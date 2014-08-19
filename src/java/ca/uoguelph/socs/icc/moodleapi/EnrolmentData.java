@@ -1,39 +1,45 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
+import java.util.List;
 import java.util.ArrayList;
 
 public class EnrolmentData implements Enrolment
 {
-	private boolean usable;
+	private Long id;
+	private Boolean usable;
 	private Course course;
 	private Grade grade;
 	private Role role;
-	private ArrayList<LogEntry> logentries;
+	private List<LogEntry> logentries;
 
-	public EnrolmentData(CourseData course, Role role)
+	protected EnrolmentData(Long id, Course course, Role role, Boolean usable)
 	{
+
 	}
 
-	public EnrolmentData(CourseData course, Role role, boolean usable)
+	protected EnrolmentData(Course course, Role role, Boolean usable)
 	{
+		this.EnrolmentData (course, role);
+		this.usable = usable;
+	}
+
+	public Long getId ()
+	{
+		return new Long (this.id);
 	}
 
 	public Role getRole()
 	{
-		return null;
+		return this.role;
 	}
 
 	public Course getCourse()
 	{
-		return null;
-	}
-
-	protected void setCourse(Course course)
-	{
+		return this.course;
 	}
 
 	public String toString()
 	{
-		return null;
+		return new String ();
 	}
 }

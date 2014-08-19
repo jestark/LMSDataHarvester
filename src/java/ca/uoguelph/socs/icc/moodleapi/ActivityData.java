@@ -1,51 +1,64 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 public class ActivityData implements Activity
 {
-	private boolean gradable;
+	private Long id;
+	private Boolean gradable;
 	private Course course;
 	private ActivityType type;
-	private ArrayList grades;
+	private Set<ActivityGrade> grades;
 
-	protected ActivityData(String name, boolean gradable)
+	protected ActivityData (ActivityType type, Course course)
 	{
+		this.course = course;
+		this.type = type;
+		this.gradable = new Boolean (false);
+		this.grades = null;
+	}
+
+	protected ActivityData(ActivityType type, Course course, Boolean gradable)
+	{
+		this.ActivityData(type, course);
+
+		if (gradable)
+		{
+			this.gradable = true;
+			this.grades = new HashSet ();
+		}
+	}
+
+	public Long getId ()
+	{
+		return new Long (this.id);
+	}
+
+	public String getName()
+	{
+		return this.type.getName();
 	}
 
 	public Course getCourse()
 	{
-		return null;
+		return this.course;
 	}
 
 	void setCourse(Course course)
 	{
 	}
 
-	public ArrayList getActions()
+	public Boolean isGradable()
 	{
-		return null;
+		return this.gradable;
 	}
 
-	public void addAction(Action action)
-	{
-	}
-
-	public String getName()
-	{
-		return null;
-	}
-
-	public boolean isGradable()
-	{
-	return false;
-	}
-
-	public void setGradable(boolean gradable)
+	public void setGradable(Boolean gradable)
 	{
 	}
 
-	public ArrayList getGrades()
+	public Set<ActivityGrade> getGrades()
 	{
 		return null;
 	}
