@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{ABSOLUTE} [%t] %-5level %logger{3} - %msg%n"/>
+		</Console>
+		<File name="App" filename="logs/app.log" append="false">
+			<PatternLayout pattern="%d{ABSOLUTE} %-5level %logger{36} - %msg%n"/>
+		</File>
+		<File name="hibernate" filename="logs/hibernate.log" append="false">
+			<PatternLayout pattern="%d{ABSOLUTE} %-5level %logger{36} - %msg%n"/>
+		</File>
+	</Appenders>
+	<Loggers>
+		<Logger name="ca.uoguelph.socs.icc" level="ALL" additivity="false">
+			<AppenderRef ref="App" level="ALL"/>
+			<AppenderRef ref="Console" level="WARN"/>
+		</Logger>
+		<Logger name="org.hibernate.loader" level="DEBUG" additivity="false">
+			<AppenderRef ref="hibernate" level="DEBUG"/>
+			<AppenderRef ref="Console" level="WARN"/>
+		</Logger>
+		<Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+			<AppenderRef ref="hibernate" level="DEBUG"/>
+			<AppenderRef ref="Console" level="WARN"/>
+		</Logger>
+		<Logger name="org.hibernate" level="INFO" additivity="false">
+			<AppenderRef ref="hibernate" level="INFO"/>
+			<AppenderRef ref="Console" level="WARN"/>
+		</Logger>
+		<Root level="error">
+			<AppenderRef ref="Console"/>
+		</Root>
+	</Loggers>
+</Configuration>
