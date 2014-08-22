@@ -1,37 +1,44 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
-public class RoleData implements PersistentData
+public class Role
 {
-	private Long id;
+	private long id;
 	private String name;
 
-	protected RoleData(String name)
+	protected Role ()
 	{
-		this.id = new Long (-1);
-		this.name = new String (name);
+		this.id = -1;
+		this.name = new String ("UNSET");
 	}
 
-	protected RoleData(Long id, String name)
+	protected Role(String name)
 	{
-		this.id = new Long (id);
-		this.name = new String (name);
+		this ();
+		this.name = name;
 	}
 
-	@Override
-	public Long getId ()
+	public long getId ()
 	{
-		return new Long (this.id);
+		return this.id;
 	}
 
-	@Override
+	protected void setId (long id)
+	{
+		this.id = id;
+	}
+
 	public String getName()
 	{
-		return new String (this.Name);
+		return this.name;
 	}
 
-	@Override
+	protected void setName (String name)
+	{
+		this.name = name;
+	}
+
 	public String toString()
 	{
-		return new String (this.name);
+		return this.name;
 	}
 }

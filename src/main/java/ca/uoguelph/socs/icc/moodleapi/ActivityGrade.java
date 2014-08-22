@@ -10,14 +10,14 @@ public class ActivityGrade implements PersistentData
 	{
 	}
 
-	public Long getId ()
+	public long getId ()
 	{
-
+		return 0;
 	}
 
 	public String getName ()
 	{
-
+		return new String ();
 	}
 
 	public String toString()
@@ -32,7 +32,7 @@ public class ActivityGrade implements PersistentData
 
 	public Integer getGrade()
 	{
-		return new Integer (this.grade);
+		return this.grade;
 	}
 
 	public Grade getStudent()

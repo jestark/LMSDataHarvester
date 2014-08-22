@@ -3,42 +3,77 @@ package ca.uoguelph.socs.icc.moodleapi;
 import java.util.Set;
 import java.util.HashSet;
 
-public class User implements PersistentData
+public class User
 {
-	private Long id;
+	private long id;
 	private Integer idnumber;
 	private String username;
 	private String firstname;
 	private String lastname;
-	private Set<Enrolment> enrolments;
+//	private Set<Enrolment> enrolments;
 
-	User(Long id, Integer idnumber, String username, String firstname, String lastname)
+	User ()
 	{
+
 	}
 
-	public Long getId ()
+	User(long id, Integer idnumber, String username, String firstname, String lastname)
 	{
-		return new Long (this.id);
+		this.id = id;
+		this.idnumber = idnumber;
+		this.username = username;
+		this.firstname = firstname;
+		this.lastname = lastname;
 	}
 
-	public Integer getIDNumber()
+	public long getId ()
 	{
-		return new Integer (this.idnumber);
+		return this.id;
 	}
 
-	public String getUsername()
+	protected void setId (long id)
 	{
-		return new String (this.username);
+		this.id = id;
+	}
+
+	public Integer getIdNumber ()
+	{
+		return this.idnumber;
+	}
+
+	protected void setIdNumber (Integer idnumber)
+	{
+		this.idnumber = idnumber;
+	}
+
+	public String getUsername ()
+	{
+		return this.username;
+	}
+
+	protected void setUsername (String username)
+	{
+		this.username = username;
 	}
 
 	public String getFirstName()
 	{
-		return new String (this.firstname);
+		return this.firstname;
 	}
 
-	public String getLastname()
+	protected void setFirstName (String firstname)
 	{
-		return new String (this.lastname);
+		this.firstname = firstname;
+	}
+
+	public String getLastName()
+	{
+		return this.lastname;
+	}
+
+	protected void setLastName (String lastname)
+	{
+		this.lastname = lastname;
 	}
 
 	public String getName()
@@ -46,13 +81,18 @@ public class User implements PersistentData
 		return new String (this.firstname + " " + this.lastname);
 	}
 
-	public Set<Enrolment> getEnrolments()
-	{
-		return new HashSet (this.enrolments);
-	}
+//	protected void setName (String name)
+//	{
+		// do nothing
+//	}
+
+//	public Set<Enrolment> getEnrolments()
+//	{
+//		return new HashSet<Enrolment>(this.enrolments);
+//	}
 
 	public String toString()
 	{
-		return null;
+		return this.getName();
 	}
 }

@@ -21,12 +21,12 @@ public class ActivityData implements Activity
 
 	protected ActivityData(ActivityType type, Course course, Boolean gradable)
 	{
-		this.ActivityData(type, course);
+		this(type, course);
 
 		if (gradable)
 		{
 			this.gradable = true;
-			this.grades = new HashSet ();
+			this.grades = new HashSet<ActivityGrade>();
 		}
 	}
 

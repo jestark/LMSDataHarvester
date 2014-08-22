@@ -5,50 +5,59 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class CourseData implements Course
+public class Course
 {
-	private Long id;
+	private long id;
 	private String name;
 	private Semester semester;
-	private int year;
-	private Set<Activity> activities;
+	private Integer year;
+//	private Set<Activity> activities;
 	private Set<Enrolment> enrolments;
-	private List<LogEntry> logentries;
+//	private List<LogEntry> logentries;
 
-	protected CourseData(String name)
+	protected Course ()
 	{
-		this.name = new String (name);
-		this.semester = Semester.Winter;
-		this.year = 0;
-		this.activities = new HashSet<Activity> ();
+		this.id = -1;
+		this.name = new String ("UNSET");
+		this.semester = Semester.WINTER;
+		this.year = new Integer (0);
+//		this.activities = new HashSet<Activity> ();
 		this.enrolments = new HashSet<Enrolment> ();
-		this.logentries = new ArrayList<LogEntry> ();
+//		this.logentries = new ArrayList<LogEntry> ();
 	}
 
-	protected CourseData(String name, Semester semester, int year)
+	protected Course(String name)
 	{
-		this.CourseData (name);
+		this();
+		this.name = name;
+	}
+
+	protected Course(String name, Semester semester, Integer year)
+	{
+		this(name);
 
 		this.semester = semester;
 		this.year = year;
 	}
 
-	protected CourseData(String name, Semester semester, int year, Set<Enrolment> enrolments, Set<Activity> activities)
+	public long getId ()
 	{
-		this.CourseData(name, semester, year);
+		return this.id;
+	}
 
-		this.activities.addAll(activities);
-		this.enrolments.addAll(enrolments);
+	protected void setId (long id)
+	{
+		this.id = id;
 	}
 
 	public String getName()
 	{
-		return new String (this.name);
+		return this.name;
 	}
 
 	public void setName(String name)
 	{
-		this.name = new String (name);
+		this.name = name;
 	}
 
 	public Semester getSemester()
@@ -61,48 +70,53 @@ public class CourseData implements Course
 		this.semester = semester;
 	}
 
-	public int getYear()
+	public Integer getYear()
 	{
 		return this.year;
 	}
 
-	public void setYear(int year)
+	public void setYear(Integer year)
 	{
-		this.year = year
+		this.year = year;
 	}
 
-	public Set<Activity> getActivities()
-	{
-		return new HashSet<Activity> (this.activities);
-	}
+//	public Set<Activity> getActivities()
+//	{
+//		return new HashSet<Activity> (this.activities);
+//	}
 
-	public void addActivity(Activity activity)
-	{
-
-	}
+//	public void addActivity(Activity activity)
+//	{
+//
+//	}
 
 	public Set<Enrolment> getEnrolments()
 	{
 		return new HashSet<Enrolment> (this.enrolments);
 	}
 
-	protected void addEnrolment(Enrolment enrolment)
+	protected void setEnrolments (Set<Enrolment> enrolments)
 	{
+		this.enrolments = enrolments;
 	}
 
-	public Set<Enrolment> getStudents()
-	{
-		return null;
-	}
+//	protected void addEnrolment(Enrolment enrolment)
+//	{
+//	}
 
-	public List<LogEntry> getLog()
-	{
-		return new ArrayList<LogEntry> (this.logentries);
-	}
+//	public Set<Enrolment> getStudents()
+//	{
+//		return null;
+//	}
 
-	protected void addLogEntry(LogEntry entry)
-	{
-	}
+//	public List<LogEntry> getLog()
+//	{
+//		return new ArrayList<LogEntry> (this.logentries);
+//	}
+
+//	protected void addLogEntry(LogEntry entry)
+//	{
+//	}
 
 	public String toString()
 	{

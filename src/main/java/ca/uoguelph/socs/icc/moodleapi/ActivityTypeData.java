@@ -4,9 +4,9 @@ import java.util.Set;
 
 public class ActivityTypeData implements ActivityType
 {
-	private Long Id;
+	private Long id;
 	private String name;
-	private DataSource source;
+//	private DataSource source;
 	private Set<Action> actions;
 
 	protected ActivityTypeData(Long id, String name)
@@ -35,10 +35,10 @@ public class ActivityTypeData implements ActivityType
 
 	public Set<Action> getActions ()
 	{
-		
+		return null;
 	}
 
-	protected addAction (Action action)
+	protected void addAction (Action action)
 	{
 
 	}

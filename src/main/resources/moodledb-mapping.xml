@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+									 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
+				 version="2.1">
+	<description>Entity mappings for the moodle database</description>
+	<package>ca.uoguelph.socs.icc.moodleapi</package>
+
+	<access>PROPERTY</access>
+
+	<entity name="Role" class="Role" metadata-complete="true">
+		<description>Mapping definition for Roles</description>
+		<table name="mdl_role"/>
+		<attributes>
+			<id name="id">
+				<column name="id"/>
+			</id>
+			<basic name="name">
+				<column name="shortname"/>
+			</basic>
+		</attributes>
+	</entity>
+
+	<entity name="User" class="User" metadata-complete="true">
+		<description>Mapping definition for Users</description>
+		<table name="mdl_user"/>
+		<attributes>
+			<id name="id">
+				<column name="id"/>
+			</id>
+			<basic name="idNumber">
+				<column name="idnumber"/>
+				<convert converter="IdNumberConverter"/>
+			</basic>
+			<basic name="username">
+				<column name="username"/>
+			</basic>
+			<basic name="firstName">
+				<column name="firstname"/>
+			</basic>
+			<basic name="lastName">
+				<column name="lastname"/>
+			</basic>
+			<transient name="name"/>
+		</attributes>
+	</entity>
+
+	<entity name="Course" class="Course" metadata-complete="true">
+		<description>Mapping definition for the Courses</description>
+		<table name="mdl_course"/>
+		<attributes>
+			<id name="id">
+				<column name="id" insertable="false" updatable="false"/>
+			</id>
+			<basic name="name">
+				<column name="fullname" insertable="false" updatable="false"/>
+			</basic>
+			<basic name="semester">
+				<column name="startdate" insertable="false" updatable="false"/>
+				<convert converter="SemesterConverter"/>
+			</basic>
+			<basic name="year">
+				<column name="startdate" insertable="false" updatable="false"/>
+				<convert converter="MoodleDateYearConverter"/>
+			</basic>
+			<one-to-many name="enrolments" target-entity="EnrolmentData" mapped-by="course"/>
+		</attributes>
+	</entity>
+
+	<entity name="Enrolment" class="EnrolmentData" metadata-complete="true">
+		<description>Mapping definition for a user's enrolment in a course</description>
+		<table name="mdl_enrol"/>
+		<secondary-table name="mdl_user_enrolments">
+			<primary-key-join-column name="enrolid"/>
+		</secondary-table>
+		<attributes>
+			<id name="id">
+				<column name="userid" insertable="false" updatable="false"/>
+			</id>
+			<many-to-one name="course" target-entity="Course" fetch="EAGER">
+				<join-column name="courseid"/>
+			</many-to-one>
+			<transient name="role"/>
+			<transient name="grade"/>
+			<transient name="usable"/>
+			<transient name="name"/>
+		</attributes>
+	</entity>
+
+</entity-mappings>

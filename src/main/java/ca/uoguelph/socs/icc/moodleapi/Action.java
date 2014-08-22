@@ -1,15 +1,15 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
-public class ActionData implements PersistentData
+public class Action implements PersistentData
 {
-	private Long id;
+	private long id;
 	private String name;
 	private ActivityType atype;
 
-	public ActionData (ActivityType type, String name)
+	public Action (ActivityType type, String name)
 	{
 		this.name = new String (name);
-		this.type = atype;
+		this.atype = type;
 
 		// Add the Action to the Activity Type (via a protected Method)
 	}
@@ -19,18 +19,18 @@ public class ActionData implements PersistentData
 		return this.atype;
 	}
 
-	public Long getId ()
+	public long getId ()
 	{
-		return new Long (this.id);
+		return this.id;
 	}
 
 	public String getName()
 	{
-		return new String (this.name);
+		return this.name;
 	}
 
 	public String toString()
 	{
-		return new String (this.name);
+		return this.name;
 	}
 }
