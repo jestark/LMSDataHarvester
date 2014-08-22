@@ -1,0 +1,3 @@
+# ignore generated directory trees.
+logs/
+target/
