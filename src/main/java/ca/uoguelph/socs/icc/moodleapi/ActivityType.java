@@ -39,7 +39,7 @@ public class ActivityType
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
 				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.name, ((ActivityTypeData) obj).name);
+				ebuilder.append (this.name, ((ActivityType) obj).name);
 
 				result = ebuilder.isEquals ();
 			}
