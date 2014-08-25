@@ -67,6 +67,12 @@
 			<version>4.3.6.Final</version>
 		</dependency>
 
+		<!-- Apache commons lang library used for building hashcodes -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.3.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
