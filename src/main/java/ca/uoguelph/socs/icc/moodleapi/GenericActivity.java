@@ -1,28 +1,25 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
-import java.util.Set;
-import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class ActivityType
+public abstract class GenericActivity implements Activity
 {
 	private long id;
-	private String name;
-	private Set<Action> actions;
+	private ActivityType atype;
+	private ActivityInstance instance;
 
-	protected ActivityType ()
+	protected GenericActivity ()
 	{
 		this.id = -1;
-		this.name = null;
-		this.actions = null;
+		this.atype = null;
+		this.instance = null;
 	}
 
-	protected ActivityType (String name)
+	public GenericActivity (ActivityType atype)
 	{
 		this ();
-		this.name = name;
-		this.actions = new HashSet<Action> ();
+		this.atype = atype;
 	}
 
 	@Override
@@ -40,7 +37,7 @@ public class ActivityType
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
 				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.name, ((ActivityType) obj).name);
+				ebuilder.append (this.atype, ((GenericActivity) obj).atype);
 
 				result = ebuilder.isEquals ();
 			}
@@ -50,17 +47,18 @@ public class ActivityType
 	}
 
 	@Override
-	public int hashCode ()
+	public int hashcode ()
 	{
-		final int base = 1009;
-		final int mult = 997;
+		final int base = 1013;
+		final int mult = 991;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.name);
+		hbuilder.append (this.atype);
 
 		return hbuilder.toHashCode ();
 	}
 
+	@Override
 	public long getId ()
 	{
 		return this.id;
@@ -71,34 +69,37 @@ public class ActivityType
 		this.id = id;
 	}
 
+	@Override
+	public ActivityType getType ()
+	{
+		return this.atype;
+	}
+
+	protected void setType (ActivityType atype)
+	{
+		this.atype = atype;
+	}
+
+	@Override
+	public ActivityInstance getInstance ()
+	{
+		return this.instance;
+	}
+
+	protected void setInstance (Activity instance)
+	{
+		this.instance = instance;
+	}
+
+	@Override
 	public String getName ()
 	{
-		return this.name;
-	}
-
-	protected void setName (String name)
-	{
-		this.name = name;
-	}
-
-	public Set<Action> getActions ()
-	{
-		return new HashSet<Action> (this.actions);
-	}
-
-	protected void setActions (Set<Action> actions)
-	{
-		this.actions = actions;
-	}
-
-	public void addAction (Action action)
-	{
-		this.actions.add (action);
+		return this.atype.getName ();
 	}
 
 	@Override
 	public String toString ()
 	{
-		return this.name;
+		return this.getName ();
 	}
 }

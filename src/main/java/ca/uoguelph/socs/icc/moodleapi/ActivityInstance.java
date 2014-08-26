@@ -66,8 +66,8 @@ public class ActivityInstance
 	@Override
 	public int hashCode ()
 	{
-		final int base = 13; // base value and multiplier for the hashcode, should be a prime number
-		final int mult = 37; // and unique among classes in the domain model
+		final int base = 1039;
+		final int mult = 953;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.append (this.course);
@@ -133,11 +133,12 @@ public class ActivityInstance
 
 	protected void setGrades (Set<ActivityGrade> grades)
 	{
-		this.grades = grades
+		this.grades = grades;
 	}
 
-	protected void addGrade (ActivityGrade grade)
+	public void addGrade (ActivityGrade grade)
 	{
+		this.grades.add (grade);
 	}
 
 	public String getName ()
@@ -145,8 +146,21 @@ public class ActivityInstance
 		return this.activity.getName();
 	}
 
+	@Override
 	public String toString ()
 	{
-		return null;
+		String string = this.activity.toString ();
+
+		if (this.stealth)
+		{
+			string = new String ("<" + string + ">");
+		}
+
+		if (this.gradable)
+		{
+			string = new String (string + ": Gradable (" + this.grades.size + " entries)"
+		}
+
+		return string;
 	}
 }

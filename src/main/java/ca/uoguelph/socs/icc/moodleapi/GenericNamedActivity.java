@@ -1,28 +1,22 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
-import java.util.Set;
-import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class ActivityType
+public abstract class GenericNamedActivity extends GenericActivity implements Activity
 {
-	private long id;
 	private String name;
-	private Set<Action> actions;
 
-	protected ActivityType ()
+	protected GenericNamedActivity ()
 	{
-		this.id = -1;
+		super ();
 		this.name = null;
-		this.actions = null;
 	}
 
-	protected ActivityType (String name)
+	public GenericNamedActivity (ActivityType atype, String name)
 	{
-		this ();
+		super (atype);
 		this.name = name;
-		this.actions = new HashSet<Action> ();
 	}
 
 	@Override
@@ -39,8 +33,7 @@ public class ActivityType
 			else if (obj.getClass () == this.getClass ())
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.name, ((ActivityType) obj).name);
+				ebuilder.append (this.name, ((GenericNamedActivity) obj).name);
 
 				result = ebuilder.isEquals ();
 			}
@@ -50,27 +43,19 @@ public class ActivityType
 	}
 
 	@Override
-	public int hashCode ()
+	public int hashcode ()
 	{
-		final int base = 1009;
-		final int mult = 997;
+		final int base = 1019;
+		final int mult = 983;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.appendSuper (super.hashCode ());
 		hbuilder.append (this.name);
 
 		return hbuilder.toHashCode ();
 	}
 
-	public long getId ()
-	{
-		return this.id;
-	}
-
-	protected void setId (long id)
-	{
-		this.id = id;
-	}
-
+	@Override
 	public String getName ()
 	{
 		return this.name;
@@ -81,24 +66,9 @@ public class ActivityType
 		this.name = name;
 	}
 
-	public Set<Action> getActions ()
-	{
-		return new HashSet<Action> (this.actions);
-	}
-
-	protected void setActions (Set<Action> actions)
-	{
-		this.actions = actions;
-	}
-
-	public void addAction (Action action)
-	{
-		this.actions.add (action);
-	}
-
 	@Override
 	public String toString ()
 	{
-		return this.name;
+		return new String (this.getType () + ": " + this.name);
 	}
 }
