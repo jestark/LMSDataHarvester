@@ -3,7 +3,7 @@ package ca.uoguelph.socs.icc.moodleapi;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Action implements PersistentData
+public class Action
 {
 	private long id;
 	private String name;
@@ -21,11 +21,9 @@ public class Action implements PersistentData
 		this ();
 		this.name = new String (name);
 		this.atype = type;
-
-		// Add the Action to the Activity Type (via a protected Method)
-		this.atype.addAction (this);
 	}
 
+	@Override
 	public boolean equals (Object obj)
 	{
 		boolean result = false;
@@ -50,10 +48,11 @@ public class Action implements PersistentData
 		return result;
 	}
 
+	@Override
 	public int hashcode ()
 	{
-		final int base = 11; // base value and multiplier for the hashcode, should be a prime number
-		final int mult = 31; // and unique among classes in the domain model
+		final int base = 1051;
+		final int mult = 941;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.append (this.atype);
@@ -92,6 +91,7 @@ public class Action implements PersistentData
 		this.name = name;
 	}
 
+	@Override
 	public String toString()
 	{
 		return this.name;
