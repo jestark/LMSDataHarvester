@@ -72,12 +72,12 @@ public class Action implements PersistentData
 		this.id = id;
 	}
 
-	public ActivityType getActivityType ()
+	public ActivityType getType ()
 	{
 		return this.atype;
 	}
 
-	protected void setActivityType (ActivityType atype)
+	protected void setType (ActivityType atype)
 	{
 		this.atype = atype;
 	}
