@@ -1,6 +1,6 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
-public class ActivityGrade implements PersistentData
+public class ActivityGrade
 {
 	private Integer grade;
 	private Grade student;

@@ -3,7 +3,7 @@ package ca.uoguelph.socs.icc.moodleapi;
 import java.util.Set;
 import java.util.HashSet;
 
-public class Grade implements PersistentData
+public class Grade
 {
 	private long id;
 	private Integer finalgrade;
