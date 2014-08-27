@@ -43,7 +43,7 @@ public abstract class GenericNamedActivity extends GenericActivity implements Ac
 	}
 
 	@Override
-	public int hashcode ()
+	public int hashCode ()
 	{
 		final int base = 1019;
 		final int mult = 983;

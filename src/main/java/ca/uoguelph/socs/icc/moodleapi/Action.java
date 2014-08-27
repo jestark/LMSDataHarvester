@@ -49,7 +49,7 @@ public class Action
 	}
 
 	@Override
-	public int hashcode ()
+	public int hashCode ()
 	{
 		final int base = 1051;
 		final int mult = 941;

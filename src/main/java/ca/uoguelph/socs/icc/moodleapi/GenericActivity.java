@@ -47,7 +47,7 @@ public abstract class GenericActivity implements Activity
 	}
 
 	@Override
-	public int hashcode ()
+	public int hashCode ()
 	{
 		final int base = 1013;
 		final int mult = 991;
@@ -86,7 +86,7 @@ public abstract class GenericActivity implements Activity
 		return this.instance;
 	}
 
-	protected void setInstance (Activity instance)
+	protected void setInstance (ActivityInstance instance)
 	{
 		this.instance = instance;
 	}

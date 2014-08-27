@@ -59,7 +59,7 @@ public class User
 	}
 
 	@Override
-	public int hashcode ()
+	public int hashCode ()
 	{
 		final int base = 1063;
 		final int mult = 929;

@@ -1,11 +1,11 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
 import java.util.Set;
-import java.util.Set;
+import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericGroupedActivity<E> extends GenericNamedActivity implements Activity, GenericActivityGroup<E>
+public abstract class GenericGroupedActivity<E extends GenericActivityGroupMember> extends GenericNamedActivity implements Activity, GenericActivityGroup<E>
 {
 	private Set<E> children;
 

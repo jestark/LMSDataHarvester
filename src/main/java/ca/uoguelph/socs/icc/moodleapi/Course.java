@@ -67,7 +67,7 @@ public class Course
 	}
 
 	@Override
-	public int hashcode ()
+	public int hashCode ()
 	{
 		final int base = 1061;
 		final int mult = 937;

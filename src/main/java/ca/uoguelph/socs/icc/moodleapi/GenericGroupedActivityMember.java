@@ -3,7 +3,7 @@ package ca.uoguelph.socs.icc.moodleapi;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericGroupedActivityMember<T> implements GenericActivityGroupMember<T>
+public abstract class GenericGroupedActivityMember<T extends GenericActivityGroup> implements GenericActivityGroupMember<T>
 {
 	private long id;
 	private String name;
@@ -16,7 +16,7 @@ public abstract class GenericGroupedActivityMember<T> implements GenericActivity
 		this.parent = null;
 	}
 
-	public GenericGroupedActivityMember(String name, GenericActivityGroup parent)
+	public GenericGroupedActivityMember(String name, T parent)
 	{
 		this ();
 		this.name = name;

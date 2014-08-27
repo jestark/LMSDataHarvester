@@ -158,7 +158,7 @@ public class ActivityInstance
 
 		if (this.gradable)
 		{
-			string = new String (string + ": Gradable (" + this.grades.size + " entries)");
+			string = new String (string + ": Gradable (" + this.grades.size () + " entries)");
 		}
 
 		return string;
