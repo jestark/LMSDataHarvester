@@ -12,21 +12,25 @@ public class ActivityInstance
 	private Boolean stealth;
 	private Course course;
 	private Activity activity;
+	private ActivityType type;
 	private Set<ActivityGrade> grades;
 
 	protected ActivityInstance ()
 	{
 		this.id = -1;
-		this.gradable = new Boolean (false);
-		this.stealth = new Boolean (false);
+		this.type = null;
 		this.course = null;
 		this.activity = null;
 		this.grades = null;
+
+		this.gradable = new Boolean (false);
+		this.stealth = new Boolean (false);
 	}
 
-	public ActivityInstance (Course course, Activity activity, Boolean gradable, Boolean stealth)
+	public ActivityInstance (Course course, ActivityType type, Activity activity, Boolean gradable, Boolean stealth)
 	{
 		this ();
+		this.type = type;
 		this.course = course;
 		this.activity = activity;
 		this.gradable = gradable;
@@ -53,6 +57,7 @@ public class ActivityInstance
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
 				ebuilder.appendSuper (super.equals (obj));
+				ebuilder.append (this.type, ((ActivityInstance) obj).type);
 				ebuilder.append (this.course, ((ActivityInstance) obj).course);
 				ebuilder.append (this.activity, ((ActivityInstance) obj).activity);
 
@@ -70,6 +75,7 @@ public class ActivityInstance
 		final int mult = 953;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.type);
 		hbuilder.append (this.course);
 		hbuilder.append (this.activity);
 
@@ -94,6 +100,16 @@ public class ActivityInstance
 	protected void setCourse (Course course)
 	{
 		this.course = course;
+	}
+
+	public ActivityType getType ()
+	{
+		return this.type;
+	}
+
+	protected void setType (ActivityType type)
+	{
+		this.type = type;
 	}
 
 	public Activity getActivity ()
@@ -143,13 +159,20 @@ public class ActivityInstance
 
 	public String getName ()
 	{
-		return this.activity.getName();
+		String name = this.type.getName ();
+
+		if (this.activity != null)
+		{
+			name = this.activity.getName();
+		}
+
+		return name;
 	}
 
 	@Override
 	public String toString ()
 	{
-		String string = this.activity.toString ();
+		String string = this.getName ();
 
 		if (this.stealth)
 		{

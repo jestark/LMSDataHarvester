@@ -3,19 +3,22 @@ package ca.uoguelph.socs.icc.moodleapi;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericNamedActivity extends GenericActivity implements Activity
+public abstract class GenericNamedActivity implements Activity
 {
+	private long id;
 	private String name;
+	private ActivityInstance instance;
 
 	protected GenericNamedActivity ()
 	{
-		super ();
+		this.id = -1;
 		this.name = null;
+		this.instance = null;
 	}
 
-	public GenericNamedActivity (ActivityType atype, String name)
+	public GenericNamedActivity (String name)
 	{
-		super (atype);
+		this ();
 		this.name = name;
 	}
 
@@ -49,10 +52,37 @@ public abstract class GenericNamedActivity extends GenericActivity implements Ac
 		final int mult = 983;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
 		hbuilder.append (this.name);
 
 		return hbuilder.toHashCode ();
+	}
+
+	@Override
+	public long getId ()
+	{
+		return this.id;
+	}
+
+	protected void setId (long id)
+	{
+		this.id = id;
+	}
+
+	@Override
+	public ActivityType getType ()
+	{
+		return this.instance.getType ();
+	}
+
+	@Override
+	public ActivityInstance getInstance ()
+	{
+		return this.instance;
+	}
+
+	protected void setInstance (ActivityInstance instance)
+	{
+		this.instance = instance;
 	}
 
 	@Override
