@@ -1,0 +1,49 @@
+Class:							Base:	Multiplier:
+ActivityType					1009	997
+GenericActivity					1013	991
+GenericNamedActivity			1019	983
+GenericGroupedActivity			1021	977
+GenericGroupedActivityMember	1031	971
+GenericGroupedActivityGroup		1033	967
+ActivityInstance				1039	953
+ActivityGrade					1049	947
+Action							1051	941
+Course							1061	937
+User							1063	929
+Role							1069	919
+Semester						1087	911
+Enrolment						1091	907
+LogData							1093	887
+MoodleLogData					1097	883
+
+MoodleBookActivity				2003	691
+MoodleBookActivityChapter		2011	683
+MoodleForumActivity				2017	677
+MoodleForumActivityPost			2027	673
+MoodleForumActivityDiscussion	2029	661
+MoodleLessonActivity			2039	601
+MoodleLessonActivityPage		2053	599
+MoodleWorkshopActivity			2063	593
+MoodleWorkshopActivitySubmission	2069	587
+
+
+MoodleAssignActivity			3001	397
+MoodleChecklistActivity			3011	389
+MoodleChoiceActivity			3019	383
+MoodleFeedbackActivity			3023	379
+MoodleFolderActivity			3037	373
+MoodleLabelActivity				3041	367
+MoodlePageActivity				3049	359
+MoodleQuizActivity				3061	353
+MoodleResourceActivity			3067	349
+MoodleSchedulerActivity			3079	347
+MoodleURLActivity				3083	337
+
+MoodleBlogActivity				4001	197
+MoodleCalendarActivity			4003	193
+MoodleCourseActivity			4007	191
+MoodleGradeActivity				4013	181
+MoodleNotesActivity				4019	179
+MoodleProgressTrackerActivity	4021	173
+MoodleRoleActivity				4027	167
+MoodleUserActivity				4049	163
