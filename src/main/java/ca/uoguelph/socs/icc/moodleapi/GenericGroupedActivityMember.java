@@ -5,13 +5,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public abstract class GenericGroupedActivityMember<T extends GenericActivityGroup> implements GenericActivityGroupMember<T>
 {
-	private long id;
+	private Long id;
 	private String name;
 	private T parent;
 
 	protected GenericGroupedActivityMember()
 	{
-		this.id = -1;
+		this.id = null;
 		this.name = null;
 		this.parent = null;
 	}
@@ -61,12 +61,12 @@ public abstract class GenericGroupedActivityMember<T extends GenericActivityGrou
 	}
 
 	@Override
-	public long getId()
+	public Long getId()
 	{
 		return this.id;
 	}
 
-	protected void setId(long id)
+	protected void setId(Long id)
 	{
 		this.id = id;
 	}

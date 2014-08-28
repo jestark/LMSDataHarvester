@@ -5,12 +5,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Role
 {
-	private long id;
+	private Long id;
 	private String name;
 
 	protected Role ()
 	{
-		this.id = -1;
+		this.id = null;
 		this.name = null;
 	}
 
@@ -55,12 +55,12 @@ public class Role
 		return hbuilder.toHashCode ();
 	}
 
-	public long getId ()
+	public Long getId ()
 	{
 		return this.id;
 	}
 
-	protected void setId (long id)
+	protected void setId (Long id)
 	{
 		this.id = id;
 	}

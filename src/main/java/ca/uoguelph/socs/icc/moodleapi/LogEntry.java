@@ -4,7 +4,7 @@ import java.util.Date;
 
 public interface LogEntry
 {
-	public long getId();
+	public Long getId();
 	public Enrolment getEnrolment();
 	public Course getCourse();
 	public ActivityInstance getActivity();

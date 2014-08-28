@@ -5,14 +5,14 @@ import java.util.HashSet;
 
 public class Grade
 {
-	private long id;
+	private Long id;
 	private Integer finalgrade;
 	private Set<ActivityGrade> grades;
 	private Enrolment student;
 
 	protected Grade ()
 	{
-		this.id = -1;
+		this.id = null;
 		this.finalgrade = new Integer (-1);
 		this.grades = new HashSet<ActivityGrade>();
 	}
@@ -31,12 +31,12 @@ public class Grade
 		this.finalgrade = new Integer (grade);
 	}
 
-	public long getId()
+	public Long getId()
 	{
 		return this.id;
 	}
 
-	protected void setId (long id)
+	protected void setId (Long id)
 	{
 		this.id = id;
 	}

@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class ActivityInstance
 {
-	private long id;
+	private Long id;
 	private Boolean gradable;
 	private Boolean stealth;
 	private Course course;
@@ -17,7 +17,7 @@ public class ActivityInstance
 
 	protected ActivityInstance ()
 	{
-		this.id = -1;
+		this.id = null;
 		this.type = null;
 		this.course = null;
 		this.activity = null;
@@ -82,12 +82,12 @@ public class ActivityInstance
 		return hbuilder.toHashCode ();
 	}
 
-	public long getId ()
+	public Long getId ()
 	{
 		return this.id;
 	}
 
-	protected void setId (long id)
+	protected void setId (Long id)
 	{
 		this.id = id;
 	}

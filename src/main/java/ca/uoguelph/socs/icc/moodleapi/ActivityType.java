@@ -7,13 +7,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class ActivityType
 {
-	private long id;
+	private Long id;
 	private String name;
 	private Set<Action> actions;
 
 	protected ActivityType ()
 	{
-		this.id = -1;
+		this.id = null;
 		this.name = null;
 		this.actions = null;
 	}
@@ -61,12 +61,12 @@ public class ActivityType
 		return hbuilder.toHashCode ();
 	}
 
-	public long getId ()
+	public Long getId ()
 	{
 		return this.id;
 	}
 
-	protected void setId (long id)
+	protected void setId (Long id)
 	{
 		this.id = id;
 	}

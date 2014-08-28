@@ -9,7 +9,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Course
 {
-	private long id;
+	private Long id;
 	private String name;
 	private Semester semester;
 	private Integer year;
@@ -19,7 +19,7 @@ public class Course
 
 	protected Course ()
 	{
-		this.id = -1;
+		this.id = null;
 		this.name = null;
 		this.semester = null;
 		this.year = null;
@@ -80,12 +80,12 @@ public class Course
 		return hbuilder.toHashCode ();
 	}
 
-	public long getId ()
+	public Long getId ()
 	{
 		return this.id;
 	}
 
-	protected void setId (long id)
+	protected void setId (Long id)
 	{
 		this.id = id;
 	}

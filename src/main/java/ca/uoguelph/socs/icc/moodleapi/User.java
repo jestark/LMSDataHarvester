@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class User
 {
-	private long id;
+	private Long id;
 	private Integer idnumber;
 	private String username;
 	private String firstname;
@@ -16,7 +16,7 @@ public class User
 
 	protected User ()
 	{
-		this.id = -1;
+		this.id = null;
 		this.idnumber = null;
 		this.username = null;
 		this.lastname = null;
@@ -73,12 +73,12 @@ public class User
 		return hbuilder.toHashCode ();
 	}
 
-	public long getId ()
+	public Long getId ()
 	{
 		return this.id;
 	}
 
-	protected void setId (long id)
+	protected void setId (Long id)
 	{
 		this.id = id;
 	}

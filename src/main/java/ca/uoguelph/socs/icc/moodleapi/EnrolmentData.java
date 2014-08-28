@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class EnrolmentData implements Enrolment
 {
-	private long id;
+	private Long id;
 	private Boolean usable;
 	private Course course;
 	private Grade grade;
@@ -14,19 +14,19 @@ public class EnrolmentData implements Enrolment
 
 	protected EnrolmentData()
 	{
-		this.id = -1;
+		this.id = null;
 		this.usable = new Boolean (false);
 		this.course = null;
 		this.grade = null;
 		this.role = null;
 	}
 
-	public long getId ()
+	public Long getId ()
 	{
 		return this.id;
 	}
 
-	protected void setId (long id)
+	protected void setId (Long id)
 	{
 		this.id = id;
 	}
@@ -78,6 +78,6 @@ public class EnrolmentData implements Enrolment
 
 	public String toString()
 	{
-		return new String ((new Long (this.id)).toString ());
+		return this.id.toString ();
 	}
 }

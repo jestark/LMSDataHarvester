@@ -5,13 +5,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public abstract class GenericNamedActivity implements Activity
 {
-	private long id;
+	private Long id;
 	private String name;
 	private ActivityInstance instance;
 
 	protected GenericNamedActivity ()
 	{
-		this.id = -1;
+		this.id = null;
 		this.name = null;
 		this.instance = null;
 	}
@@ -58,12 +58,12 @@ public abstract class GenericNamedActivity implements Activity
 	}
 
 	@Override
-	public long getId ()
+	public Long getId ()
 	{
 		return this.id;
 	}
 
-	protected void setId (long id)
+	protected void setId (Long id)
 	{
 		this.id = id;
 	}
