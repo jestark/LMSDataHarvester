@@ -15,9 +15,9 @@ public abstract class GenericGroupedActivity<E extends GenericActivityGroupMembe
 		this.children = null;
 	}
 
-	public GenericGroupedActivity(ActivityType type, String name)
+	public GenericGroupedActivity(String name)
 	{
-		super (type, name);
+		super (name);
 		this.children = new HashSet<E> ();
 	}
 
