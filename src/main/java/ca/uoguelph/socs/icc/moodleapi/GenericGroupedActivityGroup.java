@@ -5,20 +5,20 @@ import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivity, E extends GenericGroupedActivityMember> extends GenericGroupedActivityMember<T>
+public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivity, E extends GenericGroupedActivityMember> extends GenericGroupedActivityMember<T> implements GenericActivityGroup<E>
 {
-	private GenericActivitySubGroup<E> inner;
+	private Set<E> children;
 
 	protected GenericGroupedActivityGroup ()
 	{
 		super ();
-		this.inner = new GenericActivitySubGroup<E> (this);
+		this.children = null;
 	}
 
 	public GenericGroupedActivityGroup(String name, T parent)
 	{
 		super (name, parent);
-		this.inner = new GenericActivitySubGroup<E> (this);
+		this.children = new HashSet<E> ();
 	}
 
 	@Override
@@ -58,16 +58,16 @@ public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivit
 
 	public Set<E> getChildren()
 	{
-		return this.inner.getChildren ();
+		return new HashSet<E> (this.children);
 	}
 
 	protected void setChildren(Set<E> children)
 	{
-		this.inner.setChildren (children);
+		this.children = children;
 	}
 
 	public void addChild(E child)
 	{
-		this.inner.addChild (child);
+		this.children.add (child);
 	}
 }
