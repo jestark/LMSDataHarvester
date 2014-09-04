@@ -5,9 +5,8 @@ import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class ActivityInstance
+public class ActivityInstance extends AbstractActivity
 {
-	private Long id;
 	private Boolean gradable;
 	private Boolean stealth;
 	private Course course;
@@ -17,7 +16,7 @@ public class ActivityInstance
 
 	protected ActivityInstance ()
 	{
-		this.id = null;
+		super ();
 		this.type = null;
 		this.course = null;
 		this.activity = null;
@@ -29,7 +28,7 @@ public class ActivityInstance
 
 	public ActivityInstance (Course course, ActivityType type, Activity activity, Boolean gradable, Boolean stealth)
 	{
-		this ();
+		super ();
 		this.type = type;
 		this.course = course;
 		this.activity = activity;
@@ -80,16 +79,6 @@ public class ActivityInstance
 		hbuilder.append (this.activity);
 
 		return hbuilder.toHashCode ();
-	}
-
-	public Long getId ()
-	{
-		return this.id;
-	}
-
-	protected void setId (Long id)
-	{
-		this.id = id;
 	}
 
 	public Course getCourse ()
