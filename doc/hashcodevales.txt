@@ -1,6 +1,6 @@
 Class:							Base:	Multiplier:
 ActivityType					1009	997
-GenericActivity					1013	991			<Removed, Values available for reuse>
+AbstractNamedActivity			1013	991
 GenericNamedActivity			1019	983
 GenericGroupedActivity			1021	977
 GenericGroupedActivityMember	1031	971

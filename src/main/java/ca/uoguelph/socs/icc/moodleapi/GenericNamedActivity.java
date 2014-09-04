@@ -1,25 +1,23 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
+import java.util.Set;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericNamedActivity implements Activity
+public abstract class GenericNamedActivity extends AbstractNamedActivity
 {
-	private Long id;
-	private String name;
 	private ActivityInstance instance;
 
 	protected GenericNamedActivity ()
 	{
-		this.id = null;
-		this.name = null;
+		super ();
 		this.instance = null;
 	}
 
 	public GenericNamedActivity (String name)
 	{
-		this ();
-		this.name = name;
+		super (name);
+		this.instance = null;
 	}
 
 	@Override
@@ -36,7 +34,7 @@ public abstract class GenericNamedActivity implements Activity
 			else if (obj.getClass () == this.getClass ())
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.name, ((GenericNamedActivity) obj).name);
+				ebuilder.appendSuper (super.equals (obj));
 
 				result = ebuilder.isEquals ();
 			}
@@ -52,20 +50,15 @@ public abstract class GenericNamedActivity implements Activity
 		final int mult = 983;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.name);
+		hbuilder.appendSuper (super.hashCode ());
 
 		return hbuilder.toHashCode ();
 	}
 
 	@Override
-	public Long getId ()
+	public Course getCourse ()
 	{
-		return this.id;
-	}
-
-	protected void setId (Long id)
-	{
-		this.id = id;
+		return this.instance.getCourse ();
 	}
 
 	@Override
@@ -75,7 +68,30 @@ public abstract class GenericNamedActivity implements Activity
 	}
 
 	@Override
-	public ActivityInstance getInstance ()
+	public Boolean isGradable ()
+	{
+		return this.instance.isGradable ();
+	}
+
+	@Override
+	public Boolean isStealth ()
+	{
+		return this.instance.isStealth ();
+	}
+
+	@Override
+	public Set<ActivityGrade> getGrades ()
+	{
+		return this.instance.getGrades ();
+	}
+
+	@Override
+	public void addGrade (ActivityGrade grade)
+	{
+		this.instance.addGrade (grade);
+	}
+
+	protected ActivityInstance getInstance ()
 	{
 		return this.instance;
 	}
@@ -86,19 +102,8 @@ public abstract class GenericNamedActivity implements Activity
 	}
 
 	@Override
-	public String getName ()
-	{
-		return this.name;
-	}
-
-	protected void setName (String name)
-	{
-		this.name = name;
-	}
-
-	@Override
 	public String toString ()
 	{
-		return new String (this.getType () + ": " + this.name);
+		return new String (this.getType () + ": " + this.getName ());
 	}
 }

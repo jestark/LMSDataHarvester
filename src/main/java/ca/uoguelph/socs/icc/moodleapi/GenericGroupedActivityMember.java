@@ -1,25 +1,22 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
+import java.util.Set;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericGroupedActivityMember<T extends GenericActivityGroup> implements GenericActivityGroupMember<T>
+public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivity> extends AbstractNamedActivity
 {
-	private Long id;
-	private String name;
 	private T parent;
 
 	protected GenericGroupedActivityMember()
 	{
-		this.id = null;
-		this.name = null;
+		super ();
 		this.parent = null;
 	}
 
 	public GenericGroupedActivityMember(String name, T parent)
 	{
-		this ();
-		this.name = name;
+		super (name);
 		this.parent = parent;
 	}
 
@@ -37,7 +34,7 @@ public abstract class GenericGroupedActivityMember<T extends GenericActivityGrou
 			else if (obj.getClass () == this.getClass ())
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.name, ((GenericGroupedActivityMember) obj).name);
+				ebuilder.appendSuper (super.equals (obj));
 				ebuilder.append (this.parent, ((GenericGroupedActivityMember) obj).parent);
 
 				result = ebuilder.isEquals ();
@@ -54,47 +51,48 @@ public abstract class GenericGroupedActivityMember<T extends GenericActivityGrou
 		final int mult = 971;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.name);
+		hbuilder.appendSuper (super.hashCode ());
 		hbuilder.append (this.parent);
 
 		return hbuilder.toHashCode ();
 	}
 
 	@Override
-	public Long getId()
+	public Course getCourse ()
 	{
-		return this.id;
-	}
-
-	protected void setId(Long id)
-	{
-		this.id = id;
+		return this.parent.getCourse ();
 	}
 
 	@Override
-	public String getName()
-	{
-		return this.name;
-	}
-
-	protected void setName(String name)
-	{
-		this.name = name;
-	}
-
-	@Override
-	public ActivityType getType()
+	public ActivityType getType ()
 	{
 		return this.parent.getType ();
 	}
 
 	@Override
-	public ActivityInstance getInstance()
+	public Boolean isGradable ()
 	{
-		return this.parent.getInstance ();
+		return this.parent.isGradable ();
 	}
 
 	@Override
+	public Boolean isStealth ()
+	{
+		return this.parent.isStealth ();
+	}
+
+	@Override
+	public Set<ActivityGrade> getGrades ()
+	{
+		return this.parent.getGrades ();
+	}
+
+	@Override
+	public void addGrade (ActivityGrade grade)
+	{
+		this.parent.addGrade (grade);
+	}
+
 	public T getParent()
 	{
 		return this.parent;
@@ -108,6 +106,6 @@ public abstract class GenericGroupedActivityMember<T extends GenericActivityGrou
 	@Override
 	public String toString()
 	{
-		return new String (this.parent + ": " + this.name);
+		return new String (this.parent + ": " + this.getName ());
 	}
 }
