@@ -13,7 +13,7 @@ public class Course
 	private String name;
 	private Semester semester;
 	private Integer year;
-	private Set<ActivityInstance> activities;
+	private Set<Activity> activities;
 	private Set<Enrolment> enrolments;
 	private List<LogEntry> logentries;
 
@@ -35,7 +35,7 @@ public class Course
 		this.semester = semester;
 		this.year = year;
 
-		this.activities = new HashSet<ActivityInstance> ();
+		this.activities = new HashSet<Activity> ();
 		this.enrolments = new HashSet<Enrolment> ();
 		this.logentries = new ArrayList<LogEntry> ();
 	}
@@ -120,17 +120,17 @@ public class Course
 		this.year = year;
 	}
 
-	public Set<ActivityInstance> getActivities ()
+	public Set<Activity> getActivities ()
 	{
-		return new HashSet<ActivityInstance> (this.activities);
+		return new HashSet<Activity> (this.activities);
 	}
 
-	protected void setActivities (Set<ActivityInstance> activities)
+	protected void setActivities (Set<Activity> activities)
 	{
 		this.activities = activities;
 	}
 
-	public void addActivity (ActivityInstance activity)
+	public void addActivity (Activity activity)
 	{
 		this.activities.add (activity);
 	}
