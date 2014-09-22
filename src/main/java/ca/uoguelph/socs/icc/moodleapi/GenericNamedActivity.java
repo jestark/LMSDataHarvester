@@ -56,6 +56,12 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity
 	}
 
 	@Override
+	public Long getId ()
+	{
+		return this.instance.getId ();
+	}
+
+	@Override
 	public Course getCourse ()
 	{
 		return this.instance.getCourse ();
@@ -91,7 +97,7 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity
 		this.instance.addGrade (grade);
 	}
 
-	protected ActivityInstance getInstance ()
+	public ActivityInstance getInstance ()
 	{
 		return this.instance;
 	}

@@ -6,17 +6,20 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivity> extends AbstractNamedActivity
 {
+	private Long id;
 	private T parent;
 
 	protected GenericGroupedActivityMember()
 	{
 		super ();
+		this.id = null;
 		this.parent = null;
 	}
 
 	public GenericGroupedActivityMember(String name, T parent)
 	{
 		super (name);
+		this.id = null;
 		this.parent = parent;
 	}
 
@@ -55,6 +58,17 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 		hbuilder.append (this.parent);
 
 		return hbuilder.toHashCode ();
+	}
+
+	@Override
+	public Long getId ()
+	{
+		return this.id;
+	}
+
+	protected void setId (Long id)
+	{
+		this.id = id;
 	}
 
 	@Override
