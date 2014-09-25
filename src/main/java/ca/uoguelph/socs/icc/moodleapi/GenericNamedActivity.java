@@ -1,10 +1,11 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
+import java.io.Serializable;
 import java.util.Set;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericNamedActivity extends AbstractNamedActivity
+public abstract class GenericNamedActivity extends AbstractActivity implements Serializable
 {
 	private ActivityInstance instance;
 
@@ -55,11 +56,11 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity
 		return hbuilder.toHashCode ();
 	}
 
-	@Override
+/*	@Override
 	public Long getId ()
 	{
 		return this.instance.getId ();
-	}
+	}*/
 
 	@Override
 	public Course getCourse ()

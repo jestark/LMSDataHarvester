@@ -1,11 +1,12 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
+import java.io.Serializable;
 import java.util.Set;
 import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class ActivityInstance extends AbstractActivity
+public class ActivityInstance implements Serializable
 {
 	private Long id;
 	private Boolean gradable;
@@ -83,7 +84,7 @@ public class ActivityInstance extends AbstractActivity
 		return hbuilder.toHashCode ();
 	}
 
-	@Override
+//	@Override
 	public Long getId ()
 	{
 		return this.id;

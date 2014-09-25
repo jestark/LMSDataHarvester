@@ -4,7 +4,7 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivity> extends AbstractNamedActivity
+public abstract class GenericGroupedActivityMember<T extends AbstractActivity> extends AbstractActivity
 {
 	private Long id;
 	private T parent;
@@ -60,7 +60,7 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 		return hbuilder.toHashCode ();
 	}
 
-	@Override
+//	@Override
 	public Long getId ()
 	{
 		return this.id;
