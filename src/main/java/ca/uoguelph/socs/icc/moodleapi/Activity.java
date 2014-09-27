@@ -9,6 +9,6 @@ public interface Activity
 	public Course getCourse ();
 	public Boolean isGradable ();
 	public Boolean isStealth ();
-	public Set<ActivityGrade> getGrades ();
-	public void addGrade (ActivityGrade grade);
+	public Set<Grade> getGrades ();
+	public void addGrade (Grade grade);
 }

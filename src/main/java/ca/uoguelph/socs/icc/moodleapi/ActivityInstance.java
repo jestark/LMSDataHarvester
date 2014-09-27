@@ -14,7 +14,7 @@ public class ActivityInstance implements Serializable
 	private Course course;
 	private Activity activity;
 	private ActivityType type;
-	private Set<ActivityGrade> grades;
+	private Set<Grade> grades;
 
 	protected ActivityInstance ()
 	{
@@ -40,7 +40,7 @@ public class ActivityInstance implements Serializable
 
 		if (this.gradable)
 		{
-			this.grades = new HashSet<ActivityGrade> ();
+			this.grades = new HashSet<Grade> ();
 		}
 	}
 
@@ -145,17 +145,17 @@ public class ActivityInstance implements Serializable
 		this.gradable = stealth;
 	}
 
-	public Set<ActivityGrade> getGrades ()
+	public Set<Grade> getGrades ()
 	{
-		return new HashSet<ActivityGrade> (this.grades);
+		return new HashSet<Grade> (this.grades);
 	}
 
-	protected void setGrades (Set<ActivityGrade> grades)
+	protected void setGrades (Set<Grade> grades)
 	{
 		this.grades = grades;
 	}
 
-	public void addGrade (ActivityGrade grade)
+	public void addGrade (Grade grade)
 	{
 		this.grades.add (grade);
 	}

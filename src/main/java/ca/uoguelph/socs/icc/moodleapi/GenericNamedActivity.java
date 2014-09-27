@@ -87,13 +87,13 @@ public abstract class GenericNamedActivity extends AbstractActivity implements S
 	}
 
 	@Override
-	public Set<ActivityGrade> getGrades ()
+	public Set<Grade> getGrades ()
 	{
 		return this.instance.getGrades ();
 	}
 
 	@Override
-	public void addGrade (ActivityGrade grade)
+	public void addGrade (Grade grade)
 	{
 		this.instance.addGrade (grade);
 	}

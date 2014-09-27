@@ -96,13 +96,13 @@ public abstract class GenericGroupedActivityMember<T extends AbstractActivity> e
 	}
 
 	@Override
-	public Set<ActivityGrade> getGrades ()
+	public Set<Grade> getGrades ()
 	{
 		return this.parent.getGrades ();
 	}
 
 	@Override
-	public void addGrade (ActivityGrade grade)
+	public void addGrade (Grade grade)
 	{
 		this.parent.addGrade (grade);
 	}

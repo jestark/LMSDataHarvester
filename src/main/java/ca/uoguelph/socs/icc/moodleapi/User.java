@@ -21,6 +21,7 @@ public class User
 		this.username = null;
 		this.lastname = null;
 		this.firstname= null;
+		this.enrolments = null;
 	}
 
 	public User (Integer idnumber, String username, String firstname, String lastname)
@@ -30,6 +31,7 @@ public class User
 		this.username = username;
 		this.firstname = firstname;
 		this.lastname = lastname;
+		this.enrolments = new HashSet<Enrolment> ();
 	}
 
 	@Override
@@ -128,9 +130,25 @@ public class User
 		return new String (this.firstname + " " + this.lastname);
 	}
 
+	public Enrolment getEnrolment (Course course)
+	{
+		Enrolment result = null;
+
+		for (Enrolment i : this.enrolments)
+		{
+			if (course == i.getCourse ())
+			{
+				result = i;
+				break;
+			}
+		}
+
+		return result;
+	}
+
 	public Set<Enrolment> getEnrolments()
 	{
-		return new HashSet<Enrolment>(this.enrolments);
+		return new HashSet<Enrolment> (this.enrolments);
 	}
 
 	protected void setEnrolments (Set<Enrolment> enrolments)
@@ -138,9 +156,16 @@ public class User
 		this.enrolments = enrolments;
 	}
 
-	public void addEnrolment (Enrolment enrolment)
+	public Enrolment addEnrolment (Course course, Role role)
 	{
-		this.enrolments.add (enrolment);
+		Enrolment enrolment = new EnrolledUser (this, course, role);
+
+		if (!this.enrolments.add (enrolment))
+		{
+			enrolment = null;
+		}
+
+		return enrolment;
 	}
 
 	@Override
