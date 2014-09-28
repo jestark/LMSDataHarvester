@@ -33,7 +33,7 @@ public abstract class AbstractActivity implements Activity
 			else if (obj.getClass () == this.getClass ())
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.name, ((AbstractNamedActivity) obj).name);
+				ebuilder.append (this.name, ((AbstractActivity) obj).name);
 
 				result = ebuilder.isEquals ();
 			}

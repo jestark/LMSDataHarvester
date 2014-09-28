@@ -5,7 +5,7 @@ import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivity, E extends GenericGroupedActivityMember> extends GenericGroupedActivityMember<T> implements GenericActivityGroup<E>
+public abstract class GenericGroupedActivityGroup<T extends AbstractActivity, E extends GenericGroupedActivityMember> extends GenericGroupedActivityMember<T> implements GenericActivityGroup<E>
 {
 	private Set<E> children;
 
