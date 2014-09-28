@@ -1,11 +1,12 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
+import java.io.Serializable;
 import java.util.Set;
 import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class AbstractEnrolment implements Enrolment
+public abstract class AbstractEnrolment implements Enrolment, Serializable
 {
 	private Long id;
 	private Course course;

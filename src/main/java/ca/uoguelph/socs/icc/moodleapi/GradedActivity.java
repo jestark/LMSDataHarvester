@@ -1,9 +1,10 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
+import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class GradedActivity implements Grade
+public class GradedActivity implements Grade, Serializable
 {
 	private Integer grade;
 	private Enrolment enrolment;
