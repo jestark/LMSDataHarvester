@@ -7,7 +7,7 @@ public interface LogEntry
 	public Long getId();
 	public Enrolment getEnrolment();
 	public Course getCourse();
-	public ActivityInstance getActivity();
+	public Activity getActivity();
 	public Action getAction();
 	public Date getTime();
 }

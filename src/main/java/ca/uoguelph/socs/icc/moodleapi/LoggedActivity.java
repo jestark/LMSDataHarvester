@@ -1,9 +1,5 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
-public interface LoggedActivity
+public interface LoggedActivity extends Activity
 {
-	public String getActivityName();
-	public Course getCourse();
-	public String getName();
-	public String toString();
 }

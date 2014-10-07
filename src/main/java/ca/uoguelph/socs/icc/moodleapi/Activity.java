@@ -1,5 +1,6 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
+import java.util.List;
 import java.util.Set;
 
 public interface Activity
@@ -10,5 +11,5 @@ public interface Activity
 	public Boolean isGradable ();
 	public Boolean isStealth ();
 	public Set<Grade> getGrades ();
-	public void addGrade (Grade grade);
+	public List<LogEntry> getLog ();
 }

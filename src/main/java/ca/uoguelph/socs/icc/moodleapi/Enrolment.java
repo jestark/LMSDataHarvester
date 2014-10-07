@@ -1,5 +1,6 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
+import java.util.List;
 import java.util.Set;
 
 public interface Enrolment
@@ -12,4 +13,5 @@ public interface Enrolment
 	public Integer getFinalGrade ();
 	public Grade getGrade (Activity activity);
 	public Set<Grade> getGrades ();
+	public List<LogEntry> getLog ();
 }

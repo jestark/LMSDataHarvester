@@ -1,11 +1,12 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericNamedActivity extends AbstractActivity implements Serializable
+public abstract class GenericNamedActivity extends AbstractNamedActivity implements Serializable
 {
 	private ActivityInstance instance;
 
@@ -15,10 +16,10 @@ public abstract class GenericNamedActivity extends AbstractActivity implements S
 		this.instance = null;
 	}
 
-	public GenericNamedActivity (String name)
+	public GenericNamedActivity (String name, ActivityInstance instance)
 	{
 		super (name);
-		this.instance = null;
+		this.instance = instance;
 	}
 
 	@Override
@@ -56,12 +57,6 @@ public abstract class GenericNamedActivity extends AbstractActivity implements S
 		return hbuilder.toHashCode ();
 	}
 
-/*	@Override
-	public Long getId ()
-	{
-		return this.instance.getId ();
-	}*/
-
 	@Override
 	public Course getCourse ()
 	{
@@ -93,9 +88,9 @@ public abstract class GenericNamedActivity extends AbstractActivity implements S
 	}
 
 	@Override
-	public void addGrade (Grade grade)
+	protected boolean addGrade (Grade grade)
 	{
-		this.instance.addGrade (grade);
+		return this.instance.addGrade (grade);
 	}
 
 	public ActivityInstance getInstance ()
@@ -106,6 +101,18 @@ public abstract class GenericNamedActivity extends AbstractActivity implements S
 	protected void setInstance (ActivityInstance instance)
 	{
 		this.instance = instance;
+	}
+
+	@Override
+	public List<LogEntry> getLog ()
+	{
+		return this.instance.getLog ();
+	}
+
+	@Override
+	protected boolean addLog (LogEntry entry)
+	{
+		return this.instance.addLog (entry);
 	}
 
 	@Override

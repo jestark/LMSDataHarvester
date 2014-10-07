@@ -1,18 +1,22 @@
 package ca.uoguelph.socs.icc.moodleapi;
 
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericGroupedActivityMember<T extends AbstractActivity> extends AbstractActivity
+public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivity> extends AbstractNamedActivity implements LoggedActivity
 {
 	private Long id;
 	private T parent;
+	private List<LogReference> log;
 
 	protected GenericGroupedActivityMember()
 	{
 		super ();
 		this.id = null;
+		this.log = null;
 		this.parent = null;
 	}
 
@@ -21,6 +25,7 @@ public abstract class GenericGroupedActivityMember<T extends AbstractActivity> e
 		super (name);
 		this.id = null;
 		this.parent = parent;
+		this.log = new ArrayList<LogReference> ();
 	}
 
 	@Override
@@ -60,7 +65,6 @@ public abstract class GenericGroupedActivityMember<T extends AbstractActivity> e
 		return hbuilder.toHashCode ();
 	}
 
-//	@Override
 	public Long getId ()
 	{
 		return this.id;
@@ -102,9 +106,33 @@ public abstract class GenericGroupedActivityMember<T extends AbstractActivity> e
 	}
 
 	@Override
-	public void addGrade (Grade grade)
+	protected boolean addGrade (Grade grade)
 	{
-		this.parent.addGrade (grade);
+		return this.parent.addGrade (grade);
+	}
+
+	@Override
+	public List<LogEntry> getLog ()
+	{
+		List<LogEntry> result = new ArrayList<LogEntry> ();
+
+		for (LogReference ref : this.log)
+		{
+			result.add (ref.getEntry ());
+		}
+
+		return result;
+	}
+
+	protected void setLog (List<LogReference> log)
+	{
+		this.log = log;
+	}
+
+	@Override
+	protected boolean addLog (LogEntry entry)
+	{
+		return false;
 	}
 
 	public T getParent()

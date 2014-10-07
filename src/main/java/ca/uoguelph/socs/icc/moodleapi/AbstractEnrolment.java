@@ -2,6 +2,8 @@ package ca.uoguelph.socs.icc.moodleapi;
 
 import java.io.Serializable;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -15,10 +17,12 @@ public abstract class AbstractEnrolment implements Enrolment, Serializable
 	protected Boolean usable;
 	protected Boolean active;
 	protected Set<Grade> grades;
+	protected List<LogEntry> log;
 
 	protected AbstractEnrolment()
 	{
 		this.id = null;
+		this.log = null;
 		this.role = null;
 		this.course = null;
 		this.usable = new Boolean (false);
@@ -33,6 +37,7 @@ public abstract class AbstractEnrolment implements Enrolment, Serializable
 		this.role = role;
 		this.course = course;
 		this.grades = new HashSet<Grade> ();
+		this.log = new ArrayList<LogEntry> ();
 	}
 
 	@Override
@@ -151,5 +156,16 @@ public abstract class AbstractEnrolment implements Enrolment, Serializable
 	public Boolean isActive ()
 	{
 		return this.active;
+	}
+
+	@Override
+	public List<LogEntry> getLog ()
+	{
+		return this.log;
+	}
+
+	protected void setLog (List<LogEntry> log)
+	{
+		this.log = log;
 	}
 }

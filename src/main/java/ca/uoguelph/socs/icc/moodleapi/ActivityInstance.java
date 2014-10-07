@@ -2,11 +2,13 @@ package ca.uoguelph.socs.icc.moodleapi;
 
 import java.io.Serializable;
 import java.util.Set;
+import java.util.List;
 import java.util.HashSet;
+import java.util.ArrayList;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class ActivityInstance implements Serializable
+public class ActivityInstance extends AbstractActivity implements Serializable
 {
 	private Long id;
 	private Boolean gradable;
@@ -15,11 +17,13 @@ public class ActivityInstance implements Serializable
 	private Activity activity;
 	private ActivityType type;
 	private Set<Grade> grades;
+	private List<LogEntry> log;
 
 	protected ActivityInstance ()
 	{
 		super ();
 		this.id = null;
+		this.log = null;
 		this.type = null;
 		this.course = null;
 		this.activity = null;
@@ -37,6 +41,8 @@ public class ActivityInstance implements Serializable
 		this.activity = activity;
 		this.gradable = gradable;
 		this.stealth = stealth;
+
+		this.log = new ArrayList<LogEntry> ();
 
 		if (this.gradable)
 		{
@@ -84,7 +90,6 @@ public class ActivityInstance implements Serializable
 		return hbuilder.toHashCode ();
 	}
 
-//	@Override
 	public Long getId ()
 	{
 		return this.id;
@@ -95,6 +100,7 @@ public class ActivityInstance implements Serializable
 		this.id = id;
 	}
 
+	@Override
 	public Course getCourse ()
 	{
 		return this.course;
@@ -105,6 +111,7 @@ public class ActivityInstance implements Serializable
 		this.course = course;
 	}
 
+	@Override
 	public ActivityType getType ()
 	{
 		return this.type;
@@ -125,6 +132,7 @@ public class ActivityInstance implements Serializable
 		this.activity = activity;
 	}
 
+	@Override
 	public Boolean isGradable ()
 	{
 		return this.gradable;
@@ -135,6 +143,7 @@ public class ActivityInstance implements Serializable
 		this.gradable = gradable;
 	}
 
+	@Override
 	public Boolean isStealth ()
 	{
 		return this.stealth;
@@ -145,6 +154,7 @@ public class ActivityInstance implements Serializable
 		this.gradable = stealth;
 	}
 
+	@Override
 	public Set<Grade> getGrades ()
 	{
 		return new HashSet<Grade> (this.grades);
@@ -155,11 +165,30 @@ public class ActivityInstance implements Serializable
 		this.grades = grades;
 	}
 
-	public void addGrade (Grade grade)
+	@Override
+	protected boolean addGrade (Grade grade)
 	{
-		this.grades.add (grade);
+		return this.grades.add (grade);
 	}
 
+	@Override
+	public List<LogEntry> getLog ()
+	{
+		return new ArrayList<LogEntry> (this.log);
+	}
+
+	protected void setLog (List<LogEntry> log)
+	{
+		this.log = log;
+	}
+
+	@Override
+	protected boolean addLog (LogEntry entry)
+	{
+		return false;
+	}
+
+	@Override
 	public String getName ()
 	{
 		String name = this.type.getName ();
