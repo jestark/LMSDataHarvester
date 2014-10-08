@@ -1,299 +1,339 @@
--- Schema for the anonymized, "public" database of course data.  This schema
+-- Schema for the anonymized, "course" database of course data.  This schema
 -- is documented in the wiki.
 
-CREATE TYPE E_SEMESTER AS ENUM ('WINTER', 'SPRING', 'FALL');
+--****************************************************************************--
+-- Course table
+--****************************************************************************--
 
--- Courses table, making sure that there may be only one offering of a given
--- course in a given semester.
-CREATE TABLE IF NOT EXISTS COURSE (
-	ID SERIAL PRIMARY KEY,
-	YEAR INTEGER NOT NULL,
-	SEMESTER E_SEMESTER NOT NULL,
-	NAME TEXT NOT NULL,
-	UNIQUE (YEAR, SEMESTER, NAME)
+create type e_semester as enum ('WINTER', 'SPRING', 'FALL');
+
+create table if not exists course (
+	id serial primary key,
+	year integer not null,
+	semester e_semester not null,
+	name text not null,
+	unique (year, semester, name)
 );
 
-COMMENT ON TABLE COURSE IS 'All of the course offerings';
-COMMENT ON COLUMN COURSE.SEMESTER  IS 'Enumeration specifying the semester in which the course was offered.  Will be one of WINTER, SPRING or FALL';
-COMMENT ON COLUMN COURSE.YEAR IS 'Year in which the course was offered, four digits (ie. 2014)';
+comment on table course is 'All of the course offerings';
+comment on column course.semester  is 'Enumeration specifying the semester in which the course was offered.  Will be one of WINTER, SPRING or FALL';
+comment on column course.year is 'Year in which the course was offered, four digits (ie. 2014)';
 
--- All of the roles that a participant could have in a course
-CREATE TABLE IF NOT EXISTS ROLE (
-	ID SERIAL PRIMARY KEY,
-	NAME TEXT UNIQUE NOT NULL
+--****************************************************************************--
+-- Core Activity tables
+--****************************************************************************--
+
+-- The sources of the activity data.
+create table if not exists activity_source (
+	id serial primary key,
+	name text not null
 );
 
-COMMENT ON TABLE ROLE IS 'All of the possible roles in a course';
-
--- A list of all of the participants in a given course, with their role
--- (student, ta, etc).
-CREATE TABLE IF NOT EXISTS ENROLMENT (
-	ID INTEGER PRIMARY KEY,
-	COURSEID INTEGER NOT NULL REFERENCES COURSE (ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	ROLEID INTEGER NOT NULL REFERENCES ROLE (ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	ACTIVE BOOLEAN DEFAULT TRUE,
-	USABLE BOOLEAN DEFAULT FALSE
+-- All of the components of the courses, from moodle and otherwise
+create table if not exists activity (
+	id serial primary key,
+	source_id integer not null references activity_source (id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ENROLMENT IS 'Anonymized list of all of the participants in a given course.';
-COMMENT ON COLUMN ENROLMENT.ID IS 'Randomized ID to protect the identity of the user';
-COMMENT ON COLUMN ENROLMENT.ACTIVE IS 'True if the participant completed the course, false otherwise (Default: True)';
-COMMENT ON COLUMN ENROLMENT.USABLE IS 'True if the participant consented to their data being being used for research, false otherwise (Default: False)';
-
--- The final grades for the students in a given course.
-CREATE TABLE IF NOT EXISTS GRADE (
-	ENROLLMENTID INTEGER PRIMARY KEY REFERENCES ENROLMENT(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-	GRADE INTEGER NOT NULL
-);
-
-COMMENT ON TABLE GRADE IS 'Final grades for all students that completed the course';
-
--- All of the components of the courses, from moodle and otherwise.  Ensuring
--- that there are no duplicates.
-CREATE TABLE IF NOT EXISTS ACTIVITYTYPE (
-	ID SERIAL PRIMARY KEY,
-	NAME TEXT NOT NULL
-);
-
-COMMENT ON TABLE ACTIVITYTYPE IS 'The type of activity/module';
-COMMENT ON COLUMN ACTIVITYTYPE.NAME IS 'Name of the Activity type, for moodle activities it must match the module name';
 
 -- All of the possible actions, that can be logged.
-CREATE TABLE IF NOT EXISTS ACTION (
-	ID SERIAL PRIMARY KEY,
-	TYPEID INTEGER NOT NULL REFERENCES ACTIVITYTYPE(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT UNIQUE NOT NULL
+create table if not exists activity_action (
+	id serial primary key,
+	name text unique not null
 );
 
-COMMENT ON TABLE ACTION IS 'All of the actions associated with a given activity.';
-
--- All of the instances of the various components of a course.  A course may
--- have multiple instances of an item.
-CREATE TABLE IF NOT EXISTS ACTIVITY (
-	ID SERIAL PRIMARY KEY,
-	COURSEID INTEGER NOT NULL REFERENCES COURSE(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	TYPEID INTEGER NOT NULL REFERENCES ACTIVITYTYPE(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	GRADEABLE BOOLEAN NOT NULL DEFAULT FALSE,
-	STEALTH BOOLEAN NOT NULL DEFAULT FALSE
+-- Relationship table for the many-to-many mapping between activity and activity_action
+create table if not exists activity_action_map (
+	activity_id integer not null references activity (id) on delete cascade on update cascade,
+	action_id integer not null references activity_action (id) on delete restrict on update cascade,
+	primary key (activity_id, action_id)
 );
 
-COMMENT ON TABLE ACTIVITY IS 'All of the activities associated with a course offering';
-
--- All of the grades for the gradable items.  A student must not be graded
--- more than once for one item.
-CREATE TABLE IF NOT EXISTS ACTIVITYGRADE (
-	ACTIVITYID INTEGER NOT NULL REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	ENROLMENTID INTEGER NOT NULL REFERENCES ENROLMENT(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-	GRADE INTEGER NOT NULL,
-	UNIQUE (ACTIVITYID, ENROLMENTID)
+-- All of the instances of the various components of a course
+create table if not exists activity_instance (
+	id serial primary key,
+	course_id integer not null references course (id) on delete restrict on update cascade,
+	activity_id integer not null references activity (id) on delete restrict on update cascade,
+	stealth boolean not null default false
 );
 
-COMMENT ON TABLE ACTIVITYGRADE IS 'Grades assigned to each student for a graded activity';
+comment on table activity is 'The type of activity/module';
+comment on table activity_source is 'The source of the activity data';
+comment on table activity_action is 'All of the actions that can ber performed on the activities.';
+comment on table activity_action_map is 'All of the actions associated with a given activity.';
+comment on table activity_instance is 'All of the activities associated with a course offering';
+comment on column activity.name is 'Name of the Activity type, for moodle activities it must match the module name';
+
+--****************************************************************************--
+-- Enrolment tables
+--****************************************************************************--
+
+-- All of the roles that a participant could have in a course
+create table if not exists enrolment_role (
+	id serial primary key,
+	name text unique not null
+);
+
+-- All of the participants in a given course, listed with their role (student, ta, etc)
+create table if not exists enrolment (
+	id integer primary key,
+	course_id integer not null references course (id) on delete restrict on update cascade,
+	role_id integer not null references enrolment_role (id) on delete restrict on update cascade,
+	usable boolean default false
+);
+
+-- All of the recorded final grades
+create table if not exists enrolment_final_grade (
+	enrolment_id integer primary key references enrolment (id) on delete cascade on update cascade,
+	grade integer not null
+);
+
+-- All of the grades recorded for the gradable activities
+create table if not exists enrolment_activity_grade (
+	enrolment_id integer not null references enrolment (id) on delete cascade on update cascade,
+	instance_id integer not null references activity_instance (id) on delete restrict on update cascade,
+	grade integer not null,
+	primary key (enrolment_id, instance_id)
+);
+
+comment on table enrolment is 'Anonymized list of all of the participants in a given course.';
+comment on table enrolment_role is 'All of the possible roles in a course';
+comment on table enrolment_final_grade is 'Final grades for all students that completed the course';
+comment on table enrolment_activity_grade is 'Grades assigned to each student for a graded activity';
+comment on column enrolment.id is 'Randomized ID to protect the identity of the user';
+comment on column enrolment.usable is 'True if the participant consented to their data being being used for research, false otherwise (Default: False)';
+
+--****************************************************************************--
+-- Core log tables
+--****************************************************************************--
 
 -- The log.
-CREATE TABLE IF NOT EXISTS LOG (
-	ID SERIAL PRIMARY KEY,
-	ENROLMENTID INTEGER NOT NULL REFERENCES ENROLMENT(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-	ACTIVITYID INTEGER NOT NULL REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	ACTIONID INTEGER NOT NULL REFERENCES ACTION(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	TIME TIMESTAMP WITH TIME ZONE NOT NULL
+create table if not exists log (
+	id serial primary key,
+	enrolment_id integer not null references enrolment (id) on delete cascade on update cascade,
+	instance_id integer not null references activity_instance (id) on delete restrict on update cascade,
+	action_id integer not null references activity_action (id) on delete restrict on update cascade,
+	time timestamp with time zone not null
 );
 
-COMMENT ON TABLE LOG IS 'Log of actions taken by participants in a given course';
-
--- IP address associated with the log event, logged if appropriate.
-CREATE TABLE IF NOT EXISTS IPLOG (
-	LOGID INTEGER UNIQUE NOT NULL REFERENCES LOG(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-	IPADDRESS CIDR NOT NULL
+-- IP address associated with the log event
+create table if not exists log_ip (
+	log_id integer unique not null references log (id) on delete cascade on update cascade,
+	ipaddress cidr not null
 );
 
-COMMENT ON TABLE IPLOG IS 'IP Addresses logged by moodle';
+comment on table log is 'Log of actions taken by participants in a given course';
+comment on table log_ip is 'IP Addresses logged by moodle';
 
--- ---- Moodle Module Definitions ----
+--****************************************************************************--
+-- Activity data tables for Moodle modules
+--****************************************************************************--
 
 -- Moodle assign module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEASSIGN (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_assign (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLEASSIGN IS 'Data from the moodle assign module';
 
 -- Moodle Book Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEBOOK (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_book (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
 
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEBOOKCHAPTER (
-	ID SERIAL NOT NULL,
-	BOOKID INTEGER NOT NULL REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL,
-	PRIMARY KEY (BOOKID, ID)
+create table if not exists activity_moodle_book_chapter (
+	id serial primary key,
+	book_id integer not null references activity_moodle_book (instance_id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLEBOOK IS 'Data from the moodle book module';
-COMMENT ON TABLE ACTIVITYMOODLEBOOKCHAPTER IS 'Data for chapters in the moodle book module';
 
 -- Moodle Checklist Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLECHECKLIST (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_checklist (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLECHECKLIST IS 'Data from the moodle checklist module';
 
 -- Moodle Choice Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLECHOICE (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_choice (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLECHOICE IS 'Data from the moodle choice module';
 
 -- Moodle Feedback Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEFEEDBACK (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_feedback (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLEFEEDBACK IS 'Data from the moodle feedback module';
 
 -- Moodle Folder Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEFOLDER (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_folder (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLEFOLDER IS 'Data from the moodle folder module';
 
 -- Moodle Forum Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEFORUM (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_forum (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
 
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEFORUMDISCUSSION (
-	ID SERIAL NOT NULL,
-	FORUMID INTEGER NOT NULL REFERENCES ACTIVITYMOODLEFORUM(ACTIVITYID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL,
-	PRIMARY KEY (FORUMID, ID)
+create table if not exists activity_moodle_forum_discussion (
+	id serial primary key,
+	forum_id integer not null references activity_moodle_forum (instance_id) on delete restrict on update cascade,
+	name text not null
 );
 
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEFORUMPOST (
-	ID SERIAL NOT NULL,
-	FORUMID INTEGER NOT NULL,
-	DISCUSSIONID INTEGER NOT NULL,
-	SUBJECT TEXT NOT NULL,
-	FOREIGN KEY (FORUMID, DISCUSSIONID) REFERENCES ACTIVITYMOODLEFORUMDISCUSSION(FORUMID, ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	PRIMARY KEY (FORUMID, DISCUSSIONID, ID)
+create table if not exists activity_moodle_forum_post (
+	id serial primary key,
+	discussion_id integer not null references activity_moodle_forum_discussion (id) on delete restrict on update cascade,
+	subject text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLEFORUM IS 'Data from the moodle forum module';
-COMMENT ON TABLE ACTIVITYMOODLEFORUMDISCUSSION IS 'Data from moodle forum discussions';
-COMMENT ON TABLE ACTIVITYMOODLEFORUMPOST IS 'Data from moodle forum posts';
 
 -- Moodle Label Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLELABEL (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_label (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLELABEL IS 'Data from the moodle label module';
 
 -- Moodle Lesson Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLELESSON (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_lesson (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
 
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLELESSONPAGE (
-	ID SERIAL NOT NULL,
-	LESSONID INTEGER NOT NULL REFERENCES ACTIVITYMOODLELESSON(ACTIVITYID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	TITLE TEXT NOT NULL,
-	PRIMARY KEY (LESSONID, ID)
+create table if not exists activity_moodle_lesson_page (
+	id serial primary key,
+	lesson_id integer not null references activity_moodle_lesson (instance_id) on delete restrict on update cascade,
+	title text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLELESSON IS 'Data from the moodle lesson module';
-COMMENT ON TABLE ACTIVITYMOODLELESSONPAGE IS 'Data from pages in the moodle book module';
 
 -- Moodle Page Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEPAGE (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_page (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLEPAGE IS 'Data from the moodle page module';
 
 -- Moodle Quiz Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEQUIZ (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_quiz (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLEQUIZ IS 'Data from the moodle quiz module';
 
 -- Moodle Resource Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLERESOURCE (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_resource (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLERESOURCE IS 'Data from the moodle resource module';
 
 -- Moodle Scheduler Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLESCHEDULER (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_scheduler (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
 
-COMMENT ON TABLE ACTIVITYMOODLESCHEDULER IS 'Data from the moodle scheduler module';
-
--- Moodle URL Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEURL (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+-- Moodle url Module
+create table if not exists activity_moodle_url (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
-
-COMMENT ON TABLE ACTIVITYMOODLEURL IS 'Data from the moodle url module';
 
 -- Moodle Workshop Module
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEWORKSHOP (
-	ACTIVITYID INTEGER PRIMARY KEY REFERENCES ACTIVITY(ID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	NAME TEXT NOT NULL
+create table if not exists activity_moodle_workshop (
+	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	name text not null
 );
 
-CREATE TABLE IF NOT EXISTS ACTIVITYMOODLEWORKSHOPSUBMISSION (
-	ID SERIAL NOT NULL,
-	WORKSHOPID INTEGER NOT NULL REFERENCES ACTIVITYMOODLEWORKSHOP(ACTIVITYID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	TITLE TEXT NOT NULL,
-	PRIMARY KEY (WORKSHOPID, ID)
+create table if not exists activity_moodle_workshop_submission (
+	id serial primary key,
+	workshop_id integer not null references activity_moodle_workshop (instance_id) on delete restrict on update cascade,
+	title text not null
 );
 
-COMMENT ON TABLE ACTIVITYMOODLEWORKSHOP IS 'Data from the moodle workshop module';
-COMMENT ON TABLE ACTIVITYMOODLEWORKSHOPSUBMISSION IS 'Data from submissions in the moodle workshop module';
+comment on table activity_moodle_assign is 'Data from the moodle assign module';
+comment on table activity_moodle_book is 'Data from the moodle book module';
+comment on table activity_moodle_book_chapter is 'Data for chapters in the moodle book module';
+comment on table activity_moodle_checklist is 'Data from the moodle checklist module';
+comment on table activity_moodle_choice is 'Data from the moodle choice module';
+comment on table activity_moodle_feedback is 'Data from the moodle feedback module';
+comment on table activity_moodle_folder is 'Data from the moodle folder module';
+comment on table activity_moodle_forum is 'Data from the moodle forum module';
+comment on table activity_moodle_forum_discussion is 'Data from moodle forum discussions';
+comment on table activity_moodle_forum_post is 'Data from moodle forum posts';
+comment on table activity_moodle_label is 'Data from the moodle label module';
+comment on table activity_moodle_lesson is 'Data from the moodle lesson module';
+comment on table activity_moodle_lesson_page is 'Data from pages in the moodle lesson module';
+comment on table activity_moodle_page is 'Data from the moodle page module';
+comment on table activity_moodle_quiz is 'Data from the moodle quiz module';
+comment on table activity_moodle_resource is 'Data from the moodle resource module';
+comment on table activity_moodle_scheduler is 'Data from the moodle scheduler module';
+comment on table activity_moodle_url is 'Data from the moodle url module';
+comment on table activity_moodle_workshop is 'Data from the moodle workshop module';
+comment on table activity_moodle_workshop_submission is 'Data from submissions in the moodle workshop module';
 
--- ---- List of Known Modules (Activity Types) ----
+--****************************************************************************--
+-- Log reference tables for Moodle modules.
+--****************************************************************************--
 
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Blog');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Calendar');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Course');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Grade');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Notes');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Role');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('User');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Assign');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Book');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Checklist');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Choice');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Feedback');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Folder');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Forum');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Label');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Lesson');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Page');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Quiz');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Resource');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Scheduler');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('URL');
-INSERT INTO ACTIVITYTYPE (NAME) VALUES ('Workshop');
+-- Moodle book module
+create table if not exists log_moodle_book_chapter (
+	log_id integer primary key references log (id) on delete cascade on update cascade,
+	chapter_id integer references activity_moodle_book_chapter (id) on delete restrict on update cascade
+);
+
+-- Moodle forum module
+create table if not exists log_moodle_forum_discussion (
+	log_id integer primary key references log (id) on delete cascade on update cascade,
+	discussion_id integer references activity_moodle_forum_discussion (id) on delete restrict on update cascade
+);
+
+create table if not exists log_moodle_forum_post (
+	log_id integer primary key references log (id) on delete cascade on update cascade,
+	post_id integer references activity_moodle_forum_post (id) on delete restrict on update cascade
+);
+
+-- Moodle lesson module
+create table if not exists log_moodle_lesson_page (
+	log_id integer primary key references log (id) on delete cascade on update cascade,
+	page_id integer references activity_moodle_lesson_page (id) on delete restrict on update cascade
+);
+
+-- Moodle workshop module
+create table if not exists log_moodle_workshop_submission (
+	log_id integer primary key references log (id) on delete cascade on update cascade,
+	submission_id integer references activity_moodle_workshop_submission (id) on delete restrict on update cascade
+);
+
+comment on table log_moodle_book_chapter is 'Relationship table for mapping log entries to moodle book chapters';
+comment on table log_moodle_forum_discussion is 'Relationship table for mapping log entries to moodle forum discussions';
+comment on table log_moodle_forum_post is 'Relationship table for mapping log entries to moodle forum posts';
+comment on table log_moodle_lesson_page is 'Relationship table for mapping log entries to moodle lesson pages';
+comment on table log_moodle_workshop_submission is 'Relationship table for mapping log entries to moodle workshop submissions';
+
+--****************************************************************************--
+--  List of Known Modules (Activities)
+--****************************************************************************--
+
+insert into activity_source (name) values ('Moodle');
+
+insert into activity (source_id, name) select id, 'Blog' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Calendar' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Course' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Grade' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Notes' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Role' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'User' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Assign' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Book' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Checklist' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Choice' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Feedback' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Folder' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Forum' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Label' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Lesson' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Page' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Quiz' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Resource' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Scheduler' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'url' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'Workshop' from activity_source where name='Moodle';
