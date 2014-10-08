@@ -1,26 +1,28 @@
-package ca.uoguelph.socs.icc.moodleapi;
+package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.Set;
+import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Action
+public class ActivityType
 {
 	private Long id;
 	private String name;
-	private ActivityType atype;
+	private Set<Action> actions;
 
-	protected Action ()
+	protected ActivityType ()
 	{
-		this.id= null;
+		this.id = null;
 		this.name = null;
-		this.atype = null;
+		this.actions = null;
 	}
 
-	public Action (ActivityType type, String name)
+	protected ActivityType (String name)
 	{
 		this ();
-		this.name = new String (name);
-		this.atype = type;
+		this.name = name;
+		this.actions = new HashSet<Action> ();
 	}
 
 	@Override
@@ -38,8 +40,7 @@ public class Action
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
 				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.atype, ((Action) obj).atype);
-				ebuilder.append (this.name, ((Action) obj).name);
+				ebuilder.append (this.name, ((ActivityType) obj).name);
 
 				result = ebuilder.isEquals ();
 			}
@@ -51,11 +52,10 @@ public class Action
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1051;
-		final int mult = 941;
+		final int base = 1009;
+		final int mult = 997;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.atype);
 		hbuilder.append (this.name);
 
 		return hbuilder.toHashCode ();
@@ -71,17 +71,7 @@ public class Action
 		this.id = id;
 	}
 
-	public ActivityType getType ()
-	{
-		return this.atype;
-	}
-
-	protected void setType (ActivityType atype)
-	{
-		this.atype = atype;
-	}
-
-	public String getName()
+	public String getName ()
 	{
 		return this.name;
 	}
@@ -91,8 +81,23 @@ public class Action
 		this.name = name;
 	}
 
+	public Set<Action> getActions ()
+	{
+		return new HashSet<Action> (this.actions);
+	}
+
+	protected void setActions (Set<Action> actions)
+	{
+		this.actions = actions;
+	}
+
+	public void addAction (Action action)
+	{
+		this.actions.add (action);
+	}
+
 	@Override
-	public String toString()
+	public String toString ()
 	{
 		return this.name;
 	}

@@ -1,4 +1,4 @@
-package ca.uoguelph.socs.icc.moodleapi;
+package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Calendar;
 import java.util.Date;

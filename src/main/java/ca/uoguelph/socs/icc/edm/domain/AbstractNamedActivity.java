@@ -1,22 +1,21 @@
-package ca.uoguelph.socs.icc.moodleapi;
+package ca.uoguelph.socs.icc.edm.domain;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Role
+public abstract class AbstractNamedActivity extends AbstractActivity implements Activity
 {
-	private Long id;
 	private String name;
 
-	protected Role ()
+	protected AbstractNamedActivity ()
 	{
-		this.id = null;
+		super ();
 		this.name = null;
 	}
 
-	protected Role(String name)
+	public AbstractNamedActivity (String name)
 	{
-		this ();
+		super ();
 		this.name = name;
 	}
 
@@ -34,7 +33,7 @@ public class Role
 			else if (obj.getClass () == this.getClass ())
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.name, ((Role) obj).name);
+				ebuilder.append (this.name, ((AbstractNamedActivity) obj).name);
 
 				result = ebuilder.isEquals ();
 			}
@@ -46,8 +45,8 @@ public class Role
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1069;
-		final int mult = 919;
+		final int base = 1013;
+		final int mult = 991;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.append (this.name);
@@ -55,17 +54,8 @@ public class Role
 		return hbuilder.toHashCode ();
 	}
 
-	public Long getId ()
-	{
-		return this.id;
-	}
-
-	protected void setId (Long id)
-	{
-		this.id = id;
-	}
-
-	public String getName()
+	@Override
+	public String getName ()
 	{
 		return this.name;
 	}
@@ -73,11 +63,5 @@ public class Role
 	protected void setName (String name)
 	{
 		this.name = name;
-	}
-
-	@Override
-	public String toString()
-	{
-		return this.name;
 	}
 }

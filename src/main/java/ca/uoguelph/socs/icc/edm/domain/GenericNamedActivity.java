@@ -1,4 +1,4 @@
-package ca.uoguelph.socs.icc.moodleapi;
+package ca.uoguelph.socs.icc.edm.domain;
 
 import java.io.Serializable;
 import java.util.List;

@@ -1,28 +1,23 @@
-package ca.uoguelph.socs.icc.moodleapi;
+package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.Set;
-import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class ActivityType
+public class Role
 {
 	private Long id;
 	private String name;
-	private Set<Action> actions;
 
-	protected ActivityType ()
+	protected Role ()
 	{
 		this.id = null;
 		this.name = null;
-		this.actions = null;
 	}
 
-	protected ActivityType (String name)
+	protected Role(String name)
 	{
 		this ();
 		this.name = name;
-		this.actions = new HashSet<Action> ();
 	}
 
 	@Override
@@ -39,8 +34,7 @@ public class ActivityType
 			else if (obj.getClass () == this.getClass ())
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.name, ((ActivityType) obj).name);
+				ebuilder.append (this.name, ((Role) obj).name);
 
 				result = ebuilder.isEquals ();
 			}
@@ -52,8 +46,8 @@ public class ActivityType
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1009;
-		final int mult = 997;
+		final int base = 1069;
+		final int mult = 919;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.append (this.name);
@@ -71,7 +65,7 @@ public class ActivityType
 		this.id = id;
 	}
 
-	public String getName ()
+	public String getName()
 	{
 		return this.name;
 	}
@@ -81,23 +75,8 @@ public class ActivityType
 		this.name = name;
 	}
 
-	public Set<Action> getActions ()
-	{
-		return new HashSet<Action> (this.actions);
-	}
-
-	protected void setActions (Set<Action> actions)
-	{
-		this.actions = actions;
-	}
-
-	public void addAction (Action action)
-	{
-		this.actions.add (action);
-	}
-
 	@Override
-	public String toString ()
+	public String toString()
 	{
 		return this.name;
 	}
