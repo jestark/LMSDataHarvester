@@ -1,20 +1,23 @@
 -- Schema for the private database.  Documentation for the schema is on the
 -- wiki.
 
+create schema if not exists userdb;
+
 -- Identifying information for students in the public database.
-CREATE TABLE IF NOT EXISTS PARTICIPANT (
-	ID SERIAL PRIMARY KEY,
-	IDNUMBER INTEGER,
-	LOGINID VARCHAR[8] NOT NULL,
-	GIVENNAME TEXT NOT NULL,
-	SURNAME TEXT NOT NULL
+create table if not exists userdb.user (
+	id serial primary key,
+	id_number integer not null,
+	username varchar[8] not null unique,
+	first_name text not null,
+	last_name text not null
 );
 
-CREATE TABLE IF NOT EXISTS ENROLLEDIN (
-	IDNUMBER INTEGER NOT NULL REFERENCES PARTICIPANT(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-	ENROLMENTID INTEGER NOT NULL UNIQUE,
-	PRIMARY KEY (IDNUMBER, ENROLMENTID)
+create table if not exists userdb.user_enrolment (
+	user_id integer not null references userdb.user (id) on delete cascade on update cascade,
+	enrolment_id integer not null references enrolment (id) on delete cascade on update cascade,
+	primary key (user_id, enrolment_id)
 );
 
-COMMENT ON TABLE PARTICIPANT IS 'Identifying user data';
-COMMENT ON TABLE ENROLLEDIN IS 'User to enrolment mapping';
+comment on schema userdb is 'Restricted access to identifying user information';
+comment on table userdb.user is 'Identifying user data';
+comment on table userdb.user_enrolment is 'User to enrolment mapping';

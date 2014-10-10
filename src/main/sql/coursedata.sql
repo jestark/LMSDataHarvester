@@ -34,6 +34,7 @@ create table if not exists activity (
 	id serial primary key,
 	source_id integer not null references activity_source (id) on delete restrict on update cascade,
 	name text not null
+	unique (source_id, name)
 );
 
 -- All of the possible actions, that can be logged.
