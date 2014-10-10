@@ -1,4 +1,4 @@
-package ca.uoguelph.socs.icc.moodleapi;
+package ca.uoguelph.socs.icc.edm.moodledb;
 
 import java.util.Calendar;
 import javax.persistence.AttributeConverter;
