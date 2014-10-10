@@ -1,11 +1,12 @@
-package ca.uoguelph.socs.icc.moodleapi;
+package ca.uoguelph.socs.icc.edm.domain.moodle;
 
+import ca.uoguelph.socs.icc.edm.domain.GenericNamedActivity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class MoodleForumActivityDiscussion extends GenericGroupedActivityGroup<MoodleForumActivity, MoodleForumActivityPost>
+public class MoodleChoiceActivity extends GenericNamedActivity
 {
-	protected MoodleForumActivityDiscussion ()
+	protected MoodleChoiceActivity ()
 	{
 		super ();
 	}
@@ -13,8 +14,8 @@ public class MoodleForumActivityDiscussion extends GenericGroupedActivityGroup<M
 	@Override
 	public int hashCode ()
 	{
-		final int base = 2029;
-		final int mult = 661;
+		final int base = 3019;
+		final int mult = 383;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.appendSuper (super.hashCode ());
@@ -22,3 +23,4 @@ public class MoodleForumActivityDiscussion extends GenericGroupedActivityGroup<M
 		return hbuilder.toHashCode ();
 	}
 }
+

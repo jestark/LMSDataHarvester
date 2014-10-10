@@ -1,11 +1,12 @@
-package ca.uoguelph.socs.icc.moodleapi;
+package ca.uoguelph.socs.icc.edm.domain.moodle;
 
+import ca.uoguelph.socs.icc.edm.domain.GenericGroupedActivityMember;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class MoodleBookActivity extends GenericGroupedActivity<MoodleBookActivityChapter>
+public class MoodleBookActivityChapter extends GenericGroupedActivityMember<MoodleBookActivity>
 {
-	protected MoodleBookActivity ()
+	protected MoodleBookActivityChapter ()
 	{
 		super ();
 	}
@@ -13,8 +14,8 @@ public class MoodleBookActivity extends GenericGroupedActivity<MoodleBookActivit
 	@Override
 	public int hashCode ()
 	{
-		final int base = 2003;
-		final int mult = 691;
+		final int base = 2011;
+		final int mult = 683;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.appendSuper (super.hashCode ());
@@ -22,3 +23,4 @@ public class MoodleBookActivity extends GenericGroupedActivity<MoodleBookActivit
 		return hbuilder.toHashCode ();
 	}
 }
+
