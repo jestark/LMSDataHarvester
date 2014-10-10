@@ -1,0 +1,12 @@
+<entity name="$ActivityClass" class="$ActivityClass" metadata-complete="true">
+	<table name="$ActivityTable"/>
+	<attributes>
+		<id name="id">
+			<column name="$IdColumn" nullable="false" unique="true"/>$SequenceGenerator
+		</id>
+		<many-to-one name="parent">
+			<join-column name="$JoinColumn" nullable="false" referenced-column-name="$ForeignColumn"/>
+		</many-to-one>
+		<one-to-many name="children" mapped-by="parent"/>
+	</attributes>
+</entity>

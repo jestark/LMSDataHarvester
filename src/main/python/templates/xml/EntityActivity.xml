@@ -1,0 +1,3 @@
+	<entity name="$ActivityClass" class="$ActivityClass" metadata-complete="true">
+		<table name="$ActivityTable"/>
+	</entity>

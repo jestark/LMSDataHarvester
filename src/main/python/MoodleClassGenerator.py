@@ -1,40 +1,76 @@
 #!/usr/bin/python
 
-import csv, sys
+import csv, sys, string
 
-javacode = '''package ca.uoguelph.socs.icc.moodleapi;
+def loadTemplate (filename):
+    templatefile = open (filename)
+    template = string.Template (templatefile.read ())
+    templatefile.close ()
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+    return template
 
-public class %s extends %s
-{
-	protected %s ()
-	{
-		super ();
-	}
+def processActivity (params):
+    result = dict ()
 
-	@Override
-	public int hashCode ()
-	{
-		final int base = %s;
-		final int mult = %s;
+    result["Package"] = "moodle"
+    result["ActivityClass"] = params[0]
+    result["ActivityBaseClass"] = params[1]
+    result["ActivityBaseParameters"] = ""
+    result["HashBase"] = params[2]
+    result["HashMult"] = params[3]
 
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
+    return result
 
-		return hbuilder.toHashCode ();
-	}
-}
-'''
+def processActivityOneParam (params):
+    result = processActivity (params)
+    result["ActivityBaseParameters"] = "<%s>" % (params[4])
 
-classdefs = open (sys.argv[1])
+    return result
 
-csv.register_dialect ('escapedcsv', escapechar='\\', skipinitialspace=True, quoting=csv.QUOTE_NONE)
+def processActivityTwoParams (params):
+    result = processActivity (params)
+    result["ActivityBaseParameters"] = "<%s, %s>" % (params[4], params[5])
 
-for row in csv.reader (classdefs, 'escapedcsv'):
-    codefile = open ("%s.java" % row[0], "w+")
-    codefile.write (javacode % (row[0], row[1], row[0], row[2], row[3]))
+    return result
+
+def loadClassDefinitions (filename):
+    csv.register_dialect ('escapedcsv', escapechar='\\', skipinitialspace=True, quoting=csv.QUOTE_NONE)
+    result = {"GenericNamedActivity": dict (), "GenericGroupedActivity": dict (), "GenericGroupedActivityGroup": dict (), "GenericGroupedActivityMember": dict ()}
+
+    classdefs = open (filename)
+    for row in csv.reader (classdefs, 'escapedcsv'):
+        if (row[1] == "GenericNamedActivity"):
+                result["GenericNamedActivity"][row[0]] = processActivity (row)
+        elif (row[1] == "GenericGroupedActivity"):
+            result["GenericGroupedActivity"][row[0]] = processActivityOneParam (row)
+        elif (row[1] == "GenericGroupedActivityGroup"):
+            result["GenericGroupedActivityGroup"][row[0]] = processActivityTwoParams (row)
+            result["GenericGroupedActivityGroup"][row[0]]["LogClass"] = row[6]
+        elif (row[1] == "GenericGroupedActivityMember"):
+            result["GenericGroupedActivityMember"][row[0]] = processActivityOneParam (row)
+            result["GenericGroupedActivityMember"][row[0]]["LogClass"] = row[5]
+        else:
+            print "Invalid Base Class: %s" % (row[1])
+            exit (1)
+    
+    classdefs.close ()
+
+    return result
+
+def writeCode (filename, filedata):
+    codefile = open ("%s.java" % (filename), "w+")
+    codefile.write (filedata)
     codefile.close ()
 
-classdefs.close ()
+activitytemplate = loadTemplate ("templates/java/Activity.java")
+logtemplate = loadTemplate ("templates/java/Log.java")
+
+classdefs = loadClassDefinitions (sys.argv[1])
+
+for base in sorted (classdefs):
+    for activity in sorted (classdefs[base]):
+        writeCode (classdefs[base][activity]["ActivityClass"], activitytemplate.substitute (classdefs[base][activity]))
+
+        if ("LogClass" in classdefs[base][activity]):
+            writeCode (classdefs[base][activity]["LogClass"], logtemplate.substitute (classdefs[base][activity]))
+

@@ -1,0 +1,8 @@
+	<entity name="$LogClass" class="$LogClass" metadata-complete="true">
+		<table name="$LogTable"/>
+		<attributes>
+			<many-to-one name="activity" target-entity="$ActivityClass">
+				<join-column name="$JoinColumn" nullable="false" referenced-column-name="$ForeignColumn"/>
+			</many-to-one>
+		</attributes>
+	</entity>
