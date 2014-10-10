@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+									 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
+				 version="2.1">
+	<description>Entity mappings for the moodle database</description>
+	<package>ca.uoguelph.socs.icc.edm.domain</package>
+
+	<access>PROPERTY</access>
+
+	<!-- Map the Abstract classes here, to save mapping their attributes later -->
+
+	<mapped-superclass class="AbstractActivity" metadata-complete="true">
+		<description>Mapping for ID attribute for all activities</description>
+		<attributes>
+			<id name="id">
+				<column name="id"/>
+			</id>
+		</attributes>
+	</mapped-superclass>
+
+	<mapped-superclass class="AbstractNamedActivity" metadata-complete="true">
+		<description>Default mapping for Name attribute for all activities</description>
+		<attributes>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+		</attributes>
+	</mapped-superclass>
+
+	<entity name="GenericNamedActivity" class="GenericNamedActivity" metadata-complete="true">
+		<description>Mapping For the Generic Activity and the relationship the the instance</description>
+		<inheritance strategy="TABLE_PER_CLASS"/>
+		<attributes>
+			<transient name="instance"/><!--<one-to-one name="instance" mapped-by="activity"/>-->
+			<transient name="course"/>
+			<transient name="type"/>
+			<transient name="gradable"/>
+			<transient name="stealth"/>
+			<transient name="grades"/>
+		</attributes>
+	</entity>
+
+	<!-- Note:  Abstract Group classes are deliberatly not mapped.  The Generics used in the
+	classes confuse the mapper.  So all of the parent-child relations must be mapped by the
+	implementation classes, where the relationships are fully defined. -->
+
+	<entity name="ActivityType" class="ActivityType" metadata-complete="true">
+		<description>Mapping definition for the Activity Types (Moodle modules)</description>
+		<table name="mdl_modules"/>
+		<attributes>
+			<id name="id">
+				<column name="id"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<transient name="actions"/>
+		</attributes>
+	</entity>
+
+	<entity name="ActivityInstance" class="ActivityInstance" metadata-complete="true">
+		<description>Mapping definition for the instances of the activities</description>
+		<table name="mdl_course_modules"/>
+		<attributes>
+			<many-to-one name="course" fetch="LAZY">
+				<join-column name="course"/>
+			</many-to-one>
+			<many-to-one name="type" fetch="LAZY">
+				<join-column name="module"/>
+			</many-to-one>
+			<!--			<one-to-one name="activity" target-entity="GenericNamedActivity" fetch="LAZY">
+			<join-column name="instance"/>
+			</one-to-one>-->
+			<transient name="activity"/>
+			<transient name="gradable"/>
+			<transient name="stealth"/>
+			<transient name="grades"/>
+			<transient name="name"/>
+		</attributes>
+	</entity>
+
+	<entity name="Course" class="Course" metadata-complete="true">
+		<description>Mapping definition for the Courses</description>
+		<table name="mdl_course"/>
+		<attributes>
+			<id name="id">
+				<column name="id" insertable="false" updatable="false"/>
+			</id>
+			<basic name="name">
+				<column name="fullname" insertable="false" updatable="false"/>
+			</basic>
+			<basic name="semester">
+				<column name="startdate" insertable="false" updatable="false"/>
+				<convert converter="ca.uoguelph.socs.icc.edm.moodledb.SemesterConverter"/>
+			</basic>
+			<basic name="year">
+				<column name="startdate" insertable="false" updatable="false"/>
+				<convert converter="ca.uoguelph.socs.icc.edm.moodledb.MoodleDateYearConverter"/>
+			</basic>
+			<one-to-many name="activities" target-entity="ActivityInstance" mapped-by="course"/>
+			<!--<one-to-many name="enrolments" mapped-by="course"/>
+			<one-to-many name="log" target-entity="MoodleDBLogEntry" mapped-by="course">
+				<order-by>id</order-by>
+			</one-to-many>-->
+			<transient name="enrolments"/>
+			<transient name="log"/>
+		</attributes>
+	</entity>
+</entity-mappings>

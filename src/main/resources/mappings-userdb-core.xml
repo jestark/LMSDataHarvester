@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+				 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
+				 version="2.1">
+	<description>Entity mappings for the user database</description>
+	<package>ca.uoguelph.socs.icc.moodleapi</package>
+
+	<access>PROPERTY</access>
+
+	<entity name="" class="" metadata-complete="true">
+		<table name=""/>
+		<attributes>
+			<id>
+				<column name=""/>
+			</id>
+			<basic name="">
+				<column name=""/>
+			</basic>
+		</attributes>
+	</entity>
+</entity-mappings>

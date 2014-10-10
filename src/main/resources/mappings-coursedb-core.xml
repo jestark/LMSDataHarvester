@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+				 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
+				 version="2.1">
+	<description>Entity mappings for the course database</description>
+	<package>ca.uoguelph.socs.icc.edm.domain</package>
+
+	<access>PROPERTY</access>
+
+	<!--*********************************************************************-->
+	<!--  Mapped super classes used by activities                            -->
+	<!--*********************************************************************-->
+
+	<mapped-superclass class="AbstractActivity" metadata-complete="true">
+		<description>Default mapping for Name attribute for all activities</description>
+		<attributes>
+			<basic name="name">
+				<column name="name" nullable="false"/>
+			</basic>
+		</attributes>
+	</mapped-superclass>
+
+	<!--*********************************************************************-->
+	<!-- Core data mapping: Courses                                          -->
+	<!--*********************************************************************-->
+
+	<entity name="Course" class="Course" metadata-complete="true">
+		<table name="course"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="course_id_seq"/>
+				<sequence-generator name="course_id_seq" sequence-name="course_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="name" nullable="false"/>
+			</basic>
+			<basic name="semester">
+				<column name="senester" nullable="false"/>
+				<enumerated>STRING</enumerated>
+			</basic>
+			<basic name="year">
+				<column name="year" nullable="false"/>
+			</basic>
+			<one-to-many name="activities" target-entity="ActivityInstance">
+				<cascade>
+					<cascade-all/>
+				</cascade>
+			</one-to-many>
+			<one-to-many name="enrolments" target-entity="AbstractEnrolment" mapped-by="course"/>
+			<transient name="log"/>
+		</attributes>
+	</entity>
+
+	<!--*********************************************************************-->
+	<!-- Core data mapping: Enrolments                                       -->
+	<!--*********************************************************************-->
+
+	<entity name="Role" class="Role" metadata-complete="true">
+		<description>The Role of a participant in a course</description>
+		<table name="enrolment_role"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="enrolment_role_id_seq"/>
+				<sequence-generator name="enrolment_role_id_seq" sequence-name="enrolment_role_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="name" nullable="false" unique="true"/>
+			</basic>
+		</attributes>
+	</entity>
+
+	<entity name="Enrolment" class="AbstractEnrolment" metadata-complete="true">
+		<description>Record for a user enrolled in a course</description>
+		<inheritance strategy="TABLE_PER_CLASS"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<many-to-one name="role" optional="false">
+				<join-column name="roleid" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-one name="course" optional="false">
+				<join-column name="courseid" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<one-to-many name="grades" target-entity="GradedActivity" mapped-by="enrolment">
+				<cascade>
+					<cascade-all/>
+				</cascade>
+			</one-to-many>
+			<one-to-many name="log" target-entity="LogData" mapped-by="enrolment"/>
+			<transient name="active"/>
+			<transient name="finalGrade"/>
+			<transient name="name"/>
+			<transient name="usable"/>
+		</attributes>
+	</entity>
+
+	<entity name="EnrolledCourse" class="EnrolledCourse" metadata-complete="true">
+		<table name="enrolment"/>
+		<secondary-table name="enrolment_final_grade">
+			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
+		</secondary-table>
+		<attributes>
+			<basic name="active">
+				<column name="active" nullable="false"/>
+			</basic>
+			<basic name="usable">
+				<column name="usable" nullable="false"/>
+			</basic>
+			<basic name="finalGrade">
+				<column name="grade"/>
+			</basic>
+			<transient name="name"/>
+		</attributes>
+	</entity>
+
+	<entity name="Grade" class="GradedActivity" metadata-complete="true">
+		<description>Grades assigned to individual activities for a student</description>
+		<table name="enrolment_activity_grade"/>
+		<attributes>
+			<id name="enrolment"/>
+			<id name="activity"/>
+			<basic name="grade">
+				<column name="grade" nullable="false"/>
+			</basic>
+			<many-to-one name="enrolment" target-entity="EnrolledCourse" optional="false">
+				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-one name="activity" target-entity="ActivityInstance" optional="false">
+				<join-column name="activity_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<transient name="name"/>
+		</attributes>
+	</entity>
+
+	<!--*********************************************************************-->
+	<!--  Core data mapping: Activities                                      -->
+	<!--*********************************************************************-->
+
+	<entity name="ActivityType" class="ActivityType" metadata-complete="true">
+		<description>The type of the activity (or the module)</description>
+		<table name="activity"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_id_seq"/>
+				<sequence-generator name="activity_id_seq" sequence-name="activity_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="name" updatable="false" unique="true"/>
+			</basic>
+			<one-to-many name="actions">
+				<cascade>
+					<cascade-all/>
+				</cascade>
+			</one-to-many>
+		</attributes>
+	</entity>
+
+	<entity name="Action" class="Action" metadata-complete="true">
+		<description>The name of the action performed</description>
+		<table name="activity_action"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_action_id_seq"/>
+				<sequence-generator name="activity_action_id_seq" sequence-name="activity_action_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="name" nullable="false"/>
+			</basic>
+			<many-to-one name="type" optional="false">
+				<join-column name="activity_id" nullable="false" updatable="false" referenced-column-name="id"/>
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<entity name="Activity" class="ActivityInstance" metadata-complete="true">
+		<description>The activities which are associated with a given course</description>
+		<table name="activity_instance"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_instance_id_seq"/>
+				<sequence-generator name="activity_instance_id_seq" sequence-name="activity_instance_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="gradable">
+				<column name="gradable" nullable="false"/>
+			</basic>
+			<basic name="stealth">
+				<column name="stealth" nullable="false"/>
+			</basic>
+			<many-to-one name="type" optional="false">
+				<join-column name="activity_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-one name="course" optional="false">
+				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<one-to-many name="grades" target-entity="GradedActivity" mapped-by="activity"/>
+			<one-to-many name="log" target-entity="LogData" mapped-by="activitydb">
+				<cascade>
+					<cascade-all/>
+				</cascade>
+			</one-to-many>
+			<one-to-one name="activity" target-entity="GenericNamedActivity" optional="true" mapped-by="instance">
+				<cascade>
+					<cascade-all/>
+				</cascade>
+			</one-to-one>
+			<transient name="name"/>
+		</attributes>
+	</entity>
+
+	<entity name="GenericNamedActivity" class="GenericNamedActivity" metadata-complete="true">
+		<description>Mapping For the Generic Activity and the relationship the the instance</description>
+		<inheritance strategy="TABLE_PER_CLASS"/>
+		<attributes>
+			<id name="instance"/>
+			<one-to-one name="instance" optional="false">
+				<join-column name="activityid" nullable="false" referenced-column-name="id"/>
+			</one-to-one>
+			<transient name="log"/>
+			<transient name="course"/>
+			<transient name="type"/>
+			<transient name="gradable"/>
+			<transient name="stealth"/>
+			<transient name="grades"/>
+		</attributes>
+	</entity>
+
+	<!-- GenericGroupedActivity -->
+
+	<entity name="GenericGroupedActivityMember" class="GenericGroupedActivityMember" metadata-complete="true">
+		<description></description>
+		<inheritance strategy="TABLE_PER_CLASS"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<transient name="log"/>
+			<transient name="course"/>
+			<transient name="type"/>
+			<transient name="gradable"/>
+			<transient name="stealth"/>
+			<transient name="grades"/>
+			<transient name="parent"/>
+		</attributes>
+	</entity>
+
+	<!-- GenericGroupedActivityGroup-->
+
+	<!--*********************************************************************-->
+	<!-- Core data mapping: Log entries                                      -->
+	<!--*********************************************************************-->
+
+	<entity name="LogEntry" class="LogData" metadata-complete="true">
+		<description>The course activity log</description>
+		<table name="log"/>
+		<secondary-table name="log_ip">
+			<primary-key-join-column name="log_id" referenced-column-name="id"/>
+		</secondary-table>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="log_id_seq"/>
+				<sequence-generator name="log_id_seq" sequence-name="log_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="time" optional="false">
+				<column name="time" nullable="false"/>
+				<temporal>TIMESTAMP</temporal>
+			</basic>
+			<basic name="IPAddress" optional="false">
+				<column name="ipaddress" nullable="false"/>
+			</basic>
+			<many-to-one name="activitydb" target-entity="ActivityInstance">
+				<join-column name="instance_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-one name="action" target-entity="Action">
+				<join-column name="action_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-one name="enrolment" target-entity="EnrolledCourse">
+				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<one-to-one name="reference" target-entity="LogReference" mapped-by="entry"/>
+			<transient name="activity"/>
+			<transient name="course"/>
+		</attributes>
+	</entity>
+
+	<entity name="LogReference" class="LogReference" metadata-complete="true">
+		<description>References to logged sub-activities</description>
+		<inheritance strategy="TABLE_PER_CLASS"/>
+		<attributes>
+			<id name="entry"/>
+			<one-to-one name="entry" target-entity="LogData" optional="false">
+				<join-column name="log_id" nullable="false" referenced-column-name="id"/>
+			</one-to-one>
+			<transient name="activity"/>
+		</attributes>
+	</entity>
+</entity-mappings>

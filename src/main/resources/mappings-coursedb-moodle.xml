@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+				 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
+				 version="2.1">
+	<description>Entity mappings for the moodle specific components of the course database</description>
+	<package>ca.uoguelph.socs.icc.edm.domain.moodle</package>
+
+	<access>PROPERTY</access>
+
+	<!--*********************************************************************-->
+	<!-- Moodle data mapping:  Subclasses of GenericGroupedActivity          -->
+	<!--*********************************************************************-->
+
+	<entity name="MoodleBookActivity" class="MoodleBookActivity" metadata-complete="true">
+		<table name="activity_moodle_book"/>
+		<attributes>
+			<one-to-many name="children" mapped-by="parent"/>
+		</attributes>
+	</entity>
+
+	<entity name="MoodleForumActivity" class="MoodleForumActivity" metadata-complete="true">
+		<table name="activity_moodle_forum"/>
+		<attributes>
+			<one-to-many name="children" mapped-by="parent"/>
+		</attributes>
+	</entity>
+
+	<entity name="MoodleLessonActivity" class="MoodleLessonActivity" metadata-complete="true">
+		<table name="activity_moodle_lesson"/>
+		<attributes>
+			<one-to-many name="children" mapped-by="parent"/>
+		</attributes>
+	</entity>
+
+	<entity name="MoodleWorkshopActivity" class="MoodleWorkshopActivity" metadata-complete="true">
+		<table name="activity_moodle_workshop"/>
+		<attributes>
+			<one-to-many name="children" mapped-by="parent"/>
+		</attributes>
+	</entity>
+
+	<!--*********************************************************************-->
+	<!-- Moodle data mapping:  Subclasses of GenericGroupedActivityGroup     -->
+	<!--*********************************************************************-->
+
+	<entity name="MoodleForumActivityDiscussion" class="MoodleForumActivityDiscussion" metadata-complete="true">
+		<table name="activity_moodle_forum_discussion"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_moodle_forum_discussion_id_seq"/>
+				<sequence-generator name="activity_moodle_forum_discussion_id_seq" sequence-name="activity_moodle_forum_discussion_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<many-to-one name="parent">
+				<join-column name="forum_id"/>
+			</many-to-one>
+			<one-to-many name="children" mapped-by="parent"/>
+		</attributes>
+	</entity>
+
+	<!--*********************************************************************-->
+	<!-- Moodle data mapping:  Subclasses of GenericGroupedActivityMember    -->
+	<!--*********************************************************************-->
+
+	<entity name="MoodleBookActivityChapter" class="MoodleBookActivityChapter" metadata-complete="true">
+		<table name="activity_moodle_book_chapter"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_moodle_book_chapter_id_seq"/>
+				<sequence-generator name="activity_moodle_book_chapter_id_seq" sequence-name="activity_moodle_book_chapter_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="title"/>
+			</basic>
+			<many-to-one name="parent">
+				<join-column name="book_id"/>
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<entity name="MoodleForumActivityPost" class="MoodleForumActivityPost" metadata-complete="true">
+		<table name="activity_moodle_forum_post"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_moodle_forum_post_id_seq"/>
+				<sequence-generator name="activity_moodle_forum_post_id_seq" sequence-name="activity_moodle_forum_post_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="subject"/>
+			</basic>
+			<many-to-one name="parent">
+				<join-column name="discussion_id"/>
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<entity name="MoodleLessonActivityPage" class="MoodleLessonActivityPage" metadata-complete="true">
+		<table name="activity_moodle_lesson_page"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_moodle_lesson_page_id_seq"/>
+				<sequence-generator name="activity_moodle_lesson_page_id_seq" sequence-name="activity_moodle_lesson_page_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="title"/>
+			</basic>
+			<many-to-one name="parent">
+				<join-column name="lesson_id"/>
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<entity name="MoodleWorkshopActivitySubmission" class="MoodleWorkshopActivitySubmission" metadata-complete="true">
+		<table name="activity_moodle_workshop_submission"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_moodle_workshop_submission_id_seq"/>
+				<sequence-generator name="activity_moodle_workshop_submissions_id_seq" sequence-name="activity_moodle_workshop_submission_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="title"/>
+			</basic>
+			<many-to-one name="parent">
+				<join-column name="workshop_id"/>
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<!--*********************************************************************-->
+	<!-- MoodleDataMapping:  Subclasses of GenericNamedActivity              -->
+	<!--*********************************************************************-->
+
+	<entity name="MoodleAssignActivity" class="MoodleAssignActivity" metadata-complete="true">
+		<table name="activity_moodle_assign"/>
+	</entity>
+
+	<entity name="MoodleChecklistActivity" class="MoodleChecklistActivity" metadata-complete="true">
+		<table name="activity_moodle_checklist"/>
+	</entity>
+
+	<entity name="MoodleChoiceActivity" class="MoodleChoiceActivity" metadata-complete="true">
+		<table name="activity_moodle_choice"/>
+	</entity>
+
+	<entity name="MoodleFeedbackActivity" class="MoodleFeedbackActivity" metadata-complete="true">
+		<table name="activity_moodle_feedback"/>
+	</entity>
+
+	<entity name="MoodleFolderActivity" class="MoodleFolderActivity" metadata-complete="true">
+		<table name="activity_moodle_folder"/>
+	</entity>
+
+	<entity name="MoodleLabelActivity" class="MoodleLabelActivity" metadata-complete="true">
+		<table name="activity_moodle_label"/>
+	</entity>
+
+	<entity name="MoodlePageActivity" class="MoodlePageActivity" metadata-complete="true">
+		<table name="activity_moodle_page"/>
+	</entity>
+
+	<entity name="MoodleQuizActivity" class="MoodleQuizActivity" metadata-complete="true">
+		<table name="activity_moodle_quiz"/>
+	</entity>
+
+	<entity name="MoodleResourceActivity" class="MoodleResourceActivity" metadata-complete="true">
+		<table name="activity_moodle_resource"/>
+	</entity>
+
+	<entity name="MoodleSchedulerActivity" class="MoodleSchedulerActivity" metadata-complete="true">
+		<table name="activity_moodle_scheduler"/>
+	</entity>
+
+	<entity name="MoodleURLActivity" class="MoodleURLActivity" metadata-complete="true">
+		<table name="activity_moodle_url"/>
+	</entity>
+
+	<!--*********************************************************************-->
+	<!-- Moodle data mapping:  Subclasses of LogReference                    -->
+	<!--*********************************************************************-->
+
+	<entity name="MoodlBookActivityChapterLog" class="MoodleBookActivityChapterLog" metadata-complete="true">
+		<table name="log_moodle_book_chapter"/>
+		<attributes>
+			<many-to-one name="activity" target-entity="MoodlBookActivityChapter">
+				<join-column name="chapter_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<entity name="MoodleForumActivityDiscussionLog" class="MoodleForumActivityDiscussionLog" metadata-complete="true">
+		<table name="log_moodle_forum_discussion"/>
+		<attributes>
+			<many-to-one name="activity" target-entity="MoodleForumActivityDiscussion">
+				<join-column name="discussion_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<entity name="MoodleForumActivityPostLog" class="MoodleForumActivityPostLog" metadata-complete="true">
+		<table name="log_moodle_forum_post"/>
+		<attributes>
+			<many-to-one name="activity" target-entity="MoodleForumActivityPostLog">
+				<join-column name="post_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<entity name="MoodleLessonActivityPageLog" class="MoodleLessonActivityPageLog" metadata-complete="true">
+		<table name="log_moodle_lesson_page"/>
+		<attributes>
+			<many-to-one name="activity" target-entity="MoodleLessonActivityPageLog">
+				<join-column name="page_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<entity name="MoodleWorkshopActivitySubmissionLog" class="MoodleWorkshopActivitySubmissionLog" metadata-complete="true">
+		<table name="log_moodle_workshop_submission"/>
+		<attributes>
+			<many-to-one name="activity" target-entity="MoodleWorkshopActivitySubmission">
+				<join-column name="submission_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+		</attributes>
+	</entity>
+</entity-mappings>
