@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>ca.uoguelph.socs.icc</groupId>
-	<artifactId>moodleapi</artifactId>
+	<artifactId>edm</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>moodleapi</name>
