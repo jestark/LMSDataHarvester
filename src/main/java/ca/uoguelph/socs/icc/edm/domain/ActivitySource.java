@@ -2,9 +2,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
-public interface Action
+public interface ActivitySource
 {
-	public Set<ActivityType> getTypes ();
 	public String getName ();
+	public Set<ActivityType> getTypes ();
 }
-

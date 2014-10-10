@@ -26,7 +26,8 @@
 	<!-- Core data mapping: Courses                                          -->
 	<!--*********************************************************************-->
 
-	<entity name="Course" class="Course" metadata-complete="true">
+	<entity name="Course" class="CourseData" metadata-complete="true">
+		<description>Date identifying a particular offering of a course</description>
 		<table name="course"/>
 		<attributes>
 			<id name="id">
@@ -44,12 +45,16 @@
 			<basic name="year">
 				<column name="year" nullable="false"/>
 			</basic>
-			<one-to-many name="activities" target-entity="ActivityInstance">
+			<one-to-many name="activities" target-entity="ActivityInstance" orphan-removal="true">
 				<cascade>
 					<cascade-all/>
 				</cascade>
 			</one-to-many>
-			<one-to-many name="enrolments" target-entity="AbstractEnrolment" mapped-by="course"/>
+			<one-to-many name="enrolments" target-entity="AbstractEnrolment" mapped-by="course" orphan-removal="true">
+				<cascade>
+					<cascade-all/>
+				</cascade>
+			</one-to-many>
 			<transient name="log"/>
 		</attributes>
 	</entity>
@@ -58,7 +63,7 @@
 	<!-- Core data mapping: Enrolments                                       -->
 	<!--*********************************************************************-->
 
-	<entity name="Role" class="Role" metadata-complete="true">
+	<entity name="Role" class="RoleData" metadata-complete="true">
 		<description>The Role of a participant in a course</description>
 		<table name="enrolment_role"/>
 		<attributes>
@@ -80,18 +85,18 @@
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
-			<many-to-one name="role" optional="false">
-				<join-column name="roleid" nullable="false" referenced-column-name="id"/>
+			<many-to-one name="role" target-entity="RoleData" optional="false">
+				<join-column name="role_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
-			<many-to-one name="course" optional="false">
-				<join-column name="courseid" nullable="false" referenced-column-name="id"/>
+			<many-to-one name="course" target-entity="CourseData" optional="false">
+				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
-			<one-to-many name="grades" target-entity="GradedActivity" mapped-by="enrolment">
+			<one-to-many name="grades" target-entity="GradedActivity" mapped-by="enrolment" orphan-removal="true">
 				<cascade>
 					<cascade-all/>
 				</cascade>
 			</one-to-many>
-			<one-to-many name="log" target-entity="LogData" mapped-by="enrolment"/>
+			<one-to-many name="log" target-entity="LogData" mapped-by="enrolment" orphan-removal="true"/>
 			<transient name="active"/>
 			<transient name="finalGrade"/>
 			<transient name="name"/>
@@ -141,7 +146,24 @@
 	<!--  Core data mapping: Activities                                      -->
 	<!--*********************************************************************-->
 
-	<entity name="ActivityType" class="ActivityType" metadata-complete="true">
+	<entity name="ActivitySource" class="ActivitySourceData" metadata-complete="true">
+		<description>The the source of the activity data</description>
+		<table name="activity_source"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_source_id_seq"/>
+				<sequence-generator name="activity_source_id_seq" sequence-name="activity_source_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="name" nullable="false" unique="true"/>
+			</basic>
+			<one-to-many name="types" target-entity="ActivityTypeData" mapped-by="source" orphan-removal="true"/>
+		</attributes>
+	</entity>
+
+
+	<entity name="ActivityType" class="ActivityTypeData" metadata-complete="true">
 		<description>The type of the activity (or the module)</description>
 		<table name="activity"/>
 		<attributes>
@@ -151,17 +173,21 @@
 				<sequence-generator name="activity_id_seq" sequence-name="activity_id_seq" initial-value="1" allocation-size="1"/>
 			</id>
 			<basic name="name">
-				<column name="name" updatable="false" unique="true"/>
+				<column name="name" updatable="false"/>
 			</basic>
-			<one-to-many name="actions">
-				<cascade>
-					<cascade-all/>
-				</cascade>
-			</one-to-many>
+			<many-to-one name="source" target-entity="ActivitySourceData" optional="false">
+				<join-column name="source_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-many name="actions" target-entity="ActionData">
+				<join-table name="activity_action_map" >
+					<join-column name="activity_id" nullable="false" referenced-column-name="id"/>
+					<inverse-join-column name="action_id" nullable="false" referenced-column-name="id"/>
+				</join-table>
+			</many-to-many>
 		</attributes>
 	</entity>
 
-	<entity name="Action" class="Action" metadata-complete="true">
+	<entity name="Action" class="ActionData" metadata-complete="true">
 		<description>The name of the action performed</description>
 		<table name="activity_action"/>
 		<attributes>
@@ -173,9 +199,7 @@
 			<basic name="name">
 				<column name="name" nullable="false"/>
 			</basic>
-			<many-to-one name="type" optional="false">
-				<join-column name="activity_id" nullable="false" updatable="false" referenced-column-name="id"/>
-			</many-to-one>
+			<many-to-many name="types" target-entity="ActivityTypeData" mapped-by="actions"/>
 		</attributes>
 	</entity>
 
@@ -194,10 +218,10 @@
 			<basic name="stealth">
 				<column name="stealth" nullable="false"/>
 			</basic>
-			<many-to-one name="type" optional="false">
+			<many-to-one name="type" target-entity="ActivityTypeData" optional="false">
 				<join-column name="activity_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
-			<many-to-one name="course" optional="false">
+			<many-to-one name="course" target-entity="CourseData" optional="false">
 				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<one-to-many name="grades" target-entity="GradedActivity" mapped-by="activity"/>
@@ -276,13 +300,13 @@
 			<basic name="IPAddress" optional="false">
 				<column name="ipaddress" nullable="false"/>
 			</basic>
-			<many-to-one name="activitydb" target-entity="ActivityInstance">
+			<many-to-one name="activitydb" target-entity="ActivityInstance" optional="false">
 				<join-column name="instance_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
-			<many-to-one name="action" target-entity="Action">
+			<many-to-one name="action" target-entity="ActionData" optional="false">
 				<join-column name="action_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
-			<many-to-one name="enrolment" target-entity="EnrolledCourse">
+			<many-to-one name="enrolment" target-entity="EnrolledCourse" optional="false">
 				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<one-to-one name="reference" target-entity="LogReference" mapped-by="entry"/>

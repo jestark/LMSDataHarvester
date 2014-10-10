@@ -57,7 +57,7 @@ public class LogData implements LogEntry, Serializable
 		this.enrolment = enrolment;
 	}
 
-	protected Activity getActivitydb ()
+	public Activity getActivitydb ()
 	{
 		return this.activity;
 	}
@@ -67,7 +67,7 @@ public class LogData implements LogEntry, Serializable
 		this.activity = activity;
 	}
 
-	protected LogReference getReference ()
+	public LogReference getReference ()
 	{
 		return this.reference;
 	}

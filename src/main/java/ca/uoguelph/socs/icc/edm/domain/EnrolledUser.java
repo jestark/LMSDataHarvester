@@ -1,6 +1,6 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
-class EnrolledUser extends AbstractEnrolment
+public class EnrolledUser extends AbstractEnrolment
 {
 	private User user;
 
@@ -58,6 +58,15 @@ class EnrolledUser extends AbstractEnrolment
 	{
 		this.active = active;
 	}
+
+/*	public LogEntry addLog (Activity activity, Action action)
+	{
+		LogEntry entry = ((AbstractActivity) activity).addLog (this, action);
+
+		this.log.add (entry);
+
+		return entry;
+	}*/
 
 	@Override
 	public String toString ()

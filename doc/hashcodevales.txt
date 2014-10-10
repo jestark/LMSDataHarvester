@@ -14,7 +14,7 @@ Role							1069	919
 Semester						1087	911
 Enrolment						1091	907
 LogData							1093	887
-MoodleLogData					1097	883
+ActivitySource					1097	883
 
 MoodleBookActivity				2003	691
 MoodleBookActivityChapter		2011	683
