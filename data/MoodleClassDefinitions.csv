@@ -1,0 +1,20 @@
+MoodleBookActivity, GenericGroupedActivity, 2003, 691, MoodleBookActivityChapter
+MoodleBookActivityChapter, GenericGroupedActivityMember, 2011, 683, MoodleBookActivity, MoodleBookActivityChapterLog
+MoodleForumActivity, GenericGroupedActivity, 2017, 677, MoodleForumActivityDiscussion
+MoodleForumActivityPost, GenericGroupedActivityMember, 2027, 673, MoodleForumActivityDiscussion, MoodleForumActivityPostLog
+MoodleForumActivityDiscussion, GenericGroupedActivityGroup, 2029, 661, MoodleForumActivity, MoodleForumActivityPost, MoodleForumActivityDiscussionLog
+MoodleLessonActivity, GenericGroupedActivity, 2039, 601, MoodleLessonActivityPage
+MoodleLessonActivityPage, GenericGroupedActivityMember, 2053, 599, MoodleLessonActivity, MoodleLessonActivityPageLog
+MoodleWorkshopActivity, GenericGroupedActivity, 2063, 593, MoodleWorkshopActivitySubmission
+MoodleWorkshopActivitySubmission, GenericGroupedActivityMember, 2069, 587, MoodleWorkshopActivity, MoodleWorkshopActivitySubmissionLog
+MoodleAssignActivity, GenericNamedActivity, 3001, 397
+MoodleChecklistActivity, GenericNamedActivity, 3011, 389
+MoodleChoiceActivity, GenericNamedActivity, 3019, 383
+MoodleFeedbackActivity, GenericNamedActivity, 3023, 379
+MoodleFolderActivity, GenericNamedActivity, 3037, 373
+MoodleLabelActivity, GenericNamedActivity, 3041, 367
+MoodlePageActivity, GenericNamedActivity, 3049, 359
+MoodleQuizActivity, GenericNamedActivity, 3061, 353
+MoodleResourceActivity, GenericNamedActivity, 3067, 349
+MoodleSchedulerActivity, GenericNamedActivity, 3079, 347
+MoodleURLActivity, GenericNamedActivity, 3083, 337

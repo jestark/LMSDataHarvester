@@ -1,0 +1,11 @@
+MoodleAssignActivity, mdl_assign
+MoodleChecklistActivity, mdl_checklist
+MoodleChoiceActivity, mdl_choise
+MoodleFeedbackActivity, mdl_feedback
+MoodleFolderActivity, mdl_folder
+MoodleLabelActivity, mdl_label
+MoodlePageActivity, mdl_page
+MoodleQuizActivity, mdl_quiz
+MoodleResourceActivity, mdl_resource
+MoodleSchedulerActivity, mdl_scheduler
+MoodleURLActivity, mdl_url
