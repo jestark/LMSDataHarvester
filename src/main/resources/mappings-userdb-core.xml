@@ -5,19 +5,68 @@
 				 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
 				 version="2.1">
 	<description>Entity mappings for the user database</description>
-	<package>ca.uoguelph.socs.icc.moodleapi</package>
+	<package>ca.uoguelph.socs.icc.edm.domain</package>
 
 	<access>PROPERTY</access>
 
-	<entity name="" class="" metadata-complete="true">
-		<table name=""/>
+	<!--*********************************************************************-->
+	<!--  User data mapping: User                                            -->
+	<!--*********************************************************************-->
+
+	<entity name="User" class="UserData" metadata-complete="true">
+		<description>Data identifying the user</description>
+		<table schema="userdb" name="user"/>
 		<attributes>
 			<id>
-				<column name=""/>
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="user_id_seq"/>
+				<sequence-generator name="user_id_seq" sequence-name="user_id_seq" initial-value="1" allocation-size="1"/>
 			</id>
-			<basic name="">
-				<column name=""/>
+			<basic name="idnumber">
+				<column name="id_number" />
 			</basic>
+			<basic name="username">
+				<column name="username" nullable="false" unique="true"/>
+			</basic>
+			<basic name="firstname">
+				<column name="first_name" nullable="false"/>
+			</basic>
+			<basic name="lastname">
+				<column name="last_name" nullable="false"/>
+			</basic>
+			<one-to-many name="enrolments" targer-entity="EnrolledUser" mapped-by="users">
+			</one-to-many>
+			<transient name="enrolment"/>
 		</attributes>
 	</entity>
+
+	<!--*********************************************************************-->
+	<!--  User data mapping: Enrolment                                       -->
+	<!--*********************************************************************-->
+
+	<entity name="EnrolledUser" class="EnrolledUser" metadata-complete="true">
+		<table name="enrolment"/>
+		<secondary-table name="enrolment_final_grade">
+			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
+		</secondary-table>
+		<attributes>
+			<basic name="active">
+				<column name="active" nullable="false"/>
+			</basic>
+			<basic name="usable">
+				<column name="usable" nullable="false"/>
+			</basic>
+			<basic name="finalGrade">
+				<column name="grade"/>
+			</basic>
+			<many-to-one name="users" target-entity="UserData" optional="false">
+				<join-table schema="userdb" name="user_enrolments">
+					<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
+					<inverse-join-column name="user_id" nullable="false" referenced-column-name="id"/>
+				</join-table>
+			</many-to-one>
+			<transient name="name"/>
+		</attributes>
+	</entity>
+
 </entity-mappings>

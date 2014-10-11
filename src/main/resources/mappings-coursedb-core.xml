@@ -132,7 +132,7 @@
 			<basic name="grade">
 				<column name="grade" nullable="false"/>
 			</basic>
-			<many-to-one name="enrolment" target-entity="EnrolledCourse" optional="false">
+			<many-to-one name="enrolment" target-entity="AbstractEnrolment" optional="false">
 				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<many-to-one name="activity" target-entity="ActivityInstance" optional="false">
@@ -306,7 +306,7 @@
 			<many-to-one name="action" target-entity="ActionData" optional="false">
 				<join-column name="action_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
-			<many-to-one name="enrolment" target-entity="EnrolledCourse" optional="false">
+			<many-to-one name="enrolment" target-entity="AbstractEnrolment" optional="false">
 				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<one-to-one name="reference" target-entity="LogReference" mapped-by="entry"/>
