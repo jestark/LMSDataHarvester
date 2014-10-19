@@ -8,7 +8,7 @@
 create type e_semester as enum ('WINTER', 'SPRING', 'FALL');
 
 create table if not exists course (
-	id serial primary key,
+	id bigserial primary key,
 	year integer not null,
 	semester e_semester not null,
 	name text not null,
@@ -25,36 +25,36 @@ comment on column course.year is 'Year in which the course was offered, four dig
 
 -- The sources of the activity data.
 create table if not exists activity_source (
-	id serial primary key,
+	id bigserial primary key,
 	name text not null
 );
 
 -- All of the components of the courses, from moodle and otherwise
 create table if not exists activity (
-	id serial primary key,
-	source_id integer not null references activity_source (id) on delete restrict on update cascade,
-	name text not null
+	id bigserial primary key,
+	source_id bigint not null references activity_source (id) on delete restrict on update cascade,
+	name text not null,
 	unique (source_id, name)
 );
 
 -- All of the possible actions, that can be logged.
 create table if not exists activity_action (
-	id serial primary key,
+	id bigserial primary key,
 	name text unique not null
 );
 
 -- Relationship table for the many-to-many mapping between activity and activity_action
 create table if not exists activity_action_map (
-	activity_id integer not null references activity (id) on delete cascade on update cascade,
-	action_id integer not null references activity_action (id) on delete restrict on update cascade,
+	activity_id bigint not null references activity (id) on delete cascade on update cascade,
+	action_id bigint not null references activity_action (id) on delete restrict on update cascade,
 	primary key (activity_id, action_id)
 );
 
 -- All of the instances of the various components of a course
 create table if not exists activity_instance (
-	id serial primary key,
-	course_id integer not null references course (id) on delete restrict on update cascade,
-	activity_id integer not null references activity (id) on delete restrict on update cascade,
+	id bigserial primary key,
+	course_id bigint not null references course (id) on delete restrict on update cascade,
+	activity_id bigint not null references activity (id) on delete restrict on update cascade,
 	stealth boolean not null default false
 );
 
@@ -71,28 +71,28 @@ comment on column activity.name is 'Name of the Activity type, for moodle activi
 
 -- All of the roles that a participant could have in a course
 create table if not exists enrolment_role (
-	id serial primary key,
+	id bigserial primary key,
 	name text unique not null
 );
 
 -- All of the participants in a given course, listed with their role (student, ta, etc)
 create table if not exists enrolment (
-	id integer primary key,
-	course_id integer not null references course (id) on delete restrict on update cascade,
-	role_id integer not null references enrolment_role (id) on delete restrict on update cascade,
+	id bigint primary key,
+	course_id bigint not null references course (id) on delete restrict on update cascade,
+	role_id bigint not null references enrolment_role (id) on delete restrict on update cascade,
 	usable boolean default false
 );
 
 -- All of the recorded final grades
 create table if not exists enrolment_final_grade (
-	enrolment_id integer primary key references enrolment (id) on delete cascade on update cascade,
+	enrolment_id bigint primary key references enrolment (id) on delete cascade on update cascade,
 	grade integer not null
 );
 
 -- All of the grades recorded for the gradable activities
 create table if not exists enrolment_activity_grade (
-	enrolment_id integer not null references enrolment (id) on delete cascade on update cascade,
-	instance_id integer not null references activity_instance (id) on delete restrict on update cascade,
+	enrolment_id bigint not null references enrolment (id) on delete cascade on update cascade,
+	instance_id bigint not null references activity_instance (id) on delete restrict on update cascade,
 	grade integer not null,
 	primary key (enrolment_id, instance_id)
 );
@@ -110,16 +110,16 @@ comment on column enrolment.usable is 'True if the participant consented to thei
 
 -- The log.
 create table if not exists log (
-	id serial primary key,
-	enrolment_id integer not null references enrolment (id) on delete cascade on update cascade,
-	instance_id integer not null references activity_instance (id) on delete restrict on update cascade,
-	action_id integer not null references activity_action (id) on delete restrict on update cascade,
+	id bigserial primary key,
+	enrolment_id bigint not null references enrolment (id) on delete cascade on update cascade,
+	instance_id bigint not null references activity_instance (id) on delete restrict on update cascade,
+	action_id bigint not null references activity_action (id) on delete restrict on update cascade,
 	time timestamp with time zone not null
 );
 
 -- IP address associated with the log event
 create table if not exists log_ip (
-	log_id integer unique not null references log (id) on delete cascade on update cascade,
+	log_id bigint unique not null references log (id) on delete cascade on update cascade,
 	ipaddress cidr not null
 );
 
@@ -132,121 +132,121 @@ comment on table log_ip is 'IP Addresses logged by moodle';
 
 -- Moodle assign module
 create table if not exists activity_moodle_assign (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle Book Module
 create table if not exists activity_moodle_book (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 create table if not exists activity_moodle_book_chapter (
-	id serial primary key,
-	book_id integer not null references activity_moodle_book (instance_id) on delete restrict on update cascade,
+	id bigserial primary key,
+	book_id bigint not null references activity_moodle_book (instance_id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle Checklist Module
 create table if not exists activity_moodle_checklist (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle Choice Module
 create table if not exists activity_moodle_choice (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle Feedback Module
 create table if not exists activity_moodle_feedback (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle Folder Module
 create table if not exists activity_moodle_folder (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle Forum Module
 create table if not exists activity_moodle_forum (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 create table if not exists activity_moodle_forum_discussion (
-	id serial primary key,
-	forum_id integer not null references activity_moodle_forum (instance_id) on delete restrict on update cascade,
+	id bigserial primary key,
+	forum_id bigint not null references activity_moodle_forum (instance_id) on delete restrict on update cascade,
 	name text not null
 );
 
 create table if not exists activity_moodle_forum_post (
-	id serial primary key,
-	discussion_id integer not null references activity_moodle_forum_discussion (id) on delete restrict on update cascade,
+	id bigserial primary key,
+	discussion_id bigint not null references activity_moodle_forum_discussion (id) on delete restrict on update cascade,
 	subject text not null
 );
 
 -- Moodle Label Module
 create table if not exists activity_moodle_label (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle Lesson Module
 create table if not exists activity_moodle_lesson (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 create table if not exists activity_moodle_lesson_page (
-	id serial primary key,
-	lesson_id integer not null references activity_moodle_lesson (instance_id) on delete restrict on update cascade,
+	id bigserial primary key,
+	lesson_id bigint not null references activity_moodle_lesson (instance_id) on delete restrict on update cascade,
 	title text not null
 );
 
 -- Moodle Page Module
 create table if not exists activity_moodle_page (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle Quiz Module
 create table if not exists activity_moodle_quiz (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle Resource Module
 create table if not exists activity_moodle_resource (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle Scheduler Module
 create table if not exists activity_moodle_scheduler (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle url Module
 create table if not exists activity_moodle_url (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 -- Moodle Workshop Module
 create table if not exists activity_moodle_workshop (
-	instance_id integer primary key references activity_instance (id) on delete restrict on update cascade,
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade,
 	name text not null
 );
 
 create table if not exists activity_moodle_workshop_submission (
-	id serial primary key,
-	workshop_id integer not null references activity_moodle_workshop (instance_id) on delete restrict on update cascade,
+	id bigserial primary key,
+	workshop_id bigint not null references activity_moodle_workshop (instance_id) on delete restrict on update cascade,
 	title text not null
 );
 
@@ -277,31 +277,31 @@ comment on table activity_moodle_workshop_submission is 'Data from submissions i
 
 -- Moodle book module
 create table if not exists log_moodle_book_chapter (
-	log_id integer primary key references log (id) on delete cascade on update cascade,
-	chapter_id integer references activity_moodle_book_chapter (id) on delete restrict on update cascade
+	log_id bigint primary key references log (id) on delete cascade on update cascade,
+	chapter_id bigint references activity_moodle_book_chapter (id) on delete restrict on update cascade
 );
 
 -- Moodle forum module
 create table if not exists log_moodle_forum_discussion (
-	log_id integer primary key references log (id) on delete cascade on update cascade,
-	discussion_id integer references activity_moodle_forum_discussion (id) on delete restrict on update cascade
+	log_id bigint primary key references log (id) on delete cascade on update cascade,
+	discussion_id bigint references activity_moodle_forum_discussion (id) on delete restrict on update cascade
 );
 
 create table if not exists log_moodle_forum_post (
-	log_id integer primary key references log (id) on delete cascade on update cascade,
-	post_id integer references activity_moodle_forum_post (id) on delete restrict on update cascade
+	log_id bigint primary key references log (id) on delete cascade on update cascade,
+	post_id bigint references activity_moodle_forum_post (id) on delete restrict on update cascade
 );
 
 -- Moodle lesson module
 create table if not exists log_moodle_lesson_page (
-	log_id integer primary key references log (id) on delete cascade on update cascade,
-	page_id integer references activity_moodle_lesson_page (id) on delete restrict on update cascade
+	log_id bigint primary key references log (id) on delete cascade on update cascade,
+	page_id bigint references activity_moodle_lesson_page (id) on delete restrict on update cascade
 );
 
 -- Moodle workshop module
 create table if not exists log_moodle_workshop_submission (
-	log_id integer primary key references log (id) on delete cascade on update cascade,
-	submission_id integer references activity_moodle_workshop_submission (id) on delete restrict on update cascade
+	log_id bigint primary key references log (id) on delete cascade on update cascade,
+	submission_id bigint references activity_moodle_workshop_submission (id) on delete restrict on update cascade
 );
 
 comment on table log_moodle_book_chapter is 'Relationship table for mapping log entries to moodle book chapters';

@@ -5,7 +5,7 @@ create schema if not exists userdb;
 
 -- Identifying information for students in the public database.
 create table if not exists userdb.user (
-	id serial primary key,
+	id bigserial primary key,
 	id_number integer not null,
 	username varchar[8] not null unique,
 	first_name text not null,
@@ -13,8 +13,8 @@ create table if not exists userdb.user (
 );
 
 create table if not exists userdb.user_enrolment (
-	user_id integer not null references userdb.user (id) on delete cascade on update cascade,
-	enrolment_id integer not null references enrolment (id) on delete cascade on update cascade,
+	user_id bigint not null references userdb.user (id) on delete cascade on update cascade,
+	enrolment_id bigint not null references enrolment (id) on delete cascade on update cascade,
 	primary key (user_id, enrolment_id)
 );
 
