@@ -11,7 +11,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public class ActivityInstance extends AbstractActivity implements Serializable
 {
 	private Long id;
-	private Boolean gradable;
 	private Boolean stealth;
 	private Course course;
 	private Activity activity;
@@ -29,25 +28,19 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		this.activity = null;
 		this.grades = null;
 
-		this.gradable = new Boolean (false);
 		this.stealth = new Boolean (false);
 	}
 
-	public ActivityInstance (Course course, ActivityType type, Activity activity, Boolean gradable, Boolean stealth)
+	public ActivityInstance (Course course, ActivityType type, Activity activity, Boolean stealth)
 	{
 		super ();
 		this.type = type;
 		this.course = course;
 		this.activity = activity;
-		this.gradable = gradable;
 		this.stealth = stealth;
 
 		this.log = new ArrayList<LogEntry> ();
-
-		if (this.gradable)
-		{
-			this.grades = new HashSet<Grade> ();
-		}
+		this.grades = new HashSet<Grade> ();
 	}
 
 	@Override
@@ -133,17 +126,6 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	}
 
 	@Override
-	public Boolean isGradable ()
-	{
-		return this.gradable;
-	}
-
-	public void setGradable (Boolean gradable)
-	{
-		this.gradable = gradable;
-	}
-
-	@Override
 	public Boolean isStealth ()
 	{
 		return this.stealth;
@@ -151,7 +133,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 
 	public void setStealth (Boolean stealth)
 	{
-		this.gradable = stealth;
+		this.stealth = stealth;
 	}
 
 	@Override
@@ -211,10 +193,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 			string = new String ("<" + string + ">");
 		}
 
-		if (this.gradable)
-		{
-			string = new String (string + ": Gradable (" + this.grades.size () + " entries)");
-		}
+//		if (this.gradable)
+//		{
+//			string = new String (string + ": Gradable (" + this.grades.size () + " entries)");
+//		}
 
 		return string;
 	}

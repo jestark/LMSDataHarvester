@@ -8,7 +8,6 @@ public interface Activity
 	public String getName();
 	public ActivityType getType();
 	public Course getCourse ();
-	public Boolean isGradable ();
 	public Boolean isStealth ();
 	public Set<Grade> getGrades ();
 	public List<LogEntry> getLog ();

@@ -88,12 +88,6 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 	}
 
 	@Override
-	public Boolean isGradable ()
-	{
-		return this.parent.isGradable ();
-	}
-
-	@Override
 	public Boolean isStealth ()
 	{
 		return this.parent.isStealth ();

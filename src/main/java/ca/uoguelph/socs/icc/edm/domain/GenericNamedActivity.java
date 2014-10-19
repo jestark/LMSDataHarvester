@@ -70,12 +70,6 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	}
 
 	@Override
-	public Boolean isGradable ()
-	{
-		return this.instance.isGradable ();
-	}
-
-	@Override
 	public Boolean isStealth ()
 	{
 		return this.instance.isStealth ();
