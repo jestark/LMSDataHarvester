@@ -27,7 +27,7 @@
 			<version>9.3-1102-jdbc41</version>
 		</dependency>
 
-		<!-- Log4j: So that we can controll hibernates logging -->
+		<!-- Log4j: So that we can control hibernates logging -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -72,6 +72,13 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
+		</dependency>
+
+		<!-- Apache commons CSV library -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.0</version>
 		</dependency>
 	</dependencies>
 
