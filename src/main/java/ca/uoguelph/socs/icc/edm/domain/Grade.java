@@ -2,8 +2,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 public interface Grade
 {
-	public String getName ();
-	public Activity getActivity ();
-	public Enrolment getEnrolment ();
-	public Integer getGrade ();
+	public abstract String getName ();
+	public abstract Activity getActivity ();
+	public abstract Enrolment getEnrolment ();
+	public abstract Integer getGrade ();
 }

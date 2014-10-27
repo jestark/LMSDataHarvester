@@ -4,6 +4,6 @@ import java.util.Set;
 
 public interface ActivitySource
 {
-	public String getName ();
-	public Set<ActivityType> getTypes ();
+	public abstract String getName ();
+	public abstract Set<ActivityType> getTypes ();
 }

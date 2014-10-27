@@ -1,15 +1,13 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
-import java.util.List;
 
 public interface Course
 {
-	public String getName ();
-	public Semester getSemester ();
-	public Integer getYear ();
-	public Set<Activity> getActivities ();
-	public Set<Enrolment> getEnrolments ();
-	public List<LogEntry> getLog ();
+	public abstract String getName ();
+	public abstract Semester getSemester ();
+	public abstract Integer getYear ();
+	public abstract Set<Activity> getActivities ();
+	public abstract Set<Enrolment> getEnrolments ();
 }
 

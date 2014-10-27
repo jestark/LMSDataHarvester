@@ -5,13 +5,12 @@ import java.util.Set;
 
 public interface Enrolment
 {
-	public String getName ();
-	public Course getCourse();
-	public Role getRole();
-	public Boolean isUsable ();
-	public Boolean isActive ();
-	public Integer getFinalGrade ();
-	public Grade getGrade (Activity activity);
-	public Set<Grade> getGrades ();
-	public List<LogEntry> getLog ();
+	public abstract String getName ();
+	public abstract Course getCourse();
+	public abstract Role getRole();
+	public abstract Boolean isUsable ();
+	public abstract Integer getFinalGrade ();
+	public abstract Grade getGrade (Activity activity);
+	public abstract Set<Grade> getGrades ();
+	public abstract List<LogEntry> getLog ();
 }

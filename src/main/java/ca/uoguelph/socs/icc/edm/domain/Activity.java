@@ -5,10 +5,10 @@ import java.util.Set;
 
 public interface Activity
 {
-	public String getName();
-	public ActivityType getType();
-	public Course getCourse ();
-	public Boolean isStealth ();
-	public Set<Grade> getGrades ();
-	public List<LogEntry> getLog ();
+	public abstract String getName();
+	public abstract ActivityType getType();
+	public abstract Course getCourse ();
+	public abstract Boolean isStealth ();
+	public abstract Set<Grade> getGrades ();
+	public abstract List<LogEntry> getLog ();
 }

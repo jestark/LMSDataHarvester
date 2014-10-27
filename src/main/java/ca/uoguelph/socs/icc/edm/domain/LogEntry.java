@@ -4,10 +4,10 @@ import java.util.Date;
 
 public interface LogEntry
 {
-	public Long getId();
-	public Enrolment getEnrolment();
-	public Course getCourse();
-	public Activity getActivity();
-	public Action getAction();
-	public Date getTime();
+	public abstract Enrolment getEnrolment();
+	public abstract Course getCourse();
+	public abstract Activity getActivity();
+	public abstract Action getAction();
+	public abstract Date getTime();
+	public abstract String getIPAddress ();
 }

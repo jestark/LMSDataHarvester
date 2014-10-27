@@ -4,7 +4,7 @@ import java.util.Set;
 
 public interface Action
 {
-	public Set<ActivityType> getTypes ();
-	public String getName ();
+	public abstract Set<ActivityType> getTypes ();
+	public abstract String getName ();
 }
 

@@ -4,12 +4,12 @@ import java.util.Set;
 
 public interface User
 {
-	public Integer getIdNumber ();
-	public String getFirstname ();
-	public String getLastname ();
-	public String getUsername ();
-	public String getName ();
-	public Enrolment getEnrolment (Course course);
-	public Set<Enrolment> getEnrolments ();
+	public abstract Integer getIdNumber ();
+	public abstract String getFirstname ();
+	public abstract String getLastname ();
+	public abstract String getUsername ();
+	public abstract String getName ();
+	public abstract Enrolment getEnrolment (Course course);
+	public abstract Set<Enrolment> getEnrolments ();
 }
 
