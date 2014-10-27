@@ -4,7 +4,7 @@ import java.util.Set;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
-public interface CourseFactory extends DataStoreFactory<Course, Set<Course>>
+public interface CourseManager extends DataStoreManager<Course, Set<Course>>
 {
 	@Override
 	public abstract Set<Course> fetchAll ();

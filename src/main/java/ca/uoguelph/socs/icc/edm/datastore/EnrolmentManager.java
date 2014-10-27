@@ -8,7 +8,7 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-public interface EnrolmentFactory extends DataStoreFactory<Enrolment, Set<Enrolment>>
+public interface EnrolmentManager extends DataStoreManager<Enrolment, Set<Enrolment>>
 {
 	@Override
 	public abstract Set<Enrolment> fetchAll ();

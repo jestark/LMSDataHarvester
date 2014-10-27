@@ -8,7 +8,7 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-public interface LogEntryFactory extends DataStoreFactory<LogEntry, List<LogEntry>>
+public interface LogEntryManager extends DataStoreManager<LogEntry, List<LogEntry>>
 {
 	@Override
 	public abstract List<LogEntry> fetchAll ();

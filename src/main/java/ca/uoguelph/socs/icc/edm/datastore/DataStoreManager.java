@@ -2,7 +2,7 @@ package ca.uoguelph.socs.icc.edm.datastore;
 
 import java.util.Collection;
 
-public interface DataStoreFactory<T, C extends Collection<T>>
+public interface DataStoreManager<T, C extends Collection<T>>
 {
 	public abstract T fetchById (Long id);
 	public abstract C fetchAll ();

@@ -3,7 +3,7 @@ package ca.uoguelph.socs.icc.edm.datastore;
 import java.util.Set;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 
-public interface ActionFactory extends DataStoreFactory<Action, Set<Action>>
+public interface ActionManager extends DataStoreManager<Action, Set<Action>>
 {
 	@Override
 	public abstract Set<Action> fetchAll ();

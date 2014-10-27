@@ -3,7 +3,7 @@ package ca.uoguelph.socs.icc.edm.datastore;
 import java.util.Set;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 
-public interface ActivitySourceFactory extends DataStoreFactory<ActivitySource, Set<ActivitySource>>
+public interface ActivitySourceManager extends DataStoreManager<ActivitySource, Set<ActivitySource>>
 {
 	@Override
 	public abstract Set<ActivitySource> fetchAll ();

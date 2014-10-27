@@ -5,7 +5,7 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 
-public interface ActivityFactory extends DataStoreFactory<Activity, Set<Activity>>
+public interface ActivityManager extends DataStoreManager<Activity, Set<Activity>>
 {
 	@Override
 	public abstract Set<Activity> fetchAll ();

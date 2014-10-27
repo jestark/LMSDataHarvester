@@ -3,7 +3,7 @@ package ca.uoguelph.socs.icc.edm.datastore;
 import java.util.Set;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-public interface UserFactory extends DataStoreFactory<User, Set<User>>
+public interface UserManager extends DataStoreManager<User, Set<User>>
 {
 	@Override
 	public abstract Set<User> fetchAll ();

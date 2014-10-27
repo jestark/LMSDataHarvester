@@ -3,7 +3,7 @@ package ca.uoguelph.socs.icc.edm.datastore;
 import java.util.Set;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-public interface RoleFactory extends DataStoreFactory<Role, Set<Role>>
+public interface RoleManager extends DataStoreManager<Role, Set<Role>>
 {
 	@Override
 	public abstract Set<Role> fetchAll ();
