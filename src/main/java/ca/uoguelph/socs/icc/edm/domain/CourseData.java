@@ -1,8 +1,6 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.List;
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -15,7 +13,6 @@ public class CourseData implements Course
 	private Integer year;
 	private Set<Activity> activities;
 	private Set<Enrolment> enrolments;
-	private List<LogEntry> logentries;
 
 	protected CourseData ()
 	{
@@ -25,7 +22,6 @@ public class CourseData implements Course
 		this.year = null;
 		this.activities = null;
 		this.enrolments = null;
-		this.logentries = null;
 	}
 
 	public CourseData (String name, Semester semester, Integer year)
@@ -37,7 +33,6 @@ public class CourseData implements Course
 
 		this.activities = new HashSet<Activity> ();
 		this.enrolments = new HashSet<Enrolment> ();
-		this.logentries = new ArrayList<LogEntry> ();
 	}
 
 	@Override
@@ -107,7 +102,7 @@ public class CourseData implements Course
 		return this.semester;
 	}
 
-	public void setSemester (Semester semester)
+	protected void setSemester (Semester semester)
 	{
 		this.semester = semester;
 	}
@@ -118,7 +113,7 @@ public class CourseData implements Course
 		return this.year;
 	}
 
-	public void setYear (Integer year)
+	protected void setYear (Integer year)
 	{
 		this.year = year;
 	}
@@ -134,9 +129,9 @@ public class CourseData implements Course
 		this.activities = activities;
 	}
 
-	public void addActivity (Activity activity)
+	protected boolean addActivity (Activity activity)
 	{
-		this.activities.add (activity);
+		return this.activities.add (activity);
 	}
 
 	@Override
@@ -150,25 +145,9 @@ public class CourseData implements Course
 		this.enrolments = enrolments;
 	}
 
-	public void addEnrolment (Enrolment enrolment)
+	protected boolean addEnrolment (Enrolment enrolment)
 	{
-		this.enrolments.add (enrolment);
-	}
-
-	@Override
-	public List<LogEntry> getLog ()
-	{
-		return new ArrayList<LogEntry> (this.logentries);
-	}
-
-	protected void setLog (List<LogEntry> log)
-	{
-		this.logentries = log;
-	}
-
-	public void addLogEntry (LogEntry entry)
-	{
-		this.logentries.add (entry);
+		return this.enrolments.add (enrolment);
 	}
 
 	@Override
