@@ -8,30 +8,28 @@ import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class AbstractEnrolment implements Enrolment, Serializable
+public class EnrolmentData implements Enrolment, Serializable
 {
 	private Long id;
 	private Course course;
 	private Role role;
 	protected Integer finalgrade;
 	protected Boolean usable;
-	protected Boolean active;
 	protected Set<Grade> grades;
 	protected List<LogEntry> log;
 
-	protected AbstractEnrolment()
+	protected EnrolmentData ()
 	{
 		this.id = null;
 		this.log = null;
 		this.role = null;
 		this.course = null;
 		this.usable = new Boolean (false);
-		this.active = new Boolean (true);
 		this.finalgrade = null;
 		this.grades = null;
 	}
 
-	protected AbstractEnrolment (Course course, Role role)
+	protected EnrolmentData (Course course, Role role)
 	{
 		this ();
 		this.role = role;
@@ -110,7 +108,18 @@ public abstract class AbstractEnrolment implements Enrolment, Serializable
 	}
 
 	@Override
-	public abstract String getName ();
+	public String getName ()
+	{
+		String result = new String ("(unset)");
+		Long id = this.getId ();
+
+		if (id != null)
+		{
+			result = id.toString ();
+		}
+
+		return result;
+	}
 
 	@Override
 	public Grade getGrade (Activity activity)
@@ -140,10 +149,20 @@ public abstract class AbstractEnrolment implements Enrolment, Serializable
 		this.grades = grades;
 	}
 
+	protected boolean addGrade (Grade grade)
+	{
+		return this.grades.add (grade);
+	}
+
 	@Override
 	public Integer getFinalGrade ()
 	{
 		return this.finalgrade;
+	}
+
+	protected void setFinalGrade (Integer finalgrade)
+	{
+		this.finalgrade = finalgrade;
 	}
 
 	@Override
@@ -152,10 +171,9 @@ public abstract class AbstractEnrolment implements Enrolment, Serializable
 		return this.usable;
 	}
 
-	@Override
-	public Boolean isActive ()
+	protected void setUsable (Boolean usable)
 	{
-		return this.active;
+		this.usable =usable;
 	}
 
 	@Override
@@ -167,5 +185,16 @@ public abstract class AbstractEnrolment implements Enrolment, Serializable
 	protected void setLog (List<LogEntry> log)
 	{
 		this.log = log;
+	}
+
+	protected boolean addLog (LogEntry entry)
+	{
+		return this.log.add (entry);
+	}
+
+	@Override
+	public String toString ()
+	{
+		return new String ((this.getCourse ()).toString () + ": " + this.getName ());
 	}
 }
