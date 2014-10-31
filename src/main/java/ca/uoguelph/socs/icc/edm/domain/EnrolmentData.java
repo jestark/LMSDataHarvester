@@ -52,8 +52,8 @@ public class EnrolmentData implements Enrolment, Serializable
 			else if (obj.getClass () == this.getClass ())
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.course, ((AbstractEnrolment) obj).course);
-				ebuilder.append (this.role, ((AbstractEnrolment) obj).role);
+				ebuilder.append (this.course, ((EnrolmentData) obj).course);
+				ebuilder.append (this.role, ((EnrolmentData) obj).role);
 
 				result = ebuilder.isEquals ();
 			}
