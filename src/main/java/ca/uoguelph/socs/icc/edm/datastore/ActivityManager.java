@@ -1,33 +1,49 @@
+/* Copyright (C) 2014 James E. Stark
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ca.uoguelph.socs.icc.edm.datastore;
 
-import java.util.Set;
+import java.util.List;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 
-public interface ActivityManager extends DataStoreManager<Activity, Set<Activity>>
+/**
+ *
+ * @author James E. Stark
+ * @version 1.0
+ */
+
+public interface ActivityManager extends DataStoreManager<Activity>
 {
-	@Override
-	public abstract Set<Activity> fetchAll ();
+	/**
+	 * Get a list of all of the activities which are associated with a particular
+	 * ActivityType.
+	 *
+	 * @param type The ActivityType.
+	 */
 
-	public abstract Set<Activity> fetchAllForType (ActivityType type);
+	public abstract List<Activity> fetchAllForType (ActivityType type);
 
-	@Override
-	public abstract Activity fetchById (Long id);
-
-	public abstract Activity createEntity (ActivityType type, Course course);
-
-	@Override
-	public abstract Activity importEntity (Activity activity);
-
-	@Override
-	public abstract Activity importEntity (Activity activity, Boolean recursive);
-
-	@Override
-	public abstract void removeEntity (Activity activity);
-
-	@Override
-	public abstract void removeEntity (Activity activity, Boolean recursive);
+	/**
+	 * Modify the value of the stealth flag on a given activity.
+	 *
+	 * @param activity The activity to modify.
+	 * @param stealth The new value of the stealth flag.
+	 */
 
 	public abstract void setStealth (Activity activity, Boolean stealth);
 }

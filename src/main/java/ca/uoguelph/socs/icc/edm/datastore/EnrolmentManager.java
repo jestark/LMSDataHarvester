@@ -1,6 +1,22 @@
+/* Copyright (C) 2014 James E. Stark
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ca.uoguelph.socs.icc.edm.datastore;
 
-import java.util.Set;
+import java.util.List;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
@@ -8,37 +24,75 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-public interface EnrolmentManager extends DataStoreManager<Enrolment, Set<Enrolment>>
+/**
+ *
+ * @author James E. Stark
+ * @version 1.0
+ */
+
+public interface EnrolmentManager extends DataStoreManager<Enrolment>
 {
-	@Override
-	public abstract Set<Enrolment> fetchAll ();
+	/**
+	 * Retrieve a list of enrolment objects from the underlying datastore for
+	 * the given role.
+	 *
+	 * @param role The role for which the enrolments should be retrieved.
+	 * @return A list of enrolment ojects.
+	 */
 
-	public abstract Set<Enrolment> fetchAllForRole (Role role);
+	public abstract List<Enrolment> fetchAllForRole (Role role);
 	
-	@Override
-	public abstract Enrolment fetchById (Long id);
-
-	public abstract Enrolment createEntity (User user, Course course, Role role);
-
-	@Override
-	public abstract Enrolment importEntity (Enrolment enrolment);
-
-	@Override
-	public abstract Enrolment importEntity (Enrolment enrolment, Boolean recursive);
-
-	@Override
-	public abstract void removeEntity (Enrolment enrolment);
-
-	@Override
-	public abstract void removeEntity (Enrolment enrolment, Boolean recursive);
+	/**
+	 * Set the final grade for the specified enrolment.
+	 *
+	 * @param enrolment The enrolment object to modify.
+	 * @param grade The value for the final grade.
+	 */
 
 	public abstract void setFinalGrade (Enrolment enrolment, Integer grade);
 
-	public abstract void setUsable (Enrolment enrolment, Boolean Usable);
+	/**
+	 * Remove the final grade from the specified enrolment.
+	 *
+	 * @param enrolment The enrolment object to modify.
+	 */
+
+	public abstract void clearFinalGrade (Enrolment enrolment);
+
+	/**
+	 * Set the usable flag to the specified value on the given enrolment.
+	 *
+	 * @param enrolment The enrolment object to modify.
+	 * @param usable The new value for the usable flag.
+	 */
+
+	public abstract void setUsable (Enrolment enrolment, Boolean usable);
+
+	/**
+	 * Add a grade, for the specified activity to the enrolment.
+	 *
+	 * @param enrolment The enrolment object to modify.
+	 * @param activity The Activity with which to associate the grade.
+	 * @param grade The value for the grade.
+	 */
 
 	public abstract void addGrade (Enrolment enrolment, Activity activity, Integer grade);
 	
+	/**
+	 * Add a grade to the enrolment.
+	 *
+	 * @param enrolment The enrolment object to modify.
+	 * @param grade The grade to add.
+	 */
+
 	public abstract void addGrade (Enrolment enrolment, Grade grade);
+
+	/**
+	 * Remove a grade from an enrolment.
+	 *
+	 * @param enrolment The enrolment object to modify.
+	 * @param grade The grade to remove.
+	 */
 
 	public abstract void removeGrade (Enrolment enrolment, Grade grade);
 }

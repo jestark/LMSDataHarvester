@@ -1,29 +1,38 @@
+/* Copyright (C) 2014 James E. Stark
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ca.uoguelph.socs.icc.edm.datastore;
 
 import java.util.Set;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-public interface RoleManager extends DataStoreManager<Role, Set<Role>>
-{
-	@Override
-	public abstract Set<Role> fetchAll ();
+/**
+ *
+ * @author James E. Stark
+ * @version 1.0
+ */
 
-	@Override
-	public abstract Role fetchById (Long id);
+public interface RoleManager extends DataStoreManager<Role>
+{
+	/**
+	 * Retrieve a role object from the underlying datastore based on its name.
+	 *
+	 * @param name The name of the role.
+	 * @return A role object
+	 */
 
 	public abstract Role fetchByName (String name);
-	
-	public abstract Role createEntity (String name);
-
-	@Override
-	public abstract Role importEntity (Role role);
-
-	@Override
-	public abstract Role importEntity (Role role, Boolean recursive);
-
-	@Override
-	public abstract void removeEntity (Role role);
-
-	@Override
-	public abstract void removeEntity (Role role, Boolean recursive);
 }
