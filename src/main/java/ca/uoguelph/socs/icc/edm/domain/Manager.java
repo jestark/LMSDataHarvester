@@ -14,10 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
+package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
 
 /**
  *
@@ -27,7 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
  * @version 1.0
  */
 
-public interface DataStoreManager<T extends DomainModelElement>
+public interface Manager<T extends DomainModelElement>
 {
 	/**
 	 * Retrieve an object from the data store based on its primary key.

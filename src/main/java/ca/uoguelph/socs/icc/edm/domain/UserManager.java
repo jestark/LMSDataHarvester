@@ -14,10 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
-
-import java.util.Set;
-import ca.uoguelph.socs.icc.edm.domain.User;
+package ca.uoguelph.socs.icc.edm.domain;
 
 /**
  * Create, Insert and remove users from the datastore.  Implementations of
@@ -34,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.User;
  * @version 1.0
  */
 
-public interface UserManager extends DataStoreManager<User>
+public interface UserManager extends Manager<User>
 {
 	/**
 	 * Retrieve a single user, with the specified id number from the datastore.

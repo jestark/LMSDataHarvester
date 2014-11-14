@@ -14,10 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
-
-import java.util.Set;
-import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
+package ca.uoguelph.socs.icc.edm.domain;
 
 /**
  * 
@@ -27,7 +24,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
  * @version 1.0
  */
 
-public interface ActivitySourceManager extends DataStoreManager<ActivitySource>
+public interface ActivitySourceManager extends Manager<ActivitySource>
 {
 	/**
 	 * Retrive the ActivitySource object associated with the specified name

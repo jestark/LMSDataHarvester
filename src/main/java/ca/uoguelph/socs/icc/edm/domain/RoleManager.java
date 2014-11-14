@@ -14,28 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
-
-import java.util.Set;
-import ca.uoguelph.socs.icc.edm.domain.Action;
+package ca.uoguelph.socs.icc.edm.domain;
 
 /**
- * Create, insert and remove actions from the domain model.  Through
- * implementations of this interface, Actions can be added to or removed
- * from the domain model.
  *
  * @author James E. Stark
  * @version 1.0
  */
 
-public interface ActionManager extends DataStoreManager<Action>
+public interface RoleManager extends Manager<Role>
 {
 	/**
-	 * Retrieve the Action with the specified name from the datastore.
+	 * Retrieve a role object from the underlying datastore based on its name.
 	 *
-	 * @param name The name of the action to retrive
-	 * @return The Action object associated with the specified name.
+	 * @param name The name of the role.
+	 * @return A role object
 	 */
 
-	public abstract Action fetchByName (String name);
+	public abstract Role fetchByName (String name);
 }

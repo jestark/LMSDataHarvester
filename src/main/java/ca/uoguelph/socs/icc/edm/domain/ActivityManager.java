@@ -14,10 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
+package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.Set;
-import ca.uoguelph.socs.icc.edm.domain.Role;
+import java.util.List;
 
 /**
  *
@@ -25,14 +24,23 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
  * @version 1.0
  */
 
-public interface RoleManager extends DataStoreManager<Role>
+public interface ActivityManager extends Manager<Activity>
 {
 	/**
-	 * Retrieve a role object from the underlying datastore based on its name.
+	 * Get a list of all of the activities which are associated with a particular
+	 * ActivityType.
 	 *
-	 * @param name The name of the role.
-	 * @return A role object
+	 * @param type The ActivityType.
 	 */
 
-	public abstract Role fetchByName (String name);
+	public abstract List<Activity> fetchAllForType (ActivityType type);
+
+	/**
+	 * Modify the value of the stealth flag on a given activity.
+	 *
+	 * @param activity The activity to modify.
+	 * @param stealth The new value of the stealth flag.
+	 */
+
+	public abstract void setStealth (Activity activity, Boolean stealth);
 }

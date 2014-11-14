@@ -14,36 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
-
-import java.util.List;
-import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-import ca.uoguelph.socs.icc.edm.domain.Course;
+package ca.uoguelph.socs.icc.edm.domain;
 
 /**
+ * Create, insert and remove actions from the domain model.  Through
+ * implementations of this interface, Actions can be added to or removed
+ * from the domain model.
  *
  * @author James E. Stark
  * @version 1.0
  */
 
-public interface ActivityManager extends DataStoreManager<Activity>
+public interface ActionManager extends Manager<Action>
 {
 	/**
-	 * Get a list of all of the activities which are associated with a particular
-	 * ActivityType.
+	 * Retrieve the Action with the specified name from the datastore.
 	 *
-	 * @param type The ActivityType.
+	 * @param name The name of the action to retrive
+	 * @return The Action object associated with the specified name.
 	 */
 
-	public abstract List<Activity> fetchAllForType (ActivityType type);
-
-	/**
-	 * Modify the value of the stealth flag on a given activity.
-	 *
-	 * @param activity The activity to modify.
-	 * @param stealth The new value of the stealth flag.
-	 */
-
-	public abstract void setStealth (Activity activity, Boolean stealth);
+	public abstract Action fetchByName (String name);
 }

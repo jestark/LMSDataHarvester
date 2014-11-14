@@ -14,15 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
+package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 import java.util.List;
-import ca.uoguelph.socs.icc.edm.domain.Action;
-import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.Enrolment;
-import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 /**
  *
@@ -31,7 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
  * @version 1.0
  */
 
-public interface LogEntryManager extends DataStoreManager<LogEntry>
+public interface LogEntryManager extends Manager<LogEntry>
 {
 	/**
 	 * Retrieve a list of log entries, which are associated with the specified

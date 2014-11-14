@@ -14,15 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
+package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
-import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.Enrolment;
-import ca.uoguelph.socs.icc.edm.domain.Grade;
-import ca.uoguelph.socs.icc.edm.domain.Role;
-import ca.uoguelph.socs.icc.edm.domain.User;
 
 /**
  *
@@ -30,7 +24,7 @@ import ca.uoguelph.socs.icc.edm.domain.User;
  * @version 1.0
  */
 
-public interface EnrolmentManager extends DataStoreManager<Enrolment>
+public interface EnrolmentManager extends Manager<Enrolment>
 {
 	/**
 	 * Retrieve a list of enrolment objects from the underlying datastore for

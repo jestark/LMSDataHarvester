@@ -14,12 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
-
-import java.util.Set;
-import ca.uoguelph.socs.icc.edm.domain.Action;
-import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
-import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+package ca.uoguelph.socs.icc.edm.domain;
 
 /**
  *
@@ -28,7 +23,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
  * @version 1.0
  */
 
-public interface ActivityTypeManager extends DataStoreManager<ActivityType>
+public interface ActivityTypeManager extends Manager<ActivityType>
 {
 	/**
 	 * Retrieve the ActivityType object from the underlying data store which has

@@ -14,11 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
+package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
-import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.Semester;
 
 /**
  *
@@ -26,7 +24,7 @@ import ca.uoguelph.socs.icc.edm.domain.Semester;
  * @version 1.0
  */
 
-public interface CourseManager extends DataStoreManager<Course>
+public interface CourseManager extends Manager<Course>
 {
 	/**
 	 * Retrieve a list of courses from the underlying datastore based on the
