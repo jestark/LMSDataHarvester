@@ -26,8 +26,20 @@ import java.util.List;
  * @version 1.0
  */
 
-public interface LogEntryManager extends Manager<LogEntry>
+public final class LogEntryManager extends AbstractManager<LogEntry>
 {
+	/**
+	 * Create the LogEntry manager.
+	 *
+	 * @param model A reference to the instance of the domain model which owns
+	 * this LogEntry manager.
+	 */
+
+	protected LogEntryManager (DomainModel model)
+	{
+		super (model);
+	}
+
 	/**
 	 * Retrieve a list of log entries, which are associated with the specified
 	 * course, from the underlying datastore.
@@ -36,7 +48,10 @@ public interface LogEntryManager extends Manager<LogEntry>
 	 * @return A list of LogEntry objects.
 	 */
 
-	public abstract List<LogEntry> fetchAllforCourse (Course course);
+	public List<LogEntry> fetchAllforCourse (Course course)
+	{
+		return null;
+	}
 
 	/**
 	 * Set the time on a specified LogEntry.
@@ -45,7 +60,9 @@ public interface LogEntryManager extends Manager<LogEntry>
 	 * @param time the new value for the time.
 	 */
 
-	public abstract void setTime (LogEntry entry, Date time);
+	public void setTime (LogEntry entry, Date time)
+	{
+	}
 
 	/**
 	 * Set the IP Address for a speccified LogEntry.
@@ -54,5 +71,7 @@ public interface LogEntryManager extends Manager<LogEntry>
 	 * @param ip The value for the new IP Address.
 	 */
 
-	public abstract void setIPAddress (LogEntry entry, String ip);
+	public void setIPAddress (LogEntry entry, String ip)
+	{
+	}
 }

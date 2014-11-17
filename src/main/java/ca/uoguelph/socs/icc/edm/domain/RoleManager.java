@@ -22,8 +22,20 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public interface RoleManager extends Manager<Role>
+public final class RoleManager extends AbstractManager<Role>
 {
+	/**
+	 * Create the Role manager.
+	 *
+	 * @param model A reference to the instance of the domain model which owns
+	 * this Role manager.
+	 */
+
+	protected RoleManager (DomainModel model)
+	{
+		super (model);
+	}
+
 	/**
 	 * Retrieve a role object from the underlying datastore based on its name.
 	 *
@@ -31,5 +43,8 @@ public interface RoleManager extends Manager<Role>
 	 * @return A role object
 	 */
 
-	public abstract Role fetchByName (String name);
+	public Role fetchByName (String name)
+	{
+		return null;
+	}
 }

@@ -24,8 +24,20 @@ import java.util.List;
  * @version 1.0
  */
 
-public interface CourseManager extends Manager<Course>
+public final class CourseManager extends AbstractManager<Course>
 {
+	/**
+	 * Create the Course manager.
+	 *
+	 * @param model A reference to the instance of the domain model which owns
+	 * this Course manager.
+	 */
+
+	protected CourseManager (DomainModel model)
+	{
+		super (model);
+	}
+
 	/**
 	 * Retrieve a list of courses from the underlying datastore based on the
 	 * time of offering.
@@ -35,7 +47,10 @@ public interface CourseManager extends Manager<Course>
 	 * @return A list of course objects.
 	 */
 
-	public abstract List<Course> fetchAllForOffering (Semester semester, Integer year);
+	public List<Course> fetchAllForOffering (Semester semester, Integer year)
+	{
+		return null;
+	}
 	
 	/**
 	 * Retrieve a list of courses from the underlying datastore based on the 
@@ -47,7 +62,10 @@ public interface CourseManager extends Manager<Course>
 	 * @return A list of course objects.
 	 */
 
-	public abstract List<Course> fetchAllForOffering (String name, Semester semester, Integer year);
+	public List<Course> fetchAllForOffering (String name, Semester semester, Integer year)
+	{
+		return null;
+	}
 	
 	/**
 	 * Retrieve a course from the underlying datastore based on its name and 
@@ -59,5 +77,8 @@ public interface CourseManager extends Manager<Course>
 	 * @return A single course object.
 	 */
 
-	public abstract Course fetchByOffering (String name, Semester semester, Integer year);
+	public Course fetchByOffering (String name, Semester semester, Integer year)
+	{
+		return null;
+	}
 }

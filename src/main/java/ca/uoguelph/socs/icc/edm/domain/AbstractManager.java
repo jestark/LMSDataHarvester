@@ -20,14 +20,32 @@ import java.util.List;
 
 /**
  *
- * @param <T> 
+ * @param <T>
  *
  * @author James E. Stark
  * @version 1.0
  */
 
-public interface Manager<T extends DomainModelElement>
+public abstract class AbstractManager<T extends DomainModelElement>
 {
+	/**
+	 * The DomainModel instance which owns this manager.
+	 */
+
+	protected final DomainModel model;
+
+	/**
+	 * Create the Abstract Domain Model Manager.
+	 *
+	 * @param model The DomainModel instance which owns this manager.
+	 * @param proxy A proxy for access to the underlying datastore.
+	 */
+	
+	protected AbstractManager (DomainModel model)
+	{
+		this.model = model;
+	}
+
 	/**
 	 * Retrieve an object from the data store based on its primary key.
 	 *
@@ -35,28 +53,37 @@ public interface Manager<T extends DomainModelElement>
 	 * @return The requested object.
 	 */
 
-	public abstract T fetchById (Long id);
+	public T fetchById (Long id)
+	{
+		return null;
+	}
 	
 	/**
 	 * Retrieve a list of all of the enties from the underlying data store.
 	 *
 	 * @return A list of objects.
 	 */
-
-	public abstract List<T> fetchAll ();
 	
+	public List<T> fetchAll ()
+	{
+		return null;
+	}
+
 	/**
 	 * Insert an entity into the domain model and the underlying data store. This
 	 * method is a convience method which performs a non-recursive insert of the
 	 * given entity into the domain model and underlying data store.
 	 *
-	 * @see DataStoreManager#insert(T entity, Boolean recursive) 
+	 * @see AbstractManager#insert(T entity, Boolean recursive) 
 	 * @param entity The entity to insert into the domain model.
 	 * @return A reference to the inserted entity.
 	 */
-
-	public abstract T insert (T entity);
 	
+	public final T insert (T entity)
+	{
+		return this.insert (entity, new Boolean (false));
+	}
+
 	/**
 	 * Insert an entity into the domain model and the underlying data store.
 	 *
@@ -65,20 +92,26 @@ public interface Manager<T extends DomainModelElement>
 	 * inserted, <code>false</code> otherwise.
 	 * @return A reference to the inserted entity.
 	 */
-
-	public abstract T insert (T entity, Boolean recursive);
 	
+	public T insert (T entity, Boolean recursive)
+	{
+		return null;
+	}
+
 	/**
 	 * Remove an entity from the domain model and the underlying data store. This
 	 * is a convienience method that performs a non-recursive removal of the 
 	 * given entity from the domain model and underlying data store.
 	 *
-	 * @see DataStoreManager#remove(T entity, Boolean recursive) 
+	 * @see AbstractManager#remove(T entity, Boolean recursive) 
 	 * @param entity The entity to remove from the domain model.
 	 */
-
-	public abstract void remove (T entity);
 	
+	public final void remove (T entity)
+	{
+		this.remove (entity, new Boolean (false));
+	}
+
 	/**
 	 * Remove an entity from the domain model and the underlying data store.
 	 *
@@ -86,6 +119,8 @@ public interface Manager<T extends DomainModelElement>
 	 * @param recursive <code>true</code> if dependent entities should also be
 	 * removed, <code>false</code> otherwise.
 	 */
-
-	public abstract void remove (T entity, Boolean recursive);
+	
+	public void remove (T entity, Boolean recursive)
+	{
+	}
 }

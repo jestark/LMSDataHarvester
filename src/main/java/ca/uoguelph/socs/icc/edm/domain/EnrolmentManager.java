@@ -24,8 +24,20 @@ import java.util.List;
  * @version 1.0
  */
 
-public interface EnrolmentManager extends Manager<Enrolment>
+public final class EnrolmentManager extends AbstractManager<Enrolment>
 {
+	/**
+	 * Create the Enrolment manager.
+	 *
+	 * @param model A reference to the instance of the domain model which owns
+	 * this Enrolment manager.
+	 */
+
+	protected EnrolmentManager (DomainModel model)
+	{
+		super (model);
+	}
+
 	/**
 	 * Retrieve a list of enrolment objects from the underlying datastore for
 	 * the given role.
@@ -34,7 +46,10 @@ public interface EnrolmentManager extends Manager<Enrolment>
 	 * @return A list of enrolment ojects.
 	 */
 
-	public abstract List<Enrolment> fetchAllForRole (Role role);
+	public List<Enrolment> fetchAllForRole (Role role)
+	{
+		return null;
+	}
 	
 	/**
 	 * Set the final grade for the specified enrolment.
@@ -43,7 +58,9 @@ public interface EnrolmentManager extends Manager<Enrolment>
 	 * @param grade The value for the final grade.
 	 */
 
-	public abstract void setFinalGrade (Enrolment enrolment, Integer grade);
+	public void setFinalGrade (Enrolment enrolment, Integer grade)
+	{
+	}
 
 	/**
 	 * Remove the final grade from the specified enrolment.
@@ -51,7 +68,9 @@ public interface EnrolmentManager extends Manager<Enrolment>
 	 * @param enrolment The enrolment object to modify.
 	 */
 
-	public abstract void clearFinalGrade (Enrolment enrolment);
+	public void clearFinalGrade (Enrolment enrolment)
+	{
+	}
 
 	/**
 	 * Set the usable flag to the specified value on the given enrolment.
@@ -60,7 +79,9 @@ public interface EnrolmentManager extends Manager<Enrolment>
 	 * @param usable The new value for the usable flag.
 	 */
 
-	public abstract void setUsable (Enrolment enrolment, Boolean usable);
+	public void setUsable (Enrolment enrolment, Boolean usable)
+	{
+	}
 
 	/**
 	 * Add a grade, for the specified activity to the enrolment.
@@ -70,7 +91,9 @@ public interface EnrolmentManager extends Manager<Enrolment>
 	 * @param grade The value for the grade.
 	 */
 
-	public abstract void addGrade (Enrolment enrolment, Activity activity, Integer grade);
+	public void addGrade (Enrolment enrolment, Activity activity, Integer grade)
+	{
+	}
 	
 	/**
 	 * Add a grade to the enrolment.
@@ -79,7 +102,9 @@ public interface EnrolmentManager extends Manager<Enrolment>
 	 * @param grade The grade to add.
 	 */
 
-	public abstract void addGrade (Enrolment enrolment, Grade grade);
+	public abstract void addGrade (Enrolment enrolment, Grade grade)
+	{
+	}
 
 	/**
 	 * Remove a grade from an enrolment.
@@ -88,5 +113,7 @@ public interface EnrolmentManager extends Manager<Enrolment>
 	 * @param grade The grade to remove.
 	 */
 
-	public abstract void removeGrade (Enrolment enrolment, Grade grade);
+	public void removeGrade (Enrolment enrolment, Grade grade)
+	{
+	}
 }

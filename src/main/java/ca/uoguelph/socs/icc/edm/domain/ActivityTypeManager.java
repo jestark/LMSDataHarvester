@@ -23,8 +23,20 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public interface ActivityTypeManager extends Manager<ActivityType>
+public final class ActivityTypeManager extends AbstractManager<ActivityType>
 {
+	/**
+	 * Create the ActivityType manager.
+	 *
+	 * @param model A reference to the instance of the domain model which owns
+	 * this ActivityType manager.
+	 */
+
+	protected ActivityTypeManager (DomainModel model)
+	{
+		super (model);
+	}
+
 	/**
 	 * Retrieve the ActivityType object from the underlying data store which has
 	 * the specified ActivitySource and name.
@@ -35,7 +47,10 @@ public interface ActivityTypeManager extends Manager<ActivityType>
 	 * source and name.
 	 */
 
-	public abstract ActivityType fetchByName (ActivitySource source, String name);
+	public ActivityType fetchByName (ActivitySource source, String name)
+	{
+		return null;
+	}
 
 	/**
 	 * Create an association between an Activity Typs and an Action.  Both the 
@@ -47,7 +62,9 @@ public interface ActivityTypeManager extends Manager<ActivityType>
 	 * @param action The Action to be associated with the ActivityType.
 	 */
 
-	public abstract void addAction (ActivityType type, Action action);
+	public void addAction (ActivityType type, Action action)
+	{
+	}
 
 	/**
 	 * Break an association between an ActivityType and an Action.  To break an
@@ -62,5 +79,7 @@ public interface ActivityTypeManager extends Manager<ActivityType>
 	 * @param action The Action to remove from the ActivityType.
 	 */
 
-	public abstract void removeAction (ActivityType type, Action action);
+	public void removeAction (ActivityType type, Action action)
+	{
+	}
 }

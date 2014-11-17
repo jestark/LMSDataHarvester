@@ -24,8 +24,20 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public interface ActivitySourceManager extends Manager<ActivitySource>
+public final class ActivitySourceManager extends AbstractManager<ActivitySource>
 {
+	/**
+	 * Create the ActivitySource manager.
+	 *
+	 * @param model A reference to the instance of the domain model which owns
+	 * this ActivitySource manager.
+	 */
+
+	protected ActivitySourceManager (DomainModel model)
+	{
+		super (model);
+	}
+
 	/**
 	 * Retrive the ActivitySource object associated with the specified name
 	 * from the underlying datastore.
@@ -34,5 +46,8 @@ public interface ActivitySourceManager extends Manager<ActivitySource>
 	 * @return The ActivitySource object associated with the specified name.
 	 */
 
-	public abstract ActivitySource fetchByName (String name);
+	public ActivitySource fetchByName (String name)
+	{
+		return null;
+	}
 }

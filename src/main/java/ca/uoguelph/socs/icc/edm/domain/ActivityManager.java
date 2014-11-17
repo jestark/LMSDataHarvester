@@ -24,8 +24,20 @@ import java.util.List;
  * @version 1.0
  */
 
-public interface ActivityManager extends Manager<Activity>
+public final class ActivityManager extends AbstractManager<Activity>
 {
+	/**
+	 * Create the Activity manager.
+	 *
+	 * @param model A reference to the instance of the domain model which owns
+	 * this Activity manager.
+	 */
+
+	protected ActivityManager (DomainModel model)
+	{
+		super (model);
+	}
+	
 	/**
 	 * Get a list of all of the activities which are associated with a particular
 	 * ActivityType.
@@ -33,7 +45,10 @@ public interface ActivityManager extends Manager<Activity>
 	 * @param type The ActivityType.
 	 */
 
-	public abstract List<Activity> fetchAllForType (ActivityType type);
+	public List<Activity> fetchAllForType (ActivityType type)
+	{
+		return null;
+	}
 
 	/**
 	 * Modify the value of the stealth flag on a given activity.
@@ -42,5 +57,7 @@ public interface ActivityManager extends Manager<Activity>
 	 * @param stealth The new value of the stealth flag.
 	 */
 
-	public abstract void setStealth (Activity activity, Boolean stealth);
+	public void setStealth (Activity activity, Boolean stealth)
+	{
+	}
 }

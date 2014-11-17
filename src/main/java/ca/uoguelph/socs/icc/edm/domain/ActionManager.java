@@ -25,8 +25,20 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public interface ActionManager extends Manager<Action>
+public final class ActionManager extends AbstractManager<Action>
 {
+	/**
+	 * Create the Action manager.
+	 *
+	 * @param model A reference to the instance of the domain model which owns
+	 * this Action manager.
+	 */
+
+	protected ActionManager (DomainModel model)
+	{
+		super (model);
+	}
+
 	/**
 	 * Retrieve the Action with the specified name from the datastore.
 	 *
@@ -34,5 +46,8 @@ public interface ActionManager extends Manager<Action>
 	 * @return The Action object associated with the specified name.
 	 */
 
-	public abstract Action fetchByName (String name);
+	public Action fetchByName (String name)
+	{
+		return null;
+	}
 }

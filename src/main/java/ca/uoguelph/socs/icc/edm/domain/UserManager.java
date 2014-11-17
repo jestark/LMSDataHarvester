@@ -31,8 +31,20 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public interface UserManager extends Manager<User>
+public final class UserManager extends AbstractManager<User>
 {
+	/**
+	 * Create the User manager.
+	 *
+	 * @param model A reference to the instance of the domain model which owns
+	 * this User manager.
+	 */
+
+	protected UserManager (DomainModel model)
+	{
+		super (model);
+	}
+
 	/**
 	 * Retrieve a single user, with the specified id number from the datastore.
 	 *
@@ -40,7 +52,10 @@ public interface UserManager extends Manager<User>
 	 * @return The user object associated with the id number
 	 */
 
-	public abstract User fetchByIdNumber (Integer idnumber);
+	public User fetchByIdNumber (Integer idnumber)
+	{
+		return null;
+	}
 	
 	/**
 	 * Retrieve a single user, with the specified username from the datastore.
@@ -49,5 +64,8 @@ public interface UserManager extends Manager<User>
 	 * @return The user object associated with the username
 	 */
 
-	public abstract User fetchByUsername (String username);
+	public User fetchByUsername (String username)
+	{
+		return null;
+	}
 }
