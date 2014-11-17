@@ -23,8 +23,35 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public final class ActivityTypeManager extends AbstractManager<ActivityType>
+public final class ActivityTypeManager extends Manager<ActivityType>
 {
+	/**
+	 * Domain Model Type constant.  Used by the domain model to determine which
+	 * implementation classes to use, and for instantiation of this manager.
+	 */
+
+	public static final DomainModelType TYPE = DomainModelType.ACTIVITYTYPE;
+
+	/**
+	 * Get an instance of the ActivityTypeManager for the specified domain model.
+	 *
+	 * @param model The instance of the Domain model for which the ActivityTypeManager
+	 * is to be retrieved.
+	 * @return The ActivityTypeManager instance for the specified domain model.
+	 * 
+	 * @throws IllegalArguementException If the domain model is null.
+	 */
+
+	public static ActivityTypeManager getInstance (DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new IllegalArgumentException ();
+		}
+
+		return (ActivityTypeManager) model.getManager (ActivityTypeManager.TYPE);
+	}
+
 	/**
 	 * Create the ActivityType manager.
 	 *
@@ -34,7 +61,7 @@ public final class ActivityTypeManager extends AbstractManager<ActivityType>
 
 	protected ActivityTypeManager (DomainModel model)
 	{
-		super (model);
+		super (model, ActivityTypeManager.TYPE);
 	}
 
 	/**

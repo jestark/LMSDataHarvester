@@ -25,8 +25,35 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public final class ActionManager extends AbstractManager<Action>
+public final class ActionManager extends Manager<Action>
 {
+	/**
+	 * Domain Model Type constant.  Used by the domain model to determine which
+	 * implementation classes to use, and for instantiation of this manager.
+	 */
+
+	public static final DomainModelType TYPE = DomainModelType.ACTION;
+
+	/**
+	 * Get an instance of the ActionManager for the specified domain model.
+	 *
+	 * @param model The instance of the Domain model for which the ActionManager
+	 * is to be retrieved.
+	 * @return The ActionManager instance for the specified domain model.
+	 * 
+	 * @throws IllegalArguementException If the domain model is null.
+	 */
+
+	public static ActionManager getInstance (DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new IllegalArgumentException ();
+		}
+
+		return (ActionManager) model.getManager (ActionManager.TYPE);
+	}
+
 	/**
 	 * Create the Action manager.
 	 *
@@ -36,7 +63,7 @@ public final class ActionManager extends AbstractManager<Action>
 
 	protected ActionManager (DomainModel model)
 	{
-		super (model);
+		super (model, ActionManager.TYPE);
 	}
 
 	/**

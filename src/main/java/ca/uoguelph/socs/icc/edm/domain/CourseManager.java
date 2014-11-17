@@ -24,8 +24,35 @@ import java.util.List;
  * @version 1.0
  */
 
-public final class CourseManager extends AbstractManager<Course>
+public final class CourseManager extends Manager<Course>
 {
+	/**
+	 * Domain Model Type constant.  Used by the domain model to determine which
+	 * implementation classes to use, and for instantiation of this manager.
+	 */
+
+	public static final DomainModelType TYPE = DomainModelType.COURSE;
+
+	/**
+	 * Get an instance of the CourseManager for the specified domain model.
+	 *
+	 * @param model The instance of the Domain model for which the CourseManager
+	 * is to be retrieved.
+	 * @return The CourseManager instance for the specified domain model.
+	 * 
+	 * @throws IllegalArguementException If the domain model is null.
+	 */
+
+	public static CourseManager getInstance (DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new IllegalArgumentException ();
+		}
+
+		return (CourseManager) model.getManager (CourseManager.TYPE);
+	}
+
 	/**
 	 * Create the Course manager.
 	 *
@@ -35,7 +62,7 @@ public final class CourseManager extends AbstractManager<Course>
 
 	protected CourseManager (DomainModel model)
 	{
-		super (model);
+		super (model, CourseManager.TYPE);
 	}
 
 	/**

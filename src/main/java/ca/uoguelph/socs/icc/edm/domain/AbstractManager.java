@@ -26,7 +26,7 @@ import java.util.List;
  * @version 1.0
  */
 
-public abstract class AbstractManager<T extends DomainModelElement>
+public abstract class Manager<T extends DomainModelElement>
 {
 	/**
 	 * The DomainModel instance which owns this manager.
@@ -35,15 +35,23 @@ public abstract class AbstractManager<T extends DomainModelElement>
 	protected final DomainModel model;
 
 	/**
+	 * The domain model type for this manager.  Used to fetch the implementation
+	 * class.
+	 */
+
+	private final DomainModelType type;
+
+	/**
 	 * Create the Abstract Domain Model Manager.
 	 *
 	 * @param model The DomainModel instance which owns this manager.
-	 * @param proxy A proxy for access to the underlying datastore.
+	 * @param type The DomainModel Type for this manager.
 	 */
 	
-	protected AbstractManager (DomainModel model)
+	protected Manager (DomainModel model, DomainModelType type)
 	{
 		this.model = model;
+		this.type = type;
 	}
 
 	/**

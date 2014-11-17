@@ -31,8 +31,35 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public final class UserManager extends AbstractManager<User>
+public final class UserManager extends Manager<User>
 {
+	/**
+	 * Domain Model Type constant.  Used by the domain model to determine which
+	 * implementation classes to use, and for instantiation of this manager.
+	 */
+
+	public static final DomainModelType TYPE = DomainModelType.USER;
+
+	/**
+	 * Get an instance of the UserManager for the specified domain model.
+	 *
+	 * @param model The instance of the Domain model for which the UserManager
+	 * is to be retrieved.
+	 * @return The UserManager instance for the specified domain model.
+	 * 
+	 * @throws IllegalArguementException If the domain model is null.
+	 */
+
+	public static UserManager getInstance (DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new IllegalArgumentException ();
+		}
+
+		return (UserManager) model.getManager (UserManager.TYPE);
+	}
+
 	/**
 	 * Create the User manager.
 	 *
@@ -42,7 +69,7 @@ public final class UserManager extends AbstractManager<User>
 
 	protected UserManager (DomainModel model)
 	{
-		super (model);
+		super (model, UserManager.TYPE);
 	}
 
 	/**

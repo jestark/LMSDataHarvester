@@ -24,8 +24,35 @@ import java.util.List;
  * @version 1.0
  */
 
-public final class EnrolmentManager extends AbstractManager<Enrolment>
+public final class EnrolmentManager extends Manager<Enrolment>
 {
+	/**
+	 * Domain Model Type constant.  Used by the domain model to determine which
+	 * implementation classes to use, and for instantiation of this manager.
+	 */
+
+	public static final DomainModelType TYPE = DomainModelType.ENROLMENT;
+
+	/**
+	 * Get an instance of the EnrolmentManager for the specified domain model.
+	 *
+	 * @param model The instance of the Domain model for which the EnrolmentManager
+	 * is to be retrieved.
+	 * @return The EnrolmentManager instance for the specified domain model.
+	 * 
+	 * @throws IllegalArguementException If the domain model is null.
+	 */
+
+	public static EnrolmentManager getInstance (DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new IllegalArgumentException ();
+		}
+
+		return (EnrolmentManager) model.getManager (EnrolmentManager.TYPE);
+	}
+
 	/**
 	 * Create the Enrolment manager.
 	 *
@@ -35,7 +62,7 @@ public final class EnrolmentManager extends AbstractManager<Enrolment>
 
 	protected EnrolmentManager (DomainModel model)
 	{
-		super (model);
+		super (model, EnrolmentManager.TYPE);
 	}
 
 	/**
@@ -102,7 +129,7 @@ public final class EnrolmentManager extends AbstractManager<Enrolment>
 	 * @param grade The grade to add.
 	 */
 
-	public abstract void addGrade (Enrolment enrolment, Grade grade)
+	public void addGrade (Enrolment enrolment, Grade grade)
 	{
 	}
 

@@ -22,8 +22,35 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public final class RoleManager extends AbstractManager<Role>
+public final class RoleManager extends Manager<Role>
 {
+	/**
+	 * Domain Model Type constant.  Used by the domain model to determine which
+	 * implementation classes to use, and for instantiation of this manager.
+	 */
+
+	public static final DomainModelType TYPE = DomainModelType.ROLE;
+
+	/**
+	 * Get an instance of the RoleManager for the specified domain model.
+	 *
+	 * @param model The instance of the Domain model for which the RoleManager
+	 * is to be retrieved.
+	 * @return The RoleManager instance for the specified domain model.
+	 * 
+	 * @throws IllegalArguementException If the domain model is null.
+	 */
+
+	public static RoleManager getInstance (DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new IllegalArgumentException ();
+		}
+
+		return (RoleManager) model.getManager (RoleManager.TYPE);
+	}
+
 	/**
 	 * Create the Role manager.
 	 *
@@ -33,7 +60,7 @@ public final class RoleManager extends AbstractManager<Role>
 
 	protected RoleManager (DomainModel model)
 	{
-		super (model);
+		super (model, RoleManager.TYPE);
 	}
 
 	/**

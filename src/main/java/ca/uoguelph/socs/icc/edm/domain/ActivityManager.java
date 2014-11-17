@@ -24,8 +24,35 @@ import java.util.List;
  * @version 1.0
  */
 
-public final class ActivityManager extends AbstractManager<Activity>
+public final class ActivityManager extends Manager<Activity>
 {
+	/**
+	 * Domain Model Type constant.  Used by the domain model to determine which
+	 * implementation classes to use, and for instantiation of this manager.
+	 */
+
+	public static final DomainModelType TYPE = DomainModelType.ACTIVITY;
+
+	/**
+	 * Get an instance of the ActivityManager for the specified domain model.
+	 *
+	 * @param model The instance of the Domain model for which the ActivityManager
+	 * is to be retrieved.
+	 * @return The ActivityManager instance for the specified domain model.
+	 * 
+	 * @throws IllegalArguementException If the domain model is null.
+	 */
+
+	public static ActivityManager getInstance (DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new IllegalArgumentException ();
+		}
+
+		return (ActivityManager) model.getManager (ActivityManager.TYPE);
+	}
+
 	/**
 	 * Create the Activity manager.
 	 *
@@ -35,7 +62,7 @@ public final class ActivityManager extends AbstractManager<Activity>
 
 	protected ActivityManager (DomainModel model)
 	{
-		super (model);
+		super (model, ActivityManager.TYPE);
 	}
 	
 	/**
