@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
-				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
-				 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
-				 version="2.1">
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+                                     http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
+                 version="2.1">
 	<description>Entity mappings for the course database</description>
 	<package>ca.uoguelph.socs.icc.edm.domain</package>
 
@@ -13,7 +13,7 @@
 	<!--  Mapped super classes used by activities                            -->
 	<!--*********************************************************************-->
 
-	<mapped-superclass class="AbstractActivity" metadata-complete="true">
+	<mapped-superclass class="AbstractNamedActivity" metadata-complete="true">
 		<description>Default mapping for Name attribute for all activities</description>
 		<attributes>
 			<basic name="name">
@@ -23,12 +23,60 @@
 	</mapped-superclass>
 
 	<!--*********************************************************************-->
+	<!--  Core data mapping: Users                                           -->
+	<!--*********************************************************************-->
+
+	<entity name="User" class="UserData" metadata-complete="true">
+		<description>Data identifying the user</description>
+		<table schema="userdb" name="user"/>
+		<named-query name="UserData:all">
+			<query>SELECT u FROM User u</query>
+		</named-query>
+		<named-query name="UserData:idnumber">
+			<query>SELECT u FROM User u WHERE i.idnumber = :idnumber</query>
+		</named-query>
+		<named-query name="UserData:username">
+			<query>SELECT u FROM User u WHERE u.username = :username</query>
+		</named-query>
+		<attributes>
+			<id>
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="user_id_seq"/>
+				<sequence-generator name="user_id_seq" sequence-name="user_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="idnumber">
+				<column name="id_number" />
+			</basic>
+			<basic name="username">
+				<column name="username" nullable="false" unique="true"/>
+			</basic>
+			<basic name="firstname">
+				<column name="first_name" nullable="false"/>
+			</basic>
+			<basic name="lastname">
+				<column name="last_name" nullable="false"/>
+			</basic>
+			<one-to-many name="enrolments" targer-entity="UserEnrolmentData" mapped-by="users"/>
+			<transient name="enrolment"/>
+		</attributes>
+	</entity>
+
+	<!--*********************************************************************-->
 	<!-- Core data mapping: Courses                                          -->
 	<!--*********************************************************************-->
 
 	<entity name="Course" class="CourseData" metadata-complete="true">
 		<description>Date identifying a particular offering of a course</description>
 		<table name="course"/>
+		<named-query name="CourseData:all">
+			<query>SELECT c FROM Course c</query>
+		</named-query>
+		<named-query name="CourseData:alloffering">
+			<query>SELECT c FROM Course c WHERE c.year = :year AND c.semester = :semester AND c.name LIKE :name</query>
+		</named-query>
+		<named-query name="CourseData:offering">
+			<query>SELECT c FROM Course c WHERE c.year = :year AND c.semester = :semester AND c.name = :name</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -50,12 +98,11 @@
 					<cascade-all/>
 				</cascade>
 			</one-to-many>
-			<one-to-many name="enrolments" target-entity="AbstractEnrolment" mapped-by="course" orphan-removal="true">
+			<one-to-many name="enrolments" target-entity="EnrolmentData" mapped-by="course" orphan-removal="true">
 				<cascade>
 					<cascade-all/>
 				</cascade>
 			</one-to-many>
-			<transient name="log"/>
 		</attributes>
 	</entity>
 
@@ -66,6 +113,12 @@
 	<entity name="Role" class="RoleData" metadata-complete="true">
 		<description>The Role of a participant in a course</description>
 		<table name="enrolment_role"/>
+		<named-query name="RoleData:all">
+			<query>SELECT r FROM Role r</query>
+		</named-query>
+		<named-query name="RoleData:name">
+			<query>SELECT r FROM Role r WHERE r.name = :name</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -78,13 +131,25 @@
 		</attributes>
 	</entity>
 
-	<entity name="Enrolment" class="AbstractEnrolment" metadata-complete="true">
+	<entity name="Enrolment" class="EnrolmentData" metadata-complete="true">
 		<description>Record for a user enrolled in a course</description>
-		<inheritance strategy="TABLE_PER_CLASS"/>
+		<table name="enrolment"/>
+		<named-query name="EnrolmentData:all">
+			<query>SELECT e FROM Enrolment e</query>
+		</named-query>
+		<secondary-table name="enrolment_final_grade">
+			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
+		</secondary-table>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
+			<basic name="usable">
+				<column name="usable" nullable="false"/>
+			</basic>
+			<basic name="finalGrade">
+				<column name="grade"/>
+			</basic>
 			<many-to-one name="role" target-entity="RoleData" optional="false">
 				<join-column name="role_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
@@ -97,28 +162,25 @@
 				</cascade>
 			</one-to-many>
 			<one-to-many name="log" target-entity="LogData" mapped-by="enrolment" orphan-removal="true"/>
-			<transient name="active"/>
-			<transient name="finalGrade"/>
 			<transient name="name"/>
-			<transient name="usable"/>
 		</attributes>
 	</entity>
 
-	<entity name="EnrolledCourse" class="EnrolledCourse" metadata-complete="true">
+	<entity name="UserEnrolment" class="UserEnrolmentData" metadata-complete="true">
 		<table name="enrolment"/>
-		<secondary-table name="enrolment_final_grade">
-			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
-		</secondary-table>
+		<named-query name="UserEnrolmentData:all">
+			<query>SELECT e FROM UserEnrolment e</query>
+		</named-query>
+		<named-query name="UserEnrolmentData:user+course">
+			<query>SELECT e FROM UserEnrolment e WHERE e.course = :course and e.user = :user</query>
+		</named-query>
 		<attributes>
-			<basic name="active">
-				<column name="active" nullable="false"/>
-			</basic>
-			<basic name="usable">
-				<column name="usable" nullable="false"/>
-			</basic>
-			<basic name="finalGrade">
-				<column name="grade"/>
-			</basic>
+			<many-to-one name="users" target-entity="UserData" optional="false">
+				<join-table schema="userdb" name="user_enrolments">
+					<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
+					<inverse-join-column name="user_id" nullable="false" referenced-column-name="id"/>
+				</join-table>
+			</many-to-one>
 			<transient name="name"/>
 		</attributes>
 	</entity>
@@ -126,13 +188,16 @@
 	<entity name="Grade" class="GradedActivity" metadata-complete="true">
 		<description>Grades assigned to individual activities for a student</description>
 		<table name="enrolment_activity_grade"/>
+		<named-query name="Grade:enrolment+activity">
+			<query>SELECT g FROM Grade g WHERE g.activity = :activity and g.enrolment = :enrolment</query>
+		</named-query>
 		<attributes>
 			<id name="enrolment"/>
 			<id name="activity"/>
 			<basic name="grade">
 				<column name="grade" nullable="false"/>
 			</basic>
-			<many-to-one name="enrolment" target-entity="AbstractEnrolment" optional="false">
+			<many-to-one name="enrolment" target-entity="EnrolmentData" optional="false">
 				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<many-to-one name="activity" target-entity="ActivityInstance" optional="false">
@@ -149,6 +214,12 @@
 	<entity name="ActivitySource" class="ActivitySourceData" metadata-complete="true">
 		<description>The the source of the activity data</description>
 		<table name="activity_source"/>
+		<named-query name="ActivitySourceData:all">
+			<query>SELECT s FROM ActivitySource s</query>
+		</named-query>
+		<named-query name="ActivitySourceData:name">
+			<query>SELECT s FROM ActivitySource s WHERE s.name = :name</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -162,10 +233,15 @@
 		</attributes>
 	</entity>
 
-
-	<entity name="ActivityType" class="ActivityTypeData" metadata-complete="true">
+	<entity name="ActivityTypeData" class="ActivityTypeData" metadata-complete="true">
 		<description>The type of the activity (or the module)</description>
 		<table name="activity"/>
+		<named-query name="ActivityTypeData:all">
+			<query>SELECT t FROM ActivityType t</query>
+		</named-query>
+		<named-query name="ActivityTypeData:name+source">
+			<query>SELECT t FROM ActivityType t WHERE t.name = :name AND t.source = :source</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -190,6 +266,12 @@
 	<entity name="Action" class="ActionData" metadata-complete="true">
 		<description>The name of the action performed</description>
 		<table name="activity_action"/>
+		<named-query name="ActionData:all">
+			<query>SELECT a FROM Action a</query>
+		</named-query>
+		<named-query name="ActionData:name">
+			<query>SELECT s FROM Action s WHERE s.name = :name</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -206,6 +288,9 @@
 	<entity name="Activity" class="ActivityInstance" metadata-complete="true">
 		<description>The activities which are associated with a given course</description>
 		<table name="activity_instance"/>
+		<named-query name="ActivityInstance:all">
+			<query>SELECT a FROM Activity a</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -284,6 +369,12 @@
 	<entity name="LogEntry" class="LogData" metadata-complete="true">
 		<description>The course activity log</description>
 		<table name="log"/>
+		<named-query name="LogData:all">
+			<query>SELECT e FROM LogEntry e</query>
+		</named-query>
+		<named-query name="LogData:course">
+			<query>SELECT e FROM LogEntry e JOIN Activity a WHERE where a.course = :course ORDER BY e.id</query>
+		</named-query>
 		<secondary-table name="log_ip">
 			<primary-key-join-column name="log_id" referenced-column-name="id"/>
 		</secondary-table>
@@ -306,7 +397,7 @@
 			<many-to-one name="action" target-entity="ActionData" optional="false">
 				<join-column name="action_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
-			<many-to-one name="enrolment" target-entity="AbstractEnrolment" optional="false">
+			<many-to-one name="enrolment" target-entity="EnrolmentData" optional="false">
 				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<one-to-one name="reference" target-entity="LogReference" mapped-by="entry"/>
