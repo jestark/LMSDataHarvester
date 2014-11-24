@@ -105,6 +105,32 @@ public enum Semester
 	}
 
 	/**
+	 * Get the month in which the semester starts.  The returned value will be
+	 * an integer corresponding the month constants defined in java.util.Calendar.
+	 *
+	 * @see java.util.Calendar
+	 * @return The integer representation of the starting month.
+	 */
+
+	public int getStartMonth ()
+	{
+		return this.start;
+	}
+
+	/**
+	 * Get the month in which the semester ends.  The returned value will be
+	 * an integer corresponding the month constants defined in java.util.Calendar.
+	 *
+	 * @see java.util.Calendar
+	 * @return The integer representation of the ending month.
+	 */
+
+	public int getEndMonth ()
+	{
+		return this.end;
+	}
+
+	/**
 	 * Get the name of the semester as a String which is suitable for display.
 	 *
 	 * @return A string containing the name of the semester.
