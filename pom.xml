@@ -9,8 +9,12 @@
 	<artifactId>edm</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>moodleapi</name>
-	<url>http://maven.apache.org</url>
+	<name>ICC EDM API</name>
+	<url>http://bucky.socs.uoguelph.ca/wiki/EDM</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -20,14 +24,42 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Postgresql JDBC driver -->
+		<!-- Javadoc -->
 		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.3-1102-jdbc41</version>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-javadoc-plugin</artifactId>
+			<version>2.10</version>
 		</dependency>
 
-		<!-- Log4j: So that we can control hibernates logging -->
+		<!-- Apache commons lang library used for building hashcodes -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.3.2</version>
+		</dependency>
+
+		<!-- Apache commons configuration library -->
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.10</version>
+		</dependency>
+
+		<!-- Apache commons CSV library -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<!-- Apache Commons Logging: Wrapper -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.2</version>
+		</dependency>
+
+		<!-- Apache Commons Logging: Log4j -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -67,18 +99,11 @@
 			<version>4.3.6.Final</version>
 		</dependency>
 
-		<!-- Apache commons lang library used for building hashcodes -->
+		<!-- Postgresql JDBC driver -->
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.3.2</version>
-		</dependency>
-
-		<!-- Apache commons CSV library -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-csv</artifactId>
-			<version>1.0</version>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.3-1102-jdbc41</version>
 		</dependency>
 	</dependencies>
 
@@ -93,17 +118,34 @@
 				</configuration>
 			</plugin>
 
-			<!-- Compiler plugin: set to use Java 1.7 (why ius the default 1.3?) and UTF-8 encoding -->
+			<!-- Compiler plugin: set to use Java 1.7 (why is the default 1.3?) and UTF-8 encoding -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.2</version>
 				<configuration>
 					<compilerArgs>
-						<arg>-Xlint</arg>
+						<arg>-Xlint:all</arg>
+						<!--						<arg>-verbose</arg>-->
 					</compilerArgs>
 					<encoding>UTF-8</encoding>
+					<!--					<source>1.7</source>
+					<target>1.7</target> -->
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<!-- Assembly plugin:  We want execuatable jars -->
