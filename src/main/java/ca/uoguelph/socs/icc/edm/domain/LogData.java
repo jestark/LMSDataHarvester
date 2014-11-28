@@ -1,3 +1,19 @@
+/* Copyright (C) 2014 James E. Stark
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.io.Serializable;
@@ -26,16 +42,6 @@ public class LogData implements LogEntry, Serializable
 		this.time = null;
 	}
 
-	protected LogData (Enrolment enrolment, Activity activity, Action action)
-	{
-		this ();
-		this.action = action;
-		this.activity = activity;
-		this.enrolment = enrolment;
-		this.time = new Date ();
-	}
-
-	@Override
 	public Long getId ()
 	{
 		return this.id;
