@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.moodledb;
+package ca.uoguelph.socs.icc.edm.datastore.moodledb;
 
 import java.util.Calendar;
 
