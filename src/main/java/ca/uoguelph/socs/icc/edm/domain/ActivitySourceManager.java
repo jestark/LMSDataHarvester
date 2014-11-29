@@ -16,61 +16,80 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
+
 /**
  * 
  *
- * @see ca.uoguelph.socs.icc.edm.domain.ActivitySource The ActivitySource interface
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
+ * @see     ActivitySource
  */
 
-public final class ActivitySourceManager extends Manager<ActivitySource>
+public final class ActivitySourceManager extends DomainModelManager<ActivitySource>
 {
-	/**
-	 * Domain Model Type constant.  Used by the domain model to determine which
-	 * implementation classes to use, and for instantiation of this manager.
-	 */
-
-	public static final DomainModelType TYPE = DomainModelType.ACTIVITYSOURCE;
+	/** The logger */
+	private final Log log;
 
 	/**
-	 * Get an instance of the ActivitySourceManager for the specified domain model.
+	 * Get an instance of the <code>ActivitySourceManager</code> for the specified
+	 * <code>DomainModel</code>.
 	 *
-	 * @param model The instance of the Domain model for which the ActivitySourceManager
-	 * is to be retrieved.
-	 * @return The ActivitySourceManager instance for the specified domain model.
-	 * 
-	 * @throws IllegalArguementException If the domain model is null.
+	 * @param  model The instance of the <code>DomainModel</code> for which the
+	 *               <code>ActivityManager</code>is to be retrieved, not null
+	 * @return       The <code>ActivitySourceManager</code> instance for the
+	 *               specified domain model
+	 * @see    DomainModel#getManager
 	 */
 
 	public static ActivitySourceManager getInstance (DomainModel model)
 	{
 		if (model == null)
 		{
-			throw new IllegalArgumentException ();
+			throw new NullPointerException ();
 		}
 
-		return (ActivitySourceManager) model.getManager (ActivitySourceManager.TYPE);
+		return model.getManager (ActivitySourceManager.class);
 	}
 
 	/**
-	 * Create the ActivitySource manager.
+	 * Create the <code>ActivitySourceManager</code>.
 	 *
-	 * @param model A reference to the instance of the domain model which owns
-	 * this ActivitySource manager.
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>ActivitySourceManager</code> is to be created, not null
+	 * @param  query The <code>DataStoreQuery</code> to be used to access the
+	 *               data-store, not null
 	 */
 
-	protected ActivitySourceManager (DomainModel model)
+	protected ActivitySourceManager (DomainModel model, DataStoreQuery<ActivitySource> query)
 	{
-		super (model, ActivitySourceManager.TYPE);
+		super (model, query);
+
+		this.log = LogFactory.getLog (UserManager.class);
 	}
 
 	/**
-	 * Retrive the ActivitySource object associated with the specified name
-	 * from the underlying datastore.
+	 * Get an instance of the builder.
 	 *
-	 * @param name The name of the ActivitySource to retrieve
-	 * @return The ActivitySource object associated with the specified name.
+	 * @return An instance of the <code>ActivitySourceBuilder</code>
+	 */
+
+	public ActivitySourceBuilder getBuilder ()
+	{
+		return (ActivitySourceBuilder) this.builder;
+	}
+
+	/**
+	 * Retrieve the <code>ActivitySource</code> object associated with the
+	 * specified name from the underlying data-store.
+	 *
+	 * @param  name The name of the <code>ActivitySource</code> to retrieve, not
+	 *              null
+	 * @return      The <code>ActivitySource</code> object associated with the
+	 *              specified name
 	 */
 
 	public ActivitySource fetchByName (String name)

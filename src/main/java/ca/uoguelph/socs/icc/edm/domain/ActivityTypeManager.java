@@ -16,62 +16,81 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
+
 /**
  *
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
+ * @see     ActivityType
  */
 
-public final class ActivityTypeManager extends Manager<ActivityType>
+public final class ActivityTypeManager extends DomainModelManager<ActivityType>
 {
-	/**
-	 * Domain Model Type constant.  Used by the domain model to determine which
-	 * implementation classes to use, and for instantiation of this manager.
-	 */
-
-	public static final DomainModelType TYPE = DomainModelType.ACTIVITYTYPE;
+	/** The logger */
+	private final Log log;
 
 	/**
-	 * Get an instance of the ActivityTypeManager for the specified domain model.
+	 * Get an instance of the <code>ActivityTypeManager</code> for the specified
+	 * domain model.
 	 *
-	 * @param model The instance of the Domain model for which the ActivityTypeManager
-	 * is to be retrieved.
-	 * @return The ActivityTypeManager instance for the specified domain model.
-	 * 
-	 * @throws IllegalArguementException If the domain model is null.
+	 * @param  model The instance of the <code>DomainModel</code> for which the
+	 *               <code>ActivityTypeManager</code>is to be retrieved, not null
+	 * @return       The <code>ActivityTypeManager</code> instance for the 
+	 *               specified domain model
+	 * @see    DomainModel#getManager
 	 */
 
 	public static ActivityTypeManager getInstance (DomainModel model)
 	{
 		if (model == null)
 		{
-			throw new IllegalArgumentException ();
+			throw new NullPointerException ();
 		}
 
-		return (ActivityTypeManager) model.getManager (ActivityTypeManager.TYPE);
+		return model.getManager (ActivityTypeManager.class);
 	}
 
 	/**
-	 * Create the ActivityType manager.
+	 * Create the <code>ActivityType</code> manager.
 	 *
-	 * @param model A reference to the instance of the domain model which owns
-	 * this ActivityType manager.
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>ActivityTypeManager</code> is to be created, not null
+	 * @param  query The <code>DataStoreQuery</code> to be used to access the
+	 *               data-store, not null
 	 */
 
-	protected ActivityTypeManager (DomainModel model)
+	protected ActivityTypeManager (DomainModel model, DataStoreQuery<ActivityType> query)
 	{
-		super (model, ActivityTypeManager.TYPE);
+		super (model, query);
+
+		this.log = LogFactory.getLog (UserManager.class);
 	}
 
 	/**
-	 * Retrieve the ActivityType object from the underlying data store which has
-	 * the specified ActivitySource and name.
+	 * Get an instance of the builder.
 	 *
-	 * @param source The ActivitySource containing the ActivityType
-	 * @param name The name of the ActivityType
-	 * @return The ActivityType object which is associated with the specified
-	 * source and name.
+	 * @return An instance of the <code>ActivityTypeBuilder</code>
+	 */
+
+	public ActivityTypeBuilder getBuilder ()
+	{
+		return (ActivityTypeBuilder) this.builder;
+	}
+
+	/**
+	 * Retrieve the <code>ActivityType</code> object from the underlying 
+	 * data-store which has the specified <code>ActivitySource</code> and name.
+	 *
+	 * @param  source The <code>ActivitySource</code> containing the 
+	 *                <code>ActivityType</code>, not null
+	 * @param  name   The name of the <code>ActivityType</code>, not null
+	 * @return        The <code>ActivityType</code> object which is associated
+	 *                with the specified source and name
 	 */
 
 	public ActivityType fetchByName (ActivitySource source, String name)
@@ -80,13 +99,15 @@ public final class ActivityTypeManager extends Manager<ActivityType>
 	}
 
 	/**
-	 * Create an association between an Activity Typs and an Action.  Both the 
-	 * ActivityType and the action must be owned by the datastore which is 
-	 * associated with the ActivityTypeManager that to create the association
-	 * between the ActivityType and the Action.
+	 * Create an association between a <code>ActivityType</code> and a 
+	 * <code>Action</code>.  Both the <code>ActivityType</code> and the action
+	 * must already exist in the domain model associated with the
+	 * <code>ActivityTypeManager</code> that to create the association between
+	 * them.
 	 *
-	 * @param type The ActivityType to modify.
-	 * @param action The Action to be associated with the ActivityType.
+	 * @param  type   The <code>ActivityType</code> to modify, not null
+	 * @param  action The <code>Action</code> to be associated with the
+	 *                <code>ActivityType</code>, not null
 	 */
 
 	public void addAction (ActivityType type, Action action)
@@ -94,16 +115,20 @@ public final class ActivityTypeManager extends Manager<ActivityType>
 	}
 
 	/**
-	 * Break an association between an ActivityType and an Action.  To break an
-	 * association between the specified ActivityType and Action, both the 
-	 * ActivityType and Action must be members of the the domain model with which
-	 * this ActivityType manager is associated.  Futhermore there must be an
-	 * existing association between the ActivityType and the Action, and there
-	 * must not exist any log entries containing both the specified ActivityType
-	 * and the specified action.
+	 * Break an association between a <code>ActivityType</code> and a
+	 * <code>Action</code>.  To break an association between the specified
+	 * <code>ActivityType</code> and <code>Action</code>, both the
+	 * <code>ActivityType</code> and <code>Action</code> must be exist in the
+	 * domain model associated with the <code>ActivityTypeManager</code> that is
+	 * to break the association.  Furthermore, there must be an existing 
+	 * association between the <code>ActivityType</code> and the 
+	 * <code>Action</code>, and there must not exist any log entries containing
+	 * the specified <code>Action</code> and an <code>Activity</code> with the
+	 * specified <code>ActivityType</code>.
 	 *
-	 * @param type The ActivityType to modify.
-	 * @param action The Action to remove from the ActivityType.
+	 * @param  type   The <code>ActivityType</code> to modify, not null
+	 * @param  action The <code>Action</code> to remove from the
+	 *                <code>ActivityType</code>, not null
 	 */
 
 	public void removeAction (ActivityType type, Action action)

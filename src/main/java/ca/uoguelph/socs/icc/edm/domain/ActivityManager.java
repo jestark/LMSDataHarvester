@@ -18,58 +18,77 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
+
 /**
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
+ * @see     Activity
  */
 
-public final class ActivityManager extends Manager<Activity>
+public final class ActivityManager extends DomainModelManager<Activity>
 {
-	/**
-	 * Domain Model Type constant.  Used by the domain model to determine which
-	 * implementation classes to use, and for instantiation of this manager.
-	 */
-
-	public static final DomainModelType TYPE = DomainModelType.ACTIVITY;
+	/** The logger */
+	private final Log log;
 
 	/**
-	 * Get an instance of the ActivityManager for the specified domain model.
+	 * Get an instance of the <code>ActivityManager</code> for the specified
+	 * <code>DomainModel</code>.
 	 *
-	 * @param model The instance of the Domain model for which the ActivityManager
-	 * is to be retrieved.
-	 * @return The ActivityManager instance for the specified domain model.
-	 * 
-	 * @throws IllegalArguementException If the domain model is null.
+	 * @param  model The instance of the <code>DomainModel</code> for which the
+	 *               <code>ActivityManager</code>is to be retrieved, not null
+	 * @return       The <code>ActivityManager</code> instance for the specified
+	 *               domain model
+	 * @see    DomainModel#getManager
+
 	 */
 
 	public static ActivityManager getInstance (DomainModel model)
 	{
 		if (model == null)
 		{
-			throw new IllegalArgumentException ();
+			throw new NullPointerException ();
 		}
 
-		return (ActivityManager) model.getManager (ActivityManager.TYPE);
+		return model.getManager (ActivityManager.class);
 	}
 
 	/**
 	 * Create the Activity manager.
 	 *
-	 * @param model A reference to the instance of the domain model which owns
-	 * this Activity manager.
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>ActivityManager</code> is to be created, not null
+	 * @param  query The <code>DataStoreQuery</code> to be used to access the
+	 *               data-store, not null
 	 */
 
-	protected ActivityManager (DomainModel model)
+	protected ActivityManager (DomainModel model, DataStoreQuery<Activity> query)
 	{
-		super (model, ActivityManager.TYPE);
+		super (model, query);
+
+		this.log = LogFactory.getLog (UserManager.class);
 	}
-	
+
+	/**
+	 * Get an instance of the builder.
+	 *
+	 * @return An instance of the <code>ActivityBuilder</code>
+	 */
+
+	public ActivityBuilder getBuilder ()
+	{
+		return (ActivityBuilder) this.builder;
+	}
+
 	/**
 	 * Get a list of all of the activities which are associated with a particular
-	 * ActivityType.
+	 * <code>ActivityType</code>.
 	 *
-	 * @param type The ActivityType.
+	 * @param  type The <code>ActivityType</code>, not null
 	 */
 
 	public List<Activity> fetchAllForType (ActivityType type)
@@ -80,8 +99,8 @@ public final class ActivityManager extends Manager<Activity>
 	/**
 	 * Modify the value of the stealth flag on a given activity.
 	 *
-	 * @param activity The activity to modify.
-	 * @param stealth The new value of the stealth flag.
+	 * @param  activity The <code>Activity</code> to modify, not null
+	 * @param  stealth  The new value of the stealth flag, not null
 	 */
 
 	public void setStealth (Activity activity, Boolean stealth)

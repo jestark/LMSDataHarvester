@@ -18,90 +18,109 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
+
 /**
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
+ * @see     Course
  */
 
-public final class CourseManager extends Manager<Course>
+public final class CourseManager extends DomainModelManager<Course>
 {
-	/**
-	 * Domain Model Type constant.  Used by the domain model to determine which
-	 * implementation classes to use, and for instantiation of this manager.
-	 */
-
-	public static final DomainModelType TYPE = DomainModelType.COURSE;
+	/** The logger */
+	private final Log log;
 
 	/**
-	 * Get an instance of the CourseManager for the specified domain model.
+	 * Get an instance of the <code>CourseManager</code> for the specified
+	 * <code>DomainModel</code>.
 	 *
-	 * @param model The instance of the Domain model for which the CourseManager
-	 * is to be retrieved.
-	 * @return The CourseManager instance for the specified domain model.
-	 * 
-	 * @throws IllegalArguementException If the domain model is null.
+	 * @param  model The instance of the <code>DomainModel</code> for which the
+	 *               <code>CourseManager</code>is to be retrieved, not null
+	 * @return       The <code>CourseManager</code> instance for the 
+	 *               specified domain model
+	 * @see    DomainModel#getManager
 	 */
 
 	public static CourseManager getInstance (DomainModel model)
 	{
 		if (model == null)
 		{
-			throw new IllegalArgumentException ();
+			throw new NullPointerException ();
 		}
 
-		return (CourseManager) model.getManager (CourseManager.TYPE);
+		return model.getManager (CourseManager.class);
 	}
 
 	/**
-	 * Create the Course manager.
+	 * Create the <code>CourseManager</code>.
 	 *
-	 * @param model A reference to the instance of the domain model which owns
-	 * this Course manager.
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>CourseManager</code> is to be created, not null
+	 * @param  query The <code>DataStoreQuery</code> to be used to access the
+	 *               data-store, not null
 	 */
 
-	protected CourseManager (DomainModel model)
+	protected CourseManager (DomainModel model, DataStoreQuery<Course> query)
 	{
-		super (model, CourseManager.TYPE);
+		super (model, query);
+
+		this.log = LogFactory.getLog (UserManager.class);
 	}
 
 	/**
-	 * Retrieve a list of courses from the underlying datastore based on the
+	 * Get an instance of the builder.
+	 *
+	 * @return An instance of the <code>CourseBuilder</code>
+	 */
+
+	public CourseBuilder getBuilder ()
+	{
+		return (CourseBuilder) this.builder;
+	}
+
+	/**
+	 * Retrieve a list of courses from the underlying data-store based on the
 	 * time of offering.
 	 *
-	 * @param semester The Semester of offering
-	 * @param year The year of offering
-	 * @return A list of course objects.
+	 * @param  semester The <code>Semester</code> of offering, not null
+	 * @param  year     The year of offering, not null
+	 * @return          A list of <code>Course</code> objects
 	 */
 
 	public List<Course> fetchAllForOffering (Semester semester, Integer year)
 	{
 		return null;
 	}
-	
+
 	/**
-	 * Retrieve a list of courses from the underlying datastore based on the 
+	 * Retrieve a list of courses from the underlying data-store based on the
 	 * time of offering, and a regular expression matching the courses name.
 	 *
-	 * @param name The regular expression to match against the courses name.
-	 * @param semester The Semester of offering
-	 * @param year The year of offering
-	 * @return A list of course objects.
+	 * @param  name     The regular expression to match against the courses name,
+	 *                  not null
+	 * @param  semester The <code>Semester</code> of offering, not null
+	 * @param  year     The year of offering, not null
+	 * @return          A list of <code>Course</code> objects
 	 */
 
 	public List<Course> fetchAllForOffering (String name, Semester semester, Integer year)
 	{
 		return null;
 	}
-	
+
 	/**
-	 * Retrieve a course from the underlying datastore based on its name and 
+	 * Retrieve a course from the underlying data-store based on its name and
 	 * time of offering.
 	 *
-	 * @param name The name of the course
-	 * @param semester The Semester of offering
-	 * @param year The year of offering
-	 * @return A single course object.
+	 * @param  name     The name of the course, not null
+	 * @param  semester The <code>Semester</code> of offering, not null
+	 * @param  year     The year of offering, not null
+	 * @return          A single <code>Course</code> object
 	 */
 
 	public Course fetchByOffering (String name, Semester semester, Integer year)

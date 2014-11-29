@@ -18,71 +18,91 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
+
 /**
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
+ * @see     Enrolment
+ * @see     Grade
  */
 
-public final class EnrolmentManager extends Manager<Enrolment>
+public final class EnrolmentManager extends DomainModelManager<Enrolment>
 {
-	/**
-	 * Domain Model Type constant.  Used by the domain model to determine which
-	 * implementation classes to use, and for instantiation of this manager.
-	 */
-
-	public static final DomainModelType TYPE = DomainModelType.ENROLMENT;
+	/** The logger */
+	private final Log log;
 
 	/**
-	 * Get an instance of the EnrolmentManager for the specified domain model.
+	 * Get an instance of the <code>EnrolmentManager</code> for the specified
+	 * <code>DomainModel</code>.
 	 *
-	 * @param model The instance of the Domain model for which the EnrolmentManager
-	 * is to be retrieved.
-	 * @return The EnrolmentManager instance for the specified domain model.
-	 * 
-	 * @throws IllegalArguementException If the domain model is null.
+	 * @param  model The instance of the <code>DomainModel</code> for which the
+	 *               <code>EnrolmentManager</code>is to be retrieved, not null
+	 * @return       The <code>CourseManager</code> instance for the
+	 *               specified domain model
+	 * @see    DomainModel#getManager
 	 */
 
 	public static EnrolmentManager getInstance (DomainModel model)
 	{
 		if (model == null)
 		{
-			throw new IllegalArgumentException ();
+			throw new NullPointerException ();
 		}
 
-		return (EnrolmentManager) model.getManager (EnrolmentManager.TYPE);
+		return model.getManager (EnrolmentManager.class);
 	}
 
 	/**
-	 * Create the Enrolment manager.
+	 * Create the <code>EnrolmentManager</code>.
 	 *
-	 * @param model A reference to the instance of the domain model which owns
-	 * this Enrolment manager.
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>EnrolmentManager</code> is to be created, not null
+	 * @param  query The <code>DataStoreQuery</code> to be used to access the
+	 *               data-store, not null
 	 */
 
-	protected EnrolmentManager (DomainModel model)
+	protected EnrolmentManager (DomainModel model, DataStoreQuery<Enrolment> query)
 	{
-		super (model, EnrolmentManager.TYPE);
+		super (model, query);
+
+		this.log = LogFactory.getLog (UserManager.class);
 	}
 
 	/**
-	 * Retrieve a list of enrolment objects from the underlying datastore for
-	 * the given role.
+	 * Get an instance of the builder.
 	 *
-	 * @param role The role for which the enrolments should be retrieved.
-	 * @return A list of enrolment ojects.
+	 * @return An instance of the <code>EnrolmentBuilder</code>
+	 */
+
+	public EnrolmentBuilder getBuilder ()
+	{
+		return (EnrolmentBuilder) this.builder;
+	}
+
+	/**
+	 * Retrieve a list of <code>Enrolment</code> objects from the underlying
+	 * data-store for the given role.
+	 *
+	 * @param  role The role for which the enrolments should be retrieved, not
+	 *              null
+	 * @return      A list of enrolment objects.
 	 */
 
 	public List<Enrolment> fetchAllForRole (Role role)
 	{
 		return null;
 	}
-	
+
 	/**
-	 * Set the final grade for the specified enrolment.
+	 * Set the final grade for the specified <code>Enrolment</code>.
 	 *
-	 * @param enrolment The enrolment object to modify.
-	 * @param grade The value for the final grade.
+	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
+	 * @param  grade     The value for the final grade, not null
 	 */
 
 	public void setFinalGrade (Enrolment enrolment, Integer grade)
@@ -90,9 +110,9 @@ public final class EnrolmentManager extends Manager<Enrolment>
 	}
 
 	/**
-	 * Remove the final grade from the specified enrolment.
+	 * Remove the final grade from the specified <code>Enrolment</code>.
 	 *
-	 * @param enrolment The enrolment object to modify.
+	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
 	 */
 
 	public void clearFinalGrade (Enrolment enrolment)
@@ -100,10 +120,11 @@ public final class EnrolmentManager extends Manager<Enrolment>
 	}
 
 	/**
-	 * Set the usable flag to the specified value on the given enrolment.
+	 * Set the usable flag to the specified value on the given
+	 * <code>Enrolment</code>.
 	 *
-	 * @param enrolment The enrolment object to modify.
-	 * @param usable The new value for the usable flag.
+	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
+	 * @param  usable    The new value for the usable flag, not null
 	 */
 
 	public void setUsable (Enrolment enrolment, Boolean usable)
@@ -111,22 +132,23 @@ public final class EnrolmentManager extends Manager<Enrolment>
 	}
 
 	/**
-	 * Add a grade, for the specified activity to the enrolment.
+	 * Add a grade, for the specified activity to the <code>Enrolment</code>.
 	 *
-	 * @param enrolment The enrolment object to modify.
-	 * @param activity The Activity with which to associate the grade.
-	 * @param grade The value for the grade.
+	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
+	 * @param  activity  The <code>Activity</code> with which to associate the
+	 *                   grade, not null
+	 * @param  grade     The value for the grade, not null
 	 */
 
 	public void addGrade (Enrolment enrolment, Activity activity, Integer grade)
 	{
 	}
-	
+
 	/**
-	 * Add a grade to the enrolment.
+	 * Add a grade to the <code>Enrolment</code>.
 	 *
-	 * @param enrolment The enrolment object to modify.
-	 * @param grade The grade to add.
+	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
+	 * @param  grade     The <code>Grade</code> to add, not null
 	 */
 
 	public void addGrade (Enrolment enrolment, Grade grade)
@@ -134,10 +156,10 @@ public final class EnrolmentManager extends Manager<Enrolment>
 	}
 
 	/**
-	 * Remove a grade from an enrolment.
+	 * Remove a grade from an <code>Enrolment</code>.
 	 *
-	 * @param enrolment The enrolment object to modify.
-	 * @param grade The grade to remove.
+	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
+	 * @param  grade     The <code>Grade</code> to remove, not null
 	 */
 
 	public void removeGrade (Enrolment enrolment, Grade grade)

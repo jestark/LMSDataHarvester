@@ -16,83 +16,113 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.Map;
+import java.util.HashMap;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
+
 /**
- * Create, Insert and remove users from the datastore.  Implementations of
- * this interface are responcible for adding users to and removing users from
- * the datastore.  
+ * Create, Insert and remove users from the data store.  Implementations of
+ * this interface are responsible for adding users to and removing users from
+ * the data store.
  *
  * It should be noted that since the binding between users and enrolments is
- * weak, a recursive removal of a user will not remove the associated 
- * enrolments, and the existence of assoicated enrolments will not prevent 
- * the non0recursive removal of a user. 
+ * weak, a recursive removal of a user will not remove the associated
+ * enrolments, and the existence of associated enrolments will not prevent
+ * the non-recursive removal of a user.
  *
- * @see ca.uoguelph.socs.icc.edm.domain.User The User interface.
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
+ * @see     User
  */
 
-public final class UserManager extends Manager<User>
+public final class UserManager extends DomainModelManager<User>
 {
-	/**
-	 * Domain Model Type constant.  Used by the domain model to determine which
-	 * implementation classes to use, and for instantiation of this manager.
-	 */
-
-	public static final DomainModelType TYPE = DomainModelType.USER;
+	/** The logger */
+	private final Log log;
 
 	/**
-	 * Get an instance of the UserManager for the specified domain model.
+	 * Get an instance of the <code>UserManager</code> for the specified domain
+	 * model.
 	 *
-	 * @param model The instance of the Domain model for which the UserManager
-	 * is to be retrieved.
-	 * @return The UserManager instance for the specified domain model.
-	 * 
-	 * @throws IllegalArguementException If the domain model is null.
+	 * @param  model The instance of the <code>DomainModel</code> for which the
+	 *               <code>UserManager</code>is to be retrieved, not null
+	 * @return       The <code>UserManager</code> instance for the specified
+	 *               domain model
+	 * @see    DomainModel#getManager
 	 */
 
 	public static UserManager getInstance (DomainModel model)
 	{
 		if (model == null)
 		{
-			throw new IllegalArgumentException ();
+			throw new NullPointerException ();
 		}
 
-		return (UserManager) model.getManager (UserManager.TYPE);
+		return model.getManager (UserManager.class);
 	}
 
 	/**
-	 * Create the User manager.
+	 * Create the <code>UserManager</code>.
 	 *
-	 * @param model A reference to the instance of the domain model which owns
-	 * this User manager.
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>UserManager</code> is to be created, not null
+	 * @param  query The <code>DataStoreQuery</code> to be used to access the
+	 *               data-store, not null
 	 */
 
-	protected UserManager (DomainModel model)
+	protected UserManager (DomainModel model, DataStoreQuery<User> query)
 	{
-		super (model, UserManager.TYPE);
+		super (model, query);
+
+		this.log = LogFactory.getLog (UserManager.class);
 	}
 
 	/**
-	 * Retrieve a single user, with the specified id number from the datastore.
+	 * Get an instance of the builder.
 	 *
-	 * @param idnumber The (student) id number of the user to retrieve
-	 * @return The user object associated with the id number
+	 * @return An instance of the <code>UserBuilder</code>
+	 */
+
+	public UserBuilder getBuilder ()
+	{
+		return (UserBuilder) this.builder;
+	}
+
+	/**
+	 * Retrieve a single <code>User</code> object, with the specified id number,
+	 * from the data-store.
+	 *
+	 * @param  idnumber The id number of the <code>User</code> to retrieve, not null
+	 * @return          The <code>User</code> object associated with the id number
 	 */
 
 	public User fetchByIdNumber (Integer idnumber)
 	{
-		return null;
+		Map<String, Object> params = new HashMap<String, Object> ();
+
+		params.put ("idnumber", idnumber);
+
+		return this.query.query ("idnumber", params);
 	}
-	
+
 	/**
-	 * Retrieve a single user, with the specified username from the datastore.
+	 * Retrieve a single <code>User</code> object, with the specified username,
+	 * from the data-store.
 	 *
-	 * @param username The username of the entery to retrieve.
-	 * @return The user object associated with the username
+	 * @param  username The username of the entry to retrieve, not null
+	 * @return          The <code>User</code> object associated with the username
 	 */
 
 	public User fetchByUsername (String username)
 	{
-		return null;
+		Map<String, Object> params = new HashMap<String, Object> ();
+
+		params.put ("username", username);
+
+		return this.query.query ("username", params);
 	}
 }

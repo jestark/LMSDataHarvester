@@ -16,6 +16,14 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.Map;
+import java.util.HashMap;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
+
 /**
  * Create, insert and remove actions from the domain model.  Through
  * implementations of this interface, Actions can be added to or removed
@@ -23,58 +31,80 @@ package ca.uoguelph.socs.icc.edm.domain;
  *
  * @author James E. Stark
  * @version 1.0
+ * @see     Action
  */
 
-public final class ActionManager extends Manager<Action>
+public final class ActionManager extends DomainModelManager<Action>
 {
-	/**
-	 * Domain Model Type constant.  Used by the domain model to determine which
-	 * implementation classes to use, and for instantiation of this manager.
-	 */
-
-	public static final DomainModelType TYPE = DomainModelType.ACTION;
+	/** The logger */
+	private final Log log;
 
 	/**
-	 * Get an instance of the ActionManager for the specified domain model.
+	 * Get an instance of the <code>ActionManager</code> for the specified
+	 * <code>DomainModel</code>.
 	 *
-	 * @param model The instance of the Domain model for which the ActionManager
-	 * is to be retrieved.
-	 * @return The ActionManager instance for the specified domain model.
-	 * 
-	 * @throws IllegalArguementException If the domain model is null.
+	 * @param  model The instance of the <code>DomainModel</code> for which the
+	 *               <code>ActionManager</code>is to be retrieved, not null
+	 * @return       The <code>ActionManager</code> instance for the specified
+	 *               domain model
+	 * @see    DomainModel#getManager
 	 */
 
 	public static ActionManager getInstance (DomainModel model)
 	{
 		if (model == null)
 		{
-			throw new IllegalArgumentException ();
+			throw new NullPointerException ();
 		}
 
-		return (ActionManager) model.getManager (ActionManager.TYPE);
+		return model.getManager (ActionManager.class);
 	}
 
 	/**
-	 * Create the Action manager.
+	 * Create the <code>ActionManager</code>
 	 *
-	 * @param model A reference to the instance of the domain model which owns
-	 * this Action manager.
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>ActionManager</code> is to be created, not null
+	 * @param  query The <code>DataStoreQuery</code> to be used to access the
+	 *               data-store, not null
 	 */
 
-	protected ActionManager (DomainModel model)
+	protected ActionManager (DomainModel model, DataStoreQuery<Action> query)
 	{
-		super (model, ActionManager.TYPE);
+		super (model, query);
+
+		this.log = LogFactory.getLog (UserManager.class);
 	}
 
 	/**
-	 * Retrieve the Action with the specified name from the datastore.
+	 * Get an instance of the builder.
 	 *
-	 * @param name The name of the action to retrive
-	 * @return The Action object associated with the specified name.
+	 * @return An instance of the <code>ActionBuilder</code>
+	 */
+
+	public ActionBuilder getBuilder ()
+	{
+		return (ActionBuilder) this.builder;
+	}
+
+	/**
+	 * Retrieve the Action with the specified name from the data-store.
+	 *
+	 * @param  name The name of the <code>Action</code> to retrieve, not null
+	 * @return      The <code>Action</code> associated with the specified name.
 	 */
 
 	public Action fetchByName (String name)
 	{
-		return null;
+		if (name == null)
+		{
+			this.log.error ("The specified Action name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> parameters = new HashMap<String, Object> ();
+		parameters.put ("name", name);
+
+		return query.query ("name", parameters);
 	}
 }
