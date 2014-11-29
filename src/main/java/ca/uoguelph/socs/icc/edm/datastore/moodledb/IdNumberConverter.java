@@ -20,11 +20,12 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 /**
- * Convert ID numbers between string and integer representations.  Moodle
- * stores student ID numbers as strings, and the domain model uses them as
- * integers.  This class converts between the two representations.
+ * Convert ID numbers between <code>String</code> and <code>Integer</code>
+ * representations.  Moodle stores student ID numbers as strings, and the
+ * domain model uses them as integers.  This class converts between the two
+ * representations.
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
  */
 
@@ -32,11 +33,12 @@ import javax.persistence.Converter;
 public class IdNumberConverter implements AttributeConverter<Integer, String>
 {
 	/**
-	 * Convert the integer representation of the ID number to the string
-	 * representation.
+	 * Convert the integer representation of the ID number to the
+	 * <code>String</code> representation.
 	 *
-	 * @param  interger The integer representation of the id number.
-	 * @return The String representation of the id number.
+	 * @param  interger The <code>Integer</code> representation of the id number,
+	 *                  not null
+	 * @return          The <code>String</code> representation of the id number
 	 */
 
 	@Override
@@ -46,11 +48,12 @@ public class IdNumberConverter implements AttributeConverter<Integer, String>
 	}
 
 	/**
-	 * Convert the string representation of the ID number to the integer
-	 * representation.
+	 * Convert the string representation of the ID number to the
+	 * <code>Integer</code> representation.
 	 *
-	 * @param string The String representation of the ID number.
-	 * @return The integer representation of the ID number.
+	 * @param  string The <code>String</code> representation of the ID number, not
+	 *                null
+	 * @return        The <code>Integer</code> representation of the ID number
 	 */
 
 	@Override

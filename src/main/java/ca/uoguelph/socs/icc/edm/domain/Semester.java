@@ -22,55 +22,38 @@ import java.util.Date;
 /**
  * A representation of a semester.  The semesters are four months in length
  * and span the entire calendar year without and breaks.  Semesters begin
- * and end at the respective beinning and end of a calendar month.
+ * and end at the respective beginning and end of a calendar month.
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
  */
 
 public enum Semester
 {
-	/**
-	 * The Winter semester running from January to April.
-	 */
-
+	/** The Winter semester running from January to April */
 	WINTER (Calendar.JANUARY, Calendar.APRIL, "Winter"),
 	
-	/**
-	 * The Spring semester running from May to August.
-	 */
-
+	/** The Spring semester running from May to August */
 	SPRING (Calendar.MAY, Calendar.AUGUST, "Spring"),
 	
-	/**
-	 * The Fall semester running from September to December.
-	 */
-
+	/** The Fall semester running from September to December */
 	FALL   (Calendar.SEPTEMBER, Calendar.DECEMBER, "Fall");
 
-	/**
-	 * The starting month of the semester.
-	 */
-
+	/** The starting month of the semester */
 	private final int start;
 	
-	/**
-	 * The ending month of the semester.
-	 */
-
+	/** The ending month of the semester */
 	private final int end;
 	
-	/**
-	 * The name of the semester.
-	 */
-
+	/** The name of the semester */
 	private final String name;
 
 	/**
-	 * Find the semester that encapsiates the specified date.
+	 * Find the <Code>Semester</code> that encapsulates the specified date.
 	 *
-	 * @param date The date for which the semester is to be found.
-	 * @return The semester containing the specified date.
+	 * @param  date The <code>Date</code> for which the <code>Semester</code> is
+	 *              to be found, not null
+	 * @return      The <code>Semester</code> containing the specified date
 	 */
 
 	public static Semester getSemesterByDate (Date date)
@@ -90,11 +73,11 @@ public enum Semester
 	}
 
 	/**
-	 * Create the semester Enum.
+	 * Create the <code>Semester</code> enumeration.
 	 *
-	 * @param start The first calendar month of the semester.
-	 * @param end The last calendar month of the semester.
-	 * @param name The name of the semester.
+	 * @param  start The first calendar month of the <code>Semester</code>
+	 * @param  end   The last calendar month of the <code>Semester</code>
+	 * @param  name  The name of the <code>Semester</code>, not null
 	 */
 
 	private Semester (int start, int end, String name)
@@ -105,11 +88,12 @@ public enum Semester
 	}
 
 	/**
-	 * Get the month in which the semester starts.  The returned value will be
-	 * an integer corresponding the month constants defined in java.util.Calendar.
+	 * Get the month in which the <code>Semester</code> starts.  The returned
+	 * value will be an integer corresponding the month constants defined in 
+	 * <code>Calendar</code>.
 	 *
-	 * @see java.util.Calendar
-	 * @return The integer representation of the starting month.
+	 * @return The integer representation of the starting month
+	 * @see    java.util.Calendar
 	 */
 
 	public int getStartMonth ()
@@ -118,11 +102,12 @@ public enum Semester
 	}
 
 	/**
-	 * Get the month in which the semester ends.  The returned value will be
-	 * an integer corresponding the month constants defined in java.util.Calendar.
+	 * Get the month in which the <code>Semester</code> ends.  The returned value
+	 * will be an integer corresponding the month constants defined in
+	 * <code>Calendar</code>.
 	 *
-	 * @see java.util.Calendar
-	 * @return The integer representation of the ending month.
+	 * @return The integer representation of the ending month
+	 * @see    java.util.Calendar
 	 */
 
 	public int getEndMonth ()
@@ -131,9 +116,10 @@ public enum Semester
 	}
 
 	/**
-	 * Get the name of the semester as a String which is suitable for display.
+	 * Get the name of the <code>Semester</code> as a <code>String</code> which is
+	 * suitable for display.
 	 *
-	 * @return A string containing the name of the semester.
+	 * @return A <code>String</code> containing the name of the <code>Semester</code>
 	 */
 
 	public String getName ()
@@ -142,10 +128,11 @@ public enum Semester
 	}
 
 	/**
-	 * Overload java.lang.object's toString method to display the name of the
-	 * semester.
+	 * Override the <code>toString</code> method from <code>Object</code> to
+	 * display the name of the <code>Semester</code>.
 	 *
-	 * @return A string containing the name of the semester.
+	 * @return A <code>String</code> containing the name of the 
+	 *         <code>Semester</code>
 	 */
 
 	@Override

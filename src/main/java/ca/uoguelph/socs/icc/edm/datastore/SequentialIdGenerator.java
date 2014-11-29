@@ -19,16 +19,13 @@ package ca.uoguelph.socs.icc.edm.datastore;
 /**
  * An instance of this class will return a series of sequential ID numbers.
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
  */
 
 public class SequentialIdGenerator implements IdGenerator
 {
-	/**
-	 * The next value to be returned by the generator.
-	 */
-
+	/** The next value to be returned by the generator. */
 	private long currentid;
 
 	/**
@@ -45,7 +42,7 @@ public class SequentialIdGenerator implements IdGenerator
 	 * Creates a new sequential ID number generator, while allowing the caller
 	 * to specify the first value of the sequence.
 	 *
-	 * @param startingid The first value to be returned by the generator.
+	 * @param  startingid The first value to be returned by the generator.
 	 */
 
 	public  SequentialIdGenerator (Long startingid)

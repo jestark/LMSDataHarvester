@@ -23,7 +23,7 @@ package ca.uoguelph.socs.icc.edm.datastore;
  * determined though other means (such as being automatically assigned by an
  * underlying database).
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
  */
 

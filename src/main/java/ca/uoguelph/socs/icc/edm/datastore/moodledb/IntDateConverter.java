@@ -21,12 +21,12 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 /**
- * Convert Dates between java's internal date representation (java.util.Date)
- * and seconds since epoch.  Moodle stores all of its timestamps as seconds
- * since epoch, while the domain model uses java.util.Date.  This class allows
- * JPA to automatically convert between the two representations.
+ * Convert Dates between <code>Date</code> and seconds since epoch.  Moodle
+ * stores all of its timestamps as seconds since epoch, while the domain
+ * model uses <code>Date</code>.  This class allows JPA to automatically
+ * convert between the two representations.
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
  */
 
@@ -34,11 +34,11 @@ import javax.persistence.Converter;
 public class IntDateConverter implements AttributeConverter<Date, Long>
 {
 	/**
-	 * Convert the given java.util.Date object to an integer representation as
+	 * Convert the given <code>Date</code> object to an integer representation as
 	 * seconds since epoch.
 	 *
-	 * @param time The timestamp as a Date.
-	 * @return The time stamp as seconds since epoch.
+	 * @param  time The time-stamp as a <code>Date</code>, not null
+	 * @return      The time-stamp as seconds since epoch
 	 */
 
 	@Override
@@ -48,10 +48,10 @@ public class IntDateConverter implements AttributeConverter<Date, Long>
 	}
 
 	/**
-	 * Convert a timestamp from seconds since epoch to a java.util.Date.
+	 * Convert a time-stamp from seconds since epoch to a <code>Date</code>.
 	 *
-	 * @param seconds Timestamp expressed as seconds since Epoch.
-	 * @return The timestamp as a date.
+	 * @param  seconds Time-stamp expressed as seconds since Epoch, not null
+	 * @return         The time-stamp as a <code>Date</code>
 	 */
 
 	@Override

@@ -17,13 +17,13 @@
 package ca.uoguelph.socs.icc.edm.datastore;
 
 /**
- * An ID number generator.  Classes implementing this inteface will provide
- * ID numbers suitable for use with the relevant underlying datastore.  Each
+ * An ID number generator.  Classes implementing this interface will provide
+ * ID numbers suitable for use with the relevant underlying data-store.  Each
  * class implementing this interface is responsible for determining how the 
- * ID numbers are calculated, with diffeerent classes providing different
+ * ID numbers are calculated, with different classes providing different
  * distributions of ID numbers.  
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
  */
 
@@ -32,7 +32,7 @@ public interface IdGenerator
 	/**
 	 * Returns the next available ID number.
 	 *
-	 * @return A Long containing the ID number.
+	 * @return A Long containing the ID number
 	 */
 
 	public abstract Long nextId ();
