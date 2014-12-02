@@ -105,7 +105,7 @@ public abstract class DomainModelManager<T extends DomainModelElement>
 	 *
 	 * @param  entity The entity to insert into the domain model, not null
 	 * @return        A reference to the inserted entity
-	 * @see    #insert(T, Boolean) 
+	 * @see    #insert(DomainModelElement, Boolean) insert(T, Boolean)
 	 */
 	
 	public final T insert (T entity)
@@ -133,7 +133,7 @@ public abstract class DomainModelManager<T extends DomainModelElement>
 	 * given entity from the domain model and underlying data store.
 	 *
 	 * @param  entity The entity to remove from the domain model, not null
-	 * @see    #remove(T, Boolean) 
+	 * @see    #remove(DomainModelElement, Boolean) remove(T, Boolean) 
 	 */
 	
 	public final void remove (T entity)
