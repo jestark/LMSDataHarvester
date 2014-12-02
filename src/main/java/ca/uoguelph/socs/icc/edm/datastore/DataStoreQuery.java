@@ -18,6 +18,7 @@ package ca.uoguelph.socs.icc.edm.datastore;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
 
@@ -42,7 +43,7 @@ public interface DataStoreQuery<T extends DomainModelElement>
 	 *                              parameters
 	 */
 
-	public Set<String> getParameters (String name);
+	public abstract Set<String> getParameters (String name);
 
 	/**
 	 * Retrieve an object from the <code>DataStore</code> based on the value of
