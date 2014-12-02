@@ -36,9 +36,9 @@ public class IdNumberConverter implements AttributeConverter<Integer, String>
 	 * Convert the integer representation of the ID number to the
 	 * <code>String</code> representation.
 	 *
-	 * @param  interger The <code>Integer</code> representation of the id number,
-	 *                  not null
-	 * @return          The <code>String</code> representation of the id number
+	 * @param  integer The <code>Integer</code> representation of the id number,
+	 *                 not null
+	 * @return         The <code>String</code> representation of the id number
 	 */
 
 	@Override

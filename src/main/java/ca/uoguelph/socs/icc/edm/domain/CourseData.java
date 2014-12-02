@@ -26,10 +26,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * will be accessed though the Course interface, and its relevant managers.
  * See the Course interface documentation for details.
  *
- * @see ca.uoguelph.socs.icc.edm.Course
- * @see ca.uoguelph.socs.icc.edm.DMCourseManager Domain Model Course Manager
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
+ * @see     Course
+ * @see     CourseManager
  */
 
 public class CourseData implements Course

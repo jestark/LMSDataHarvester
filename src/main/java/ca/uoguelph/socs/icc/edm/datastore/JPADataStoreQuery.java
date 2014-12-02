@@ -65,7 +65,7 @@ public final class JPADataStoreQuery<T extends DomainModelElement, X extends T> 
 	private final Log log;
 
 	/**
-	 * Create the JPA Data Store Query.
+	 * Create the <code>JPADataStoreQuery</code>.
 	 *
 	 * @param  datastore The DataStore instance to be queried, not null
 	 * @param  type      The type of objects to return from this query, not null
@@ -252,10 +252,9 @@ public final class JPADataStoreQuery<T extends DomainModelElement, X extends T> 
 	/**
 	 * Get the set of parameter names for the specified query.
 	 *
-	 * @param  name                 The name of the query
+	 * @param  name                 The name of the query, not null
 	 * @return                      A set containing the names of all of the
 	 *                              parameters
-	 * @throws NullPointerException if the query name is null
 	 */
 
 	public Set<String> getParameters (String name)

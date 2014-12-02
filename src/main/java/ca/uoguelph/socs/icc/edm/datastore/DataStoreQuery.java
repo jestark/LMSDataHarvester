@@ -23,74 +23,127 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
 
 /**
  *
- * @param <T>
  *
  * @author James E. Stark
  * @version 1.0
+ * @param   <T> The type of <code>DomainModelElement</code> to return from
+ *              query methods.
+ * @see     DataStore
+ * @see     ca.uoguelph.socs.icc.edm.domain.DomainModelElement
  */
 
 public interface DataStoreQuery<T extends DomainModelElement>
 {
 	/**
-	 *  Retrieve a single object from the datastore based on its identifier.
+	 * Get the set of parameter names for the specified query.
 	 *
-	 * @param  id 
-	 * @return
+	 * @param  name                 The name of the query, not null
+	 * @return                      A set containing the names of all of the
+	 *                              parameters
+	 */
+
+	public Set<String> getParameters (String name);
+
+	/**
+	 * Retrieve an object from the <code>DataStore</code> based on the value of
+	 * its primary key.  Note that the value of the primary key must not be less
+	 * than zero.
+	 *
+	 * @param  id The id (primary key) of the object to retrieve, not null
+	 * @return    The object with an ID equal to the specified value or null if
+	 *            that object does not exist in the <code>DataStore</code>.
 	 */
 
 	public abstract T query (Long id);
-	
+
 	/**
-	 * Retrieve a single object from the datastore based on the value of the
-	 * spcified uniqe query.
+	 * Fetch the object from the <code>DataStore</code> which matches the
+	 * specified query, with the specified parameters.
+	 * <p>
+	 * The parameter map may be null, however all of the parameters to the query
+	 * (if any) must have a value.  All of the parameters included in the
+	 * parameter map must have non-null values.
+	 * <p>
+	 * The <code>getParameters</code> method will return a list of all of the
+	 * query parameters.
 	 *
-	 * @param  name
-	 * @param  parameters
-	 * @return
+	 * @param name                      The name of the query to execute, not null
+	 * @param parameters                A Map of parameter names and their
+	 *                                  corresponding values for this query.  The
+	 *                                  Map may be null, the values must not be
+	 *                                  null.
+	 * @return                          The object which matches the specified
+	 *                                  query, null if that object does not exist
+	 *                                  in the <code>DataStore</code>.
+	 * @throws IllegalArgumentException if a parameter is missing, or the query
+	 *                                  does not exist
+	 * @see    #getParameters
 	 */
 
 	public abstract T query (String name, Map<String, Object> parameters);
 
 	/**
-	 * Retrieve all objects of the specified type from the datastore.
+	 * Retrieve a List of all of the objects in the <code>DataStore</code> of the
+	 * type which corresponds to this <code>DataStoreQuery</code> instance.  If
+	 * there are no object of the corresponding type in the <code>DataStore</code>
+	 * then the list will be empty.
 	 *
-	 * @return
+	 * @return A (possibly empty) list of objects.
+
 	 */
 
 	public abstract List<T> queryAll ();
 
 	/**
-	 * Retrieve all objects from the datastore for a given type which match the named query.
+	 * Fetch a list of objects from the <code>DataStore</code> which match the
+	 * specified query, with the specified parameters.
+	 * <p>
+	 * The parameter map may be null, however all of the parameters to the query
+	 * (if any) must have a value.  All of the parameters included in the
+	 * parameter map must have non-null values.
+	 * <p>
+	 * The <code>getParameters</code> method will return a list of all of the
+	 * query parameters.
 	 *
-	 * @param  name The name of the query to execute, not null
-	 * @param  parameters 
-	 * @return
+	 * @param  name                     The name of the query to execute, not null
+	 * @param  parameters               A Map of parameter names and their
+	 *                                  corresponding values for this query.  The
+	 *                                  Map may be null, the values must not be
+	 *                                  null.
+	 * @return                          The list of object which match the
+	 *                                  specified query.  If no objects match then
+	 *                                  the List will be empty.
+	 * @throws IllegalArgumentException if a parameter is missing, or the query
+	 *                                  does not exist
+	 * @throws NullPointerException     if a value to a parameter is null
+	 * @see    #getParameters
+
 	 */
 
 	public abstract List<T> queryAll (String name, Map<String, Object> parameters);
 
 	/**
-	 * 
+	 * Determine if an entity exists within the <code>DataStore</code>.
 	 *
 	 * @param  entity  The entity to check, not null
-	 * @return <code>true</code>
-	 *         <code>false</code>
+	 * @return <code>true</code> if a copy of the entity exists in the
+	 *         <code>DataStore</code>, <code>false</code> otherwise
 	 */
 
 	public abstract Boolean contains (T entity);
 
 	/**
-	 * Insert the specified entity into the data store.
+	 * Insert the specified entity into the <code>DataStore</code>.
 	 *
-	 * @param entity The entity to insert, not null
+	 * @param  entity The entity to insert, not null
 	 */
 
 	public abstract void insert (T entity);
 
 	/**
-	 * Remove the specified entity from the data store.
+	 * Remove the specified entity from the <code>DataStore</code>.
 	 *
-	 * @param entity The entity to remove, noit null
+	 * @param  entity The entity to remove, not null
 	 */
 
 	public abstract void remove (T entity);

@@ -21,37 +21,48 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
 /**
  *
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
+ * @see     DataStoreQuery
+ * @see     DataStoreTransaction
  */
 
 public interface DataStore
 {
 	/**
+	 * Determine if the <code>DataStore</code> is open.  
 	 *
-	 * @return 
+	 * @return <code>true</code> if the <code>DataStore</code> is open,
+	 *         <code>false</code> otherwise
 	 */
 
 	public abstract Boolean isOpen ();
 
 	/**
-	 *
+	 * Close the <code>DataStore</code>.
 	 */
 
 	public abstract void close ();
 
 	/**
+	 * Get the relevant DataStoreQuery for the provided interface and
+	 * implementation classes.
 	 *
-	 * @param <T>
-	 * @param <X>
-	 * @param type
-	 * @param impl  
-	 * @return
+	 * @param <T>                 The interface type of the query object
+	 * @param <X>                 The implementation type of the query object
+	 * @param type                Interface type class, not null
+	 * @param impl                Implementation type class, not null
+	 * @return                    Query object for the specified interface and
+	 *                            implementation
+	 * @throws ClassCastException if the specified interface or implementation
+	 *                            types do not match those of a previously stored
+	 *                            query object.
 	 */
 
 	public abstract <T extends DomainModelElement, X extends T> DataStoreQuery<T> getQuery (Class<T> type, Class<X> impl);
 
 	/**
+	 * Get the transaction manager for the <code>DataStore</code>.
 	 *
 	 * @return An instance of the transaction manager
 	 */
