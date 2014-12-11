@@ -18,10 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
-import ca.uoguelph.socs.icc.edm.datastore.IdGenerator;
 
-public interface DomainModelElementFactory<T extends DomainModelElement>
+public interface QueryFactory<T extends DomainModelElement> extends ConcreteFactory<DataStoreQuery<T>, DataStore>
 {
-	public abstract DomainModelBuilder<T> createBuilder (DomainModelManager<T> manager, IdGenerator generator);
-	public abstract DataStoreQuery<T> createQuery (DataStore datastore);
+	public abstract DataStoreQuery<T> create (DataStore datastore);
 }

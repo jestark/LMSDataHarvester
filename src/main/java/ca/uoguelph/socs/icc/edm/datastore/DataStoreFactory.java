@@ -14,11 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.datastore;
 
-import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.ConcreteFactory;
 
-public interface DomainModelImplementationFactory<T extends DomainModelElement>
+public interface DataStoreFactory extends ConcreteFactory<DataStore, DataStoreProfile>
 {
-	public abstract T create ();
+	@Override
+	public abstract DataStore create (DataStoreProfile profile);
 }
