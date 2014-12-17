@@ -1,4 +1,8 @@
 Class:							Base:	Multiplier:
+DomainModelProfile				907		5
+DomainModelProfile.Entry		911		3
+JPADataStoreBuilder.Key			919		2
+
 ActivityType					1009	997
 AbstractNamedActivity			1013	991
 GenericNamedActivity			1019	983
