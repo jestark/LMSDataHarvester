@@ -22,87 +22,58 @@ package ca.uoguelph.socs.icc.edm.domain;
  * abstract components of the domain model (interfaces, managers, etc) and
  * their implementations.
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
  */
 
 public enum DomainModelType
 {
-	/**
-	 * The Action interface.
-	 */
+	/** The Action interface. */
+	ACTION ("Action", Action.class),
 
-	ACTION ("Action"),
+	/** The Activity interface. */
+	ACTIVITY ("Activity", Activity.class),
 
-	/**
-	 * The Activity interface.
-	 */
+	/** The ActivitySource Interface. */
+	ACTIVITYSOURCE ("ActivitySource", ActivitySource.class),
 
-	ACTIVITY ("Activity"),
+	/** The ActivityType Interface. */
+	ACTIVITYTYPE ("ActivityType", ActivityType.class),
 
-	/**
-	 * The ActivitySource Interface.
-	 */
+	/** The Course interface. */
+	COURSE ("Course", Course.class),
 
-	ACTIVITYSOURCE ("ActivitySource"),
+	/** The Enrolment interface. */
+	ENROLMENT ("Enrolment", Enrolment.class),
 
-	/**
-	 * The ActivityType Interface.
-	 */
+	/** The Grade interface. */
+	GRADE ("Grade", grade.class),
 
-	ACTIVITYTYPE ("ActivityType"),
+	/** The LogEntry interface. */
+	LOGENTRY ("LogEntry", LogEntry.class),
 
-	/**
-	 * The Course interface.
-	 */
+	/** The Role interface. */
+	ROLE ("Role", Role.class),
 
-	COURSE ("Course"),
+	/** The User interface. */
+	USER ("User", User.class);
 
-	/**
-	 * The Enrolment interface.
-	 */
-
-	ENROLMENT ("Enrolment"),
-
-	/**
-	 * The Grade interface.
-	 */
-
-	GRADE ("Grade"),
-
-	/**
-	 * The LogEntry interface.
-	 */
-
-	LOGENTRY ("LogEntry"),
-
-	/**
-	 * The Role interface.
-	 */
-
-	ROLE ("Role"),
-
-	/**
-	 * The User interface.
-	 */
-
-	USER ("User");
-
-	/**
-	 * The name of the constant (and interface).
-	 */
-
+	/** The name of the constant (and interface). */
 	private final String name;
+
+	/** The interface class */
+	private final Class<?> cls;
 
 	/**
 	 * Create the Domain Model Type Enum.
 	 *
-	 * @param name The name of the constant
+	 * @param  name The name of the constant
 	 */
 
-	private DomainModelType (String name)
+	private DomainModelType (String name, Class<?> cls)
 	{
 		this.name = name;
+		this.cls = cls;
 	}
 
 	/**
@@ -114,6 +85,18 @@ public enum DomainModelType
 	public String getName ()
 	{
 		return this.name;
+	}
+
+	/**
+	 * Get the class for the interface which is associated with the value for the
+	 * type.
+	 *
+	 * @return The class which defines the associated interface
+	 */
+
+	public Class<?> getInterfaceClass ()
+	{
+		return this.cls;
 	}
 
 	/**
