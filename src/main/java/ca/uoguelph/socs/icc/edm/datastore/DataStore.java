@@ -59,7 +59,7 @@ public interface DataStore
 	 *                            query object.
 	 */
 
-	public abstract <T extends DomainModelElement, X extends T> DataStoreQuery<T> getQuery (Class<T> type, Class<X> impl);
+	public abstract <T extends DomainModelElement, X extends T> DataStoreQuery<T> createQuery (Class<T> type, Class<X> impl);
 
 	/**
 	 * Get the transaction manager for the <code>DataStore</code>.

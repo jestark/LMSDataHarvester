@@ -19,8 +19,6 @@ package ca.uoguelph.socs.icc.edm.datastore;
 import java.util.List;
 import java.util.Map;
 
-import java.util.HashMap;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -40,7 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
  * @see     JPADataStoreTransaction
  */
 
-public class JPADataStore implements DataStore
+public final class JPADataStore implements DataStore
 {
 	/** The JPA Entity manager factory for this database */
 	private final EntityManagerFactory emf;
@@ -50,9 +48,6 @@ public class JPADataStore implements DataStore
 
 	/** The transaction object */
 	private final JPADataStoreTransaction transaction;
-
-	/** Cache of query objects */
-	private final Map<Class<?>, JPADataStoreQuery<?, ?>> queries;
 
 	/** The logger */
 	private final Log log;
@@ -78,7 +73,6 @@ public class JPADataStore implements DataStore
 			this.em = this.emf.createEntityManager (properties);
 
 			this.transaction = new JPADataStoreTransaction (this);
-			this.queries = new HashMap<Class<?>, JPADataStoreQuery<?, ?>> ();
 		}
 		catch (RuntimeException ex)
 		{
@@ -137,10 +131,6 @@ public class JPADataStore implements DataStore
 	public void close ()
 	{
 		// clean up all of the queries.
-		for (JPADataStoreQuery<?, ?> q : this.queries.values ())
-		{
-			q.close ();
-		}
 
 		// Close the entity manager and factory.
 		if ((this.emf != null) && (this.emf.isOpen ()))
@@ -170,47 +160,21 @@ public class JPADataStore implements DataStore
 	 */
 
 	@Override
-	public <T extends DomainModelElement, X extends T> DataStoreQuery<T> getQuery (Class<T> type, Class<X> impl)
+	public <T extends DomainModelElement, X extends T> DataStoreQuery<T> createQuery (Class<T> type, Class<X> impl)
 	{
 		if (type == null)
 		{
 			this.log.error ("Interface type is NULL");
-			throw new NullPointerException ();
+			throw new NullPointerException ("Interface type is NULL");
 		}
-		
+
 		if (impl == null)
 		{
 			this.log.error ("Implementation type is NULL");
-			throw new NullPointerException ();
+			throw new NullPointerException ("Implementation type is NULL");
 		}
 
-		if (! this.queries.containsKey (impl))
-		{
-			this.queries.put (impl, new JPADataStoreQuery<T, X> (this, type, impl));
-		}
-
-		// Suppress the unchecked warning because java doesn't allow us to deal with
-		// it properly.  Instead both types are checked at runtime below.
-		@SuppressWarnings("unchecked")
-		JPADataStoreQuery<T, X> query = (JPADataStoreQuery<T, X>) this.queries.get (impl);
-
-		if (! impl.equals (query.getImplementationType ()))
-		{
-			String msg = "Specified implementation class (" + impl.getName () + ") does not match query implementation class (" + (query.getImplementationType ()).getName () + ")";
-
-			this.log.fatal (msg);
-			throw new ClassCastException (msg);
-		}
-
-		if (! type.equals (query.getInterfaceType ()))
-		{
-			String msg = "Specified interface class (" + type.getName () + ") does not match query interface class (" + (query.getInterfaceType ()).getName () + ")";
-
-			this.log.fatal (msg);
-			throw new ClassCastException (msg);
-		}
-
-		return query;
+		return new JPADataStoreQuery<T, X> (this, type, impl);
 	}
 
 	/**
