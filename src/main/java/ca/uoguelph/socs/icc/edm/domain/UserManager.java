@@ -39,7 +39,7 @@ import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
  * @see     User
  */
 
-public final class UserManager extends DomainModelManager<User>
+public final class UserManager extends AbstractManager<User>
 {
 	/** The logger */
 	private final Log log;
@@ -74,9 +74,9 @@ public final class UserManager extends DomainModelManager<User>
 	 *               data-store, not null
 	 */
 
-	protected UserManager (DomainModel model, DataStoreQuery<User> query)
+	protected UserManager (DomainModel model)
 	{
-		super (model, query);
+		super (model);
 
 		this.log = LogFactory.getLog (UserManager.class);
 	}
@@ -89,7 +89,7 @@ public final class UserManager extends DomainModelManager<User>
 
 	public UserBuilder getBuilder ()
 	{
-		return (UserBuilder) this.builder;
+		return (UserBuilder) this.fetchBuilder ();
 	}
 
 	/**
@@ -106,7 +106,7 @@ public final class UserManager extends DomainModelManager<User>
 
 		params.put ("idnumber", idnumber);
 
-		return this.query.query ("idnumber", params);
+		return (this.fetchQuery ()).query ("idnumber", params);
 	}
 
 	/**
@@ -123,6 +123,6 @@ public final class UserManager extends DomainModelManager<User>
 
 		params.put ("username", username);
 
-		return this.query.query ("username", params);
+		return (this.fetchQuery ()).query ("username", params);
 	}
 }

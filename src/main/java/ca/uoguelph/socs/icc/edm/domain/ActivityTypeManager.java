@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
  * @see     ActivityType
  */
 
-public final class ActivityTypeManager extends DomainModelManager<ActivityType>
+public final class ActivityTypeManager extends AbstractManager<ActivityType>
 {
 	/** The logger */
 	private final Log log;
@@ -64,9 +64,9 @@ public final class ActivityTypeManager extends DomainModelManager<ActivityType>
 	 *               data-store, not null
 	 */
 
-	protected ActivityTypeManager (DomainModel model, DataStoreQuery<ActivityType> query)
+	protected ActivityTypeManager (DomainModel model)
 	{
-		super (model, query);
+		super (model);
 
 		this.log = LogFactory.getLog (UserManager.class);
 	}
@@ -79,7 +79,7 @@ public final class ActivityTypeManager extends DomainModelManager<ActivityType>
 
 	public ActivityTypeBuilder getBuilder ()
 	{
-		return (ActivityTypeBuilder) this.builder;
+		return (ActivityTypeBuilder) this.fetchBuilder ();
 	}
 
 	/**

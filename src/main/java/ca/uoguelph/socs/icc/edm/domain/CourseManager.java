@@ -30,7 +30,7 @@ import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
  * @see     Course
  */
 
-public final class CourseManager extends DomainModelManager<Course>
+public final class CourseManager extends AbstractManager<Course>
 {
 	/** The logger */
 	private final Log log;
@@ -65,11 +65,11 @@ public final class CourseManager extends DomainModelManager<Course>
 	 *               data-store, not null
 	 */
 
-	protected CourseManager (DomainModel model, DataStoreQuery<Course> query)
+	protected CourseManager (DomainModel model)
 	{
-		super (model, query);
+		super (model);
 
-		this.log = LogFactory.getLog (UserManager.class);
+		this.log = LogFactory.getLog (CourseManager.class);
 	}
 
 	/**
@@ -80,7 +80,7 @@ public final class CourseManager extends DomainModelManager<Course>
 
 	public CourseBuilder getBuilder ()
 	{
-		return (CourseBuilder) this.builder;
+		return (CourseBuilder) this.fetchBuilder ();
 	}
 
 	/**

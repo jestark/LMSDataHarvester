@@ -34,7 +34,7 @@ import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
  * @see     Action
  */
 
-public final class ActionManager extends DomainModelManager<Action>
+public final class ActionManager extends AbstractManager<Action>
 {
 	/** The logger */
 	private final Log log;
@@ -69,9 +69,9 @@ public final class ActionManager extends DomainModelManager<Action>
 	 *               data-store, not null
 	 */
 
-	protected ActionManager (DomainModel model, DataStoreQuery<Action> query)
+	protected ActionManager (DomainModel model)
 	{
-		super (model, query);
+		super (model);
 
 		this.log = LogFactory.getLog (UserManager.class);
 	}
@@ -84,7 +84,7 @@ public final class ActionManager extends DomainModelManager<Action>
 
 	public ActionBuilder getBuilder ()
 	{
-		return (ActionBuilder) this.builder;
+		return (ActionBuilder) this.fetchBuilder ();
 	}
 
 	/**
@@ -105,6 +105,6 @@ public final class ActionManager extends DomainModelManager<Action>
 		Map<String, Object> parameters = new HashMap<String, Object> ();
 		parameters.put ("name", name);
 
-		return query.query ("name", parameters);
+		return (this.fetchQuery ()).query ("name", parameters);
 	}
 }

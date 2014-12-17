@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
  * @version 1.0
  */
 
-public final class LogEntryManager extends DomainModelManager<LogEntry>
+public final class LogEntryManager extends AbstractManager<LogEntry>
 {
 	/** The logger */
 	private final Log log;
@@ -66,11 +66,11 @@ public final class LogEntryManager extends DomainModelManager<LogEntry>
 	 *               data-store, not null
 	 */
 
-	protected LogEntryManager (DomainModel model, DataStoreQuery<LogEntry> query)
+	protected LogEntryManager (DomainModel model)
 	{
-		super (model, query);
+		super (model);
 
-		this.log = LogFactory.getLog (UserManager.class);
+		this.log = LogFactory.getLog (LogEntryManager.class);
 	}
 
 	/**
@@ -81,7 +81,7 @@ public final class LogEntryManager extends DomainModelManager<LogEntry>
 
 	public LogEntryBuilder getBuilder ()
 	{
-		return (LogEntryBuilder) this.builder;
+		return (LogEntryBuilder) this.fetchBuilder ();
 	}
 
 	/**

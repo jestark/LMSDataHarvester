@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
  * @see     Role
  */
 
-public final class RoleManager extends DomainModelManager<Role>
+public final class RoleManager extends AbstractManager<Role>
 {
 	/** The logger */
 	private final Log log;
@@ -63,11 +63,11 @@ public final class RoleManager extends DomainModelManager<Role>
 	 *               data-store, not null
 	 */
 
-	protected RoleManager (DomainModel model, DataStoreQuery<Role> query)
+	protected RoleManager (DomainModel model)
 	{
-		super (model, query);
+		super (model);
 
-		this.log = LogFactory.getLog (UserManager.class);
+		this.log = LogFactory.getLog (RoleManager.class);
 	}
 
 	/**
@@ -78,7 +78,7 @@ public final class RoleManager extends DomainModelManager<Role>
 
 	public RoleBuilder getBuilder ()
 	{
-		return (RoleBuilder) this.builder;
+		return (RoleBuilder) this.fetchBuilder ();
 	}
 
 	/**

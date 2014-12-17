@@ -34,45 +34,37 @@ import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
  * @param   <T> The type of <code>DomainModelElement</code> to be processed
  */
 
-public abstract class DomainModelManager<T extends DomainModelElement>
+public abstract class AbstractManager<T extends DomainModelElement>
 {
 	/** The <code>DomainModel</code> instance which owns this manager. */
 	protected final DomainModel model;
-
-	/** The query for assessing the data store */
-	protected final DataStoreQuery<T> query;
-
-	/** The builder */
-	protected DomainModelBuilder<T> builder;
 
 	/** The logger */
 	private final Log log;
 
 	/**
-	 * Create the <code>DomainModelManager</code>.
+	 * Create the <code>AbstractManager</code>.
 	 *
 	 * @param  model The <code>DomainModel</code> instance for this manager, not null
-	 * @param  query The <code>DataStoreQuery</code> to be used to access the 
+	 * @param  query The <code>DataStoreQuery</code> to be used to access the
 	 *               data-store, not null
 	 */
-	
-	protected DomainModelManager (DomainModel model, DataStoreQuery<T> query)
+
+	protected AbstractManager (DomainModel model)
 	{
 		this.model = model;
-		this.query = query;
 
 		this.log = LogFactory.getLog (DomainModelManager.class);
 	}
 
-	protected final void setBuilder (DomainModelBuilder<T> builder)
+	protected final DataStoreQuery<T> fetchQuery ()
 	{
-		if (builder == null)
-		{
-			this.log.error ("Builder is NULL");
-			throw new NullPointerException ("Builder is NULL");
-		}
+		return null;
+	}
 
-		this.builder = builder;
+	protected final DomainModelBuilder<T> fetchBuilder ()
+	{
+		return null;
 	}
 
 	/**
@@ -84,18 +76,18 @@ public abstract class DomainModelManager<T extends DomainModelElement>
 
 	public T fetchById (Long id)
 	{
-		return this.query.query (id);
+		return (this.fetchQuery ()).query (id);
 	}
-	
+
 	/**
 	 * Retrieve a list of all of the entities from the underlying data store.
 	 *
 	 * @return A list of objects.
 	 */
-	
+
 	public List<T> fetchAll ()
 	{
-		return this.query.queryAll ();
+		return (this.fetchQuery ()).queryAll ();
 	}
 
 	/**
@@ -107,7 +99,7 @@ public abstract class DomainModelManager<T extends DomainModelElement>
 	 * @return        A reference to the inserted entity
 	 * @see    #insert(DomainModelElement, Boolean) insert(T, Boolean)
 	 */
-	
+
 	public final T insert (T entity)
 	{
 		return this.insert (entity, new Boolean (false));
@@ -121,7 +113,7 @@ public abstract class DomainModelManager<T extends DomainModelElement>
 	 *                   inserted, <code>false</code> otherwise, not null
 	 * @return           A reference to the inserted entity
 	 */
-	
+
 	public T insert (T entity, Boolean recursive)
 	{
 		return null;
@@ -129,13 +121,13 @@ public abstract class DomainModelManager<T extends DomainModelElement>
 
 	/**
 	 * Remove an entity from the domain model and the underlying data store. This
-	 * is a convenience method that performs a non-recursive removal of the 
+	 * is a convenience method that performs a non-recursive removal of the
 	 * given entity from the domain model and underlying data store.
 	 *
 	 * @param  entity The entity to remove from the domain model, not null
-	 * @see    #remove(DomainModelElement, Boolean) remove(T, Boolean) 
+	 * @see    #remove(DomainModelElement, Boolean) remove(T, Boolean)
 	 */
-	
+
 	public final void remove (T entity)
 	{
 		this.remove (entity, new Boolean (false));
@@ -148,7 +140,7 @@ public abstract class DomainModelManager<T extends DomainModelElement>
 	 * @param  recursive <code>true</code> if dependent entities should also be
 	 *                   removed, <code>false</code> otherwise, not null
 	 */
-	
+
 	public void remove (T entity, Boolean recursive)
 	{
 	}

@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
  * @see     Grade
  */
 
-public final class EnrolmentManager extends DomainModelManager<Enrolment>
+public final class EnrolmentManager extends AbstractManager<Enrolment>
 {
 	/** The logger */
 	private final Log log;
@@ -66,11 +66,11 @@ public final class EnrolmentManager extends DomainModelManager<Enrolment>
 	 *               data-store, not null
 	 */
 
-	protected EnrolmentManager (DomainModel model, DataStoreQuery<Enrolment> query)
+	protected EnrolmentManager (DomainModel model)
 	{
-		super (model, query);
+		super (model);
 
-		this.log = LogFactory.getLog (UserManager.class);
+		this.log = LogFactory.getLog (EnrolmentManager.class);
 	}
 
 	/**
@@ -81,7 +81,7 @@ public final class EnrolmentManager extends DomainModelManager<Enrolment>
 
 	public EnrolmentBuilder getBuilder ()
 	{
-		return (EnrolmentBuilder) this.builder;
+		return (EnrolmentBuilder) this.fetchBuilder ();
 	}
 
 	/**
