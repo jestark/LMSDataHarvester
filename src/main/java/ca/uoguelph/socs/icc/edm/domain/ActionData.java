@@ -1,3 +1,19 @@
+/* Copyright (C) 2014 James E. Stark
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
@@ -5,11 +21,35 @@ import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+/**
+ * Implementation of the Action interface.  It is expected that this object
+ * will be accessed though the Action interface, and its relevant managers.
+ * See the Action interface documentation for details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     Action
+ * @see     ActionManager
+ */
+
 public class ActionData implements Action
 {
+	/** The datastore id of this action */
 	private Long id;
+
+	/** The name of this action */
 	private String name;
+
+	/** A set of the Activity Types associated with this action */
 	private Set<ActivityType> types;
+
+	/**
+	 * Create the <code>Action</code> with null values.  Default no-argument
+	 * constructor used by the <code>DataStore</code> (particularly the Java
+	 * Persistence API) when loading an instance of the class.  This constructor
+	 * initializes all values to null and expects that the values in the class
+	 * will be set via the (protected) mutator methods.
+	 */
 
 	protected ActionData ()
 	{
@@ -18,12 +58,14 @@ public class ActionData implements Action
 		this.types = null;
 	}
 
-	public ActionData (String name)
-	{
-		this ();
-		this.name = new String (name);
-		this.types = new HashSet<ActivityType> ();
-	}
+	/**
+	 * Override java.lang.object's equals method to compare to Actions based on
+	 * their names.
+	 *
+	 * @param  obj The reference object with which to compare
+	 * @return <code>true</code> if the two actions have the same name (or if
+	 * the references are identical), <code>false</code> otherwise.
+	 */
 
 	@Override
 	public boolean equals (Object obj)
@@ -49,6 +91,13 @@ public class ActionData implements Action
 		return result;
 	}
 
+	/**
+	 * Override of java.lang.object's hashCode method to compute a hash code
+	 * based on the name of the Action.
+	 *
+	 * @return The hash code.
+	 */
+
 	@Override
 	public int hashCode ()
 	{
@@ -61,35 +110,96 @@ public class ActionData implements Action
 		return hbuilder.toHashCode ();
 	}
 
+	/**
+	 * Get the datastore ID for the Action.
+	 *
+	 * @return The unique numeric ID of the Action.
+	 */
+
 	public Long getId ()
 	{
 		return this.id;
 	}
+
+	/**
+	 * Internal method used by the datastore and managers to set the datastore
+	 * ID for the Action.
+	 *
+	 * @param id The unique numeric ID of the Action.
+	 */
 
 	protected void setId (Long id)
 	{
 		this.id = id;
 	}
 
+	/**
+	 * Get a set containing all of the ActivityTypes associated with this
+	 * Action.
+	 *
+	 * @return The Set of Activity Types associated with this Action.
+	 */
+
 	public Set<ActivityType> getTypes ()
 	{
 		return new HashSet<ActivityType> (this.types);
 	}
+
+	/**
+	 * Internal method used by the datastore and managers to set the assocated
+	 * Activity Type.
+	 *
+	 * @param types The Set of Activity Types associated with this Action.
+	 */
 
 	protected void setTypes (Set<ActivityType> types)
 	{
 		this.types = types;
 	}
 
+	/**
+	 * Internal methos used by the managers to associate an activity type with
+	 * the action.
+	 *
+	 * @param type The Activity Type to associate with the action.
+	 * @return <code>true</code> if the Activity Type was successfully added,
+	 * <code>false</code> otherwise.
+	 */
+
+	protected boolean addType (ActivityType type)
+	{
+		return this.types.add (type);
+	}
+
+	/**
+	 * Get the name of the Action.
+	 *
+	 * @return The name of the Action.
+	 */
+
 	public String getName()
 	{
 		return this.name;
 	}
 
+	/**
+	 * Internal method used by the datastore and managers to set the name of the
+	 * Action.
+	 *
+	 * @param name The name of the Action.
+	 */
+
 	protected void setName (String name)
 	{
 		this.name = name;
 	}
+
+	/**
+	 * Override java.lang.Object's toString function to display the name of the
+	 * Action.
+	 *
+	 * @return A string identifying the Action.
+	 */
 
 	@Override
 	public String toString()
