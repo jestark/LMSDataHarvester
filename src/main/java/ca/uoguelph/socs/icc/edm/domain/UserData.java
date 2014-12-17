@@ -18,53 +18,63 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 import java.util.HashSet;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import ca.uoguelph.socs.icc.edm.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.datastore.IdGenerator;
+
 /**
- * This class inplments the User interface, to repersent a user in the domain
+ * This class implements the User interface, to represent a user in the domain
  * model.  See the user interface for the details about how the user
  * representations behave.
  *
- * @see ca.uoguelph.socs.icc.edm.domain.User The user interface.
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.User
  */
 
 public class UserData implements User
 {
 	/**
-	 * The datastore id of this user.
+	 *
 	 */
 
+	static class UserDataFactory implements BuilderFactory<User>, ElementFactory<UserData>
+	{
+		@Override
+		public UserData create ()
+		{
+			return new UserData ();
+		}
+
+		@Override
+		public DomainModelBuilder<User> create (DomainModelManager<User> manager)
+		{
+			return null;
+//			return new CoreUserBuilder<UserData> (((UserManager) manager), this, generator);
+		}
+	}
+
+	/** The data store id of this user. */
 	private Long id;
 
-	/**
-	 * The ID number (Student ID) of this user.
-	 */
-
+	/** The ID number (Student ID) of this user. */
 	private Integer idnumber;
 
-	/**
-	 * The username of this user.
-	 */
-
+	/** The username of this user. */
 	private String username;
 
-	/**
-	 * The user's first (given) name.
-	 */
-
+	/** The user's first (given) name. */
 	private String firstname;
 
-	/**
-	 * The user's last name (surname).
-	 */
-
+	/** The user's last name (surname). */
 	private String lastname;
 
 	/**
-	 * The enrolments objects correcponding to the courses in which the user is
+	 * The enrolments objects corresponding to the courses in which the user is
 	 * enrolled.
 	 */
 
@@ -89,21 +99,21 @@ public class UserData implements User
 	 * identifying user data.  The following fields are used to compare two users:
 	 *
 	 * <ul>
-	 * 	<li>The user's id number</li>
-	 * 	<li>The user's username</li>
-	 * 	<li>The user's first name</li>
-	 * 	<li>The user's last name</li>
+	 * 	<li>The user's id number
+	 * 	<li>The user's username
+	 * 	<li>The user's first name
+	 * 	<li>The user's last name
 	 * </ul>
-	 *
-	 * <p>If all of these fields compare as equal then the user's are considered
-	 * to be equal.  A comparison of these filds will only occur if the the 
+	 * <p>
+	 * If all of these fields compare as equal then the user's are considered
+	 * to be equal.  A comparison of these fields will only occur if the 
 	 * object's being compared have different references (otherwise this method 
-	 * will immediately return true), and the the two objects are of the same 
+	 * will immediately return true), and the two objects are of the same 
 	 * class (otherwise this method will immediately return false).</p>
 	 *
-	 * @param obj The object to compare to this user.
-	 * @return <code>True</code> if the users should be considered to be equal.
-	 * <code>False</code> otherwise.
+	 * @param  obj The object to compare to this user
+	 * @return     <code>true</code> if the users should be considered to be
+	 *             equal, <code>false</code> otherwise.
 	 */
 
 	@Override
@@ -138,10 +148,10 @@ public class UserData implements User
 	 * are immutable:
 	 *
 	 * <ul>
-	 * 	<li>The user's id number</li>
-	 * 	<li>The user's username</li>
-	 * 	<li>The user's first name</li>
-	 * 	<li>The user's last name</li>
+	 * 	<li>The user's id number
+	 * 	<li>The user's username
+	 * 	<li>The user's first name
+	 * 	<li>The user's last name
 	 * </ul>
 	 *
 	 * @return The hash code for the user.
@@ -257,8 +267,8 @@ public class UserData implements User
 	}
 
 	/**
-	 * Intialise the user's first name.  This method is intended to be used by a
-	 * datastore (particularly JPA) to initialse the user's first name when the 
+	 * Initialize the user's first name.  This method is intended to be used by a
+	 * datastore (particularly JPA) to initialize the user's first name when the 
 	 * user is loaded from a data store.
 	 *
 	 * @param firstname The user's first name.
@@ -282,8 +292,8 @@ public class UserData implements User
 	}
 
 	/**
-	 * Intialise the user's last name.  This method is intended to be used by a
-	 * datastore (particularly JPA) to initialse the user's last name when the 
+	 * Initialize the user's last name.  This method is intended to be used by a
+	 * datastore (particularly JPA) to initialize the user's last name when the 
 	 * user is loaded from a data store.
 	 *
 	 * @param lastname The user's last name.
@@ -345,7 +355,7 @@ public class UserData implements User
 	}
 
 	/**
-	 * Intialise the set of enrolment objects assocated with this user.  This 
+	 * Initialize the set of enrolment objects associated with this user.  This 
 	 * method is intended to be used by a datastore (particularly JPA) to 
 	 * initialse the user's enrolments with the user is loaded from a data store.
 	 *
@@ -375,7 +385,7 @@ public class UserData implements User
 	}
 
 	/**
-	 * Override java.lang.Object's toString methof to display the name of the
+	 * Override java.lang.Object's toString method to display the name of the
 	 * user.
 	 *
 	 * @return A String containing the full name of the user.
