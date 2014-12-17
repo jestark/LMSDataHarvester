@@ -27,7 +27,7 @@ import java.util.Set;
  *
  * <p>In the domain model, the user is a root level element, as its existence
  * is not dependent on any other components of the domain model.  Only 
- * Enrolment depends on User, and that dependentcy is weak.  The domain model
+ * Enrolment depends on User, and that dependency is weak.  The domain model
  * is designed such that User is optional.  However, it would be wise to make
  * sure that any datastore that doe not contain the user's is completely 
  * immutable.</p>
@@ -35,17 +35,17 @@ import java.util.Set;
  * <p>With the exception of adding and removing enrolments, User's, once
  * created, are immutable.</p>
  *
- * @see ca.uoguelph.socs.icc.edm.domain.UserManager The user manager.
- * @see ca.uoguelph.socs.icc.edm.domain.Enrolment The Enrolment interface.
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
+ * @see     Enrolment
+ * @see     UserManager
  */
 
-public interface User extends DomainModelElement
+public interface User extends Element
 {
 	/**
 	 * Get the user's id number.  In most cases this will be the user's student
-	 * number, or a similar idetifier used to track the student by the students
+	 * number, or a similar identifier used to track the student by the students
 	 * institution.  While the id number is not used as the database identifier
 	 * it is expected to be unique.
 	 *

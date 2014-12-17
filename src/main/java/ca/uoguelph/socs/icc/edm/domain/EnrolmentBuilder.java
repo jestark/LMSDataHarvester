@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-public interface EnrolmentBuilder extends DomainModelBuilder<Enrolment>
+public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
 {
 	public abstract Course getCourse ();
 	public abstract EnrolmentBuilder setCourse (Course course);

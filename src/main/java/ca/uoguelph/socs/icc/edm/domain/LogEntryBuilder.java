@@ -18,7 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
-public interface LogEntryBuilder extends DomainModelBuilder<LogEntry>
+public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 {
 	public abstract Action getAction ();
 	public abstract LogEntryBuilder setAction (Action action);

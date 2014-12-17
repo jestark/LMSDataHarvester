@@ -33,7 +33,7 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * Add, remove and retrieve data from a database using the Java Persistence
@@ -47,7 +47,7 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
  * @see     JPADataStore
  */
 
-public final class JPADataStoreQuery<T extends DomainModelElement, X extends T> implements DataStoreQuery<T>
+public final class JPADataStoreQuery<T extends Element, X extends T> implements DataStoreQuery<T>
 {
 	/** The data store instance which is being queried */
 	private final JPADataStore datastore;

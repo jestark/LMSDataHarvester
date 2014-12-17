@@ -16,9 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.datastore.IdGenerator;
-
-public interface BuilderFactory<T extends DomainModelElement> extends ConcreteFactory<DomainModelBuilder<T>, DomainModelManager<T>>
+public interface BuilderFactory<T extends Element> extends ConcreteFactory<ElementBuilder<T>, ElementManager<T>>
 {
-	public abstract DomainModelBuilder<T> create (DomainModelManager<T> manager);
+	public abstract ElementBuilder<T> create (ElementManager<T> manager);
 }

@@ -18,7 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
-public interface LogEntry extends DomainModelElement
+public interface LogEntry extends Element
 {
 	public abstract Enrolment getEnrolment();
 	public abstract Course getCourse();

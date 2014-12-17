@@ -18,11 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
-
 /**
  * Top level interface for all operations involving the domain model and the
  * underlying data-store.  This class and its subclasses are responsible for
@@ -34,39 +29,8 @@ import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
  * @param   <T> The type of <code>Element</code> to be processed
  */
 
-public abstract class AbstractManager<T extends Element> implements ElementManager<T>
+public interface ElementManager<T extends Element>
 {
-	/** The <code>DomainModel</code> instance which owns this manager. */
-	protected final DomainModel model;
-
-	/** The logger */
-	private final Log log;
-
-	/**
-	 * Create the <code>AbstractManager</code>.
-	 *
-	 * @param  model The <code>DomainModel</code> instance for this manager, not null
-	 * @param  query The <code>DataStoreQuery</code> to be used to access the
-	 *               data-store, not null
-	 */
-
-	protected AbstractManager (DomainModel model)
-	{
-		this.model = model;
-
-		this.log = LogFactory.getLog (AbstractManager.class);
-	}
-
-	protected final DataStoreQuery<T> fetchQuery ()
-	{
-		return null;
-	}
-
-	protected final ElementBuilder<T> fetchBuilder ()
-	{
-		return null;
-	}
-
 	/**
 	 * Retrieve an object from the data store based on its primary key.
 	 *

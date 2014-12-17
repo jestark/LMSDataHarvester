@@ -19,12 +19,12 @@ package ca.uoguelph.socs.icc.edm.domain;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.datastore.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
 
-public abstract class AbstractBuilder<T extends DomainModelElement>
+public abstract class AbstractBuilder<T extends Element>
 {
 	/** The manager (used to add new instances to the model) */
-	private final DomainModelManager<T> manager;
+	private final ElementManager<T> manager;
 
 	/** The ID number generator */
 //	protected final IdGenerator generator;
@@ -32,7 +32,7 @@ public abstract class AbstractBuilder<T extends DomainModelElement>
 	/** The Logger */
 	private final Log log;
 
-	protected AbstractBuilder (DomainModelManager<T> manager)
+	protected AbstractBuilder (ElementManager<T> manager)
 	{
 		this.log = LogFactory.getLog (AbstractBuilder.class);
 		

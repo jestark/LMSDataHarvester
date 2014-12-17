@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-public interface ElementFactory<T extends DomainModelElement>
+public interface ElementFactory<T extends Element>
 {
 	public abstract T create ();
 }

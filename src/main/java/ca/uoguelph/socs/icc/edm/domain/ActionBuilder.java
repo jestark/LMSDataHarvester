@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-public interface ActionBuilder extends DomainModelBuilder<Action>
+public interface ActionBuilder extends ElementBuilder<Action>
 {
 	public abstract String getName ();
 	public abstract ActionBuilder setName (String name);

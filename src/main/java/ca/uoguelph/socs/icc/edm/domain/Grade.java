@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-public interface Grade extends DomainModelElement
+public interface Grade extends Element
 {
 	public abstract String getName ();
 	public abstract Activity getActivity ();

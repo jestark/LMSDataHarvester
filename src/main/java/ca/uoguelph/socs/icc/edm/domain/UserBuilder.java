@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-public interface UserBuilder extends DomainModelBuilder<User>
+public interface UserBuilder extends ElementBuilder<User>
 {
 	public abstract Integer getIdNumber ();
 	public abstract UserBuilder setIdNumber (Integer idnumber);

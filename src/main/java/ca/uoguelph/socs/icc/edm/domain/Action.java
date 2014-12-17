@@ -28,7 +28,7 @@ import java.util.Set;
  * @see     ActionManager
  */
 
-public interface Action extends DomainModelElement
+public interface Action extends Element
 {
 	/**
 	 * Get a Set of the Activity Types containing this action.

@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
 import ca.uoguelph.socs.icc.edm.datastore.IdGenerator;
 
-public abstract class AbstractManagerFactory<T extends DomainModelElement, X extends DomainModelManager<T>>
+public abstract class AbstractManagerFactory<T extends Element, X extends ElementManager<T>>
 {
 	private X manager;
 
@@ -63,7 +63,7 @@ public abstract class AbstractManagerFactory<T extends DomainModelElement, X ext
 		return null;
 	}
 
-	protected final DomainModelBuilder<T> createBuilder (DomainModel model)
+	protected final ElementBuilder<T> createBuilder (DomainModel model)
 	{
 		return null;
 	}

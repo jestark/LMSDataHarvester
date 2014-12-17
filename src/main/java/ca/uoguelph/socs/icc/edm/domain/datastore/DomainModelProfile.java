@@ -24,7 +24,7 @@ import java.util.HashMap;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
 
 /**
@@ -71,7 +71,7 @@ public final class DomainModelProfile
 		private final Class<? extends IdGenerator> generator;
 
 		/** Class implementing the interface */
-		private final Class<? extends DomainModelElement> implementation;
+		private final Class<? extends Element> implementation;
 
 		/**
 		 * Create the <code>Entry</code>.
@@ -85,7 +85,7 @@ public final class DomainModelProfile
 		 *                        this entry, not null
 		 */
 
-		protected Entry (Boolean available, Class<? extends IdGenerator> generator, Class<? extends DomainModelElement> implementation)
+		protected Entry (Boolean available, Class<? extends IdGenerator> generator, Class<? extends Element> implementation)
 		{
 			this.available = available;
 			this.generator = generator;
@@ -179,7 +179,7 @@ public final class DomainModelProfile
 		 *         <code>DataStore</code>
 		 */
 
-		public Class<? extends DomainModelElement> getImplClass ()
+		public Class<? extends Element> getImplClass ()
 		{
 			return this.implementation;
 		}
@@ -393,7 +393,7 @@ public final class DomainModelProfile
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
-	public Class<? extends DomainModelElement> getImplClass (DomainModelType element)
+	public Class<? extends Element> getImplClass (DomainModelType element)
 	{
 		if (element == null)
 		{
@@ -426,7 +426,7 @@ public final class DomainModelProfile
 	 * @see    DomainModelBuilder#setEntry
 	 */
 
-	protected void addEntry (DomainModelType element, Boolean available, Class<? extends DomainModelElement> impl, Class<? extends IdGenerator> generator)
+	protected void addEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
 	{
 		if (element == null)
 		{

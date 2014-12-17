@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-public interface ActivityBuilder extends DomainModelBuilder<Activity>
+public interface ActivityBuilder extends ElementBuilder<Activity>
 {
 	public abstract ActivityType getActivityType ();
 	public abstract Course getCourse ();

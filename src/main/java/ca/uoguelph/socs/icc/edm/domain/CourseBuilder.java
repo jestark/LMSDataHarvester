@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-public interface CourseBuilder extends DomainModelBuilder<Course>
+public interface CourseBuilder extends ElementBuilder<Course>
 {
 	public abstract String getName ();
 	public abstract CourseBuilder setName (String name);

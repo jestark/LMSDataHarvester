@@ -16,19 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-/**
- * Root level interface for all of the elements of the domain model.  Since
- * there is no common behaviors shared by all of the elements in the domain
- * model this interface it empty.  It exists to allow the managers and the 
- * <code>DataStore</code> to handle all of the elements of the domain model
- * generically.
- *
- * @author  James E. Stark
- * @version 1.0
- * @see     DomainModelManager
- * @see     ca.uoguelph.socs.icc.edm.datastore.DataStore
- */
-
-public interface DomainModelElement
+public interface ElementBuilder<T extends Element>
 {
+	public abstract T create ();
+	public abstract void clear ();
 }

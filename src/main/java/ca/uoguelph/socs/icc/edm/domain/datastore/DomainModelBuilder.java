@@ -24,8 +24,8 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * Create instances of the <code>DomainModel</code>.  This class will build up
@@ -184,9 +184,9 @@ public abstract class DomainModelBuilder
 	 *                 <code>DataStore</code>
 	 */
 
-	public final Class<? extends DomainModelElement> getImplClass (DomainModelType element)
+	public final Class<? extends Element> getImplClass (DomainModelType element)
 	{
-		Class<? extends DomainModelElement> impl = null;
+		Class<? extends Element> impl = null;
 
 		try
 		{
@@ -235,7 +235,7 @@ public abstract class DomainModelBuilder
 	 *                                  element
 	 */
 
-	public final void setEntry (DomainModelType element, Boolean available, Class<? extends DomainModelElement> impl, Class<? extends IdGenerator> generator)
+	public final void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
 	{
 		try
 		{

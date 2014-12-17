@@ -18,7 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
-public interface ActivitySource extends DomainModelElement
+public interface ActivitySource extends Element
 {
 	public abstract String getName ();
 	public abstract Set<ActivityType> getTypes ();

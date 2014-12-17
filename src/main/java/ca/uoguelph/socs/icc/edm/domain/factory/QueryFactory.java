@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
  * @param   <X> The type of the implementation class
  */
 
-public final class QueryFactory<T extends DomainModelElement, X extends T> implements ConcreteFactory<DataStoreQuery<T>, DataStore>
+public final class QueryFactory<T extends Element, X extends T> implements ConcreteFactory<DataStoreQuery<T>, DataStore>
 {
 	private final Class<T> type;
 	private final Class<X> impl;

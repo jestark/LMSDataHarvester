@@ -28,7 +28,7 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  *
@@ -160,7 +160,7 @@ public final class JPADataStore implements DataStore
 	 */
 
 	@Override
-	public <T extends DomainModelElement, X extends T> DataStoreQuery<T> createQuery (Class<T> type, Class<X> impl)
+	public <T extends Element, X extends T> DataStoreQuery<T> createQuery (Class<T> type, Class<X> impl)
 	{
 		if (type == null)
 		{

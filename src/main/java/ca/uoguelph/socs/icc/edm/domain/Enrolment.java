@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
-public interface Enrolment extends DomainModelElement
+public interface Enrolment extends Element
 {
 	public abstract String getName ();
 	public abstract Course getCourse();

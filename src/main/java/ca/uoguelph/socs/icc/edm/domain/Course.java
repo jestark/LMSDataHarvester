@@ -18,7 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
-public interface Course extends DomainModelElement
+public interface Course extends Element
 {
 	public abstract String getName ();
 	public abstract Semester getSemester ();

@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-public interface RoleBuilder extends DomainModelBuilder<Role>
+public interface RoleBuilder extends ElementBuilder<Role>
 {
 	public abstract String getName ();
 	public abstract RoleBuilder setName (String name);

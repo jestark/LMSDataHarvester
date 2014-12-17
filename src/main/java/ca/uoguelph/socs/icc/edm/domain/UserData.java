@@ -51,7 +51,7 @@ public class UserData implements User
 		}
 
 		@Override
-		public DomainModelBuilder<User> create (DomainModelManager<User> manager)
+		public ElementBuilder<User> create (ElementManager<User> manager)
 		{
 			return null;
 //			return new CoreUserBuilder<UserData> (((UserManager) manager), this, generator);

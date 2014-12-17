@@ -61,7 +61,7 @@ public final class DomainModel
 		this.log = LogFactory.getLog (DomainModel.class);
 	}
 
-	protected <T extends DomainModelElement> DataStoreQuery<T> createQuery (QueryFactory<T> factory)
+	protected <T extends Element> DataStoreQuery<T> createQuery (QueryFactory<T> factory)
 	{
 		return factory.create (this.datastore);
 	}
@@ -111,7 +111,7 @@ public final class DomainModel
 	}
 
 	/**
-	 * Get the requested <code>DomainModelManager</code>.
+	 * Get the requested <code>ElementManager</code>.
 	 *
 	 * @param <T>                 The type of the manager
 	 * @param type                The manager type class, not null
@@ -123,7 +123,7 @@ public final class DomainModel
 	 *                            (should never happen).
 	 */
 
-	public <T extends DomainModelManager<? extends DomainModelElement>> T getManager (Class<T> type)
+	public <T extends ElementManager<? extends Element>> T getManager (Class<T> type)
 	{
 		if (type == null)
 		{

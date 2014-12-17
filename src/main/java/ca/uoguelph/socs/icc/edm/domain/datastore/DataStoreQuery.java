@@ -20,20 +20,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModelElement;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  *
  *
  * @author James E. Stark
  * @version 1.0
- * @param   <T> The type of <code>DomainModelElement</code> to return from
+ * @param   <T> The type of <code>Element</code> to return from
  *              query methods.
  * @see     DataStore
- * @see     ca.uoguelph.socs.icc.edm.domain.DomainModelElement
+ * @see     ca.uoguelph.socs.icc.edm.domain.Element
  */
 
-public interface DataStoreQuery<T extends DomainModelElement>
+public interface DataStoreQuery<T extends Element>
 {
 	/**
 	 * Get the set of parameter names for the specified query.

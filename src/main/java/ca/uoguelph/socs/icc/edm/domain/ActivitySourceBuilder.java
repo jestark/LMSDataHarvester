@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-public interface ActivitySourceBuilder extends DomainModelBuilder<ActivitySource>
+public interface ActivitySourceBuilder extends ElementBuilder<ActivitySource>
 {
 	public abstract String getName ();
 	public abstract ActivitySourceBuilder setName (String name);

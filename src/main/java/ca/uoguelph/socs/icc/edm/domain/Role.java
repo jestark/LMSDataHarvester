@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-public interface Role extends DomainModelElement
+public interface Role extends Element
 {
 	public abstract String getName ();
 }
