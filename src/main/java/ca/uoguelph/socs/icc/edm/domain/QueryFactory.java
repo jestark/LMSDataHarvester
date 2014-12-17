@@ -19,7 +19,61 @@ package ca.uoguelph.socs.icc.edm.domain;
 import ca.uoguelph.socs.icc.edm.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
 
-public interface QueryFactory<T extends DomainModelElement> extends ConcreteFactory<DataStoreQuery<T>, DataStore>
+/**
+ * Factory to create queries based on interface and implementation classes.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @param   <T> The type of the interface class
+ * @param   <X> The type of the implementation class
+ */
+
+public final class QueryFactory<T extends DomainModelElement, X extends T> implements ConcreteFactory<DataStoreQuery<T>, DataStore>
 {
-	public abstract DataStoreQuery<T> create (DataStore datastore);
+	private final Class<T> type;
+	private final Class<X> impl;
+
+	/**
+	 * Create the <code>QueryFactory</code>.
+	 *
+	 * @param  type The class representing the interface for which the queries are
+	 *              to be created, not null
+	 * @param  impl The class implementing the interface that is to be queried,
+	 *              not null
+	 */
+
+	protected QueryFactory (Class<T> type, Class<X> impl)
+	{
+		if (type == null)
+		{
+			throw new NullPointerException ("Interface class is NULL");
+		}
+
+		if (impl == null)
+		{
+			throw new NullPointerException ("Implementation Class is NULL");
+		}
+
+		this.type = type;
+		this.impl = impl;
+	}
+
+	/**
+	 * Create a query.
+	 *
+	 * @param  datastore The <code>DataStore</code> for which the query is to be
+	 *                   created, not null
+	 * @return           The initialized query.
+	 */
+
+	@Override
+	public DataStoreQuery<T> create (DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ("DataStore is NULL");
+		}
+
+		return datastore.createQuery (type, impl);
+	}
 }
