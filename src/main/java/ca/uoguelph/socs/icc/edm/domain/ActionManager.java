@@ -16,14 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.Map;
-import java.util.HashMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
-
 /**
  * Create, insert and remove actions from the domain model.  Through
  * implementations of this interface, Actions can be added to or removed
@@ -34,58 +26,15 @@ import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
  * @see     Action
  */
 
-public final class ActionManager extends AbstractManager<Action>
+public interface ActionManager extends ElementManager<Action>
 {
-	/** The logger */
-	private final Log log;
-
-	/**
-	 * Get an instance of the <code>ActionManager</code> for the specified
-	 * <code>DomainModel</code>.
-	 *
-	 * @param  model The instance of the <code>DomainModel</code> for which the
-	 *               <code>ActionManager</code>is to be retrieved, not null
-	 * @return       The <code>ActionManager</code> instance for the specified
-	 *               domain model
-	 * @see    DomainModel#getManager
-	 */
-
-	public static ActionManager getInstance (DomainModel model)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ();
-		}
-
-		return model.getManager (ActionManager.class);
-	}
-
-	/**
-	 * Create the <code>ActionManager</code>
-	 *
-	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>ActionManager</code> is to be created, not null
-	 * @param  query The <code>DataStoreQuery</code> to be used to access the
-	 *               data-store, not null
-	 */
-
-	protected ActionManager (DomainModel model)
-	{
-		super (model);
-
-		this.log = LogFactory.getLog (UserManager.class);
-	}
-
 	/**
 	 * Get an instance of the builder.
 	 *
 	 * @return An instance of the <code>ActionBuilder</code>
 	 */
 
-	public ActionBuilder getBuilder ()
-	{
-		return (ActionBuilder) this.fetchBuilder ();
-	}
+	public abstract ActionBuilder getBuilder ();
 
 	/**
 	 * Retrieve the Action with the specified name from the data-store.
@@ -94,17 +43,5 @@ public final class ActionManager extends AbstractManager<Action>
 	 * @return      The <code>Action</code> associated with the specified name.
 	 */
 
-	public Action fetchByName (String name)
-	{
-		if (name == null)
-		{
-			this.log.error ("The specified Action name is NULL");
-			throw new NullPointerException ();
-		}
-
-		Map<String, Object> parameters = new HashMap<String, Object> ();
-		parameters.put ("name", name);
-
-		return (this.fetchQuery ()).query ("name", parameters);
-	}
+	public abstract Action fetchByName (String name);
 }

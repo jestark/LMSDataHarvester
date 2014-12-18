@@ -14,9 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.ActivityManager;
+import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  *
@@ -25,15 +36,35 @@ import java.util.List;
  * @see     Activity
  */
 
-public interface ActivityManager extends ElementManager<Activity>
+public final class DefaultActivityManager extends AbstractManager<Activity> implements ActivityManager
 {
+	/** The logger */
+	private final Log log;
+
+	/**
+	 * Create the Activity manager.
+	 *
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>ActivityManager</code> is to be created, not null
+	 */
+
+	protected DefaultActivityManager (DomainModel model)
+	{
+		super (model);
+
+		this.log = LogFactory.getLog (ActivityManager.class);
+	}
+
 	/**
 	 * Get an instance of the builder.
 	 *
 	 * @return An instance of the <code>ActivityBuilder</code>
 	 */
 
-	public abstract ActivityBuilder getBuilder ();
+	public ActivityBuilder getBuilder ()
+	{
+		return (ActivityBuilder) this.fetchBuilder ();
+	}
 
 	/**
 	 * Get a list of all of the activities which are associated with a particular
@@ -42,7 +73,10 @@ public interface ActivityManager extends ElementManager<Activity>
 	 * @param  type The <code>ActivityType</code>, not null
 	 */
 
-	public abstract List<Activity> fetchAllForType (ActivityType type);
+	public List<Activity> fetchAllForType (ActivityType type)
+	{
+		return null;
+	}
 
 	/**
 	 * Modify the value of the stealth flag on a given activity.
@@ -51,5 +85,7 @@ public interface ActivityManager extends ElementManager<Activity>
 	 * @param  stealth  The new value of the stealth flag, not null
 	 */
 
-	public abstract void setStealth (Activity activity, Boolean stealth);
+	public void setStealth (Activity activity, Boolean stealth)
+	{
+	}
 }

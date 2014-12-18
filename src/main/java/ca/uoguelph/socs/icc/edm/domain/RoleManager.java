@@ -14,72 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
+package ca.uoguelph.socs.icc.edm.domain.manager;
 
 /**
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Role
  */
 
-public final class RoleManager extends AbstractManager<Role>
+public interface RoleManager extends ElementManager<Role>
 {
-	/** The logger */
-	private final Log log;
-
-	/**
-	 * Get an instance of the <code>RoleManager</code> for the specified
-	 * <code>DomainModel</code>.
-	 *
-	 * @param  model The instance of the <code>DomainModel</code> for which the
-	 *               <code>RoleManager</code>is to be retrieved, not null
-	 * @return       The <code>RoleManager</code> instance for the specified
-	 *               domain model
-	 * @see    DomainModel#getManager
-	 */
-
-	public static RoleManager getInstance (DomainModel model)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ();
-		}
-
-		return model.getManager (RoleManager.class);
-	}
-
-	/**
-	 * Create the <code>RoleManager</code>.
-	 *
-	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>RoleManager</code> is to be created, not null
-	 * @param  query The <code>DataStoreQuery</code> to be used to access the
-	 *               data-store, not null
-	 */
-
-	protected RoleManager (DomainModel model)
-	{
-		super (model);
-
-		this.log = LogFactory.getLog (RoleManager.class);
-	}
-
 	/**
 	 * Get an instance of the builder.
 	 *
 	 * @return An instance of the <code>RoleBuilder</code>
 	 */
 
-	public RoleBuilder getBuilder ()
-	{
-		return (RoleBuilder) this.fetchBuilder ();
-	}
+	public abstract RoleBuilder getBuilder ();
 
 	/**
 	 * Retrieve a <code>Role</code> object from the underlying data-store based on
@@ -89,8 +40,5 @@ public final class RoleManager extends AbstractManager<Role>
 	 * @return      A <code>Role</code> object
 	 */
 
-	public Role fetchByName (String name)
-	{
-		return null;
-	}
+	public abstract Role fetchByName (String name);
 }

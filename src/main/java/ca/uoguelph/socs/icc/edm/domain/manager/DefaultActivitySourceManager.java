@@ -14,7 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.manager;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
+import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
+import ca.uoguelph.socs.icc.edm.domain.ActivitySourceManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  * 
@@ -24,15 +34,35 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @see     ActivitySource
  */
 
-public interface ActivitySourceManager extends ElementManager<ActivitySource>
+public final class DefaultActivitySourceManager extends AbstractManager<ActivitySource> implements ActivitySourceManager
 {
+	/** The logger */
+	private final Log log;
+
+	/**
+	 * Create the <code>ActivitySourceManager</code>.
+	 *
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>ActivitySourceManager</code> is to be created, not null
+	 */
+
+	protected DefaultActivitySourceManager (DomainModel model)
+	{
+		super (model);
+
+		this.log = LogFactory.getLog (ActivitySourceManager.class);
+	}
+
 	/**
 	 * Get an instance of the builder.
 	 *
 	 * @return An instance of the <code>ActivitySourceBuilder</code>
 	 */
 
-	public abstract ActivitySourceBuilder getBuilder ();
+	public ActivitySourceBuilder getBuilder ()
+	{
+		return (ActivitySourceBuilder) this.fetchBuilder ();
+	}
 
 	/**
 	 * Retrieve the <code>ActivitySource</code> object associated with the
@@ -44,5 +74,8 @@ public interface ActivitySourceManager extends ElementManager<ActivitySource>
 	 *              specified name
 	 */
 
-	public abstract ActivitySource fetchByName (String name);
+	public ActivitySource fetchByName (String name)
+	{
+		return null;
+	}
 }

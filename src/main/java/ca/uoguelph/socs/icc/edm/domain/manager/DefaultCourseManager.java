@@ -14,9 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
+import ca.uoguelph.socs.icc.edm.domain.CourseManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Semester;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  *
@@ -25,15 +36,35 @@ import java.util.List;
  * @see     Course
  */
 
-public interface CourseManager extends ElementManager<Course>
+public final class DefaultCourseManager extends AbstractManager<Course> implements CourseManager
 {
+	/** The logger */
+	private final Log log;
+
+	/**
+	 * Create the <code>CourseManager</code>.
+	 *
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>CourseManager</code> is to be created, not null
+	 */
+
+	protected DefaultCourseManager (DomainModel model)
+	{
+		super (model);
+
+		this.log = LogFactory.getLog (CourseManager.class);
+	}
+
 	/**
 	 * Get an instance of the builder.
 	 *
 	 * @return An instance of the <code>CourseBuilder</code>
 	 */
 
-	public abstract CourseBuilder getBuilder ();
+	public CourseBuilder getBuilder ()
+	{
+		return (CourseBuilder) this.fetchBuilder ();
+	}
 
 	/**
 	 * Retrieve a list of courses from the underlying data-store based on the
@@ -44,7 +75,10 @@ public interface CourseManager extends ElementManager<Course>
 	 * @return          A list of <code>Course</code> objects
 	 */
 
-	public abstract List<Course> fetchAllForOffering (Semester semester, Integer year);
+	public List<Course> fetchAllForOffering (Semester semester, Integer year)
+	{
+		return null;
+	}
 
 	/**
 	 * Retrieve a list of courses from the underlying data-store based on the
@@ -57,7 +91,10 @@ public interface CourseManager extends ElementManager<Course>
 	 * @return          A list of <code>Course</code> objects
 	 */
 
-	public abstract List<Course> fetchAllForOffering (String name, Semester semester, Integer year);
+	public List<Course> fetchAllForOffering (String name, Semester semester, Integer year)
+	{
+		return null;
+	}
 
 	/**
 	 * Retrieve a course from the underlying data-store based on its name and
@@ -69,5 +106,8 @@ public interface CourseManager extends ElementManager<Course>
 	 * @return          A single <code>Course</code> object
 	 */
 
-	public abstract Course fetchByOffering (String name, Semester semester, Integer year);
+	public Course fetchByOffering (String name, Semester semester, Integer year)
+	{
+		return null;
+	}
 }

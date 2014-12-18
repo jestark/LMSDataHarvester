@@ -14,9 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Enrolment;
+import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
+import ca.uoguelph.socs.icc.edm.domain.EnrolmentManager;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
+import ca.uoguelph.socs.icc.edm.domain.Role;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  *
@@ -24,15 +37,37 @@ import java.util.List;
  * @version 1.0
  */
 
-public interface EnrolmentManager extends ElementManager<Enrolment>
+public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> implements EnrolmentManager
 {
+	/** The logger */
+	private final Log log;
+
+	/**
+	 * Create the <code>EnrolmentManager</code>.
+	 *
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>EnrolmentManager</code> is to be created, not null
+	 * @param  query The <code>DataStoreQuery</code> to be used to access the
+	 *               data-store, not null
+	 */
+
+	protected DefaultEnrolmentManager (DomainModel model)
+	{
+		super (model);
+
+		this.log = LogFactory.getLog (EnrolmentManager.class);
+	}
+
 	/**
 	 * Get an instance of the builder.
 	 *
 	 * @return An instance of the <code>EnrolmentBuilder</code>
 	 */
 
-	public abstract EnrolmentBuilder getBuilder ();
+	public EnrolmentBuilder getBuilder ()
+	{
+		return (EnrolmentBuilder) this.fetchBuilder ();
+	}
 
 	/**
 	 * Retrieve a list of <code>Enrolment</code> objects from the underlying
@@ -43,7 +78,10 @@ public interface EnrolmentManager extends ElementManager<Enrolment>
 	 * @return      A list of enrolment objects.
 	 */
 
-	public abstract List<Enrolment> fetchAllForRole (Role role);
+	public List<Enrolment> fetchAllForRole (Role role)
+	{
+		return null;
+	}
 
 	/**
 	 * Set the final grade for the specified <code>Enrolment</code>.
@@ -52,7 +90,9 @@ public interface EnrolmentManager extends ElementManager<Enrolment>
 	 * @param  grade     The value for the final grade, not null
 	 */
 
-	public abstract void setFinalGrade (Enrolment enrolment, Integer grade);
+	public void setFinalGrade (Enrolment enrolment, Integer grade)
+	{
+	}
 
 	/**
 	 * Remove the final grade from the specified <code>Enrolment</code>.
@@ -60,7 +100,9 @@ public interface EnrolmentManager extends ElementManager<Enrolment>
 	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
 	 */
 
-	public abstract void clearFinalGrade (Enrolment enrolment);
+	public void clearFinalGrade (Enrolment enrolment)
+	{
+	}
 
 	/**
 	 * Set the usable flag to the specified value on the given
@@ -70,7 +112,9 @@ public interface EnrolmentManager extends ElementManager<Enrolment>
 	 * @param  usable    The new value for the usable flag, not null
 	 */
 
-	public abstract void setUsable (Enrolment enrolment, Boolean usable);
+	public void setUsable (Enrolment enrolment, Boolean usable)
+	{
+	}
 
 	/**
 	 * Add a grade, for the specified activity to the <code>Enrolment</code>.
@@ -81,7 +125,9 @@ public interface EnrolmentManager extends ElementManager<Enrolment>
 	 * @param  grade     The value for the grade, not null
 	 */
 
-	public abstract void addGrade (Enrolment enrolment, Activity activity, Integer grade);
+	public void addGrade (Enrolment enrolment, Activity activity, Integer grade)
+	{
+	}
 
 	/**
 	 * Add a grade to the <code>Enrolment</code>.
@@ -90,7 +136,9 @@ public interface EnrolmentManager extends ElementManager<Enrolment>
 	 * @param  grade     The <code>Grade</code> to add, not null
 	 */
 
-	public abstract void addGrade (Enrolment enrolment, Grade grade);
+	public void addGrade (Enrolment enrolment, Grade grade)
+	{
+	}
 
 	/**
 	 * Remove a grade from an <code>Enrolment</code>.
@@ -99,5 +147,7 @@ public interface EnrolmentManager extends ElementManager<Enrolment>
 	 * @param  grade     The <code>Grade</code> to remove, not null
 	 */
 
-	public abstract void removeGrade (Enrolment enrolment, Grade grade);
+	public void removeGrade (Enrolment enrolment, Grade grade)
+	{
+	}
 }

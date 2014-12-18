@@ -14,7 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.manager;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.Action;
+import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
+import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
+import ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  *
@@ -24,15 +36,35 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @see     ActivityType
  */
 
-public interface ActivityTypeManager extends ElementManager<ActivityType>
+public final class DefaultActivityTypeManager extends AbstractManager<ActivityType> implements ActivityTypeManager
 {
+	/** The logger */
+	private final Log log;
+
+	/**
+	 * Create the <code>ActivityType</code> manager.
+	 *
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>ActivityTypeManager</code> is to be created, not null
+	 */
+
+	protected DefaultActivityTypeManager (DomainModel model)
+	{
+		super (model);
+
+		this.log = LogFactory.getLog (ActivityTypeManager.class);
+	}
+
 	/**
 	 * Get an instance of the builder.
 	 *
 	 * @return An instance of the <code>ActivityTypeBuilder</code>
 	 */
 
-	public abstract ActivityTypeBuilder getBuilder ();
+	public ActivityTypeBuilder getBuilder ()
+	{
+		return (ActivityTypeBuilder) this.fetchBuilder ();
+	}
 
 	/**
 	 * Retrieve the <code>ActivityType</code> object from the underlying 
@@ -45,7 +77,10 @@ public interface ActivityTypeManager extends ElementManager<ActivityType>
 	 *                with the specified source and name
 	 */
 
-	public abstract ActivityType fetchByName (ActivitySource source, String name);
+	public ActivityType fetchByName (ActivitySource source, String name)
+	{
+		return null;
+	}
 
 	/**
 	 * Create an association between a <code>ActivityType</code> and a 
@@ -59,7 +94,9 @@ public interface ActivityTypeManager extends ElementManager<ActivityType>
 	 *                <code>ActivityType</code>, not null
 	 */
 
-	public abstract void addAction (ActivityType type, Action action);
+	public void addAction (ActivityType type, Action action)
+	{
+	}
 
 	/**
 	 * Break an association between a <code>ActivityType</code> and a
@@ -78,5 +115,7 @@ public interface ActivityTypeManager extends ElementManager<ActivityType>
 	 *                <code>ActivityType</code>, not null
 	 */
 
-	public abstract void removeAction (ActivityType type, Action action);
+	public void removeAction (ActivityType type, Action action)
+	{
+	}
 }

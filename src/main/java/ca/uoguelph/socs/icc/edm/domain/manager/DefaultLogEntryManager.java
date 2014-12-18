@@ -14,10 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
+import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  *
@@ -26,15 +37,37 @@ import java.util.List;
  * @version 1.0
  */
 
-public interface LogEntryManager extends ElementManager<LogEntry>
+public final class DefaultLogEntryManager extends AbstractManager<LogEntry> implements LogEntryManager
 {
+	/** The logger */
+	private final Log log;
+
+	/**
+	 * Create the <code>LogEntryManager</code>.
+	 *
+	 * @param  model The instance of the <code>DomainModel</code> upon which the
+	 *               <code>LogEntryManager</code> is to be created, not null
+	 * @param  query The <code>DataStoreQuery</code> to be used to access the
+	 *               data-store, not null
+	 */
+
+	protected DefaultLogEntryManager (DomainModel model)
+	{
+		super (model);
+
+		this.log = LogFactory.getLog (LogEntryManager.class);
+	}
+
 	/**
 	 * Get an instance of the builder.
 	 *
 	 * @return An instance of the <code>LogEntryBuilder</code>
 	 */
 
-	public LogEntryBuilder getBuilder ();
+	public LogEntryBuilder getBuilder ()
+	{
+		return (LogEntryBuilder) this.fetchBuilder ();
+	}
 
 	/**
 	 * Retrieve a list of <code>LogEntry</code> objects, which are associated with
@@ -45,7 +78,10 @@ public interface LogEntryManager extends ElementManager<LogEntry>
 	 * @return        A list of <code>LogEntry</code> objects
 	 */
 
-	public List<LogEntry> fetchAllforCourse (Course course);
+	public List<LogEntry> fetchAllforCourse (Course course)
+	{
+		return null;
+	}
 
 	/**
 	 * Set the time on a specified <code>LogEntry</code>.
@@ -54,7 +90,9 @@ public interface LogEntryManager extends ElementManager<LogEntry>
 	 * @param  time  The new value for the time
 	 */
 
-	public void setTime (LogEntry entry, Date time);
+	public void setTime (LogEntry entry, Date time)
+	{
+	}
 
 	/**
 	 * Set the IP Address for a specified <code>LogEntry</code>.
@@ -63,5 +101,7 @@ public interface LogEntryManager extends ElementManager<LogEntry>
 	 * @param  ip    The value for the new IP Address
 	 */
 
-	public void setIPAddress (LogEntry entry, String ip);
+	public void setIPAddress (LogEntry entry, String ip)
+	{
+	}
 }
