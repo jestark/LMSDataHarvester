@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.factory.ConcreteFactory;
+
 public interface BuilderFactory<T extends Element> extends ConcreteFactory<ElementBuilder<T>, ElementManager<T>>
 {
 	public abstract ElementBuilder<T> create (ElementManager<T> manager);

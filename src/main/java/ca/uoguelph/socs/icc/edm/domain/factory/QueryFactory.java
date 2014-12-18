@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.factory;
 
-import ca.uoguelph.socs.icc.edm.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  * Factory to create queries based on interface and implementation classes.

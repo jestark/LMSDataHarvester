@@ -14,26 +14,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.idgenerator;
+package ca.uoguelph.socs.icc.edm.domain.factory;
 
-/**
- * An ID number generator.  Classes implementing this interface will provide
- * ID numbers suitable for use with the relevant underlying data-store.  Each
- * class implementing this interface is responsible for determining how the 
- * ID numbers are calculated, with different classes providing different
- * distributions of ID numbers.  
- *
- * @author  James E. Stark
- * @version 1.0
- */
+import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
+import ca.uoguelph.socs.icc.edm.domain.User;
+import ca.uoguelph.socs.icc.edm.domain.UserManager;
 
-public interface IdGenerator
+public final class UserFactory extends AbstractManagerFactory<User, UserManager>
 {
-	/**
-	 * Returns the next available ID number.
-	 *
-	 * @return A Long containing the ID number
-	 */
+	private static UserFactory instance;
 
-	public abstract Long nextId ();
+	static
+	{
+		UserFactory.instance = null;
+	}
+
+	public static UserFactory getInstance ()
+	{
+		if (UserFactory.instance == null)
+		{
+			UserFactory.instance = new UserFactory ();
+		}
+
+		return UserFactory.instance;
+	}
+
+	private UserFactory ()
+	{
+		super ();
+	}
 }

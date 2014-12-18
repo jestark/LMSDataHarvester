@@ -14,16 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
+
 import java.util.List;
 import java.util.Set;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+
 public abstract class GenericNamedActivity extends AbstractNamedActivity implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	private ActivityInstance instance;
 
 	protected GenericNamedActivity ()

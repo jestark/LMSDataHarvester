@@ -14,7 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.factory;
+
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public interface ElementFactory<T extends Element>
 {

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
+package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Map;
 import java.util.Set;
@@ -24,8 +24,7 @@ import java.util.HashMap;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
+import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
 
 /**
  * Meta-data describing the capabilities of a <code>DataStore</code>.  This
@@ -453,6 +452,6 @@ public final class DomainModelProfile
 			throw new IllegalArgumentException (impl.getName () + " does not implement " + element.getName ());
 		}
 
-		this.entries.put (type, new Entry (available, generator, impl));
+		this.entries.put (element, new Entry (available, generator, impl));
 	}
 }

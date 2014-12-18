@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
-import ca.uoguelph.socs.icc.edm.domain.UserEnrolmentData;
+import ca.uoguelph.socs.icc.edm.domain.core.UserEnrolmentData;
 
 class MoodleEnrolmentUserData extends UserEnrolmentData
 {

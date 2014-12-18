@@ -14,9 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.util.Set;
+
+import ca.uoguelph.socs.icc.edm.domain.Activity;
 
 public interface ActivityGroup<E extends GenericGroupedActivityMember> extends Activity
 {

@@ -1,6 +1,6 @@
 package ca.uoguelph.socs.icc.edm.domain.moodle;
 
-import ca.uoguelph.socs.icc.edm.domain.GenericGroupedActivityGroup;
+import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityGroup;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 

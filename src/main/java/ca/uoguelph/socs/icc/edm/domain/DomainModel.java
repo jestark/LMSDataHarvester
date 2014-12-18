@@ -23,10 +23,10 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.datastore.DataStoreProfile;
-import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
-import ca.uoguelph.socs.icc.edm.datastore.DataStoreTransaction;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreTransaction;
+import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
 
 /**
  *
@@ -40,7 +40,7 @@ public final class DomainModel
 	private final DataStore datastore;
 
 	/** The profile */
-	private final DataStoreProfile profile;
+	private final DomainModelProfile profile;
 
 	/** The log */
 	private final Log log;
@@ -53,7 +53,7 @@ public final class DomainModel
 	 * @param  profile   The configuration profile, not null
 	 */
 
-	public DomainModel (DataStore datastore, DataStoreProfile profile)
+	public DomainModel (DataStore datastore, DomainModelProfile profile)
 	{
 		this.datastore = datastore;
 		this.profile = profile;
@@ -61,7 +61,7 @@ public final class DomainModel
 		this.log = LogFactory.getLog (DomainModel.class);
 	}
 
-	protected <T extends Element> DataStoreQuery<T> createQuery (QueryFactory<T> factory)
+	protected <T extends Element, X extends T> DataStoreQuery<T> createQuery (QueryFactory<T, X> factory)
 	{
 		return factory.create (this.datastore);
 	}
@@ -105,7 +105,7 @@ public final class DomainModel
 		return this.datastore.getTransaction ();
 	}
 
-	protected DataStoreProfile getProfile ()
+	public DomainModelProfile getProfile ()
 	{
 		return this.profile;
 	}

@@ -38,10 +38,7 @@ public interface ElementManager<T extends Element>
 	 * @return    The requested object.
 	 */
 
-	public T fetchById (Long id)
-	{
-		return (this.fetchQuery ()).query (id);
-	}
+	public abstract T fetchById (Long id);
 
 	/**
 	 * Retrieve a list of all of the entities from the underlying data store.
@@ -49,10 +46,7 @@ public interface ElementManager<T extends Element>
 	 * @return A list of objects.
 	 */
 
-	public List<T> fetchAll ()
-	{
-		return (this.fetchQuery ()).queryAll ();
-	}
+	public abstract List<T> fetchAll ();
 
 	/**
 	 * Insert an entity into the domain model and the underlying data store. This
@@ -64,10 +58,7 @@ public interface ElementManager<T extends Element>
 	 * @see    #insert(Element, Boolean) insert(T, Boolean)
 	 */
 
-	public final T insert (T entity)
-	{
-		return this.insert (entity, new Boolean (false));
-	}
+	public abstract T insert (T entity);
 
 	/**
 	 * Insert an entity into the domain model and the underlying data store.
@@ -78,10 +69,7 @@ public interface ElementManager<T extends Element>
 	 * @return           A reference to the inserted entity
 	 */
 
-	public T insert (T entity, Boolean recursive)
-	{
-		return null;
-	}
+	public abstract T insert (T entity, Boolean recursive);
 
 	/**
 	 * Remove an entity from the domain model and the underlying data store. This
@@ -92,10 +80,7 @@ public interface ElementManager<T extends Element>
 	 * @see    #remove(Element, Boolean) remove(T, Boolean)
 	 */
 
-	public final void remove (T entity)
-	{
-		this.remove (entity, new Boolean (false));
-	}
+	public abstract void remove (T entity);
 
 	/**
 	 * Remove an entity from the domain model and the underlying data store.
@@ -105,7 +90,5 @@ public interface ElementManager<T extends Element>
 	 *                   removed, <code>false</code> otherwise, not null
 	 */
 
-	public void remove (T entity, Boolean recursive)
-	{
-	}
+	public abstract void remove (T entity, Boolean recursive);
 }

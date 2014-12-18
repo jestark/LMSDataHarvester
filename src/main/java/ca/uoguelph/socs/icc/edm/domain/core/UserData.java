@@ -14,17 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.util.Set;
+
 import java.util.HashSet;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ca.uoguelph.socs.icc.edm.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
-import ca.uoguelph.socs.icc.edm.datastore.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Enrolment;
+import ca.uoguelph.socs.icc.edm.domain.User;
 
 /**
  * This class implements the User interface, to represent a user in the domain
@@ -38,26 +39,6 @@ import ca.uoguelph.socs.icc.edm.datastore.IdGenerator;
 
 public class UserData implements User
 {
-	/**
-	 *
-	 */
-
-	static class UserDataFactory implements BuilderFactory<User>, ElementFactory<UserData>
-	{
-		@Override
-		public UserData create ()
-		{
-			return new UserData ();
-		}
-
-		@Override
-		public ElementBuilder<User> create (ElementManager<User> manager)
-		{
-			return null;
-//			return new CoreUserBuilder<UserData> (((UserManager) manager), this, generator);
-		}
-	}
-
 	/** The data store id of this user. */
 	private Long id;
 

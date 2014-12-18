@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
+package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -26,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder;
+import ca.uoguelph.socs.icc.edm.domain.DomainModelProfile;
 
 /**
  * A profile for any <code>DataStore</code> which used the Java Persistence
@@ -156,7 +158,7 @@ public final class JPADataStoreBuilder extends DomainModelBuilder
 	}
 
 	/**  */
-	private static final Map<Key, DomainModel> cache;
+//	private static final Map<Key, DomainModel> cache;
 
 	/** JPA unit name */
 	private String unitname;

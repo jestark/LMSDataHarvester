@@ -14,12 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
 
+import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+
 public abstract class LogReference<T extends ActivityGroupMember> implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	private LogEntry entry;
 	private T activity;
 

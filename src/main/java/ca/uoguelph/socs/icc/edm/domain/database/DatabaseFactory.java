@@ -14,11 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.datastore;
+package ca.uoguelph.socs.icc.edm.domain.database;
 
 import java.util.Map;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder;
+import ca.uoguelph.socs.icc.edm.domain.DomainModelProfile;
+import ca.uoguelph.socs.icc.edm.domain.datastore.JPADataStoreBuilder;
 
 /**
  * Create <code>DataStoreProfile</code>'s
@@ -44,8 +47,7 @@ public abstract class DatabaseFactory
 	protected DatabaseFactory (String unitname)
 	{
 		this.unitname = unitname;
-		this.builder = new JPADataStoreProfileBuilder ();
-		this.factory = DomainModelFactory.getInstance ();
+		this.builder = new JPADataStoreBuilder ();
 	}
 
 	/**
@@ -65,14 +67,14 @@ public abstract class DatabaseFactory
 	 * @return A complete profile using default connection parameters
 	 */
 
-	public DataStoreProfile createProfile ()
+	public DomainModelProfile createProfile ()
 	{
 		this.builder.clear ();
 
 		this.builder.setUnitName (this.unitname);
 		this.buildProfile (this.builder);
 
-		return this.builder.createProfile ();
+		return null;
 	}
 
 	/**
@@ -86,14 +88,14 @@ public abstract class DatabaseFactory
 	 *                  unit.
 	 */
 
-	public DataStoreProfile createProfile (String unitname)
+	public DomainModelProfile createProfile (String unitname)
 	{
 		this.builder.clear ();
 
 		this.builder.setUnitName (unitname);
 		this.buildProfile (this.builder);
 
-		return this.builder.createProfile ();
+		return null;
 	}
 
 	/**
@@ -117,7 +119,7 @@ public abstract class DatabaseFactory
 	 * @return          A complete profile using the specified parameters
 	 */
 
-	public DataStoreProfile createProfile (String unitname, String url, String username, String password)
+	public DomainModelProfile createProfile (String unitname, String url, String username, String password)
 	{
 		this.builder.clear ();
 
@@ -146,7 +148,7 @@ public abstract class DatabaseFactory
 			this.builder.setConnectionPassword (password);
 		}
 
-		return this.builder.createProfile ();
+		return null;
 	}
 
 	/**
@@ -160,7 +162,8 @@ public abstract class DatabaseFactory
 
 	public DomainModel createDomainModel ()
 	{
-		return this.factory.create (this.createProfile ());
+		this.createProfile ();
+		return this.builder.createDomainModel ();
 	}
 
 	/**
@@ -177,7 +180,8 @@ public abstract class DatabaseFactory
 
 	public DomainModel createDomainModel (String unitname)
 	{
-		return this.factory.create (this.createProfile (unitname));
+		this.createProfile (unitname);
+		return this.builder.createDomainModel ();
 	}
 
 	/**
@@ -196,6 +200,7 @@ public abstract class DatabaseFactory
 
 	public DomainModel createDomainModel (String unitname, String url, String username, String password)
 	{
-		return this.factory.create (this.createProfile (unitname, url, username, password));
+		this.createProfile (unitname, url, username, password);
+		return this.builder.createDomainModel ();
 	}
 }

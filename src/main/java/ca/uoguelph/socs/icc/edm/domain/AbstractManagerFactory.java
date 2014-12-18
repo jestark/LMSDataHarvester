@@ -24,8 +24,9 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.datastore.DataStoreQuery;
-import ca.uoguelph.socs.icc.edm.datastore.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
+import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
 
 public abstract class AbstractManagerFactory<T extends Element, X extends ElementManager<T>>
 {
@@ -44,7 +45,7 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	{
 	}
 
-	public final void registerQuery (Class<?> impl, QueryFactory<T> factory)
+	public final <X extends T> void registerQuery (Class<?> impl, QueryFactory<T, X> factory)
 	{
 	}
 
@@ -68,16 +69,9 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 		return null;
 	}
 
-	protected abstract X needsaname (DomainModel model);
-
 	protected final X createManager (DomainModel model)
 	{
-		if (this.manager == null)
-		{
-			this.manager = needsaname (model);
-		}
-
-		return this.manager;
+		return null;
 	}
 
 	public final X getManager (DomainModel model)

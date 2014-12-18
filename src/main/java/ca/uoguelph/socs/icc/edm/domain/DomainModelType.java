@@ -47,7 +47,7 @@ public enum DomainModelType
 	ENROLMENT ("Enrolment", Enrolment.class),
 
 	/** The Grade interface. */
-	GRADE ("Grade", grade.class),
+	GRADE ("Grade", Grade.class),
 
 	/** The LogEntry interface. */
 	LOGENTRY ("LogEntry", LogEntry.class),
