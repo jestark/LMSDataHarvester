@@ -6,6 +6,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class MoodleWorkshopActivitySubmission extends GenericGroupedActivityMember<MoodleWorkshopActivity>
 {
+	private static final long serialVersionUID = 1L;
+
 	protected MoodleWorkshopActivitySubmission ()
 	{
 		super ();

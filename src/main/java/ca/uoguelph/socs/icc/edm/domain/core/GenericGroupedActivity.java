@@ -23,7 +23,7 @@ import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericGroupedActivity<E extends GenericGroupedActivityMember> extends GenericNamedActivity implements ActivityGroup<E>
+public abstract class GenericGroupedActivity<E extends ActivityGroupMember> extends GenericNamedActivity implements ActivityGroup<E>
 {
 	private Set<E> children;
 

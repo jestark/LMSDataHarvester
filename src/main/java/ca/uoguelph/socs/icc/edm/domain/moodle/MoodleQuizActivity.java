@@ -6,6 +6,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class MoodleQuizActivity extends GenericNamedActivity
 {
+	private static final long serialVersionUID = 1L;
+
 	protected MoodleQuizActivity ()
 	{
 		super ();

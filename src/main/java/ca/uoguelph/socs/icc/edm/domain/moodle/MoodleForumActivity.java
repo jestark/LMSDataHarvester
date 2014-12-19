@@ -6,6 +6,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class MoodleForumActivity extends GenericGroupedActivity<MoodleForumActivityDiscussion>
 {
+	private static final long serialVersionUID = 1L;
+
 	protected MoodleForumActivity ()
 	{
 		super ();

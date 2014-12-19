@@ -33,7 +33,7 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 {
 	private Long id;
 	private T parent;
-	private List<LogReference> log;
+	private List<LogReference<? extends ActivityGroupMember>> log;
 
 	protected GenericGroupedActivityMember()
 	{
@@ -125,7 +125,7 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 	{
 		List<LogEntry> result = new ArrayList<LogEntry> ();
 
-		for (LogReference ref : this.log)
+		for (LogReference<? extends ActivityGroupMember> ref : this.log)
 		{
 			result.add (ref.getEntry ());
 		}
@@ -133,7 +133,7 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 		return result;
 	}
 
-	protected void setLog (List<LogReference> log)
+	protected void setLog (List<LogReference<? extends ActivityGroupMember>> log)
 	{
 		this.log = log;
 	}

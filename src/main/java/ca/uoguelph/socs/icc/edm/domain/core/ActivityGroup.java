@@ -20,7 +20,7 @@ import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 
-public interface ActivityGroup<E extends GenericGroupedActivityMember> extends Activity
+public interface ActivityGroup<E extends ActivityGroupMember> extends Activity
 {
 	public abstract Set<E> getChildren();
 	public abstract void addChild(E child);

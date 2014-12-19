@@ -39,7 +39,7 @@ public class LogData implements LogEntry, Serializable
 	private Action action;
 	private Date time;
 	private String ip;
-	private LogReference reference;
+	private LogReference<? extends ActivityGroupMember> reference;
 
 	protected LogData ()
 	{
@@ -83,12 +83,12 @@ public class LogData implements LogEntry, Serializable
 		this.activity = activity;
 	}
 
-	public LogReference getReference ()
+	public LogReference<? extends ActivityGroupMember> getReference ()
 	{
 		return this.reference;
 	}
 
-	protected void setReference (LogReference reference)
+	protected void setReference (LogReference<? extends ActivityGroupMember> reference)
 	{
 		this.reference = reference;
 	}

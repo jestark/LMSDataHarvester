@@ -29,6 +29,8 @@ import ca.uoguelph.socs.icc.edm.domain.User;
 
 public class UserEnrolmentData extends EnrolmentData
 {
+	private static final long serialVersionUID = 1L;
+
 	/** The user which is associated with this enrolment */
 	private User user;
 

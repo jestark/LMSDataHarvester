@@ -126,11 +126,11 @@
 				<configuration>
 					<compilerArgs>
 						<arg>-Xlint:all</arg>
-						<!--						<arg>-verbose</arg>-->
 					</compilerArgs>
 					<encoding>UTF-8</encoding>
-					<!--					<source>1.7</source>
-					<target>1.7</target> -->
+					<showWarnings>true</showWarnings>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 

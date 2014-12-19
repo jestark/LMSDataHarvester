@@ -6,6 +6,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class MoodleBookActivity extends GenericGroupedActivity<MoodleBookActivityChapter>
 {
+	private static final long serialVersionUID = 1L;
+
 	protected MoodleBookActivity ()
 	{
 		super ();
