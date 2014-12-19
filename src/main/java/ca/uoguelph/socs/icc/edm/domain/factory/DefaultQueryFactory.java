@@ -29,8 +29,36 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  * @param   <X> The type of the implementation class
  */
 
-public interface QueryFactory<T extends Element> extends ConcreteFactory<DataStoreQuery<T>, DataStore>
+public final class DefaultQueryFactory<T extends Element, X extends T> implements QueryFactory<T>
 {
+	private final Class<T> type;
+	private final Class<X> impl;
+
+	/**
+	 * Create the <code>QueryFactory</code>.
+	 *
+	 * @param  type The class representing the interface for which the queries are
+	 *              to be created, not null
+	 * @param  impl The class implementing the interface that is to be queried,
+	 *              not null
+	 */
+
+	protected DefaultQueryFactory (Class<T> type, Class<X> impl)
+	{
+		if (type == null)
+		{
+			throw new NullPointerException ("Interface class is NULL");
+		}
+
+		if (impl == null)
+		{
+			throw new NullPointerException ("Implementation Class is NULL");
+		}
+
+		this.type = type;
+		this.impl = impl;
+	}
+
 	/**
 	 * Create a query.
 	 *
@@ -40,5 +68,13 @@ public interface QueryFactory<T extends Element> extends ConcreteFactory<DataSto
 	 */
 
 	@Override
-	public abstract DataStoreQuery<T> create (DataStore datastore);
+	public DataStoreQuery<T> create (DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ("DataStore is NULL");
+		}
+
+		return datastore.createQuery (type, impl);
+	}
 }
