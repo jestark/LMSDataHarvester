@@ -76,7 +76,17 @@ public final class JPADataStore implements DataStore
 		}
 		catch (RuntimeException ex)
 		{
-			this.emf.close ();
+			this.log.error (ex);
+
+			if (this.em != null)
+			{
+				this.em.close ();
+			}
+
+			if (this.emf != null)
+			{
+				this.emf.close ();
+			}
 
 			throw ex;
 		}

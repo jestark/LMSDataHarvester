@@ -35,7 +35,7 @@ public abstract class DatabaseFactory
 	/** The default JPA unit name */
 	private final String unitname;
 
-	/** Internal profile builder */
+	/** Internal <code>DataStore</code> profile builder */
 	private final JPADataStoreBuilder builder;
 
 	/**
@@ -69,12 +69,7 @@ public abstract class DatabaseFactory
 
 	public DomainModelProfile createProfile ()
 	{
-		this.builder.clear ();
-
-		this.builder.setUnitName (this.unitname);
-		this.buildProfile (this.builder);
-
-		return null;
+		return this.createProfile (this.unitname);
 	}
 
 	/**
@@ -90,12 +85,7 @@ public abstract class DatabaseFactory
 
 	public DomainModelProfile createProfile (String unitname)
 	{
-		this.builder.clear ();
-
-		this.builder.setUnitName (unitname);
-		this.buildProfile (this.builder);
-
-		return null;
+		return this.createProfile (unitname, null, null, null);
 	}
 
 	/**
@@ -147,8 +137,12 @@ public abstract class DatabaseFactory
 		{
 			this.builder.setConnectionPassword (password);
 		}
+		
+		DomainModelBuilder modelbuilder = new DomainModelBuilder ();
 
-		return null;
+		this.buildProfile (modelbuilder);
+		
+		return modelbuilder.createProfile ();
 	}
 
 	/**
@@ -162,8 +156,7 @@ public abstract class DatabaseFactory
 
 	public DomainModel createDomainModel ()
 	{
-		this.createProfile ();
-		return this.builder.createDomainModel ();
+		return (new DomainModelBuilder (this.createProfile ())).createDomainModel (this.builder);
 	}
 
 	/**
@@ -181,7 +174,7 @@ public abstract class DatabaseFactory
 	public DomainModel createDomainModel (String unitname)
 	{
 		this.createProfile (unitname);
-		return this.builder.createDomainModel ();
+		return (new DomainModelBuilder (this.createProfile (unitname))).createDomainModel (this.builder);
 	}
 
 	/**
@@ -200,7 +193,6 @@ public abstract class DatabaseFactory
 
 	public DomainModel createDomainModel (String unitname, String url, String username, String password)
 	{
-		this.createProfile (unitname, url, username, password);
-		return this.builder.createDomainModel ();
+		return (new DomainModelBuilder (this.createProfile (unitname, url, username, password))).createDomainModel (this.builder);
 	}
 }

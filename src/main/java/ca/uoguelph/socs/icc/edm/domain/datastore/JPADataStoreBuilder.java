@@ -25,10 +25,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelProfile;
-
 /**
  * A profile for any <code>DataStore</code> which used the Java Persistence
  * API.  This class adds the connection information required to connect to a
@@ -45,7 +41,7 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModelProfile;
  * @version 1.0
  */
 
-public final class JPADataStoreBuilder extends DomainModelBuilder
+public final class JPADataStoreBuilder implements DataStoreBuilder
 {
 	private final class Key
 	{
@@ -187,8 +183,6 @@ public final class JPADataStoreBuilder extends DomainModelBuilder
 
 	public void clear ()
 	{
-		super.clear ();
-
 		this.unitname = null;
 		this.parameters.clear ();
 	}
@@ -354,13 +348,12 @@ public final class JPADataStoreBuilder extends DomainModelBuilder
 	}
 
 	/**
-	 * Create the <code>DomainModel</code>
+	 * Create the <code>DataStore</code>
 	 */
 
-	public DomainModel createDomainModel ()
+	@Override
+	public DataStore createDataStore ()
 	{
-		DomainModelProfile profile = this.buildProfile ();
-
-		return null;
+		return new JPADataStore (this.unitname, this.parameters);
 	}
 }

@@ -24,6 +24,8 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreBuilder;
 import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
 
 /**
@@ -36,7 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
  * @see     DomainModelProfile
  */
 
-public abstract class DomainModelBuilder
+public final class DomainModelBuilder
 {
 	/** Internal copy of the profile which is being built. */
 	private DomainModelProfile profile;
@@ -52,6 +54,26 @@ public abstract class DomainModelBuilder
 	{
 		this.log = LogFactory.getLog (DomainModelBuilder.class);
 		this.profile = new DomainModelProfile (new Boolean (false));
+	}
+
+	/**
+	 * Create the <code>DomainModelBuilder</code>, initializing from a pre-built
+	 * profile.
+	 *
+	 * @param  init The profile to use for initialization, not null
+	 */
+
+	public DomainModelBuilder (DomainModelProfile init)
+	{
+		this.log = LogFactory.getLog (DomainModelBuilder.class);
+
+		if (init == null)
+		{
+			this.log.error ("Initialization profile is NULL");
+			throw new NullPointerException ("Initialization profile is NULL");
+		}
+
+		this.profile = new DomainModelProfile (init);
 	}
 
 	/**
@@ -84,7 +106,7 @@ public abstract class DomainModelBuilder
 	 *                 not null
 	 */
 
-	public final void setMutable (Boolean mutable)
+	public void setMutable (Boolean mutable)
 	{
 		if (mutable == null)
 		{
@@ -109,7 +131,7 @@ public abstract class DomainModelBuilder
 	 *         all of the elements in the profile
 	 */
 
-	public final Set<DomainModelType> getElements ()
+	public Set<DomainModelType> getElements ()
 	{
 		return this.profile.getElements ();
 	}
@@ -124,7 +146,7 @@ public abstract class DomainModelBuilder
 	 *                 <code>false</code> otherwise
 	 */
 
-	public final Boolean isAvalable (DomainModelType element)
+	public Boolean isAvalable (DomainModelType element)
 	{
 		Boolean available = null;
 
@@ -153,7 +175,7 @@ public abstract class DomainModelBuilder
 	 * @return         The associated ID generator class
 	 */
 
-	public final Class<? extends IdGenerator> getGenerator (DomainModelType element)
+	public Class<? extends IdGenerator> getGenerator (DomainModelType element)
 	{
 		Class<? extends IdGenerator> generator = null;
 
@@ -183,7 +205,7 @@ public abstract class DomainModelBuilder
 	 *                 <code>DataStore</code>
 	 */
 
-	public final Class<? extends Element> getImplClass (DomainModelType element)
+	public Class<? extends Element> getImplClass (DomainModelType element)
 	{
 		Class<? extends Element> impl = null;
 
@@ -234,7 +256,7 @@ public abstract class DomainModelBuilder
 	 *                                  element
 	 */
 
-	public final void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
+	public void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
 	{
 		try
 		{
@@ -263,7 +285,7 @@ public abstract class DomainModelBuilder
 	 *                               are missing
 	 */
 
-	protected DomainModelProfile buildProfile ()
+	public DomainModelProfile createProfile ()
 	{
 		boolean abort = false;
 
@@ -290,5 +312,8 @@ public abstract class DomainModelBuilder
 		return new DomainModelProfile (this.profile);
 	}
 
-	public abstract DomainModel createDomainModel ();
+	public DomainModel createDomainModel (DataStoreBuilder dsbuilder)
+	{
+		return new DomainModel (dsbuilder.createDataStore (), this.createProfile ());
+	}
 }
