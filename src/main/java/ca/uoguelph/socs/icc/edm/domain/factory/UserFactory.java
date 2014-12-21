@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
 import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
 
 public final class UserFactory extends AbstractManagerFactory<User, UserManager>
 {
@@ -41,6 +42,6 @@ public final class UserFactory extends AbstractManagerFactory<User, UserManager>
 
 	private UserFactory ()
 	{
-		super ();
+		super (DomainModelType.USER);
 	}
 }

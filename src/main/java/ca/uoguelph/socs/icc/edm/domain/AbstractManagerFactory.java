@@ -25,57 +25,157 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.factory.GenericFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.GenericBaseFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.GenericCachedFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
+
+/**
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @param   <T> The domain model interface represented by this factory
+ * @param   <X> The Manager interface created by this factory
+ */
 
 public abstract class AbstractManagerFactory<T extends Element, X extends ElementManager<T>>
 {
-	private X manager;
+	/** The logger */
+	private final Log log;
 
-	private Log log;
+	/** */
+	private final DomainModelType type;
 
-	protected AbstractManagerFactory ()
+	/** Caching factory for the <code>ElementManager</code> implementations */
+	private final GenericFactory<X, DomainModel> managerfactories;
+
+	/** <code>Element<code> to <code>ElementManager</code> implementation mapping */
+	private final Map<Class<? extends T>, Class<? extends X>> elementmanagers;
+
+	/**
+	 * Create the <code>AbstractManagerFactory</code>.
+	 *
+	 * @param  type 
+	 */
+
+	protected AbstractManagerFactory (DomainModelType type)
 	{
-		this.manager = null;
-
 		this.log = LogFactory.getLog (AbstractManagerFactory.class);
+
+		this.type = type;
+
+		this.managerfactories = new GenericCachedFactory<X, DomainModel> (new GenericBaseFactory<X, DomainModel> ());
+
+		this.elementmanagers = new HashMap<Class<? extends T>, Class<? extends X>> ();
 	}
 
-	public final void registerBuilder (Class<?> impl, BuilderFactory<T> factory)
+	/**
+	 * Register a <code>ElementManager</code> implementation with the factory.
+	 * This method is intended to be used by the implementation of
+	 * <code>ElementManager</code> when the classes initialize.
+	 *
+	 * @param  impl                     The <code>ElementManager</code>
+	 *                                  implementation which is being registered
+	 * @param  factory                  The <code>ManagerFactory</code> used to
+	 *                                  create the <code>ElementManager</code>
+	 * @throws IllegalArgumentException If the <code>ElementManager</code> is
+	 *                                  already registered with the factory
+	 */
+
+	public final void registerManagerFactory (Class<? extends X> impl, ManagerFactory<X> factory)
 	{
+		this.managerfactories.registerClass (impl, factory);
 	}
 
-	public final <X extends T> void registerQuery (Class<?> impl, QueryFactory<T, X> factory)
+	/**
+	 * Get the <code>Set</code> of <code>ElementManager</code> implementations
+	 * which have been registered with the factory.
+	 *
+	 * @return A <code>Set</code> containing the registered
+	 *         <code>ElementManager</code> implementations
+	 */
+
+	public final Set<Class<? extends X>> getRegisteredManagerFactories ()
 	{
+		return this.managerfactories.getRegisteredClasses ();
 	}
 
-	public final Set<Class<?>> getRegisteredBuilders ()
+	/**
+	 * Set the <code>ElementManager</code> implementation to be used with a given
+	 * <code>Element</code> implementation.  This method is intended to be used by
+	 * the element implementations when they register with the factory.
+	 *
+	 * @param  impl                     The <code>Element</code> implementation
+	 *                                  which is being registered, not null
+	 * @param  manager                  The manager implementation to use with the
+	 *                                  element, not null
+	 * @throws IllegalArgumentException if a manager is already registered for the
+	 *                                  element
+	 */
+
+	public final void setElementManager (Class<? extends T> impl, Class<? extends X> manager)
 	{
-		return null;
+		if (impl == null)
+		{
+			this.log.error ("Element is NULL");
+			throw new NullPointerException ("Element is NULL");
+		}
+
+		if (manager == null)
+		{
+			this.log.error ("Manager is NULL");
+			throw new NullPointerException ("Manager is NULL");
+		}
+
+		if (this.elementmanagers.containsKey (impl))
+		{
+			this.log.error ("Attempting to replace previously registered element");
+			throw new IllegalArgumentException ("Attempting to replace previously registered element");
+		}
+
+		this.elementmanagers.put (impl, manager);
 	}
 
-	public final Set<Class<?>> getRegisteredQueries ()
-	{
-		return null;
-	}
+	/**
+	 * Create a <code>ElementManager</code> for the specified
+	 * <code>DomainModel</code>.  
+	 *
+	 * @param  model                 The <code>DomainModel</code> for which the
+	 *                               <code>ElementManager</code> is to be created,
+	 *                               not null
+	 * @return                       The <code>ElementManager</code> for the
+	 *                               <code>DomainModel</code>
+	 * @throws IllegalStateException if the <code>Element</code> implementation is
+	 *                               not registered
+	 */
 
-	protected final DataStoreQuery<T> createQuery (DomainModel model)
+	public final X createManager (DomainModel model)
 	{
-		return null;
-	}
+		X manager = null;
 
-	protected final ElementBuilder<T> createBuilder (DomainModel model)
-	{
-		return null;
-	}
+		if (model == null)
+		{
+			this.log.error ("DomainModel is null");
+			throw new NullPointerException ("DomainModel is null");
+		}
 
-	protected final X createManager (DomainModel model)
-	{
-		return null;
-	}
+		Class<? extends Element> impl = (model.getProfile ()).getImplClass (this.type);
 
-	public final X getManager (DomainModel model)
-	{
-		return this.createManager (model);
+		if (! this.elementmanagers.containsKey (impl))
+		{
+			throw new IllegalStateException ();
+		}
+
+		try
+		{
+			manager = this.managerfactories.create (this.elementmanagers.get (impl), model);
+		}
+		catch (IllegalArgumentException ex)
+		{
+			throw new IllegalStateException ("", ex);
+		}
+
+		return manager;
 	}
 }
