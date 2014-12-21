@@ -30,6 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.EnrolmentManager;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
 /**
  *
@@ -39,6 +40,38 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> implements EnrolmentManager
 {
+	/**
+	 * Implementation of the <code>ManagerFactory</code> to create a
+	 * <code>DefaultCourseManager</code>.
+	 */
+
+	private static final class DefaultEnrolmentManagerFactory implements ManagerFactory<EnrolmentManager>
+	{
+		/**
+		 * Create an instance of the <code>DefaultCourseManager</code>.
+		 *
+		 * @param  model The <code>DomainModel</code> to be associated with the
+		 *               <code>DefaultCourseManager</code>
+		 * @return       The <code>DefaultCourseManager</code>
+		 */
+
+		@Override
+		public EnrolmentManager create (DomainModel model)
+		{
+			return new DefaultEnrolmentManager (model);
+		}
+	}
+
+	/**
+	 * Static initializer to register the manager with its
+	 * <code>AbstractManagerFactory</code> implementation.
+	 */
+
+	static
+	{
+		(EnrolmentFactory.getInstance ()).registerManagerFactory (DefaultEnrolmentManager.class, new DefaultEnrolmentManagerFactory ());
+	}
+
 	/** The logger */
 	private final Log log;
 

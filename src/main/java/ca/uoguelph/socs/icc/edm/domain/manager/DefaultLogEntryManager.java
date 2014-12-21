@@ -29,6 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
 
 /**
  *
@@ -39,8 +40,40 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 public final class DefaultLogEntryManager extends AbstractManager<LogEntry> implements LogEntryManager
 {
+	/**
+	 * Implementation of the <code>ManagerFactory</code> to create a
+	 * <code>DefaultLogEntryManager</code>.
+	 */
+
+	private static final class DefaultLogEntryManagerFactory implements ManagerFactory<LogEntryManager>
+	{
+		/**
+		 * Create an instance of the <code>DefaultLogEntryManager</code>.
+		 *
+		 * @param  model The <code>DomainModel</code> to be associated with the
+		 *               <code>DefaultLogEntryManager</code>
+		 * @return       The <code>DefaultLogEntryManager</code>
+		 */
+
+		@Override
+		public LogEntryManager create (DomainModel model)
+		{
+			return new DefaultLogEntryManager (model);
+		}
+	}
+
 	/** The logger */
 	private final Log log;
+
+	/**
+	 * Static initializer to register the manager with its
+	 * <code>AbstractManagerFactory</code> implementation.
+	 */
+
+	static
+	{
+		(LogEntryFactory.getInstance ()).registerManagerFactory (DefaultLogEntryManager.class, new DefaultLogEntryManagerFactory ());
+	}
 
 	/**
 	 * Create the <code>LogEntryManager</code>.

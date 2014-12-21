@@ -28,6 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 import ca.uoguelph.socs.icc.edm.domain.UserManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
 
 /**
  * Create, Insert and remove users from the data store.  Implementations of
@@ -45,8 +46,40 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 public final class DefaultUserManager extends AbstractManager<User> implements UserManager
 {
+	/**
+	 * Implementation of the <code>ManagerFactory</code> to create a
+	 * <code>DefaultUserManager</code>.
+	 */
+
+	private static final class DefaultUserManagerFactory implements ManagerFactory<UserManager>
+	{
+		/**
+		 * Create an instance of the <code>DefaultUserManager</code>.
+		 *
+		 * @param  model The <code>DomainModel</code> to be associated with the
+		 *               <code>DefaultUserManager</code>
+		 * @return       The <code>DefaultUserManager</code>
+		 */
+
+		@Override
+		public UserManager create (DomainModel model)
+		{
+			return new DefaultUserManager (model);
+		}
+	}
+
 	/** The logger */
 	private final Log log;
+
+	/**
+	 * Static initializer to register the manager with its
+	 * <code>AbstractManagerFactory</code> implementation.
+	 */
+
+	static
+	{
+		(UserFactory.getInstance ()).registerManagerFactory (DefaultUserManager.class, new DefaultUserManagerFactory ());
+	}
 
 	/**
 	 * Create the <code>UserManager</code>.

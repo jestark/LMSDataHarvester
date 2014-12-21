@@ -28,6 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActionManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
 
 /**
  * Create, insert and remove actions from the domain model.  Through
@@ -41,8 +42,40 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 public final class DefaultActionManager extends AbstractManager<Action> implements ActionManager
 {
+	/**
+	 * Implementation of the <code>ManagerFactory</code> to create a
+	 * <code>DefaultActionManager</code>.
+	 */
+
+	private static final class DefaultActionManagerFactory implements ManagerFactory<ActionManager>
+	{
+		/**
+		 * Create an instance of the <code>DefaultActionManager</code>.
+		 *
+		 * @param  model The <code>DomainModel</code> to be associated with the
+		 *               <code>DefaultActionManager</code>
+		 * @return       The <code>DefaultActionManager</code>
+		 */
+
+		@Override
+		public ActionManager create (DomainModel model)
+		{
+			return new DefaultActionManager (model);
+		}
+	}
+
 	/** The logger */
 	private final Log log;
+
+	/**
+	 * Static initializer to register the manager with its
+	 * <code>AbstractManagerFactory</code> implementation.
+	 */
+
+	static
+	{
+		(ActionFactory.getInstance ()).registerManagerFactory (DefaultActionManager.class, new DefaultActionManagerFactory ());
+	}
 
 	/**
 	 * Create the <code>ActionManager</code>

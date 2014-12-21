@@ -25,6 +25,7 @@ import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
 import ca.uoguelph.socs.icc.edm.domain.RoleManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
 
 /**
  *
@@ -34,8 +35,40 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 public final class DefaultRoleManager extends AbstractManager<Role> implements RoleManager
 {
+	/**
+	 * Implementation of the <code>ManagerFactory</code> to create a
+	 * <code>DefaultRoleManager</code>.
+	 */
+
+	private static final class DefaultRoleManagerFactory implements ManagerFactory<RoleManager>
+	{
+		/**
+		 * Create an instance of the <code>DefaultRoleManager</code>.
+		 *
+		 * @param  model The <code>DomainModel</code> to be associated with the
+		 *               <code>DefaultRoleManager</code>
+		 * @return       The <code>DefaultRoleManager</code>
+		 */
+
+		@Override
+		public RoleManager create (DomainModel model)
+		{
+			return new DefaultRoleManager (model);
+		}
+	}
+
 	/** The logger */
 	private final Log log;
+
+	/**
+	 * Static initializer to register the manager with its
+	 * <code>AbstractManagerFactory</code> implementation.
+	 */
+
+	static
+	{
+		(RoleFactory.getInstance ()).registerManagerFactory (DefaultRoleManager.class, new DefaultRoleManagerFactory ());
+	}
 
 	/**
 	 * Create the <code>RoleManager</code>.

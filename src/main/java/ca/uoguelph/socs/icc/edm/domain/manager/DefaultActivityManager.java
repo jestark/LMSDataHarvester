@@ -28,6 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
 
 /**
  *
@@ -38,8 +39,40 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 public final class DefaultActivityManager extends AbstractManager<Activity> implements ActivityManager
 {
+	/**
+	 * Implementation of the <code>ManagerFactory</code> to create a
+	 * <code>DefaultActivityManager</code>.
+	 */
+
+	private static final class DefaultActivityManagerFactory implements ManagerFactory<ActivityManager>
+	{
+		/**
+		 * Create an instance of the <code>DefaultActivityManager</code>.
+		 *
+		 * @param  model The <code>DomainModel</code> to be associated with the
+		 *               <code>DefaultActivityManager</code>
+		 * @return       The <code>DefaultActivityManager</code>
+		 */
+
+		@Override
+		public ActivityManager create (DomainModel model)
+		{
+			return new DefaultActivityManager (model);
+		}
+	}
+
 	/** The logger */
 	private final Log log;
+
+	/**
+	 * Static initializer to register the manager with its
+	 * <code>AbstractManagerFactory</code> implementation.
+	 */
+
+	static
+	{
+		(ActivityFactory.getInstance ()).registerManagerFactory (DefaultActivityManager.class, new DefaultActivityManagerFactory ());
+	}
 
 	/**
 	 * Create the Activity manager.

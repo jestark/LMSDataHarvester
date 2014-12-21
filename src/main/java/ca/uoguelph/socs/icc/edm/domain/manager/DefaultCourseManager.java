@@ -28,6 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.CourseManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
 
 /**
  *
@@ -38,8 +39,40 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 public final class DefaultCourseManager extends AbstractManager<Course> implements CourseManager
 {
+	/**
+	 * Implementation of the <code>ManagerFactory</code> to create a
+	 * <code>DefaultCourseManager</code>.
+	 */
+
+	private static final class DefaultCourseManagerFactory implements ManagerFactory<CourseManager>
+	{
+		/**
+		 * Create an instance of the <code>DefaultCourseManager</code>.
+		 *
+		 * @param  model The <code>DomainModel</code> to be associated with the
+		 *               <code>DefaultCourseManager</code>
+		 * @return       The <code>DefaultCourseManager</code>
+		 */
+
+		@Override
+		public CourseManager create (DomainModel model)
+		{
+			return new DefaultCourseManager (model);
+		}
+	}
+
 	/** The logger */
 	private final Log log;
+
+	/**
+	 * Static initializer to register the manager with its
+	 * <code>AbstractManagerFactory</code> implementation.
+	 */
+
+	static
+	{
+		(CourseFactory.getInstance ()).registerManagerFactory (DefaultCourseManager.class, new DefaultCourseManagerFactory ());
+	}
 
 	/**
 	 * Create the <code>CourseManager</code>.
