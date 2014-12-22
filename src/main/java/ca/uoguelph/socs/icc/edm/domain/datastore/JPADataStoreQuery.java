@@ -137,7 +137,7 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 			throw new NullPointerException ();
 		}
 
-		String queryname = impl.getName () + ":" + name;
+		String queryname = impl.getSimpleName () + ":" + name;
 
 		// Have the data store create the query only if there is no cached copy.  In
 		// that case we need to catch the illegal argument exception coming from the
