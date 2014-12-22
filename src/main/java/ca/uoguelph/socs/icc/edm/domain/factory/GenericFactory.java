@@ -28,24 +28,24 @@ import java.util.Set;
  * 
  * @author  James E. Stark
  * @version 1.0
+ * @param   <K> The type used to index the registered factories
  * @param   <T> The type of the objects to be created by the factory
  * @param   <X> The type of the objects to be used as parameters for creation
  * @see     ConcreteFactory
  */
 
-public interface GenericFactory<T, X>
+public interface GenericFactory<K, T, X>
 {
 	/**
 	 * Register an implementation with the factory.
 	 *
-	 * @param  impl                      The implementation class to register, not
-	 *                                   null
+	 * @param  key                       The registration key, not null
 	 * @param  factory                   The factory used to instantiate the class
 	 * @throws IllegalArguementException if the implementation class is already
 	 *                                   registered
 	 */
 
-	public abstract void registerClass (Class<? extends T> impl, ConcreteFactory<T, X> factory);
+	public abstract void registerClass (K key, ConcreteFactory<T, X> factory);
 
 	/**
 	 * Get the set of classes which have been registered with this factory.
@@ -54,18 +54,18 @@ public interface GenericFactory<T, X>
 	 *         the factory.
 	 */
 
-	public abstract Set<Class<? extends T>> getRegisteredClasses ();
+	public abstract Set<K> getRegisteredClasses ();
 
 	/**
 	 * Create an instance of an implementation class.  This method will call the
 	 * <code>create</code> method on the <code>ConcreteFactory</code> which is
 	 * associated with the specified implementation class.
 	 *
-	 * @param  impl The implementation class to instantiate, not null
-	 * @param  key  Parameter to be used to create the instance
+	 * @param  key  The registration key, not null
+	 * @param  arg  Parameter to be used to create the instance
 	 * @return      An instance of the requested class
 	 * @see    ConcreteFactory#create
 	 */
 
-	public abstract T create (Class<? extends T> impl, X key);
+	public abstract T create (K key, X arg);
 }

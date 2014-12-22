@@ -30,14 +30,15 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author  James E. Stark
  * @version 1.0
+ * @param   <K> The type used to index the registered factories
  * @param   <T> The type of the objects to be created by the factory
  * @param   <X> The type of the objects to be used as parameters for creation
  */
 
-public class GenericBaseFactory<T, X> implements GenericFactory<T, X>
+public class GenericBaseFactory<K, T, X> implements GenericFactory<K, T, X>
 {
 	/** Map containing the classes and factories */
-	private final Map<Class<? extends T>, ConcreteFactory<T, X>> factories;
+	private final Map<K, ConcreteFactory<T, X>> factories;
 
 	/** Log */
 	private final Log log;
@@ -48,7 +49,7 @@ public class GenericBaseFactory<T, X> implements GenericFactory<T, X>
 
 	public GenericBaseFactory ()
 	{
-		this.factories = new HashMap<Class<? extends T>, ConcreteFactory<T, X>> ();
+		this.factories = new HashMap<K, ConcreteFactory<T, X>> ();
 
 		this.log = LogFactory.getLog (GenericBaseFactory.class);
 	}
@@ -56,19 +57,18 @@ public class GenericBaseFactory<T, X> implements GenericFactory<T, X>
 	/**
 	 * Register an implementation with the factory.
 	 *
-	 * @param  impl                      The implementation class to register, not
-	 *                                   null
+	 * @param  key                       The registration key, not null
 	 * @param  factory                   The factory used to instantiate the class
 	 * @throws IllegalArguementException if the implementation class is already
 	 *                                   registered
 	 */
 
 	@Override
-	public void registerClass (Class<? extends T> impl, ConcreteFactory<T, X> factory)
+	public void registerClass (K key, ConcreteFactory<T, X> factory)
 	{
-		if (impl == null)
+		if (key == null)
 		{
-			this.log.error ("Implementation Class is NULL");
+			this.log.error ("Key is NULL");
 			throw new NullPointerException ();
 		}
 
@@ -78,15 +78,15 @@ public class GenericBaseFactory<T, X> implements GenericFactory<T, X>
 			throw new NullPointerException ();
 		}
 
-		if (this.factories.containsKey (impl))
+		if (this.factories.containsKey (key))
 		{
-			String msg = impl.getName () + "has already been registered";
+			String msg = key + "has already been registered";
 
 			this.log.error (msg);
 			throw new IllegalArgumentException (msg);
 		}
 
-		this.factories.put (impl, factory);
+		this.factories.put (key, factory);
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class GenericBaseFactory<T, X> implements GenericFactory<T, X>
 	 */
 
 	@Override
-	public Set<Class<? extends T>> getRegisteredClasses ()
+	public Set<K> getRegisteredClasses ()
 	{
 		return this.factories.keySet ();
 	}
@@ -107,9 +107,8 @@ public class GenericBaseFactory<T, X> implements GenericFactory<T, X>
 	 * <code>create</code> method on the <code>ConcreteFactory</code> which is
 	 * associated with the specified implementation class.
 	 *
-	 * @param  impl                     The implementation class to instantiate,
-	 *                                  not null
-	 * @param  key                      Parameter to be used to create the
+	 * @param  impl                     The registration key, not null
+	 * @param  arg                      Parameter to be used to create the
 	 *                                  instance
 	 * @return                          An instance of the requested class
 	 * @throws IllegalArgumentException if the requested implementation is not
@@ -118,22 +117,22 @@ public class GenericBaseFactory<T, X> implements GenericFactory<T, X>
 	 */
 
 	@Override
-	public T create (Class<? extends T> impl, X key)
+	public T create (K key, X arg)
 	{
-		if (impl == null)
+		if (key == null)
 		{
-			this.log.error ("Implementation Class is NULL");
-			throw new NullPointerException ();
+			this.log.error ("Registration key is NULL");
+			throw new NullPointerException ("Registration key is NULL");
 		}
 
-		if (! this.factories.containsKey (impl))
+		if (! this.factories.containsKey (key))
 		{
-			String msg = "Class is not registered: " + impl.getName ();
+			String msg = "Key not registered: " + key;
 
 			this.log.error (msg);
 			throw new IllegalArgumentException (msg);
 		}
 
-		return (this.factories.get (impl)).create (key);
+		return (this.factories.get (key)).create (arg);
 	}
 }

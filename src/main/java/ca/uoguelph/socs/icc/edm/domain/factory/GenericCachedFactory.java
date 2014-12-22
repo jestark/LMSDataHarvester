@@ -34,17 +34,18 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author  James E. Stark
  * @version 1.0
+ * @param   <K> The type used to index the registered factories
  * @param   <T> The type of the objects to be created by the factory
  * @param   <X> The type of the objects to be used as parameters for creation
  */
 
-public class GenericCachedFactory<T, X> implements GenericFactory<T, X>
+public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
 {
 	/** The cache */
 	private final Map<X, T> cache;
 
 	/** The underlying factory */
-	private final GenericFactory<T, X> factory;
+	private final GenericFactory<K, T, X> factory;
 
 	/** The log */
 	private final Log log;
@@ -56,7 +57,7 @@ public class GenericCachedFactory<T, X> implements GenericFactory<T, X>
 	 *                 <code>CachedFactory</code> instance, not null
 	 */
 
-	public GenericCachedFactory (GenericFactory<T, X> factory)
+	public GenericCachedFactory (GenericFactory<K, T, X> factory)
 	{
 		this.log = LogFactory.getLog (GenericCachedFactory.class);
 
@@ -74,17 +75,16 @@ public class GenericCachedFactory<T, X> implements GenericFactory<T, X>
 	/**
 	 * Register an implementation with the factory.
 	 *
-	 * @param  impl                      The implementation class to register, not
-	 *                                   null
+	 * @param  key                       The registration key, not null
 	 * @param  factory                   The factory used to instantiate the class
 	 * @throws IllegalArguementException if the implementation class is already
 	 *                                   registered
 	 */
 
 	@Override
-	public void registerClass (Class<? extends T> impl, ConcreteFactory<T, X> factory)
+	public void registerClass (K key, ConcreteFactory<T, X> factory)
 	{
-		this.factory.registerClass (impl, factory);
+		this.factory.registerClass (key, factory);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class GenericCachedFactory<T, X> implements GenericFactory<T, X>
 	 */
 
 	@Override
-	public Set<Class<? extends T>> getRegisteredClasses ()
+	public Set<K> getRegisteredClasses ()
 	{
 		return this.factory.getRegisteredClasses ();
 	}
@@ -112,14 +112,14 @@ public class GenericCachedFactory<T, X> implements GenericFactory<T, X>
 	 * key can not be null, unlike other instances of the
 	 * <code>GenericFactory</code>.
 	 *
-	 * @param  impl The implementation class to instantiate, not null
-	 * @param  key  Parameter to be used to create the instance
+	 * @param  key  The registration key, not null
+	 * @param  arg  Parameter to be used to create the instance
 	 * @return      An instance of the requested class, not null
 	 * @see    ConcreteFactory#create
 	 */
 
 	@Override
-	public T create (Class<? extends T> impl, X key)
+	public T create (K key, X arg)
 	{
 		if (key == null)
 		{
@@ -129,27 +129,28 @@ public class GenericCachedFactory<T, X> implements GenericFactory<T, X>
 
 		if (! this.cache.containsKey (key))
 		{
-			this.cache.put (key, this.factory.create (impl, key));
+			this.cache.put (arg, this.factory.create (key, arg));
 		}
 
-		return this.cache.get (key);
+		return this.cache.get (arg);
 	}
 
 	/**
 	 * Remove the object with the specified key from ant cache.
 	 *
-	 * @param  key The key associated with the object to be removed, not null
+	 * @param  item The cache key associated with the object to be removed, not
+	 *              null
 	 */
 
-	public void remove (X key)
+	public void remove (X item)
 	{
-		if (key == null)
+		if (item == null)
 		{
-			this.log.error ("Key is NULL");
-			throw new NullPointerException ();
+			this.log.error ("Item is NULL");
+			throw new NullPointerException ("Item is NULL");
 		}
 
-		this.cache.remove (key);
+		this.cache.remove (item);
 	}
 
 	/**
