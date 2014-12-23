@@ -1,0 +1,240 @@
+Functional processing
+
+Create
+	- Is the model mutable?
+
+	- Are the parameters valid?
+		- For referenced model objects, do they exist in the model?
+
+	- Does an object of identical parameters (for ones that are to be unique) already exist in the model?
+	
+	- Assign Id
+
+	- Add object to model
+		- references in dependancies
+		- object
+
+Import
+	- Is the model mutable?
+
+	- Does an object with identical paramters already exist in the model?
+		- Does this exact object already exist in the model
+		- Is the object identical?
+			- Does it have all of the exact same sub-components?
+			- Are the references identical?
+		- Recusive only (what happens if a dependant already exists?), can that happen?
+
+	- Assign Id
+
+	- Add Object to model
+		- references in dependencies
+		- object
+		- dependants (recursive)
+
+Remove
+	- Is the model mutable?
+
+	- Does the object exist in the model?
+		- is it identical (same as import)
+
+	- non-recursive: Are the dependants empty?
+	- recursive:  are the dependants identical?
+
+	- remove object from model
+		- dependants (recursive only)
+		- references in dependancies
+		- object
+
+Pseudocode:
+
+Create:
+
+	try:
+		if (constructor takes all parameters)
+			result = import (new object (parameters))
+		else	
+			result = new object (parameters)
+			object.set (additional parameters)
+			result = import (result)
+		end if
+	catch (All exceptions thrown by import):
+		log failure
+		re-throw exception with any additional information
+
+	return result
+
+Import:
+
+	if (domain model is mutable)
+		
+	else
+		throw ReadOnlyModelException
+	end if
+
+	return result
+
+Remove:
+
+	if (domain model is mutable)
+	
+	else
+		throw ReadOnlyModelException
+	end if
+
+Object Parameters
+
+Activity
+	- Dependancies
+		- ActivityType
+		- Course
+
+	- Dependants
+		- Grade
+		- LogEntry
+
+	- Unique Parameters
+		- name (for named activities)
+		- ActivityType (for unnamed activities)
+
+	- References
+		- Course (non-issue)
+		- ActivityType (non-issue)
+		- Grades
+		- Logentries
+		- Instance Data (internal)
+
+ActivitySource
+	- Dependancies
+		- None
+
+	- Dependants
+		- ActivityType
+
+	- Unique Parameters
+		- name
+
+	- References
+		- ActivityTypes (non-issue)
+
+ActivityType
+	- Dependancies
+		- ActivitySource
+
+	- Dependants
+		- Activity (remove only)
+		- Action   (weak)
+
+	- Unique Parameters
+		- name, source
+
+	- References
+		- ActivitySource (non-issue)
+		- Actions (non-issue)
+
+Action
+	- Dependancies
+		- ActivityType (weak)
+
+	- Dependants
+		- LogEntry (remove only)
+
+	- Unique Parameters
+		- Name
+
+	- References
+		- ActivityTypes (non-issue)
+
+Course
+	- Dependancies
+		- None
+
+	- Dependants
+		- Activity
+		- Enrolment
+
+	- Unique Parameters
+		- name, semester, year
+
+	- References
+		- Activities
+		- Enrolments
+
+Enrolment
+	- Dependancies
+		- Course
+		- Role
+		- User (weak)
+
+	- Dependants
+		- Grade
+		- LogEntry
+
+	- Unique Parameters
+		- User, Course
+
+	- References
+		- Course (non-issue)
+		- Role (non-issue)
+		- User (non-issue)
+		- Grades
+		- LogEntries
+
+Grade
+	- Dependancies
+		- Enrolment
+		- Activity
+
+	- Dependants
+		- None
+
+	- Unique Parameters
+		- Enrolment, Activity
+
+	- References
+		- Enrolment
+		- Activity
+
+LogEntry
+	- Dependancies
+		- Activity
+		- Action
+		- Enrolment
+
+	- Dependants
+		- None
+
+	- Unique Parameters
+		- None
+
+	- References
+		- Activity (possible issue) - disjoint set of grades/logenties with existing
+		- Action (non-issue)
+		- Enrolment (possible issue) - disjoint set of grades/logenties with existing
+		- Reference
+			- Subactivity (possible issue)
+
+Role
+	- Dependancies
+		- None
+
+	- Dependants
+		- Enrolment (remove only)
+
+	- Unique Parameters
+		- name
+	
+	- References
+		- None
+
+User
+	- Dependancies
+		- None
+
+	- Dependants
+		- Enrolment (weak)
+
+	- Unique Parameters
+		- idnumber (maybe)
+		- username
+	- References
+		- Enrolments (non-issue)
