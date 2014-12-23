@@ -26,6 +26,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
+import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager;
 
 /**
  * This class implements the User interface, to represent a user in the domain
@@ -54,12 +56,16 @@ public class UserData implements User
 	/** The user's last name (surname). */
 	private String lastname;
 
-	/**
-	 * The enrolments objects corresponding to the courses in which the user is
-	 * enrolled.
-	 */
-
+	/** The user's enrolments */
 	private Set<Enrolment> enrolments;
+
+	static
+	{
+		UserFactory factory = UserFactory.getInstance ();
+
+		factory.setElementManager (UserData.class, DefaultUserManager.class);
+		factory.registerQueryFactory (User.class, UserData.class);
+	}
 
 	/**
 	 * Create the user with null values.  

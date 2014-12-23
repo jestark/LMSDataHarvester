@@ -43,7 +43,7 @@ public final class DefaultQueryFactory<T extends Element, X extends T> implement
 	 *              not null
 	 */
 
-	protected DefaultQueryFactory (Class<T> type, Class<X> impl)
+	public DefaultQueryFactory (Class<T> type, Class<X> impl)
 	{
 		if (type == null)
 		{

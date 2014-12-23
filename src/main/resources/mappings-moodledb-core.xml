@@ -5,20 +5,13 @@
 									 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
 				 version="2.1">
 	<description>Entity mappings for the moodle database</description>
-	<package>ca.uoguelph.socs.icc.edm.domain</package>
+	<package>ca.uoguelph.socs.icc.edm.domain.core</package>
 
 	<access>PROPERTY</access>
 
-	<!-- Map the Abstract classes here, to save mapping their attributes later -->
-
-	<mapped-superclass class="AbstractActivity" metadata-complete="true">
-		<description>Mapping for ID attribute for all activities</description>
-		<attributes>
-			<id name="id">
-				<column name="id"/>
-			</id>
-		</attributes>
-	</mapped-superclass>
+	<!--*********************************************************************-->
+	<!--  Mapped super classes used by activities                            -->
+	<!--*********************************************************************-->
 
 	<mapped-superclass class="AbstractNamedActivity" metadata-complete="true">
 		<description>Default mapping for Name attribute for all activities</description>
@@ -29,26 +22,89 @@
 		</attributes>
 	</mapped-superclass>
 
-	<entity name="GenericNamedActivity" class="GenericNamedActivity" metadata-complete="true">
-		<description>Mapping For the Generic Activity and the relationship the the instance</description>
-		<inheritance strategy="TABLE_PER_CLASS"/>
+	<!--*********************************************************************-->
+	<!-- Core data mapping: Users                                            -->
+	<!--*********************************************************************-->
+
+	<entity name="User" class="UserData" metadata-complete="true">
+		<description>Mapping definition for the Users</description>
+		<table name="mdl_user"/>
+		<named-query name="UserData:all">
+			<query>SELECT u FROM User u</query>
+		</named-query>
+		<named-query name="UserData:username">
+			<query>SELECT u FROM User u where u.username = :username</query>
+		</named-query>
+		<named-query name="UserData:idnumber">
+			<query>SELECT u FROM User u where u.idNumber = :idnumber</query>
+		</named-query>
 		<attributes>
-			<transient name="instance"/><!--<one-to-one name="instance" mapped-by="activity"/>-->
-			<transient name="course"/>
-			<transient name="type"/>
-			<transient name="gradable"/>
-			<transient name="stealth"/>
-			<transient name="grades"/>
+			<id name="id">
+				<column name="id" unique="true" nullable="false" insertable="false" updatable="false"/>
+			</id>
+			<basic name="idNumber">
+				<column name="idnumber" insertable="false" updatable="false"/>
+				<convert converter="ca.uoguelph.socs.icc.edm.domain.database.moodle.converter.IdNumberConverter"/>
+			</basic>
+			<basic name="username">
+				<column name="username" nullable="false" insertable="false" updatable="false"/>
+			</basic>
+			<basic name="firstname">
+				<column name="firstname" nullable="false" insertable="false" updatable="false"/>
+			</basic>
+			<basic name="lastname">
+				<column name="lastname" nullable="false" insertable="false" updatable="false"/>
+			</basic>
+			<transient name="name"/>
+			<transient name="enrolments"/>
 		</attributes>
 	</entity>
 
-	<!-- Note:  Abstract Group classes are deliberatly not mapped.  The Generics used in the
-	classes confuse the mapper.  So all of the parent-child relations must be mapped by the
-	implementation classes, where the relationships are fully defined. -->
+	<!--*********************************************************************-->
+	<!-- Core data mapping: Courses                                          -->
+	<!--*********************************************************************-->
 
-	<entity name="ActivityType" class="ActivityType" metadata-complete="true">
+	<entity name="Course" class="CourseData" metadata-complete="true">
+		<description>Mapping definition for the Courses</description>
+		<table name="mdl_course"/>
+		<named-query name="CourseData:all">
+			<query>SELECT c FROM Course c</query>
+		</named-query>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" insertable="false" updatable="false"/>
+			</id>
+			<basic name="name">
+				<column name="fullname" insertable="false" updatable="false"/>
+			</basic>
+			<basic name="semester">
+				<column name="startdate" insertable="false" updatable="false"/>
+				<convert converter="ca.uoguelph.socs.icc.edm.domain.database.moodle.converter.SemesterConverter"/>
+			</basic>
+			<basic name="year">
+				<column name="startdate" insertable="false" updatable="false"/>
+				<convert converter="ca.uoguelph.socs.icc.edm.domain.database.moodle.converter.DateYearConverter"/>
+			</basic>
+-			<one-to-many name="activities" target-entity="ActivityInstance" mapped-by="course"/>
+<!--			<one-to-many name="enrolments" mapped-by="course"/>
+			<one-to-many name="log" target-entity="MoodleDBLogEntry" mapped-by="course">
+			<order-by>id</order-by>
+			</one-to-many>-->
+			<transient name="activities"/>
+			<transient name="enrolments"/>
+		</attributes>
+	</entity>
+
+	<!--*********************************************************************-->
+	<!--  Core data mapping: Activities                                      -->
+	<!--*********************************************************************-->
+
+	<entity name="ActivityType" class="ActivityTypeData" metadata-complete="true">
 		<description>Mapping definition for the Activity Types (Moodle modules)</description>
 		<table name="mdl_modules"/>
+		<named-query name="ActivityTypeData:all">
+			<query>SELECT t FROM ActivityType t</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id"/>
@@ -57,55 +113,48 @@
 				<column name="name"/>
 			</basic>
 			<transient name="actions"/>
+			<transient name="source"/>
 		</attributes>
 	</entity>
 
-	<entity name="ActivityInstance" class="ActivityInstance" metadata-complete="true">
+	<entity name="Activity" class="ActivityInstance" metadata-complete="true">
 		<description>Mapping definition for the instances of the activities</description>
 		<table name="mdl_course_modules"/>
+		<named-query name="Activity:all">
+			<query>SELECT a FROM Activity a</query>
+		</named-query>
 		<attributes>
-			<many-to-one name="course" fetch="LAZY">
+			<id name="id">
+				<column name="id" nullable="false" unique="true" insertable="false" updatable="false"/>
+			</id>
+			<many-to-one name="course" target-entity="CourseData" optional="false">
 				<join-column name="course"/>
 			</many-to-one>
-			<many-to-one name="type" fetch="LAZY">
-				<join-column name="module"/>
+			<many-to-one name="type" target-entity="ActivityTypeData" optional="false">
+				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<!--			<one-to-one name="activity" target-entity="GenericNamedActivity" fetch="LAZY">
-			<join-column name="instance"/>
-			</one-to-one>-->
 			<transient name="activity"/>
-			<transient name="gradable"/>
 			<transient name="stealth"/>
 			<transient name="grades"/>
 			<transient name="name"/>
-		</attributes>
-	</entity>
-
-	<entity name="Course" class="Course" metadata-complete="true">
-		<description>Mapping definition for the Courses</description>
-		<table name="mdl_course"/>
-		<attributes>
-			<id name="id">
-				<column name="id" insertable="false" updatable="false"/>
-			</id>
-			<basic name="name">
-				<column name="fullname" insertable="false" updatable="false"/>
-			</basic>
-			<basic name="semester">
-				<column name="startdate" insertable="false" updatable="false"/>
-				<convert converter="ca.uoguelph.socs.icc.edm.moodledb.SemesterConverter"/>
-			</basic>
-			<basic name="year">
-				<column name="startdate" insertable="false" updatable="false"/>
-				<convert converter="ca.uoguelph.socs.icc.edm.moodledb.MoodleDateYearConverter"/>
-			</basic>
-			<one-to-many name="activities" target-entity="ActivityInstance" mapped-by="course"/>
-			<!--<one-to-many name="enrolments" mapped-by="course"/>
-			<one-to-many name="log" target-entity="MoodleDBLogEntry" mapped-by="course">
-				<order-by>id</order-by>
-			</one-to-many>-->
-			<transient name="enrolments"/>
 			<transient name="log"/>
 		</attributes>
 	</entity>
+
+<!--	<entity name="GenericNamedActivity" class="GenericNamedActivity" metadata-complete="true">
+		<description>Mapping For the Generic Activity and the relationship the the instance</description>
+		<inheritance strategy="TABLE_PER_CLASS"/>
+		<attributes>
+			<transient name="instance"/><one-to-one name="instance" mapped-by="activity"/>
+			<transient name="course"/>
+			<transient name="type"/>
+			<transient name="gradable"/>
+			<transient name="stealth"/>
+			<transient name="grades"/>
+		</attributes>
+		</entity>-->
+
+	<!-- Note:  Abstract Group classes are deliberatly not mapped.  The Generics used in the
+	classes confuse the mapper.  So all of the parent-child relations must be mapped by the
+	implementation classes, where the relationships are fully defined. -->
 </entity-mappings>

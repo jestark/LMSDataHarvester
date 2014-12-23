@@ -61,11 +61,6 @@ public final class DomainModel
 		this.log = LogFactory.getLog (DomainModel.class);
 	}
 
-	protected <T extends Element, X extends T> DataStoreQuery<T> createQuery (QueryFactory<T, X> factory)
-	{
-		return factory.create (this.datastore);
-	}
-
 	/**
 	 * Determine if the <code>DomainModel</code> is mutable.
 	 *
@@ -108,6 +103,11 @@ public final class DomainModel
 	public DomainModelProfile getProfile ()
 	{
 		return this.profile;
+	}
+
+	protected DataStore getDataStore ()
+	{
+		return this.datastore;
 	}
 
 	/**
