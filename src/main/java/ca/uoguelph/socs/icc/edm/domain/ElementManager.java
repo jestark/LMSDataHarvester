@@ -32,6 +32,15 @@ import java.util.List;
 public interface ElementManager<T extends Element>
 {
 	/**
+	 * Get the <code>DomainModel</code> which is associated with this
+	 * <code>ElementManager</code> instance.
+	 *
+	 * @return A reference to the associated <code>DomainModel</code>
+	 */
+
+	public abstract DomainModel getDomainModel ();
+
+	/**
 	 * Retrieve an object from the data store based on its primary key.
 	 *
 	 * @param  id The value of the primary key of the object to retrieve, not null

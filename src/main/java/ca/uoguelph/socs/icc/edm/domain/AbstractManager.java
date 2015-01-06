@@ -75,6 +75,18 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	}
 
 	/**
+	 * Get the <code>DomainModel</code> which is associated with this
+	 * <code>AbstractManager</code> instance.
+	 *
+	 * @return A reference to the associated <code>DomainModel</code>
+	 */
+
+	public DomainModel getDomainModel ()
+	{
+		return this.model;
+	}
+
+	/**
 	 * Retrieve an object from the data store based on its primary key.
 	 *
 	 * @param  id The value of the primary key of the object to retrieve, not null
