@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
 import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
 
 public final class LogEntryFactory extends AbstractManagerFactory<LogEntry, LogEntryManager>
 {
@@ -37,6 +36,6 @@ public final class LogEntryFactory extends AbstractManagerFactory<LogEntry, LogE
 
 	private LogEntryFactory ()
 	{
-		super (DomainModelType.LOGENTRY);
+		super ();
 	}
 }

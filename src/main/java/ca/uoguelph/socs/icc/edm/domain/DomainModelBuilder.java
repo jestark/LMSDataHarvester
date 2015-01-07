@@ -131,7 +131,7 @@ public final class DomainModelBuilder
 	 *         all of the elements in the profile
 	 */
 
-	public Set<DomainModelType> getElements ()
+	public Set<Class<? extends Element>> getElements ()
 	{
 		return this.profile.getElements ();
 	}
@@ -146,7 +146,7 @@ public final class DomainModelBuilder
 	 *                 <code>false</code> otherwise
 	 */
 
-	public Boolean isAvalable (DomainModelType element)
+	public Boolean isAvalable (Class<? extends Element> element)
 	{
 		Boolean available = null;
 
@@ -175,7 +175,7 @@ public final class DomainModelBuilder
 	 * @return         The associated ID generator class
 	 */
 
-	public Class<? extends IdGenerator> getGenerator (DomainModelType element)
+	public Class<? extends IdGenerator> getGenerator (Class<? extends Element> element)
 	{
 		Class<? extends IdGenerator> generator = null;
 
@@ -205,7 +205,7 @@ public final class DomainModelBuilder
 	 *                 <code>DataStore</code>
 	 */
 
-	public Class<? extends Element> getImplClass (DomainModelType element)
+	public Class<? extends Element> getImplClass (Class<? extends Element> element)
 	{
 		Class<? extends Element> impl = null;
 
@@ -256,7 +256,7 @@ public final class DomainModelBuilder
 	 *                                  element
 	 */
 
-	public void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
+	public void setEntry (Class<? extends Element> element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
 	{
 		try
 		{
@@ -289,7 +289,7 @@ public final class DomainModelBuilder
 	{
 		boolean abort = false;
 
-		Set<DomainModelType> elements = this.profile.getElements ();
+		Set<Class<? extends Element>> elements = this.profile.getElements ();
 
 		for (DomainModelType t : DomainModelType.values ())
 		{

@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
 import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.RoleManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
 
 public final class RoleFactory extends AbstractManagerFactory<Role, RoleManager>
 {
@@ -37,6 +36,6 @@ public final class RoleFactory extends AbstractManagerFactory<Role, RoleManager>
 
 	private RoleFactory ()
 	{
-		super (DomainModelType.ROLE);
+		super ();
 	}
 }

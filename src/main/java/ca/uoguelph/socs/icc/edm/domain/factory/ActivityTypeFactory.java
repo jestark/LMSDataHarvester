@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
 import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
 
 public final class ActivityTypeFactory extends AbstractManagerFactory<ActivityType, ActivityTypeManager>
 {
@@ -37,6 +36,6 @@ public final class ActivityTypeFactory extends AbstractManagerFactory<ActivityTy
 
 	private ActivityTypeFactory ()
 	{
-		super (DomainModelType.ACTIVITYTYPE);
+		super ();
 	}
 }

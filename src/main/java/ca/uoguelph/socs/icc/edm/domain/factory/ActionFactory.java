@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
 import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActionManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
 
 public final class ActionFactory extends AbstractManagerFactory<Action, ActionManager>
 {
@@ -37,6 +36,6 @@ public final class ActionFactory extends AbstractManagerFactory<Action, ActionMa
 
 	private ActionFactory ()
 	{
-		super (DomainModelType.ACTION);
+		super ();
 	}
 }
