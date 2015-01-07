@@ -27,16 +27,11 @@ public final class CourseFactory extends AbstractManagerFactory<Course, CourseMa
 
 	static
 	{
-		CourseFactory.instance = null;
+		CourseFactory.instance = new CourseFactory ();
 	}
 
 	public static CourseFactory getInstance ()
 	{
-		if (CourseFactory.instance == null)
-		{
-			CourseFactory.instance = new CourseFactory ();
-		}
-
 		return CourseFactory.instance;
 	}
 

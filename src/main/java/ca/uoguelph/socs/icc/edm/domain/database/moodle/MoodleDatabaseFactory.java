@@ -49,16 +49,11 @@ public final class MoodleDatabaseFactory extends DatabaseFactory
 
 	static
 	{
-		MoodleDatabaseFactory.instance = null;
+		MoodleDatabaseFactory.instance = new MoodleDatabaseFactory ();
 	}
 
 	public static MoodleDatabaseFactory getInstance()
 	{
-		if (MoodleDatabaseFactory.instance == null)
-		{
-			MoodleDatabaseFactory.instance = new MoodleDatabaseFactory ();
-		}
-
 		return MoodleDatabaseFactory.instance;
 	}
 

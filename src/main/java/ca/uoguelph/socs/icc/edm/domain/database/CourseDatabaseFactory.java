@@ -48,16 +48,11 @@ public final class CourseDatabaseFactory extends DatabaseFactory
 
 	static
 	{
-		CourseDatabaseFactory.instance = null;
+		CourseDatabaseFactory.instance = new CourseDatabaseFactory ();
 	}
 
 	public static CourseDatabaseFactory getInstance ()
 	{
-		if (CourseDatabaseFactory.instance == null)
-		{
-			CourseDatabaseFactory.instance = new CourseDatabaseFactory ();
-		}
-
 		return CourseDatabaseFactory.instance;
 	}
 

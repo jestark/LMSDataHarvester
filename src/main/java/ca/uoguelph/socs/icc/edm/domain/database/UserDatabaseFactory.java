@@ -49,16 +49,11 @@ public final class UserDatabaseFactory extends DatabaseFactory
 
 	static
 	{
-		UserDatabaseFactory.instance = null;
+		UserDatabaseFactory.instance = new UserDatabaseFactory ();
 	}
 
 	public UserDatabaseFactory getInstance ()
 	{
-		if (UserDatabaseFactory.instance ==  null)
-		{
-			UserDatabaseFactory.instance = new UserDatabaseFactory ();
-		}
-
 		return UserDatabaseFactory.instance;
 	}
 

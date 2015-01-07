@@ -27,16 +27,11 @@ public final class RoleFactory extends AbstractManagerFactory<Role, RoleManager>
 
 	static
 	{
-		RoleFactory.instance = null;
+		RoleFactory.instance = new RoleFactory ();
 	}
 
 	public static RoleFactory getInstance ()
 	{
-		if (RoleFactory.instance == null)
-		{
-			RoleFactory.instance = new RoleFactory ();
-		}
-
 		return RoleFactory.instance;
 	}
 

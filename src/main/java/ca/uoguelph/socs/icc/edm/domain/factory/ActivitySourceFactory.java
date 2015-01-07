@@ -27,16 +27,11 @@ public final class ActivitySourceFactory extends AbstractManagerFactory<Activity
 
 	static
 	{
-		ActivitySourceFactory.instance = null;
+		ActivitySourceFactory.instance = new ActivitySourceFactory ();
 	}
 
 	public static ActivitySourceFactory getInstance ()
 	{
-		if (ActivitySourceFactory.instance == null)
-		{
-			ActivitySourceFactory.instance = new ActivitySourceFactory ();
-		}
-
 		return ActivitySourceFactory.instance;
 	}
 

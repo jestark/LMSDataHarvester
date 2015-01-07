@@ -27,16 +27,11 @@ public final class UserFactory extends AbstractManagerFactory<User, UserManager>
 
 	static
 	{
-		UserFactory.instance = null;
+		UserFactory.instance = new UserFactory ();
 	}
 
 	public static UserFactory getInstance ()
 	{
-		if (UserFactory.instance == null)
-		{
-			UserFactory.instance = new UserFactory ();
-		}
-
 		return UserFactory.instance;
 	}
 

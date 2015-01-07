@@ -27,16 +27,11 @@ public final class ActionFactory extends AbstractManagerFactory<Action, ActionMa
 
 	static
 	{
-		ActionFactory.instance = null;
+		ActionFactory.instance = new ActionFactory ();
 	}
 
 	public static ActionFactory getInstance ()
 	{
-		if (ActionFactory.instance == null)
-		{
-			ActionFactory.instance = new ActionFactory ();
-		}
-
 		return ActionFactory.instance;
 	}
 

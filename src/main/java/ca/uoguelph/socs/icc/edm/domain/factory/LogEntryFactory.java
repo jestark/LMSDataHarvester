@@ -27,16 +27,11 @@ public final class LogEntryFactory extends AbstractManagerFactory<LogEntry, LogE
 
 	static
 	{
-		LogEntryFactory.instance = null;
+		LogEntryFactory.instance = new LogEntryFactory ();
 	}
 
 	public static LogEntryFactory getInstance ()
 	{
-		if (LogEntryFactory.instance == null)
-		{
-			LogEntryFactory.instance = new LogEntryFactory ();
-		}
-
 		return LogEntryFactory.instance;
 	}
 

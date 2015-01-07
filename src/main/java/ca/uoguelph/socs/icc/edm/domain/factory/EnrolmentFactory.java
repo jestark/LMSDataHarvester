@@ -27,16 +27,11 @@ public final class EnrolmentFactory extends AbstractManagerFactory<Enrolment, En
 
 	static
 	{
-		EnrolmentFactory.instance = null;
+		EnrolmentFactory.instance = new EnrolmentFactory ();
 	}
 
 	public static EnrolmentFactory getInstance ()
 	{
-		if (EnrolmentFactory.instance == null)
-		{
-			EnrolmentFactory.instance = new EnrolmentFactory ();
-		}
-
 		return EnrolmentFactory.instance;
 	}
 
