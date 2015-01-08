@@ -18,10 +18,12 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
+import ca.uoguelph.socs.icc.edm.domain.builder.ActivityTypeElementFactory;
 
-public final class ActivityTypeFactory extends AbstractManagerFactory<ActivityType, ActivityTypeManager>
+public final class ActivityTypeFactory extends AbstractManagerFactory<ActivityType, ActivityTypeManager, ActivityTypeBuilder, ActivityTypeElementFactory>
 {
 	private static ActivityTypeFactory instance;
 

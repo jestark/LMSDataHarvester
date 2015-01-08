@@ -18,10 +18,12 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
+import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
 
-public final class LogEntryFactory extends AbstractManagerFactory<LogEntry, LogEntryManager>
+public final class LogEntryFactory extends AbstractManagerFactory<LogEntry, LogEntryManager, LogEntryBuilder, LogEntryElementFactory>
 {
 	private static LogEntryFactory instance;
 

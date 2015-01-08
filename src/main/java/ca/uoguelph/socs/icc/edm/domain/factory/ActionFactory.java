@@ -18,10 +18,12 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Action;
+import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActionManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
+import ca.uoguelph.socs.icc.edm.domain.builder.ActionElementFactory;
 
-public final class ActionFactory extends AbstractManagerFactory<Action, ActionManager>
+public final class ActionFactory extends AbstractManagerFactory<Action, ActionManager, ActionBuilder, ActionElementFactory>
 {
 	private static ActionFactory instance;
 
