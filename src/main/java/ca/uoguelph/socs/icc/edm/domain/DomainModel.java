@@ -26,7 +26,17 @@ import org.apache.commons.logging.LogFactory;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreTransaction;
+
+import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActivitySourceFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
 
 /**
  *
@@ -61,6 +71,11 @@ public final class DomainModel
 		this.log = LogFactory.getLog (DomainModel.class);
 	}
 
+	protected DataStore getDataStore ()
+	{
+		return this.datastore;
+	}
+
 	/**
 	 * Determine if the <code>DomainModel</code> is mutable.
 	 *
@@ -78,7 +93,7 @@ public final class DomainModel
 	 *
 	 * @return <code>true</code> if the underlying <code>DataStore</code> is open,
 	 *         <code>false</code> otherwise
-	 * @see    ca.uoguelph.socs.icc.edm.datastore.DataStore#isOpen
+	 * @see    ca.uoguelph.socs.icc.edm.domain.datastore.DataStore#isOpen
 	 */
 
 	public Boolean isOpen ()
@@ -105,76 +120,183 @@ public final class DomainModel
 		return this.profile;
 	}
 
-	protected DataStore getDataStore ()
+	/**
+	 * Get the <code>ActionManager</code> for the <code>DomainModel</code>.
+	 *
+	 * @return                       A reference to the <code>ActionManager</code>
+	 * @throws IllegalStateException If the <code>Action</code> interface is not
+	 *                               available for the <code>DomainModel</code>
+	 */
+
+	public ActionManager getActionManager ()
 	{
-		return this.datastore;
+		if (! this.profile.isAvailable (DomainModelType.ACTION))
+		{
+			this.log.error ("Action interface is not represented by the data store");
+			throw new IllegalStateException ("Action interface is not available");
+		}
+
+		return (ActionFactory.getInstance ()).createManager (this);
 	}
 
 	/**
-	 * Get the requested <code>ElementManager</code>.
+	 * Get the <code>ActivityManager</code> for the <code>DomainModel</code>.
 	 *
-	 * @param <T>                 The type of the manager
-	 * @param type                The manager type class, not null
-	 * @return                    An instance of the requested manager.
-	 * @throws ClassCastException if the stored instance of the manager doesn't
-	 *                            match the requested type.
-	 *                            if the specified manager type does not match
-	 *                            that of a previously stored manager instance
-	 *                            (should never happen).
+	 * @return                       A reference to the
+	 *                               <code>ActivityManager</code>
+	 * @throws IllegalStateException If the <code>Activity</code> interface is not
+	 *                               available for the <code>DomainModel</code>
 	 */
 
-	public <T extends ElementManager<? extends Element>> T getManager (Class<T> type)
+	public ActivityManager getActivityManager ()
 	{
-		if (type == null)
+		if (! this.profile.isAvailable (DomainModelType.ACTIVITY))
 		{
-			this.log.error ("The specified for the manager is NULL");
-			throw new NullPointerException ("Manager type is NULL");
+			this.log.error ("Activity interface is not represented by the data store");
+			throw new IllegalStateException ("Activity interface is not available");
 		}
-		
-		/* Uhmmm.... */
-		
-		return null;
 
-/*		switch (type)
+		return (ActivityFactory.getInstance ()).createManager (this);
+	}
+
+	/**
+	 * Get the <code>ActivitySourceManager</code> for the
+	 * <code>DomainModel</code>.
+	 *
+	 * @return                       A reference to the
+	 *                               <code>ActivitySourceManager</code>
+	 * @throws IllegalStateException If the <code>ActivitySource</code> interface
+	 *                               is not available for the
+	 *                               <code>DomainModel</code>
+	 */
+
+	public ActivitySourceManager getActivitySourceManager ()
+	{
+		if (! this.profile.isAvailable (DomainModelType.ACTIVITYSOURCE))
 		{
-			case ACTION:
-				result = new ActionManager (this);
-				break;
+			this.log.error ("ActivitySource interface is not represented by the data store");
+			throw new IllegalStateException ("ActivitySource interface is not available");
+		}
 
-			case ACTIVITY:
-				result = new ActivityManager (this);
-				break;
+		return (ActivitySourceFactory.getInstance ()).createManager (this);
+	}
 
-			case ACTIVITYSOURCE:
-				result = new ActivitySourceManager (this);
-				break;
+	/**
+	 * Get the <code>ActivityTypeManager</code> for the <code>DomainModel</code>.
+	 *
+	 * @return                       A reference to the
+	 *                               <code>ActivityTypeManager</code>
+	 * @throws IllegalStateException If the <code>ActivityTypeManager</code>
+	 *                               interface is not available for the
+	 *                               <code>DomainModel</code>
+	 */
 
-			case ACTIVITYTYPE:
-				result = new ActivityTypeManager (this);
-				break;
+	public ActivityTypeManager getActivityTypeManager ()
+	{
+		if (! this.profile.isAvailable (DomainModelType.ACTIVITYTYPE))
+		{
+			this.log.error ("ActivityType interface is not represented by the data store");
+			throw new IllegalStateException ("ActivityType interface is not available");
+		}
 
-			case COURSE:
-				result = new CourseManager (this);
-				break;
+		return (ActivityTypeFactory.getInstance ()).createManager (this);
+	}
 
-			case ENROLMENT:
-				result = new EnrolmentManager (this);
-				break;
+	/**
+	 * Get the <code>CourseManager</code> for the <code>DomainModel</code>.
+	 *
+	 * @return                       A reference to the <code>CourseManager</code>
+	 * @throws IllegalStateException If the <code>Course</code> interface is not
+	 *                               available for the <code>DomainModel</code>
+	 */
 
-			case LOGENTRY:
-				result = new LogEntryManager (this);
-				break;
+	public CourseManager getCourseManager ()
+	{
+		if (! this.profile.isAvailable (DomainModelType.COURSE))
+		{
+			this.log.error ("Course interface is not represented by the data store");
+			throw new IllegalStateException ("Course interface is not available");
+		}
 
-			case ROLE:
-				result = new RoleManager (this);
-				break;
+		return (CourseFactory.getInstance ()).createManager (this);
+	}
 
-			case USER:
-				result = new UserManager (this);
-				break;
+	/**
+	 * Get the <code>EnrolmentManager</code> for the <code>DomainModel</code>.
+	 *
+	 * @return                       A reference to the
+	 *                               <code>EnrolmentManager</code>
+	 * @throws IllegalStateException If the <code>Enrolment</code> interface is
+	 *                               not available for the
+	 *                               <code>DomainModel</code>
+	 */
 
-			default:
-				throw new IllegalArgumentException ();
-		}*/
+	public EnrolmentManager getEnrolmentManager ()
+	{
+		if (! this.profile.isAvailable (DomainModelType.ENROLMENT))
+		{
+			this.log.error ("Enrolment interface is not represented by the data store");
+			throw new IllegalStateException ("Enrolment interface is not available");
+		}
+
+		return (EnrolmentFactory.getInstance ()).createManager (this);
+	}
+
+	/**
+	 * Get the <code>LogEntryManager</code> for the <code>DomainModel</code>.
+	 *
+	 * @return                       A reference to the
+	 *                               <code>LogEntryManager</code>
+	 * @throws IllegalStateException If the <code>LogEntry</code> interface is not
+	 *                               available for the <code>DomainModel</code>
+	 */
+
+	public LogEntryManager getLogEntryManager ()
+	{
+		if (! this.profile.isAvailable (DomainModelType.LOGENTRY))
+		{
+			this.log.error ("LogEntry interface is not represented by the data store");
+			throw new IllegalStateException ("LogEntry interface is not available");
+		}
+
+		return (LogEntryFactory.getInstance ()).createManager (this);
+	}
+
+	/**
+	 * Get the <code>RoleManager</code> for the <code>DomainModel</code>.
+	 *
+	 * @return                       A reference to the <code>RoleManager</code>
+	 * @throws IllegalStateException If the <code>Role</code> interface is not
+	 *                               available for the <code>DomainModel</code>
+	 */
+
+	public RoleManager getRoleManager ()
+	{
+		if (! this.profile.isAvailable (DomainModelType.ROLE))
+		{
+			this.log.error ("Role interface is not represented by the data store");
+			throw new IllegalStateException ("Role interface is not available");
+		}
+
+		return (RoleFactory.getInstance ()).createManager (this);
+	}
+
+	/**
+	 * Get the <code>UserManager</code> for the <code>DomainModel</code>.
+	 *
+	 * @return                       A reference to the <code>UserManager</code>
+	 * @throws IllegalStateException If the <code>User</code> interface is not
+	 *                               available for the <code>DomainModel</code>
+	 */
+
+	public UserManager getUserManager ()
+	{
+		if (! this.profile.isAvailable (DomainModelType.USER))
+		{
+			this.log.error ("User interface is not represented by the data store");
+			throw new IllegalStateException ("User interface is not available");
+		}
+
+		return (UserFactory.getInstance ()).createManager (this);
 	}
 }
