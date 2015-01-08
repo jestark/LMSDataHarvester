@@ -20,14 +20,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
-import ca.uoguelph.socs.icc.edm.domain.CourseManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
 
 public final class DefaultCourseBuilder extends AbstractBuilder<Course> implements CourseBuilder
 {
+	private static class DefaultCourseBuilderFactory implements BuilderFactory<CourseBuilder>
+	{
+		public CourseBuilder create (DomainModel model)
+		{
+			return new DefaultCourseBuilder ((AbstractManager<Course>) model.getCourseManager ());
+		}
+	}
+
 	/** The logger */
 	private final Log log;
 
@@ -43,11 +52,11 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	/** The year of offering */
 	private Integer year;
 
-	protected DefaultCourseBuilder (CourseManager manager, CourseElementFactory factory, IdGenerator generator)
+	protected DefaultCourseBuilder (AbstractManager<Course> manager)
 	{
 		super (manager);
 
-		this.factory = factory;
+		this.factory = null;
 		this.log = LogFactory.getLog (DefaultCourseBuilder.class);
 	}
 

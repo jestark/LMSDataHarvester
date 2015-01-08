@@ -24,20 +24,20 @@ import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
 public abstract class AbstractBuilder<T extends Element>
 {
 	/** The manager (used to add new instances to the model) */
-	private final ElementManager<T> manager;
+	private final AbstractManager<T> manager;
 
 	/** The ID number generator */
-//	protected final IdGenerator generator;
+	private final IdGenerator generator;
 
 	/** The Logger */
 	private final Log log;
 
-	protected AbstractBuilder (ElementManager<T> manager)
+	protected AbstractBuilder (AbstractManager<T> manager)
 	{
 		this.log = LogFactory.getLog (AbstractBuilder.class);
 		
 		this.manager = manager;
-//		this.generator = generator;
+		this.generator = null;
 	}
 
 	public final T create ()

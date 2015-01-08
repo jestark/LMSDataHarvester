@@ -20,15 +20,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
-import ca.uoguelph.socs.icc.edm.domain.EnrolmentManager;
 import ca.uoguelph.socs.icc.edm.domain.User;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
 public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> implements EnrolmentBuilder
 {
+	private static class DefaultEnrolmentBuilderFactory implements BuilderFactory<EnrolmentBuilder>
+	{
+		public EnrolmentBuilder create (DomainModel model)
+		{
+			return new DefaultEnrolmentBuilder ((AbstractManager<Enrolment>) model.getEnrolmentManager ());
+		}
+	}
+
 	/** The logger */
 	private final Log log;
 
@@ -44,11 +53,11 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	/** The user associated with the enrolment */
 	private User user;
 
-	protected DefaultEnrolmentBuilder (EnrolmentManager manager, EnrolmentElementFactory factory, IdGenerator generator)
+	protected DefaultEnrolmentBuilder (AbstractManager<Enrolment> manager)
 	{
 		super (manager);
 
-		this.factory = factory;
+		this.factory = null;
 		this.log = LogFactory.getLog (DefaultEnrolmentBuilder.class);
 	}
 

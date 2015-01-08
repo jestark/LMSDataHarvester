@@ -20,14 +20,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
-import ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
 
 public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType> implements ActivityTypeBuilder
 {
+	private static class DefaultActivityTypeBuilderFactory implements BuilderFactory<ActivityTypeBuilder>
+	{
+		public ActivityTypeBuilder create (DomainModel model)
+		{
+			return new DefaultActivityTypeBuilder ((AbstractManager<ActivityType>) model.getActivityTypeManager ());
+		}
+	}
+
 	/** The logger */
 	private final Log log;
 
@@ -40,11 +49,11 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	/** The name of the <code>ActivityType</code> */
 	private String name;
 
-	protected DefaultActivityTypeBuilder (ActivityTypeManager manager, ActivityTypeElementFactory factory, IdGenerator generator)
+	protected DefaultActivityTypeBuilder (AbstractManager<ActivityType> manager)
 	{
 		super (manager);
 
-		this.factory = factory;
+		this.factory = null;
 		this.log = LogFactory.getLog (DefaultActivityTypeBuilder.class);
 	}
 

@@ -20,13 +20,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
-import ca.uoguelph.socs.icc.edm.domain.RoleManager;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
 
 public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements RoleBuilder
 {
+	private static class DefaultRoleBuilderFactory implements BuilderFactory<RoleBuilder>
+	{
+		public RoleBuilder create (DomainModel model)
+		{
+			return new DefaultRoleBuilder ((AbstractManager<Role>) model.getRoleManager ());
+		}
+	}
+
 	/** The logger */
 	private final Log log;
 
@@ -36,11 +45,11 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 	/** The name of the Role */
 	private String name;
 
-	protected DefaultRoleBuilder (RoleManager manager, RoleElementFactory factory, IdGenerator generator)
+	protected DefaultRoleBuilder (AbstractManager<Role> manager)
 	{
 		super (manager);
 
-		this.factory = factory;
+		this.factory = null;
 		this.log = LogFactory.getLog (DefaultRoleBuilder.class);
 	}
 
