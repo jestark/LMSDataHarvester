@@ -78,7 +78,7 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 
 	static
 	{
-		(UserFactory.getInstance ()).registerManagerFactory (DefaultUserManager.class, new DefaultUserManagerFactory ());
+		(UserFactory.getInstance ()).registerManager (DefaultUserManager.class, new DefaultUserManagerFactory ());
 	}
 
 	/**

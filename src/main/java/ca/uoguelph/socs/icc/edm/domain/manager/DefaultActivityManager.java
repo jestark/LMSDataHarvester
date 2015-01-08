@@ -71,7 +71,7 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 
 	static
 	{
-		(ActivityFactory.getInstance ()).registerManagerFactory (DefaultActivityManager.class, new DefaultActivityManagerFactory ());
+		(ActivityFactory.getInstance ()).registerManager (DefaultActivityManager.class, new DefaultActivityManagerFactory ());
 	}
 
 	/**
