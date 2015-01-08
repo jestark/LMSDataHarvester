@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.factory;
+package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public interface ElementFactory<T extends Element>
 {
-	public abstract T create ();
+	public abstract void setId (T element, Long id);
 }

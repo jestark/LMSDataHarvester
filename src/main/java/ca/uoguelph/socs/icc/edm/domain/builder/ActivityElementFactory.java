@@ -19,8 +19,9 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
-public interface ActivityElementFactory
+public interface ActivityElementFactory extends ElementFactory<Activity>
 {
 	public abstract Activity create (ActivityType type, Course course, Boolean stealth);
 }

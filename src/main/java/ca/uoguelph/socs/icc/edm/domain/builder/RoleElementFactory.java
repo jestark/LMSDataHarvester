@@ -16,9 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-public interface RoleElementFactory
+public interface RoleElementFactory extends ElementFactory<Role>
 {
 	public abstract Role create (String name);
 }

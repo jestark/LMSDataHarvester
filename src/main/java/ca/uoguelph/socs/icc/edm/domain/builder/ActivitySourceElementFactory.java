@@ -17,8 +17,9 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
-public interface ActivitySourceElementFactory
+public interface ActivitySourceElementFactory extends ElementFactory<ActivitySource>
 {
 	public abstract ActivitySource create (String source);
 }

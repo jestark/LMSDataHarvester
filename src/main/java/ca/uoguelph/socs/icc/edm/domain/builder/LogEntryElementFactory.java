@@ -20,10 +20,11 @@ import java.util.Date;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-public interface LogEntryElementFactory
+public interface LogEntryElementFactory extends ElementFactory<LogEntry>
 {
 	public abstract LogEntry create (Action action, Activity activity, Enrolment enrolment, String ip, Date time);
 }

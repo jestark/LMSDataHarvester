@@ -16,9 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-public interface UserElementFactory
+public interface UserElementFactory extends ElementFactory<User>
 {
 	public abstract User create (Integer idnumber, String firstname, String lastname, String username);
 }
