@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import java.util.HashSet;
@@ -41,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager;
  * @see     ca.uoguelph.socs.icc.edm.domain.User
  */
 
-public class UserData implements User
+public class UserData implements User, Serializable
 {
 	private static final class UserDataFactory implements UserElementFactory
 	{
@@ -64,6 +65,9 @@ public class UserData implements User
 			((UserData) user).setId (id);
 		}
 	}
+
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
 
 	/** The data store id of this user. */
 	private Long id;

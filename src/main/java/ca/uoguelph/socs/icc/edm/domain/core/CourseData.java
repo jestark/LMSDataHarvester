@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import java.util.HashSet;
@@ -43,7 +44,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager;
  * @see     ca.uoguelph.socs.icc.edm.domain.CourseManager
  */
 
-public class CourseData implements Course
+public class CourseData implements Course, Serializable
 {
 	private static final class CourseDataFactory implements CourseElementFactory
 	{
@@ -65,6 +66,8 @@ public class CourseData implements Course
 			((CourseData) course).setId (id);
 		}
 	}
+
+	private static final long serialVersionUID = 1L;
 
 	/** The datastore id of this course. */
 	private Long id;

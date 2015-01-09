@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -25,7 +27,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.RoleElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager;
 
-public class RoleData implements Role
+public class RoleData implements Role, Serializable
 {
 	private static final class RoleDataFactory implements RoleElementFactory
 	{
@@ -46,6 +48,9 @@ public class RoleData implements Role
 		}
 	}
 
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+	
 	private Long id;
 	private String name;
 

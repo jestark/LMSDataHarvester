@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
-
 import java.util.Set;
 import java.util.List;
 
@@ -60,6 +59,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		}
 	}
 
+	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	private Long id;

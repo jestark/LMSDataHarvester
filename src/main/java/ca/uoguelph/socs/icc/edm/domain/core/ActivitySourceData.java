@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import java.util.HashSet;
@@ -30,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivitySourceElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivitySourceFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivitySourceManager;
 
-public class ActivitySourceData implements ActivitySource
+public class ActivitySourceData implements ActivitySource, Serializable
 {
 	private static final class ActivitySourceDataFactory implements ActivitySourceElementFactory
 	{
@@ -50,6 +51,9 @@ public class ActivitySourceData implements ActivitySource
 			((ActivitySourceData) ActivitySource).setId (id);
 		}
 	}
+
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	private String name;

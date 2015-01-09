@@ -17,9 +17,8 @@
 package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
-
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -61,6 +60,7 @@ public class EnrolmentData implements Enrolment, Serializable
 		}
 	}
 
+	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	private Long id;

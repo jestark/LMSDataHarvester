@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import java.util.HashSet;
@@ -23,8 +24,11 @@ import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivity, E extends ActivityGroupMember> extends GenericGroupedActivityMember<T> implements ActivityGroup<E>
+public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivity, E extends ActivityGroupMember> extends GenericGroupedActivityMember<T> implements ActivityGroup<E>, Serializable
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	private Set<E> children;
 
 	protected GenericGroupedActivityGroup ()

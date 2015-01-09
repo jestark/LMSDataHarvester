@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
+
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
@@ -33,7 +35,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager;
  * @see     EnrolmentManager
  */
 
-public class UserEnrolmentData extends EnrolmentData
+public class UserEnrolmentData extends EnrolmentData implements Enrolment, Serializable
 {
 	private static final class UserEnrolmentDataFactory implements EnrolmentElementFactory
 	{
@@ -56,6 +58,7 @@ public class UserEnrolmentData extends EnrolmentData
 		}
 	}
 
+	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	static

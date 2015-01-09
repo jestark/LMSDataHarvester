@@ -16,8 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
-import java.util.Set;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import java.util.ArrayList;
 
@@ -29,8 +30,11 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivity> extends AbstractNamedActivity implements ActivityGroupMember
+public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivity> extends AbstractNamedActivity implements ActivityGroupMember, Serializable
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	private Long id;
 	private T parent;
 	private List<LogReference<? extends ActivityGroupMember>> log;

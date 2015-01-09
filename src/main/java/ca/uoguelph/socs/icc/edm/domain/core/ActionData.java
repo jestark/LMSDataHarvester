@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import java.util.HashSet;
@@ -41,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActionManager;
  * @see     ActionManager
  */
 
-public class ActionData implements Action
+public class ActionData implements Action, Serializable
 {
 	private static final class ActionDataFactory implements ActionElementFactory
 	{
@@ -61,6 +62,9 @@ public class ActionData implements Action
 			((ActionData) Action).setId (id);
 		}
 	}
+
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
 
 	/** The datastore id of this action */
 	private Long id;

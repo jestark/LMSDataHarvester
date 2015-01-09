@@ -23,6 +23,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 public abstract class LogReference<T extends ActivityGroupMember> implements Serializable
 {
+	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	private LogEntry entry;

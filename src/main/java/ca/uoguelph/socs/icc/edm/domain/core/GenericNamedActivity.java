@@ -31,6 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 public abstract class GenericNamedActivity extends AbstractNamedActivity implements Serializable
 {
+	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	private ActivityInstance instance;
