@@ -16,21 +16,4 @@
 
 package ca.uoguelph.socs.icc.edm.domain.database.moodle;
 
-import java.util.Set;
-import java.util.HashSet;
 
-import ca.uoguelph.socs.icc.edm.domain.Role;
-import ca.uoguelph.socs.icc.edm.domain.core.UserEnrolmentData;
-
-class MoodleEnrolmentUserData extends UserEnrolmentData
-{
-	private static final long serialVersionUID = 1L;
-
-	private Set<Role> roles;
-
-	protected MoodleEnrolmentUserData ()
-	{
-		super ();
-		roles = null;
-	}
-}

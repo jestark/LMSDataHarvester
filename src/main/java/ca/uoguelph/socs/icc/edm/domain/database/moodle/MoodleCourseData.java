@@ -17,20 +17,21 @@
 package ca.uoguelph.socs.icc.edm.domain.database.moodle;
 
 import java.util.Set;
+
 import java.util.HashSet;
 
-import ca.uoguelph.socs.icc.edm.domain.Role;
-import ca.uoguelph.socs.icc.edm.domain.core.UserEnrolmentData;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-class MoodleEnrolmentUserData extends UserEnrolmentData
+import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Enrolment;
+import ca.uoguelph.socs.icc.edm.domain.Semester;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.CourseElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
+
+public class MoodleCourseData implements Course, Serializable
 {
-	private static final long serialVersionUID = 1L;
 
-	private Set<Role> roles;
-
-	protected MoodleEnrolmentUserData ()
-	{
-		super ();
-		roles = null;
-	}
 }

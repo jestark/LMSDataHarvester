@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.moodledb;
+package ca.uoguelph.socs.icc.edm.domain.database.moodle;
 
 import java.util.Date;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
 
-public class MoodleDBLogEntry
+public class MoodleLogData
 {
 	private long id;
 	private Date timestamp;
@@ -32,7 +32,7 @@ public class MoodleDBLogEntry
 	private String action;
 	private String info;
 
-	protected MoodleDBLogEntry ()
+	protected MoodleLogData ()
 	{
 		this.id = -1;
 		this.timestamp = null;
