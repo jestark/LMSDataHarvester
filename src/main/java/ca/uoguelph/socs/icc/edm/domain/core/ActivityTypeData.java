@@ -39,12 +39,7 @@ public class ActivityTypeData implements ActivityType, Serializable
 		@Override
 		public ActivityType create (ActivitySource source, String name)
 		{
-			ActivityTypeData type = new ActivityTypeData ();
-
-			type.setSource (source);
-			type.setName (name);
-
-			return type;
+			return new ActivityTypeData (source, name);
 		}
 
 		@Override
@@ -67,12 +62,22 @@ public class ActivityTypeData implements ActivityType, Serializable
 		(ActivityTypeFactory.getInstance ()).registerElement (ActivityTypeData.class, DefaultActivityTypeManager.class, DefaultActivityTypeBuilder.class, new ActivityTypeDataFactory ());
 	}
 
-	protected ActivityTypeData ()
+	public ActivityTypeData ()
 	{
 		this.id = null;
 		this.name = null;
 		this.source = null;
 		this.actions = null;
+	}
+
+	public ActivityTypeData (ActivitySource source, String name)
+	{
+		this ();
+
+		this.name = name;
+		this.source = source;
+
+		this.actions = new HashSet<Action> ();
 	}
 
 	@Override

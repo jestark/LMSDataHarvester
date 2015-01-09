@@ -35,13 +35,7 @@ public class GradedActivity implements Grade, Serializable
 		@Override
 		public Grade create (Enrolment enrolment, Activity activity, Integer mark)
 		{
-			GradedActivity grade = new GradedActivity ();
-
-			grade.setEnrolment (enrolment);
-			grade.setActivity (activity);
-			grade.setGrade (mark);
-
-			return grade;
+			return new GradedActivity (enrolment, activity, mark);
 		}
 	}
 
@@ -57,11 +51,20 @@ public class GradedActivity implements Grade, Serializable
 //		(EnrolmentFactory.getInstance ()).registerElement (GradedActivity.class, DefaultGradeBuilder.class, new GradedActivityFactory ());
 	}
 
-	protected GradedActivity ()
+	public GradedActivity ()
 	{
 		this.grade = null;
 		this.activity = null;
 		this.enrolment = null;
+	}
+
+	public GradedActivity (Enrolment enrolment, Activity activity, Integer mark)
+	{
+		this ();
+
+		this.grade = grade;
+		this.activity = activity;
+		this.enrolment = enrolment;
 	}
 
 	@Override

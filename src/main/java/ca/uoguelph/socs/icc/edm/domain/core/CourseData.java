@@ -51,13 +51,7 @@ public class CourseData implements Course, Serializable
 		@Override
 		public Course create (String name, Semester semester, Integer year)
 		{
-			CourseData course = new CourseData ();
-
-			course.setName (name);
-			course.setSemester (semester);
-			course.setYear (year);
-
-			return course;
+			return new CourseData (name, semester, year);
 		}
 
 		@Override
@@ -100,7 +94,7 @@ public class CourseData implements Course, Serializable
 	 * the (protected) mutator methods.
 	 */
 
-	protected CourseData ()
+	public CourseData ()
 	{
 		this.id = null;
 		this.name = null;
@@ -109,6 +103,17 @@ public class CourseData implements Course, Serializable
 		this.activities = null;
 		this.enrolments = null;
 	}
+
+	public CourseData (String name, Semester semester, Integer year)
+	{
+		this ();
+		this.name = name;
+		this.semester = semester;
+		this.year = year;
+
+		this.activities = new HashSet<Activity> ();
+		this.enrolments = new HashSet<Enrolment> ();
+	}	
 
 	/**
 	 * Override java.lang.object's equals method to compare to courses based on

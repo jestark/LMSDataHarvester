@@ -39,7 +39,7 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 	private T parent;
 	private List<LogReference<? extends ActivityGroupMember>> log;
 
-	protected GenericGroupedActivityMember()
+	public GenericGroupedActivityMember ()
 	{
 		super ();
 		this.id = null;
@@ -47,8 +47,18 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 		this.parent = null;
 	}
 
+	public GenericGroupedActivityMember (String name, T parent)
+	{
+		super (name);
+
+		this.id = null;
+		this.parent = parent;
+
+		this.log = new ArrayList<LogReference<? extends ActivityGroupMember>> ();
+	}
+
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals (Object obj)
 	{
 		boolean result = false;
 
@@ -72,7 +82,7 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 	}
 
 	@Override
-	public int hashCode()
+	public int hashCode ()
 	{
 		final int base = 1031;
 		final int mult = 971;

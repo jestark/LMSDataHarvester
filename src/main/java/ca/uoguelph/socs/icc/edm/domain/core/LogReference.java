@@ -29,7 +29,7 @@ public abstract class LogReference<T extends ActivityGroupMember> implements Ser
 	private LogEntry entry;
 	private T activity;
 
-	protected LogReference ()
+	public LogReference ()
 	{
 		this.entry = null;
 		this.activity = null;

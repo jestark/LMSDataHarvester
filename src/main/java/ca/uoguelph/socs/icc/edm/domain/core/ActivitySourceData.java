@@ -38,11 +38,7 @@ public class ActivitySourceData implements ActivitySource, Serializable
 		@Override
 		public ActivitySource create (String name)
 		{
-			ActivitySourceData source = new ActivitySourceData ();
-
-			source.setName (name);
-
-			return source;
+			return new ActivitySourceData (name);
 		}
 
 		@Override
@@ -64,11 +60,20 @@ public class ActivitySourceData implements ActivitySource, Serializable
 		(ActivitySourceFactory.getInstance ()).registerElement (ActivitySourceData.class, DefaultActivitySourceManager.class, DefaultActivitySourceBuilder.class, new ActivitySourceDataFactory ());
 	}
 
-	protected ActivitySourceData ()
+	public ActivitySourceData ()
 	{
 		this.id = null;
 		this.name = null;
 		this.types = null;
+	}
+
+	public ActivitySourceData (String name)
+	{
+		this ();
+
+		this.name = name;
+
+		this.types = new HashSet<ActivityType> ();
 	}
 
 	@Override

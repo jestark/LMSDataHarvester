@@ -43,14 +43,9 @@ public class EnrolmentData implements Enrolment, Serializable
 	private static final class EnrolmentDataFactory implements EnrolmentElementFactory
 	{
 		@Override
-		public Enrolment create (User user, Course course, Integer grade)
+		public Enrolment create (User user, Course course, Role role, Integer grade, Boolean usable)
 		{
-			EnrolmentData enrolment = new EnrolmentData ();
-
-			enrolment.setCourse (course);
-			enrolment.setFinalGrade (grade);
-
-			return enrolment;
+			return new EnrolmentData (course, role, grade, usable);
 		}
 
 		@Override
@@ -76,7 +71,7 @@ public class EnrolmentData implements Enrolment, Serializable
 		(EnrolmentFactory.getInstance ()).registerElement (EnrolmentData.class, DefaultEnrolmentManager.class, DefaultEnrolmentBuilder.class, new EnrolmentDataFactory ());
 	}
 
-	protected EnrolmentData ()
+	public EnrolmentData ()
 	{
 		this.id = null;
 		this.log = null;
@@ -85,6 +80,19 @@ public class EnrolmentData implements Enrolment, Serializable
 		this.usable = new Boolean (false);
 		this.finalgrade = null;
 		this.grades = null;
+	}
+
+	public EnrolmentData (Course course, Role role, Integer grade, Boolean usable)
+	{
+		this ();
+
+		this.course = course;
+		this.role = role;
+		this.finalgrade = grade;
+		this.usable = usable;
+
+		this.grades = new HashSet<Grade> ();
+		this.log = new ArrayList<LogEntry> ();
 	}
 
 	@Override

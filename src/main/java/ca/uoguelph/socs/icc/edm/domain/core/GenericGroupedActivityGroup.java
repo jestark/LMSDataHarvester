@@ -31,10 +31,17 @@ public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivit
 
 	private Set<E> children;
 
-	protected GenericGroupedActivityGroup ()
+	public GenericGroupedActivityGroup ()
 	{
 		super ();
 		this.children = null;
+	}
+
+	public GenericGroupedActivityGroup (String name, T parent)
+	{
+		super (name, parent);
+
+		this.children = new HashSet<E> ();
 	}
 
 	@Override

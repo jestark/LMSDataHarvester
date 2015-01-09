@@ -20,6 +20,7 @@ import java.io.Serializable;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
+import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.EnrolmentElementFactory;
@@ -40,15 +41,9 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	private static final class UserEnrolmentDataFactory implements EnrolmentElementFactory
 	{
 		@Override
-		public Enrolment create (User user, Course course, Integer grade)
+		public Enrolment create (User user, Course course, Role role, Integer grade, Boolean usable)
 		{
-			UserEnrolmentData enrolment = new UserEnrolmentData ();
-
-			enrolment.setUser (user);
-			enrolment.setCourse (course);
-			enrolment.setFinalGrade (grade);
-
-			return enrolment;
+			return new UserEnrolmentData (user, course, role, grade, usable);
 		}
 
 		@Override
@@ -73,10 +68,17 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	 * Create the enrolment with null values
 	 */
 
-	protected UserEnrolmentData ()
+	public UserEnrolmentData ()
 	{
 		super ();
 		this.user = null;
+	}
+
+	public UserEnrolmentData (User user, Course course, Role role, Integer grade, Boolean usable)
+	{
+		super (course, role, grade, usable);
+
+		this.user = user;
 	}
 
 	/**

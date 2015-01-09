@@ -40,15 +40,7 @@ public class LogData implements LogEntry, Serializable
 		@Override
 		public LogEntry create (Action action, Activity activity, Enrolment enrolment, String ip, Date time)
 		{
-			LogData entry = new LogData ();
-
-			entry.setAction (action);
-			entry.setActivitydb (activity);
-			entry.setEnrolment (enrolment);
-			entry.setIPAddress (ip);
-			entry.setTime (time);
-
-			return entry;
+			return new LogData (action, activity, enrolment, ip, time);
 		}
 
 		@Override
@@ -74,7 +66,7 @@ public class LogData implements LogEntry, Serializable
 		(LogEntryFactory.getInstance ()).registerElement (LogData.class, DefaultLogEntryManager.class, DefaultLogEntryBuilder.class, new LogDataFactory ());
 	}
 
-	protected LogData ()
+	public LogData ()
 	{
 		this.id = null;
 		this.ip = null;
@@ -83,6 +75,17 @@ public class LogData implements LogEntry, Serializable
 		this.enrolment = null;
 		this.reference = null;
 		this.time = null;
+	}
+
+	public LogData (Action action, Activity activity, Enrolment enrolment, String ip, Date time)
+	{
+		this ();
+
+		this.action = action;
+		this.activity = activity;
+		this.enrolment = enrolment;
+		this.ip = ip;
+		this.time = time;
 	}
 
 	public Long getId ()

@@ -36,9 +36,16 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 
 	private ActivityInstance instance;
 
-	protected GenericNamedActivity ()
+	public GenericNamedActivity ()
 	{
 		super ();
+		this.instance = null;
+	}
+
+	public GenericNamedActivity (String name)
+	{
+		super (name);
+
 		this.instance = null;
 	}
 

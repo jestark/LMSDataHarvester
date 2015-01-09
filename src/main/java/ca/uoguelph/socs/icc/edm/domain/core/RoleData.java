@@ -34,11 +34,7 @@ public class RoleData implements Role, Serializable
 		@Override
 		public Role create (String name)
 		{
-			RoleData role = new RoleData ();
-
-			role.setName (name);
-
-			return role;
+			return new RoleData (name);
 		}
 
 		@Override
@@ -59,10 +55,17 @@ public class RoleData implements Role, Serializable
 		(RoleFactory.getInstance ()).registerElement (RoleData.class, DefaultRoleManager.class, DefaultRoleBuilder.class, new RoleDataFactory ());
 	}
 
-	protected RoleData ()
+	public RoleData ()
 	{
 		this.id = null;
 		this.name = null;
+	}
+
+	public RoleData (String name)
+	{
+		this ();
+
+		this.name = name;
 	}
 
 	@Override

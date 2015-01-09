@@ -49,11 +49,7 @@ public class ActionData implements Action, Serializable
 		@Override
 		public Action create (String name)
 		{
-			ActionData action = new ActionData ();
-
-			action.setName (name);
-
-			return action;
+			return new ActionData (name);
 		}
 
 		@Override
@@ -88,11 +84,20 @@ public class ActionData implements Action, Serializable
 	 * will be set via the (protected) mutator methods.
 	 */
 
-	protected ActionData ()
+	public ActionData ()
 	{
 		this.id= null;
 		this.name = null;
 		this.types = null;
+	}
+
+	public ActionData (String name)
+	{
+		this ();
+
+		this.name = name;
+
+		this.types = new HashSet<ActivityType> ();
 	}
 
 	/**

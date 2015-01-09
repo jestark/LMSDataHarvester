@@ -30,7 +30,7 @@ public abstract class AbstractNamedActivity extends AbstractActivity implements 
 
 	private String name;
 
-	protected AbstractNamedActivity ()
+	public AbstractNamedActivity ()
 	{
 		super ();
 		this.name = null;

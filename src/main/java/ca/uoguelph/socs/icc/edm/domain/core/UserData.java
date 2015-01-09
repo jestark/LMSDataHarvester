@@ -49,14 +49,7 @@ public class UserData implements User, Serializable
 		@Override
 		public User create (Integer idnumber, String firstname, String lastname, String username)
 		{
-			UserData user = new UserData ();
-
-			user.setIdNumber (idnumber);
-			user.setFirstname (firstname);
-			user.setLastname (lastname);
-			user.setUsername (username);
-
-			return user;
+			return new UserData (idnumber, firstname, lastname, username);
 		}
 
 		@Override
@@ -96,7 +89,7 @@ public class UserData implements User, Serializable
 	 * Create the user with null values.
 	 */
 
-	protected UserData ()
+	public UserData ()
 	{
 		this.id = null;
 		this.idnumber = null;
@@ -104,6 +97,18 @@ public class UserData implements User, Serializable
 		this.lastname = null;
 		this.firstname= null;
 		this.enrolments = null;
+	}
+
+	public UserData (Integer idnumber, String firstname, String lastname, String username)
+	{
+		this ();
+
+		this.idnumber = idnumber;
+		this.username = firstname;
+		this.lastname = lastname;
+		this.firstname= username;
+
+		this.enrolments = new HashSet<Enrolment> ();
 	}
 
 	/**

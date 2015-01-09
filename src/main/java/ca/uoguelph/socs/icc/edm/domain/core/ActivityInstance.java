@@ -43,13 +43,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		@Override
 		public Activity create (ActivityType type, Course course, Boolean stealth)
 		{
-			ActivityInstance instance = new ActivityInstance ();
-
-			instance.setType (type);
-			instance.setCourse (course);
-			instance.setStealth (stealth);
-
-			return instance;
+			return new ActivityInstance (type, course, stealth);
 		}
 
 		@Override
@@ -75,7 +69,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		(ActivityFactory.getInstance ()).registerElement (ActivityInstance.class, DefaultActivityManager.class, DefaultActivityBuilder.class, new ActivityInstanceFactory ());
 	}
 
-	protected ActivityInstance ()
+	public ActivityInstance ()
 	{
 		super ();
 		this.id = null;
@@ -86,6 +80,18 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		this.grades = null;
 
 		this.stealth = new Boolean (false);
+	}
+
+	public ActivityInstance (ActivityType type, Course course, Boolean stealth)
+	{
+		this ();
+
+		this.type = type;
+		this.course = course;
+		this.stealth = stealth;
+
+		this.grades = new HashSet<Grade> ();
+		this.log = new ArrayList<LogEntry> ();
 	}
 
 	@Override
