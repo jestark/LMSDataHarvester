@@ -85,21 +85,18 @@ public class ActivityTypeData implements ActivityType, Serializable
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.name, ((ActivityTypeData) obj).name);
-				ebuilder.append (this.source, ((ActivityTypeData) obj).source);
+			result = true;
+		}
+		else if (obj instanceof ActivityTypeData)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.name, ((ActivityTypeData) obj).name);
+			ebuilder.append (this.source, ((ActivityTypeData) obj).source);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

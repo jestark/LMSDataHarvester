@@ -138,22 +138,19 @@ public class UserData implements User, Serializable
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.idnumber, ((UserData) obj).idnumber);
-				ebuilder.append (this.username, ((UserData) obj).username);
-				ebuilder.append (this.lastname, ((UserData) obj).lastname);
-				ebuilder.append (this.firstname, ((UserData) obj).firstname);
+			result = true;
+		}
+		else if (obj instanceof UserData)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.idnumber, ((UserData) obj).idnumber);
+			ebuilder.append (this.username, ((UserData) obj).username);
+			ebuilder.append (this.lastname, ((UserData) obj).lastname);
+			ebuilder.append (this.firstname, ((UserData) obj).firstname);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

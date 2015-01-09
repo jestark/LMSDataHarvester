@@ -49,19 +49,16 @@ public abstract class GenericGroupedActivity<E extends ActivityGroupMember> exte
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
+			result = true;
+		}
+		else if (obj instanceof GenericGroupedActivity)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

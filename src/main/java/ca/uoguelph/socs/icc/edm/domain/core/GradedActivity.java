@@ -72,21 +72,18 @@ public class GradedActivity implements Grade, Serializable
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.activity, ((GradedActivity) obj).activity);
-				ebuilder.append (this.enrolment, ((GradedActivity) obj).enrolment);
-				ebuilder.append (this.grade, ((GradedActivity) obj).grade);
+			result = true;
+		}
+		else if (obj instanceof GradedActivity)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.activity, ((GradedActivity) obj).activity);
+			ebuilder.append (this.enrolment, ((GradedActivity) obj).enrolment);
+			ebuilder.append (this.grade, ((GradedActivity) obj).grade);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

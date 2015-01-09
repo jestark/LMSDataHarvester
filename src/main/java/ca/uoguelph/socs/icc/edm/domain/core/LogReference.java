@@ -40,16 +40,13 @@ public abstract class LogReference<T extends ActivityGroupMember> implements Ser
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				result = this.entry.equals (obj);
-			}
+			result = true;
+		}
+		else if (obj instanceof LogReference)
+		{
+			result = this.entry.equals (obj);
 		}
 
 		return result;

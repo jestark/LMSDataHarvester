@@ -88,6 +88,48 @@ public class LogData implements LogEntry, Serializable
 		this.time = time;
 	}
 
+	@Override
+	public boolean equals (Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof LogData)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.action, ((LogData) obj).action);
+			ebuilder.append (this.activity, ((LogData) obj).activity);
+			ebuilder.append (this.enrolment, ((LogData) obj).enrolment);
+			ebuilder.append (this.ip, ((LogData) obj).ip);
+			ebuilder.append (this.time, ((LogData) obj).time);
+			ebuilder.append (this.reference, ((LogData) obj).reference);
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 1093;
+		final int mult = 887;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.action);
+		hbuilder.append (this.activity);
+		hbuilder.append (this.enrolment);
+		hbuilder.append (this.ip);
+		hbuilder.append (this.time);
+		hbuilder.append (this.reference);
+
+		return hbuilder.toHashCode ();
+	}
+
 	public Long getId ()
 	{
 		return this.id;

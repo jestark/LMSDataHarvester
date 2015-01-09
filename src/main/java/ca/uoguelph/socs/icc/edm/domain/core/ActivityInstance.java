@@ -99,22 +99,19 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.type, ((ActivityInstance) obj).type);
-				ebuilder.append (this.course, ((ActivityInstance) obj).course);
-				ebuilder.append (this.activity, ((ActivityInstance) obj).activity);
+			result = true;
+		}
+		else if (obj instanceof ActivityInstance)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.type, ((ActivityInstance) obj).type);
+			ebuilder.append (this.course, ((ActivityInstance) obj).course);
+			ebuilder.append (this.activity, ((ActivityInstance) obj).activity);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

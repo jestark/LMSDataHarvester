@@ -18,6 +18,9 @@ package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Role;
@@ -80,6 +83,41 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 
 		this.user = user;
 	}
+
+	@Override
+	public boolean equals (Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof UserEnrolmentData)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.user, ((UserEnrolmentData) obj).user);
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 1103;
+		final int mult = 881;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.appendSuper (super.hashCode ());
+		hbuilder.append (this.user);
+
+		return hbuilder.toHashCode ();
+	}
+
 
 	/**
 	 * Get the user associated with this enrolment.

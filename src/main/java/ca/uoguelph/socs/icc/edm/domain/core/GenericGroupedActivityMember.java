@@ -62,20 +62,17 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.parent, ((GenericGroupedActivityMember) obj).parent);
+			result = true;
+		}
+		else if (obj instanceof GenericGroupedActivityMember)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.parent, ((GenericGroupedActivityMember) obj).parent);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;
