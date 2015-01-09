@@ -35,7 +35,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager;
 
 public class LogData implements LogEntry, Serializable
 {
-	private static final class LogEntryDataFactory implements LogEntryElementFactory
+	private static final class LogDataFactory implements LogEntryElementFactory
 	{
 		@Override
 		public LogEntry create (Action action, Activity activity, Enrolment enrolment, String ip, Date time)
