@@ -22,5 +22,5 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public interface ActivityTypeElementFactory extends ElementFactory<ActivityType>
 {
-	public abstract ActivityType create (ActivitySource type, String name);
+	public abstract ActivityType create (ActivitySource source, String name);
 }
