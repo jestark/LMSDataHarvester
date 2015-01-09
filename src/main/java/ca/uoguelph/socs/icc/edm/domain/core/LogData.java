@@ -28,9 +28,36 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager;
 
 public class LogData implements LogEntry, Serializable
 {
+	private static final class LogEntryDataFactory implements LogEntryElementFactory
+	{
+		@Override
+		public LogEntry create (Action action, Activity activity, Enrolment enrolment, String ip, Date time)
+		{
+			LogData entry = new LogData ();
+
+			entry.setAction (action);
+			entry.setActivitydb (activity);
+			entry.setEnrolment (enrolment);
+			entry.setIPAddress (ip);
+			entry.setTime (time);
+
+			return entry;
+		}
+
+		@Override
+		public void setId (LogEntry entry, Long id)
+		{
+			((LogData) entry).setId (id);
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
@@ -40,6 +67,11 @@ public class LogData implements LogEntry, Serializable
 	private Date time;
 	private String ip;
 	private LogReference<? extends ActivityGroupMember> reference;
+
+	static
+	{
+		(LogEntryFactory.getInstance ()).registerElement (LogData.class, DefaultLogEntryManager.class, DefaultLogEntryBuilder.class, new LogDataFactory ());
+	}
 
 	protected LogData ()
 	{
@@ -57,7 +89,7 @@ public class LogData implements LogEntry, Serializable
 		return this.id;
 	}
 
-	protected void setid (Long id)
+	protected void setId (Long id)
 	{
 		this.id = id;
 	}

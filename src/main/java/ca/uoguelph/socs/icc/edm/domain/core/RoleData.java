@@ -20,11 +20,39 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.RoleElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager;
 
 public class RoleData implements Role
 {
+	private static final class RoleDataFactory implements RoleElementFactory
+	{
+		@Override
+		public Role create (String name)
+		{
+			RoleData role = new RoleData ();
+
+			role.setName (name);
+
+			return role;
+		}
+
+		@Override
+		public void setId (Role Role, Long id)
+		{
+			((RoleData) Role).setId (id);
+		}
+	}
+
 	private Long id;
 	private String name;
+
+	static
+	{
+		(RoleFactory.getInstance ()).registerElement (RoleData.class, DefaultRoleManager.class, DefaultRoleBuilder.class, new RoleDataFactory ());
+	}
 
 	protected RoleData ()
 	{
