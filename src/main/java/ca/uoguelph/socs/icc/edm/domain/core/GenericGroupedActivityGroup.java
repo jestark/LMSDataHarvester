@@ -29,6 +29,7 @@ public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivit
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The set of sub-activities  */
 	private Set<E> children;
 
 	public GenericGroupedActivityGroup ()

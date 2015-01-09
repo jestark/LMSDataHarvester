@@ -56,12 +56,25 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The primary key for the activity */
 	private Long id;
+
+	/** Flag indicting if the activity is a "system" activity */
 	private Boolean stealth;
+	
+	/** The course with which the activity is associated */
 	private Course course;
+
+	/** The data associated with the activity */
 	private Activity activity;
+
+	/** The type of the activity*/
 	private ActivityType type;
+
+	/** The set of grades for the activity */
 	private Set<Grade> grades;
+
+	/** The log entries associated with the activity*/
 	private List<LogEntry> log;
 
 	static

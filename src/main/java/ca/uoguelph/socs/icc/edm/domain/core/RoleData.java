@@ -47,7 +47,10 @@ public class RoleData implements Role, Serializable
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 	
+	/** The primary key for the role */
 	private Long id;
+
+	/** The name of the role */
 	private String name;
 
 	static

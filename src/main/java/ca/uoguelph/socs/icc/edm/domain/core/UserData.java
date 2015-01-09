@@ -62,13 +62,13 @@ public class UserData implements User, Serializable
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
-	/** The data store id of this user. */
+	/** The primary key of the user. */
 	private Long id;
 
-	/** The ID number (Student ID) of this user. */
+	/** The ID number (Student ID) of the user. */
 	private Integer idnumber;
 
-	/** The username of this user. */
+	/** The username of the user. */
 	private String username;
 
 	/** The user's first (given) name. */
@@ -77,7 +77,7 @@ public class UserData implements User, Serializable
 	/** The user's last name (surname). */
 	private String lastname;
 
-	/** The user's enrolments */
+	/** The set of enrolments which are associated with the user */
 	private Set<Enrolment> enrolments;
 
 	static

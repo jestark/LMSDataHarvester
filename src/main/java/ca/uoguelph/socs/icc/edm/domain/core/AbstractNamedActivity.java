@@ -28,6 +28,7 @@ public abstract class AbstractNamedActivity extends AbstractActivity implements 
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The name of the activity */
 	private String name;
 
 	public AbstractNamedActivity ()

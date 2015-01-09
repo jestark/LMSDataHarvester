@@ -62,13 +62,13 @@ public class ActionData implements Action, Serializable
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
-	/** The datastore id of this action */
+	/** The primary key of the action */
 	private Long id;
 
-	/** The name of this action */
+	/** The name of the action */
 	private String name;
 
-	/** A set of the Activity Types associated with this action */
+	/** A set of the Activity Types associated with the action */
 	private Set<ActivityType> types;
 
 	static

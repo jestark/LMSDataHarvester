@@ -34,6 +34,7 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The activity instance */
 	private ActivityInstance instance;
 
 	public GenericNamedActivity ()

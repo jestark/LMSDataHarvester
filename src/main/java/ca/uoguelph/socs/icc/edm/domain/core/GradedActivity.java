@@ -42,8 +42,13 @@ public class GradedActivity implements Grade, Serializable
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The grade */
 	private Integer grade;
+
+	/** The enrolment to which the grade is assigned */
 	private Enrolment enrolment;
+
+	/** The activity for which the grade is assigned */
 	private Activity activity;
 
 	static

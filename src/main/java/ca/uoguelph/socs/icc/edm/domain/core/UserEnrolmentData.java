@@ -59,13 +59,13 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The user which is associated with the enrolment */
+	private User user;
+
 	static
 	{
 		(EnrolmentFactory.getInstance ()).registerElement (UserEnrolmentData.class, DefaultEnrolmentManager.class, DefaultEnrolmentBuilder.class, new UserEnrolmentDataFactory ());
 	}
-
-	/** The user which is associated with this enrolment */
-	private User user;
 
 	/**
 	 * Create the enrolment with null values

@@ -63,22 +63,22 @@ public class CourseData implements Course, Serializable
 
 	private static final long serialVersionUID = 1L;
 
-	/** The datastore id of this course. */
+	/** The primary key of the course. */
 	private Long id;
 
-	/** The name of this course. */
+	/** The name of the course. */
 	private String name;
 
-	/** The semester in which this course was offered. */
+	/** The semester in which the course was offered. */
 	private Semester semester;
 
-	/** The year in which this course was offered. */
+	/** The year in which the course was offered. */
 	private Integer year;
 
-	/** The set of Activities which are associated with this course. */
+	/** The set of Activities which are associated with the course. */
 	private Set<Activity> activities;
 
-	/** All of the individuals which are enrolled in this course. */
+	/** The set of individuals which are enrolled in the course. */
 	private Set<Enrolment> enrolments;
 
 	static

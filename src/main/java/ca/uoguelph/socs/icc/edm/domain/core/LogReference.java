@@ -26,7 +26,10 @@ public abstract class LogReference<T extends ActivityGroupMember> implements Ser
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The associated log entry */
 	private LogEntry entry;
+
+	/** The associated sub-activity */
 	private T activity;
 
 	public LogReference ()

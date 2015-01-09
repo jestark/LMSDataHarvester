@@ -52,9 +52,16 @@ public class ActivityTypeData implements ActivityType, Serializable
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 	
+	/** The primary key of the activity type */
 	private Long id;
+
+	/** The name of the activity type */
 	private String name;
+
+	/** The source of the activity type */
 	private ActivitySource source;
+
+	/** The set of actions which are associated with the activity type */
 	private Set<Action> actions;
 
 	static

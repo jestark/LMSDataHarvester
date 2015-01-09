@@ -53,12 +53,25 @@ public class LogData implements LogEntry, Serializable
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The primary key for the log entry */
 	private Long id;
+
+	/** The enrolment which generated the log entry */
 	private Enrolment enrolment;
+
+	/** The activity which is associated with the log entry */
 	private Activity activity;
+
+	/** The logged action, which was performed on the associated activity */
 	private Action action;
+
+	/** The time at which the action was performed */
 	private Date time;
+
+	/** The originating IP Address for the logged action */
 	private String ip;
+
+	/** The Sub-activity which is associated with the log entry */
 	private LogReference<? extends ActivityGroupMember> reference;
 
 	static

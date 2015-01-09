@@ -35,8 +35,13 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The primary key for the sub-activity */
 	private Long id;
+
+	/** The sub-activity's parent activity */
 	private T parent;
+
+	/** The log entries which are associated with the sub-activity */
 	private List<LogReference<? extends ActivityGroupMember>> log;
 
 	public GenericGroupedActivityMember ()
