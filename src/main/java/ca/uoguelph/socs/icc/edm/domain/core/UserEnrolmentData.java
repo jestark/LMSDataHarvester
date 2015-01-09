@@ -16,7 +16,13 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.EnrolmentElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager;
 
 /**
  *
@@ -29,7 +35,33 @@ import ca.uoguelph.socs.icc.edm.domain.User;
 
 public class UserEnrolmentData extends EnrolmentData
 {
+	private static final class UserEnrolmentDataFactory implements EnrolmentElementFactory
+	{
+		@Override
+		public Enrolment create (User user, Course course, Integer grade)
+		{
+			UserEnrolmentData enrolment = new UserEnrolmentData ();
+
+			enrolment.setUser (user);
+			enrolment.setCourse (course);
+			enrolment.setFinalGrade (grade);
+
+			return enrolment;
+		}
+
+		@Override
+		public void setId (Enrolment enrolment, Long id)
+		{
+			((UserEnrolmentData) enrolment).setId (id);
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
+
+	static
+	{
+		(EnrolmentFactory.getInstance ()).registerElement (UserEnrolmentData.class, DefaultEnrolmentManager.class, DefaultEnrolmentBuilder.class, new UserEnrolmentDataFactory ());
+	}
 
 	/** The user which is associated with this enrolment */
 	private User user;

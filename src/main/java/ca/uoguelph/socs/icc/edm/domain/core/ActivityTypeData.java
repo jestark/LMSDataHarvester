@@ -26,13 +26,42 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.ActivityTypeElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager;
 
 public class ActivityTypeData implements ActivityType
 {
+	private static final class ActivityTypeDataFactory implements ActivityTypeElementFactory
+	{
+		@Override
+		public ActivityType create (ActivitySource source, String name)
+		{
+			ActivityTypeData type = new ActivityTypeData ();
+
+			type.setSource (source);
+			type.setName (name);
+
+			return type;
+		}
+
+		@Override
+		public void setId (ActivityType type, Long id)
+		{
+			((ActivityTypeData) type).setId (id);
+		}
+	}
+
 	private Long id;
 	private String name;
 	private ActivitySource source;
 	private Set<Action> actions;
+
+	static
+	{
+		(ActivityTypeFactory.getInstance ()).registerElement (ActivityTypeData.class, DefaultActivityTypeManager.class, DefaultActivityTypeBuilder.class, new ActivityTypeDataFactory ());
+	}
 
 	protected ActivityTypeData ()
 	{

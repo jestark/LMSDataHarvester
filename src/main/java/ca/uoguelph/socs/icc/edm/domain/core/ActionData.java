@@ -25,6 +25,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.ActionElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActionManager;
 
 /**
  * Implementation of the Action interface.  It is expected that this object
@@ -39,6 +43,25 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
 public class ActionData implements Action
 {
+	private static final class ActionDataFactory implements ActionElementFactory
+	{
+		@Override
+		public Action create (String name)
+		{
+			ActionData action = new ActionData ();
+
+			action.setName (name);
+
+			return action;
+		}
+
+		@Override
+		public void setId (Action Action, Long id)
+		{
+			((ActionData) Action).setId (id);
+		}
+	}
+
 	/** The datastore id of this action */
 	private Long id;
 
@@ -47,6 +70,11 @@ public class ActionData implements Action
 
 	/** A set of the Activity Types associated with this action */
 	private Set<ActivityType> types;
+
+	static
+	{
+		(ActionFactory.getInstance ()).registerElement (ActionData.class, DefaultActionManager.class, DefaultActionBuilder.class, new ActionDataFactory ());
+	}
 
 	/**
 	 * Create the <code>Action</code> with null values.  Default no-argument

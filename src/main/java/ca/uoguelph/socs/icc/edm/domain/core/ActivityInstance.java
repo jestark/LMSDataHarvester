@@ -32,9 +32,34 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager;
 
 public class ActivityInstance extends AbstractActivity implements Serializable
 {
+	private static final class ActivityInstanceFactory implements ActivityElementFactory
+	{
+		@Override
+		public Activity create (ActivityType type, Course course, Boolean stealth)
+		{
+			ActivityInstance instance = new ActivityInstance ();
+
+			instance.setType (type);
+			instance.setCourse (course);
+			instance.setStealth (stealth);
+
+			return instance;
+		}
+
+		@Override
+		public void setId (Activity activity, Long id)
+		{
+			((ActivityInstance) activity).setId (id);
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
@@ -44,6 +69,11 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	private ActivityType type;
 	private Set<Grade> grades;
 	private List<LogEntry> log;
+
+	static
+	{
+		(ActivityFactory.getInstance ()).registerElement (ActivityInstance.class, DefaultActivityManager.class, DefaultActivityBuilder.class, new ActivityInstanceFactory ());
+	}
 
 	protected ActivityInstance ()
 	{
@@ -207,11 +237,6 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		{
 			string = new String ("<" + string + ">");
 		}
-
-//		if (this.gradable)
-//		{
-//			string = new String (string + ": Gradable (" + this.grades.size () + " entries)");
-//		}
 
 		return string;
 	}
