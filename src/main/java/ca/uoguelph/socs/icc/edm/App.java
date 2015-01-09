@@ -12,7 +12,6 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.UserManager;
 import ca.uoguelph.socs.icc.edm.domain.database.UserDatabaseFactory;
 import ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleDatabaseFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
 
 public class App
 {
@@ -87,7 +86,7 @@ public class App
 		{
 			moodledb = (MoodleDatabaseFactory.getInstance ()).createDomainModel ();
 
-			UserManager umanager = (UserFactory.getInstance ()).createManager (moodledb);
+			UserManager umanager = moodledb.getUserManager ();
 
 			System.out.println ("--------------------++++++++++++++++++++++++++++++++++++++++--------------------");
 			System.out.println (umanager.fetchByUsername ("starkj"));

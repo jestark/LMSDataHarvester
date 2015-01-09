@@ -19,14 +19,23 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
-import ca.uoguelph.socs.icc.edm.domain.ActionManager;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
 
 public final class DefaultActionBuilder extends AbstractBuilder<Action> implements ActionBuilder
 {
+	private static class DefaultActionBuilderFactory implements BuilderFactory<ActionBuilder>
+	{
+		public ActionBuilder create (DomainModel model)
+		{
+			return new DefaultActionBuilder ((AbstractManager<Action>) model.getActionManager ());
+		}
+	}
+
 	/** The logger */
 	private final Log log;
 
@@ -36,11 +45,16 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 	/** The name of the Action */
 	private String name;
 
-	protected DefaultActionBuilder (ActionManager manager, ActionElementFactory factory, IdGenerator generator)
+	static
+	{
+		(ActionFactory.getInstance ()).registerBuilder (DefaultActionBuilder.class, new DefaultActionBuilderFactory ());
+	}
+
+	protected DefaultActionBuilder (AbstractManager<Action> manager)
 	{
 		super (manager);
 
-		this.factory = factory;
+		this.factory = null;
 		this.log = LogFactory.getLog (DefaultActionBuilder.class);
 	}
 

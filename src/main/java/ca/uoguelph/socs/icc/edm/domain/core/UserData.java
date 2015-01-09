@@ -26,6 +26,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.UserElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager;
 
@@ -41,6 +43,28 @@ import ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager;
 
 public class UserData implements User
 {
+	private static final class UserDataFactory implements UserElementFactory
+	{
+		@Override
+		public User create (Integer idnumber, String firstname, String lastname, String username)
+		{
+			UserData user = new UserData ();
+
+			user.setIdNumber (idnumber);
+			user.setFirstname (firstname);
+			user.setLastname (lastname);
+			user.setUsername (username);
+
+			return user;
+		}
+
+		@Override
+		public void setId (User user, Long id)
+		{
+			((UserData) user).setId (id);
+		}
+	}
+
 	/** The data store id of this user. */
 	private Long id;
 
@@ -61,14 +85,11 @@ public class UserData implements User
 
 	static
 	{
-		UserFactory factory = UserFactory.getInstance ();
-
-		factory.setElementManager (UserData.class, DefaultUserManager.class);
-		factory.registerQueryFactory (User.class, UserData.class);
+		(UserFactory.getInstance ()).registerElement (UserData.class, DefaultUserManager.class, DefaultUserBuilder.class, new UserDataFactory ());
 	}
 
 	/**
-	 * Create the user with null values.  
+	 * Create the user with null values.
 	 */
 
 	protected UserData ()
@@ -93,9 +114,9 @@ public class UserData implements User
 	 * </ul>
 	 * <p>
 	 * If all of these fields compare as equal then the user's are considered
-	 * to be equal.  A comparison of these fields will only occur if the 
-	 * object's being compared have different references (otherwise this method 
-	 * will immediately return true), and the two objects are of the same 
+	 * to be equal.  A comparison of these fields will only occur if the
+	 * object's being compared have different references (otherwise this method
+	 * will immediately return true), and the two objects are of the same
 	 * class (otherwise this method will immediately return false).</p>
 	 *
 	 * @param  obj The object to compare to this user
@@ -130,7 +151,7 @@ public class UserData implements User
 	}
 
 	/**
-	 * Override the hashCode method to generate a hash code based on the user 
+	 * Override the hashCode method to generate a hash code based on the user
 	 * data.  The following fields are used to generate the hash code, since they
 	 * are immutable:
 	 *
@@ -174,7 +195,7 @@ public class UserData implements User
 
 	/**
 	 * Intialise the user's datastore identifier.  This method is intended to be
-	 * used by a datastore (particularly JPA) to initialse the user's datastore 
+	 * used by a datastore (particularly JPA) to initialse the user's datastore
 	 * identification when the user is loaded from a data store.
 	 *
 	 * @param id The user's datastore identifier.
@@ -202,7 +223,7 @@ public class UserData implements User
 
 	/**
 	 * Intialise the user's id number.  This method is intended to be used by a
-	 * datastore (particularly JPA) to initialse the user's id number when the 
+	 * datastore (particularly JPA) to initialse the user's id number when the
 	 * user is loaded from a data store.
 	 *
 	 * @param idnumber The user's id number.
@@ -229,7 +250,7 @@ public class UserData implements User
 
 	/**
 	 * Intialise the user's username.  This method is intended to be used by a
-	 * datastore (particularly JPA) to initialse the user's username when the 
+	 * datastore (particularly JPA) to initialse the user's username when the
 	 * user is loaded from a data store.
 	 *
 	 * @param username The user's username.
@@ -255,7 +276,7 @@ public class UserData implements User
 
 	/**
 	 * Initialize the user's first name.  This method is intended to be used by a
-	 * datastore (particularly JPA) to initialize the user's first name when the 
+	 * datastore (particularly JPA) to initialize the user's first name when the
 	 * user is loaded from a data store.
 	 *
 	 * @param firstname The user's first name.
@@ -280,8 +301,8 @@ public class UserData implements User
 
 	/**
 	 * Initialize the user's last name.  This method is intended to be used by a
-	 * datastore (particularly JPA) to initialize the user's last name when the 
-	 * user is loaded from a data store.
+	 * datastore (particularly JPA) to initialize the user's last name when the
+	 * user is loaded from a data store
 	 *
 	 * @param lastname The user's last name.
 	 */
@@ -342,8 +363,8 @@ public class UserData implements User
 	}
 
 	/**
-	 * Initialize the set of enrolment objects associated with this user.  This 
-	 * method is intended to be used by a datastore (particularly JPA) to 
+	 * Initialize the set of enrolment objects associated with this user.  This
+	 * method is intended to be used by a datastore (particularly JPA) to
 	 * initialse the user's enrolments with the user is loaded from a data store.
 	 *
 	 * @param enrolments The set of enrolments.

@@ -24,14 +24,37 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.GradeElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
 public class GradedActivity implements Grade, Serializable
 {
+	private static final class GradedActivityFactory implements GradeElementFactory
+	{
+		@Override
+		public Grade create (Enrolment enrolment, Activity activity, Integer mark)
+		{
+			GradedActivity grade = new GradedActivity ();
+
+			grade.setEnrolment (enrolment);
+			grade.setActivity (activity);
+			grade.setGrade (mark);
+
+			return grade;
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	private Integer grade;
 	private Enrolment enrolment;
 	private Activity activity;
+
+	static
+	{
+//		(EnrolmentFactory.getInstance ()).registerElement (GradedActivity.class, DefaultGradeBuilder.class, new GradedActivityFactory ());
+	}
 
 	protected GradedActivity ()
 	{

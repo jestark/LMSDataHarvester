@@ -69,7 +69,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 
 	static
 	{
-		(EnrolmentFactory.getInstance ()).registerManagerFactory (DefaultEnrolmentManager.class, new DefaultEnrolmentManagerFactory ());
+		(EnrolmentFactory.getInstance ()).registerManager (DefaultEnrolmentManager.class, new DefaultEnrolmentManagerFactory ());
 	}
 
 	/** The logger */

@@ -33,9 +33,34 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
+import ca.uoguelph.socs.icc.edm.domain.User;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.EnrolmentElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager;
 
 public class EnrolmentData implements Enrolment, Serializable
 {
+	private static final class EnrolmentDataFactory implements EnrolmentElementFactory
+	{
+		@Override
+		public Enrolment create (User user, Course course, Integer grade)
+		{
+			EnrolmentData enrolment = new EnrolmentData ();
+
+			enrolment.setCourse (course);
+			enrolment.setFinalGrade (grade);
+
+			return enrolment;
+		}
+
+		@Override
+		public void setId (Enrolment enrolment, Long id)
+		{
+			((EnrolmentData) enrolment).setId (id);
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
@@ -45,6 +70,11 @@ public class EnrolmentData implements Enrolment, Serializable
 	protected Boolean usable;
 	protected Set<Grade> grades;
 	protected List<LogEntry> log;
+
+	static
+	{
+		(EnrolmentFactory.getInstance ()).registerElement (EnrolmentData.class, DefaultEnrolmentManager.class, DefaultEnrolmentBuilder.class, new EnrolmentDataFactory ());
+	}
 
 	protected EnrolmentData ()
 	{

@@ -27,6 +27,10 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.CourseElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager;
 
 /**
  * Implementation of the Course interface.  It is expected that this object
@@ -35,47 +39,55 @@ import ca.uoguelph.socs.icc.edm.domain.Semester;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Course
- * @see     CourseManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.CourseBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.CourseManager
  */
 
 public class CourseData implements Course
 {
-	/**
-	 * The datastore id of this course.
-	 */
+	private static final class CourseDataFactory implements CourseElementFactory
+	{
+		@Override
+		public Course create (String name, Semester semester, Integer year)
+		{
+			CourseData course = new CourseData ();
 
+			course.setName (name);
+			course.setSemester (semester);
+			course.setYear (year);
+
+			return course;
+		}
+
+		@Override
+		public void setId (Course course, Long id)
+		{
+			((CourseData) course).setId (id);
+		}
+	}
+
+	/** The datastore id of this course. */
 	private Long id;
 
-	/**
-	 * The name of this course.
-	 */
-
+	/** The name of this course. */
 	private String name;
 
-	/**
-	 * The semester in which this course was offered.
-	 */
-
+	/** The semester in which this course was offered. */
 	private Semester semester;
 
-	/**
-	 * The year in which this course was offered.
-	 */
-
+	/** The year in which this course was offered. */
 	private Integer year;
 
-	/**
-	 * The set of Activities which are associated with this course.
-	 */
-
+	/** The set of Activities which are associated with this course. */
 	private Set<Activity> activities;
 
-	/**
-	 * All of the individuals which are enrolled in this course.
-	 */
-
+	/** All of the individuals which are enrolled in this course. */
 	private Set<Enrolment> enrolments;
+
+	static
+	{
+		(CourseFactory.getInstance ()).registerElement (CourseData.class, DefaultCourseManager.class, DefaultCourseBuilder.class, new CourseDataFactory ());
+	}
 
 	/**
 	 * Create the Course with null values.  Default no-arguement constructor

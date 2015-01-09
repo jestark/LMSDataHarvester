@@ -39,7 +39,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	/** The <code>DomainModel</code> instance which owns this manager. */
 	protected final DomainModel model;
 
-	private AbstractManagerFactory<T, ?> factory; 
+	private AbstractManagerFactory<T, ?, ?, ?> factory; 
 
 	/** The logger */
 	private final Log log;
@@ -59,7 +59,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 		this.log = LogFactory.getLog (AbstractManager.class);
 	}
 
-	final void setFactory (AbstractManagerFactory<T, ?> factory)
+	final void setFactory (AbstractManagerFactory<T, ?, ?, ?> factory)
 	{
 		this.factory = factory;
 	}

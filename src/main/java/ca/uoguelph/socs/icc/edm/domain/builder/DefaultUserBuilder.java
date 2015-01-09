@@ -20,13 +20,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
-import ca.uoguelph.socs.icc.edm.domain.UserManager;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
 
 public final class DefaultUserBuilder extends AbstractBuilder<User> implements UserBuilder
 {
+	private static class DefaultUserBuilderFactory implements BuilderFactory<UserBuilder>
+	{
+		@Override
+		public UserBuilder create (DomainModel model)
+		{
+			return new DefaultUserBuilder ((AbstractManager<User>) model.getUserManager ());
+		}
+	}
+
 	/** The logger */
 	private final Log log;
 
@@ -47,15 +57,23 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 
 	/**
 	 *
-	 * @param  manager   The instance of the <code>UserManager</code>, not null
-	 * @param  factory   The factory to use to create new users, not null
-	 * @param  generator The generator to use to assign id's to new users, not null
 	 */
 
-	protected DefaultUserBuilder (UserManager manager, UserElementFactory factory, IdGenerator generator)
+	static
+	{
+		(UserFactory.getInstance ()).registerBuilder (DefaultUserBuilder.class, new DefaultUserBuilderFactory ());
+	}
+
+	/**
+	 * create an instance of the <code>DefaultUserBuilder</code>.
+	 *
+	 * @param  manager The instance of the <code>UserManager</code>, not null
+	 */
+
+	protected DefaultUserBuilder (AbstractManager<User> manager)
 	{
 		super (manager);
-		this.factory = factory;
+		this.factory = null;
 
 		this.clear ();
 

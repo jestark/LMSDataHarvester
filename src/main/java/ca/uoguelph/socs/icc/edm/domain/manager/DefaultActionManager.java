@@ -74,7 +74,7 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 
 	static
 	{
-		(ActionFactory.getInstance ()).registerManagerFactory (DefaultActionManager.class, new DefaultActionManagerFactory ());
+		(ActionFactory.getInstance ()).registerManager (DefaultActionManager.class, new DefaultActionManagerFactory ());
 	}
 
 	/**

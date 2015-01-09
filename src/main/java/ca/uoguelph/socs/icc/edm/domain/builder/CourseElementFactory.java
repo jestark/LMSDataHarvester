@@ -17,9 +17,10 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
-public interface CourseElementFactory
+public interface CourseElementFactory extends ElementFactory<Course>
 {
 	public abstract Course create (String name, Semester semester, Integer year);
 }

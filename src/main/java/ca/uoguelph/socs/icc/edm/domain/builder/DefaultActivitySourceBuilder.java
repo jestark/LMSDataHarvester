@@ -20,13 +20,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
-import ca.uoguelph.socs.icc.edm.domain.ActivitySourceManager;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActivitySourceFactory;
 
 public final class DefaultActivitySourceBuilder extends AbstractBuilder<ActivitySource> implements ActivitySourceBuilder
 {
+	private static class DefaultActivitySourceBuilderFactory implements BuilderFactory<ActivitySourceBuilder>
+	{
+		public ActivitySourceBuilder create (DomainModel model)
+		{
+			return new DefaultActivitySourceBuilder ((AbstractManager<ActivitySource>) model.getActivitySourceManager ());
+		}
+	}
+
 	/** The logger */
 	private final Log log;
 
@@ -36,11 +45,11 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	/** The name of the Activity Source */
 	private String name;
 
-	protected DefaultActivitySourceBuilder (ActivitySourceManager manager, ActivitySourceElementFactory factory, IdGenerator generator)
+	protected DefaultActivitySourceBuilder (AbstractManager<ActivitySource> manager)
 	{
 		super (manager);
 
-		this.factory = factory;
+		this.factory = null;
 		this.log = LogFactory.getLog (DefaultActivitySourceBuilder.class);
 	}
 

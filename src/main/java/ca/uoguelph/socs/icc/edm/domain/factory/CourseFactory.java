@@ -18,9 +18,11 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.CourseManager;
+import ca.uoguelph.socs.icc.edm.domain.builder.CourseElementFactory;
 
-public final class CourseFactory extends AbstractManagerFactory<Course, CourseManager>
+public final class CourseFactory extends AbstractManagerFactory<Course, CourseManager, CourseBuilder, CourseElementFactory>
 {
 	private static CourseFactory instance;
 

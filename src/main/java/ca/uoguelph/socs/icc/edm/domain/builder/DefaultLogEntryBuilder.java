@@ -22,16 +22,25 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
-import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
 
 public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> implements LogEntryBuilder
 {
+	private static class DefaultLogEntryBuilderFactory implements BuilderFactory<LogEntryBuilder>
+	{
+		public LogEntryBuilder create (DomainModel model)
+		{
+			return new DefaultLogEntryBuilder ((AbstractManager<LogEntry>) model.getLogEntryManager ());
+		}
+	}
+
 	/** The logger */
 	private final Log log;
 
@@ -53,11 +62,11 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	/** The ip-address from with the user accessed the <code>Activity</code> */
 	private String ipaddress;
 
-	protected DefaultLogEntryBuilder (LogEntryManager manager, LogEntryElementFactory factory, IdGenerator generator)
+	protected DefaultLogEntryBuilder (AbstractManager<LogEntry> manager)
 	{
 		super (manager);
 
-		this.factory = factory;
+		this.factory = null;
 		this.log = LogFactory.getLog (DefaultLogEntryBuilder.class);
 	}
 

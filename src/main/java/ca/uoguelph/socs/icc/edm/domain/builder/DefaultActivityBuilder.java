@@ -20,15 +20,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
-import ca.uoguelph.socs.icc.edm.domain.ActivityManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
 
 public final class DefaultActivityBuilder extends AbstractBuilder<Activity> implements ActivityBuilder
 {
+	private static class DefaultActivityBuilderFactory implements BuilderFactory<ActivityBuilder>
+	{
+		public ActivityBuilder create (DomainModel model)
+		{
+			return new DefaultActivityBuilder ((AbstractManager<Activity>) model.getActivityManager ());
+		}
+	}
+
 	/** The logger */
 	private final Log log;
 
@@ -44,11 +53,11 @@ public final class DefaultActivityBuilder extends AbstractBuilder<Activity> impl
 	/** Is the activity stealth? */
 	private Boolean stealth;
 
-	protected DefaultActivityBuilder (ActivityManager manager, ActivityElementFactory factory, IdGenerator generator)
+	protected DefaultActivityBuilder (AbstractManager<Activity> manager)
 	{
 		super (manager);
 
-		this.factory = factory;
+		this.factory = null;
 		this.log = LogFactory.getLog (DefaultActivityBuilder.class);
 	}
 

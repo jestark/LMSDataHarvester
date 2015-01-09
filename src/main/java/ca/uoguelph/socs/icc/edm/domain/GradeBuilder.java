@@ -14,12 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.builder;
+package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.Role;
-
-public interface RoleElementFactory extends ElementFactory<Role>
+public interface GradeBuilder extends ElementBuilder<Grade>
 {
-	public abstract Role create (String name);
+	public abstract Activity getActivity ();
+	public abstract GradeBuilder setActivity (Activity activity);
+	public abstract Enrolment getEnrolment ();
+	public abstract GradeBuilder setEnrolment (Enrolment enrolment);
+	public abstract Integer getGrade ();
+	public abstract GradeBuilder setGrade (Integer grade);
 }

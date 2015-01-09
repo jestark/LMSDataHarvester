@@ -72,7 +72,7 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 
 	static
 	{
-		(LogEntryFactory.getInstance ()).registerManagerFactory (DefaultLogEntryManager.class, new DefaultLogEntryManagerFactory ());
+		(LogEntryFactory.getInstance ()).registerManager (DefaultLogEntryManager.class, new DefaultLogEntryManagerFactory ());
 	}
 
 	/**

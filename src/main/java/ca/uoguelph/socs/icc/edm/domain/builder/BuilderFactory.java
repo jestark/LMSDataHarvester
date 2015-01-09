@@ -14,11 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.builder;
 
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 import ca.uoguelph.socs.icc.edm.domain.factory.ConcreteFactory;
 
-public interface BuilderFactory<T extends Element> extends ConcreteFactory<ElementBuilder<T>, ElementManager<T>>
+public interface BuilderFactory<T> extends ConcreteFactory<T, DomainModel>
 {
-	public abstract ElementBuilder<T> create (ElementManager<T> manager);
+	@Override
+	public abstract T create (DomainModel model);
 }
