@@ -23,7 +23,7 @@ import java.util.Set;
  * <code>ConcreteFactory</code> specify a two part factory structure.  The two
  * part factory is intended for use cases where a given interface has multiple
  * implementations, where one will be selected at runtime.  For the interface
- * in question there should be one <code>GenericFactory</code> and one
+ * in question there should be one <code>MappedFactory</code> and one
  * <code>ConcreteFactory</code> for each implementation.
  * 
  * @author  James E. Stark
@@ -34,7 +34,7 @@ import java.util.Set;
  * @see     ConcreteFactory
  */
 
-public interface GenericFactory<K, T, X>
+public interface MappedFactory<K, T, X>
 {
 	/**
 	 * Register an implementation with the factory.
@@ -61,11 +61,10 @@ public interface GenericFactory<K, T, X>
 	 * <code>create</code> method on the <code>ConcreteFactory</code> which is
 	 * associated with the specified implementation class.
 	 *
-	 * @param  key  The registration key, not null
 	 * @param  arg  Parameter to be used to create the instance
 	 * @return      An instance of the requested class
 	 * @see    ConcreteFactory#create
 	 */
 
-	public abstract T create (K key, X arg);
+	public abstract T create (X arg);
 }

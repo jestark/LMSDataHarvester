@@ -25,8 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Caching implementation of <code>GenericFactory</code>.  This class decorates
- * another instance of the <code>GenericFactory</code> adding a cache of all of
+ * Caching implementation of <code>MappedFactory</code>.  This class decorates
+ * another instance of the <code>MappedFactory</code> adding a cache of all of
  * the previously created objects.  This first time that an object is created
  * with a given argument, the factory simply passes the request though to the
  * underlying factory, and caches the result.  On subsequent creation requests,
@@ -39,13 +39,13 @@ import org.apache.commons.logging.LogFactory;
  * @param   <X> The type of the objects to be used as parameters for creation
  */
 
-public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
+public class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 {
 	/** The cache */
 	private final Map<X, T> cache;
 
 	/** The underlying factory */
-	private final GenericFactory<K, T, X> factory;
+	private final MappedAbstractFactory<K, T, X> factory;
 
 	/** The log */
 	private final Log log;
@@ -54,12 +54,12 @@ public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
 	 * Create the factory.
 	 *
 	 * @param  factory The factory to use as the base for the
-	 *                 <code>CachedFactory</code> instance, not null
+	 *                 <code>CachedMappedFactory</code> instance, not null
 	 */
 
-	public GenericCachedFactory (GenericFactory<K, T, X> factory)
+	public CachedMappedFactory (MappedAbstractFactory<K, T, X> factory)
 	{
-		this.log = LogFactory.getLog (GenericCachedFactory.class);
+		this.log = LogFactory.getLog (CachedMappedFactory.class);
 
 		if (factory == null)
 		{
@@ -110,7 +110,7 @@ public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
 	 * specified key will be returned.  Subsequent calls with the same key object
 	 * will return a reference to the previously created object.  As a result, the
 	 * key can not be null, unlike other instances of the
-	 * <code>GenericFactory</code>.
+	 * <code>MappedFactory</code>.
 	 *
 	 * @param  key  The registration key, not null
 	 * @param  arg  Parameter to be used to create the instance
@@ -119,17 +119,11 @@ public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
 	 */
 
 	@Override
-	public T create (K key, X arg)
+	public T create (X arg)
 	{
-		if (key == null)
+		if (! this.cache.containsKey (arg))
 		{
-			this.log.error ("Key is NULL");
-			throw new NullPointerException ();
-		}
-
-		if (! this.cache.containsKey (key))
-		{
-			this.cache.put (arg, this.factory.create (key, arg));
+			this.cache.put (arg, this.factory.create (arg));
 		}
 
 		return this.cache.get (arg);

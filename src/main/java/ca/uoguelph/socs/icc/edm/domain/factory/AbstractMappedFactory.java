@@ -25,8 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Base implementation of <code>GenericFactory</code>.  This class implements
- * the <code>GenericFactory</code> interface using a <code>HashMap</code>.
+ *  implementation of <code>MappedFactory</code>.  This class implements
+ * the <code>MappedFactory</code> interface using a <code>HashMap</code>.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
  * @param   <X> The type of the objects to be used as parameters for creation
  */
 
-public class GenericBaseFactory<K, T, X> implements GenericFactory<K, T, X>
+public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 {
 	/** Map containing the classes and factories */
 	private final Map<K, ConcreteFactory<T, X>> factories;
@@ -47,11 +47,11 @@ public class GenericBaseFactory<K, T, X> implements GenericFactory<K, T, X>
 	 * Create the Factory.
 	 */
 
-	public GenericBaseFactory ()
+	public AbstractMappedFactory ()
 	{
 		this.factories = new HashMap<K, ConcreteFactory<T, X>> ();
 
-		this.log = LogFactory.getLog (GenericBaseFactory.class);
+		this.log = LogFactory.getLog (AbstractMappedFactory.class);
 	}
 
 	/**
@@ -107,7 +107,6 @@ public class GenericBaseFactory<K, T, X> implements GenericFactory<K, T, X>
 	 * <code>create</code> method on the <code>ConcreteFactory</code> which is
 	 * associated with the specified implementation class.
 	 *
-	 * @param  impl                     The registration key, not null
 	 * @param  arg                      Parameter to be used to create the
 	 *                                  instance
 	 * @return                          An instance of the requested class
@@ -117,22 +116,5 @@ public class GenericBaseFactory<K, T, X> implements GenericFactory<K, T, X>
 	 */
 
 	@Override
-	public T create (K key, X arg)
-	{
-		if (key == null)
-		{
-			this.log.error ("Registration key is NULL");
-			throw new NullPointerException ("Registration key is NULL");
-		}
-
-		if (! this.factories.containsKey (key))
-		{
-			String msg = "Key not registered: " + key;
-
-			this.log.error (msg);
-			throw new IllegalArgumentException (msg);
-		}
-
-		return (this.factories.get (key)).create (arg);
-	}
+	public abstract T create (X arg);
 }
