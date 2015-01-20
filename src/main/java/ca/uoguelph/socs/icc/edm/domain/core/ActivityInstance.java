@@ -36,6 +36,19 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager;
 
+/**
+ * Implementation of the <code>Activity</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>Activity</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>Activity</code> interface documentation for details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivityBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivityManager
+ */
+
+
 public class ActivityInstance extends AbstractActivity implements Serializable
 {
 	private static final class ActivityInstanceFactory implements ActivityElementFactory

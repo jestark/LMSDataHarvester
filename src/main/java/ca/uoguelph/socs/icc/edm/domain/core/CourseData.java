@@ -34,9 +34,10 @@ import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager;
 
 /**
- * Implementation of the Course interface.  It is expected that this object
- * will be accessed though the Course interface, and its relevant managers.
- * See the Course interface documentation for details.
+ * Implementation of the <code>Course</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>Course</code>
+ * interface, along with the relevant manager and builder.  See the
+ * <code>Course</code> interface documentation for details.
  *
  * @author  James E. Stark
  * @version 1.0

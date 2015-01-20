@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
-
 import java.util.Date;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -32,6 +31,18 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager;
+
+/**
+ * Implementation of the <code>LogEntry</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>LogEntry</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>LogEntry</code> interface documentation for details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.LogEntryManager
+ */
 
 public class LogData implements LogEntry, Serializable
 {

@@ -19,19 +19,20 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Set;
 
 /**
- * 
+ * A representation of actions performed against activities 
  *
  * @author  James E. Stark
  * @version 1.0
  * @see     ActivityType
  * @see     ActivityTypeManager
  * @see     ActionManager
+ * @see     ActionBuilder
  */
 
 public interface Action extends Element
 {
 	/**
-	 * Get a Set of the Activity Types containing this action.
+	 * Get a Set of the Activity Types containing the action.
 	 *
 	 * @return A Set of classes implementing the <code>ActivityType</code>
 	 *         interface.
@@ -40,7 +41,7 @@ public interface Action extends Element
 	public abstract Set<ActivityType> getTypes ();
 
 	/**
-	 * Get the name action.
+	 * Get the name of the action.
 	 *
 	 * @return A String containing the name of the action.
 	 */

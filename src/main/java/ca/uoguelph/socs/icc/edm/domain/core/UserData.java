@@ -33,13 +33,15 @@ import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager;
 
 /**
- * This class implements the User interface, to represent a user in the domain
- * model.  See the user interface for the details about how the user
- * representations behave.
+ * Implementation of the <code>User</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>User</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>User</code> interface documentation for details.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.User
+ * @see     ca.uoguelph.socs.icc.edm.domain.UserBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.UserManager
  */
 
 public class UserData implements User, Serializable

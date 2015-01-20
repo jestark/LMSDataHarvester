@@ -27,6 +27,19 @@ import ca.uoguelph.socs.icc.edm.domain.builder.RoleElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager;
 
+/**
+ * Implementation of the <code>Role</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>Role</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>Role</code> interface documentation for details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.RoleBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.RoleManager
+ */
+
+
 public class RoleData implements Role, Serializable
 {
 	private static final class RoleDataFactory implements RoleElementFactory

@@ -32,6 +32,19 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivityTypeElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager;
 
+/**
+ * Implementation of the <code>ActivityType</code> interface.  It is expected
+ * that instances of this class will be accessed though the
+ * <code>ActivityType</code> interface, along with the relevant manager, and
+ * builder.  See the <code>ActivityType</code> interface documentation for
+ * details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager
+ */
+
 public class ActivityTypeData implements ActivityType, Serializable
 {
 	private static final class ActivityTypeDataFactory implements ActivityTypeElementFactory

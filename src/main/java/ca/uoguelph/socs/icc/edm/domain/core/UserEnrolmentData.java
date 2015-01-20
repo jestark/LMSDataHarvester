@@ -31,12 +31,19 @@ import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager;
 
 /**
+ * Implementation of the <code>Enrolment</code> interface with user data.  It
+ * is expected that instances of this class will be accessed though the
+ * <code>Enrolment</code> interface, along with the relevant manager, and
+ * builder.  See the <code>Enrolment</code> interface documentation for
+ * details.
+ * <p>
+ * This class implements the <code>Enrolment</code> and adds a link to the
+ * relevant user-identifying data.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Enrolment
- * @see     EnrolmentData
- * @see     EnrolmentManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.EnrolmentManager
  */
 
 public class UserEnrolmentData extends EnrolmentData implements Enrolment, Serializable

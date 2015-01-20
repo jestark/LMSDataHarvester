@@ -28,6 +28,18 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.GradeElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
+/**
+ * Implementation of the <code>Grade</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>Grade</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>Grade</code> interface documentation for details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.GradeBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.GradeManager
+ */
+
 public class GradedActivity implements Grade, Serializable
 {
 	private static final class GradedActivityFactory implements GradeElementFactory

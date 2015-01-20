@@ -32,14 +32,15 @@ import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActionManager;
 
 /**
- * Implementation of the Action interface.  It is expected that this object
- * will be accessed though the Action interface, and its relevant managers.
- * See the Action interface documentation for details.
+ * Implementation of the <code>Action</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>Action</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>Action</code> interface documentation for details.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Action
- * @see     ActionManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActionBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActionManager
  */
 
 public class ActionData implements Action, Serializable
