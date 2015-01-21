@@ -57,9 +57,11 @@ public interface MappedFactory<K, T, X>
 	public abstract Set<K> getRegisteredClasses ();
 
 	/**
-	 * Create an instance of an implementation class.  This method will call the
-	 * <code>create</code> method on the <code>ConcreteFactory</code> which is
-	 * associated with the specified implementation class.
+	 * Create an instance of an implementation class.  This method will determine
+	 * which implementation of the interface mapped by this factory should be
+	 * used, this it will call the <code>create</code> method on the
+	 * <code>ConcreteFactory</code> which is associated with the specified
+	 * implementation class.
 	 *
 	 * @param  arg  Parameter to be used to create the instance
 	 * @return      An instance of the requested class

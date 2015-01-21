@@ -64,7 +64,7 @@ public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K,
 	 */
 
 	@Override
-	public void registerClass (K key, ConcreteFactory<T, X> factory)
+	public final void registerClass (K key, ConcreteFactory<T, X> factory)
 	{
 		if (key == null)
 		{
@@ -97,7 +97,7 @@ public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K,
 	 */
 
 	@Override
-	public Set<K> getRegisteredClasses ()
+	public final Set<K> getRegisteredClasses ()
 	{
 		return this.factories.keySet ();
 	}

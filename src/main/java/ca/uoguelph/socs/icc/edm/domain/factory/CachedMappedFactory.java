@@ -39,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
  * @param   <X> The type of the objects to be used as parameters for creation
  */
 
-public class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X>
+public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 {
 	/** The cache */
 	private final Map<X, T> cache;
@@ -102,20 +102,20 @@ public class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 
 	/**
 	 * Create an instance of an implementation class.  This method will call the
-	 * <code>create</code> method on the <code>ConcreteFactory</code> which is
-	 * associated with the specified implementation class.
+	 * <code>create</code> method on the underlying factory, and cache the result.
+	 * Subsequent calls will return the cached object without making a call to the
+	 * underlying factory.
 	 * <p>
-	 * The key is used as the parameter by which the objects created by the
+	 * The arguement is used as the parameter by which the objects created by the
 	 * factory are cached.  So only one instance of an object created using the
 	 * specified key will be returned.  Subsequent calls with the same key object
 	 * will return a reference to the previously created object.  As a result, the
 	 * key can not be null, unlike other instances of the
 	 * <code>MappedFactory</code>.
 	 *
-	 * @param  key  The registration key, not null
 	 * @param  arg  Parameter to be used to create the instance
 	 * @return      An instance of the requested class, not null
-	 * @see    ConcreteFactory#create
+	 * @see    AbstractMappedFactory#create
 	 */
 
 	@Override
