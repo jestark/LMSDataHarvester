@@ -132,12 +132,30 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 		return this.factory.isRegistered (key);
 	}
 
+	/**
+	 * Create an instance of an implementation class.  This method will call the
+	 * <code>create</code> method on the <code>ConcreteFactory</code> which is
+	 * associated with the specified implementation class.
+	 * <p>
+	 * The key is used as the parameter by which the objects created by the
+	 * factory are cached.  So only one instance of an object created using the
+	 * specified key will be returned.  Subsequent calls with the same key object
+	 * will return a reference to the previously created object.  As a result, the
+	 * key can not be null, unlike other instances of the
+	 * <code>MappedFactory</code>.
+	 *
+	 * @param  key  The registration key, not null
+	 * @param  arg  Parameter to be used to create the instance
+	 * @return      An instance of the requested class, not null
+	 * @see    ConcreteFactory#create
+	 */
+
 	@Override
-	public T create (X arg)
+	public T create (K key, X arg)
 	{
 		if (! this.cache.containsKey (arg))
 		{
-			this.cache.put (arg, this.factory.create (arg));
+			this.cache.put (arg, this.factory.create (key, arg));
 		}
 
 		return this.cache.get (arg);

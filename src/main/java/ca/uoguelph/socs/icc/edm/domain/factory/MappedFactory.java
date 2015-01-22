@@ -73,10 +73,11 @@ public interface MappedFactory<K, T, X>
 	 * <code>ConcreteFactory</code> which is associated with the specified
 	 * implementation class.
 	 *
+	 * @param  key  The registration key, not null
 	 * @param  arg  Parameter to be used to create the instance
 	 * @return      An instance of the requested class
 	 * @see    ConcreteFactory#create
 	 */
 
-	public abstract T create (X arg);
+	public abstract T create (K Key, X arg);
 }

@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
  * @param   <X> The type of the objects to be used as parameters for creation
  */
 
-public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K, T, X>
+public final class BaseMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 {
 	/** Map containing the classes and factories */
 	private final Map<K, ConcreteFactory<T, X>> factories;
@@ -47,16 +47,11 @@ public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K,
 	 * Create the Factory.
 	 */
 
-	public AbstractMappedFactory ()
+	public BaseMappedFactory ()
 	{
 		this.factories = new HashMap<K, ConcreteFactory<T, X>> ();
 
 		this.log = LogFactory.getLog (AbstractMappedFactory.class);
-	}
-
-	protected final T create (K key, X param)
-	{
-
 	}
 
 	/**
@@ -69,7 +64,7 @@ public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K,
 	 */
 
 	@Override
-	public final void registerClass (K key, ConcreteFactory<T, X> factory)
+	public void registerClass (K key, ConcreteFactory<T, X> factory)
 	{
 		if (key == null)
 		{
@@ -102,7 +97,7 @@ public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K,
 	 */
 
 	@Override
-	public final Set<K> getRegisteredClasses ()
+	public Set<K> getRegisteredClasses ()
 	{
 		return this.factories.keySet ();
 	}
@@ -115,7 +110,7 @@ public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K,
 	 *             <code>false</code> otherwise.
 	 */
 
-	public final boolean isRegistered (K key)
+	public boolean isRegistered (K key)
 	{
 		return this.factories.containsKey (key);
 	}
@@ -125,6 +120,7 @@ public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K,
 	 * <code>create</code> method on the <code>ConcreteFactory</code> which is
 	 * associated with the specified implementation class.
 	 *
+	 * @param  key                      The registration key, not null
 	 * @param  arg                      Parameter to be used to create the
 	 *                                  instance
 	 * @return                          An instance of the requested class
@@ -134,5 +130,22 @@ public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K,
 	 */
 
 	@Override
-	public abstract T create (X arg);
+	public T create (K key, X arg)
+	{
+		if (key == null)
+		{
+			this.log.error ("Registration key is NULL");
+			throw new NullPointerException ("Registration key is NULL");
+		}
+
+		if (! this.factories.containsKey (key))
+		{
+			String msg = "Key not registered: " + key;
+
+			this.log.error (msg);
+			throw new IllegalArgumentException (msg);
+		}
+
+		return (this.factories.get (key)).create (arg);
+	}
 }
