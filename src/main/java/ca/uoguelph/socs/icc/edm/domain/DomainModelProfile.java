@@ -188,7 +188,7 @@ public final class DomainModelProfile
 	private Boolean mutable;
 
 	/** Interface class to Implementation class mapping */
-	private final Map<Class<? extends Element>, Entry> entries;
+	private final Map<DomainModelType, Entry> entries;
 
 	/**
 	 * Create the <code>DataStoreProfile</code>.  This constructor is not intended
@@ -206,7 +206,7 @@ public final class DomainModelProfile
 		}
 
 		this.mutable = mutable;
-		this.entries = new HashMap<Class<? extends Element>, Entry> ();
+		this.entries = new HashMap<DomainModelType, Entry> ();
 	}
 
 	/**
@@ -325,7 +325,7 @@ public final class DomainModelProfile
 	 *         all of the elements in the profile
 	 */
 
-	public Set<Class<? extends Element>> getElements ()
+	public Set<DomainModelType> getElements ()
 	{
 		return this.entries.keySet ();
 	}
@@ -343,7 +343,7 @@ public final class DomainModelProfile
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
-	public Boolean isAvailable (Class<? extends Element> element)
+	public Boolean isAvailable (DomainModelType element)
 	{
 		if (element == null)
 		{
@@ -367,7 +367,7 @@ public final class DomainModelProfile
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
-	public Class<? extends IdGenerator> getGenerator (Class<? extends Element> element)
+	public Class<? extends IdGenerator> getGenerator (DomainModelType element)
 	{
 		if (element == null)
 		{
@@ -392,7 +392,7 @@ public final class DomainModelProfile
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
-	public Class<? extends Element> getImplClass (Class<? extends Element> element)
+	public Class<? extends Element> getImplClass (DomainModelType element)
 	{
 		if (element == null)
 		{
@@ -425,7 +425,7 @@ public final class DomainModelProfile
 	 * @see    DomainModelBuilder#setEntry
 	 */
 
-	protected void addEntry (Class<? extends Element> element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
+	protected void addEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
 	{
 		if (element == null)
 		{

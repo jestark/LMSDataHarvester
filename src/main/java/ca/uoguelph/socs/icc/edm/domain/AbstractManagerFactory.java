@@ -24,7 +24,6 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 import ca.uoguelph.socs.icc.edm.domain.factory.DefaultQueryFactory;
@@ -48,6 +47,7 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	private final Log log;
 
 	/** The Domain Model Type for this factory */
+	private final DomainModelType type;
 
 	/** Caching factory for the <code>ElementManager</code> implementations */
 	private final GenericFactory<Class<? extends X>, X, DomainModel> managerfactories;
@@ -70,10 +70,10 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	/**
 	 * Create the <code>AbstractManagerFactory</code>.
 	 *
-	 * @param  type
+	 * @param  type 
 	 */
 
-	protected AbstractManagerFactory ()
+	protected AbstractManagerFactory (DomainModelType type)
 	{
 		this.log = LogFactory.getLog (AbstractManagerFactory.class);
 

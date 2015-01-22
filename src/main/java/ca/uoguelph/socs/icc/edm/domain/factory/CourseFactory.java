@@ -20,6 +20,8 @@ import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.CourseManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.CourseElementFactory;
 
 public final class CourseFactory extends AbstractManagerFactory<Course, CourseManager, CourseBuilder, CourseElementFactory>
@@ -38,6 +40,6 @@ public final class CourseFactory extends AbstractManagerFactory<Course, CourseMa
 
 	private CourseFactory ()
 	{
-		super ();
+		super (DomainModelType.COURSE);
 	}
 }

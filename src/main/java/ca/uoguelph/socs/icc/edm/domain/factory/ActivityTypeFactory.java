@@ -20,6 +20,8 @@ import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityTypeElementFactory;
 
 public final class ActivityTypeFactory extends AbstractManagerFactory<ActivityType, ActivityTypeManager, ActivityTypeBuilder, ActivityTypeElementFactory>
@@ -38,6 +40,6 @@ public final class ActivityTypeFactory extends AbstractManagerFactory<ActivityTy
 
 	private ActivityTypeFactory ()
 	{
-		super ();
+		super (DomainModelType.ACTIVITYTYPE);
 	}
 }
