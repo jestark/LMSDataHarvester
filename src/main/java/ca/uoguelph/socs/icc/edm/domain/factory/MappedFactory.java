@@ -57,6 +57,16 @@ public interface MappedFactory<K, T, X>
 	public abstract Set<K> getRegisteredClasses ();
 
 	/**
+	 * Determine if an implementation class has been registered with the factory.
+	 *
+	 * @param  key
+	 * @return     <code>true</code> if the class is registered,
+	 *             <code>false</code> otherwise.
+	 */
+
+	public abstract boolean isRegistered (K key);
+
+	/**
 	 * Create an instance of an implementation class.  This method will determine
 	 * which implementation of the interface mapped by this factory should be
 	 * used, this it will call the <code>create</code> method on the

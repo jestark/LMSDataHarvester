@@ -118,6 +118,20 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 	 * @see    AbstractMappedFactory#create
 	 */
 
+	/**
+	 * Determine if an implementation class has been registered with the factory.
+	 *
+	 * @param  key
+	 * @return     <code>true</code> if the class is registered,
+	 *             <code>false</code> otherwise.
+	 */
+
+	@Override
+	public abstract boolean isRegistered (K key)
+	{
+		return this.factory.isRegistered (key);
+	}
+
 	@Override
 	public T create (X arg)
 	{

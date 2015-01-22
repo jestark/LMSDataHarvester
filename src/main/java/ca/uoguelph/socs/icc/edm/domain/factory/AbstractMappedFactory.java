@@ -54,6 +54,11 @@ public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K,
 		this.log = LogFactory.getLog (AbstractMappedFactory.class);
 	}
 
+	protected final T create (K key, X param)
+	{
+
+	}
+
 	/**
 	 * Register an implementation with the factory.
 	 *
@@ -100,6 +105,19 @@ public abstract class AbstractMappedFactory<K, T, X> implements MappedFactory<K,
 	public final Set<K> getRegisteredClasses ()
 	{
 		return this.factories.keySet ();
+	}
+
+	/**
+	 * Determine if an implementation class has been registered with the factory.
+	 *
+	 * @param  key
+	 * @return     <code>true</code> if the class is registered,
+	 *             <code>false</code> otherwise.
+	 */
+
+	public final boolean isRegistered (K key)
+	{
+		return this.factories.containsKey (key);
 	}
 
 	/**
