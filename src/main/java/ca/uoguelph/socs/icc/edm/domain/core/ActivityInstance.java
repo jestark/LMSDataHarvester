@@ -34,7 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager;
 
 /**
  * Implementation of the <code>Activity</code> interface.  It is expected that
@@ -92,7 +91,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 
 	static
 	{
-		(ActivityFactory.getInstance ()).registerElement (ActivityInstance.class, DefaultActivityManager.class, DefaultActivityBuilder.class, new ActivityInstanceFactory ());
+		(ActivityFactory.getInstance ()).registerElement (ActivityInstance.class, DefaultActivityBuilder.class, new ActivityInstanceFactory ());
 	}
 
 	public ActivityInstance ()

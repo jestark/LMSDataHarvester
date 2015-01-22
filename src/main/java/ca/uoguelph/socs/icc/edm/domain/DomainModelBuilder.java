@@ -227,6 +227,39 @@ public final class DomainModelBuilder
 	}
 
 	/**
+	 * Get the <code>ElementManager</code> implementation used to access the
+	 * <code>DataStore</code> for the specified domain model interface.
+	 *
+	 * @param  element                  Domain model interface class, not null
+	 * @return                          The class used to represent the interface
+	 *                                  in the <code>DataStore</code>
+	 * @throws IllegalArgumentException if the element is not in the profile
+	 */
+
+
+	public Class<? extends Element> getManagerClass (DomainModelType element)
+	{
+		Class<? extends ElementManager> manager = null;
+
+		try
+		{
+			impl = this.profile.getManagerClass (element);
+		}
+		catch (NullPointerException ex)
+		{
+			this.log.error (ex.getMessage ());
+			throw ex;
+		}
+		catch (IllegalArgumentException ex)
+		{
+			this.log.debug (ex.getMessage ());
+		}
+
+		return manager;
+	}
+
+
+	/**
 	 * Add an entry to the profile for the specified element type.  A profile
 	 * entry has the following components:
 	 * <ul>
@@ -256,11 +289,11 @@ public final class DomainModelBuilder
 	 *                                  element
 	 */
 
-	public void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
+	public void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
 	{
 		try
 		{
-			this.profile.addEntry (element, available, impl, generator);
+			this.profile.addEntry (element, available, impl, generator, manager);
 		}
 		catch (NullPointerException ex)
 		{

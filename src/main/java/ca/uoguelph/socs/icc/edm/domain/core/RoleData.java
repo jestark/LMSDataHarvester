@@ -25,7 +25,6 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.RoleElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager;
 
 /**
  * Implementation of the <code>Role</code> interface.  It is expected that
@@ -68,7 +67,7 @@ public class RoleData implements Role, Serializable
 
 	static
 	{
-		(RoleFactory.getInstance ()).registerElement (RoleData.class, DefaultRoleManager.class, DefaultRoleBuilder.class, new RoleDataFactory ());
+		(RoleFactory.getInstance ()).registerElement (RoleData.class, DefaultRoleBuilder.class, new RoleDataFactory ());
 	}
 
 	public RoleData ()

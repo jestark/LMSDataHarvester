@@ -30,7 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.UserElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager;
 
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
@@ -84,7 +83,7 @@ public class UserData implements User, Serializable
 
 	static
 	{
-		(UserFactory.getInstance ()).registerElement (UserData.class, DefaultUserManager.class, DefaultUserBuilder.class, new UserDataFactory ());
+		(UserFactory.getInstance ()).registerElement (UserData.class, DefaultUserBuilder.class, new UserDataFactory ());
 	}
 
 	/**

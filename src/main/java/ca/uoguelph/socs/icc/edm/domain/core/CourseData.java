@@ -31,7 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.Semester;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.CourseElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager;
 
 /**
  * Implementation of the <code>Course</code> interface.  It is expected that
@@ -84,7 +83,7 @@ public class CourseData implements Course, Serializable
 
 	static
 	{
-		(CourseFactory.getInstance ()).registerElement (CourseData.class, DefaultCourseManager.class, DefaultCourseBuilder.class, new CourseDataFactory ());
+		(CourseFactory.getInstance ()).registerElement (CourseData.class, DefaultCourseBuilder.class, new CourseDataFactory ());
 	}
 
 	/**

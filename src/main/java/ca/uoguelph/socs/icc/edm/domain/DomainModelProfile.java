@@ -72,6 +72,9 @@ public final class DomainModelProfile
 		/** Class implementing the interface */
 		private final Class<? extends Element> implementation;
 
+		/** <code>DataStore</code> access for the interface */
+		private final Class<? extends ElementManager<? extends Element>> manager;
+
 		/**
 		 * Create the <code>Entry</code>.
 		 *
@@ -82,13 +85,16 @@ public final class DomainModelProfile
 		 *                        represented by this entry, not null
 		 * @param  implementation The class implementing the interface represented by
 		 *                        this entry, not null
+		 * @param  manager        The class which provides <code>DataStore</code>
+		 *                        access for the interface represented by this Entry
 		 */
 
-		protected Entry (Boolean available, Class<? extends IdGenerator> generator, Class<? extends Element> implementation)
+		protected Entry (Boolean available, Class<? extends IdGenerator> generator, Class<? extends Element> implementation, Class<? extends ElementManager<? extends Element>> manager)
 		{
 			this.available = available;
 			this.generator = generator;
 			this.implementation = implementation;
+			this.manager = manager;
 		}
 
 		/**
@@ -105,21 +111,19 @@ public final class DomainModelProfile
 		{
 			boolean result = false;
 
-			if (obj != null)
+			if (obj == this)
 			{
-				if (obj == this)
-				{
-					result = true;
-				}
-				else if (obj.getClass () == this.getClass ())
-				{
-					EqualsBuilder ebuilder = new EqualsBuilder ();
-					ebuilder.append (this.available, ((Entry) obj).available);
-					ebuilder.append (this.generator, ((Entry) obj).generator);
-					ebuilder.append (this.implementation, ((Entry) obj).implementation);
+				result = true;
+			}
+			else if (obj instanceof DomainModelProfile)
+			{
+				EqualsBuilder ebuilder = new EqualsBuilder ();
+				ebuilder.append (this.available, ((Entry) obj).available);
+				ebuilder.append (this.generator, ((Entry) obj).generator);
+				ebuilder.append (this.implementation, ((Entry) obj).implementation);
+				ebuilder.append (this.manager, ((Entry) obj).manager);
 
-					result = ebuilder.isEquals ();
-				}
+				result = ebuilder.isEquals ();
 			}
 
 			return result;
@@ -142,6 +146,7 @@ public final class DomainModelProfile
 			hbuilder.append (this.available);
 			hbuilder.append (this.generator);
 			hbuilder.append (this.implementation);
+			hbuilder.append (this.manager);
 
 			return hbuilder.toHashCode ();
 		}
@@ -181,6 +186,18 @@ public final class DomainModelProfile
 		public Class<? extends Element> getImplClass ()
 		{
 			return this.implementation;
+		}
+		
+		/**
+		 * Get the <code>ElementManager</code> implementation to be used to access
+		 * the <code>DataStore</code>.
+		 *
+		 * @return The accociated <code>ElementManager</code> class
+		 */
+
+		public Class<? extends ElementManager<? extends Element>> getManagerClass ()
+		{
+			return this.manager;
 		}
 	}
 
@@ -408,6 +425,32 @@ public final class DomainModelProfile
 	}
 
 	/**
+	 * Get the <code>ElementManager</code> implementation used to access the
+	 * <code>DataStore</code> for the specified domain model interface.
+	 *
+	 * @param  element                  Domain model interface class, not null
+	 * @return                          The class used to represent the interface
+	 *                                  in the <code>DataStore</code>
+	 * @throws IllegalArgumentException if the element is not in the profile
+	 */
+
+	public Class<? extends ElementManager<? extends Element>> getManagerClass (DomainModelType element)
+	{
+		if (element == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (! this.entries.containsKey (element))
+		{
+			throw new IllegalArgumentException ("Element is not in the profile: " + element.getName ());
+		}
+
+		return (this.entries.get (element)).getManagerClass ();
+	}
+
+
+	/**
 	 * Add an entry to the profile from the specified element type.  This method
 	 * is intended to be used by the builder while is constructs the profile.
 	 *
@@ -425,7 +468,7 @@ public final class DomainModelProfile
 	 * @see    DomainModelBuilder#setEntry
 	 */
 
-	protected void addEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
+	protected void addEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
 	{
 		if (element == null)
 		{
@@ -447,11 +490,17 @@ public final class DomainModelProfile
 			throw new NullPointerException ("The specified generator is NULL");
 		}
 
+		// Special case:  Grades don't have managers.
+		if ((manager == null) && (element != DomainModelType.GRADE))
+		{
+			throw new NullPointerException ("The specified manager class is NULL");
+		}
+
 		if (! (element.getInterfaceClass ()).isAssignableFrom (impl))
 		{
 			throw new IllegalArgumentException (impl.getName () + " does not implement " + element.getName ());
 		}
 
-		this.entries.put (element, new Entry (available, generator, impl));
+		this.entries.put (element, new Entry (available, generator, impl, manager));
 	}
 }

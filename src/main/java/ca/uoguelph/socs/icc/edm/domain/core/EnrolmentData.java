@@ -36,7 +36,6 @@ import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.EnrolmentElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager;
 
 /**
  * Implementation of the <code>Enrolment</code> interface.  It is expected that
@@ -99,7 +98,7 @@ public class EnrolmentData implements Enrolment, Serializable
 
 	static
 	{
-		(EnrolmentFactory.getInstance ()).registerElement (EnrolmentData.class, DefaultEnrolmentManager.class, DefaultEnrolmentBuilder.class, new EnrolmentDataFactory ());
+		(EnrolmentFactory.getInstance ()).registerElement (EnrolmentData.class, DefaultEnrolmentBuilder.class, new EnrolmentDataFactory ());
 	}
 
 	public EnrolmentData ()

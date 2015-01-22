@@ -30,7 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityTypeElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager;
 
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
@@ -79,7 +78,7 @@ public class ActivityTypeData implements ActivityType, Serializable
 
 	static
 	{
-		(ActivityTypeFactory.getInstance ()).registerElement (ActivityTypeData.class, DefaultActivityTypeManager.class, DefaultActivityTypeBuilder.class, new ActivityTypeDataFactory ());
+		(ActivityTypeFactory.getInstance ()).registerElement (ActivityTypeData.class, DefaultActivityTypeBuilder.class, new ActivityTypeDataFactory ());
 	}
 
 	public ActivityTypeData ()
