@@ -18,5 +18,5 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 public interface DataStoreBuilder
 {
-	public abstract DataStore createDataStore ();
+	public abstract DataStore createDataStore (DataStoreProfile profile);
 }

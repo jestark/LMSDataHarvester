@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +24,9 @@ import java.util.HashMap;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.ElementManager;
 import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
 
 /**
@@ -51,7 +54,7 @@ import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
  * @see     DomainModelBuilder
  */
 
-public final class DomainModelProfile
+public final class DataStoreProfile
 {
 	/**
 	 * <code>DataStore</code> profile data for a single domain model interface.
@@ -115,7 +118,7 @@ public final class DomainModelProfile
 			{
 				result = true;
 			}
-			else if (obj instanceof DomainModelProfile)
+			else if (obj instanceof DataStoreProfile)
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
 				ebuilder.append (this.available, ((Entry) obj).available);
@@ -211,11 +214,11 @@ public final class DomainModelProfile
 	 * Create the <code>DataStoreProfile</code>.  This constructor is not intended
 	 * to be called directly, the profile should be created though its builder.
 	 *
-	 * @param  mutable The designed mutability of the <code>DomainModel</code>,
+	 * @param  mutable The designed mutability of the <code>DataStore</code>,
 	 *                 not null
 	 */
 
-	protected DomainModelProfile (Boolean mutable)
+	public DataStoreProfile (Boolean mutable)
 	{
 		if (mutable == null)
 		{
@@ -227,13 +230,13 @@ public final class DomainModelProfile
 	}
 
 	/**
-	 * Create the <code>DomainModelProfile</code>, from another profile.  This
+	 * Create the <code>DataStoreProfile</code>, from another profile.  This
 	 * method is intended to be used by the builder to copy the profile.
 	 *
 	 * @param  profile The profile to copy, not null
 	 */
 
-	protected DomainModelProfile (DomainModelProfile profile)
+	public DataStoreProfile (DataStoreProfile profile)
 	{
 		this (profile.mutable);
 
@@ -246,16 +249,16 @@ public final class DomainModelProfile
 	}
 
 	/**
-	 *  Create the <code>DomainModelProfile</code>, from another profile, but
+	 *  Create the <code>DataStoreProfile</code>, from another profile, but
 	 *  overriding the mutability.  This method is intended to be used by the
 	 *  builder to copy the profile.
 	 *
-	 *  @param  mutable The designed mutability of the <code>DomainModel</code>,
+	 *  @param  mutable The designed mutability of the <code>DataStore</code>,
 	 *                  not null
 	 *  @param  profile The profile to copy, not null
 	 */
 
-	protected DomainModelProfile (Boolean mutable, DomainModelProfile profile)
+	public DataStoreProfile (Boolean mutable, DataStoreProfile profile)
 	{
 		this (mutable);
 
@@ -269,10 +272,10 @@ public final class DomainModelProfile
 
 	/**
 	 * Override the equals method to determine if this
-	 * <code>DomainModelProfile</code> is equal to another based on its
+	 * <code>DataStoreProfile</code> is equal to another based on its
 	 * attributes.
 	 *
-	 * @param  obj The object to compare to this <code>DomainModelProfile</code>
+	 * @param  obj The object to compare to this <code>DataStoreProfile</code>
 	 * @return     <code>true</code> if the two profiles are the same,
 	 *             <code>false</code> otherwise
 	 */
@@ -291,8 +294,8 @@ public final class DomainModelProfile
 			else if (obj.getClass () == this.getClass ())
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.mutable, ((DomainModelProfile) obj).mutable);
-				ebuilder.append (this.entries, ((DomainModelProfile) obj).entries);
+				ebuilder.append (this.mutable, ((DataStoreProfile) obj).mutable);
+				ebuilder.append (this.entries, ((DataStoreProfile) obj).entries);
 
 				result = ebuilder.isEquals ();
 			}
@@ -303,7 +306,7 @@ public final class DomainModelProfile
 
 	/**
 	 * Compute a unique <code>hashCode</code> for a
-	 * <code>DomainModelProfile</code> based on its attributes.
+	 * <code>DataStoreProfile</code> based on its attributes.
 	 *
 	 * @return The hash code
 	 */
@@ -322,11 +325,9 @@ public final class DomainModelProfile
 	}
 
 	/**
-	 * Determine if the <code>DomainModel</code> and its underlying
-	 * <code>DataStore</code> can be changed.
+	 * Determine if the <code>DataStore</code> can be changed.
 	 *
-	 * @return <code>true</code> if the <code>DomainModel</code> and its
-	 *         underlying <code>DataStore</code> can be changed,
+	 * @return <code>true</code> if the <code>DataStore</code> can be changed,
 	 *         <code>false</code> otherwise
 	 */
 
@@ -468,7 +469,7 @@ public final class DomainModelProfile
 	 * @see    DomainModelBuilder#setEntry
 	 */
 
-	protected void addEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
+	public void addEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
 	{
 		if (element == null)
 		{

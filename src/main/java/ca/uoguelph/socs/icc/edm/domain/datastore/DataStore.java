@@ -62,6 +62,14 @@ public interface DataStore
 	public abstract <T extends Element, X extends T> DataStoreQuery<T> createQuery (Class<T> type, Class<X> impl);
 
 	/**
+	 * Get the profile data for the <code>DataStore</code>.
+	 *
+	 * @return A copy of the profile data
+	 */
+
+	public abstract DataStoreProfile getProfile ();
+
+	/**
 	 * Get the transaction manager for the <code>DataStore</code>.
 	 *
 	 * @return An instance of the transaction manager

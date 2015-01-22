@@ -26,22 +26,23 @@ import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreBuilder;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
 import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
 
 /**
  * Create instances of the <code>DomainModel</code>.  This class will build up
- * a <code>DomainModelProfile</code> and use that profile to create an instance
+ * a <code>DataStoreProfile</code> and use that profile to create an instance
  * of the <code>DomainModel</code>.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     DomainModelProfile
+ * @see     DataStoreProfile
  */
 
 public final class DomainModelBuilder
 {
 	/** Internal copy of the profile which is being built. */
-	private DomainModelProfile profile;
+	private DataStoreProfile profile;
 
 	/** The logger */
 	private final Log log;
@@ -53,7 +54,7 @@ public final class DomainModelBuilder
 	public DomainModelBuilder ()
 	{
 		this.log = LogFactory.getLog (DomainModelBuilder.class);
-		this.profile = new DomainModelProfile (new Boolean (false));
+		this.profile = new DataStoreProfile (new Boolean (false));
 	}
 
 	/**
@@ -63,7 +64,7 @@ public final class DomainModelBuilder
 	 * @param  init The profile to use for initialization, not null
 	 */
 
-	public DomainModelBuilder (DomainModelProfile init)
+	public DomainModelBuilder (DataStoreProfile init)
 	{
 		this.log = LogFactory.getLog (DomainModelBuilder.class);
 
@@ -73,7 +74,7 @@ public final class DomainModelBuilder
 			throw new NullPointerException ("Initialization profile is NULL");
 		}
 
-		this.profile = new DomainModelProfile (init);
+		this.profile = new DataStoreProfile (init);
 	}
 
 	/**
@@ -82,7 +83,7 @@ public final class DomainModelBuilder
 
 	public void clear ()
 	{
-		this.profile = new DomainModelProfile (new Boolean (false));
+		this.profile = new DataStoreProfile (new Boolean (false));
 	}
 
 	/**
@@ -120,7 +121,7 @@ public final class DomainModelBuilder
 		}
 		else
 		{
-			this.profile = new DomainModelProfile (mutable, profile);
+			this.profile = new DataStoreProfile (mutable, profile);
 		}
 	}
 
@@ -237,13 +238,13 @@ public final class DomainModelBuilder
 	 */
 
 
-	public Class<? extends Element> getManagerClass (DomainModelType element)
+	public Class<? extends ElementManager<? extends Element>> getManagerClass (DomainModelType element)
 	{
-		Class<? extends ElementManager> manager = null;
+		Class<? extends ElementManager<? extends Element>> manager = null;
 
 		try
 		{
-			impl = this.profile.getManagerClass (element);
+			manager = this.profile.getManagerClass (element);
 		}
 		catch (NullPointerException ex)
 		{
@@ -308,17 +309,17 @@ public final class DomainModelBuilder
 	}
 
 	/**
-	 * Validate and return the complete <code>DomainModelProfile</code>.  This
+	 * Validate and return the complete <code>DataStoreProfile</code>.  This
 	 * method ensures that all of the required entries are in the profile before
 	 * returning a copy of the profile.
 	 *
-	 * @return                       The complete <code>DomainModelProfile</code>
+	 * @return                       The complete <code>DataStoreProfile</code>
 	 * @throws IllegalStateException if any of the domain model interfaces
 	 *                               (enumerated in <code>DomainModelType</code>)
 	 *                               are missing
 	 */
 
-	public DomainModelProfile createProfile ()
+	public DataStoreProfile createProfile ()
 	{
 		boolean abort = false;
 
@@ -342,11 +343,11 @@ public final class DomainModelBuilder
 			throw new IllegalStateException ("Domain Model Profile is missing Elements");
 		}
 
-		return new DomainModelProfile (this.profile);
+		return new DataStoreProfile (this.profile);
 	}
 
 	public DomainModel createDomainModel (DataStoreBuilder dsbuilder)
 	{
-		return new DomainModel (dsbuilder.createDataStore (), this.createProfile ());
+		return new DomainModel (dsbuilder.createDataStore (this.createProfile ()));
 	}
 }
