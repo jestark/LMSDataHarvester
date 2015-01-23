@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain.factory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentManager;
@@ -40,6 +39,6 @@ public final class EnrolmentFactory extends AbstractManagerFactory<Enrolment, En
 
 	private EnrolmentFactory ()
 	{
-		super (DomainModelType.ENROLMENT);
+		super (Enrolment.class);
 	}
 }

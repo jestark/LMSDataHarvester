@@ -128,11 +128,11 @@ public final class DomainModelBuilder
 	/**
 	 * Get the set of elements contained in this profile.
 	 *
-	 * @return A <code>Set</code> containing the <code>DomainModelType</code> of
+	 * @return A <code>Set</code> containing the domain model interface classes of
 	 *         all of the elements in the profile
 	 */
 
-	public Set<DomainModelType> getElements ()
+	public Set<Class<? extends Element>> getElements ()
 	{
 		return this.profile.getElements ();
 	}
@@ -147,7 +147,7 @@ public final class DomainModelBuilder
 	 *                 <code>false</code> otherwise
 	 */
 
-	public Boolean isAvalable (DomainModelType element)
+	public Boolean isAvailable (Class<? extends Element> element)
 	{
 		Boolean available = null;
 
@@ -168,6 +168,11 @@ public final class DomainModelBuilder
 		return available;
 	}
 
+	public Boolean isAvailable (DomainModelType element)
+	{
+		return this.isAvailable (element.getInterfaceClass ());
+	}
+
 	/**
 	 * Get the <code>DataStore</code> ID generation class for the specified domain
 	 * model interface.
@@ -176,7 +181,7 @@ public final class DomainModelBuilder
 	 * @return         The associated ID generator class
 	 */
 
-	public Class<? extends IdGenerator> getGenerator (DomainModelType element)
+	public Class<? extends IdGenerator> getGenerator (Class<? extends Element> element)
 	{
 		Class<? extends IdGenerator> generator = null;
 
@@ -197,6 +202,11 @@ public final class DomainModelBuilder
 		return generator;
 	}
 
+	public Class<? extends IdGenerator> getGenerator (DomainModelType element)
+	{
+		return this.getGenerator (element.getInterfaceClass ());
+	}
+
 	/**
 	 * Get the implementation class to be used for the specified domain model
 	 * interface.
@@ -206,7 +216,7 @@ public final class DomainModelBuilder
 	 *                 <code>DataStore</code>
 	 */
 
-	public Class<? extends Element> getImplClass (DomainModelType element)
+	public Class<? extends Element> getImplClass (Class<? extends Element> element)
 	{
 		Class<? extends Element> impl = null;
 
@@ -227,6 +237,11 @@ public final class DomainModelBuilder
 		return impl;
 	}
 
+	public Class<? extends Element> getImplClass (DomainModelType element)
+	{
+		return this.getImplClass (element.getInterfaceClass ());
+	}
+
 	/**
 	 * Get the <code>ElementManager</code> implementation used to access the
 	 * <code>DataStore</code> for the specified domain model interface.
@@ -237,8 +252,7 @@ public final class DomainModelBuilder
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
-
-	public Class<? extends ElementManager<? extends Element>> getManagerClass (DomainModelType element)
+	public Class<? extends ElementManager<? extends Element>> getManagerClass (Class<? extends Element> element)
 	{
 		Class<? extends ElementManager<? extends Element>> manager = null;
 
@@ -259,6 +273,10 @@ public final class DomainModelBuilder
 		return manager;
 	}
 
+	public Class<? extends ElementManager<? extends Element>> getManagerClass (DomainModelType element)
+	{
+		return this.getManagerClass (element.getInterfaceClass ());
+	}
 
 	/**
 	 * Add an entry to the profile for the specified element type.  A profile
@@ -290,7 +308,7 @@ public final class DomainModelBuilder
 	 *                                  element
 	 */
 
-	public void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
+	public void setEntry (Class<? extends Element> element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
 	{
 		try
 		{
@@ -308,6 +326,11 @@ public final class DomainModelBuilder
 		}
 	}
 
+	public void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
+	{
+		this.setEntry (element.getInterfaceClass (), available, impl, generator, manager);
+	}
+
 	/**
 	 * Validate and return the complete <code>DataStoreProfile</code>.  This
 	 * method ensures that all of the required entries are in the profile before
@@ -323,11 +346,11 @@ public final class DomainModelBuilder
 	{
 		boolean abort = false;
 
-		Set<DomainModelType> elements = this.profile.getElements ();
+		Set<Class<? extends Element>> elements = this.profile.getElements ();
 
 		for (DomainModelType t : DomainModelType.values ())
 		{
-			if (! elements.contains (t))
+			if (! elements.contains (t.getInterfaceClass ()))
 			{
 				if (this.log.isErrorEnabled ())
 				{

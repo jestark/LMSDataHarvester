@@ -62,7 +62,7 @@ public enum DomainModelType
 	private final String name;
 
 	/** The interface class */
-	private final Class<?> cls;
+	private final Class<? extends Element> cls;
 
 	/**
 	 * Create the Domain Model Type Enum.
@@ -70,7 +70,7 @@ public enum DomainModelType
 	 * @param  name The name of the constant
 	 */
 
-	private DomainModelType (String name, Class<?> cls)
+	private DomainModelType (String name, Class<? extends Element> cls)
 	{
 		this.name = name;
 		this.cls = cls;
@@ -94,7 +94,7 @@ public enum DomainModelType
 	 * @return The class which defines the associated interface
 	 */
 
-	public Class<?> getInterfaceClass ()
+	public Class<? extends Element> getInterfaceClass ()
 	{
 		return this.cls;
 	}

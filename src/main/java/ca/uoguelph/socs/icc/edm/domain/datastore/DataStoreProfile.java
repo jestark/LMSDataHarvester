@@ -24,9 +24,9 @@ import java.util.HashMap;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementManager;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
 
 /**
@@ -44,8 +44,7 @@ import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
  * </ul>
  * <p>
  * All of the per-interface fields are required, for all of the
- * <code>DomainModel</code> interfaces, enumerated in
- * <code>DomainModelType</code>.  If a <code>DataStore</code> does not
+ * <code>DomainModel</code> interfaces.  If a <code>DataStore</code> does not
  * internally represent a given interface, an implementation must be specified,
  * along with an ID generator.
  *
@@ -208,7 +207,7 @@ public final class DataStoreProfile
 	private Boolean mutable;
 
 	/** Interface class to Implementation class mapping */
-	private final Map<DomainModelType, Entry> entries;
+	private final Map<Class<? extends Element>, Entry> entries;
 
 	/**
 	 * Create the <code>DataStoreProfile</code>.  This constructor is not intended
@@ -226,7 +225,7 @@ public final class DataStoreProfile
 		}
 
 		this.mutable = mutable;
-		this.entries = new HashMap<DomainModelType, Entry> ();
+		this.entries = new HashMap<Class<? extends Element>, Entry> ();
 	}
 
 	/**
@@ -339,11 +338,11 @@ public final class DataStoreProfile
 	/**
 	 * Get the set of elements contained in this profile.
 	 *
-	 * @return A <code>Set</code> containing the <code>DomainModelType</code> of
+	 * @return A <code>Set</code> containing the domain model interface classes of
 	 *         all of the elements in the profile
 	 */
 
-	public Set<DomainModelType> getElements ()
+	public Set<Class<? extends Element>> getElements ()
 	{
 		return this.entries.keySet ();
 	}
@@ -361,7 +360,7 @@ public final class DataStoreProfile
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
-	public Boolean isAvailable (DomainModelType element)
+	public Boolean isAvailable (Class<? extends Element> element)
 	{
 		if (element == null)
 		{
@@ -385,7 +384,7 @@ public final class DataStoreProfile
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
-	public Class<? extends IdGenerator> getGenerator (DomainModelType element)
+	public Class<? extends IdGenerator> getGenerator (Class<? extends Element> element)
 	{
 		if (element == null)
 		{
@@ -410,7 +409,7 @@ public final class DataStoreProfile
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
-	public Class<? extends Element> getImplClass (DomainModelType element)
+	public Class<? extends Element> getImplClass (Class<? extends Element> element)
 	{
 		if (element == null)
 		{
@@ -435,7 +434,7 @@ public final class DataStoreProfile
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
-	public Class<? extends ElementManager<? extends Element>> getManagerClass (DomainModelType element)
+	public Class<? extends ElementManager<? extends Element>> getManagerClass (Class<? extends Element> element)
 	{
 		if (element == null)
 		{
@@ -450,12 +449,11 @@ public final class DataStoreProfile
 		return (this.entries.get (element)).getManagerClass ();
 	}
 
-
 	/**
 	 * Add an entry to the profile from the specified element type.  This method
 	 * is intended to be used by the builder while is constructs the profile.
 	 *
-	 * @param  element                  The <code>DomainModelType</code> of the
+	 * @param  element                  The domain model interface class of the
 	 *                                  element which is being added, not null
 	 * @param  available                Indication if the element is available in
 	 *                                  the <code>DataStore</code>, not null
@@ -469,7 +467,7 @@ public final class DataStoreProfile
 	 * @see    DomainModelBuilder#setEntry
 	 */
 
-	public void addEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
+	public void addEntry (Class<? extends Element> element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
 	{
 		if (element == null)
 		{
@@ -492,12 +490,12 @@ public final class DataStoreProfile
 		}
 
 		// Special case:  Grades don't have managers.
-		if ((manager == null) && (element != DomainModelType.GRADE))
+		if ((manager == null) && (element != Grade.class))
 		{
 			throw new NullPointerException ("The specified manager class is NULL");
 		}
 
-		if (! (element.getInterfaceClass ()).isAssignableFrom (impl))
+		if (! element.isAssignableFrom (impl))
 		{
 			throw new IllegalArgumentException (impl.getName () + " does not implement " + element.getName ());
 		}

@@ -46,7 +46,7 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	private final Log log;
 
 	/** The Domain Model Type for this factory */
-	private final DomainModelType type;
+	private final Class<T> type;
 
 	/** Caching factory for the <code>ElementManager</code> implementations */
 	private final MappedFactory<Class<?>, X, DomainModel> managerfactories;
@@ -69,7 +69,7 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	 * @param  type 
 	 */
 
-	protected AbstractManagerFactory (DomainModelType type)
+	protected AbstractManagerFactory (Class<T> type)
 	{
 		this.log = LogFactory.getLog (AbstractManagerFactory.class);
 
