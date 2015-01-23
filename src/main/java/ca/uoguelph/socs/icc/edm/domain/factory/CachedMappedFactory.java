@@ -45,7 +45,7 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 	private final Map<X, T> cache;
 
 	/** The underlying factory */
-	private final MappedAbstractFactory<K, T, X> factory;
+	private final MappedFactory<K, T, X> factory;
 
 	/** The log */
 	private final Log log;
@@ -57,7 +57,7 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 	 *                 <code>CachedMappedFactory</code> instance, not null
 	 */
 
-	public CachedMappedFactory (MappedAbstractFactory<K, T, X> factory)
+	public CachedMappedFactory (MappedFactory<K, T, X> factory)
 	{
 		this.log = LogFactory.getLog (CachedMappedFactory.class);
 
@@ -115,7 +115,7 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 	 *
 	 * @param  arg  Parameter to be used to create the instance
 	 * @return      An instance of the requested class, not null
-	 * @see    AbstractMappedFactory#create
+	 * @see    MappedFactory#create
 	 */
 
 	/**
@@ -127,7 +127,7 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 	 */
 
 	@Override
-	public abstract boolean isRegistered (K key)
+	public boolean isRegistered (K key)
 	{
 		return this.factory.isRegistered (key);
 	}

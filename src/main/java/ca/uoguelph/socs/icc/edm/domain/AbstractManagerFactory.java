@@ -24,13 +24,12 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
-import ca.uoguelph.socs.icc.edm.domain.factory.DefaultQueryFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.GenericFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.GenericBaseFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.GenericCachedFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.MappedFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.BaseMappedFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.CachedMappedFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
 
 /**
@@ -50,13 +49,13 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	private final DomainModelType type;
 
 	/** Caching factory for the <code>ElementManager</code> implementations */
-	private final GenericFactory<Class<? extends X>, X, DomainModel> managerfactories;
+	private final MappedFactory<Class<? extends X>, X, DomainModel> managerfactories;
 
 	/** Caching factory for the <code>ElementBuilder</code> implementations */
-	private final GenericFactory<Class<? extends Y>, Y, DomainModel> builderfactories;
+	private final MappedFactory<Class<? extends Y>, Y, DomainModel> builderfactories;
 
 	/** Caching factory for the <code>DataStoreQuery</code> instances */
-	private final GenericFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> queryfactories;
+	private final MappedFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> queryfactories;
 
 	/** <code>Element<code> to <code>ElementManager</code> implementation mapping */
 	private final Map<Class<? extends T>, Class<? extends X>> elementmanagers;
@@ -79,9 +78,9 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 
 		this.type = type;
 
-		this.managerfactories = new GenericCachedFactory<Class<? extends X>, X, DomainModel> (new GenericBaseFactory<Class<? extends X>, X, DomainModel> ());
-		this.builderfactories = new GenericBaseFactory<Class<? extends Y>, Y, DomainModel> ();
-		this.queryfactories = new GenericCachedFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> (new GenericBaseFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> ());
+		this.managerfactories = new CachedMappedFactory<Class<? extends X>, X, DomainModel> (new BaseMappedFactory<Class<? extends X>, X, DomainModel> ());
+		this.builderfactories = new BaseMappedFactory<Class<? extends Y>, Y, DomainModel> ();
+		this.queryfactories = new CachedMappedFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> (new BaseMappedFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> ());
 
 		this.elementmanagers = new HashMap<Class<? extends T>, Class<? extends X>> ();
 		this.elementbuilders = new HashMap<Class<? extends T>, Class<? extends Y>> ();
@@ -184,7 +183,7 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 			throw new NullPointerException ();
 		}
 
-		this.queryfactories.registerClass (impl, new DefaultQueryFactory<T, A> (type, impl));
+//		this.queryfactories.registerClass (impl, new DefaultQueryFactory<T, A> (type, impl));
 	}
 
 	/**

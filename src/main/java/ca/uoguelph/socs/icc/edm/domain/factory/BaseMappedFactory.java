@@ -51,7 +51,7 @@ public final class BaseMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 	{
 		this.factories = new HashMap<K, ConcreteFactory<T, X>> ();
 
-		this.log = LogFactory.getLog (AbstractMappedFactory.class);
+		this.log = LogFactory.getLog (BaseMappedFactory.class);
 	}
 
 	/**
