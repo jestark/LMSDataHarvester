@@ -16,16 +16,22 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 
-public abstract class AbstractNamedActivity extends AbstractActivity implements Activity
+public abstract class AbstractNamedActivity extends AbstractActivity implements Activity, Serializable
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
+	/** The name of the activity */
 	private String name;
 
-	protected AbstractNamedActivity ()
+	public AbstractNamedActivity ()
 	{
 		super ();
 		this.name = null;
@@ -42,19 +48,16 @@ public abstract class AbstractNamedActivity extends AbstractActivity implements 
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.name, ((AbstractNamedActivity) obj).name);
+			result = true;
+		}
+		else if (obj instanceof AbstractNamedActivity)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.name, ((AbstractNamedActivity) obj).name);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

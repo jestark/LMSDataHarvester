@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import java.util.HashSet;
@@ -23,14 +24,25 @@ import java.util.HashSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivity, E extends ActivityGroupMember> extends GenericGroupedActivityMember<T> implements ActivityGroup<E>
+public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivity, E extends ActivityGroupMember> extends GenericGroupedActivityMember<T> implements ActivityGroup<E>, Serializable
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
+	/** The set of sub-activities  */
 	private Set<E> children;
 
-	protected GenericGroupedActivityGroup ()
+	public GenericGroupedActivityGroup ()
 	{
 		super ();
 		this.children = null;
+	}
+
+	public GenericGroupedActivityGroup (String name, T parent)
+	{
+		super (name, parent);
+
+		this.children = new HashSet<E> ();
 	}
 
 	@Override
@@ -38,19 +50,16 @@ public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivit
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
+			result = true;
+		}
+		else if (obj instanceof GenericGroupedActivityGroup)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

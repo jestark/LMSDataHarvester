@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import java.util.HashSet;
@@ -28,20 +29,28 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivitySourceBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivitySourceElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivitySourceFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivitySourceManager;
 
-public class ActivitySourceData implements ActivitySource
+/**
+ * Implementation of the <code>ActivitySource</code> interface.  It is expected
+ * that instances of this class will be accessed though the
+ * <code>ActivitySource</code> interface, along with the relevant manager, and
+ * builder.  See the <code>ActivitySource</code> interface documentation for
+ * details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivitySourceManager
+ */
+
+public class ActivitySourceData implements ActivitySource, Serializable
 {
 	private static final class ActivitySourceDataFactory implements ActivitySourceElementFactory
 	{
 		@Override
 		public ActivitySource create (String name)
 		{
-			ActivitySourceData source = new ActivitySourceData ();
-
-			source.setName (name);
-
-			return source;
+			return new ActivitySourceData (name);
 		}
 
 		@Override
@@ -51,20 +60,37 @@ public class ActivitySourceData implements ActivitySource
 		}
 	}
 
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
+	/** The primary key of the activity source */
 	private Long id;
+
+	/** The name of the activity source */
 	private String name;
+
+	/** The set of activity types which are associated with the source */
 	private Set<ActivityType> types;
 
 	static
 	{
-		(ActivitySourceFactory.getInstance ()).registerElement (ActivitySourceData.class, DefaultActivitySourceManager.class, DefaultActivitySourceBuilder.class, new ActivitySourceDataFactory ());
+		(ActivitySourceFactory.getInstance ()).registerElement (ActivitySourceData.class, DefaultActivitySourceBuilder.class, new ActivitySourceDataFactory ());
 	}
 
-	protected ActivitySourceData ()
+	public ActivitySourceData ()
 	{
 		this.id = null;
 		this.name = null;
 		this.types = null;
+	}
+
+	public ActivitySourceData (String name)
+	{
+		this ();
+
+		this.name = name;
+
+		this.types = new HashSet<ActivityType> ();
 	}
 
 	@Override
@@ -72,19 +98,16 @@ public class ActivitySourceData implements ActivitySource
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.name, ((ActivitySourceData) obj).name);
+			result = true;
+		}
+		else if (obj instanceof ActivitySourceData)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.name, ((ActivitySourceData) obj).name);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

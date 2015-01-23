@@ -28,6 +28,18 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.GradeElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
+/**
+ * Implementation of the <code>Grade</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>Grade</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>Grade</code> interface documentation for details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.GradeBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.GradeManager
+ */
+
 public class GradedActivity implements Grade, Serializable
 {
 	private static final class GradedActivityFactory implements GradeElementFactory
@@ -35,20 +47,20 @@ public class GradedActivity implements Grade, Serializable
 		@Override
 		public Grade create (Enrolment enrolment, Activity activity, Integer mark)
 		{
-			GradedActivity grade = new GradedActivity ();
-
-			grade.setEnrolment (enrolment);
-			grade.setActivity (activity);
-			grade.setGrade (mark);
-
-			return grade;
+			return new GradedActivity (enrolment, activity, mark);
 		}
 	}
 
+	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The grade */
 	private Integer grade;
+
+	/** The enrolment to which the grade is assigned */
 	private Enrolment enrolment;
+
+	/** The activity for which the grade is assigned */
 	private Activity activity;
 
 	static
@@ -56,11 +68,20 @@ public class GradedActivity implements Grade, Serializable
 //		(EnrolmentFactory.getInstance ()).registerElement (GradedActivity.class, DefaultGradeBuilder.class, new GradedActivityFactory ());
 	}
 
-	protected GradedActivity ()
+	public GradedActivity ()
 	{
 		this.grade = null;
 		this.activity = null;
 		this.enrolment = null;
+	}
+
+	public GradedActivity (Enrolment enrolment, Activity activity, Integer mark)
+	{
+		this ();
+
+		this.grade = grade;
+		this.activity = activity;
+		this.enrolment = enrolment;
 	}
 
 	@Override
@@ -68,21 +89,18 @@ public class GradedActivity implements Grade, Serializable
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.activity, ((GradedActivity) obj).activity);
-				ebuilder.append (this.enrolment, ((GradedActivity) obj).enrolment);
-				ebuilder.append (this.grade, ((GradedActivity) obj).grade);
+			result = true;
+		}
+		else if (obj instanceof GradedActivity)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.activity, ((GradedActivity) obj).activity);
+			ebuilder.append (this.enrolment, ((GradedActivity) obj).enrolment);
+			ebuilder.append (this.grade, ((GradedActivity) obj).grade);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

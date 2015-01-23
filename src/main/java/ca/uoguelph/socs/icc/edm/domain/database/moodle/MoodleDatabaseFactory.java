@@ -38,6 +38,16 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogData;
 import ca.uoguelph.socs.icc.edm.domain.core.RoleData;
 import ca.uoguelph.socs.icc.edm.domain.core.UserData;
 
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActionManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivitySourceManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager;
+
 import ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
 import ca.uoguelph.socs.icc.edm.domain.database.DatabaseFactory;
@@ -64,15 +74,15 @@ public final class MoodleDatabaseFactory extends DatabaseFactory
 
 	protected void buildProfile (DomainModelBuilder builder)
 	{
-		builder.setEntry (DomainModelType.ACTION, false, ActionData.class, NullIdGenerator.class);
-		builder.setEntry (DomainModelType.ACTIVITY, true, ActivityInstance.class, NullIdGenerator.class);
-		builder.setEntry (DomainModelType.ACTIVITYSOURCE, false, ActivitySourceData.class, NullIdGenerator.class);
-		builder.setEntry (DomainModelType.ACTIVITYTYPE, true, ActivityTypeData.class, NullIdGenerator.class);
-		builder.setEntry (DomainModelType.COURSE, true, CourseData.class, NullIdGenerator.class);
-		builder.setEntry (DomainModelType.ENROLMENT, true, UserEnrolmentData.class, NullIdGenerator.class);
-		builder.setEntry (DomainModelType.GRADE, true, GradedActivity.class, NullIdGenerator.class);
-		builder.setEntry (DomainModelType.LOGENTRY, true, LogData.class, NullIdGenerator.class);
-		builder.setEntry (DomainModelType.ROLE, true, RoleData.class, NullIdGenerator.class);
-		builder.setEntry (DomainModelType.USER, true, UserData.class, NullIdGenerator.class);
+		builder.setEntry (DomainModelType.ACTION, false, ActionData.class, NullIdGenerator.class, DefaultActionManager.class);
+		builder.setEntry (DomainModelType.ACTIVITY, true, ActivityInstance.class, NullIdGenerator.class, DefaultActivityManager.class);
+		builder.setEntry (DomainModelType.ACTIVITYSOURCE, false, ActivitySourceData.class, NullIdGenerator.class, DefaultActivitySourceManager.class);
+		builder.setEntry (DomainModelType.ACTIVITYTYPE, true, ActivityTypeData.class, NullIdGenerator.class, DefaultActivityTypeManager.class);
+		builder.setEntry (DomainModelType.COURSE, true, CourseData.class, NullIdGenerator.class, DefaultCourseManager.class);
+		builder.setEntry (DomainModelType.ENROLMENT, true, UserEnrolmentData.class, NullIdGenerator.class, DefaultEnrolmentManager.class);
+		builder.setEntry (DomainModelType.GRADE, true, GradedActivity.class, NullIdGenerator.class, null);
+		builder.setEntry (DomainModelType.LOGENTRY, true, LogData.class, NullIdGenerator.class, DefaultLogEntryManager.class);
+		builder.setEntry (DomainModelType.ROLE, true, RoleData.class, NullIdGenerator.class, DefaultRoleManager.class);
+		builder.setEntry (DomainModelType.USER, true, UserData.class, NullIdGenerator.class, DefaultUserManager.class);
 	}
 }

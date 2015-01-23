@@ -32,7 +32,7 @@ public class App
 
 	public static void init ()
 	{
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.UserBuilder");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActionData");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActivitySourceData");

@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
-
 import java.util.Date;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -31,7 +30,18 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager;
+
+/**
+ * Implementation of the <code>LogEntry</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>LogEntry</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>LogEntry</code> interface documentation for details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.LogEntryManager
+ */
 
 public class LogData implements LogEntry, Serializable
 {
@@ -40,15 +50,7 @@ public class LogData implements LogEntry, Serializable
 		@Override
 		public LogEntry create (Action action, Activity activity, Enrolment enrolment, String ip, Date time)
 		{
-			LogData entry = new LogData ();
-
-			entry.setAction (action);
-			entry.setActivitydb (activity);
-			entry.setEnrolment (enrolment);
-			entry.setIPAddress (ip);
-			entry.setTime (time);
-
-			return entry;
+			return new LogData (action, activity, enrolment, ip, time);
 		}
 
 		@Override
@@ -58,22 +60,36 @@ public class LogData implements LogEntry, Serializable
 		}
 	}
 
+	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The primary key for the log entry */
 	private Long id;
+
+	/** The enrolment which generated the log entry */
 	private Enrolment enrolment;
+
+	/** The activity which is associated with the log entry */
 	private Activity activity;
+
+	/** The logged action, which was performed on the associated activity */
 	private Action action;
+
+	/** The time at which the action was performed */
 	private Date time;
+
+	/** The originating IP Address for the logged action */
 	private String ip;
+
+	/** The Sub-activity which is associated with the log entry */
 	private LogReference<? extends ActivityGroupMember> reference;
 
 	static
 	{
-		(LogEntryFactory.getInstance ()).registerElement (LogData.class, DefaultLogEntryManager.class, DefaultLogEntryBuilder.class, new LogDataFactory ());
+		(LogEntryFactory.getInstance ()).registerElement (LogData.class, DefaultLogEntryBuilder.class, new LogDataFactory ());
 	}
 
-	protected LogData ()
+	public LogData ()
 	{
 		this.id = null;
 		this.ip = null;
@@ -82,6 +98,59 @@ public class LogData implements LogEntry, Serializable
 		this.enrolment = null;
 		this.reference = null;
 		this.time = null;
+	}
+
+	public LogData (Action action, Activity activity, Enrolment enrolment, String ip, Date time)
+	{
+		this ();
+
+		this.action = action;
+		this.activity = activity;
+		this.enrolment = enrolment;
+		this.ip = ip;
+		this.time = time;
+	}
+
+	@Override
+	public boolean equals (Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof LogData)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.action, ((LogData) obj).action);
+			ebuilder.append (this.activity, ((LogData) obj).activity);
+			ebuilder.append (this.enrolment, ((LogData) obj).enrolment);
+			ebuilder.append (this.ip, ((LogData) obj).ip);
+			ebuilder.append (this.time, ((LogData) obj).time);
+			ebuilder.append (this.reference, ((LogData) obj).reference);
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 1093;
+		final int mult = 887;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.action);
+		hbuilder.append (this.activity);
+		hbuilder.append (this.enrolment);
+		hbuilder.append (this.ip);
+		hbuilder.append (this.time);
+		hbuilder.append (this.reference);
+
+		return hbuilder.toHashCode ();
 	}
 
 	public Long getId ()
