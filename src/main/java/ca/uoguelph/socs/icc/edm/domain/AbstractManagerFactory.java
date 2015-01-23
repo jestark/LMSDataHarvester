@@ -49,13 +49,13 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	private final DomainModelType type;
 
 	/** Caching factory for the <code>ElementManager</code> implementations */
-	private final GenericFactory<Class<?>, X, DomainModel> managerfactories;
+	private final MappedFactory<Class<?>, X, DomainModel> managerfactories;
 
 	/** Caching factory for the <code>ElementBuilder</code> implementations */
-	private final GenericFactory<Class<?>, Y, DomainModel> builderfactories;
+	private final MappedFactory<Class<?>, Y, DomainModel> builderfactories;
 
 	/** Caching factory for the <code>DataStoreQuery</code> instances */
-	private final GenericFactory<Class<?>, DataStoreQuery<T>, DataStore> queryfactories;
+	private final MappedFactory<Class<?>, DataStoreQuery<T>, DataStore> queryfactories;
 
 	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
 	private final Map<Class<? extends T>, Class<? extends Y>> elementbuilders;
@@ -75,9 +75,9 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 
 		this.type = type;
 
-		this.managerfactories = new GenericCachedFactory<Class<?>, X, DomainModel> (new GenericBaseFactory<Class<?>, X, DomainModel> ());
-		this.builderfactories = new GenericBaseFactory<Class<?>, Y, DomainModel> ();
-		this.queryfactories = new GenericCachedFactory<Class<?>, DataStoreQuery<T>, DataStore> (new GenericBaseFactory<Class<?>, DataStoreQuery<T>, DataStore> ());
+		this.managerfactories = new CachedMappedFactory<Class<?>, X, DomainModel> (new BaseMappedFactory<Class<?>, X, DomainModel> ());
+		this.builderfactories = new BaseMappedFactory<Class<?>, Y, DomainModel> ();
+		this.queryfactories = new CachedMappedFactory<Class<?>, DataStoreQuery<T>, DataStore> (new BaseMappedFactory<Class<?>, DataStoreQuery<T>, DataStore> ());
 
 		this.elementbuilders = new HashMap<Class<? extends T>, Class<? extends Y>> ();
 		this.elementfactories = new HashMap<Class<? extends T>, Z> ();
