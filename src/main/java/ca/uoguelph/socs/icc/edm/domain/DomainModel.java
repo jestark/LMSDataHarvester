@@ -34,7 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
 
@@ -130,7 +129,7 @@ public final class DomainModel
 
 	public ActionManager getActionManager ()
 	{
-		if (! this.profile.isAvailable (Action.class))
+		if (! this.profile.isAvailable (DomainModelType.ACTION))
 		{
 			this.log.error ("Action interface is not represented by the data store");
 			throw new IllegalStateException ("Action interface is not available");
@@ -150,7 +149,7 @@ public final class DomainModel
 
 	public ActivityManager getActivityManager ()
 	{
-		if (! this.profile.isAvailable (Activity.class))
+		if (! this.profile.isAvailable (DomainModelType.ACTIVITY))
 		{
 			this.log.error ("Activity interface is not represented by the data store");
 			throw new IllegalStateException ("Activity interface is not available");
@@ -172,7 +171,7 @@ public final class DomainModel
 
 	public ActivitySourceManager getActivitySourceManager ()
 	{
-		if (! this.profile.isAvailable (ActivitySource.class))
+		if (! this.profile.isAvailable (DomainModelType.ACTIVITYSOURCE))
 		{
 			this.log.error ("ActivitySource interface is not represented by the data store");
 			throw new IllegalStateException ("ActivitySource interface is not available");
@@ -193,7 +192,7 @@ public final class DomainModel
 
 	public ActivityTypeManager getActivityTypeManager ()
 	{
-		if (! this.profile.isAvailable (ActivityType.class))
+		if (! this.profile.isAvailable (DomainModelType.ACTIVITYTYPE))
 		{
 			this.log.error ("ActivityType interface is not represented by the data store");
 			throw new IllegalStateException ("ActivityType interface is not available");
@@ -212,7 +211,7 @@ public final class DomainModel
 
 	public CourseManager getCourseManager ()
 	{
-		if (! this.profile.isAvailable (Course.class))
+		if (! this.profile.isAvailable (DomainModelType.COURSE))
 		{
 			this.log.error ("Course interface is not represented by the data store");
 			throw new IllegalStateException ("Course interface is not available");
@@ -233,7 +232,7 @@ public final class DomainModel
 
 	public EnrolmentManager getEnrolmentManager ()
 	{
-		if (! this.profile.isAvailable (Enrolment.class))
+		if (! this.profile.isAvailable (DomainModelType.ENROLMENT))
 		{
 			this.log.error ("Enrolment interface is not represented by the data store");
 			throw new IllegalStateException ("Enrolment interface is not available");
@@ -253,7 +252,7 @@ public final class DomainModel
 
 	public LogEntryManager getLogEntryManager ()
 	{
-		if (! this.profile.isAvailable (LogEntry.class))
+		if (! this.profile.isAvailable (DomainModelType.LOGENTRY))
 		{
 			this.log.error ("LogEntry interface is not represented by the data store");
 			throw new IllegalStateException ("LogEntry interface is not available");
@@ -272,7 +271,7 @@ public final class DomainModel
 
 	public RoleManager getRoleManager ()
 	{
-		if (! this.profile.isAvailable (Role.class))
+		if (! this.profile.isAvailable (DomainModelType.ROLE))
 		{
 			this.log.error ("Role interface is not represented by the data store");
 			throw new IllegalStateException ("Role interface is not available");
@@ -291,7 +290,7 @@ public final class DomainModel
 
 	public UserManager getUserManager ()
 	{
-		if (! this.profile.isAvailable (User.class))
+		if (! this.profile.isAvailable (DomainModelType.USER))
 		{
 			this.log.error ("User interface is not represented by the data store");
 			throw new IllegalStateException ("User interface is not available");
