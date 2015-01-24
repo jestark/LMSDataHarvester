@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@ import java.util.Set;
 
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *  implementation of <code>MappedFactory</code>.  This class implements
@@ -41,7 +41,7 @@ public final class BaseMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 	private final Map<K, ConcreteFactory<T, X>> factories;
 
 	/** Log */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Create the Factory.
@@ -49,16 +49,16 @@ public final class BaseMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 
 	public BaseMappedFactory ()
 	{
+		this.log = LoggerFactory.getLogger (BaseMappedFactory.class);
 		this.factories = new HashMap<K, ConcreteFactory<T, X>> ();
-
-		this.log = LogFactory.getLog (BaseMappedFactory.class);
 	}
 
 	/**
 	 * Register an implementation with the factory.
 	 *
 	 * @param  key                       The registration key, not null
-	 * @param  factory                   The factory used to instantiate the class
+	 * @param  factory                   The factory used to instantiate the
+	 *                                   class, not null
 	 * @throws IllegalArguementException if the implementation class is already
 	 *                                   registered
 	 */
@@ -66,6 +66,8 @@ public final class BaseMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 	@Override
 	public void registerClass (K key, ConcreteFactory<T, X> factory)
 	{
+		this.log.trace ("Registering Class: {} ({})", key, factory);
+
 		if (key == null)
 		{
 			this.log.error ("Key is NULL");
@@ -80,10 +82,8 @@ public final class BaseMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 
 		if (this.factories.containsKey (key))
 		{
-			String msg = key + "has already been registered";
-
-			this.log.error (msg);
-			throw new IllegalArgumentException (msg);
+			this.log.error ("Class has already been registered: {}", key);
+			throw new IllegalArgumentException ("Duplicate class registration");
 		}
 
 		this.factories.put (key, factory);
@@ -105,7 +105,7 @@ public final class BaseMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 	/**
 	 * Determine if an implementation class has been registered with the factory.
 	 *
-	 * @param  key
+	 * @param  key The registration key, not null
 	 * @return     <code>true</code> if the class is registered,
 	 *             <code>false</code> otherwise.
 	 */
@@ -122,7 +122,7 @@ public final class BaseMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 	 *
 	 * @param  key                      The registration key, not null
 	 * @param  arg                      Parameter to be used to create the
-	 *                                  instance
+	 *                                  instance, not null
 	 * @return                          An instance of the requested class
 	 * @throws IllegalArgumentException if the requested implementation is not
 	 *                                  registered
@@ -132,6 +132,8 @@ public final class BaseMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 	@Override
 	public T create (K key, X arg)
 	{
+		this.log.trace ("Creating new instance of {} ({})", key, arg);
+
 		if (key == null)
 		{
 			this.log.error ("Registration key is NULL");
@@ -140,10 +142,8 @@ public final class BaseMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 
 		if (! this.factories.containsKey (key))
 		{
-			String msg = "Key not registered: " + key;
-
-			this.log.error (msg);
-			throw new IllegalArgumentException (msg);
+			this.log.error ("Attempting to create an instance of unregistered class: {}", key);
+			throw new IllegalArgumentException ("Class not registered.");
 		}
 
 		return (this.factories.get (key)).create (arg);

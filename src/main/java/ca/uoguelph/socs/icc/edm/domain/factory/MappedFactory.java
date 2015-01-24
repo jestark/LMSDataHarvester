@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,8 @@ public interface MappedFactory<K, T, X>
 	 * Register an implementation with the factory.
 	 *
 	 * @param  key                       The registration key, not null
-	 * @param  factory                   The factory used to instantiate the class
+	 * @param  factory                   The factory used to instantiate the
+	 *                                   class, not null
 	 * @throws IllegalArguementException if the implementation class is already
 	 *                                   registered
 	 */
@@ -59,7 +60,7 @@ public interface MappedFactory<K, T, X>
 	/**
 	 * Determine if an implementation class has been registered with the factory.
 	 *
-	 * @param  key
+	 * @param  key The registration key, not null
 	 * @return     <code>true</code> if the class is registered,
 	 *             <code>false</code> otherwise.
 	 */
@@ -75,9 +76,9 @@ public interface MappedFactory<K, T, X>
 	 *
 	 * @param  key  The registration key, not null
 	 * @param  arg  Parameter to be used to create the instance
-	 * @return      An instance of the requested class
+	 * @return      An instance of the requested class, not null
 	 * @see    ConcreteFactory#create
 	 */
 
-	public abstract T create (K Key, X arg);
+	public abstract T create (K key, X arg);
 }

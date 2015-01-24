@@ -18,8 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
 
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -37,7 +37,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The <code>Element</code> type of the queries to be created
- * @see     ChachedMappedFactory
+ * @see     CachedMappedFactory
  */
 
 public final class MappedQueryFactory<T extends Element>
@@ -88,7 +88,7 @@ public final class MappedQueryFactory<T extends Element>
 	}
 
 	/** The Log */
-	private final Log log;
+	private final Logger log;
 
 	/** The interface type of the query */
 	Class<T> type;
@@ -100,17 +100,17 @@ public final class MappedQueryFactory<T extends Element>
 	 * Create the <code>MappedQueryFactory</code>.
 	 *
 	 * @param  type The domain model interface class for which this factory is to
-	 *              create queries
+	 *              create queries, not null
 	 */
 
 	public MappedQueryFactory (Class<T> type)
 	{
-		this.log = LogFactory.getLog (MappedQueryFactory.class);
+		this.log = LoggerFactory.getLogger (MappedQueryFactory.class);
 
-		if (this.type == null)
+		if (type == null)
 		{
-			this.log.error ("Type is NULL");
-			throw new NullPointerException ("Type is NULL");
+			this.log.error ("Domain model interface type NULL");
+			throw new NullPointerException ();
 		}
 
 		this.type = type;
@@ -120,12 +120,14 @@ public final class MappedQueryFactory<T extends Element>
 	/**
 	 * Register an element class.
 	 *
-	 * @param  impl The implementation class to be used in the query
+	 * @param  impl The implementation class to be used in the query, not null
 	 * @see    MappedFactory#registerClass
 	 */
 
 	public <X extends T> void registerClass (Class<X> impl)
 	{
+		this.log.trace ("Registering Element implementation class: {} ({})", impl, this.type);
+
 		this.queries.registerClass (impl, new QueryFactory<T, X> (this.type, impl));
 	}
 
@@ -172,20 +174,20 @@ public final class MappedQueryFactory<T extends Element>
 
 	public DataStoreQuery<T> create (DataStore datastore)
 	{
+		this.log.debug ("Creating query for interface {}, on using DataStore {}", this.type, datastore);
+
 		if (datastore == null)
 		{
-			this.log.error ("datastore is NULL");
-			throw new NullPointerException ("datastore is NULL");
+			this.log.error ("Attempting to create a query for a NULL DataStore");
+			throw new NullPointerException ();
 		}
 
 		Class<? extends Element> impl = (datastore.getProfile ()).getImplClass (this.type);
 
 		if (! this.queries.isRegistered (impl))
 		{
-			String message = "Element class is not registered: " + impl;
-
-			this.log.error (message);
-			throw new IllegalStateException (message);
+			this.log.error ("Element implementation class is not registered: {}", impl);
+			throw new IllegalStateException ("Unregistered Element implementation");
 		}
 
 		return this.queries.create (impl, datastore);
@@ -196,23 +198,25 @@ public final class MappedQueryFactory<T extends Element>
 	 * cache.
 	 *
 	 * @param  datastore The <code>DataStore</code> for which all of the cached
-	 *                   queries are to be purged
-	 * @see    CachedMappedfactory#remove
+	 *                   queries are to be purged, not null
+	 * @see    CachedMappedFactory#remove
 	 */
 
 	public void remove (DataStore datastore)
 	{
+		this.log.trace ("Removing all cached query instances for DataStore: {}", datastore);
 		this.queries.remove (datastore);
 	}
 
 	/**
 	 * Remove all queries from the cache.
 	 *
-	 * @see    CachedMappedfactory#flush
+	 * @see    CachedMappedFactory#flush
 	 */
 
 	public void flush ()
 	{
+		this.log.trace ("Flushing cache");
 		this.queries.flush ();
 	}
 }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@ import java.util.Set;
 
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Caching implementation of <code>MappedFactory</code>.  This class decorates
@@ -48,7 +48,7 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 	private final MappedFactory<K, T, X> factory;
 
 	/** The log */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Create the factory.
@@ -59,7 +59,7 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 
 	public CachedMappedFactory (MappedFactory<K, T, X> factory)
 	{
-		this.log = LogFactory.getLog (CachedMappedFactory.class);
+		this.log = LoggerFactory.getLogger (CachedMappedFactory.class);
 
 		if (factory == null)
 		{
@@ -84,6 +84,8 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 	@Override
 	public void registerClass (K key, ConcreteFactory<T, X> factory)
 	{
+		this.log.trace ("Registering Class: {} ({})", key, factory);
+
 		this.factory.registerClass (key, factory);
 	}
 
@@ -101,27 +103,9 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 	}
 
 	/**
-	 * Create an instance of an implementation class.  This method will call the
-	 * <code>create</code> method on the underlying factory, and cache the result.
-	 * Subsequent calls will return the cached object without making a call to the
-	 * underlying factory.
-	 * <p>
-	 * The arguement is used as the parameter by which the objects created by the
-	 * factory are cached.  So only one instance of an object created using the
-	 * specified key will be returned.  Subsequent calls with the same key object
-	 * will return a reference to the previously created object.  As a result, the
-	 * key can not be null, unlike other instances of the
-	 * <code>MappedFactory</code>.
-	 *
-	 * @param  arg  Parameter to be used to create the instance
-	 * @return      An instance of the requested class, not null
-	 * @see    MappedFactory#create
-	 */
-
-	/**
 	 * Determine if an implementation class has been registered with the factory.
 	 *
-	 * @param  key
+	 * @param  key The registration key, not null
 	 * @return     <code>true</code> if the class is registered,
 	 *             <code>false</code> otherwise.
 	 */
@@ -153,8 +137,11 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 	@Override
 	public T create (K key, X arg)
 	{
+		this.log.trace ("Creating new instance of class from cache: {} ({})", key, arg);
+
 		if (! this.cache.containsKey (arg))
 		{
+			this.log.debug ("{} not in cache, creating new instance", key);
 			this.cache.put (arg, this.factory.create (key, arg));
 		}
 
@@ -170,10 +157,12 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 
 	public void remove (X item)
 	{
+		this.log.trace ("Removing all cached instances for: {}", item);
+
 		if (item == null)
 		{
-			this.log.error ("Item is NULL");
-			throw new NullPointerException ("Item is NULL");
+			this.log.error ("Attempting to remove instances for NULL");
+			throw new NullPointerException ();
 		}
 
 		this.cache.remove (item);
@@ -185,6 +174,8 @@ public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X
 
 	public void flush ()
 	{
+		this.log.trace ("Flushing cache");
+
 		this.cache.clear ();
 	}
 }

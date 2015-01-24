@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
  * @version 1.0
  * @param   <T> The type of the objects to be created by the factory
  * @param   <X> The type of the objects to be used as parameters for creation
- * @see     GenericFactory
+ * @see     MappedFactory
  */
 
 public interface ConcreteFactory<T, X>
@@ -39,7 +39,7 @@ public interface ConcreteFactory<T, X>
 	 *
 	 * @param  key  Parameter to be used to create the instance
 	 * @return      An instance of the class
-	 * @see    GenericFactory#create
+	 * @see    MappedFactory#create
 	 */
 
 	public abstract T create (X key);

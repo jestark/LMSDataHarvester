@@ -21,8 +21,8 @@ import java.util.Set;
 
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -46,12 +46,13 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
  * @param   <T> The domain model interface represented by this factory
  * @param   <X> The Manager interface created by this factory
  * @see     CachedMappedFactory
+ * @see     ca.uoguelph.socs.icc.edm.manager.ManagerFactory
  */
 
 public final class MappedManagerFactory<T extends Element, X extends ElementManager<T>>
 {
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/** The type of the domain model interface associated with this factory*/
 	private final Class<T> type;
@@ -68,12 +69,12 @@ public final class MappedManagerFactory<T extends Element, X extends ElementMana
 
 	public MappedManagerFactory (Class<T> type)
 	{
-		this.log = LogFactory.getLog (MappedManagerFactory.class);
+		this.log = LoggerFactory.getLogger (MappedManagerFactory.class);
 
 		if (type == null)
 		{
-			this.log.error ("Type is NULL");
-			throw new NullPointerException ("Type is NULL");
+			this.log.error ("domain model interface type NULL");
+			throw new NullPointerException ();
 		}
 
 		this.type = type;
@@ -86,9 +87,11 @@ public final class MappedManagerFactory<T extends Element, X extends ElementMana
 	 * <code>ElementManager</code> when the classes initialize.
 	 *
 	 * @param  impl                     The <code>ElementManager</code>
-	 *                                  implementation which is being registered
+	 *                                  implementation which is being registered,
+	 *                                  not null
 	 * @param  factory                  The <code>ManagerFactory</code> used to
-	 *                                  create the <code>ElementManager</code>
+	 *                                  create the <code>ElementManager</code>,
+	 *                                  not null
 	 * @throws IllegalArgumentException If the <code>ElementManager</code> is
 	 *                                  already registered with the factory
 	 * @see    MappedFactory#registerClass
@@ -96,6 +99,8 @@ public final class MappedManagerFactory<T extends Element, X extends ElementMana
 
 	public void registerClass (Class<? extends ElementManager<? extends Element>> impl, ManagerFactory<X> factory)
 	{
+		this.log.trace ("Registering Class: {} ({})", impl, factory);
+
 		this.managers.registerClass (impl, factory);
 	}
 
@@ -128,35 +133,35 @@ public final class MappedManagerFactory<T extends Element, X extends ElementMana
 	}
 
 	/**
-	 * Create a <code>DataStoreQuery</code> for the specified
-	 * <code>DataStore</code>.  If the query already exists in the cache,
-	 * then the cached copy will be returned, otherwise a new
-	 * <code>DataStoreQuery</code> will be created.
+	 * Create a <code>ElementManager</code> for the specified
+	 * <code>DomainModel</code>.  If the <code>ElementManager</code> already
+	 * exists in the cache, then the cached copy will be returned, otherwise a new
+	 * <code>ElementManager</code> will be created.
 	 *
-	 * @param  datastore             The <code>DataStore</code> for which the
-	 *                               query is to be created, not null
-	 * @return                       The <code>DataStoreQuery</code>
-	 * @throws IllegalStateException if the query implementation class is not
+	 * @param  model                 The <code>DomainModel</code> for which the
+	 *                               manager is to be created, not null
+	 * @return                       The <code>ElementManager</code>
+	 * @throws IllegalStateException if the manager implementation class is not
 	 *                               registered
 	 * @see    MappedFactory#create
 	 */
 
 	public X create (DomainModel model)
 	{
+		this.log.debug ("Create manager for interface {}, on model {}", this.type, model);
+
 		if (model == null)
 		{
-			this.log.error ("DomainModel is null");
-			throw new NullPointerException ("DomainModel is null");
+			this.log.error ("Domain model is NULL");
+			throw new NullPointerException ();
 		}
 
 		Class<? extends ElementManager<? extends Element>> manager = (model.getProfile ()).getManagerClass (this.type);
 
-		if (this.managers.isRegistered (manager))
+		if (! this.managers.isRegistered (manager))
 		{
-			String message = "Manager not registered: " + manager;
-
-			this.log.error (message);
-			throw new IllegalStateException (message);
+			this.log.error ("Attempting to create manager for unregistered class: {}", manager);
+			throw new IllegalStateException ("ElementManager implementation is not registered");
 		}
 
 		return this.managers.create (manager, model);
@@ -167,23 +172,27 @@ public final class MappedManagerFactory<T extends Element, X extends ElementMana
 	 * cache.
 	 *
 	 * @param  model The <code>DomainModel</code> for which all of the cached
-	 *               managers are to be purged
-	 * @see    CachedMappedfactory#remove
+	 *               managers are to be purged, not null
+	 * @see    CachedMappedFactory#remove
 	 */
 
 	public void remove (DomainModel model)
 	{
+		this.log.trace ("Removing all ElementManager instances for {}", model);
+
 		this.managers.remove (model);
 	}
 
 	/**
 	 * Remove all managers from the cache.
 	 *
-	 * @see    CachedMappedfactory#flush
+	 * @see    CachedMappedFactory#flush
 	 */
 
 	public void flush ()
 	{
+		this.log.trace ("Flushing cache");
+
 		this.managers.flush ();
 	}
 

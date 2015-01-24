@@ -16,3 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.factory;
 
+public class MappedIdGeneratorFactory
+{
+	/** */
+}
