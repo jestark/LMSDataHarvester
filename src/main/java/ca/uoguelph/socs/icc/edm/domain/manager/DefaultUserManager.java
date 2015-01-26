@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014,2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,12 +82,10 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	}
 
 	/**
-	 * Create the <code>UserManager</code>.
+	 * Create the <code>DefaultUserManager</code>.
 	 *
 	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>UserManager</code> is to be created, not null
-	 * @param  query The <code>DataStoreQuery</code> to be used to access the
-	 *               data-store, not null
+	 *               <code>DefaultUserManager</code> is to be created, not null
 	 */
 
 	protected DefaultUserManager (DomainModel model)

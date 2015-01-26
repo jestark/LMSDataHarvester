@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014,2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,12 +71,10 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 	}
 
 	/**
-	 * Create the <code>RoleManager</code>.
+	 * Create the <code>DefaultRoleManager</code>.
 	 *
 	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>RoleManager</code> is to be created, not null
-	 * @param  query The <code>DataStoreQuery</code> to be used to access the
-	 *               data-store, not null
+	 *               <code>DefaultRoleManager</code> is to be created, not null
 	 */
 
 	protected DefaultRoleManager (DomainModel model)

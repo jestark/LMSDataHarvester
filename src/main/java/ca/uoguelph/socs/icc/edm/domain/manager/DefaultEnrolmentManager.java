@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014,2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,17 +42,17 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 {
 	/**
 	 * Implementation of the <code>ManagerFactory</code> to create a
-	 * <code>DefaultCourseManager</code>.
+	 * <code>DefaultEnrolmentManager</code>.
 	 */
 
 	private static final class DefaultEnrolmentManagerFactory implements ManagerFactory<EnrolmentManager>
 	{
 		/**
-		 * Create an instance of the <code>DefaultCourseManager</code>.
+		 * Create an instance of the <code>DefaultEnrolmentManager</code>.
 		 *
 		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>DefaultCourseManager</code>
-		 * @return       The <code>DefaultCourseManager</code>
+		 *               <code>DefaultEnrolmentManager</code>
+		 * @return       The <code>DefaultEnrolmentManager</code>
 		 */
 
 		@Override
@@ -76,12 +76,11 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	private final Log log;
 
 	/**
-	 * Create the <code>EnrolmentManager</code>.
+	 * Create the <code>DefaultEnrolmentManager</code>.
 	 *
 	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>EnrolmentManager</code> is to be created, not null
-	 * @param  query The <code>DataStoreQuery</code> to be used to access the
-	 *               data-store, not null
+	 *               <code>DefaultEnrolmentManager</code> is to be created, not
+	 *               null
 	 */
 
 	protected DefaultEnrolmentManager (DomainModel model)

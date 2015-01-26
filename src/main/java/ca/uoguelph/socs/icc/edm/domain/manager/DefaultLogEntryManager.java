@@ -80,8 +80,6 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	 *
 	 * @param  model The instance of the <code>DomainModel</code> upon which the
 	 *               <code>LogEntryManager</code> is to be created, not null
-	 * @param  query The <code>DataStoreQuery</code> to be used to access the
-	 *               data-store, not null
 	 */
 
 	protected DefaultLogEntryManager (DomainModel model)

@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014,2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     DomainModelBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder
  */
 
 public final class DataStoreProfile
@@ -464,7 +464,7 @@ public final class DataStoreProfile
 	 * @throws IllegalArgumentException if the implementation class does not
 	 *                                  implement the interface associated with
 	 *                                  element
-	 * @see    DomainModelBuilder#setEntry
+	 * @see    ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder#setEntry
 	 */
 
 	public void addEntry (Class<? extends Element> element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)

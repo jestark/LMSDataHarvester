@@ -37,7 +37,6 @@ import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.GradeBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.GradeManager
  */
 
 public class GradedActivity implements Grade, Serializable
