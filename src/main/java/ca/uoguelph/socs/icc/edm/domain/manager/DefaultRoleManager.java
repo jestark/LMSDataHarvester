@@ -1,4 +1,4 @@
-/* Copyright (C) 2014,2015 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +16,20 @@
 
 package ca.uoguelph.socs.icc.edm.domain.manager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Map;
+
+import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
-import ca.uoguelph.socs.icc.edm.domain.Role;
-import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
-import ca.uoguelph.socs.icc.edm.domain.RoleManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Role;
+import ca.uoguelph.socs.icc.edm.domain.RoleManager;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
 
 /**
@@ -58,7 +63,7 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -77,22 +82,11 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 	 *               <code>DefaultRoleManager</code> is to be created, not null
 	 */
 
-	protected DefaultRoleManager (DomainModel model)
+	public DefaultRoleManager (DomainModel model)
 	{
-		super (model);
+		super (Role.class, model);
 
-		this.log = LogFactory.getLog (RoleManager.class);
-	}
-
-	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>RoleBuilder</code>
-	 */
-
-	public RoleBuilder getBuilder ()
-	{
-		return (RoleBuilder) this.fetchBuilder ();
+		this.log = LoggerFactory.getLogger (RoleManager.class);
 	}
 
 	/**
@@ -105,6 +99,17 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 
 	public Role fetchByName (String name)
 	{
-		return null;
+		this.log.trace ("Fetching Role with name: {}", name);
+
+		if (name == null)
+		{
+			this.log.error ("The specified Role name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
+		params.put ("name", name);
+
+		return (this.fetchQuery ()).query ("name", params);
 	}
 }

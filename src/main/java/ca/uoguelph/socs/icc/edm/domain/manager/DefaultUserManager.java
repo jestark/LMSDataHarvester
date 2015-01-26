@@ -1,4 +1,4 @@
-/* Copyright (C) 2014,2015 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,16 @@ package ca.uoguelph.socs.icc.edm.domain.manager;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.User;
-import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 import ca.uoguelph.socs.icc.edm.domain.UserManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
 
 /**
@@ -69,7 +70,7 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -88,22 +89,11 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	 *               <code>DefaultUserManager</code> is to be created, not null
 	 */
 
-	protected DefaultUserManager (DomainModel model)
+	public DefaultUserManager (DomainModel model)
 	{
-		super (model);
+		super (User.class, model);
 
-		this.log = LogFactory.getLog (UserManager.class);
-	}
-
-	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>UserBuilder</code>
-	 */
-
-	public UserBuilder getBuilder ()
-	{
-		return (UserBuilder) this.fetchBuilder ();
+		this.log = LoggerFactory.getLogger (UserManager.class);
 	}
 
 	/**
@@ -116,8 +106,15 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 
 	public User fetchByIdNumber (Integer idnumber)
 	{
-		Map<String, Object> params = new HashMap<String, Object> ();
+		this.log.trace ("Fetching user with ID number: {}", idnumber);
 
+		if (idnumber == null)
+		{
+			this.log.error ("The specified User ID number is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
 		params.put ("idnumber", idnumber);
 
 		return (this.fetchQuery ()).query ("idnumber", params);
@@ -133,8 +130,15 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 
 	public User fetchByUsername (String username)
 	{
-		Map<String, Object> params = new HashMap<String, Object> ();
+		this.log.trace ("Fetching user with username: {}", username);
 
+		if (username == null)
+		{
+			this.log.error ("The specified user name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
 		params.put ("username", username);
 
 		return (this.fetchQuery ()).query ("username", params);

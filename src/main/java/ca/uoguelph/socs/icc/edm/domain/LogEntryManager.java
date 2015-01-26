@@ -29,14 +29,6 @@ import java.util.List;
 public interface LogEntryManager extends ElementManager<LogEntry>
 {
 	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>LogEntryBuilder</code>
-	 */
-
-	public LogEntryBuilder getBuilder ();
-
-	/**
 	 * Retrieve a list of <code>LogEntry</code> objects, which are associated with
 	 * the specified course, from the underlying data-store.
 	 *

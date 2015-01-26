@@ -1,4 +1,4 @@
-/* Copyright (C) 2014,2015 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +17,23 @@
 package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
-import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentManager;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.Role;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
 /**
@@ -73,7 +77,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Create the <code>DefaultEnrolmentManager</code>.
@@ -83,22 +87,11 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	 *               null
 	 */
 
-	protected DefaultEnrolmentManager (DomainModel model)
+	public DefaultEnrolmentManager (DomainModel model)
 	{
-		super (model);
+		super (Enrolment.class, model);
 
-		this.log = LogFactory.getLog (EnrolmentManager.class);
-	}
-
-	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>EnrolmentBuilder</code>
-	 */
-
-	public EnrolmentBuilder getBuilder ()
-	{
-		return (EnrolmentBuilder) this.fetchBuilder ();
+		this.log = LoggerFactory.getLogger (EnrolmentManager.class);
 	}
 
 	/**
@@ -112,7 +105,18 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 
 	public List<Enrolment> fetchAllForRole (Role role)
 	{
-		return null;
+		this.log.trace ("Fetching all Enrolments with Role: {}", role);
+
+		if (role == null)
+		{
+			this.log.error ("The specified Role is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
+		params.put ("role", role);
+
+		return (this.fetchQuery ()).queryAll ("role", params);
 	}
 
 	/**

@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,19 @@
 package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.Map;
+
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Action;
-import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActionManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
 
 /**
@@ -65,7 +67,7 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -84,22 +86,11 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	 *               <code>ActionManager</code> is to be created, not null
 	 */
 
-	protected DefaultActionManager (DomainModel model)
+	public DefaultActionManager (DomainModel model)
 	{
-		super (model);
+		super (Action.class, model);
 
-		this.log = LogFactory.getLog (ActionManager.class);
-	}
-
-	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>ActionBuilder</code>
-	 */
-
-	public ActionBuilder getBuilder ()
-	{
-		return (ActionBuilder) this.fetchBuilder ();
+		this.log = LoggerFactory.getLogger (ActionManager.class);
 	}
 
 	/**
@@ -111,10 +102,12 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 
 	public Action fetchByName (String name)
 	{
+		this.log.trace ("Fetching Action with name: {}", name);
+
 		if (name == null)
 		{
 			this.log.error ("The specified Action name is NULL");
-			throw new NullPointerException ("The specified Action name is NULL");
+			throw new NullPointerException ();
 		}
 
 		Map<String, Object> parameters = new HashMap<String, Object> ();

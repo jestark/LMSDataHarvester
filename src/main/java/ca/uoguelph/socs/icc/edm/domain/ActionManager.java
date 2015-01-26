@@ -29,14 +29,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface ActionManager extends ElementManager<Action>
 {
 	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>ActionBuilder</code>
-	 */
-
-	public abstract ActionBuilder getBuilder ();
-
-	/**
 	 * Retrieve the Action with the specified name from the data-store.
 	 *
 	 * @param  name The name of the <code>Action</code> to retrieve, not null

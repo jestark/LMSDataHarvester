@@ -25,14 +25,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface RoleManager extends ElementManager<Role>
 {
 	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>RoleBuilder</code>
-	 */
-
-	public abstract RoleBuilder getBuilder ();
-
-	/**
 	 * Retrieve a <code>Role</code> object from the underlying data-store based on
 	 * its name.
 	 *

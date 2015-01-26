@@ -27,14 +27,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface ActivityTypeManager extends ElementManager<ActivityType>
 {
 	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>ActivityTypeBuilder</code>
-	 */
-
-	public abstract ActivityTypeBuilder getBuilder ();
-
-	/**
 	 * Retrieve the <code>ActivityType</code> object from the underlying 
 	 * data-store which has the specified <code>ActivitySource</code> and name.
 	 *

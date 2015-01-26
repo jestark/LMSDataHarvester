@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,21 @@ package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
-import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
 
 /**
@@ -63,7 +67,7 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -82,22 +86,11 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	 *               <code>LogEntryManager</code> is to be created, not null
 	 */
 
-	protected DefaultLogEntryManager (DomainModel model)
+	public DefaultLogEntryManager (DomainModel model)
 	{
-		super (model);
+		super (LogEntry.class, model);
 
-		this.log = LogFactory.getLog (LogEntryManager.class);
-	}
-
-	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>LogEntryBuilder</code>
-	 */
-
-	public LogEntryBuilder getBuilder ()
-	{
-		return (LogEntryBuilder) this.fetchBuilder ();
+		this.log = LoggerFactory.getLogger (LogEntryManager.class);
 	}
 
 	/**
@@ -111,7 +104,18 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 
 	public List<LogEntry> fetchAllforCourse (Course course)
 	{
-		return null;
+		this.log.trace ("Fetching all Log Entries for course: {}", course);
+
+		if (course == null)
+		{
+			this.log.error ("The specified Course is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
+		params.put ("course", course);
+
+		return (this.fetchQuery ()).queryAll ("course", params);
 	}
 
 	/**

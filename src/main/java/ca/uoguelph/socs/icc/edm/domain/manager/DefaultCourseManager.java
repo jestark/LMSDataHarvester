@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,21 @@
 package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.CourseManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
 
 /**
@@ -62,7 +66,7 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -81,22 +85,11 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	 *               <code>CourseManager</code> is to be created, not null
 	 */
 
-	protected DefaultCourseManager (DomainModel model)
+	public DefaultCourseManager (DomainModel model)
 	{
-		super (model);
+		super (Course.class, model);
 
-		this.log = LogFactory.getLog (CourseManager.class);
-	}
-
-	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>CourseBuilder</code>
-	 */
-
-	public CourseBuilder getBuilder ()
-	{
-		return (CourseBuilder) this.fetchBuilder ();
+		this.log = LoggerFactory.getLogger (CourseManager.class);
 	}
 
 	/**
@@ -110,7 +103,25 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 
 	public List<Course> fetchAllForOffering (Semester semester, Integer year)
 	{
-		return null;
+		this.log.trace ("Fetching all courses offered in year {} and semester {}", year, semester);
+
+		if (semester == null)
+		{
+			this.log.error ("The specified semester is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (year == null)
+		{
+			this.log.error ("The specified year is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
+		params.put ("semester", semester);
+		params.put ("year", year);
+
+		return (this.fetchQuery ()).queryAll ("offering", params);
 	}
 
 	/**
@@ -126,7 +137,32 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 
 	public List<Course> fetchAllForOffering (String name, Semester semester, Integer year)
 	{
-		return null;
+		this.log.trace ("Fetching all courses offered in year {} and semester {}, with name {}", year, semester, name);
+
+		if (semester == null)
+		{
+			this.log.error ("The specified semester is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (year == null)
+		{
+			this.log.error ("The specified year is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (name == null)
+		{
+			this.log.error ("The specified Course name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
+		params.put ("semester", semester);
+		params.put ("year", year);
+		params.put ("name", name);
+
+		return (this.fetchQuery ()).queryAll ("offering", params);
 	}
 
 	/**
@@ -141,6 +177,31 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 
 	public Course fetchByOffering (String name, Semester semester, Integer year)
 	{
-		return null;
+		this.log.trace ("Fetching course: {} (offered in year {} and semester {})", name, year, semester);
+
+		if (semester == null)
+		{
+			this.log.error ("The specified semester is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (year == null)
+		{
+			this.log.error ("The specified year is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (name == null)
+		{
+			this.log.error ("The specified Course name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
+		params.put ("semester", semester);
+		params.put ("year", year);
+		params.put ("name", name);
+
+		return (this.fetchQuery ()).query ("offering", params);
 	}
 }
