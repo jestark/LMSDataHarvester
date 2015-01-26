@@ -29,12 +29,10 @@ import ca.uoguelph.socs.icc.edm.domain.factory.MappedManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.MappedQueryFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
-import ca.uoguelph.socs.icc.edm.domain.factory.MappedFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.BaseMappedFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.CachedMappedFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  *
@@ -44,13 +42,13 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
  * @param   <X> The Manager interface created by this factory
  */
 
-public abstract class AbstractManagerFactory<T extends Element, X extends ElementManager<T>, Y extends ElementBuilder<T>, Z>
+public abstract class AbstractManagerFactory<T extends Element, X extends ElementManager<T>, Y extends ElementBuilder<T>, Z extends ElementFactory<T>>
 {
 	/** The logger */
 	private final Logger log;
 
 	/** Factory for the <code>ElementBuilder</code> implementations */
-	private final MappedFactory<Class<?>, Y, DomainModel> builderfactories;
+	private final MappedBuilderFactory<T, Y, Z> builders;
 
 	/** Factory for the <code>ElementManager</code> implementations */
 	private final MappedManagerFactory<T, X> managers;
@@ -75,8 +73,7 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 			throw new NullPointerException ();
 		}
 
-		this.builderfactories = new BaseMappedFactory<Class<?>, Y, DomainModel> ();
-
+		this.builders = new MappedBuilderFactory<T, Y, Z> (type);
 		this.managers = new MappedManagerFactory<T, X> (type);
 		this.queries = new MappedQueryFactory<T> (type);
 	}
@@ -85,7 +82,7 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	{
 		this.log.trace ("Registering Builder: {} ({})", impl, factory);
 
-		this.builderfactories.registerClass (impl, factory);
+		this.builders.registerClass (impl, factory);
 	}
 
 	public final <A extends T> void registerElement (Class<A> impl, Class<? extends Y> builder, Z factory)
@@ -103,6 +100,7 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 			throw new NullPointerException ();
 		}
 
+		this.builders.registerElement (impl, builder, factory);
 		this.queries.registerClass (impl);
 	}
 
