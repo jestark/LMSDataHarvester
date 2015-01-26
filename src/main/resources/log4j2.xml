@@ -12,7 +12,7 @@
 		</File>
 	</Appenders>
 	<Loggers>
-		<Logger name="ca.uoguelph.socs.icc" level="ALL" additivity="false">
+		<Logger name="ca.uoguelph.socs.icc.edm" level="ALL" additivity="false">
 			<AppenderRef ref="App" level="ALL"/>
 			<AppenderRef ref="Console" level="WARN"/>
 		</Logger>
