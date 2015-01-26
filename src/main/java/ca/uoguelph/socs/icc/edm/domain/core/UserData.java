@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import java.util.HashSet;
@@ -29,33 +30,27 @@ import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.UserElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager;
 
 /**
- * This class implements the User interface, to represent a user in the domain
- * model.  See the user interface for the details about how the user
- * representations behave.
+ * Implementation of the <code>User</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>User</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>User</code> interface documentation for details.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.User
+ * @see     ca.uoguelph.socs.icc.edm.domain.UserBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.UserManager
  */
 
-public class UserData implements User
+public class UserData implements User, Serializable
 {
 	private static final class UserDataFactory implements UserElementFactory
 	{
 		@Override
 		public User create (Integer idnumber, String firstname, String lastname, String username)
 		{
-			UserData user = new UserData ();
-
-			user.setIdNumber (idnumber);
-			user.setFirstname (firstname);
-			user.setLastname (lastname);
-			user.setUsername (username);
-
-			return user;
+			return new UserData (idnumber, firstname, lastname, username);
 		}
 
 		@Override
@@ -65,13 +60,16 @@ public class UserData implements User
 		}
 	}
 
-	/** The data store id of this user. */
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
+	/** The primary key of the user. */
 	private Long id;
 
-	/** The ID number (Student ID) of this user. */
+	/** The ID number (Student ID) of the user. */
 	private Integer idnumber;
 
-	/** The username of this user. */
+	/** The username of the user. */
 	private String username;
 
 	/** The user's first (given) name. */
@@ -80,19 +78,19 @@ public class UserData implements User
 	/** The user's last name (surname). */
 	private String lastname;
 
-	/** The user's enrolments */
+	/** The set of enrolments which are associated with the user */
 	private Set<Enrolment> enrolments;
 
 	static
 	{
-		(UserFactory.getInstance ()).registerElement (UserData.class, DefaultUserManager.class, DefaultUserBuilder.class, new UserDataFactory ());
+		(UserFactory.getInstance ()).registerElement (UserData.class, DefaultUserBuilder.class, new UserDataFactory ());
 	}
 
 	/**
 	 * Create the user with null values.
 	 */
 
-	protected UserData ()
+	public UserData ()
 	{
 		this.id = null;
 		this.idnumber = null;
@@ -100,6 +98,18 @@ public class UserData implements User
 		this.lastname = null;
 		this.firstname= null;
 		this.enrolments = null;
+	}
+
+	public UserData (Integer idnumber, String firstname, String lastname, String username)
+	{
+		this ();
+
+		this.idnumber = idnumber;
+		this.username = firstname;
+		this.lastname = lastname;
+		this.firstname= username;
+
+		this.enrolments = new HashSet<Enrolment> ();
 	}
 
 	/**
@@ -129,22 +139,19 @@ public class UserData implements User
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.idnumber, ((UserData) obj).idnumber);
-				ebuilder.append (this.username, ((UserData) obj).username);
-				ebuilder.append (this.lastname, ((UserData) obj).lastname);
-				ebuilder.append (this.firstname, ((UserData) obj).firstname);
+			result = true;
+		}
+		else if (obj instanceof UserData)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.idnumber, ((UserData) obj).idnumber);
+			ebuilder.append (this.username, ((UserData) obj).username);
+			ebuilder.append (this.lastname, ((UserData) obj).lastname);
+			ebuilder.append (this.firstname, ((UserData) obj).firstname);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

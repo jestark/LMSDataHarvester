@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
 
 public final class LogEntryFactory extends AbstractManagerFactory<LogEntry, LogEntryManager, LogEntryBuilder, LogEntryElementFactory>
@@ -39,6 +39,6 @@ public final class LogEntryFactory extends AbstractManagerFactory<LogEntry, LogE
 
 	private LogEntryFactory ()
 	{
-		super (DomainModelType.LOGENTRY);
+		super (LogEntry.class);
 	}
 }

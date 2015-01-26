@@ -20,7 +20,7 @@ import java.util.Map;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelProfile;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.JPADataStoreBuilder;
 
 /**
@@ -67,7 +67,7 @@ public abstract class DatabaseFactory
 	 * @return A complete profile using default connection parameters
 	 */
 
-	public DomainModelProfile createProfile ()
+	public DataStoreProfile createProfile ()
 	{
 		return this.createProfile (this.unitname);
 	}
@@ -83,7 +83,7 @@ public abstract class DatabaseFactory
 	 *                  unit.
 	 */
 
-	public DomainModelProfile createProfile (String unitname)
+	public DataStoreProfile createProfile (String unitname)
 	{
 		return this.createProfile (unitname, null, null, null);
 	}
@@ -109,7 +109,7 @@ public abstract class DatabaseFactory
 	 * @return          A complete profile using the specified parameters
 	 */
 
-	public DomainModelProfile createProfile (String unitname, String url, String username, String password)
+	public DataStoreProfile createProfile (String unitname, String url, String username, String password)
 	{
 		this.builder.clear ();
 

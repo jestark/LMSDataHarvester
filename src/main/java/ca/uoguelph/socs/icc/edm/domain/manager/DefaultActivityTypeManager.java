@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,22 @@
 
 package ca.uoguelph.socs.icc.edm.domain.manager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Map;
+
+import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
 
 /**
@@ -62,7 +67,7 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -81,22 +86,11 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 	 *               <code>ActivityTypeManager</code> is to be created, not null
 	 */
 
-	protected DefaultActivityTypeManager (DomainModel model)
+	public DefaultActivityTypeManager (DomainModel model)
 	{
-		super (model);
+		super (ActivityType.class, model);
 
-		this.log = LogFactory.getLog (ActivityTypeManager.class);
-	}
-
-	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>ActivityTypeBuilder</code>
-	 */
-
-	public ActivityTypeBuilder getBuilder ()
-	{
-		return (ActivityTypeBuilder) this.fetchBuilder ();
+		this.log = LoggerFactory.getLogger (ActivityTypeManager.class);
 	}
 
 	/**
@@ -112,7 +106,25 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 
 	public ActivityType fetchByName (ActivitySource source, String name)
 	{
-		return null;
+		this.log.trace ("Fetching ActivityType {}, with ActivitySource {}", name, source);
+
+		if (source == null)
+		{
+			this.log.error ("The specified ActivitySource is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (name == null)
+		{
+			this.log.error ("The specified ActivityType name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
+		params.put ("source", source);
+		params.put ("name", name);
+
+		return (this.fetchQuery ()).query ("name", params);
 	}
 
 	/**

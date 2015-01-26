@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import java.util.HashSet;
@@ -30,12 +31,12 @@ import ca.uoguelph.socs.icc.edm.domain.Semester;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.CourseElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager;
 
 /**
- * Implementation of the Course interface.  It is expected that this object
- * will be accessed though the Course interface, and its relevant managers.
- * See the Course interface documentation for details.
+ * Implementation of the <code>Course</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>Course</code>
+ * interface, along with the relevant manager and builder.  See the
+ * <code>Course</code> interface documentation for details.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -43,20 +44,14 @@ import ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager;
  * @see     ca.uoguelph.socs.icc.edm.domain.CourseManager
  */
 
-public class CourseData implements Course
+public class CourseData implements Course, Serializable
 {
 	private static final class CourseDataFactory implements CourseElementFactory
 	{
 		@Override
 		public Course create (String name, Semester semester, Integer year)
 		{
-			CourseData course = new CourseData ();
-
-			course.setName (name);
-			course.setSemester (semester);
-			course.setYear (year);
-
-			return course;
+			return new CourseData (name, semester, year);
 		}
 
 		@Override
@@ -66,27 +61,29 @@ public class CourseData implements Course
 		}
 	}
 
-	/** The datastore id of this course. */
+	private static final long serialVersionUID = 1L;
+
+	/** The primary key of the course. */
 	private Long id;
 
-	/** The name of this course. */
+	/** The name of the course. */
 	private String name;
 
-	/** The semester in which this course was offered. */
+	/** The semester in which the course was offered. */
 	private Semester semester;
 
-	/** The year in which this course was offered. */
+	/** The year in which the course was offered. */
 	private Integer year;
 
-	/** The set of Activities which are associated with this course. */
+	/** The set of Activities which are associated with the course. */
 	private Set<Activity> activities;
 
-	/** All of the individuals which are enrolled in this course. */
+	/** The set of individuals which are enrolled in the course. */
 	private Set<Enrolment> enrolments;
 
 	static
 	{
-		(CourseFactory.getInstance ()).registerElement (CourseData.class, DefaultCourseManager.class, DefaultCourseBuilder.class, new CourseDataFactory ());
+		(CourseFactory.getInstance ()).registerElement (CourseData.class, DefaultCourseBuilder.class, new CourseDataFactory ());
 	}
 
 	/**
@@ -97,7 +94,7 @@ public class CourseData implements Course
 	 * the (protected) mutator methods.
 	 */
 
-	protected CourseData ()
+	public CourseData ()
 	{
 		this.id = null;
 		this.name = null;
@@ -106,6 +103,17 @@ public class CourseData implements Course
 		this.activities = null;
 		this.enrolments = null;
 	}
+
+	public CourseData (String name, Semester semester, Integer year)
+	{
+		this ();
+		this.name = name;
+		this.semester = semester;
+		this.year = year;
+
+		this.activities = new HashSet<Activity> ();
+		this.enrolments = new HashSet<Enrolment> ();
+	}	
 
 	/**
 	 * Override java.lang.object's equals method to compare to courses based on
@@ -122,22 +130,19 @@ public class CourseData implements Course
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.name, ((CourseData) obj).name);
-				ebuilder.append (this.year, ((CourseData) obj).year);
-				ebuilder.append (this.semester, ((CourseData) obj).semester);
+			result = true;
+		}
+		else if (obj instanceof CourseData)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.name, ((CourseData) obj).name);
+			ebuilder.append (this.year, ((CourseData) obj).year);
+			ebuilder.append (this.semester, ((CourseData) obj).semester);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActionManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.ActionElementFactory;
 
 public final class ActionFactory extends AbstractManagerFactory<Action, ActionManager, ActionBuilder, ActionElementFactory>
@@ -39,6 +39,6 @@ public final class ActionFactory extends AbstractManagerFactory<Action, ActionMa
 
 	private ActionFactory ()
 	{
-		super (DomainModelType.ACTION);
+		super (Action.class);
 	}
 }

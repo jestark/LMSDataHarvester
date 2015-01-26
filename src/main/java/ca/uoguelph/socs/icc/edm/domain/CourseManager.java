@@ -28,14 +28,6 @@ import java.util.List;
 public interface CourseManager extends ElementManager<Course>
 {
 	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>CourseBuilder</code>
-	 */
-
-	public abstract CourseBuilder getBuilder ();
-
-	/**
 	 * Retrieve a list of courses from the underlying data-store based on the
 	 * time of offering.
 	 *

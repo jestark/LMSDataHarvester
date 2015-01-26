@@ -33,14 +33,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface UserManager extends ElementManager<User>
 {
 	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>UserBuilder</code>
-	 */
-
-	public abstract UserBuilder getBuilder ();
-
-	/**
 	 * Retrieve a single <code>User</code> object, with the specified id number,
 	 * from the data-store.
 	 *

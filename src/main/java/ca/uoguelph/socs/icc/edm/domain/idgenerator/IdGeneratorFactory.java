@@ -14,13 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore;
+package ca.uoguelph.socs.icc.edm.domain.idgenerator;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModelProfile;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.factory.ConcreteFactory;
 
-public interface DataStoreFactory extends ConcreteFactory<DataStore, DomainModelProfile>
+public interface IdGeneratorFactory extends ConcreteFactory<IdGenerator, DataStore>
 {
-	@Override
-	public abstract DataStore create (DomainModelProfile profile);
+	public abstract IdGenerator create (DataStore datastore);
 }

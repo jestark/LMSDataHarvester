@@ -27,14 +27,6 @@ import java.util.List;
 public interface EnrolmentManager extends ElementManager<Enrolment>
 {
 	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>EnrolmentBuilder</code>
-	 */
-
-	public abstract EnrolmentBuilder getBuilder ();
-
-	/**
 	 * Retrieve a list of <code>Enrolment</code> objects from the underlying
 	 * data-store for the given role.
 	 *

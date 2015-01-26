@@ -352,8 +352,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	 */
 
 	@Override
-	public DataStore createDataStore ()
+	public DataStore createDataStore (DataStoreProfile profile)
 	{
-		return new JPADataStore (this.unitname, this.parameters);
+		return new JPADataStore (profile, this.unitname, this.parameters);
 	}
 }

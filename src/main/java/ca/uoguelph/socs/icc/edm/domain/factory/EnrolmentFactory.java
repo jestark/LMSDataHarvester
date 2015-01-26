@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ import ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModelType;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.EnrolmentElementFactory;
 
 public final class EnrolmentFactory extends AbstractManagerFactory<Enrolment, EnrolmentManager, EnrolmentBuilder, EnrolmentElementFactory>
@@ -39,6 +39,6 @@ public final class EnrolmentFactory extends AbstractManagerFactory<Enrolment, En
 
 	private EnrolmentFactory ()
 	{
-		super (DomainModelType.ENROLMENT);
+		super (Enrolment.class);
 	}
 }

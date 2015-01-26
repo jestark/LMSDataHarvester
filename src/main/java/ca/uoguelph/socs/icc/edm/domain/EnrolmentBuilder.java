@@ -20,8 +20,12 @@ public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
 {
 	public abstract Course getCourse ();
 	public abstract EnrolmentBuilder setCourse (Course course);
+	public abstract Role getRole ();
+	public abstract EnrolmentBuilder setRole (Role role);
 	public abstract User getUser ();
 	public abstract EnrolmentBuilder setUser (User user);
 	public abstract Integer getFinalGrade ();
 	public abstract EnrolmentBuilder setFinalGrade (Integer finalgrade);
+	public abstract Boolean isUsable ();
+	public abstract EnrolmentBuilder setUsable (Boolean usable);
 }

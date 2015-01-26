@@ -2,8 +2,8 @@ package ca.uoguelph.socs.icc.edm;
 
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.Course;
@@ -15,12 +15,13 @@ import ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleDatabaseFactory;
 
 public class App
 {
-	static final Logger logger = LogManager.getLogger(App.class.getName());
+	public static final Logger log = LoggerFactory.getLogger (App.class);
 
 	public static void loadClass (String name)
 	{
 		try
 		{
+			App.log.debug ("Loading Class: {}", name);
 			Class.forName (name);
 		}
 		catch (ClassNotFoundException ex)
@@ -32,7 +33,24 @@ public class App
 
 	public static void init ()
 	{
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.UserBuilder");
+//		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleDBLogEntry");
+//		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleEnrolmentUserData");
+
+		// Default Builder Implementations
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder");
+
+		// Default ElementManager implementations
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultActionManager");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivitySourceManager");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager");
+
+		// Core Element implementations
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActionData");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActivitySourceData");
@@ -43,17 +61,8 @@ public class App
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.RoleData");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.UserData");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.UserEnrolmentData");
-//		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleDBLogEntry");
-//		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleEnrolmentUserData");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultActionManager");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivitySourceManager");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager");
+
+		// Moodle Activity Data Classes
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleAssignActivity");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleBookActivityChapter");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleBookActivity");

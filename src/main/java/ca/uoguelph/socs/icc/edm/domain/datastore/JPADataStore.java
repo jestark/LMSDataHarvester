@@ -49,6 +49,9 @@ public final class JPADataStore implements DataStore
 	/** The transaction object */
 	private final JPADataStoreTransaction transaction;
 
+	/** The profile */
+	private final DataStoreProfile profile;
+
 	/** The logger */
 	private final Log log;
 
@@ -63,9 +66,11 @@ public final class JPADataStore implements DataStore
 	 *                    database connection.
 	 */
 
-	public JPADataStore (String unitname, Map<String, String> properties)
+	public JPADataStore (DataStoreProfile profile, String unitname, Map<String, String> properties)
 	{
 		this.log = LogFactory.getLog (JPADataStore.class);
+
+		this.profile = profile;
 
 		try
 		{
@@ -185,6 +190,18 @@ public final class JPADataStore implements DataStore
 		}
 
 		return new JPADataStoreQuery<T, X> (this, type, impl);
+	}
+
+	/**
+	 * Get the profile data for the <code>DataStore</code>.
+	 *
+	 * @return A copy of the profile data
+	 */
+
+	@Override
+	public DataStoreProfile getProfile ()
+	{
+		return this.profile;
 	}
 
 	/**

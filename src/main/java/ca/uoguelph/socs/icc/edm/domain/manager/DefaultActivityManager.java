@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,21 @@
 package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
 
 /**
@@ -62,7 +66,7 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -81,22 +85,11 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 	 *               <code>ActivityManager</code> is to be created, not null
 	 */
 
-	protected DefaultActivityManager (DomainModel model)
+	public DefaultActivityManager (DomainModel model)
 	{
-		super (model);
+		super (Activity.class, model);
 
-		this.log = LogFactory.getLog (ActivityManager.class);
-	}
-
-	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>ActivityBuilder</code>
-	 */
-
-	public ActivityBuilder getBuilder ()
-	{
-		return (ActivityBuilder) this.fetchBuilder ();
+		this.log = LoggerFactory.getLogger (ActivityManager.class);
 	}
 
 	/**
@@ -108,7 +101,18 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 
 	public List<Activity> fetchAllForType (ActivityType type)
 	{
-		return null;
+		this.log.trace ("Fetching all Activities with ActivityType: {}", type);
+
+		if (type == null)
+		{
+			this.log.error ("The specified ActivityType is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
+		params.put ("type", type);
+
+		return (this.fetchQuery ()).queryAll ("type", params);
 	}
 
 	/**

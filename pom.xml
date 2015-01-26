@@ -20,60 +20,58 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>LATEST</version>
 			<scope>test</scope>
-		</dependency>
-
-		<!-- Javadoc -->
-		<dependency>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-javadoc-plugin</artifactId>
-			<version>2.10</version>
 		</dependency>
 
 		<!-- Apache commons lang library used for building hashcodes -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.3.2</version>
+			<version>LATEST</version>
 		</dependency>
 
 		<!-- Apache commons configuration library -->
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
-			<version>1.10</version>
+			<version>LATEST</version>
 		</dependency>
 
 		<!-- Apache commons CSV library -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
-			<version>1.0</version>
+			<version>LATEST</version>
 		</dependency>
 
-		<!-- Apache Commons Logging: Wrapper -->
+		<!-- SLF4J:  Logging system facade -->
 		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.2</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>LATEST</version>
 		</dependency>
 
 		<!-- Apache Commons Logging: Log4j -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.0.1</version>
+			<version>LATEST</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.0.1</version>
+			<version>LATEST</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-1.2-api</artifactId>
-			<version>2.0.1</version>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>LATEST</version>
 		</dependency>
 
 		<!-- Explicitly include jboss logging which is needed by hibernate to force
@@ -82,28 +80,28 @@
 		<dependency>
 			<groupId>org.jboss.logging</groupId>
 			<artifactId>jboss-logging</artifactId>
-			<version>3.1.4.GA</version>
+			<version>LATEST</version>
 		</dependency>
 
-		<!-- Java Persistence API (JPA) descriped by hibernate -->
+		<!-- Java Persistence API (JPA) described by hibernate -->
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.1-api</artifactId>
-			<version>1.0.0.Final</version>
+			<version>LATEST</version>
 		</dependency>
 
 		<!-- Hibernate Entity Manager (implementation of JPA) -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.3.6.Final</version>
+			<version>LATEST</version>
 		</dependency>
 
 		<!-- Postgresql JDBC driver -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.3-1102-jdbc41</version>
+			<version>LATEST</version>
 		</dependency>
 	</dependencies>
 
@@ -149,18 +147,32 @@
 				</executions>
 			</plugin>
 
-			<!-- Assembly plugin:  We want execuatable jars -->
+			<!-- Assembly plugin:  We want executable jars -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>ca.uoguelph.socs.icc.moodleapi.App</mainClass>
+							<mainClass>ca.uoguelph.socs.icc.edm.App</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.3.2</version>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-classpath</argument>
+						<classpath/>
+						<argument>ca.uoguelph.socs.icc.edm.App</argument>
+					</arguments>
 				</configuration>
 			</plugin>
 		</plugins>

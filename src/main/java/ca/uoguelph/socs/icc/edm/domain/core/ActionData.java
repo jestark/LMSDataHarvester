@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import java.util.HashSet;
@@ -28,31 +29,27 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActionElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActionManager;
 
 /**
- * Implementation of the Action interface.  It is expected that this object
- * will be accessed though the Action interface, and its relevant managers.
- * See the Action interface documentation for details.
+ * Implementation of the <code>Action</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>Action</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>Action</code> interface documentation for details.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Action
- * @see     ActionManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActionBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActionManager
  */
 
-public class ActionData implements Action
+public class ActionData implements Action, Serializable
 {
 	private static final class ActionDataFactory implements ActionElementFactory
 	{
 		@Override
 		public Action create (String name)
 		{
-			ActionData action = new ActionData ();
-
-			action.setName (name);
-
-			return action;
+			return new ActionData (name);
 		}
 
 		@Override
@@ -62,18 +59,21 @@ public class ActionData implements Action
 		}
 	}
 
-	/** The datastore id of this action */
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
+	/** The primary key of the action */
 	private Long id;
 
-	/** The name of this action */
+	/** The name of the action */
 	private String name;
 
-	/** A set of the Activity Types associated with this action */
+	/** A set of the Activity Types associated with the action */
 	private Set<ActivityType> types;
 
 	static
 	{
-		(ActionFactory.getInstance ()).registerElement (ActionData.class, DefaultActionManager.class, DefaultActionBuilder.class, new ActionDataFactory ());
+		(ActionFactory.getInstance ()).registerElement (ActionData.class, DefaultActionBuilder.class, new ActionDataFactory ());
 	}
 
 	/**
@@ -84,11 +84,20 @@ public class ActionData implements Action
 	 * will be set via the (protected) mutator methods.
 	 */
 
-	protected ActionData ()
+	public ActionData ()
 	{
 		this.id= null;
 		this.name = null;
 		this.types = null;
+	}
+
+	public ActionData (String name)
+	{
+		this ();
+
+		this.name = name;
+
+		this.types = new HashSet<ActivityType> ();
 	}
 
 	/**
@@ -105,20 +114,17 @@ public class ActionData implements Action
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.name, ((ActionData) obj).name);
+			result = true;
+		}
+		else if (obj instanceof ActionData)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.name, ((ActionData) obj).name);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

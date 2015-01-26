@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ import java.util.Set;
  * <code>ConcreteFactory</code> specify a two part factory structure.  The two
  * part factory is intended for use cases where a given interface has multiple
  * implementations, where one will be selected at runtime.  For the interface
- * in question there should be one <code>GenericFactory</code> and one
+ * in question there should be one <code>MappedFactory</code> and one
  * <code>ConcreteFactory</code> for each implementation.
  * 
  * @author  James E. Stark
@@ -34,13 +34,14 @@ import java.util.Set;
  * @see     ConcreteFactory
  */
 
-public interface GenericFactory<K, T, X>
+public interface MappedFactory<K, T, X>
 {
 	/**
 	 * Register an implementation with the factory.
 	 *
 	 * @param  key                       The registration key, not null
-	 * @param  factory                   The factory used to instantiate the class
+	 * @param  factory                   The factory used to instantiate the
+	 *                                   class, not null
 	 * @throws IllegalArguementException if the implementation class is already
 	 *                                   registered
 	 */
@@ -57,13 +58,25 @@ public interface GenericFactory<K, T, X>
 	public abstract Set<K> getRegisteredClasses ();
 
 	/**
-	 * Create an instance of an implementation class.  This method will call the
-	 * <code>create</code> method on the <code>ConcreteFactory</code> which is
-	 * associated with the specified implementation class.
+	 * Determine if an implementation class has been registered with the factory.
+	 *
+	 * @param  key The registration key, not null
+	 * @return     <code>true</code> if the class is registered,
+	 *             <code>false</code> otherwise.
+	 */
+
+	public abstract boolean isRegistered (K key);
+
+	/**
+	 * Create an instance of an implementation class.  This method will determine
+	 * which implementation of the interface mapped by this factory should be
+	 * used, this it will call the <code>create</code> method on the
+	 * <code>ConcreteFactory</code> which is associated with the specified
+	 * implementation class.
 	 *
 	 * @param  key  The registration key, not null
 	 * @param  arg  Parameter to be used to create the instance
-	 * @return      An instance of the requested class
+	 * @return      An instance of the requested class, not null
 	 * @see    ConcreteFactory#create
 	 */
 

@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
-
 import java.util.Set;
 import java.util.List;
 
@@ -35,7 +34,19 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager;
+
+/**
+ * Implementation of the <code>Activity</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>Activity</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>Activity</code> interface documentation for details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivityBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivityManager
+ */
+
 
 public class ActivityInstance extends AbstractActivity implements Serializable
 {
@@ -44,13 +55,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		@Override
 		public Activity create (ActivityType type, Course course, Boolean stealth)
 		{
-			ActivityInstance instance = new ActivityInstance ();
-
-			instance.setType (type);
-			instance.setCourse (course);
-			instance.setStealth (stealth);
-
-			return instance;
+			return new ActivityInstance (type, course, stealth);
 		}
 
 		@Override
@@ -60,22 +65,36 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		}
 	}
 
+	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The primary key for the activity */
 	private Long id;
+
+	/** Flag indicting if the activity is a "system" activity */
 	private Boolean stealth;
+	
+	/** The course with which the activity is associated */
 	private Course course;
+
+	/** The data associated with the activity */
 	private Activity activity;
+
+	/** The type of the activity*/
 	private ActivityType type;
+
+	/** The set of grades for the activity */
 	private Set<Grade> grades;
+
+	/** The log entries associated with the activity*/
 	private List<LogEntry> log;
 
 	static
 	{
-		(ActivityFactory.getInstance ()).registerElement (ActivityInstance.class, DefaultActivityManager.class, DefaultActivityBuilder.class, new ActivityInstanceFactory ());
+		(ActivityFactory.getInstance ()).registerElement (ActivityInstance.class, DefaultActivityBuilder.class, new ActivityInstanceFactory ());
 	}
 
-	protected ActivityInstance ()
+	public ActivityInstance ()
 	{
 		super ();
 		this.id = null;
@@ -88,27 +107,36 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		this.stealth = new Boolean (false);
 	}
 
+	public ActivityInstance (ActivityType type, Course course, Boolean stealth)
+	{
+		this ();
+
+		this.type = type;
+		this.course = course;
+		this.stealth = stealth;
+
+		this.grades = new HashSet<Grade> ();
+		this.log = new ArrayList<LogEntry> ();
+	}
+
 	@Override
 	public boolean equals (Object obj)
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.type, ((ActivityInstance) obj).type);
-				ebuilder.append (this.course, ((ActivityInstance) obj).course);
-				ebuilder.append (this.activity, ((ActivityInstance) obj).activity);
+			result = true;
+		}
+		else if (obj instanceof ActivityInstance)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.type, ((ActivityInstance) obj).type);
+			ebuilder.append (this.course, ((ActivityInstance) obj).course);
+			ebuilder.append (this.activity, ((ActivityInstance) obj).activity);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

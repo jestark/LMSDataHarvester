@@ -27,14 +27,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface ActivitySourceManager extends ElementManager<ActivitySource>
 {
 	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>ActivitySourceBuilder</code>
-	 */
-
-	public abstract ActivitySourceBuilder getBuilder ();
-
-	/**
 	 * Retrieve the <code>ActivitySource</code> object associated with the
 	 * specified name from the underlying data-store.
 	 *

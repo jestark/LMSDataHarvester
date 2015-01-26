@@ -26,22 +26,23 @@ import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreBuilder;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
 import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
 
 /**
  * Create instances of the <code>DomainModel</code>.  This class will build up
- * a <code>DomainModelProfile</code> and use that profile to create an instance
+ * a <code>DataStoreProfile</code> and use that profile to create an instance
  * of the <code>DomainModel</code>.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     DomainModelProfile
+ * @see     DataStoreProfile
  */
 
 public final class DomainModelBuilder
 {
 	/** Internal copy of the profile which is being built. */
-	private DomainModelProfile profile;
+	private DataStoreProfile profile;
 
 	/** The logger */
 	private final Log log;
@@ -53,7 +54,7 @@ public final class DomainModelBuilder
 	public DomainModelBuilder ()
 	{
 		this.log = LogFactory.getLog (DomainModelBuilder.class);
-		this.profile = new DomainModelProfile (new Boolean (false));
+		this.profile = new DataStoreProfile (new Boolean (false));
 	}
 
 	/**
@@ -63,7 +64,7 @@ public final class DomainModelBuilder
 	 * @param  init The profile to use for initialization, not null
 	 */
 
-	public DomainModelBuilder (DomainModelProfile init)
+	public DomainModelBuilder (DataStoreProfile init)
 	{
 		this.log = LogFactory.getLog (DomainModelBuilder.class);
 
@@ -73,7 +74,7 @@ public final class DomainModelBuilder
 			throw new NullPointerException ("Initialization profile is NULL");
 		}
 
-		this.profile = new DomainModelProfile (init);
+		this.profile = new DataStoreProfile (init);
 	}
 
 	/**
@@ -82,7 +83,7 @@ public final class DomainModelBuilder
 
 	public void clear ()
 	{
-		this.profile = new DomainModelProfile (new Boolean (false));
+		this.profile = new DataStoreProfile (new Boolean (false));
 	}
 
 	/**
@@ -120,18 +121,18 @@ public final class DomainModelBuilder
 		}
 		else
 		{
-			this.profile = new DomainModelProfile (mutable, profile);
+			this.profile = new DataStoreProfile (mutable, profile);
 		}
 	}
 
 	/**
 	 * Get the set of elements contained in this profile.
 	 *
-	 * @return A <code>Set</code> containing the <code>DomainModelType</code> of
+	 * @return A <code>Set</code> containing the domain model interface classes of
 	 *         all of the elements in the profile
 	 */
 
-	public Set<DomainModelType> getElements ()
+	public Set<Class<? extends Element>> getElements ()
 	{
 		return this.profile.getElements ();
 	}
@@ -146,7 +147,7 @@ public final class DomainModelBuilder
 	 *                 <code>false</code> otherwise
 	 */
 
-	public Boolean isAvalable (DomainModelType element)
+	public Boolean isAvailable (Class<? extends Element> element)
 	{
 		Boolean available = null;
 
@@ -167,6 +168,11 @@ public final class DomainModelBuilder
 		return available;
 	}
 
+	public Boolean isAvailable (DomainModelType element)
+	{
+		return this.isAvailable (element.getInterfaceClass ());
+	}
+
 	/**
 	 * Get the <code>DataStore</code> ID generation class for the specified domain
 	 * model interface.
@@ -175,7 +181,7 @@ public final class DomainModelBuilder
 	 * @return         The associated ID generator class
 	 */
 
-	public Class<? extends IdGenerator> getGenerator (DomainModelType element)
+	public Class<? extends IdGenerator> getGenerator (Class<? extends Element> element)
 	{
 		Class<? extends IdGenerator> generator = null;
 
@@ -196,6 +202,11 @@ public final class DomainModelBuilder
 		return generator;
 	}
 
+	public Class<? extends IdGenerator> getGenerator (DomainModelType element)
+	{
+		return this.getGenerator (element.getInterfaceClass ());
+	}
+
 	/**
 	 * Get the implementation class to be used for the specified domain model
 	 * interface.
@@ -205,7 +216,7 @@ public final class DomainModelBuilder
 	 *                 <code>DataStore</code>
 	 */
 
-	public Class<? extends Element> getImplClass (DomainModelType element)
+	public Class<? extends Element> getImplClass (Class<? extends Element> element)
 	{
 		Class<? extends Element> impl = null;
 
@@ -224,6 +235,47 @@ public final class DomainModelBuilder
 		}
 
 		return impl;
+	}
+
+	public Class<? extends Element> getImplClass (DomainModelType element)
+	{
+		return this.getImplClass (element.getInterfaceClass ());
+	}
+
+	/**
+	 * Get the <code>ElementManager</code> implementation used to access the
+	 * <code>DataStore</code> for the specified domain model interface.
+	 *
+	 * @param  element                  Domain model interface class, not null
+	 * @return                          The class used to represent the interface
+	 *                                  in the <code>DataStore</code>
+	 * @throws IllegalArgumentException if the element is not in the profile
+	 */
+
+	public Class<? extends ElementManager<? extends Element>> getManagerClass (Class<? extends Element> element)
+	{
+		Class<? extends ElementManager<? extends Element>> manager = null;
+
+		try
+		{
+			manager = this.profile.getManagerClass (element);
+		}
+		catch (NullPointerException ex)
+		{
+			this.log.error (ex.getMessage ());
+			throw ex;
+		}
+		catch (IllegalArgumentException ex)
+		{
+			this.log.debug (ex.getMessage ());
+		}
+
+		return manager;
+	}
+
+	public Class<? extends ElementManager<? extends Element>> getManagerClass (DomainModelType element)
+	{
+		return this.getManagerClass (element.getInterfaceClass ());
 	}
 
 	/**
@@ -256,11 +308,11 @@ public final class DomainModelBuilder
 	 *                                  element
 	 */
 
-	public void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
+	public void setEntry (Class<? extends Element> element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
 	{
 		try
 		{
-			this.profile.addEntry (element, available, impl, generator);
+			this.profile.addEntry (element, available, impl, generator, manager);
 		}
 		catch (NullPointerException ex)
 		{
@@ -274,26 +326,31 @@ public final class DomainModelBuilder
 		}
 	}
 
+	public void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
+	{
+		this.setEntry (element.getInterfaceClass (), available, impl, generator, manager);
+	}
+
 	/**
-	 * Validate and return the complete <code>DomainModelProfile</code>.  This
+	 * Validate and return the complete <code>DataStoreProfile</code>.  This
 	 * method ensures that all of the required entries are in the profile before
 	 * returning a copy of the profile.
 	 *
-	 * @return                       The complete <code>DomainModelProfile</code>
+	 * @return                       The complete <code>DataStoreProfile</code>
 	 * @throws IllegalStateException if any of the domain model interfaces
 	 *                               (enumerated in <code>DomainModelType</code>)
 	 *                               are missing
 	 */
 
-	public DomainModelProfile createProfile ()
+	public DataStoreProfile createProfile ()
 	{
 		boolean abort = false;
 
-		Set<DomainModelType> elements = this.profile.getElements ();
+		Set<Class<? extends Element>> elements = this.profile.getElements ();
 
 		for (DomainModelType t : DomainModelType.values ())
 		{
-			if (! elements.contains (t))
+			if (! elements.contains (t.getInterfaceClass ()))
 			{
 				if (this.log.isErrorEnabled ())
 				{
@@ -309,11 +366,11 @@ public final class DomainModelBuilder
 			throw new IllegalStateException ("Domain Model Profile is missing Elements");
 		}
 
-		return new DomainModelProfile (this.profile);
+		return new DataStoreProfile (this.profile);
 	}
 
 	public DomainModel createDomainModel (DataStoreBuilder dsbuilder)
 	{
-		return new DomainModel (dsbuilder.createDataStore (), this.createProfile ());
+		return new DomainModel (dsbuilder.createDataStore (this.createProfile ()));
 	}
 }

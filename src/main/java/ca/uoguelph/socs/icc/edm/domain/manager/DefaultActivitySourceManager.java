@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +16,20 @@
 
 package ca.uoguelph.socs.icc.edm.domain.manager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Map;
+
+import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
-import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySourceManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivitySourceFactory;
 
 /**
@@ -60,7 +65,7 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -79,22 +84,11 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 	 *               <code>ActivitySourceManager</code> is to be created, not null
 	 */
 
-	protected DefaultActivitySourceManager (DomainModel model)
+	public DefaultActivitySourceManager (DomainModel model)
 	{
-		super (model);
+		super (ActivitySource.class, model);
 
-		this.log = LogFactory.getLog (ActivitySourceManager.class);
-	}
-
-	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>ActivitySourceBuilder</code>
-	 */
-
-	public ActivitySourceBuilder getBuilder ()
-	{
-		return (ActivitySourceBuilder) this.fetchBuilder ();
+		this.log = LoggerFactory.getLogger (ActivitySourceManager.class);
 	}
 
 	/**
@@ -109,6 +103,17 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 
 	public ActivitySource fetchByName (String name)
 	{
-		return null;
+		this.log.trace ("Fetching ActvitySource {}", name);
+
+		if (name == null)
+		{
+			this.log.error ("The specified ActivitySource name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
+		params.put ("name", name);
+
+		return (this.fetchQuery ()).query ("name", params);
 	}
 }

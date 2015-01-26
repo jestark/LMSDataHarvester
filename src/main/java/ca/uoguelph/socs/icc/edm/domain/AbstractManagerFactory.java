@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +21,18 @@ import java.util.Set;
 
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.factory.MappedBuilderFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.MappedManagerFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.MappedQueryFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
-import ca.uoguelph.socs.icc.edm.domain.factory.DefaultQueryFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.GenericFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.GenericBaseFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.GenericCachedFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  *
@@ -42,100 +42,66 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
  * @param   <X> The Manager interface created by this factory
  */
 
-public abstract class AbstractManagerFactory<T extends Element, X extends ElementManager<T>, Y extends ElementBuilder<T>, Z>
+public abstract class AbstractManagerFactory<T extends Element, X extends ElementManager<T>, Y extends ElementBuilder<T>, Z extends ElementFactory<T>>
 {
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
-	/** The Domain Model Type for this factory */
-	private final DomainModelType type;
+	/** Factory for the <code>ElementBuilder</code> implementations */
+	private final MappedBuilderFactory<T, Y, Z> builders;
 
-	/** Caching factory for the <code>ElementManager</code> implementations */
-	private final GenericFactory<Class<? extends X>, X, DomainModel> managerfactories;
+	/** Factory for the <code>ElementManager</code> implementations */
+	private final MappedManagerFactory<T, X> managers;
 
-	/** Caching factory for the <code>ElementBuilder</code> implementations */
-	private final GenericFactory<Class<? extends Y>, Y, DomainModel> builderfactories;
-
-	/** Caching factory for the <code>DataStoreQuery</code> instances */
-	private final GenericFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> queryfactories;
-
-	/** <code>Element<code> to <code>ElementManager</code> implementation mapping */
-	private final Map<Class<? extends T>, Class<? extends X>> elementmanagers;
-
-	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
-	private final Map<Class<? extends T>, Class<? extends Y>> elementbuilders;
-
-	/** <code>ElementFactory</code> implementations */
-	private final Map<Class<? extends T>, Z> elementfactories;
+	/** Factory for the <code>DataStoreQuery</code> instances */
+	private final MappedQueryFactory<T> queries;
 
 	/**
 	 * Create the <code>AbstractManagerFactory</code>.
 	 *
-	 * @param  type 
+	 * @param  type The domain model interface class for which the queries are
+	 *              being created, not null
 	 */
 
-	protected AbstractManagerFactory (DomainModelType type)
+	protected AbstractManagerFactory (Class<T> type)
 	{
-		this.log = LogFactory.getLog (AbstractManagerFactory.class);
+		this.log = LoggerFactory.getLogger (AbstractManagerFactory.class);
 
-		this.type = type;
-
-		this.managerfactories = new GenericCachedFactory<Class<? extends X>, X, DomainModel> (new GenericBaseFactory<Class<? extends X>, X, DomainModel> ());
-		this.builderfactories = new GenericBaseFactory<Class<? extends Y>, Y, DomainModel> ();
-		this.queryfactories = new GenericCachedFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> (new GenericBaseFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> ());
-
-		this.elementmanagers = new HashMap<Class<? extends T>, Class<? extends X>> ();
-		this.elementbuilders = new HashMap<Class<? extends T>, Class<? extends Y>> ();
-		this.elementfactories = new HashMap<Class<? extends T>, Z> ();
-	}
-
-	/**
-	 * Set the <code>ElementManager</code> implementation to be used with a given
-	 * <code>Element</code> implementation.  This method is intended to be used by
-	 * the element implementations when they register with the factory.
-	 *
-	 * @param  impl                     The <code>Element</code> implementation
-	 *                                  which is being registered, not null
-	 * @param  manager                  The manager implementation to use with the
-	 *                                  element, not null
-	 * @throws IllegalArgumentException if a manager is already registered for the
-	 *                                  element
-	 */
-
-	public final void registerElement (Class<? extends T> impl, Class<? extends X> manager, Class<? extends Y> builder, Z factory)
-	{
-		if (impl == null)
+		if (type == null)
 		{
-			this.log.error ("Element is NULL");
-			throw new NullPointerException ("Element is NULL");
+			this.log.error ("DomainModel interface type is NULL");
+			throw new NullPointerException ();
 		}
 
-		if (manager == null)
-		{
-			this.log.error ("Manager is NULL");
-			throw new NullPointerException ("Manager is NULL");
-		}
-
-		if (builder == null)
-		{
-			this.log.error ("Builder is NULL");
-			throw new NullPointerException ("Builder is NULL");
-		}
-
-		if (this.elementmanagers.containsKey (impl))
-		{
-			this.log.error ("Attempting to replace previously registered element");
-			throw new IllegalArgumentException ("Attempting to replace previously registered element");
-		}
-
-		this.elementmanagers.put (impl, manager);
-		this.elementbuilders.put (impl, builder);
-		this.elementfactories.put (impl, factory);
+		this.builders = new MappedBuilderFactory<T, Y, Z> (type);
+		this.managers = new MappedManagerFactory<T, X> (type);
+		this.queries = new MappedQueryFactory<T> (type);
 	}
 
 	public final void registerBuilder (Class<? extends Y> impl, BuilderFactory<Y> factory)
 	{
-		this.builderfactories.registerClass (impl, factory);
+		this.log.trace ("Registering Builder: {} ({})", impl, factory);
+
+		this.builders.registerClass (impl, factory);
+	}
+
+	public final <A extends T> void registerElement (Class<A> impl, Class<? extends Y> builder, Z factory)
+	{
+		this.log.trace ("Registering Element: {} ({}, {})", impl, builder, factory);
+		if (impl == null)
+		{
+			this.log.error ("Attempting to register a NULL Element");
+			throw new NullPointerException ();
+		}
+
+		if (builder == null)
+		{
+			this.log.error ("Attempting to register an Element with a NULL Builder");
+			throw new NullPointerException ();
+		}
+
+		this.builders.registerElement (impl, builder, factory);
+		this.queries.registerClass (impl);
 	}
 
 	/**
@@ -153,39 +119,9 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 
 	public final void registerManager (Class<? extends X> impl, ManagerFactory<X> factory)
 	{
-		this.managerfactories.registerClass (impl, factory);
-	}
+		this.log.trace ("Registering Manager: {} ({})", impl, factory);
 
-	/**
-	 * Register a <code>QueryFactory</code> instance with the factory.  This
-	 * method is intended to be used by the <code>Element</code> implementations
-	 * to provide a properly initialized <code>QueryFactory</code> when they
-	 * register with the factory.
-	 *
-	 * @param  impl                      The <code>Element</code> implementation
-	 *                                   which is being registered, not null
-	 * @param  factory                   The <code>QueryFactory</code> instance,
-	 *                                   not null
-	 * @throws IllegalArguementException If a <code>QueryFactory</code> has
-	 *                                   already been registered for the specified
-	 *                                   <code>Element</code> implementation
-	 */
-
-	public final <A extends T> void registerQueryFactory (Class<T> type, Class<A> impl)
-	{
-		if (type == null)
-		{
-			this.log.error ("Type is NULL");
-			throw new NullPointerException ();
-		}
-
-		if (impl == null)
-		{
-			this.log.error ("Implementation is NULL");
-			throw new NullPointerException ();
-		}
-
-		this.queryfactories.registerClass (impl, new DefaultQueryFactory<T, A> (type, impl));
+		this.managers.registerClass (impl, factory);
 	}
 
 	/**
@@ -196,9 +132,9 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	 *         <code>ElementManager</code> implementations
 	 */
 
-	public final Set<Class<? extends X>> getRegisteredManagerFactories ()
+	public final Set<Class<? extends ElementManager<? extends Element>>> getRegisteredManagers ()
 	{
-		return this.managerfactories.getRegisteredClasses ();
+		return this.managers.getRegisteredClasses ();
 	}
 
 	/**
@@ -210,9 +146,9 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	 *         <code>Element</code> implementations
 	 */
 
-	public final Set<Class<? extends Element>> getRegisteredQueryFactories ()
+	public final Set<Class<? extends Element>> getRegisteredQueries ()
 	{
-		return this.queryfactories.getRegisteredClasses ();
+		return this.queries.getRegisteredClasses ();
 	}
 
 	/**
@@ -230,30 +166,10 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 
 	protected final X createManager (DomainModel model)
 	{
-		X manager = null;
+		this.log.trace ("Create manager for: {}", model);
 
-		if (model == null)
-		{
-			this.log.error ("DomainModel is null");
-			throw new NullPointerException ("DomainModel is null");
-		}
-
-		Class<? extends Element> impl = (model.getProfile ()).getImplClass (this.type);
-
-		if (! this.elementmanagers.containsKey (impl))
-		{
-			throw new IllegalStateException ();
-		}
-
-		try
-		{
-			manager = this.managerfactories.create (this.elementmanagers.get (impl), model);
-			((AbstractManager<T>) manager).setFactory (this);
-		}
-		catch (IllegalArgumentException ex)
-		{
-			throw new IllegalStateException ("", ex);
-		}
+		X manager = this.managers.create (model);
+		((AbstractManager<T>) manager).setFactory (this);
 
 		return manager;
 	}
@@ -272,12 +188,14 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 
 	protected final DataStoreQuery<T> createQuery (DomainModel model)
 	{
+		this.log.trace ("Create query on model {}", model);
+
 		if (model == null)
 		{
-			this.log.error ("Model is NULL");
-			throw new NullPointerException ("Model is NULL");
+			this.log.error ("Attempting to create a Query on a NULL DomainModel");
+			throw new NullPointerException ();
 		}
 
-		return this.queryfactories.create ((model.getProfile ()).getImplClass (this.type), model.getDataStore ());
+		return this.queries.create (model.getDataStore ());
 	}
 }

@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import java.util.HashSet;
@@ -29,21 +30,28 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityTypeElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager;
 
-public class ActivityTypeData implements ActivityType
+/**
+ * Implementation of the <code>ActivityType</code> interface.  It is expected
+ * that instances of this class will be accessed though the
+ * <code>ActivityType</code> interface, along with the relevant manager, and
+ * builder.  See the <code>ActivityType</code> interface documentation for
+ * details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager
+ */
+
+public class ActivityTypeData implements ActivityType, Serializable
 {
 	private static final class ActivityTypeDataFactory implements ActivityTypeElementFactory
 	{
 		@Override
 		public ActivityType create (ActivitySource source, String name)
 		{
-			ActivityTypeData type = new ActivityTypeData ();
-
-			type.setSource (source);
-			type.setName (name);
-
-			return type;
+			return new ActivityTypeData (source, name);
 		}
 
 		@Override
@@ -52,18 +60,28 @@ public class ActivityTypeData implements ActivityType
 			((ActivityTypeData) type).setId (id);
 		}
 	}
-
+	
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+	
+	/** The primary key of the activity type */
 	private Long id;
+
+	/** The name of the activity type */
 	private String name;
+
+	/** The source of the activity type */
 	private ActivitySource source;
+
+	/** The set of actions which are associated with the activity type */
 	private Set<Action> actions;
 
 	static
 	{
-		(ActivityTypeFactory.getInstance ()).registerElement (ActivityTypeData.class, DefaultActivityTypeManager.class, DefaultActivityTypeBuilder.class, new ActivityTypeDataFactory ());
+		(ActivityTypeFactory.getInstance ()).registerElement (ActivityTypeData.class, DefaultActivityTypeBuilder.class, new ActivityTypeDataFactory ());
 	}
 
-	protected ActivityTypeData ()
+	public ActivityTypeData ()
 	{
 		this.id = null;
 		this.name = null;
@@ -71,26 +89,33 @@ public class ActivityTypeData implements ActivityType
 		this.actions = null;
 	}
 
+	public ActivityTypeData (ActivitySource source, String name)
+	{
+		this ();
+
+		this.name = name;
+		this.source = source;
+
+		this.actions = new HashSet<Action> ();
+	}
+
 	@Override
 	public boolean equals (Object obj)
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.name, ((ActivityTypeData) obj).name);
-				ebuilder.append (this.source, ((ActivityTypeData) obj).source);
+			result = true;
+		}
+		else if (obj instanceof ActivityTypeData)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.name, ((ActivityTypeData) obj).name);
+			ebuilder.append (this.source, ((ActivityTypeData) obj).source);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

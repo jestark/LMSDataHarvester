@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,12 @@ import java.util.Set;
 
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Caching implementation of <code>GenericFactory</code>.  This class decorates
- * another instance of the <code>GenericFactory</code> adding a cache of all of
+ * Caching implementation of <code>MappedFactory</code>.  This class decorates
+ * another instance of the <code>MappedFactory</code> adding a cache of all of
  * the previously created objects.  This first time that an object is created
  * with a given argument, the factory simply passes the request though to the
  * underlying factory, and caches the result.  On subsequent creation requests,
@@ -39,27 +39,27 @@ import org.apache.commons.logging.LogFactory;
  * @param   <X> The type of the objects to be used as parameters for creation
  */
 
-public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
+public final class CachedMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 {
 	/** The cache */
 	private final Map<X, T> cache;
 
 	/** The underlying factory */
-	private final GenericFactory<K, T, X> factory;
+	private final MappedFactory<K, T, X> factory;
 
 	/** The log */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Create the factory.
 	 *
 	 * @param  factory The factory to use as the base for the
-	 *                 <code>CachedFactory</code> instance, not null
+	 *                 <code>CachedMappedFactory</code> instance, not null
 	 */
 
-	public GenericCachedFactory (GenericFactory<K, T, X> factory)
+	public CachedMappedFactory (MappedFactory<K, T, X> factory)
 	{
-		this.log = LogFactory.getLog (GenericCachedFactory.class);
+		this.log = LoggerFactory.getLogger (CachedMappedFactory.class);
 
 		if (factory == null)
 		{
@@ -84,6 +84,8 @@ public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
 	@Override
 	public void registerClass (K key, ConcreteFactory<T, X> factory)
 	{
+		this.log.trace ("Registering Class: {} ({})", key, factory);
+
 		this.factory.registerClass (key, factory);
 	}
 
@@ -101,6 +103,20 @@ public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
 	}
 
 	/**
+	 * Determine if an implementation class has been registered with the factory.
+	 *
+	 * @param  key The registration key, not null
+	 * @return     <code>true</code> if the class is registered,
+	 *             <code>false</code> otherwise.
+	 */
+
+	@Override
+	public boolean isRegistered (K key)
+	{
+		return this.factory.isRegistered (key);
+	}
+
+	/**
 	 * Create an instance of an implementation class.  This method will call the
 	 * <code>create</code> method on the <code>ConcreteFactory</code> which is
 	 * associated with the specified implementation class.
@@ -110,7 +126,7 @@ public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
 	 * specified key will be returned.  Subsequent calls with the same key object
 	 * will return a reference to the previously created object.  As a result, the
 	 * key can not be null, unlike other instances of the
-	 * <code>GenericFactory</code>.
+	 * <code>MappedFactory</code>.
 	 *
 	 * @param  key  The registration key, not null
 	 * @param  arg  Parameter to be used to create the instance
@@ -121,14 +137,11 @@ public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
 	@Override
 	public T create (K key, X arg)
 	{
-		if (key == null)
-		{
-			this.log.error ("Key is NULL");
-			throw new NullPointerException ();
-		}
+		this.log.trace ("Creating new instance of class from cache: {} ({})", key, arg);
 
-		if (! this.cache.containsKey (key))
+		if (! this.cache.containsKey (arg))
 		{
+			this.log.debug ("{} not in cache, creating new instance", key);
 			this.cache.put (arg, this.factory.create (key, arg));
 		}
 
@@ -144,10 +157,12 @@ public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
 
 	public void remove (X item)
 	{
+		this.log.trace ("Removing all cached instances for: {}", item);
+
 		if (item == null)
 		{
-			this.log.error ("Item is NULL");
-			throw new NullPointerException ("Item is NULL");
+			this.log.error ("Attempting to remove instances for NULL");
+			throw new NullPointerException ();
 		}
 
 		this.cache.remove (item);
@@ -159,6 +174,8 @@ public class GenericCachedFactory<K, T, X> implements GenericFactory<K, T, X>
 
 	public void flush ()
 	{
+		this.log.trace ("Flushing cache");
+
 		this.cache.clear ();
 	}
 }

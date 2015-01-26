@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreTransaction;
 
@@ -34,7 +35,6 @@ import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
 
@@ -49,9 +49,6 @@ public final class DomainModel
 	/** The data store which contains all of the data */
 	private final DataStore datastore;
 
-	/** The profile */
-	private final DomainModelProfile profile;
-
 	/** The log */
 	private final Log log;
 
@@ -60,13 +57,11 @@ public final class DomainModel
 	 *
 	 * @param  datastore The <code>DataStore</code> which contains all of the data
 	 *                   represented by this <code>DomainModel</code>, not null
-	 * @param  profile   The configuration profile, not null
 	 */
 
-	public DomainModel (DataStore datastore, DomainModelProfile profile)
+	public DomainModel (DataStore datastore)
 	{
 		this.datastore = datastore;
-		this.profile = profile;
 
 		this.log = LogFactory.getLog (DomainModel.class);
 	}
@@ -85,7 +80,7 @@ public final class DomainModel
 
 	public Boolean isMutable ()
 	{
-		return this.profile.isMutable ();
+		return (this.getProfile()).isMutable ();
 	}
 
 	/**
@@ -115,9 +110,9 @@ public final class DomainModel
 		return this.datastore.getTransaction ();
 	}
 
-	public DomainModelProfile getProfile ()
+	public DataStoreProfile getProfile ()
 	{
-		return this.profile;
+		return this.datastore.getProfile ();
 	}
 
 	/**
@@ -130,7 +125,7 @@ public final class DomainModel
 
 	public ActionManager getActionManager ()
 	{
-		if (! this.profile.isAvailable (DomainModelType.ACTION))
+		if (! (this.datastore.getProfile ()).isAvailable (Action.class))
 		{
 			this.log.error ("Action interface is not represented by the data store");
 			throw new IllegalStateException ("Action interface is not available");
@@ -150,7 +145,7 @@ public final class DomainModel
 
 	public ActivityManager getActivityManager ()
 	{
-		if (! this.profile.isAvailable (DomainModelType.ACTIVITY))
+		if (! (this.datastore.getProfile ()).isAvailable (Activity.class))
 		{
 			this.log.error ("Activity interface is not represented by the data store");
 			throw new IllegalStateException ("Activity interface is not available");
@@ -172,7 +167,7 @@ public final class DomainModel
 
 	public ActivitySourceManager getActivitySourceManager ()
 	{
-		if (! this.profile.isAvailable (DomainModelType.ACTIVITYSOURCE))
+		if (! (this.datastore.getProfile ()).isAvailable (ActivitySource.class))
 		{
 			this.log.error ("ActivitySource interface is not represented by the data store");
 			throw new IllegalStateException ("ActivitySource interface is not available");
@@ -193,7 +188,7 @@ public final class DomainModel
 
 	public ActivityTypeManager getActivityTypeManager ()
 	{
-		if (! this.profile.isAvailable (DomainModelType.ACTIVITYTYPE))
+		if (! (this.datastore.getProfile ()).isAvailable (ActivityType.class))
 		{
 			this.log.error ("ActivityType interface is not represented by the data store");
 			throw new IllegalStateException ("ActivityType interface is not available");
@@ -212,7 +207,7 @@ public final class DomainModel
 
 	public CourseManager getCourseManager ()
 	{
-		if (! this.profile.isAvailable (DomainModelType.COURSE))
+		if (! (this.datastore.getProfile ()).isAvailable (Course.class))
 		{
 			this.log.error ("Course interface is not represented by the data store");
 			throw new IllegalStateException ("Course interface is not available");
@@ -233,7 +228,7 @@ public final class DomainModel
 
 	public EnrolmentManager getEnrolmentManager ()
 	{
-		if (! this.profile.isAvailable (DomainModelType.ENROLMENT))
+		if (! (this.datastore.getProfile ()).isAvailable (Enrolment.class))
 		{
 			this.log.error ("Enrolment interface is not represented by the data store");
 			throw new IllegalStateException ("Enrolment interface is not available");
@@ -253,7 +248,7 @@ public final class DomainModel
 
 	public LogEntryManager getLogEntryManager ()
 	{
-		if (! this.profile.isAvailable (DomainModelType.LOGENTRY))
+		if (! (this.datastore.getProfile ()).isAvailable (LogEntry.class))
 		{
 			this.log.error ("LogEntry interface is not represented by the data store");
 			throw new IllegalStateException ("LogEntry interface is not available");
@@ -272,7 +267,7 @@ public final class DomainModel
 
 	public RoleManager getRoleManager ()
 	{
-		if (! this.profile.isAvailable (DomainModelType.ROLE))
+		if (! (this.datastore.getProfile ()).isAvailable (Role.class))
 		{
 			this.log.error ("Role interface is not represented by the data store");
 			throw new IllegalStateException ("Role interface is not available");
@@ -291,7 +286,7 @@ public final class DomainModel
 
 	public UserManager getUserManager ()
 	{
-		if (! this.profile.isAvailable (DomainModelType.USER))
+		if (! (this.datastore.getProfile ()).isAvailable (User.class))
 		{
 			this.log.error ("User interface is not represented by the data store");
 			throw new IllegalStateException ("User interface is not available");

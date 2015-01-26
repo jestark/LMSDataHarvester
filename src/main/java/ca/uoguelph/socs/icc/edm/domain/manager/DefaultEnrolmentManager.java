@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +17,23 @@
 package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
-import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentManager;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.Role;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
 /**
@@ -42,17 +46,17 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 {
 	/**
 	 * Implementation of the <code>ManagerFactory</code> to create a
-	 * <code>DefaultCourseManager</code>.
+	 * <code>DefaultEnrolmentManager</code>.
 	 */
 
 	private static final class DefaultEnrolmentManagerFactory implements ManagerFactory<EnrolmentManager>
 	{
 		/**
-		 * Create an instance of the <code>DefaultCourseManager</code>.
+		 * Create an instance of the <code>DefaultEnrolmentManager</code>.
 		 *
 		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>DefaultCourseManager</code>
-		 * @return       The <code>DefaultCourseManager</code>
+		 *               <code>DefaultEnrolmentManager</code>
+		 * @return       The <code>DefaultEnrolmentManager</code>
 		 */
 
 		@Override
@@ -73,33 +77,21 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
-	 * Create the <code>EnrolmentManager</code>.
+	 * Create the <code>DefaultEnrolmentManager</code>.
 	 *
 	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>EnrolmentManager</code> is to be created, not null
-	 * @param  query The <code>DataStoreQuery</code> to be used to access the
-	 *               data-store, not null
+	 *               <code>DefaultEnrolmentManager</code> is to be created, not
+	 *               null
 	 */
 
-	protected DefaultEnrolmentManager (DomainModel model)
+	public DefaultEnrolmentManager (DomainModel model)
 	{
-		super (model);
+		super (Enrolment.class, model);
 
-		this.log = LogFactory.getLog (EnrolmentManager.class);
-	}
-
-	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>EnrolmentBuilder</code>
-	 */
-
-	public EnrolmentBuilder getBuilder ()
-	{
-		return (EnrolmentBuilder) this.fetchBuilder ();
+		this.log = LoggerFactory.getLogger (EnrolmentManager.class);
 	}
 
 	/**
@@ -113,7 +105,18 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 
 	public List<Enrolment> fetchAllForRole (Role role)
 	{
-		return null;
+		this.log.trace ("Fetching all Enrolments with Role: {}", role);
+
+		if (role == null)
+		{
+			this.log.error ("The specified Role is NULL");
+			throw new NullPointerException ();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object> ();
+		params.put ("role", role);
+
+		return (this.fetchQuery ()).queryAll ("role", params);
 	}
 
 	/**

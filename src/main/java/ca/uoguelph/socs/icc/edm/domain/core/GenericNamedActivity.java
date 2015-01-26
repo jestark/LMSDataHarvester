@@ -31,13 +31,22 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 public abstract class GenericNamedActivity extends AbstractNamedActivity implements Serializable
 {
+	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The activity instance */
 	private ActivityInstance instance;
 
-	protected GenericNamedActivity ()
+	public GenericNamedActivity ()
 	{
 		super ();
+		this.instance = null;
+	}
+
+	public GenericNamedActivity (String name)
+	{
+		super (name);
+
 		this.instance = null;
 	}
 
@@ -46,19 +55,16 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
+			result = true;
+		}
+		else if (obj instanceof GenericNamedActivity)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;

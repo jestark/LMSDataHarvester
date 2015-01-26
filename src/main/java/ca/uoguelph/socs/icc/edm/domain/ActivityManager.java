@@ -28,14 +28,6 @@ import java.util.List;
 public interface ActivityManager extends ElementManager<Activity>
 {
 	/**
-	 * Get an instance of the builder.
-	 *
-	 * @return An instance of the <code>ActivityBuilder</code>
-	 */
-
-	public abstract ActivityBuilder getBuilder ();
-
-	/**
 	 * Get a list of all of the activities which are associated with a particular
 	 * <code>ActivityType</code>.
 	 *

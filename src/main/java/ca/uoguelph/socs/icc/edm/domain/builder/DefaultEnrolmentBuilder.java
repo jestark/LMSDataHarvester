@@ -25,6 +25,7 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
+import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
@@ -50,8 +51,14 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	/** The user's final grade in the course */
 	private Integer grade;
 
+	/** The user's role in the course */
+	private Role role;
+
 	/** The user associated with the enrolment */
 	private User user;
+
+	/** Flag indicating if the user has given permission to use the data */
+	private Boolean usable;
 
 	protected DefaultEnrolmentBuilder (AbstractManager<Enrolment> manager)
 	{
@@ -70,13 +77,19 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 			throw new IllegalStateException ("user not set");
 		}
 
+		if (this.role == null)
+		{
+			this.log.error ("Can not build: The role's course is not set");
+			throw new IllegalStateException ("role not set");
+		}
+
 		if (this.course == null)
 		{
 			this.log.error ("Can not build: The enrolment's course is not set");
 			throw new IllegalStateException ("course not set");
 		}
 
-		return this.factory.create (this.user, this.course, this.grade);
+		return this.factory.create (this.user, this.course, this.role, this.grade, this.usable);
 	}
 
 	@Override
@@ -84,6 +97,8 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	{
 		this.course = null;
 		this.grade = null;
+		this.role = null;
+		this.usable = new Boolean (false);
 		this.user = null;
 	}
 
@@ -103,6 +118,26 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 		}
 
 		this.course = course;
+
+		return this;
+	}
+
+	@Override
+	public Role getRole ()
+	{
+		return this.role;
+	}
+
+	@Override
+	public EnrolmentBuilder setRole (Role role)
+	{
+		if (role == null)
+		{
+			this.log.error ("Role is NULL");
+			throw new NullPointerException ("Role is NULL");
+		}
+
+		this.role = role;
 
 		return this;
 	}
@@ -143,6 +178,26 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 		}
 
 		this.grade = grade;
+
+		return this;
+	}
+	
+	@Override
+	public Boolean isUsable ()
+	{
+		return this.usable;
+	}
+
+	@Override
+	public EnrolmentBuilder setUsable (Boolean usable)
+	{
+		if (usable == null)
+		{
+			this.log.error ("Usable is NULL");
+			throw new NullPointerException ("Usable is NULL");
+		}
+
+		this.usable = usable;
 
 		return this;
 	}

@@ -16,8 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
-import java.util.Set;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import java.util.ArrayList;
 
@@ -29,13 +30,21 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivity> extends AbstractNamedActivity implements ActivityGroupMember
+public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivity> extends AbstractNamedActivity implements ActivityGroupMember, Serializable
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
+	/** The primary key for the sub-activity */
 	private Long id;
+
+	/** The sub-activity's parent activity */
 	private T parent;
+
+	/** The log entries which are associated with the sub-activity */
 	private List<LogReference<? extends ActivityGroupMember>> log;
 
-	protected GenericGroupedActivityMember()
+	public GenericGroupedActivityMember ()
 	{
 		super ();
 		this.id = null;
@@ -43,32 +52,39 @@ public abstract class GenericGroupedActivityMember<T extends AbstractNamedActivi
 		this.parent = null;
 	}
 
+	public GenericGroupedActivityMember (String name, T parent)
+	{
+		super (name);
+
+		this.id = null;
+		this.parent = parent;
+
+		this.log = new ArrayList<LogReference<? extends ActivityGroupMember>> ();
+	}
+
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals (Object obj)
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.parent, ((GenericGroupedActivityMember) obj).parent);
+			result = true;
+		}
+		else if (obj instanceof GenericGroupedActivityMember)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.parent, ((GenericGroupedActivityMember) obj).parent);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;
 	}
 
 	@Override
-	public int hashCode()
+	public int hashCode ()
 	{
 		final int base = 1031;
 		final int mult = 971;

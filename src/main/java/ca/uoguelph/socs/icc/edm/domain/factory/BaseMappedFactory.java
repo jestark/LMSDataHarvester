@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,12 @@ import java.util.Set;
 
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Base implementation of <code>GenericFactory</code>.  This class implements
- * the <code>GenericFactory</code> interface using a <code>HashMap</code>.
+ *  implementation of <code>MappedFactory</code>.  This class implements
+ * the <code>MappedFactory</code> interface using a <code>HashMap</code>.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -35,30 +35,30 @@ import org.apache.commons.logging.LogFactory;
  * @param   <X> The type of the objects to be used as parameters for creation
  */
 
-public class GenericBaseFactory<K, T, X> implements GenericFactory<K, T, X>
+public final class BaseMappedFactory<K, T, X> implements MappedFactory<K, T, X>
 {
 	/** Map containing the classes and factories */
 	private final Map<K, ConcreteFactory<T, X>> factories;
 
 	/** Log */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Create the Factory.
 	 */
 
-	public GenericBaseFactory ()
+	public BaseMappedFactory ()
 	{
+		this.log = LoggerFactory.getLogger (BaseMappedFactory.class);
 		this.factories = new HashMap<K, ConcreteFactory<T, X>> ();
-
-		this.log = LogFactory.getLog (GenericBaseFactory.class);
 	}
 
 	/**
 	 * Register an implementation with the factory.
 	 *
 	 * @param  key                       The registration key, not null
-	 * @param  factory                   The factory used to instantiate the class
+	 * @param  factory                   The factory used to instantiate the
+	 *                                   class, not null
 	 * @throws IllegalArguementException if the implementation class is already
 	 *                                   registered
 	 */
@@ -66,6 +66,8 @@ public class GenericBaseFactory<K, T, X> implements GenericFactory<K, T, X>
 	@Override
 	public void registerClass (K key, ConcreteFactory<T, X> factory)
 	{
+		this.log.trace ("Registering Class: {} ({})", key, factory);
+
 		if (key == null)
 		{
 			this.log.error ("Key is NULL");
@@ -80,10 +82,8 @@ public class GenericBaseFactory<K, T, X> implements GenericFactory<K, T, X>
 
 		if (this.factories.containsKey (key))
 		{
-			String msg = key + "has already been registered";
-
-			this.log.error (msg);
-			throw new IllegalArgumentException (msg);
+			this.log.error ("Class has already been registered: {}", key);
+			throw new IllegalArgumentException ("Duplicate class registration");
 		}
 
 		this.factories.put (key, factory);
@@ -103,13 +103,26 @@ public class GenericBaseFactory<K, T, X> implements GenericFactory<K, T, X>
 	}
 
 	/**
+	 * Determine if an implementation class has been registered with the factory.
+	 *
+	 * @param  key The registration key, not null
+	 * @return     <code>true</code> if the class is registered,
+	 *             <code>false</code> otherwise.
+	 */
+
+	public boolean isRegistered (K key)
+	{
+		return this.factories.containsKey (key);
+	}
+
+	/**
 	 * Create an instance of an implementation class.  This method will call the
 	 * <code>create</code> method on the <code>ConcreteFactory</code> which is
 	 * associated with the specified implementation class.
 	 *
-	 * @param  impl                     The registration key, not null
+	 * @param  key                      The registration key, not null
 	 * @param  arg                      Parameter to be used to create the
-	 *                                  instance
+	 *                                  instance, not null
 	 * @return                          An instance of the requested class
 	 * @throws IllegalArgumentException if the requested implementation is not
 	 *                                  registered
@@ -119,6 +132,8 @@ public class GenericBaseFactory<K, T, X> implements GenericFactory<K, T, X>
 	@Override
 	public T create (K key, X arg)
 	{
+		this.log.trace ("Creating new instance of {} ({})", key, arg);
+
 		if (key == null)
 		{
 			this.log.error ("Registration key is NULL");
@@ -127,10 +142,8 @@ public class GenericBaseFactory<K, T, X> implements GenericFactory<K, T, X>
 
 		if (! this.factories.containsKey (key))
 		{
-			String msg = "Key not registered: " + key;
-
-			this.log.error (msg);
-			throw new IllegalArgumentException (msg);
+			this.log.error ("Attempting to create an instance of unregistered class: {}", key);
+			throw new IllegalArgumentException ("Class not registered.");
 		}
 
 		return (this.factories.get (key)).create (arg);

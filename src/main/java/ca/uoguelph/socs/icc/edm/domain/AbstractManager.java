@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014,2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
@@ -32,31 +32,37 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The type of <code>Element</code> to be processed
+ * @param   <X> The type of <code>ElementBuilder</code> to be returned
  */
 
 public abstract class AbstractManager<T extends Element> implements ElementManager<T>
 {
+	/** The logger */
+	private final Logger log;
+
+	/** The type of <code>Element</code> which is being managed */
+	private final Class<T> type;
+
 	/** The <code>DomainModel</code> instance which owns this manager. */
 	protected final DomainModel model;
 
 	private AbstractManagerFactory<T, ?, ?, ?> factory; 
 
-	/** The logger */
-	private final Log log;
-
 	/**
 	 * Create the <code>AbstractManager</code>.
 	 *
-	 * @param  model The <code>DomainModel</code> instance for this manager, not null
-	 * @param  query The <code>DataStoreQuery</code> to be used to access the
-	 *               data-store, not null
+	 * @param  type  The type of <code>Element</code> which is being managed, not
+	 *               null
+	 * @param  model The <code>DomainModel</code> instance for this manager, not
+	 *               null
 	 */
 
-	protected AbstractManager (DomainModel model)
+	protected AbstractManager (Class<T> type, DomainModel model)
 	{
+		this.log = LoggerFactory.getLogger (AbstractManager.class);
+		
+		this.type = type;
 		this.model = model;
-
-		this.log = LogFactory.getLog (AbstractManager.class);
 	}
 
 	final void setFactory (AbstractManagerFactory<T, ?, ?, ?> factory)
@@ -66,12 +72,9 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 
 	protected final DataStoreQuery<T> fetchQuery ()
 	{
-		return this.factory.createQuery (this.model);
-	}
+		this.log.trace ("Getting query object from factory");
 
-	protected final ElementBuilder<T> fetchBuilder ()
-	{
-		return null;
+		return this.factory.createQuery (this.model);
 	}
 
 	/**
@@ -95,6 +98,8 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 
 	public T fetchById (Long id)
 	{
+		this.log.trace ("Fetching entity from DataStore with ID: {}", id);
+
 		return (this.fetchQuery ()).query (id);
 	}
 
@@ -106,6 +111,8 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 
 	public List<T> fetchAll ()
 	{
+		this.log.trace ("Fetching all entities from DataStore");
+
 		return (this.fetchQuery ()).queryAll ();
 	}
 
@@ -135,6 +142,8 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 
 	public T insert (T entity, Boolean recursive)
 	{
+		this.log.trace ("Insert entity into data store: {} (recursively: {})", entity, recursive);
+
 		return null;
 	}
 
@@ -162,5 +171,6 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 
 	public void remove (T entity, Boolean recursive)
 	{
+		this.log.trace ("Remove entity from data store: {} (recursively: {})", entity, recursive);
 	}
 }

@@ -19,9 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
+import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
 public interface EnrolmentElementFactory extends ElementFactory<Enrolment>
 {
-	public abstract Enrolment create (User user, Course course, Integer grade);
+	public abstract Enrolment create (User user, Course course, Role role, Integer grade, Boolean usable);
 }

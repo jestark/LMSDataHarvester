@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.core;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -23,20 +25,28 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.RoleElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager;
 
-public class RoleData implements Role
+/**
+ * Implementation of the <code>Role</code> interface.  It is expected that
+ * instances of this class will be accessed though the <code>Role</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>Role</code> interface documentation for details.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.RoleBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.RoleManager
+ */
+
+
+public class RoleData implements Role, Serializable
 {
 	private static final class RoleDataFactory implements RoleElementFactory
 	{
 		@Override
 		public Role create (String name)
 		{
-			RoleData role = new RoleData ();
-
-			role.setName (name);
-
-			return role;
+			return new RoleData (name);
 		}
 
 		@Override
@@ -46,18 +56,31 @@ public class RoleData implements Role
 		}
 	}
 
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+	
+	/** The primary key for the role */
 	private Long id;
+
+	/** The name of the role */
 	private String name;
 
 	static
 	{
-		(RoleFactory.getInstance ()).registerElement (RoleData.class, DefaultRoleManager.class, DefaultRoleBuilder.class, new RoleDataFactory ());
+		(RoleFactory.getInstance ()).registerElement (RoleData.class, DefaultRoleBuilder.class, new RoleDataFactory ());
 	}
 
-	protected RoleData ()
+	public RoleData ()
 	{
 		this.id = null;
 		this.name = null;
+	}
+
+	public RoleData (String name)
+	{
+		this ();
+
+		this.name = name;
 	}
 
 	@Override
@@ -65,19 +88,16 @@ public class RoleData implements Role
 	{
 		boolean result = false;
 
-		if (obj != null)
+		if (obj == this)
 		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.name, ((RoleData) obj).name);
+			result = true;
+		}
+		else if (obj instanceof RoleData)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.name, ((RoleData) obj).name);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;
