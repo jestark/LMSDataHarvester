@@ -16,10 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain.idgenerator;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.factory.ConcreteFactory;
 
-public interface IdGeneratorFactory<T extends IdGenerator> extends ConcreteFactory<T, DomainModel>
+public interface IdGeneratorFactory extends ConcreteFactory<IdGenerator, DataStore>
 {
-	public abstract T create (DomainModel model);
+	public abstract IdGenerator create (DataStore datastore);
 }
