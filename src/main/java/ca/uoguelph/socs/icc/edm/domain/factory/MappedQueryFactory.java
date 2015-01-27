@@ -37,7 +37,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  * that element when they are requested.
  *
  * @author  James E. Stark
- * @version 1.0
+ * @version 1.1
  * @param   <T> The <code>Element</code> type of the queries to be created
  */
 
@@ -214,8 +214,41 @@ public final class MappedQueryFactory<T extends Element>
 			throw new NullPointerException ();
 		}
 
-		Class<? extends Element> impl = (datastore.getProfile ()).getImplClass (this.type);
+		return this.create (datastore, (datastore.getProfile ()).getImplClass (this.type));
+	}
 
+	/**
+	 * Create a <code>DataStoreQuery</code> for the specified
+	 * <code>DataStore</code>, and <code>Element</code> implementation class.  If
+	 * the query already exists in the cache, then the cached copy will be
+	 * returned, otherwise a new <code>DataStoreQuery</code> will be created.
+	 * 
+	 * @param  datastore             The <code>DataStore</code> for which the
+	 *                               query is to be created, not null
+	 * @param  impl                  The implementation class for which the query
+	 *                               is to be created, not null
+	 * @return                       The <code>DataStoreQuery</code>
+	 * @throws IllegalStateException if the query implementation class is not 
+	 *                               registered
+	 */
+
+	public DataStoreQuery<T> create (DataStore datastore, Class<? extends Element> impl)
+	{
+		this.log.debug ("Creating query for interface {}, using implementation {}, on using DataStore {}", this.type, impl, datastore);
+
+		if (datastore == null)
+		{
+			this.log.error ("Attempting to create a query for a NULL DataStore");
+			throw new NullPointerException ();
+		}
+
+		if (impl == null)
+		{
+			this.log.error ("Attempting to create a query for a NULL implementation class");
+			throw new NullPointerException ();
+		}
+
+		// If the Query is not in the cache then create it.
 		if ((! this.cache.containsKey (datastore)) || (! (this.cache.get (datastore)).containsKey (impl)))
 		{
 			if (! this.queries.containsKey (impl))
