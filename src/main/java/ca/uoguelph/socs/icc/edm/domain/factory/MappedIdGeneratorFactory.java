@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain.factory;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.HashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGeneratorFactory;
  * 
  * @author  James E. Stark
  * @version 1.0
- * @param   <T> The domain model interface represented by this factory
- * @see     MappedFactory
- * @see     ca.uoguelph.socs.icc.edm.manager.ManagerFactory
+ * @see     ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGeneratorFactory
  */
 
 public final class MappedIdGeneratorFactory
@@ -47,7 +47,7 @@ public final class MappedIdGeneratorFactory
 	private final Logger log;
 
 	/** Factory for the <code>IdGenerator</code> implementations */
-	private final MappedFactory<Class<? extends IdGenerator>, IdGenerator, DataStore> generators;
+	private final Map<Class<? extends IdGenerator>, IdGeneratorFactory> generators;
 
 	/**
 	 * Create the <code>MappedIdGeneratorFactory</code>.
@@ -57,7 +57,7 @@ public final class MappedIdGeneratorFactory
 	{
 		this.log = LoggerFactory.getLogger (MappedManagerFactory.class);
 
-		this.generators = new BaseMappedFactory<Class<? extends IdGenerator>, IdGenerator, DataStore> ();
+		this.generators = new HashMap<Class<? extends IdGenerator>, IdGeneratorFactory> ();
 	}
 
 	/**
@@ -73,14 +73,31 @@ public final class MappedIdGeneratorFactory
 	 *                                  not null
 	 * @throws IllegalArgumentException If the <code>IdGenerator</code> is
 	 *                                  already registered with the factory
-	 * @see    MappedFactory#registerClass
 	 */
 
 	public void registerClass (Class<? extends IdGenerator> impl, IdGeneratorFactory factory)
 	{
 		this.log.trace ("Registering ID Generator: {} ({})", impl, factory);
 
-		this.generators.registerClass (impl, factory);
+		if (impl == null)
+		{
+			this.log.error ("Implementation class is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (factory == null)
+		{
+			this.log.error ("Factory is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (this.generators.containsKey (impl))
+		{
+			this.log.error ("Class has already been registered: {}", impl);
+			throw new IllegalArgumentException ("Duplicate class registration");
+		}
+
+		this.generators.put (impl, factory);
 	}
 
 	/**
@@ -89,12 +106,11 @@ public final class MappedIdGeneratorFactory
 	 *
 	 * @return A <code>Set</code> containing the registered
 	 *         <code>IdGenerator</code> implementations
-	 * @see    MappedFactory#getRegisteredClasses
 	 */
 
 	public Set<Class<? extends IdGenerator>> getRegisteredClasses ()
 	{
-		return this.generators.getRegisteredClasses ();
+		return this.generators.keySet ();
 	}
 
 	/**
@@ -103,12 +119,11 @@ public final class MappedIdGeneratorFactory
 	 *
 	 * @return <code>true</code> if the <code>IdGenerator</code> implementation
 	 *         has been registered, <code>false</code> otherwise
-	 * @see    MappedFactory#isRegistered
 	 */
 
 	public boolean isRegistered (Class<? extends IdGenerator> impl)
 	{
-		return this.generators.isRegistered (impl);
+		return this.generators.containsKey (impl);
 	}
 
 	/**
@@ -131,6 +146,6 @@ public final class MappedIdGeneratorFactory
 			throw new NullPointerException ();
 		}
 
-		return this.generators.create (null, datastore);
+		return null;
 	}
 }

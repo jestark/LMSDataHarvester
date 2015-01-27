@@ -17,9 +17,8 @@
 package ca.uoguelph.socs.icc.edm.domain.idgenerator;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.factory.ConcreteFactory;
 
-public interface IdGeneratorFactory extends ConcreteFactory<IdGenerator, DataStore>
+public interface IdGeneratorFactory
 {
 	public abstract IdGenerator create (DataStore datastore);
 }

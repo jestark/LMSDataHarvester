@@ -18,7 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.ElementManager;
-import ca.uoguelph.socs.icc.edm.domain.factory.ConcreteFactory;
 
 /**
  * Create an <code>ElementManager</code> for the specified
@@ -27,12 +26,12 @@ import ca.uoguelph.socs.icc.edm.domain.factory.ConcreteFactory;
  * <code>ElementManager</code>.
  *
  * @author  James E. Stark
- * @version 1.0
+ * @version 1.1
  * @param   <T> The type of manager returned by the factory
  * @see     ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory
  */
 
-public interface ManagerFactory<T> extends ConcreteFactory<T, DomainModel>
+public interface ManagerFactory<T>
 {
 	/**
 	 * Create the <code>ElementManager</code>.
@@ -42,6 +41,5 @@ public interface ManagerFactory<T> extends ConcreteFactory<T, DomainModel>
 	 * @return       The <code>ElementManager</code>
 	 */
 
-	@Override
 	public abstract T create (DomainModel model);
 }

@@ -16,7 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain.factory;
 
+import java.util.Map;
 import java.util.Set;
+
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,21 +30,37 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Factory for creating <code>DataStoreQuery</code> objects.  This class is
- * implemented using a <code>CachedMappedFactory<code>.  However, unlike the
- * other mapped factories, the elements that register with this class do not
- * provide a factory.  The factory is generated internally, such that it can
- * provide the necessary information to the <code>DataStore</code> to allow
- * the <code>DataStore</code> to create the <code>DataStoreQuery</code>
+ * Factory for creating <code>DataStoreQuery</code> objects.  This class
+ * requires all of the elements to register with it.  During the registration
+ * process this class internally generate a query factory for the element,
+ * which will be used to create the <code>DataStoreQuery</code> instances for
+ * that element when they are requested.
  *
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The <code>Element</code> type of the queries to be created
- * @see     CachedMappedFactory
  */
 
 public final class MappedQueryFactory<T extends Element>
 {
+	/**
+	 * Interface to hide the implementation class for the query factory from the
+	 * Map.
+	 */
+
+	private interface IntQueryFactory<T extends Element>
+	{
+		/**
+		 * Create a query.
+		 *
+		 * @param  datastore The <code>DataStore</code> for which the query is to be
+		 *                   created, not null
+		 * @return           The initialized query.
+		 */
+
+		public DataStoreQuery<T> create (DataStore datastore);
+	}
+
 	/**
 	 * Factory to create queries based on interface and implementation classes.
 	 *
@@ -49,7 +68,7 @@ public final class MappedQueryFactory<T extends Element>
 	 * @param   <X> The type of the implementation class
 	 */
 
-	private final class QueryFactory<T extends Element, X extends T> implements ConcreteFactory<DataStoreQuery<T>, DataStore>
+	private final class IntQueryFactoryImpl<T extends Element, X extends T> implements IntQueryFactory<T>
 	{
 		/** The interface type of the query */
 		private final Class<T> type;
@@ -66,7 +85,7 @@ public final class MappedQueryFactory<T extends Element>
 		 *              not null
 		 */
 
-		public QueryFactory (Class<T> type, Class<X> impl)
+		public IntQueryFactoryImpl (Class<T> type, Class<X> impl)
 		{
 			this.type = type;
 			this.impl = impl;
@@ -91,10 +110,13 @@ public final class MappedQueryFactory<T extends Element>
 	private final Logger log;
 
 	/** The interface type of the query */
-	Class<T> type;
+	private final Class<T> type;
 
-	/** Factory used to store and build the queries */
-	private final CachedMappedFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> queries;
+	/** Query factories */
+	private final Map<Class<? extends Element>, IntQueryFactory<T>> queries;
+
+	/** <code>DataStoreQuery</code> instance cache */
+	private final Map<DataStore, Map<Class<? extends Element>, DataStoreQuery<T>>> cache;
 
 	/**
 	 * Create the <code>MappedQueryFactory</code>.
@@ -114,21 +136,34 @@ public final class MappedQueryFactory<T extends Element>
 		}
 
 		this.type = type;
-		this.queries = new CachedMappedFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> (new BaseMappedFactory<Class<? extends Element>, DataStoreQuery<T>, DataStore> ());
+
+		this.queries = new HashMap<Class<? extends Element>, IntQueryFactory<T>> ();
+		this.cache = new HashMap<DataStore, Map<Class<? extends Element>, DataStoreQuery<T>>> ();
 	}
 
 	/**
 	 * Register an element class.
 	 *
 	 * @param  impl The implementation class to be used in the query, not null
-	 * @see    MappedFactory#registerClass
 	 */
 
 	public <X extends T> void registerClass (Class<X> impl)
 	{
 		this.log.trace ("Registering Element implementation class: {} ({})", impl, this.type);
 
-		this.queries.registerClass (impl, new QueryFactory<T, X> (this.type, impl));
+		if (impl == null)
+		{
+			this.log.error ("Attempting to register a NULL implementation class");
+			throw new NullPointerException ();
+		}
+
+		if (this.queries.containsKey (impl))
+		{
+			this.log.error ("Class has already been registered: {}", impl);
+			throw new IllegalArgumentException ("Duplicate class registration");
+		}
+
+		this.queries.put (impl, new IntQueryFactoryImpl<T, X> (this.type, impl));
 	}
 
 	/**
@@ -136,12 +171,11 @@ public final class MappedQueryFactory<T extends Element>
 	 * that have been registered with the factory.
 	 *
 	 * @return A <code>Set</code> of all of the registered classes
-	 * @see    MappedFactory#getRegisteredClasses
 	 */
 
 	public Set<Class<? extends Element>> getRegisteredClasses ()
 	{
-		return this.queries.getRegisteredClasses ();
+		return this.queries.keySet ();
 	}
 
 	/**
@@ -150,12 +184,11 @@ public final class MappedQueryFactory<T extends Element>
 	 *
 	 * @return <code>true</code> if the <code>Element</code> implementation has
 	 *         been registered, <code>false</code> otherwise
-	 * @see    MappedFactory#isRegistered
 	 */
 
 	public boolean isRegistered (Class<? extends T> impl)
 	{
-		return this.queries.isRegistered (impl);
+		return this.queries.containsKey (impl);
 	}
 
 	/**
@@ -169,7 +202,6 @@ public final class MappedQueryFactory<T extends Element>
 	 * @return                       The <code>DataStoreQuery</code>
 	 * @throws IllegalStateException if the query implementation class is not 
 	 *                               registered
-	 * @see    MappedFactory#create
 	 */
 
 	public DataStoreQuery<T> create (DataStore datastore)
@@ -184,39 +216,54 @@ public final class MappedQueryFactory<T extends Element>
 
 		Class<? extends Element> impl = (datastore.getProfile ()).getImplClass (this.type);
 
-		if (! this.queries.isRegistered (impl))
+		if ((! this.cache.containsKey (datastore)) || (! (this.cache.get (datastore)).containsKey (impl)))
 		{
-			this.log.error ("Element implementation class is not registered: {}", impl);
-			throw new IllegalStateException ("Unregistered Element implementation");
+			if (! this.queries.containsKey (impl))
+			{
+				this.log.error ("Element implementation class is not registered: {}", impl);
+				throw new IllegalStateException ("Unregistered Element implementation");
+			}
+
+			if (! this.cache.containsKey (datastore))
+			{
+				this.cache.put (datastore, new HashMap<Class<? extends Element>, DataStoreQuery<T>> ());
+			}
+
+			(this.cache.get (datastore)).put (impl, (this.queries.get (impl)).create (datastore));
 		}
 
-		return this.queries.create (impl, datastore);
+		return (this.cache.get (datastore)).get (impl);
 	}
 
 	/**
-	 * Remove all of the Queries for the specified <code>DataStore</code> from the
-	 * cache.
+	 * Remove all of the <code>DataStoreQuery</code> instances for the specified
+	 * <code>DataStore</code> from the cache.
 	 *
 	 * @param  datastore The <code>DataStore</code> for which all of the cached
 	 *                   queries are to be purged, not null
-	 * @see    CachedMappedFactory#remove
 	 */
 
 	public void remove (DataStore datastore)
 	{
 		this.log.trace ("Removing all cached query instances for DataStore: {}", datastore);
+
+		if (datastore == null)
+		{
+			this.log.error ("Attempting to remove cached queries for a NULL DataStore");
+			throw new NullPointerException ();
+		}
+
 		this.queries.remove (datastore);
 	}
 
 	/**
 	 * Remove all queries from the cache.
-	 *
-	 * @see    CachedMappedFactory#flush
 	 */
 
 	public void flush ()
 	{
 		this.log.trace ("Flushing cache");
-		this.queries.flush ();
+	
+		this.queries.clear ();
 	}
 }
