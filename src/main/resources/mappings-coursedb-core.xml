@@ -29,6 +29,12 @@
 	<entity name="User" class="UserData" metadata-complete="true">
 		<description>Data identifying the user</description>
 		<table schema="userdb" name="user"/>
+		<named-query name="UserData:maxid">
+			<query>SELECT MAX(u.id) FROM User u</query>
+		</named-query>
+		<named-query name="UserData:allid">
+			<query>SELECT u.id FROM User u</query>
+		</named-query>
 		<named-query name="UserData:all">
 			<query>SELECT u FROM User u</query>
 		</named-query>
@@ -68,8 +74,17 @@
 	<entity name="Course" class="CourseData" metadata-complete="true">
 		<description>Date identifying a particular offering of a course</description>
 		<table name="course"/>
+		<named-query name="CourseData:maxid">
+			<query>SELECT MAX(c.id) FROM Course c</query>
+		</named-query>
+		<named-query name="CourseData:allid">
+			<query>SELECT c.id FROM Course c</query>
+		</named-query>
 		<named-query name="CourseData:all">
 			<query>SELECT c FROM Course c</query>
+		</named-query>
+		<named-query name="CourseData:allsemester">
+			<query>SELECT c FROM Course c WHERE c.year = :year AND c.semester = :semester</query>
 		</named-query>
 		<named-query name="CourseData:alloffering">
 			<query>SELECT c FROM Course c WHERE c.year = :year AND c.semester = :semester AND c.name LIKE :name</query>
@@ -113,6 +128,12 @@
 	<entity name="Role" class="RoleData" metadata-complete="true">
 		<description>The Role of a participant in a course</description>
 		<table name="enrolment_role"/>
+		<named-query name="RoleData:maxid">
+			<query>SELECT MAX(r.id) FROM Role r</query>
+		</named-query>
+		<named-query name="RoleData:allid">
+			<query>SELECT r.id FROM Role r</query>
+		</named-query>
 		<named-query name="RoleData:all">
 			<query>SELECT r FROM Role r</query>
 		</named-query>
@@ -134,8 +155,17 @@
 	<entity name="Enrolment" class="EnrolmentData" metadata-complete="true">
 		<description>Record for a user enrolled in a course</description>
 		<table name="enrolment"/>
+		<named-query name="EnrolmentData:maxid">
+			<query>SELECT MAX(e.id) FROM Enrolment e</query>
+		</named-query>
+		<named-query name="EnrolmentData:allid">
+			<query>SELECT e.id FROM Enrolment e</query>
+		</named-query>
 		<named-query name="EnrolmentData:all">
 			<query>SELECT e FROM Enrolment e</query>
+		</named-query>
+		<named-query name="EnrolmentData:role">
+			<query>SELECT e FROM Enrolment e WHERE e.role = :role</query>
 		</named-query>
 		<secondary-table name="enrolment_final_grade">
 			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
@@ -168,11 +198,17 @@
 
 	<entity name="UserEnrolment" class="UserEnrolmentData" metadata-complete="true">
 		<table name="enrolment"/>
+		<named-query name="UserEnrolmentData:maxid">
+			<query>SELECT MAX(c.id) FROM UserEnrolment c</query>
+		</named-query>
+		<named-query name="UserEnrolmentData:allid">
+			<query>SELECT c.id FROM UserEnrolment c</query>
+		</named-query>
 		<named-query name="UserEnrolmentData:all">
 			<query>SELECT e FROM UserEnrolment e</query>
 		</named-query>
-		<named-query name="UserEnrolmentData:user+course">
-			<query>SELECT e FROM UserEnrolment e WHERE e.course = :course and e.user = :user</query>
+		<named-query name="UserEnrolmentData:role">
+			<query>SELECT e FROM UserEnrolment e WHERE e.role = :role</query>
 		</named-query>
 		<attributes>
 			<many-to-one name="users" target-entity="UserData" optional="false">
@@ -188,9 +224,6 @@
 	<entity name="Grade" class="GradedActivity" metadata-complete="true">
 		<description>Grades assigned to individual activities for a student</description>
 		<table name="enrolment_activity_grade"/>
-		<named-query name="Grade:enrolment+activity">
-			<query>SELECT g FROM Grade g WHERE g.activity = :activity and g.enrolment = :enrolment</query>
-		</named-query>
 		<attributes>
 			<id name="enrolment"/>
 			<id name="activity"/>
@@ -214,6 +247,12 @@
 	<entity name="ActivitySource" class="ActivitySourceData" metadata-complete="true">
 		<description>The the source of the activity data</description>
 		<table name="activity_source"/>
+		<named-query name="ActivitySourceData:maxid">
+			<query>SELECT MAX(s.id) FROM ActivitySource s</query>
+		</named-query>
+		<named-query name="ActivitySourceData:allid">
+			<query>SELECT s.id FROM ActivitySource s</query>
+		</named-query>
 		<named-query name="ActivitySourceData:all">
 			<query>SELECT s FROM ActivitySource s</query>
 		</named-query>
@@ -236,10 +275,16 @@
 	<entity name="ActivityTypeData" class="ActivityTypeData" metadata-complete="true">
 		<description>The type of the activity (or the module)</description>
 		<table name="activity"/>
+		<named-query name="ActivityTypeData:maxid">
+			<query>SELECT MAX(t.id) FROM ActivityType t</query>
+		</named-query>
+		<named-query name="ActivityTypeData:allid">
+			<query>SELECT t.id FROM ActivityType t</query>
+		</named-query>
 		<named-query name="ActivityTypeData:all">
 			<query>SELECT t FROM ActivityType t</query>
 		</named-query>
-		<named-query name="ActivityTypeData:name+source">
+		<named-query name="ActivityTypeData:name">
 			<query>SELECT t FROM ActivityType t WHERE t.name = :name AND t.source = :source</query>
 		</named-query>
 		<attributes>
@@ -266,11 +311,17 @@
 	<entity name="Action" class="ActionData" metadata-complete="true">
 		<description>The name of the action performed</description>
 		<table name="activity_action"/>
+		<named-query name="ActionData:maxid">
+			<query>SELECT MAX(a.id) FROM Action a</query>
+		</named-query>
+		<named-query name="ActionData:allid">
+			<query>SELECT a.id FROM Action a</query>
+		</named-query>
 		<named-query name="ActionData:all">
 			<query>SELECT a FROM Action a</query>
 		</named-query>
 		<named-query name="ActionData:name">
-			<query>SELECT s FROM Action s WHERE s.name = :name</query>
+			<query>SELECT a FROM Action s WHERE a.name = :name</query>
 		</named-query>
 		<attributes>
 			<id name="id">
@@ -288,6 +339,12 @@
 	<entity name="Activity" class="ActivityInstance" metadata-complete="true">
 		<description>The activities which are associated with a given course</description>
 		<table name="activity_instance"/>
+		<named-query name="ActivityInstance:maxid">
+			<query>SELECT MAX(a.id) FROM Activity a</query>
+		</named-query>
+		<named-query name="ActivityInstance:allid">
+			<query>SELECT a.id FROM Activity a</query>
+		</named-query>
 		<named-query name="ActivityInstance:all">
 			<query>SELECT a FROM Activity a</query>
 		</named-query>
@@ -369,6 +426,12 @@
 	<entity name="LogEntry" class="LogData" metadata-complete="true">
 		<description>The course activity log</description>
 		<table name="log"/>
+		<named-query name="LogData:maxid">
+			<query>SELECT MAX(e.id) FROM LogEntry e</query>
+		</named-query>
+		<named-query name="LogData:allid">
+			<query>SELECT e.id FROM LogEntry e</query>
+		</named-query>
 		<named-query name="LogData:all">
 			<query>SELECT e FROM LogEntry e</query>
 		</named-query>

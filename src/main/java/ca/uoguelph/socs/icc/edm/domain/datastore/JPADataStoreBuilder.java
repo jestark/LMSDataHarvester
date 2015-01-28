@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@ import java.util.HashMap;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A profile for any <code>DataStore</code> which used the Java Persistence
@@ -163,7 +163,7 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	private Map<String, String> parameters;
 
 	/** Logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Create the <code>JPADataStoreBuilder</code>.
@@ -171,7 +171,7 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 
 	public JPADataStoreBuilder ()
 	{
-		this.log = LogFactory.getLog (JPADataStoreBuilder.class);
+		this.log = LoggerFactory.getLogger (JPADataStoreBuilder.class);
 
 		this.unitname = null;
 		this.parameters = new HashMap<String, String> ();
@@ -183,6 +183,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 
 	public void clear ()
 	{
+		this.log.trace ("Clear the builder");
+
 		this.unitname = null;
 		this.parameters.clear ();
 	}
@@ -337,6 +339,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 
 	public void setConnectionParameters (Map<String, String> parameters)
 	{
+		this.log.trace ("Set multiple connection parameters: {}", parameters);
+
 		if (parameters == null)
 		{
 			this.log.error ("Parameter map is NULL");
@@ -354,6 +358,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	@Override
 	public DataStore createDataStore (DataStoreProfile profile)
 	{
+		this.log.trace ("Create the datastore using profile: {}", profile);
+
 		return new JPADataStore (profile, this.unitname, this.parameters);
 	}
 }

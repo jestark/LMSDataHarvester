@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,19 +25,19 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 public interface DataStoreTransaction
 {
 	/**
-	 *
+	 * determine if the current transaction is active.
 	 */
 
 	public abstract Boolean isActive ();
 	
 	/**
-	 *
+	 * Determine if the current transaction must be rolled back.
 	 */
 
 	public abstract Boolean getRollbackOnly ();
 	
 	/**
-	 * 
+	 * Force the current transaction to be rolled back.
 	 */
 
 	public abstract void setRollbackOnly ();

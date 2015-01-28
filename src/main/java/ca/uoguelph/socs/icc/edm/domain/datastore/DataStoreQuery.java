@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 /**
  *
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
  * @param   <T> The type of <code>Element</code> to return from
  *              query methods.
@@ -36,14 +36,49 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 public interface DataStoreQuery<T extends Element>
 {
 	/**
+	 * Get a reference to the <code>DataStore</code> upon which the
+	 * <code>DataStoreQuery</code> operates.
+	 *
+	 * @return A reference to the <code>DataStore</code>
+	 */
+
+	public abstract DataStore getDataStore ();
+	
+	/**
+	 * Get the next available DataStore ID number.  The number will be chosen by
+	 * the IdGenerator algorithm set in the <code>DataStoreProfile</code>
+	 *
+	 * @return A Long containing the ID number
+	 */
+
+	public abstract Long nextId ();
+
+	/**
 	 * Get the set of parameter names for the specified query.
 	 *
-	 * @param  name                 The name of the query, not null
-	 * @return                      A set containing the names of all of the
-	 *                              parameters
+	 * @param  name The name of the query, not null
+	 * @return      A set containing the names of all of the parameters
 	 */
 
 	public abstract Set<String> getParameters (String name);
+
+	/**
+	 * Get all of the ID numbers for the class represented by this
+	 * <code>DataStoreQuery</code> in the <code>DataStore</code>.
+	 *
+	 * @return A (possibly empty) list of <code>Long</code> integers
+	 */
+
+	public abstract List<Long> queryAllIds ();
+
+	/**
+	 * Get the largest ID number for the class represented by this
+	 * <code>dataStoreQuery</code> in the <code>DataStore</code>.
+	 *
+	 * @return A <code>Long</code> integer
+	 */
+
+	public abstract Long queryMaxId ();
 
 	/**
 	 * Retrieve an object from the <code>DataStore</code> based on the value of
