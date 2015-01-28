@@ -47,6 +47,8 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	/** The logger */
 	private final Logger log;
 
+	private final Class<T> type;
+
 	/** Factory for the <code>ElementBuilder</code> implementations */
 	private final MappedBuilderFactory<T, Y, Z> builders;
 
@@ -54,7 +56,7 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 	private final MappedManagerFactory<T, X> managers;
 
 	/** Factory for the <code>DataStoreQuery</code> instances */
-	private final MappedQueryFactory<T> queries;
+	private final MappedQueryFactory queries;
 
 	/**
 	 * Create the <code>AbstractManagerFactory</code>.
@@ -73,9 +75,10 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 			throw new NullPointerException ();
 		}
 
+		this.type = type;
 		this.builders = new MappedBuilderFactory<T, Y, Z> (type);
 		this.managers = new MappedManagerFactory<T, X> (type);
-		this.queries = new MappedQueryFactory<T> (type);
+		this.queries = new MappedQueryFactory ();
 	}
 
 	public final void registerBuilder (Class<? extends Y> impl, BuilderFactory<Y> factory)
@@ -101,7 +104,7 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 		}
 
 		this.builders.registerElement (impl, builder, factory);
-		this.queries.registerClass (impl);
+		this.queries.registerClass (this.type, impl);
 	}
 
 	/**
@@ -196,6 +199,6 @@ public abstract class AbstractManagerFactory<T extends Element, X extends Elemen
 			throw new NullPointerException ();
 		}
 
-		return this.queries.create (model.getDataStore ());
+		return this.queries.create (this.type, model.getDataStore ());
 	}
 }
