@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,88 +21,99 @@ import java.util.Set;
 /**
  * A representation of a user within the domain model.  Classes implementing
  * this interface contain the information required to identify the person who
- * is associated with the data (enrolments, grades, log entries, etc.) 
- * contained within the domain model.  As such, users are treated somewhat 
- * specially.
- *
- * <p>In the domain model, the user is a root level element, as its existence
- * is not dependent on any other components of the domain model.  Only 
- * Enrolment depends on User, and that dependency is weak.  The domain model
- * is designed such that User is optional.  However, it would be wise to make
- * sure that any datastore that doe not contain the user's is completely 
- * immutable.</p>
- *
- * <p>With the exception of adding and removing enrolments, User's, once
- * created, are immutable.</p>
+ * is associated with the data (<code>Enrolment</code>, <code>Grade</code>,
+ * and <code>LogEntry</code> instances, etc.) contained within the domain
+ * model.  As such, instances of the <code>User</code> interface are treated
+ * somewhat specially.
+ * <p>
+ * In the domain model, <code>User</code> is a root level element, as its existence
+ * is not dependent on any other components of the domain model.  Only
+ * <code>Enrolment</code> depends on <code>User</code>, and that dependency
+ * is weak.  The domain model is designed such that <code>User</code> is 
+ * optional.  However, it would be wise to make sure that any <code>DataStore</code>
+ * instance that does not contain <code>User</code> instances is completely
+ * immutable.
+ * <p>
+ * With the exception of adding and removing <code>Enrolment<code> instances,
+ * <code>User</code> instances, once created, are immutable.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Enrolment
+ * @see     UserBuilder
  * @see     UserManager
  */
 
 public interface User extends Element
 {
 	/**
-	 * Get the user's id number.  In most cases this will be the user's student
-	 * number, or a similar identifier used to track the student by the students
-	 * institution.  While the id number is not used as the database identifier
-	 * it is expected to be unique.
+	 * Get the (student) ID number of the <code>User</code>.  This will be the
+	 * student number, or a similar identifier used to track the <code>User</code>
+	 * by the institution from which the data was harvested.  While the ID number
+	 * is not used as the database identifier it is expected to be unique.
 	 *
-	 * @return An Integer representation of the user's ID Number.
+	 * @return An Integer representation of the ID number.
 	 */
 
 	public abstract Integer getIdNumber ();
-	
+
 	/**
-	 * Get the users first (given) name.
+	 * Get the first name (given name) of the <code>User</code>.
 	 *
-	 * @return A String containing the user's first name.
+	 * @return A <code>String</code> containing the given name of the
+	 *         <code>User</code>
 	 */
 
 	public abstract String getFirstname ();
-	
+
 	/**
-	 * Get the user's last name.
+	 * Get the last name (surname) of the <code>User</code>.
 	 *
-	 * @return A String containing the user's last name.
+	 * @return A String containing the surname of the <code>User</code>.
 	 */
 
 	public abstract String getLastname ();
-	
+
 	/**
-	 * Get the user's username.  This will be the username that the user in
-	 * question used to access the LMS from which the user's data was harvested.
-	 * The username is expected to be unique.
+	 * Get the username for the <code>User</code>.  This will be the username that
+	 * the <code>User</code> used to access the LMS from which the data associated
+	 * with the <code>User</code> was harvested.  The username is expected to be
+	 * unique.
 	 *
-	 * @return A String containing the user's username.
+	 * @return A <code>String</code> containing the username for the
+	 *         <code>User</code>
 	 */
 
 	public abstract String getUsername ();
-	
+
 	/**
-	 * Get the full name of the user.  The output of this methos should be a
-	 * String formatted as: <code>"&lt;first name&gt;&nbsp;&lt;last name&gt;"
-	 * </code>
+	 * Get the full name of the <code>User</code>.  This method will return a
+	 * concatenation of the <code>firstname</code> and <code>lastname</code> of
+	 * the <code>User</code>.
 	 *
-	 * @return A string containing the name of the user.
+	 * @return A <code>String</code> containing the name of the user.
 	 */
 
 	public abstract String getName ();
-	
+
 	/**
-	 * Get the object describing the user's enrolment in a particular course.
+	 * Get the <code>Enrolment</code> instance for the <code>User</code> in the
+	 * specified <code>Course</code>.
 	 *
-	 * @param course The course for which the users enrolment is to be retrieved.
-	 * @return The enrolment object for the user in the specified course.
+	 * @param  course The <code>Course</code> for which the <code>Enrolment</code>
+	 *                instance is to be retrieved
+	 * @return        The <code>Enrolment</code> instance for the
+	 *                <code>User</code> in the specified <code>Course</code>, or
+	 *                null
 	 */
 
 	public abstract Enrolment getEnrolment (Course course);
-	
+
 	/**
-	 * Get the set of all of the enrolments whiuch are associated with this user.
+	 * Get the <code>Set</code> of <code>Enrolment<code> instances which are
+	 * associated with this <code>User</code>.  If there are no associated
+	 * <code>Enrolment</code> instances, then the <code>Set</code> will be empty.
 	 *
-	 * @return A Set of enrolment objects.
+	 * @return A <code>Set</code> of <code>Enrolment</code> instances
 	 */
 
 	public abstract Set<Enrolment> getEnrolments ();
