@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,27 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
+/**
+ * Factory interface to create new <code>Role</code> instances.
+ * Implementations of this interface provide the functionality required to
+ * create new instances of a class implementing the <code>Role</code> domain
+ * model interface.  It also provides the functionality required to set the
+ * <code>DataStore</code> ID for the <code>Role</code> instance.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.RoleBuilder
+ */
+
 public interface RoleElementFactory extends ElementFactory<Role>
 {
+	/**
+	 * Create a new <code>Role</code> instance.
+	 *
+	 * @param  name The name of the <code>Role</code>, not null
+	 *
+	 * @return      The new <code>Role</code> instance
+	 */
+
 	public abstract Role create (String name);
 }

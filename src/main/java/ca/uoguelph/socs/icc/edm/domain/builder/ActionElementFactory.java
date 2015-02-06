@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,63 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
+import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Element;
+
+/**
+ * Factory interface to create new <code>Action</code> instances.
+ * Implementations of this interface provide the functionality required to
+ * create new instances of a class implementing the <code>Action</code> domain
+ * model interface.  It also provides the functionality required to set the
+ * <code>DataStore</code> ID for the <code>Action</code> instance, as well as
+ * adding and removing any associated <code>ActivityType</code> instances.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActionBuilder
+ */
 
 public interface ActionElementFactory extends ElementFactory<Action>
 {
+	/**
+	 * Create a new <code>Action</code> instance.
+	 *
+	 * @param  name The name of the <code>Action</code>, not null
+	 *
+	 * @return      The new <code>Action</code> instance
+	 */
+
 	public abstract Action create (String name);
+
+	/**
+	 * Add the specified <code>ActivityType</code> to the specified
+	 * <code>Action</code>.
+	 *
+	 * @param  action The <code>Action</code> to which the
+	 *                <code>ActivityType</code> is to be added, not null
+	 * @param  type   The <code>ActivityType</code> to add to the
+	 *                <code>Action</code>, not null
+	 *
+	 * @return        <code>True</code> if the <code>ActivityType</code> was
+	 *                successfully added to the <code>Action</code>,
+	 *                <code>False</code> otherwise
+	 */
+
+	public abstract boolean addActivityType (Action action, ActivityType type);
+
+	/**
+	 * Remove the specified <code>ActivityType</code> from the specified
+	 * <code>Action</code>. 
+	 *
+	 * @param  action The <code>Action</code> from which the
+	 *                <code>ActivityType</code> is to be removed, not null
+	 * @param  type   The <code>ActivityType</code> to remove from the
+	 *                <code>Action</code>, not null
+	 *
+	 * @return        <code>True</code> if the <code>ActivityType</code> was
+	 *                successfully removed from the <code>Action</code>,
+	 *                <code>False</code> otherwise
+	 */
+
+	public abstract boolean removeActivityType (Action action, ActivityType type);
 }

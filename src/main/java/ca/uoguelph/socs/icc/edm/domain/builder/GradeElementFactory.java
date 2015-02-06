@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,34 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 
+/**
+ * Factory interface to create new <code>Grade</code> instances.
+ * Implementations of this interface provide the functionality required to
+ * create new instances of a class implementing the <code>Grade</code> domain
+ * model interface.  Since instances of the <code>Grade</code> interface do not
+ * have <code>DataStore</code> ID's, their implementations of the
+ * <code>setId</code> method must throw a
+ * <code>UnsupportedOperationException</code>
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     ca.uoguelph.socs.icc.edm.domain.GradeBuilder
+ * @see     java.lang.UnsupportedOperationException
+ */
+
 public interface GradeElementFactory
 {
+	/**
+	 * Create a new <code>Grade</code> instance.
+	 *
+	 * @param  enrolment The <code>Enrolment</code> to which the grade is
+	 *                   assigned, not null
+	 * @param  activity  The <code>Activity</code> for which the grade is
+	 *                   assigned, not null
+	 * @param  grade     The assigned grade, on the interval [0, 100], not null
+	 *
+	 * @return           The new <code>Grade</code> instance
+	 */
+
 	public abstract Grade create (Enrolment enrolment, Activity activity, Integer grade);
 }
