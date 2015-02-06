@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
@@ -39,7 +39,7 @@ public final class DefaultActivityBuilder extends AbstractBuilder<Activity> impl
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/** <code>ElementFactory</code> to build the activity instance */
 	private final ActivityElementFactory factory;
@@ -58,7 +58,7 @@ public final class DefaultActivityBuilder extends AbstractBuilder<Activity> impl
 		super (manager);
 
 		this.factory = null;
-		this.log = LogFactory.getLog (DefaultActivityBuilder.class);
+		this.log = LoggerFactory.getLog (DefaultActivityBuilder.class);
 	}
 
 	@Override

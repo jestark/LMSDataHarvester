@@ -16,8 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
@@ -40,7 +40,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/** <code>ElementFactory</code> to build the enrolment */
 	private final EnrolmentElementFactory factory;
@@ -65,7 +65,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 		super (manager);
 
 		this.factory = null;
-		this.log = LogFactory.getLog (DefaultEnrolmentBuilder.class);
+		this.log = LoggerFactory.getLog (DefaultEnrolmentBuilder.class);
 	}
 
 	@Override

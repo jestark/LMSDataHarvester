@@ -18,8 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
@@ -42,7 +42,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/** <code>ElementFactory</code> to build the log entry */
 	private final LogEntryElementFactory factory;
@@ -67,7 +67,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 		super (manager);
 
 		this.factory = null;
-		this.log = LogFactory.getLog (DefaultLogEntryBuilder.class);
+		this.log = LoggerFactory.getLog (DefaultLogEntryBuilder.class);
 	}
 
 	@Override
