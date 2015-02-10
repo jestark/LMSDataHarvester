@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import java.util.HashSet;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
@@ -40,24 +41,121 @@ import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.CourseBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.CourseManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager
  */
 
 public class CourseData implements Course, Serializable
 {
+	/**
+	 * Implementation of the <code>CourseElementFactory</code> interface.  Allows
+	 * the builders to create instances of <code>CourseData</code>
+	 */
+
 	private static final class CourseDataFactory implements CourseElementFactory
 	{
+		/**
+		 * Create a new <code>Course</code> instance.
+		 *
+		 * @param  name     The name of the <code>Course</code>, not null
+		 * @param  semester The <code>Semester</code> of offering, not null
+		 * @param  year     The year of offering, not null
+		 *
+		 * @return          The new <code>Course</code> instance
+		 */
+
 		@Override
 		public Course create (String name, Semester semester, Integer year)
 		{
 			return new CourseData (name, semester, year);
 		}
 
+		/**
+		 * Write the specified <code>DataStore</code> ID number into the
+		 * <code>course</code>.
+		 *
+		 * @param  course The <code>Course</code> to which the ID number is assigned,
+		 *                not null
+		 * @param  id     The ID number assigned to the <code>Course</code>, not null
+		 */
+
 		@Override
 		public void setId (Course course, Long id)
 		{
 			((CourseData) course).setId (id);
+		}
+
+		/**
+		 * Add the specified <code>Activity</code> to the specified <code>Course</code>.
+		 *
+		 * @param  course    The <code>Course</code> to which the <code>Activity</code>
+		 *                   is to be added, not null
+		 * @param  enrolment The <code>Enrolment</code> to add to the
+		 *                   <code>Course</code>, not null
+		 *
+		 * @return           <code>True</code> if the <code>Activity</code> was
+		 *                   successfully added to the <code>Course</code>,
+		 *                   <code>False</code> otherwise
+		 */
+
+		public boolean addActivity (Course course, Activity activity)
+		{
+			return ((CourseData) course).addActivity (activity);
+		}
+
+		/**
+		 * Remove the specified <code>Activity</code> from the specified <code>Course</code>.
+		 *
+		 * @param  course    The <code>Course</code> from which the <code>Activity</code>
+		 *                   is to be removed, not null
+		 * @param  enrolment The <code>Enrolment</code> to remove from the
+		 *                   <code>Course</code>, not null
+		 *
+		 * @return           <code>True</code> if the <code>Activity</code> was
+		 *                   successfully removed from the <code>Course</code>,
+		 *                   <code>False</code> otherwise
+		 */
+
+		public boolean removeActivity (Course course, Activity activity)
+		{
+			return ((CourseData) course).removeActivity (activity);
+		}
+
+		/**
+		 * Add the specified <code>Enrolment</code> to the specified <code>Course</code>.
+		 *
+		 * @param  course    The <code>Course</code> to which the <code>Enrolment</code>
+		 *                   is to be added, not null
+		 * @param  enrolment The <code>Enrolment</code> to add to the
+		 *                   <code>User</code>, not null
+		 *
+		 * @return           <code>True</code> if the <code>Enrolment</code> was
+		 *                   successfully added to the <code>Course</code>,
+		 *                   <code>False</code> otherwise
+		 */
+
+		public boolean addEnrolment (Course course, Enrolment enrolment)
+		{
+			return ((CourseData) course).addEnrolment (enrolment);
+		}
+
+		/**
+		 * Remove the specified <code>Enrolment</code> from the specified
+		 * <code>Course</code>.
+		 *
+		 * @param  course    The <code>Course</code> from which the
+		 *                   <code>Enrolment</code> is to be removed, not null
+		 * @param  enrolment The <code>Enrolment</code> to remove from the
+		 *                   <code>User</code>, not null
+		 *
+		 * @return           <code>True</code> if the <code>Enrolment</code> was
+		 *                   successfully removed from the <code>Course</code>,
+		 *                   <code>False</code> otherwise
+		 */
+
+		public boolean removeEnrolment (Course course, Enrolment enrolment)
+		{
+			return ((CourseData) course).removeEnrolment (enrolment);
 		}
 	}
 
@@ -81,17 +179,18 @@ public class CourseData implements Course, Serializable
 	/** The set of individuals which are enrolled in the course. */
 	private Set<Enrolment> enrolments;
 
+	/**
+	 * Static initializer to register the <code>CourseData</code> class with the
+	 * factories.
+	 */
+
 	static
 	{
 		(CourseFactory.getInstance ()).registerElement (CourseData.class, DefaultCourseBuilder.class, new CourseDataFactory ());
 	}
 
 	/**
-	 * Create the Course with null values.  Default no-arguement constructor
-	 * used by the datastore (particularly the Java Persistence API) when
-	 * loading an instance of the class.  This constructor initializes all
-	 * values to null and expects that the values in the class will be set via
-	 * the (protected) mutator methods.
+	 * Create the <code>Course</code> with null values.
 	 */
 
 	public CourseData ()
@@ -103,6 +202,16 @@ public class CourseData implements Course, Serializable
 		this.activities = null;
 		this.enrolments = null;
 	}
+
+	/**
+	 * Create a new <code>Course</code> instance.
+	 *
+	 * @param  name     The name of the <code>Course</code>, not null
+	 * @param  semester The <code>Semester</code> of offering, not null
+	 * @param  year     The year of offering, not null
+	 *
+	 * @return          The new <code>Course</code> instance
+	 */
 
 	public CourseData (String name, Semester semester, Integer year)
 	{
@@ -116,13 +225,15 @@ public class CourseData implements Course, Serializable
 	}	
 
 	/**
-	 * Override java.lang.object's equals method to compare to courses based on
-	 * their names, as well as their semester and year of offering.
+	 * Compare two <code>Course</code> instances to determine if they are equal.
+	 * The <code>Course</code> instances are compared based upon their names, as
+	 * well as their year and <code>Semester</code> of offering.
 	 *
-	 * @param obj The reference object with which to compare.
-	 * @return <code>true</code> if the two  have the same name and were offered
-	 * at the same time, (or if the references are identical),
-	 * <code>false</code> otherwise.
+	 * @param  obj The <code>Course</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Course</code> instances
+	 *             are equal, <code>False</code> otherwise
 	 */
 
 	@Override
@@ -149,10 +260,11 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Override of java.lang.object's hashCode method to compute a hash code
-	 * based on the name and time of offering of the course.
+	 * Compute a <code>hashCode</code> of the <code>Course</code> instance.
+	 * The hash code is computed based upon the name of the instance as well as
+	 * the year and <code>Semester</code> of offering.
 	 *
-	 * @return The hash code.
+	 * @return An <code>Integer</code> containing the hash code
 	 */
 
 	@Override
@@ -170,9 +282,10 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Get the datastore ID for the course.
+	 * Get the <code>DataStore</code> identifier for the <code>Course</code>
+	 * instance.
 	 *
-	 * @return The unique numeric ID of the course.
+	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
 	public Long getId ()
@@ -181,10 +294,13 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Internal method used by the datastore and managers to set the datastore
-	 * ID for the course.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Course</code> instance is
+	 * loaded, or by the <code>CourseBuilder</code> implementation to set the
+	 * <code>DataStore</code> identifier, prior to storing a new <code>Course</code>
+	 * instance.
 	 *
-	 * @param id The unique numeric ID of the course.
+	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
 	protected void setId (Long id)
@@ -193,9 +309,10 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Get the name of the course.
+	 * Get the name of the <code>Course</code>.
 	 *
-	 * @return The name of the course.
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Course</code>
 	 */
 
 	@Override
@@ -205,10 +322,11 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Internal method used by the datastore and managers to set the name of the
-	 * course.
+	 * Set the name of the <code>Course</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Course</code> instance is
+	 * loaded.
 	 *
-	 * @param name The name of the course.
+	 * @param  name The name of the <code>Course</code>
 	 */
 
 	public void setName (String name)
@@ -217,9 +335,9 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Get the semester in which the course was offered.
+	 * Get the <code>Semester</code> in which the <code>Course</code> was offered.
 	 *
-	 * @return The semester in which the course was offered.
+	 * @return The <code>Semester</code> of offering
 	 */
 
 	@Override
@@ -229,10 +347,12 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Internal method used by the datastore and managers to set the semester in 
-	 * which the course was offered.
+	 * Set the <code>Semester</code> in which the <code>Course</code> was offered.
+	 * This method is intended to be used by a <code>DataStore</code> when the 
+	 * <code>Course</code> instance is loaded.
 	 *
-	 * @param semester The semester in which the course was offered.
+	 * @param  semester The <code>Semester</code> in which the <code>Course</code>
+	 *                  was offered
 	 */
 
 	protected void setSemester (Semester semester)
@@ -241,9 +361,9 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Get the year in which the course was offered.
+	 * Get the year in which the <code>Course</code> was offered.
 	 *
-	 * @return The year in which the course was offered.
+	 * @return An <code>Integer</code> containing the year of offering
 	 */
 
 	@Override
@@ -253,10 +373,11 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Internal method used by the datastore and managers to set the year in 
-	 * which the course was offered.
+	 * Set the year in which the <code>Course</code> was offered.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Course</code> instance is loaded.
 	 *
-	 * @param year The year in which the course was offered.
+	 * @param  year The year in which the <code>Course</code> was offered
 	 */
 
 	protected void setYear (Integer year)
@@ -265,9 +386,12 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Get a set of all of the activities for the course.
+	 * Get the <code>Set</code> of <code>Activity</code> instances which are
+	 * associated with the <code>Course</code>.  The <code>Set</code> will be
+	 * empty if there are no <code>Activity</code> instances associated with the
+	 * <code>Course</code>.
 	 *
-	 * @return The set of all of the activities for the course.
+	 * @return A <code>Set</code> of <code>Activity</code> instances
 	 */
 
 	@Override
@@ -277,10 +401,13 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Internal method used by the datastore and managers to set the initial
-	 * set of activities for the course.
+	 * Initialize the <code>Set</code> of <code>Activity</code> instances
+	 * associated with the <code>Course</code> instance.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Course</code> instance is
+	 * loaded.
 	 *
-	 * @param activities The Set of activities for the course.
+	 * @param  activities The <code>Set</code> of <code>Activity</code>
+	 *                    instances, not null
 	 */
 
 	protected void setActivities (Set<Activity> activities)
@@ -289,11 +416,12 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Internal method used by the managers to add activities to the course.
+	 * Add the specified <code>Activity</code> to the <code>Course</code>.
 	 *
-	 * @param activity The activity to add to the course.
-	 * @return <code>true</code> if the activity was successfully added to the
-	 * course, </code>false</code> otherwise.
+	 * @param  enrolment The <code>Enrolment</code> to add, not null
+	 *
+	 * @return           <code>True</code> if the <code>Activity</code> was
+	 *                   successfully added, <code>False</code> otherwise
 	 */
 
 	protected boolean addActivity (Activity activity)
@@ -302,9 +430,25 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Get a set of all of the enrollments for the course.
+	 * Remove the specified <code>Activity</code> from the <code>Course</code>.
 	 *
-	 * @return The set of all of the enrolments for the course.
+	 * @param  enrolment The <code>Enrolment</code> to remove,  not null
+	 *
+	 * @return           <code>True</code> if the <code>Activity</code> was
+	 *                   successfully removed, <code>False</code> otherwise
+	 */
+
+	protected boolean removeActivity (Activity activity)
+	{
+		return this.activities.remove (activity);
+	}
+
+	/**
+	 * Get the <code>Set</code> of <code>Enrolment</code> instances which are
+	 * associated with the <code>Course</code>.  The <code>Set</code> will be
+	 * empty if no one is enrolled in the <code>Course</code>.
+	 *
+	 * @return A <code>Set</code> of <code>Enrolment</code> instances
 	 */
 
 	@Override
@@ -314,10 +458,13 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Internal method used by the datastore and managers to set the initial
-	 * set of enrolments for the course.
+	 * Initialize the <code>Set</code> of <code>Enrolment</code> instances
+	 * associated with the <code>Course</code> instance.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Course</code> instance is
+	 * loaded.
 	 *
-	 * @param enrolments The Set of enrolments for the course.
+	 * @param  enrolments The <code>Set</code> of <code>Enrolment</code>
+	 *                    instances, not null
 	 */
 
 	protected void setEnrolments (Set<Enrolment> enrolments)
@@ -326,11 +473,12 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Internal method used by the managers to add an enrolment to the course.
+	 * Add the specified <code>Enrolment</code> to the <code>Course</code>.
 	 *
-	 * @param enrolment The enrolment to add to the course.
-	 * @return <code>true</code> if the enrolment was successfully added,
-	 * <code>false</code> otherwise.
+	 * @param  enrolment The <code>Enrolment</code> to add, not null
+	 *
+	 * @return           <code>True</code> if the <code>Enrolment</code> was
+	 *                   successfully added, <code>False</code> otherwise
 	 */
 
 	protected boolean addEnrolment (Enrolment enrolment)
@@ -339,15 +487,36 @@ public class CourseData implements Course, Serializable
 	}
 
 	/**
-	 * Override java.lang.Object's toString function to display the name and
-	 * time of offering of the course.
+	 * Remove the specified <code>Enrolment</code> from the <code>Course</code>.
 	 *
-	 * @return A string identifying the course.
+	 * @param  enrolment The <code>Enrolment</code> to remove, not null
+	 *
+	 * @return           <code>True</code> if the <code>Enrolment</code> was
+	 *                   successfully removed, <code>False</code> otherwise
+	 */
+
+	protected boolean removeEnrolment (Enrolment enrolment)
+	{
+		return this.enrolments.remove (enrolment);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>Course</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the <code>Course</code>
+	 *         instance
 	 */
 
 	@Override
-	public String toString()
+	public String toString ()
 	{
-		return new String (this.name + ": " + this.semester + ", " + this.year);
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("name", this.name);
+		builder.append ("semester", this.semester);
+		builder.append ("year", this.year);
+
+		return builder.toString ();
 	}
 }

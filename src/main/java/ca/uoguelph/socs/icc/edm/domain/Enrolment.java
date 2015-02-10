@@ -136,7 +136,8 @@ public interface Enrolment extends Element
 	public abstract Grade getGrade (Activity activity);
 
 	/**
-	 * Get the <code>Set</code> of <code>Grade</code>
+	 * Get the <code>Set</code> of <code>Grade</code> instances which are
+	 * associated with the <code>Enrolment</code> instance.
 	 *
 	 * @return A <code>Set</code> of <code>Grade</code> instances.
 	 */
