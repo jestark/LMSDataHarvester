@@ -50,7 +50,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 		super (manager);
 
 		this.factory = null;
-		this.log = LoggerFactory.getLog (DefaultActivitySourceBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultActivitySourceBuilder.class);
 	}
 
 	@Override

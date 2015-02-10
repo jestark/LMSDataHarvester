@@ -57,7 +57,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 		super (manager);
 
 		this.factory = null;
-		this.log = LoggerFactory.getLog (DefaultCourseBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultCourseBuilder.class);
 	}
 
 	@Override

@@ -65,7 +65,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 		super (manager);
 
 		this.factory = null;
-		this.log = LoggerFactory.getLog (DefaultEnrolmentBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultEnrolmentBuilder.class);
 	}
 
 	@Override

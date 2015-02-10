@@ -77,7 +77,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 
 		this.clear ();
 
-		this.log = LoggerFactory.getLog (DefaultUserBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultUserBuilder.class);
 	}
 
 	@Override

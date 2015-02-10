@@ -67,7 +67,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 		super (manager);
 
 		this.factory = null;
-		this.log = LoggerFactory.getLog (DefaultLogEntryBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultLogEntryBuilder.class);
 	}
 
 	@Override

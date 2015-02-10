@@ -24,6 +24,9 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
+import ca.uoguelph.socs.icc.edm.domain.core.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
+
 /**
  * Factory interface to create new <code>LogEntry</code> instances.
  * Implementations of this interface provide the functionality required to
@@ -69,5 +72,5 @@ public interface LogEntryElementFactory extends ElementFactory<LogEntry>
 	 *                   <code>LogEntry</code>, not null
 	 */
 
-	public abstract void setReference (LogEntry entry, LogReference reference);
+	public abstract void setReference (LogEntry entry, LogReference<? extends ActivityGroupMember> reference);
 }

@@ -54,7 +54,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 		super (manager);
 
 		this.factory = null;
-		this.log = LoggerFactory.getLog (DefaultActivityTypeBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultActivityTypeBuilder.class);
 	}
 
 	@Override

@@ -60,7 +60,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 
 		this.clear ();
 
-		this.log = LoggerFactory.getLog (DefaultGradeBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultGradeBuilder.class);
 	}
 
 	@Override

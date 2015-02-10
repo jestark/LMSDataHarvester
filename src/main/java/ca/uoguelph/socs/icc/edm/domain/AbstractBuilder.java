@@ -31,7 +31,7 @@ public abstract class AbstractBuilder<T extends Element>
 
 	protected AbstractBuilder (AbstractManager<T> manager)
 	{
-		this.log = LoggerFactory.getLog (AbstractBuilder.class);
+		this.log = LoggerFactory.getLogger (AbstractBuilder.class);
 		
 		this.manager = manager;
 	}

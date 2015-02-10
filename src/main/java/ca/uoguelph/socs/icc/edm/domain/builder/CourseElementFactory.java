@@ -16,8 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
+import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
 /**
@@ -61,7 +63,7 @@ public interface CourseElementFactory extends ElementFactory<Course>
 	 *                   <code>False</code> otherwise
 	 */
 
-	public abstract boolean addActivity (Activity activity);
+	public abstract boolean addActivity (Course course, Activity activity);
 
 	/**
 	 * Remove the specified <code>Activity</code> from the specified <code>Course</code>.
@@ -76,7 +78,7 @@ public interface CourseElementFactory extends ElementFactory<Course>
 	 *                   <code>False</code> otherwise
 	 */
 
-	public abstract boolean removeActivity (Activity activity);
+	public abstract boolean removeActivity (Course course, Activity activity);
 
 	/**
 	 * Add the specified <code>Enrolment</code> to the specified <code>Course</code>.
@@ -91,7 +93,7 @@ public interface CourseElementFactory extends ElementFactory<Course>
 	 *                   <code>False</code> otherwise
 	 */
 
-	public abstract boolean addEnrolemnt (Enrolment enrolment);
+	public abstract boolean addEnrolment (Course course, Enrolment enrolment);
 
 	/**
 	 * Remove the specified <code>Enrolment</code> from the specified
@@ -107,5 +109,5 @@ public interface CourseElementFactory extends ElementFactory<Course>
 	 *                   <code>False</code> otherwise
 	 */
 
-	public abstract boolean removeEnrolemnt (Enrolment enrolment);
+	public abstract boolean removeEnrolment (Course course, Enrolment enrolment);
 }

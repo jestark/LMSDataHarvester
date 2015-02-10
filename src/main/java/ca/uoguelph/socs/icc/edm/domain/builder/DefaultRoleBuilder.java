@@ -50,7 +50,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 		super (manager);
 
 		this.factory = null;
-		this.logger = LogFactory.getLog (DefaultRoleBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultRoleBuilder.class);
 	}
 
 	@Override

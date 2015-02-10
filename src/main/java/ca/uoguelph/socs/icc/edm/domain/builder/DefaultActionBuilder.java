@@ -55,7 +55,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 		super (manager);
 
 		this.factory = null;
-		this.log = LoggerFactory.getLog (DefaultActionBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultActionBuilder.class);
 	}
 
 	@Override
