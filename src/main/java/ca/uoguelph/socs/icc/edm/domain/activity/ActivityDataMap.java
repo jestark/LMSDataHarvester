@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.factory;
+package ca.uoguelph.socs.icc.edm.domain.activity;
 
 import java.util.Map;
 import java.util.Set;
@@ -109,7 +109,7 @@ public final class ActivityDataMap
 			this.log.error ("ActivityType ({}) already registered", atype);
 			throw new IllegalStateException ("ActivityType already registered");
 		}
-		
+
 		this.types.put (atype, impl);
 	}
 
