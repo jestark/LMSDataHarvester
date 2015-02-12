@@ -159,6 +159,8 @@ public final class ActivityDataMap
 
 	public void registerRelationship (Class<? extends ActivityGroup> parent, Class<? extends ActivityGroupMember> child)
 	{
+		this.log.trace ("Register parent -> Child relationship: {} -> {}", parent, child);
+
 		if (parent == null)
 		{
 			this.log.error ("Attempting to register a NULL parent");
