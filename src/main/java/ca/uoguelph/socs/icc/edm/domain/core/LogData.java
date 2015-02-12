@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ import java.util.Date;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
@@ -39,24 +40,71 @@ import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.LogEntryManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager
  */
 
 public class LogData implements LogEntry, Serializable
 {
+	/**
+	 * Implementation of the <code>LogEntryElementFactory</code> interface.  Allows
+	 * the builders to create instances of <code>LogData</code>.
+	 */
+
 	private static final class LogDataFactory implements LogEntryElementFactory
 	{
+		/**
+		 * Create a new <code>LogEntry</code> instance.  Defaults to the current
+		 * system time, if the specified time is null.
+		 *
+		 * @param  action    The <code>Action</code>, not null
+		 * @param  activity  The <code>Activity</code> upon which the
+		 *                   <code>Action</code> was performed, not null
+		 * @param  enrolment The <code>Enrolment</code> which performed the
+		 *                   <code>Action</code>, not null
+		 * @param  ip        The remote IP Address
+		 * @param  time      The time that the <code>Action</code> was performed
+		 *
+		 * @return           The new <code>LogEntry</code> instance
+		 */
+
 		@Override
 		public LogEntry create (Action action, Activity activity, Enrolment enrolment, String ip, Date time)
 		{
 			return new LogData (action, activity, enrolment, ip, time);
 		}
 
+		/**
+		 * Write the specified <code>DataStore</code> ID number into the
+		 * <code>Action</code>.
+		 *
+		 * @param  entry The <code>LogEntry</code> to which the ID number is assigned,
+		 *               not null
+		 * @param  id    The ID number assigned to the <code>LogEntry</code>, not null
+		 */
+
 		@Override
 		public void setId (LogEntry entry, Long id)
 		{
 			((LogData) entry).setId (id);
+		}
+
+		/**
+		 * Add the reference to the Sub-Activity to the <code>LogEntry</code>.  Some
+		 * <code>LogEntry</code> instances will record an <code>Action</code> upon a
+		 * sub-activity, rather than the <code>Activity</code> itself.  This method
+		 * sets the reference to the sub-activity via a <code>LogReference</code>
+		 * instance.
+		 *
+		 * @param  entry     The <code>LogEntry</code> to which the
+		 *                   <code>LogReference</code> is to be added, not null
+		 * @param  reference The <code>LogReference</code> instance to be added to
+		 *                   the <code>LogEntry</code>, not null
+		 */
+
+		public void setReference (LogEntry entry, LogReference reference)
+		{
+			((LogData) entry).setReference (reference);
 		}
 	}
 
@@ -82,12 +130,21 @@ public class LogData implements LogEntry, Serializable
 	private String ip;
 
 	/** The Sub-activity which is associated with the log entry */
-	private LogReference<? extends ActivityGroupMember> reference;
+	private LogReference reference;
+
+	/**
+	 * Static initializer to register the <code>LogData</code> class with the
+	 * factories.
+	 */
 
 	static
 	{
 		(LogEntryFactory.getInstance ()).registerElement (LogData.class, DefaultLogEntryBuilder.class, new LogDataFactory ());
 	}
+
+	/**
+	 * Create the <code>LogEntry</code> with null values.
+	 */
 
 	public LogData ()
 	{
@@ -100,6 +157,21 @@ public class LogData implements LogEntry, Serializable
 		this.time = null;
 	}
 
+	/**
+	 * Create a new <code>LogEntry</code> instance.  Defaults to the current
+	 * system time, if the specified time is null.
+	 *
+	 * @param  action    The <code>Action</code>, not null
+	 * @param  activity  The <code>Activity</code> upon which the
+	 *                   <code>Action</code> was performed, not null
+	 * @param  enrolment The <code>Enrolment</code> which performed the
+	 *                   <code>Action</code>, not null
+	 * @param  ip        The remote IP Address
+	 * @param  time      The time that the <code>Action</code> was performed
+	 *
+	 * @return           The new <code>LogEntry</code> instance
+	 */
+
 	public LogData (Action action, Activity activity, Enrolment enrolment, String ip, Date time)
 	{
 		this ();
@@ -110,6 +182,23 @@ public class LogData implements LogEntry, Serializable
 		this.ip = ip;
 		this.time = time;
 	}
+
+	/**
+	 * Compare two <code>LogEntry</code> instances and determine if they are equal.
+	 * <p>
+	 * <ul>
+	 * <li>The <code>Action</code>
+	 * <li>The <code>Activity</code>
+	 * <li>The <code>Enrolment</code>
+	 * <li>The logged IP Address
+	 * <li>The time
+	 * <ul>
+	 *
+	 * @param  obj The <code>LogEntry</code> instance to compare with this one
+	 *
+	 * @return     <code>True</code> if the <code>LogEntry</code> instances should
+	 *             be considered to be equal, <code>False</code> otherwise
+	 */
 
 	@Override
 	public boolean equals (Object obj)
@@ -122,19 +211,41 @@ public class LogData implements LogEntry, Serializable
 		}
 		else if (obj instanceof LogData)
 		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.action, ((LogData) obj).action);
-			ebuilder.append (this.activity, ((LogData) obj).activity);
-			ebuilder.append (this.enrolment, ((LogData) obj).enrolment);
-			ebuilder.append (this.ip, ((LogData) obj).ip);
-			ebuilder.append (this.time, ((LogData) obj).time);
-			ebuilder.append (this.reference, ((LogData) obj).reference);
+			if (this.reference != null)
+			{
+				result = this.reference.equals (((LogData) obj).reference);
+			}
+			else
+			{
+				EqualsBuilder ebuilder = new EqualsBuilder ();
+				ebuilder.append (this.action, ((LogData) obj).action);
+				ebuilder.append (this.activity, ((LogData) obj).activity);
+				ebuilder.append (this.enrolment, ((LogData) obj).enrolment);
+				ebuilder.append (this.ip, ((LogData) obj).ip);
+				ebuilder.append (this.time, ((LogData) obj).time);
+				ebuilder.append (this.reference, ((LogData) obj).reference);
 
-			result = ebuilder.isEquals ();
+				result = ebuilder.isEquals ();
+			}
 		}
 
 		return result;
 	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>LogEntry</code> instance.  The
+	 * hash code is computed based upon the following fields:
+	 * <p>
+	 * <ul>
+	 * <li>The <code>Action</code>
+	 * <li>The <code>Activity</code>
+	 * <li>The <code>Enrolment</code>
+	 * <li>The logged IP Address
+	 * <li>The time
+	 * <ul>
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
 
 	@Override
 	public int hashCode ()
@@ -142,57 +253,61 @@ public class LogData implements LogEntry, Serializable
 		final int base = 1093;
 		final int mult = 887;
 
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.action);
-		hbuilder.append (this.activity);
-		hbuilder.append (this.enrolment);
-		hbuilder.append (this.ip);
-		hbuilder.append (this.time);
-		hbuilder.append (this.reference);
+		int result = 0;
 
-		return hbuilder.toHashCode ();
+		if (this.reference != null)
+		{
+			result = this.reference.hashCode ();
+		}
+		else
+		{
+			HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+			hbuilder.append (this.action);
+			hbuilder.append (this.activity);
+			hbuilder.append (this.enrolment);
+			hbuilder.append (this.ip);
+			hbuilder.append (this.time);
+			hbuilder.append (this.reference);
+
+			result = hbuilder.toHashCode ();
+		}
+
+		return result;
 	}
+
+	/**
+	 * Get the <code>DataStore</code> identifier for the <code>LogEntry</code>
+	 * instance.
+	 *
+	 * @return a Long integer containing <code>DataStore</code> identifier
+	 */
 
 	public Long getId ()
 	{
 		return this.id;
 	}
 
+	/**
+	 * Set the <code>DataStore</code> identifier.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded, or by the <code>LogEntryBuilder</code> implementation to set the
+	 * <code>DataStore</code> identifier, prior to storing a new <code>LogEntry</code>
+	 * instance.
+	 *
+	 * @param  id The <code>DataStore</code> identifier, not null
+	 */
+
 	protected void setId (Long id)
 	{
 		this.id = id;
 	}
 
-	@Override
-	public Enrolment getEnrolment ()
-	{
-		return this.enrolment;
-	}
-
-	protected void setEnrolment (Enrolment enrolment)
-	{
-		this.enrolment = enrolment;
-	}
-
-	public Activity getActivitydb ()
-	{
-		return this.activity;
-	}
-
-	protected void setActivitydb (Activity activity)
-	{
-		this.activity = activity;
-	}
-
-	public LogReference<? extends ActivityGroupMember> getReference ()
-	{
-		return this.reference;
-	}
-
-	protected void setReference (LogReference<? extends ActivityGroupMember> reference)
-	{
-		this.reference = reference;
-	}
+	/**
+	 * Get the <code>Action</code> which was performed upon the logged
+	 * <code>Activity</code>.
+	 *
+	 * @return A reference to the logged <code>Action</code>
+	 */
 
 	@Override
 	public Action getAction ()
@@ -200,44 +315,49 @@ public class LogData implements LogEntry, Serializable
 		return this.action;
 	}
 
+	/**
+	 * Set the <code>Action</code> which was performed upon the logged
+	 * <code>Activity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is loaded.
+	 *
+	 * @param  action The <code>Action</code>, not null
+	 */
+
 	protected void setAction (Action action)
 	{
 		this.action = action;
 	}
 
-	@Override
-	public Date getTime ()
-	{
-		return (Date) this.time.clone ();
-	}
-
-	protected void setTime (Date time)
-	{
-		this.time = time;
-	}
-
-	public String getIPAddress ()
-	{
-		return this.ip;
-	}
-
-	protected void setIPAddress (String ip)
-	{
-		this.ip = ip;
-	}
-
+	/**
+	 * Get the <code>Activity</code> upon which the logged action was performed.
+	 *
+	 * @return A reference to the associated <code>Activity</code> object.
+	 */
+	
 	@Override
 	public Activity getActivity ()
 	{
-		Activity result = this.activity;
-
-		if (this.reference != null)
-		{
-			result = this.reference.getActivity ();
-		}
-
-		return result;
+		return this.activity;
 	}
+
+	/**
+	 * Set the <code>Activity</code>  upon which the logged action was performed.
+	 * This method is intended to be used by a <code>DataStore</code> when the
+	 * <code>LogEntry</code> instance is loaded.
+	 *
+	 * @param  activity The <code>Activity</code>, not null
+	 */
+
+	protected void setActivity (Activity activity)
+	{
+		this.activity = activity;
+	}
+
+	/**
+	 * Get the <code>Course</code> for which the action was logged.
+	 *
+	 * @return A reference to the associated <code>Course</code>
+	 */
 
 	@Override
 	public Course getCourse ()
@@ -245,14 +365,141 @@ public class LogData implements LogEntry, Serializable
 		return this.activity.getCourse ();
 	}
 
+	/**
+	 * Get the <code>Enrolment</code> instance for the <code>User</code> which
+	 * performed the logged action.
+	 *
+	 * @return A reference to the associated <code>Enrolment</code>
+	 */
+
+	@Override
+	public Enrolment getEnrolment ()
+	{
+		return this.enrolment;
+	}
+
+	/**
+	 * Set the <code>Enrolment</code> instance for the <code>User</code> which
+	 * performed the logged action.   This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is loaded.
+	 *
+	 * @param  enrolment The <code>Enrolment</code>, not null
+	 */
+
+	protected void setEnrolment (Enrolment enrolment)
+	{
+		this.enrolment = enrolment;
+	}
+
+	/**
+	 * Get the Internet Protocol address which is associated with the logged
+	 * action.
+	 *
+	 * @return A <code>String</code> containing the IP address, may be null
+	 */
+
+	@Override
+	public String getIPAddress ()
+	{
+		return this.ip;
+	}
+
+	/**
+	 * Set the Internet Protocol Address which is associated with the logged
+	 * <code>Action</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded.
+	 *
+	 * @param  ip A <code>String</code> containing the IP Address
+	 */
+
+	protected void setIPAddress (String ip)
+	{
+		this.ip = ip;
+	}
+
+	/**
+	 * Get the reference to the Sub-Activity for the <code>LogEntry</code>.  Some
+	 * <code>LogEntry</code> instances will record an <code>Action</code> upon a
+	 * sub-activity, rather than the <code>Activity</code> itself.  This method
+	 * gets the <code>LogReference</code> instance containing the Sub-Activity.
+	 *
+	 * @return The <code>LogReference</code> instance
+	 */
+
+	public LogReference getReference ()
+	{
+		return this.reference;
+	}
+
+	/**
+	 * Set the reference to the Sub-Activity to the <code>LogEntry</code>.  This
+	 * method is intended to be used by a <code>DataStore</code> when the
+	 * <code>LogEntry</code> instance is loaded, or by the
+	 * <code>LogEntryBuilder</code> when the <code>LogEntry</code> is created.
+	 *
+	 * @param  reference The <code>LogReference</code> instance, not null
+	 */
+
+	protected void setReference (LogReference reference)
+	{
+		this.reference = reference;
+	}
+
+	/**
+	 * Get the time of the logged <code>Action</code>.
+	 *
+	 * @return A <code>Date</code> object containing the logged time
+	 */
+
+	@Override
+	public Date getTime ()
+	{
+		return (Date) this.time.clone ();
+	}
+
+	/**
+	 * Set the time of the logged <code>Action</code>.  This method is intended
+	 * to be used by a <code>DataStore</code> when the <code>LogEntry</code>
+	 * instance is loaded.
+	 *
+	 * @param  time The time, not null
+	 */
+
+	protected void setTime (Date time)
+	{
+		this.time = time;
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>LogEntry</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the <code>LogEntry</code>
+	 *         instance
+	 */
+
 	@Override
 	public String toString ()
 	{
-		String result = new String (this.enrolment + ": " + this.getActivity () + ", " + this.action + ", " + this.time);
+		String result = null;
 
-		if (this.ip != null)
+		if (this.reference != null)
 		{
-			result = new String (result + ", " + this.ip);
+			result = this.reference.toString ();
+		}
+		else
+		{
+			ToStringBuilder builder = new ToStringBuilder (this);
+
+			builder.append ("enrolment", this.enrolment);
+			builder.append ("action", this.action);
+			builder.append ("activity", this.activity);
+			builder.append ("time", this.time);
+			builder.append ("ipaddress", this.ip);
+			builder.append ("subactivity", this.reference);
+
+			result = builder.toString ();
 		}
 
 		return result;

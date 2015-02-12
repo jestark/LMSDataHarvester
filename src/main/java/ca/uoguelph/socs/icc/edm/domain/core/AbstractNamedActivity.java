@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,20 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+
+/**
+ * An abstract representation of an <code>Activity</code> instance which has a
+ * name.  This class acts as the common base class for all of the
+ * <code>Activity</code> implementations which contain additional data beyond
+ * the associated <code>Course</code> and <code>ActivityType</code>.  It is also
+ * the base for all of the Sub-activities.
+ *
+ * @author  James E.Stark
+ * @version 1.0
+ */
 
 public abstract class AbstractNamedActivity extends AbstractActivity implements Activity, Serializable
 {
@@ -31,17 +43,38 @@ public abstract class AbstractNamedActivity extends AbstractActivity implements 
 	/** The name of the activity */
 	private String name;
 
+	/**
+	 * Create the <code>Activity</code> with Null values.
+	 */
+
 	public AbstractNamedActivity ()
 	{
 		super ();
 		this.name = null;
 	}
 
+	/**
+	 * Create the <code>Activity</code>
+	 *
+	 * @param  name The name of the <code>Activity</code>
+	 */
+
 	public AbstractNamedActivity (String name)
 	{
 		super ();
 		this.name = name;
 	}
+
+	/**
+	 * Compare two <code>Activity</code> instances to determine if they are equal.
+	 * The <code>Activity</code> instances are compared based upon their names.
+	 *
+	 * @param  obj The <code>Activity</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Activity</code> instances
+	 *             are equal, <code>False</code> otherwise
+	 */
 
 	@Override
 	public boolean equals (Object obj)
@@ -63,6 +96,13 @@ public abstract class AbstractNamedActivity extends AbstractActivity implements 
 		return result;
 	}
 
+	/**
+	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
+	 * The hash code is computed based upon the name of the instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
 	@Override
 	public int hashCode ()
 	{
@@ -75,14 +115,47 @@ public abstract class AbstractNamedActivity extends AbstractActivity implements 
 		return hbuilder.toHashCode ();
 	}
 
+	/**
+	 * Get the name of the <code>Activity</code>.  
+	 *
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Activity</code>
+	 */
+
 	@Override
 	public String getName ()
 	{
 		return this.name;
 	}
 
+	/**
+	 * Set the name of the <code>Activity</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
+	 *
+	 * @param  name The name of the <code>Activity</code>
+	 */
+
 	protected void setName (String name)
 	{
 		this.name = name;
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>Activity</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the <code>Activity</code>
+	 *         instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("name", this.name);
+
+		return builder.toString ();
 	}
 }
