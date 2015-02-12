@@ -28,21 +28,10 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
 
-public final class DefaultActivityBuilder extends AbstractBuilder<Activity> implements ActivityBuilder
+public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity> implements ActivityBuilder
 {
-	private static class DefaultActivityBuilderFactory implements BuilderFactory<ActivityBuilder>
-	{
-		public ActivityBuilder create (DomainModel model)
-		{
-			return new DefaultActivityBuilder ((AbstractManager<Activity>) model.getActivityManager ());
-		}
-	}
-
 	/** The logger */
 	private final Logger log;
-
-	/** <code>ElementFactory</code> to build the activity instance */
-	private final ActivityElementFactory factory;
 
 	/** The type of the Activity */
 	private ActivityType type;
@@ -53,11 +42,10 @@ public final class DefaultActivityBuilder extends AbstractBuilder<Activity> impl
 	/** Is the activity stealth? */
 	private Boolean stealth;
 
-	protected DefaultActivityBuilder (AbstractManager<Activity> manager)
+	public DefaultActivityBuilder (AbstractManager<Activity> manager)
 	{
 		super (manager);
 
-		this.factory = null;
 		this.log = LoggerFactory.getLogger (DefaultActivityBuilder.class);
 	}
 
@@ -76,7 +64,7 @@ public final class DefaultActivityBuilder extends AbstractBuilder<Activity> impl
 			throw new IllegalStateException ("stealth flag is NULL");
 		}
 
-		return this.factory.create (type, course, stealth);
+		return null; //this.factory.create (type, course, stealth);
 	}
 
 	@Override
@@ -88,19 +76,19 @@ public final class DefaultActivityBuilder extends AbstractBuilder<Activity> impl
 	}
 
 	@Override
-	public ActivityType getActivityType ()
+	public final ActivityType getActivityType ()
 	{
 		return this.type;
 	}
 
 	@Override
-	public Course getCourse ()
+	public final Course getCourse ()
 	{
 		return this.course;
 	}
 
 	@Override
-	public ActivityBuilder setCourse (Course course)
+	public final ActivityBuilder setCourse (final Course course)
 	{
 		if (course == null)
 		{
@@ -114,13 +102,13 @@ public final class DefaultActivityBuilder extends AbstractBuilder<Activity> impl
 	}
 
 	@Override
-	public Boolean getStealth ()
+	public final Boolean getStealth ()
 	{
 		return this.stealth;
 	}
 
 	@Override
-	public ActivityBuilder setStealth (Boolean stealth)
+	public final ActivityBuilder setStealth (final Boolean stealth)
 	{
 		if (stealth == null)
 		{
