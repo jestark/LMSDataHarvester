@@ -209,8 +209,6 @@ public class CourseData implements Course, Serializable
 	 * @param  name     The name of the <code>Course</code>, not null
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
-	 *
-	 * @return          The new <code>Course</code> instance
 	 */
 
 	public CourseData (String name, Semester semester, Integer year)
@@ -418,10 +416,10 @@ public class CourseData implements Course, Serializable
 	/**
 	 * Add the specified <code>Activity</code> to the <code>Course</code>.
 	 *
-	 * @param  enrolment The <code>Enrolment</code> to add, not null
+	 * @param  activity The <code>Activity</code> to add, not null
 	 *
-	 * @return           <code>True</code> if the <code>Activity</code> was
-	 *                   successfully added, <code>False</code> otherwise
+	 * @return          <code>True</code> if the <code>Activity</code> was
+	 *                  successfully added, <code>False</code> otherwise
 	 */
 
 	protected boolean addActivity (Activity activity)
@@ -432,10 +430,10 @@ public class CourseData implements Course, Serializable
 	/**
 	 * Remove the specified <code>Activity</code> from the <code>Course</code>.
 	 *
-	 * @param  enrolment The <code>Enrolment</code> to remove,  not null
+	 * @param  activity The <code>Activity</code> to remove,  not null
 	 *
-	 * @return           <code>True</code> if the <code>Activity</code> was
-	 *                   successfully removed, <code>False</code> otherwise
+	 * @return          <code>True</code> if the <code>Activity</code> was
+	 *                  successfully removed, <code>False</code> otherwise
 	 */
 
 	protected boolean removeActivity (Activity activity)

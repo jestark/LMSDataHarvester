@@ -248,8 +248,6 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 *                 <code>Activity</code> instance, not null
 	 * @param  stealth Indicator if the <code>Activity</code> was added by the
 	 *                 system, not null
-	 *
-	 * @return         The new <code>Activity</code> instance
 	 */
 
 	public ActivityInstance (ActivityType type, Course course, Boolean stealth)

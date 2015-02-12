@@ -44,7 +44,7 @@ public interface ActivitySourceElementFactory extends ElementFactory<ActivitySou
 	 * @return      The new <code>ActivitySource</code> instance
 	 */
 
-	public abstract ActivitySource create (String source);
+	public abstract ActivitySource create (String name);
 
 	/**
 	 * Add the specified <code>ActivityType</code> to the specified

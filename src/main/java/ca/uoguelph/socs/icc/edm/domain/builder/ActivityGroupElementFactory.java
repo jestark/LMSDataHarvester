@@ -30,9 +30,9 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
  * @author  James E. Stark
  * @version 1.0
  * @see     NamedActivityElementFactory
- * @see     SubActivityElementFactory
+ * @see     ActivityGroupMemberElementFactory
  * @see     ca.uoguelph.socs.icc.edm.domain.ActivityBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivityGroupMemberBuilder
  */
 
 public interface ActivityGroupElementFactory extends ElementFactory<Activity>

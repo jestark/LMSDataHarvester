@@ -42,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager
  */
 
 public class ActivityTypeData implements ActivityType, Serializable
@@ -169,7 +169,6 @@ public class ActivityTypeData implements ActivityType, Serializable
 	 * @param  source The <code>ActivitySource</code> for the
 	 *                <code>ActivityType</code>, not null
 	 * @param  name   The name of the <code>ActivityType</code>, not null
-	 * @return        The new <code>ActivityType</code> instance
 	 */
 
 	public ActivityTypeData (ActivitySource source, String name)

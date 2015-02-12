@@ -168,8 +168,6 @@ public class LogData implements LogEntry, Serializable
 	 *                   <code>Action</code>, not null
 	 * @param  ip        The remote IP Address
 	 * @param  time      The time that the <code>Action</code> was performed
-	 *
-	 * @return           The new <code>LogEntry</code> instance
 	 */
 
 	public LogData (Action action, Activity activity, Enrolment enrolment, String ip, Date time)

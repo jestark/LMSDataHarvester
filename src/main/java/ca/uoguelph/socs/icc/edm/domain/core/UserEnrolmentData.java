@@ -212,8 +212,6 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	 *                <code>Course</code>
 	 * @param  usable Indication if the <code>User</code> has consented to their
 	 *                data being used for research
-	 *
-	 * @return        The new <code>Enrolment</code> instance
 	 */
 
 	public UserEnrolmentData (User user, Course course, Role role, Integer grade, Boolean usable)

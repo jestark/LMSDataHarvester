@@ -149,10 +149,10 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 	 * Add the specified <code>ActivityGroupMember</code> to the specified
 	 * <code>ActivityGroup</code>.
 	 *
-	 * @param  member The <code>ActivityGroupMember</code> to add, not null
+	 * @param  child The <code>ActivityGroupMember</code> to add, not null
 	 *
-	 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
-	 *                was successfully added, <code>False</code> otherwise
+	 * @return       <code>True</code> if the <code>ActivityGroupMember</code>
+	 *               was successfully added, <code>False</code> otherwise
 	 */
 
 	protected boolean addChild(ActivityGroupMember child)
@@ -164,10 +164,10 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 	 * Remove the specified <code>ActivityGroupMember</code> from the specified
 	 * <code>ActivityGroup</code>.
 	 *
-	 * @param  member The <code>ActivityGroupMember</code> to remove, not null
+	 * @param  child The <code>ActivityGroupMember</code> to remove, not null
 	 *
-	 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
-	 *                was successfully removed, <code>False</code> otherwise
+	 * @return       <code>True</code> if the <code>ActivityGroupMember</code>
+	 *               was successfully removed, <code>False</code> otherwise
 	 */
 
 	protected boolean removeChild(ActivityGroupMember child)

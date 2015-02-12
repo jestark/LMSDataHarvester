@@ -40,8 +40,8 @@ import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.Default.UserBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.manager.Default.UserManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager
  */
 
 public class UserData implements User, Serializable

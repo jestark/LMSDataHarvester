@@ -53,14 +53,14 @@ public interface CourseElementFactory extends ElementFactory<Course>
 	/**
 	 * Add the specified <code>Activity</code> to the specified <code>Course</code>.
 	 *
-	 * @param  course    The <code>Course</code> to which the <code>Activity</code>
-	 *                   is to be added, not null
-	 * @param  enrolment The <code>Enrolment</code> to add to the
-	 *                   <code>Course</code>, not null
+	 * @param  course   The <code>Course</code> to which the <code>Activity</code>
+	 *                  is to be added, not null
+	 * @param  activity The <code>Activity</code> to add to the
+	 *                  <code>Course</code>, not null
 	 *
-	 * @return           <code>True</code> if the <code>Activity</code> was
-	 *                   successfully added to the <code>Course</code>,
-	 *                   <code>False</code> otherwise
+	 * @return          <code>True</code> if the <code>Activity</code> was
+	 *                  successfully added to the <code>Course</code>,
+	 *                  <code>False</code> otherwise
 	 */
 
 	public abstract boolean addActivity (Course course, Activity activity);
@@ -68,14 +68,14 @@ public interface CourseElementFactory extends ElementFactory<Course>
 	/**
 	 * Remove the specified <code>Activity</code> from the specified <code>Course</code>.
 	 *
-	 * @param  course    The <code>Course</code> from which the <code>Activity</code>
-	 *                   is to be removed, not null
-	 * @param  enrolment The <code>Enrolment</code> to remove from the
-	 *                   <code>Course</code>, not null
+	 * @param  course   The <code>Course</code> from which the <code>Activity</code>
+	 *                  is to be removed, not null
+	 * @param  activity The <code>Activity</code> to remove from the
+	 *                  <code>Course</code>, not null
 	 *
-	 * @return           <code>True</code> if the <code>Activity</code> was
-	 *                   successfully removed from the <code>Course</code>,
-	 *                   <code>False</code> otherwise
+	 * @return          <code>True</code> if the <code>Activity</code> was
+	 *                  successfully removed from the <code>Course</code>,
+	 *                  <code>False</code> otherwise
 	 */
 
 	public abstract boolean removeActivity (Course course, Activity activity);

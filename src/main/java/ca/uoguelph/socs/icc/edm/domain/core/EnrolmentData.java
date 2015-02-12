@@ -244,8 +244,6 @@ public class EnrolmentData implements Enrolment, Serializable
 	 *                <code>Course</code>
 	 * @param  usable Indication if the <code>User</code> has consented to their
 	 *                data being used for research
-	 *
-	 * @return        The new <code>Enrolment</code> instance
 	 */
 
 	public EnrolmentData (Course course, Role role, Integer grade, Boolean usable)

@@ -161,8 +161,6 @@ public class ActivitySourceData implements ActivitySource, Serializable
 	 * Create a new <code>ActivitySource</code> instance.
 	 *
 	 * @param  name The name of the <code>ActivitySource</code>, not null
-	 *
-	 * @return      The new <code>ActivitySource</code> instance
 	 */
 
 	public ActivitySourceData (String name)

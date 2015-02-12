@@ -32,7 +32,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The type of <code>Element</code> to be processed
- * @param   <X> The type of <code>ElementBuilder</code> to be returned
  */
 
 public abstract class AbstractManager<T extends Element> implements ElementManager<T>

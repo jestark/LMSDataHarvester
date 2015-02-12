@@ -112,8 +112,6 @@ public class GradedActivity implements Grade, Serializable
 	 * @param  activity  The <code>Activity</code> for which the grade is
 	 *                   assigned, not null
 	 * @param  grade     The assigned grade, on the interval [0, 100], not null
-	 *
-	 * @return           The new <code>Grade</code> instance
 	 */
 
 	public GradedActivity (Enrolment enrolment, Activity activity, Integer grade)
@@ -226,7 +224,7 @@ public class GradedActivity implements Grade, Serializable
 	 * @param  enrolment The <code>Enrolment</code>, not null
 	 */
 
-	public void setEnrolment (Enrolment Enrolment)
+	public void setEnrolment (Enrolment enrolment)
 	{
 		this.enrolment = enrolment;
 	}
