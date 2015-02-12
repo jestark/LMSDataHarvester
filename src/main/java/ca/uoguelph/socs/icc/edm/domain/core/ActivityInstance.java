@@ -41,6 +41,10 @@ import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
  * instances of this class will be accessed though the <code>Activity</code>
  * interface, along with the relevant manager, and builder.  See the
  * <code>Activity</code> interface documentation for details.
+ * <p>
+ * Note that there is a co-dependency between this class and
+ * <code>GenericNamedActivity</code>.  See <code>GenericNamedActivity</code>
+ * for the details.
  *
  * @author  James E. Stark
  * @version 1.0

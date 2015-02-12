@@ -28,10 +28,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMemberBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+
+import ca.uoguelph.socs.icc.edm.domain.activity.ActivityDataMap;
 
 /**
  * An generic representation of a sub-activity in the domain model.  This class
@@ -55,6 +58,22 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 
 	/** The log entries which are associated with the sub-activity */
 	private List<LogEntry> log;
+
+	/**
+	 * Register the activity with the <code>ActivityDataMap</code> and the
+	 * factories.  This method handles the registrations for the subclasses to
+	 * reduce code duplication.
+	 *
+	 * @param  impl    The implementation class, not null
+	 * @param  parent  The parent <code>Activity</code> class, not null
+	 * @param  builder The <code>ActivityGroupMemberBuilder</code> implementation,
+	 *                 not null
+	 */
+
+	protected static final <T extends GenericGroupedActivityMember> void registerActivity (Class<T> impl, Class<? extends ActivityGroup> parent, Class<? extends ActivityGroupMemberBuilder> builder)
+	{
+		(ActivityDataMap.getInstance ()).registerRelationship (parent, impl);
+	}
 
 	/**
 	 * Create the <code>Activity</code> with null values.

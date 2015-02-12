@@ -26,15 +26,52 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
+import ca.uoguelph.socs.icc.edm.domain.activity.ActivityDataMap;
+
 /**
  * Generic representation of an <code>Activity</code> which has a name.  This
  * class acts as an abstract base class for all of the <code>Activity</code>
  * implementations which have a name.
+ * <p>
+ * Note that there exists a co-dependency between this class and
+ * <code>ActivityInstance</code>. Instances of this class require the data in
+ * <code>ActivityInstance</code> to be uniquely identified, and when this class
+ * is present the instances of <code>ActivityInstance</code> require data in
+ * this class to be uniquely identified.  The co-dependency effects the
+ * implementations for the <code>equals</code>, <code>hashCode</code> and
+ * <code>toString</code> methods.
+ * <p>
+ * Normally, the implementation of the relation ship between two classes we see
+ * each class call the others <code>equals</code>, <code>hashCode</code> or
+ * <code>toString</code> method when it is needed.  With the co-dependency each
+ * class calling the others <code>equals</code>, <code>hashCode</code> or
+ * <code>toString</code> method would lead to an infinite mutual recursion.  To
+ * avoid the infinite mutual recursion, this class re-implements the 
+ * <code>equals</code>, <code>hashCode</code> and <code>toString</code> methods
+ * from <code>ActivityInstance</code> using the methods from the
+ * <code>Activity</code> interface.  When this class is present, 
+ * <code>ActivityInstance</code> calls the <code>equals</code>,
+ * <code>hashCode</code> and <code>toString</code> methods from this class
+ * rather than doing the computations itself.
+ * <p>
+ * Ideally, <code>ActivityInstance</code> would be encapsulated by this class
+ * and the depedency would be one way (from this class to
+ * <code>ActivityInstance</code>).  However, limitations imposed by the
+ * database and the Java Persistence API require that these classes are
+ * co-dependant.  Since this class is optional, <code>ActivityInstance</code>
+ * needs to be able to stand alone.  There is no way to tell JPA to encapsulate
+ * <code>ActivityInstance</code> within the instance of this class, when this
+ * class is present.  So from the point of view of the database,
+ * <code>ActivityInstance</code> encapsulates this class.  However, it is
+ * expected that some programs will treat this class as encapsulating
+ * <code>ActivityInstance</code>, so the instances of both classes need to be
+ * able to be resolved starting from either class.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -47,6 +84,22 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 
 	/** The activity instance */
 	private ActivityInstance instance;
+
+	/**
+	 * Register the activity with the <code>ActivityDataMap</code> and the
+	 * factories.  This method handles the registrations for the subclasses to
+	 * reduce code duplication.
+	 *
+	 * @param  impl    The implementation class, not null
+	 * @param  builder The <code>ActivityBuilder</code> implementation, not null
+	 * @param  source  The name of the <code>ActivitySource</code> not null
+	 * @param  type    The name of the <code>ActivityType</code> not null
+	 */
+
+	protected static final <T extends GenericNamedActivity> void registerActivity (Class<T> impl, Class<? extends ActivityBuilder> builder, String source, String type)
+	{
+		(ActivityDataMap.getInstance ()).registerElement (source, type, impl);
+	}
 
 	/**
 	 * Create the <code>Activity</code> with null values.
