@@ -20,11 +20,11 @@ import java.util.Date;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
 
 /**
@@ -72,5 +72,5 @@ public interface LogEntryElementFactory extends ElementFactory<LogEntry>
 	 *                   <code>LogEntry</code>, not null
 	 */
 
-	public abstract void setReference (LogEntry entry, LogReference<? extends ActivityGroupMember> reference);
+	public abstract void setReference (LogEntry entry, LogReference reference);
 }

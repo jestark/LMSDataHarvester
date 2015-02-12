@@ -17,9 +17,8 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityGroup;
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
+import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 /**
  * Factory interface to create new <code>ActivityGroupMember</code> instances.
