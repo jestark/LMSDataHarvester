@@ -32,6 +32,11 @@ MoodleLessonActivityPage		2053	599
 MoodleWorkshopActivity			2063	593
 MoodleWorkshopActivitySubmission	2069	587
 
+MoodleBookActivityChapterLog	2081 577
+MoodleForumActivityDiscussionLog	2083 571
+MoodleForumActivityPostLog		2087 569
+MoodleLessonActivityPostLog		2089 563
+MoodleWorkshopActivitySubmissionLog	2099 557
 
 MoodleAssignActivity			3001	397
 MoodleChecklistActivity			3011	389

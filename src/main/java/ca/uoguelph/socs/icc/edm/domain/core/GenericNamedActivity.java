@@ -34,6 +34,8 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.activity.ActivityDataMap;
 
+import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
+
 /**
  * Generic representation of an <code>Activity</code> which has a name.  This
  * class acts as an abstract base class for all of the <code>Activity</code>
@@ -92,11 +94,12 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	 *
 	 * @param  impl    The implementation class, not null
 	 * @param  builder The <code>ActivityBuilder</code> implementation, not null
+	 * @param  factory The <code>ElementFactory</code>, not null
 	 * @param  source  The name of the <code>ActivitySource</code> not null
 	 * @param  type    The name of the <code>ActivityType</code> not null
 	 */
 
-	protected static final <T extends GenericNamedActivity> void registerActivity (Class<T> impl, Class<? extends ActivityBuilder> builder, String source, String type)
+	protected static final <T extends GenericNamedActivity> void registerActivity (Class<T> impl, Class<? extends ActivityBuilder> builder, NamedActivityElementFactory factory, String source, String type)
 	{
 		(ActivityDataMap.getInstance ()).registerElement (source, type, impl);
 	}
@@ -117,11 +120,11 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	 * @param  name The name of the <code>Activity</code>
 	 */
 
-	public GenericNamedActivity (String name)
+	public GenericNamedActivity (Activity instance, String name)
 	{
 		super (name);
 
-		this.instance = null;
+		this.instance = (ActivityInstance) instance;
 	}
 
 	/**

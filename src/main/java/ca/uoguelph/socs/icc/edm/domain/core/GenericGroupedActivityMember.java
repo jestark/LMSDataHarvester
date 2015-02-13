@@ -36,6 +36,8 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.activity.ActivityDataMap;
 
+import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
+
 /**
  * An generic representation of a sub-activity in the domain model.  This class
  * acts as an abstract base class for all of the sub-activities by implementing
@@ -68,9 +70,10 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 * @param  parent  The parent <code>Activity</code> class, not null
 	 * @param  builder The <code>ActivityGroupMemberBuilder</code> implementation,
 	 *                 not null
+	 * @param  factory The <code>ElementFactory</code>, not null
 	 */
 
-	protected static final <T extends GenericGroupedActivityMember> void registerActivity (Class<T> impl, Class<? extends ActivityGroup> parent, Class<? extends ActivityGroupMemberBuilder> builder)
+	protected static final <T extends GenericGroupedActivityMember> void registerActivity (Class<T> impl, Class<? extends ActivityGroup> parent, Class<? extends ActivityGroupMemberBuilder> builder, ActivityGroupMemberElementFactory factory)
 	{
 		(ActivityDataMap.getInstance ()).registerRelationship (parent, impl);
 	}

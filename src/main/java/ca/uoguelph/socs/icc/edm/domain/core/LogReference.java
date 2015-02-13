@@ -31,6 +31,8 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
+import ca.uoguelph.socs.icc.edm.domain.builder.LogReferenceElementFactory;
+
 /**
  * An abstract representation of the relationship between a
  * <code>LogEntry</code> and a sub-activity.  This class acts as the abstract
@@ -50,6 +52,18 @@ public abstract class LogReference implements LogEntry, Serializable
 
 	/** The associated sub-activity */
 	private ActivityGroupMember activity;
+
+	/**
+	 * Register the <code>LogReference</code> with the factories.  This method
+	 * handles the registrations for the subclasses to reduce code duplication.
+	 *
+	 * @param  impl    The implementation class, not null
+	 * @param  factory The <code>ElementFactory</code>, not null
+	 */	
+
+	protected static void registerLog (Class<? extends LogReference> impl, LogReferenceElementFactory factory)
+	{
+	}
 
 	/**
 	 * Create the <code>LogEntry</code> with null values.

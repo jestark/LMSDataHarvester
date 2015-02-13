@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,20 @@ package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
+import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.AbstractNoIdElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 /**
- * Implementation of the <code>Activity</code> interface for the
- * ${ActivitySource}/${ActivityType}
+ * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>ActivityGroup</code> interface,
  * along with the relevant manager, and builder.  See the
@@ -40,6 +44,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <li>ActivitySource = ${ActivitySource}
  * <li>ActivityType   = ${ActivityType}
  * <li>ClassName      = ${ClassName}
+ * <li>ChildClass     = ${ChildClass}
  * <li>Builder        = ${Builder}
  * <li>HashBase       = ${HashBase}
  * <li>HashMult       = ${HashMult}
@@ -56,7 +61,7 @@ public class ${ClassName} extends GenericGroupedActivity
 	 * builders to create instances of <code>${ClassName}</code>.
 	 */
 
-	private static final class Factory extends AbstractNoIdFactory implements NamedActivityElementFactory, ActivityGroupElementFactory
+	private static final class Factory extends AbstractNoIdElementFactory<Activity> implements NamedActivityElementFactory, ActivityGroupElementFactory
 	{
 		/**
 		 * Create a new <code>Activity</code> instance.
@@ -89,6 +94,11 @@ public class ${ClassName} extends GenericGroupedActivity
 
 		public boolean addChild (ActivityGroup group, ActivityGroupMember member)
 		{
+			if (! (member instanceof ${ChildClass}))
+			{
+				throw new IllegalArgumentException ("Child is not a member of ${ChildClass}");
+			}
+
 			return ((${ClassName}) group).addChild (member);
 		}
 
@@ -108,9 +118,17 @@ public class ${ClassName} extends GenericGroupedActivity
 
 		public boolean removeChild (ActivityGroup group, ActivityGroupMember member)
 		{
+			if (! (member instanceof ${ChildClass}))
+			{
+				throw new IllegalArgumentException ("Child is not a member of ${ChildClass}");
+			}
+
 			return ((${ClassName}) group).removeChild (member);
 		}
 	}
+
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Register the <code>${ClassName}</code> with the factories on initialization.
@@ -118,7 +136,7 @@ public class ${ClassName} extends GenericGroupedActivity
 
 	static
 	{
-		GenericGroupedActivity.registerActivity (${ClassName}.class, ${Builder}.class, new Factory (), "${ActivitySource}", "${ActivityType}");
+		GenericNamedActivity.registerActivity (${ClassName}.class, ${Builder}.class, new Factory (), "${ActivitySource}", "${ActivityType}");
 	}
 
 	/**

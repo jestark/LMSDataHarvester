@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -22,12 +22,12 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.AbstractNoIdElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 /**
- * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
+ * Implementation of the <code>Activity</code> interface for the moodle/url
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>Activity</code> interface,
  * along with the relevant manager, and builder.  See the <code>Activity</code>
@@ -37,23 +37,23 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * the following values:
  * <p>
  * <ul>
- * <li>ActivitySource = ${ActivitySource}
- * <li>ActivityType   = ${ActivityType}
- * <li>ClassName      = ${ClassName}
- * <li>Builder        = ${Builder}
- * <li>HashBase       = ${HashBase}
- * <li>HashMult       = ${HashMult}
+ * <li>ActivitySource = moodle
+ * <li>ActivityType   = url
+ * <li>ClassName      = URL
+ * <li>Builder        = DefaultNamedActivityBuilder
+ * <li>HashBase       = 3083
+ * <li>HashMult       = 337
  * </ul>
  *
  * @author  James E. Stark
  * @version 1.1
  */
 
-public class ${ClassName} extends GenericNamedActivity
+public class URL extends GenericNamedActivity
 {
 	/**
 	 * Implementation of the <code>NamedActivityElementFactory</code>.  Allows the
-	 * builders to create instances of <code>${ClassName}</code>.
+	 * builders to create instances of <code>URL</code>.
 	 */
 
 	private static final class Factory extends AbstractNoIdElementFactory<Activity> implements NamedActivityElementFactory
@@ -70,7 +70,7 @@ public class ${ClassName} extends GenericNamedActivity
 
 		public Activity create (Activity instance, String name)
 		{
-			return new ${ClassName} (instance, name);
+			return new URL (instance, name);
 		}
 	}
 
@@ -78,19 +78,19 @@ public class ${ClassName} extends GenericNamedActivity
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Register the <code>${ClassName}</code> with the factories on initialization.
+	 * Register the <code>URL</code> with the factories on initialization.
 	 */
 
 	static
 	{
-		GenericNamedActivity.registerActivity (${ClassName}.class, ${Builder}.class, new Factory (), "${ActivitySource}", "${ActivityType}");
+		GenericNamedActivity.registerActivity (URL.class, DefaultNamedActivityBuilder.class, new Factory (), "moodle", "url");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	public URL ()
 	{
 		super ();
 	}
@@ -103,7 +103,7 @@ public class ${ClassName} extends GenericNamedActivity
 	 * @param  name     The name of the <code>Activity</code>, not null
 	 */
 
-	public ${ClassName} (Activity instance, String name)
+	public URL (Activity instance, String name)
 	{
 		super (instance, name);
 	}
@@ -111,7 +111,7 @@ public class ${ClassName} extends GenericNamedActivity
 	/**
 	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
 	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>${ClassName}</code> from the other
+	 * to separate the instances of <code>URL</code> from the other
 	 * subclasses of the superclass.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
@@ -120,8 +120,8 @@ public class ${ClassName} extends GenericNamedActivity
 	@Override
 	public int hashCode ()
 	{
-		final int base = ${HashBase};
-		final int mult = ${HashMult};
+		final int base = 3083;
+		final int mult = 337;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.appendSuper (super.hashCode ());

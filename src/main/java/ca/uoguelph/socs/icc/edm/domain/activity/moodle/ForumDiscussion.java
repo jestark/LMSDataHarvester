@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -24,13 +24,13 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityGroupMemberBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
 
 /**
- * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
+ * Implementation of the <code>Activity</code> interface for the moodle/Forum
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>ActivityGroup</code> interface,
  * along with the relevant manager, and builder.  See the
@@ -40,25 +40,25 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * the following values:
  * <p>
  * <ul>
- * <li>ActivitySource = ${ActivitySource}
- * <li>ActivityType   = ${ActivityType}
- * <li>ClassName      = ${ClassName}
- * <li>ParentClass    = ${ParentClass}
- * <li>ChildClass     = ${ChildClass}
- * <li>Builder        = ${Builder}
- * <li>HashBase       = ${HashBase}
- * <li>HashMult       = ${HashMult}
+ * <li>ActivitySource = moodle
+ * <li>ActivityType   = Forum
+ * <li>ClassName      = ForumDiscussion
+ * <li>ParentClass    = Forum
+ * <li>ChildClass     = ForumPost
+ * <li>Builder        = DefaultActivityGroupMemberBuilder
+ * <li>HashBase       = 2027
+ * <li>HashMult       = 673
  * </ul>
  *
  * @author  James E. Stark
  * @version 1.1
  */
 
-public class ${ClassName} extends GenericGroupedActivityGroup
+public class ForumDiscussion extends GenericGroupedActivityGroup
 {
 	/**
 	 * Implementation of the <code>ActivityGroupMemberElementFactory</code>.
-	 * Allows the builders to create instances of <code>${ClassName}</code>.
+	 * Allows the builders to create instances of <code>ForumDiscussion</code>.
 	 */
 
 	private static final class Factory implements ActivityGroupElementFactory, ActivityGroupMemberElementFactory
@@ -75,12 +75,12 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 
 		public ActivityGroupMember create (ActivityGroup parent, String name)
 		{
-			if (! (parent instanceof ${ParentClass}))
+			if (! (parent instanceof Forum))
 			{
-				throw new IllegalArgumentException ("Parent is not an instance of ${ParentClass}");
+				throw new IllegalArgumentException ("Parent is not an instance of Forum");
 			}
 
-			return new ${ClassName} (parent, name);
+			return new ForumDiscussion (parent, name);
 		}
 
 		/**
@@ -95,7 +95,7 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 
 		public void setId (Activity activity, Long id)
 		{
-			((${ClassName}) activity).setId (id);
+			((ForumDiscussion) activity).setId (id);
 		}
 
 		/**
@@ -114,12 +114,12 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 
 		public boolean addChild (ActivityGroup group, ActivityGroupMember member)
 		{
-			if (! (member instanceof ${ChildClass}))
+			if (! (member instanceof ForumPost))
 			{
-				throw new IllegalArgumentException ("Child is not an instance of ${ChildClass}");
+				throw new IllegalArgumentException ("Child is not an instance of ForumPost");
 			}
 
-			return ((${ClassName}) group).addChild (member);
+			return ((ForumDiscussion) group).addChild (member);
 		}
 
 		/**
@@ -138,22 +138,22 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 
 		public boolean removeChild (ActivityGroup group, ActivityGroupMember member)
 		{
-			if (! (member instanceof ${ChildClass}))
+			if (! (member instanceof ForumPost))
 			{
-				throw new IllegalArgumentException ("Child is not an instance of ${ChildClass}");
+				throw new IllegalArgumentException ("Child is not an instance of ForumPost");
 			}
 
-			return ((${ClassName}) group).removeChild (member);
+			return ((ForumDiscussion) group).removeChild (member);
 		}
 	}
 
 	/**
-	 * Register the <code>${ClassName}</code> with the factories on initialization.
+	 * Register the <code>ForumDiscussion</code> with the factories on initialization.
 	 */
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (${ClassName}.class, ${ParentClass}.class, ${Builder}.class, new Factory ());
+		GenericGroupedActivityMember.registerActivity (ForumDiscussion.class, Forum.class, DefaultActivityGroupMemberBuilder.class, new Factory ());
 	}
 
 	/** Serial version id, required by the Serializable interface */
@@ -163,7 +163,7 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	public ForumDiscussion ()
 	{
 		super ();
 	}
@@ -175,7 +175,7 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 	 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
 	 */
 
-	public ${ClassName} (ActivityGroup parent, String name)
+	public ForumDiscussion (ActivityGroup parent, String name)
 	{
 		super (parent, name);
 	}
@@ -183,7 +183,7 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 	/**
 	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
 	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>${ClassName}</code> from the other
+	 * to separate the instances of <code>ForumDiscussion</code> from the other
 	 * subclasses of the superclass.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
@@ -192,8 +192,8 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 	@Override
 	public int hashCode ()
 	{
-		final int base = ${HashBase};
-		final int mult = ${HashMult};
+		final int base = 2027;
+		final int mult = 673;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.appendSuper (super.hashCode ());

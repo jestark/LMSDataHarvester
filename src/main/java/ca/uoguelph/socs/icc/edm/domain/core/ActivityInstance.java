@@ -83,7 +83,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 
 		/**
 		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Action</code>.
+		 * <code>Activity</code>.
 		 *
 		 * @param  action The <code>Action</code> to which the ID number is assigned,
 		 *                not null

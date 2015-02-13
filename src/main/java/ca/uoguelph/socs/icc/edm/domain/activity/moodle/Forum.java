@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -22,15 +22,16 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
+import ca.uoguelph.socs.icc.edm.domain.builder.AbstractNoIdElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
+import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityGroup;
-import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
+import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivity;
+import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 /**
- * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
+ * Implementation of the <code>Activity</code> interface for the moodle/Forum
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>ActivityGroup</code> interface,
  * along with the relevant manager, and builder.  See the
@@ -40,62 +41,41 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * the following values:
  * <p>
  * <ul>
- * <li>ActivitySource = ${ActivitySource}
- * <li>ActivityType   = ${ActivityType}
- * <li>ClassName      = ${ClassName}
- * <li>ParentClass    = ${ParentClass}
- * <li>ChildClass     = ${ChildClass}
- * <li>Builder        = ${Builder}
- * <li>HashBase       = ${HashBase}
- * <li>HashMult       = ${HashMult}
+ * <li>ActivitySource = moodle
+ * <li>ActivityType   = Forum
+ * <li>ClassName      = Forum
+ * <li>ChildClass     = ForumDiscussion
+ * <li>Builder        = DefaultNamedActivityBuilder
+ * <li>HashBase       = 2017
+ * <li>HashMult       = 677
  * </ul>
  *
  * @author  James E. Stark
  * @version 1.1
  */
 
-public class ${ClassName} extends GenericGroupedActivityGroup
+public class Forum extends GenericGroupedActivity
 {
 	/**
-	 * Implementation of the <code>ActivityGroupMemberElementFactory</code>.
-	 * Allows the builders to create instances of <code>${ClassName}</code>.
+	 * Implementation of the <code>NamedActivityElementFactory</code>.  Allows the
+	 * builders to create instances of <code>Forum</code>.
 	 */
 
-	private static final class Factory implements ActivityGroupElementFactory, ActivityGroupMemberElementFactory
+	private static final class Factory extends AbstractNoIdElementFactory<Activity> implements NamedActivityElementFactory, ActivityGroupElementFactory
 	{
 		/**
-		 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.
+		 * Create a new <code>Activity</code> instance.
 		 *
-		 * @param  parent The parent <code>ActivityGroup</code>, not null
-		 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
+		 * @param  instance The <code>Activity</code> containing the instance data,
+		 *                  not null
+		 * @param  name     The name of the <code>Activity</code>, not null
 		 *
-		 * @return        The new sub-activity (<code>ActivityGroupMember</code>)
-		 *                instance
+		 * @return          The new <code>Activity</code> instance
 		 */
 
-		public ActivityGroupMember create (ActivityGroup parent, String name)
+		public Activity create (Activity instance, String name)
 		{
-			if (! (parent instanceof ${ParentClass}))
-			{
-				throw new IllegalArgumentException ("Parent is not an instance of ${ParentClass}");
-			}
-
-			return new ${ClassName} (parent, name);
-		}
-
-		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity The <code>Activity</code> to which the ID number is
-		 *                  assigned not null
-		 * @param  id       The ID number assigned to the <code>Activity</code>, not
-		 *                  null
-		 */
-
-		public void setId (Activity activity, Long id)
-		{
-			((${ClassName}) activity).setId (id);
+			return new Forum (instance, name);
 		}
 
 		/**
@@ -114,12 +94,12 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 
 		public boolean addChild (ActivityGroup group, ActivityGroupMember member)
 		{
-			if (! (member instanceof ${ChildClass}))
+			if (! (member instanceof ForumDiscussion))
 			{
-				throw new IllegalArgumentException ("Child is not an instance of ${ChildClass}");
+				throw new IllegalArgumentException ("Child is not a member of ForumDiscussion");
 			}
 
-			return ((${ClassName}) group).addChild (member);
+			return ((Forum) group).addChild (member);
 		}
 
 		/**
@@ -138,52 +118,55 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 
 		public boolean removeChild (ActivityGroup group, ActivityGroupMember member)
 		{
-			if (! (member instanceof ${ChildClass}))
+			if (! (member instanceof ForumDiscussion))
 			{
-				throw new IllegalArgumentException ("Child is not an instance of ${ChildClass}");
+				throw new IllegalArgumentException ("Child is not a member of ForumDiscussion");
 			}
 
-			return ((${ClassName}) group).removeChild (member);
+			return ((Forum) group).removeChild (member);
 		}
-	}
-
-	/**
-	 * Register the <code>${ClassName}</code> with the factories on initialization.
-	 */
-
-	static
-	{
-		GenericGroupedActivityMember.registerActivity (${ClassName}.class, ${ParentClass}.class, ${Builder}.class, new Factory ());
 	}
 
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Register the <code>Forum</code> with the factories on initialization.
+	 */
+
+	static
+	{
+		GenericNamedActivity.registerActivity (Forum.class, DefaultNamedActivityBuilder.class, new Factory (), "moodle", "Forum");
+	}
+
+	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	public Forum ()
 	{
 		super ();
 	}
 
 	/**
-	 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.
+	 * Create a new <code>Activity</code> instance.
 	 *
-	 * @param  parent The parent <code>ActivityGroup</code>, not null
-	 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
+	 * @param  instance The <code>Activity</code> containing the instance data,
+	 *                  not null
+	 * @param  name     The name of the <code>Activity</code>, not null
+	 *
+	 * @return          The new <code>Activity</code> instance
 	 */
 
-	public ${ClassName} (ActivityGroup parent, String name)
+	public Forum (Activity instance, String name)
 	{
-		super (parent, name);
+		super (instance, name);
 	}
 
 	/**
 	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
 	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>${ClassName}</code> from the other
+	 * to separate the instances of <code>Forum</code> from the other
 	 * subclasses of the superclass.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
@@ -192,8 +175,8 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 	@Override
 	public int hashCode ()
 	{
-		final int base = ${HashBase};
-		final int mult = ${HashMult};
+		final int base = 2017;
+		final int mult = 677;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.appendSuper (super.hashCode ());
@@ -201,3 +184,4 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 		return hbuilder.toHashCode ();
 	}
 }
+

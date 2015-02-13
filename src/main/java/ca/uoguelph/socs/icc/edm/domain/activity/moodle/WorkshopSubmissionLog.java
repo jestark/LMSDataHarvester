@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
 
 /**
  * Implementation of the <code>LogEntry</code> interface for logs referencing
- * the sub-activity implemented by that <code>${ActivityClass}</code> class.
+ * the sub-activity implemented by that <code>WorkshopSubmission</code> class.
  * It is expected that this class will be accessed though the
  * <code>LogEntry</code> interface, along with the relevant manager, and
  * builder.  See the <code>LogEntry</code> interface documentation for details.
@@ -37,19 +37,19 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
  * the following values:
  * <p>
  * <ul>
- * <li>ActivitySource = ${ActivitySource}
- * <li>ActivityType   = ${ActivityType}
- * <li>ClassName      = ${ClassName}
- * <li>ActivityClass  = ${ActivityClass}
- * <li>HashBase       = ${HashBase}
- * <li>HashMult       = ${HashMult}
+ * <li>ActivitySource = moodle
+ * <li>ActivityType   = Workshop
+ * <li>ClassName      = WorkshopSubmissionLog
+ * <li>ActivityClass  = WorkshopSubmission
+ * <li>HashBase       = 2099
+ * <li>HashMult       = 557
  * </ul>
  *
  * @author  James E. Stark
  * @version 1.1
  */
 
-class ${ClassName} extends LogReference
+class WorkshopSubmissionLog extends LogReference
 {
 	private static final class Factory extends AbstractNoIdElementFactory<LogEntry> implements LogReferenceElementFactory
 	{
@@ -67,12 +67,12 @@ class ${ClassName} extends LogReference
 
 		public LogEntry create (LogEntry entry, ActivityGroupMember activity)
 		{
-			if (! (activity instanceof ${ActivityClass}))
+			if (! (activity instanceof WorkshopSubmission))
 			{
-				throw new IllegalArgumentException ("Activity is not an instance of ${ActivityClass}");
+				throw new IllegalArgumentException ("Activity is not an instance of WorkshopSubmission");
 			}
 
-			return new ${ClassName} (entry, activity);
+			return new WorkshopSubmissionLog (entry, activity);
 		}
 	}
 
@@ -80,25 +80,25 @@ class ${ClassName} extends LogReference
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Register the <code>${ClassName}</code> with the factories on initialization.
+	 * Register the <code>WorkshopSubmissionLog</code> with the factories on initialization.
 	 */
 
 	static
 	{
-		LogReference.registerLog (${ClassName}.class, new Factory ());
+		LogReference.registerLog (WorkshopSubmissionLog.class, new Factory ());
 	}
 
 	/**
 	 * Create the <code>LogEntry</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	public WorkshopSubmissionLog ()
 	{
 		super ();
 	}
 
 	/**
-	 * Create the <code>${ClassName}</code>.
+	 * Create the <code>WorkshopSubmissionLog</code>.
 	 *
 	 * @param  entry    The <code>LogEntry</code> which refers to the
 	 *                  sub-activity, not null
@@ -106,7 +106,7 @@ class ${ClassName} extends LogReference
 	 *                  is being referenced, not null
 	 */
 
-	public ${ClassName} (LogEntry entry, ActivityGroupMember activity)
+	public WorkshopSubmissionLog (LogEntry entry, ActivityGroupMember activity)
 	{
 		super (entry, activity);
 	}
@@ -114,7 +114,7 @@ class ${ClassName} extends LogReference
 	/**
 	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
 	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>$ActivityClass</code> from the other
+	 * to separate the instances of <code>WorkshopSubmission</code> from the other
 	 * subclasses of the superclass.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
@@ -123,8 +123,8 @@ class ${ClassName} extends LogReference
 	@Override
 	public int hashCode ()
 	{
-		final int base = ${HashBase};
-		final int mult = ${HashMult};
+		final int base = 2099;
+		final int mult = 557;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.appendSuper (super.hashCode ());

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -23,12 +23,12 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityGroupMemberBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
 
 /**
- * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
+ * Implementation of the <code>Activity</code> interface for the moodle/Book
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>ActivityGroup</code> interface,
  * along with the relevant manager, and builder.  See the
@@ -38,24 +38,24 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * the following values:
  * <p>
  * <ul>
- * <li>ActivitySource = ${ActivitySource}
- * <li>ActivityType   = ${ActivityType}
- * <li>ClassName      = ${ClassName}
- * <li>ParentClass    = ${ParentClass}
- * <li>Builder        = ${Builder}
- * <li>HashBase       = ${HashBase}
- * <li>HashMult       = ${HashMult}
+ * <li>ActivitySource = moodle
+ * <li>ActivityType   = Book
+ * <li>ClassName      = BookChapter
+ * <li>ParentClass    = Book
+ * <li>Builder        = DefaultActivityGroupMemberBuilder
+ * <li>HashBase       = 2011
+ * <li>HashMult       = 683
  * </ul>
  *
  * @author  James E. Stark
  * @version 1.1
  */
 
-public class ${ClassName} extends GenericGroupedActivityMember
+public class BookChapter extends GenericGroupedActivityMember
 {
 	/**
 	 * Implementation of the <code>ActivityGroupMemberElementFactory</code>.
-	 * Allows the builders to create instances of <code>${ClassName}</code>.
+	 * Allows the builders to create instances of <code>BookChapter</code>.
 	 */
 
 	private static final class Factory implements ActivityGroupMemberElementFactory
@@ -72,12 +72,12 @@ public class ${ClassName} extends GenericGroupedActivityMember
 
 		public ActivityGroupMember create (ActivityGroup parent, String name)
 		{
-			if (! (parent instanceof ${ParentClass}))
+			if (! (parent instanceof Book))
 			{
-				throw new IllegalArgumentException ("Parent is not an instance of ${ParentClass}");
+				throw new IllegalArgumentException ("Parent is not an instance of Book");
 			}
 
-			return new ${ClassName} (parent, name);
+			return new BookChapter (parent, name);
 		}
 
 		/**
@@ -92,7 +92,7 @@ public class ${ClassName} extends GenericGroupedActivityMember
 
 		public void setId (Activity activity, Long id)
 		{
-			((${ClassName}) activity).setId (id);
+			((BookChapter) activity).setId (id);
 		}
 	}
 
@@ -100,19 +100,19 @@ public class ${ClassName} extends GenericGroupedActivityMember
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Register the <code>${ClassName}</code> with the factories on initialization.
+	 * Register the <code>BookChapter</code> with the factories on initialization.
 	 */
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (${ClassName}.class, ${ParentClass}.class, ${Builder}.class, new Factory ());
+		GenericGroupedActivityMember.registerActivity (BookChapter.class, Book.class, DefaultActivityGroupMemberBuilder.class, new Factory ());
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	public BookChapter ()
 	{
 		super ();
 	}
@@ -124,7 +124,7 @@ public class ${ClassName} extends GenericGroupedActivityMember
 	 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
 	 */
 
-	public ${ClassName} (ActivityGroup parent, String name)
+	public BookChapter (ActivityGroup parent, String name)
 	{
 		super (parent, name);
 	}
@@ -132,7 +132,7 @@ public class ${ClassName} extends GenericGroupedActivityMember
 	/**
 	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
 	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>${ClassName}</code> from the other
+	 * to separate the instances of <code>BookChapter</code> from the other
 	 * subclasses of the superclass.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
@@ -141,8 +141,8 @@ public class ${ClassName} extends GenericGroupedActivityMember
 	@Override
 	public int hashCode ()
 	{
-		final int base = ${HashBase};
-		final int mult = ${HashMult};
+		final int base = 2011;
+		final int mult = 683;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.appendSuper (super.hashCode ());

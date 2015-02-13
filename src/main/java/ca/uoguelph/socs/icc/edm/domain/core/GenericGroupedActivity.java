@@ -25,6 +25,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
@@ -62,9 +63,9 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 	 * @param  name The name of the <code>Activity</code>
 	 */
 
-	public GenericGroupedActivity (String name)
+	public GenericGroupedActivity (Activity instance, String name)
 	{
-		super (name);
+		super (instance, name);
 
 		this.children = new HashSet<ActivityGroupMember> ();
 	}
