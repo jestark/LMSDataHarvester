@@ -154,8 +154,6 @@ public class Forum extends GenericGroupedActivity
 	 * @param  instance The <code>Activity</code> containing the instance data,
 	 *                  not null
 	 * @param  name     The name of the <code>Activity</code>, not null
-	 *
-	 * @return          The new <code>Activity</code> instance
 	 */
 
 	public Forum (Activity instance, String name)
