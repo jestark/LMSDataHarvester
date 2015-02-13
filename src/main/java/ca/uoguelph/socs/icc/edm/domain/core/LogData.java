@@ -37,6 +37,10 @@ import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
  * instances of this class will be accessed though the <code>LogEntry</code>
  * interface, along with the relevant manager, and builder.  See the
  * <code>LogEntry</code> interface documentation for details.
+ * <p>
+ * Note that there is a co-dependency between this class and
+ * <code>LogReference</code>.  See <code>LogReference</code>
+ * for the details.
  *
  * @author  James E. Stark
  * @version 1.0

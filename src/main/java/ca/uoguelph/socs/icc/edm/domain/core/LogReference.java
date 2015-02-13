@@ -37,6 +37,38 @@ import ca.uoguelph.socs.icc.edm.domain.builder.LogReferenceElementFactory;
  * An abstract representation of the relationship between a
  * <code>LogEntry</code> and a sub-activity.  This class acts as the abstract
  * base class for all of the logging related to sub-activities.
+ * <p>
+ * Note that there exists a co-dependency between this class and
+ * <code>LogData</code>. Instances of this class require the data in
+ * <code>LogData</code> to be uniquely identified, and when this class is
+ * present the instances of <code>LogData</code> require data in this class to
+ * be uniquely identified.  The co-dependency effects the implementations for
+ * the <code>equals</code>, <code>hashCode</code> and <code>toString</code>
+ * methods.
+ * <p>
+ * Normally, the implementation of the relation ship between two classes we see
+ * each class call the others <code>equals</code>, <code>hashCode</code> or
+ * <code>toString</code> method when it is needed.  With the co-dependency each
+ * class calling the others <code>equals</code>, <code>hashCode</code> or
+ * <code>toString</code> method would lead to an infinite mutual recursion.  To
+ * avoid the infinite mutual recursion, this class re-implements the 
+ * <code>equals</code>, <code>hashCode</code> and <code>toString</code> methods
+ * from <code>LogData</code> using the methods from the <code>LogEntry</code>
+ * interface.  When this class is present, <code>LogData</code> calls the
+ * <code>equals</code>, <code>hashCode</code> and <code>toString</code> methods
+ * from this class rather than doing the computations itself.
+ * <p>
+ * Ideally, <code>LogData</code> would be encapsulated by this class and the
+ * dependency would be one way (from this class to <code>LogData</code>).
+ * However, limitations imposed by the database and the Java Persistence API
+ * require that these classes are co-dependant.  Since this class is optional,
+ * <code>LogData</code> needs to be able to stand alone.  There is no way to
+ * tell JPA to encapsulate <code>LogData</code> within the instance of this
+ * class, when this class is present.  So from the point of view of the
+ * database, <code>LogData</code> encapsulates this class.  However, it is
+ * expected that some programs will treat this class as encapsulating
+ * <code>LogData</code>, so the instances of both classes need to be able to be
+ * resolved starting from either class.
  *
  * @author  James E. Stark
  * @version 1.1
