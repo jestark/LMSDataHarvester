@@ -16,8 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
@@ -38,7 +38,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/** <code>ElementFactory</code> to build the user */
 	private final UserElementFactory factory;
@@ -77,7 +77,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 
 		this.clear ();
 
-		this.log = LogFactory.getLog (DefaultUserBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultUserBuilder.class);
 	}
 
 	@Override

@@ -16,8 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
 
@@ -26,22 +26,20 @@ public abstract class AbstractBuilder<T extends Element>
 	/** The manager (used to add new instances to the model) */
 	private final AbstractManager<T> manager;
 
-	/** The ID number generator */
-	private final IdGenerator generator;
-
 	/** The Logger */
-	private final Log log;
+	private final Logger log;
 
 	protected AbstractBuilder (AbstractManager<T> manager)
 	{
-		this.log = LogFactory.getLog (AbstractBuilder.class);
+		this.log = LoggerFactory.getLogger (AbstractBuilder.class);
 		
 		this.manager = manager;
-		this.generator = null;
 	}
 
 	public final T create ()
 	{
+		this.log.trace ("Create an instance of the Element");
+
 		return this.build ();
 	}
 

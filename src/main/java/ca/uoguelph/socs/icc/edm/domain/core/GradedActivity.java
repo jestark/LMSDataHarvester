@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,16 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
+
+import ca.uoguelph.socs.icc.edm.domain.builder.AbstractNoIdElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.GradeElementFactory;
+
 import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
 /**
@@ -36,13 +40,30 @@ import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.GradeBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder
  */
 
 public class GradedActivity implements Grade, Serializable
 {
-	private static final class GradedActivityFactory implements GradeElementFactory
+	/**
+	 * Implementation of the <code>GradeElementFactory</code> interface.  Allows
+	 * the builders to create instances of <code>GradedActivity</code>.
+	 */
+
+	private static final class GradedActivityFactory extends AbstractNoIdElementFactory<Grade> implements GradeElementFactory
 	{
+		/**
+		 * Create a new <code>Grade</code> instance.
+		 *
+		 * @param  enrolment The <code>Enrolment</code> to which the grade is
+		 *                   assigned, not null
+		 * @param  activity  The <code>Activity</code> for which the grade is
+		 *                   assigned, not null
+		 * @param  grade     The assigned grade, on the interval [0, 100], not null
+		 *
+		 * @return           The new <code>Grade</code> instance
+		 */
+
 		@Override
 		public Grade create (Enrolment enrolment, Activity activity, Integer mark)
 		{
@@ -62,10 +83,19 @@ public class GradedActivity implements Grade, Serializable
 	/** The activity for which the grade is assigned */
 	private Activity activity;
 
+	/**
+	 * Static initializer to register the <code>GradedActivity</code> class with the
+	 * factories.
+	 */
+
 	static
 	{
 //		(EnrolmentFactory.getInstance ()).registerElement (GradedActivity.class, DefaultGradeBuilder.class, new GradedActivityFactory ());
 	}
+
+	/**
+	 * Create the <code>Grade</code> with null values.
+	 */
 
 	public GradedActivity ()
 	{
@@ -74,7 +104,17 @@ public class GradedActivity implements Grade, Serializable
 		this.enrolment = null;
 	}
 
-	public GradedActivity (Enrolment enrolment, Activity activity, Integer mark)
+	/**
+	 * Create a new <code>Grade</code> instance.
+	 *
+	 * @param  enrolment The <code>Enrolment</code> to which the grade is
+	 *                   assigned, not null
+	 * @param  activity  The <code>Activity</code> for which the grade is
+	 *                   assigned, not null
+	 * @param  grade     The assigned grade, on the interval [0, 100], not null
+	 */
+
+	public GradedActivity (Enrolment enrolment, Activity activity, Integer grade)
 	{
 		this ();
 
@@ -82,6 +122,18 @@ public class GradedActivity implements Grade, Serializable
 		this.activity = activity;
 		this.enrolment = enrolment;
 	}
+
+	/**
+	 * Compare two <code>Grade</code> instances to determine if they are equal.
+	 * The <code>Grade</code> instances are compared based upon the associated
+	 * <code>Activity</code> and the associated <code>Enrolment</code>.
+	 *
+	 * @param  obj The <code>Grade</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Grade</code> instances
+	 *             are equal, <code>False</code> otherwise
+	 */
 
 	@Override
 	public boolean equals (Object obj)
@@ -97,13 +149,20 @@ public class GradedActivity implements Grade, Serializable
 			EqualsBuilder ebuilder = new EqualsBuilder ();
 			ebuilder.append (this.activity, ((GradedActivity) obj).activity);
 			ebuilder.append (this.enrolment, ((GradedActivity) obj).enrolment);
-			ebuilder.append (this.grade, ((GradedActivity) obj).grade);
 
 			result = ebuilder.isEquals ();
 		}
 
 		return result;
 	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>Grade</code> instance.
+	 * The hash code is computed based upon associated <code>Activity</code> and
+	 * the associated <code>Enrolment</code>.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
 
 	@Override
 	public int hashCode ()
@@ -114,10 +173,16 @@ public class GradedActivity implements Grade, Serializable
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.append (this.activity);
 		hbuilder.append (this.enrolment);
-		hbuilder.append (this.grade);
 
 		return hbuilder.toHashCode ();
 	}
+
+	/**
+	 * Get the <code>Activity</code> for which the <code>Grade</code> is
+	 * assigned.
+	 *
+	 * @return The associated <code>Activity</code>
+	 */
 
 	@Override
 	public Activity getActivity()
@@ -125,10 +190,25 @@ public class GradedActivity implements Grade, Serializable
 		return this.activity;
 	}
 
+	/**
+	 * Set the <code>Activity</code> which is associated with the
+	 * <code>Grade</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Grade</code> instance is loaded.
+	 *
+	 * @param  activity The <code>Activity</code>, not null
+	 */
+
 	protected void setActivity (Activity activity)
 	{
 		this.activity = activity;
 	}
+
+	/**
+	 * Get the <code>Enrolment</code>, for the student, to which the
+	 * <code>Grade</code> is assigned
+	 *
+	 * @return The associated <code>Enrolment</code>
+	 */
 
 	@Override
 	public Enrolment getEnrolment ()
@@ -136,10 +216,25 @@ public class GradedActivity implements Grade, Serializable
 		return this.enrolment;
 	}
 
-	public void setEnrolment (Enrolment Enrolment)
+	/**
+	 * Set the <code>Enrolment</code> which is associated with the
+	 * <code>Grade</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Grade</code> instance is loaded.
+	 *
+	 * @param  enrolment The <code>Enrolment</code>, not null
+	 */
+
+	public void setEnrolment (Enrolment enrolment)
 	{
 		this.enrolment = enrolment;
 	}
+
+	/**
+	 * Get the grade that the student received for the <code>Activity</code>.  The
+	 * grade will be an <code>Integer</code> with a value on the range of [0, 100].
+	 *
+	 * @return An <code>Integer</code> containing the assigned grade.
+	 */
 
 	@Override
 	public Integer getGrade()
@@ -147,10 +242,29 @@ public class GradedActivity implements Grade, Serializable
 		return this.grade;
 	}
 
+	/**
+	 * Set the numeric grade assigned to the <code>Enrolment</code> for the
+	 * <code>Activity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Grade</code> instance is loaded.
+	 *
+	 * @param  grade The grade, on the interval [0, 100], not null
+	 */
+
 	protected void setGrade (Integer grade)
 	{
 		this.grade = grade;
 	}
+
+	/**
+	 * Get the name of the <code>Enrolment</code> to which the <code>Grade</code>
+	 * is assigned.  This is a convenience method which return the result from the
+	 * <code>getName</code> method on the associated <code>Enrolment</code>
+	 * instance.
+	 *
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Enrolment</code>
+	 * @see    Enrolment#getName
+	 */
 
 	@Override
 	public String getName ()
@@ -158,9 +272,23 @@ public class GradedActivity implements Grade, Serializable
 		return this.enrolment.getName ();
 	}
 
+	/**
+	 * Get a <code>String</code> representation of the <code>Grade</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the <code>Grade</code>
+	 *         instance
+	 */
+
 	@Override
 	public String toString()
 	{
-		return new String (this.enrolment.toString () + ", " + this.activity.toString () + ": " +this.grade.toString ());
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("enrolment", this.enrolment);
+		builder.append ("activity", this.activity);
+		builder.append ("grade", this.grade);
+
+		return builder.toString ();
 	}
 }

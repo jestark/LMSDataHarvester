@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import java.util.HashSet;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
@@ -39,24 +40,89 @@ import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.UserBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.UserManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager
  */
 
 public class UserData implements User, Serializable
 {
+	/**
+	 * Implementation of the <code>UserElementFactory</code> interface.  Allows
+	 * the builders to create instances of <code>UserData</code>.
+	 */
+
 	private static final class UserDataFactory implements UserElementFactory
 	{
+		/**
+		 * Create a new <code>User</code> instance.
+		 *
+		 * @param  idnumber  The user's ID number, not null
+		 * @param  firstname The user's first name, not null
+		 * @param  lastname  The user's last name, not null
+		 * @param  username  The user's username, not null
+		 *
+		 * @return           The new <code>User</code> instance
+		 */
+
 		@Override
 		public User create (Integer idnumber, String firstname, String lastname, String username)
 		{
 			return new UserData (idnumber, firstname, lastname, username);
 		}
 
+		/**
+		 * Write the specified <code>DataStore</code> ID number into the
+		 * <code>User</code>.
+		 *
+		 * @param  user The <code>User</code> to which the ID number is assigned, not
+		 *              null
+		 * @param  id   The ID number assigned to the <code>User</code>, not null
+		 */
+
 		@Override
 		public void setId (User user, Long id)
 		{
 			((UserData) user).setId (id);
+		}
+
+		/**
+		 * Add the specified <code>Enrolment</code> to the specified
+		 * <code>User</code>.
+		 *
+		 * @param  user      The <code>User</code> to which the
+		 *                   <code>Enrolment</code> is to be added, not null
+		 * @param  enrolment The <code>Enrolment</code> to add to the
+		 *                   <code>User</code>, not null
+		 *
+		 * @return           <code>True</code> if the <code>Enrolment</code> was
+		 *                   successfully added to the <code>User</code>,
+		 *                   <code>False</code> otherwise
+		 */
+
+		@Override
+		public boolean addEnrolment (User user, Enrolment enrolment)
+		{
+			return ((UserData) user).addEnrolment (enrolment);
+		}
+
+		/**
+		 * Remove the specified <code>Enrolment</code> from the specified
+		 * <code>User</code>. 
+		 *
+		 * @param  user      The <code>User</code> from which the
+		 *                   <code>Enrolment</code> is to be removed, not null
+		 * @param  enrolment The <code>Enrolment</code> to remove from the
+		 *                   <code>User</code>, not null
+		 *
+		 * @return           <code>True</code> if the <code>Enrolment</code> was
+		 *                   successfully removed from the <code>User</code>,
+		 *                   <code>False</code> otherwise
+		 */
+
+		@Override
+		public boolean removeEnrolment (User user, Enrolment enrolment)
+		{
+			return ((UserData) user).removeEnrolment (enrolment);
 		}
 	}
 
@@ -81,6 +147,11 @@ public class UserData implements User, Serializable
 	/** The set of enrolments which are associated with the user */
 	private Set<Enrolment> enrolments;
 
+	/**
+	 * Static initializer to register the <code>UserData</code> class with the
+	 * factories.
+	 */
+
 	static
 	{
 		(UserFactory.getInstance ()).registerElement (UserData.class, DefaultUserBuilder.class, new UserDataFactory ());
@@ -100,6 +171,15 @@ public class UserData implements User, Serializable
 		this.enrolments = null;
 	}
 
+	/**
+	 * Create a new <code>User</code> instance.
+	 *
+	 * @param  idnumber  The user's ID number, not null
+	 * @param  firstname The user's first name, not null
+	 * @param  lastname  The user's last name, not null
+	 * @param  username  The user's username, not null
+	 */
+
 	public UserData (Integer idnumber, String firstname, String lastname, String username)
 	{
 		this ();
@@ -113,25 +193,23 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Override the equals method to test the equality of two Users based on the
-	 * identifying user data.  The following fields are used to compare two users:
-	 *
-	 * <ul>
-	 * 	<li>The user's id number
-	 * 	<li>The user's username
-	 * 	<li>The user's first name
-	 * 	<li>The user's last name
-	 * </ul>
+	 * Compare two <code>User</code> instances to determine if they are
+	 * equal.  The <code>User</code> instances are compared based upon the
+	 * following fields:
 	 * <p>
-	 * If all of these fields compare as equal then the user's are considered
-	 * to be equal.  A comparison of these fields will only occur if the
-	 * object's being compared have different references (otherwise this method
-	 * will immediately return true), and the two objects are of the same
-	 * class (otherwise this method will immediately return false).</p>
+	 * <ul>
+	 * <li>The id number
+	 * <li>The username
+	 * <li>The first name
+	 * <li>The last name
+	 * <ul>
+	 * <p>
 	 *
-	 * @param  obj The object to compare to this user
-	 * @return     <code>true</code> if the users should be considered to be
-	 *             equal, <code>false</code> otherwise.
+	 * @param  obj The <code>ActionData</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>ActionData</code> instances
+	 *             are equal, <code>False</code> otherwise
 	 */
 
 	@Override
@@ -158,18 +236,18 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Override the hashCode method to generate a hash code based on the user
-	 * data.  The following fields are used to generate the hash code, since they
-	 * are immutable:
-	 *
+	 * Compute a <code>hashCode</code> of the <code>User</code> instance.
+	 * The hash code is computed based upon the following fields:
+	 * <p>
 	 * <ul>
-	 * 	<li>The user's id number
-	 * 	<li>The user's username
-	 * 	<li>The user's first name
-	 * 	<li>The user's last name
-	 * </ul>
+	 * <li>The id number
+	 * <li>The username
+	 * <li>The first name
+	 * <li>The last name
+	 * <ul>
+	 * <p>
 	 *
-	 * @return The hash code for the user.
+	 * @return An <code>Integer</code> containing the hash code
 	 */
 
 	@Override
@@ -188,11 +266,10 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Get the datastore identifier for the user.  The datastore identifier is a
-	 * number that acts as the primary key in the datastore.  As such this number
-	 * is unique for every user.
+	 * Get the <code>DataStore</code> identifier for the <code>User</code>
+	 * instance.
 	 *
-	 * @return a Long integer containing the user's datastore identifier
+	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
 	public Long getId ()
@@ -201,11 +278,13 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Intialise the user's datastore identifier.  This method is intended to be
-	 * used by a datastore (particularly JPA) to initialse the user's datastore
-	 * identification when the user is loaded from a data store.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>User</code> instance is
+	 * loaded, or by the <code>UserBuilder</code> implementation to set the
+	 * <code>DataStore</code> identifier, prior to storing a new <code>User</code>
+	 * instance.
 	 *
-	 * @param id The user's datastore identifier.
+	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
 	protected void setId (Long id)
@@ -214,12 +293,12 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Get the user's id number.  In most cases this will be the user's student
-	 * number, or a similar idetifier used to track the student by the students
-	 * institution.  While the id number is not used as the database identifier
-	 * it is expected to be unique.
+	 * Get the (student) ID number of the <code>User</code>.  This will be the
+	 * student number, or a similar identifier used to track the <code>User</code>
+	 * by the institution from which the data was harvested.  While the ID number
+	 * is not used as the database identifier it is expected to be unique.
 	 *
-	 * @return An Integer representation of the user's id number.
+	 * @return An Integer representation of the ID number
 	 */
 
 	@Override
@@ -229,11 +308,11 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Intialise the user's id number.  This method is intended to be used by a
-	 * datastore (particularly JPA) to initialse the user's id number when the
-	 * user is loaded from a data store.
+	 * Set the (student) ID number of the <code>User</code>.  This method is
+	 * intended to be used by a <code>DataStore</code> when the <code>User</code>
+	 * instance is loaded.
 	 *
-	 * @param idnumber The user's id number.
+	 * @param  idnumber The ID Number, not null
 	 */
 
 	protected void setIdNumber (Integer idnumber)
@@ -242,11 +321,13 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Get the user's username.  This will be the username that the user in
-	 * question used to access the LMS from which the user's data was harvested.
-	 * The username is expected to be unique.
+	 * Get the username for the <code>User</code>.  This will be the username that
+	 * the <code>User</code> used to access the LMS from which the data associated
+	 * with the <code>User</code> was harvested.  The username is expected to be
+	 * unique.
 	 *
-	 * @return A String containing the user's username.
+	 * @return A <code>String</code> containing the username for the
+	 *         <code>User</code>
 	 */
 
 	@Override
@@ -256,11 +337,11 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Intialise the user's username.  This method is intended to be used by a
-	 * datastore (particularly JPA) to initialse the user's username when the
-	 * user is loaded from a data store.
+	 * Set the username of the <code>User</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>User</code> instance is
+	 * loaded.
 	 *
-	 * @param username The user's username.
+	 * @param  username The username, not null
 	 */
 
 	protected void setUsername (String username)
@@ -269,11 +350,11 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Get the users first (given) name.
+	 * Get the first name (given name) of the <code>User</code>.
 	 *
-	 * @return A String containing the user's first name.
+	 * @return A <code>String</code> containing the given name of the
+	 *         <code>User</code>
 	 */
-
 
 	@Override
 	public String getFirstname()
@@ -282,11 +363,11 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Initialize the user's first name.  This method is intended to be used by a
-	 * datastore (particularly JPA) to initialize the user's first name when the
-	 * user is loaded from a data store.
+	 * Set the first name of the <code>User</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>User</code> instance is
+	 * loaded.
 	 *
-	 * @param firstname The user's first name.
+	 * @param  firstname The first name, not null
 	 */
 
 	protected void setFirstname (String firstname)
@@ -295,9 +376,9 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Get the user's last name.
+	 * Get the last name (surname) of the <code>User</code>.
 	 *
-	 * @return A String containing the user's last name.
+	 * @return A String containing the surname of the <code>User</code>.
 	 */
 
 	@Override
@@ -307,11 +388,11 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Initialize the user's last name.  This method is intended to be used by a
-	 * datastore (particularly JPA) to initialize the user's last name when the
-	 * user is loaded from a data store
+	 * Set the last name of the <code>User</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>User</code> instance is
+	 * loaded.
 	 *
-	 * @param lastname The user's last name.
+	 * @param  lastname The last name, not null
 	 */
 
 	protected void setLastname (String lastname)
@@ -320,11 +401,11 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Get the full name of the user.  The output of this methos should be a
-	 * String formatted as: <code>"&lt;first name&gt;&nbsp;&lt;last name&gt;"
-	 * </code>
+	 * Get the full name of the <code>User</code>.  This method will return a
+	 * concatenation of the <code>firstname</code> and <code>lastname</code> of
+	 * the <code>User</code>.
 	 *
-	 * @return A string containing the name of the user.
+	 * @return A <code>String</code> containing the name of the user.
 	 */
 
 	@Override
@@ -334,10 +415,14 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Get the object describing the user's enrolment in a particular course.
+	 * Get the <code>Enrolment</code> instance for the <code>User</code> in the
+	 * specified <code>Course</code>.
 	 *
-	 * @param course The course for which the users enrolment is to be retrieved.
-	 * @return The enrolment object for the user in the specified course.
+	 * @param  course The <code>Course</code> for which the <code>Enrolment</code>
+	 *                instance is to be retrieved
+	 * @return        The <code>Enrolment</code> instance for the
+	 *                <code>User</code> in the specified <code>Course</code>, or
+	 *                null
 	 */
 
 	@Override
@@ -358,9 +443,11 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Get the set of all of the enrolments which are associated with this user.
+	 * Get the <code>Set</code> of <code>Enrolment<code> instances which are
+	 * associated with this <code>User</code>.  If there are no associated
+	 * <code>Enrolment</code> instances, then the <code>Set</code> will be empty.
 	 *
-	 * @return A Set of enrolment objects.
+	 * @return A <code>Set</code> of <code>Enrolment</code> instances
 	 */
 
 	@Override
@@ -370,11 +457,13 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Initialize the set of enrolment objects associated with this user.  This
-	 * method is intended to be used by a datastore (particularly JPA) to
-	 * initialse the user's enrolments with the user is loaded from a data store.
+	 * Initialize the <code>Set</code> of <code>Enrolment</code> instances
+	 * associated with the <code>User</code> instance.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>User</code> instance is
+	 * loaded.
 	 *
-	 * @param enrolments The set of enrolments.
+	 * @param  enrolments The <code>Set</code> of <code>Enrolment</code>
+	 *                    instances, not null
 	 */
 
 	protected void setEnrolments (Set<Enrolment> enrolments)
@@ -383,15 +472,11 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Add an enrolment.  Enrolments must be unique.  If the enrolment which is
-	 * to be added to this user evaluates to be equal to a pre-existing enrolment
-	 * then the new enrolment will not be added and the this method will return
-	 * <code>false</code>.
+	 * Add an <code>Enrolment</code> to the <code>User</code> instance.
 	 *
-	 * @param enrolment The enrolment to add.
-	 * @return An indication if the enrolment was successfully added.
-	 * <code>True</code> if the enrolment was added to the user entry,
-	 * <code>False</code> otherwise.
+	 * @param  enrolment The <code>Enrolment</code> to add
+	 * @return           <code>True</code> if the enrolment was added to the
+	 *                   <code>User</code> instance, <code>False</code> otherwise
 	 */
 
 	protected boolean addEnrolment (Enrolment enrolment)
@@ -400,15 +485,36 @@ public class UserData implements User, Serializable
 	}
 
 	/**
-	 * Override java.lang.Object's toString method to display the name of the
-	 * user.
+	 * Remove an <code>Enrolment</code> from the <code>User</code> instance.
 	 *
-	 * @return A String containing the full name of the user.
+	 * @param  enrolment The <code>Enrolment</code> to remove
+	 * @return           <code>True</code> if the enrolment was removed from the
+	 *                   <code>User</code> instance, <code>False</code> otherwise
+	 */
+
+	protected boolean removeEnrolment (Enrolment enrolment)
+	{
+		return this.enrolments.remove (enrolment);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>User</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the <code>User</code>
+	 *         instance
 	 */
 
 	@Override
 	public String toString()
 	{
-		return this.getName();
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("firstname", this.firstname);
+		builder.append ("lastname", this.lastname);
+		builder.append ("username", this.username);
+		builder.append ("idnumber", this.idnumber);
+
+		return builder.toString ();
 	}
 }

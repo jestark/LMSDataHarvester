@@ -121,7 +121,7 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 		params.put ("semester", semester);
 		params.put ("year", year);
 
-		return (this.fetchQuery ()).queryAll ("offering", params);
+		return (this.fetchQuery ()).queryAll ("allsemester", params);
 	}
 
 	/**
@@ -162,7 +162,7 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 		params.put ("year", year);
 		params.put ("name", name);
 
-		return (this.fetchQuery ()).queryAll ("offering", params);
+		return (this.fetchQuery ()).queryAll ("alloffering", params);
 	}
 
 	/**

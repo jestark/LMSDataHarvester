@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder;
@@ -34,25 +35,47 @@ import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.RoleBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.RoleManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager
  */
 
 
 public class RoleData implements Role, Serializable
 {
+	/**
+	 * Implementation of the <code>RoleElementFactory</code> interface.  Allows
+	 * the builders to create instances of <code>RoleData</code>.
+	 */
+
 	private static final class RoleDataFactory implements RoleElementFactory
 	{
+		/**
+		 * Create a new <code>Role</code> instance.
+		 *
+		 * @param  name The name of the <code>Role</code>, not null
+		 *
+		 * @return      The new <code>Role</code> instance
+		 */
+
 		@Override
 		public Role create (String name)
 		{
 			return new RoleData (name);
 		}
 
+		/**
+		 * Write the specified <code>DataStore</code> ID number into the
+		 * <code>Role</code>.
+		 *
+		 * @param  role The <code>Role</code> to which the ID number is assigned, not
+		 *              null
+		 * @param  id   The ID number assigned to the <code>Role</code>, not null
+		 */
+
 		@Override
-		public void setId (Role Role, Long id)
+		public void setId (Role role, Long id)
 		{
-			((RoleData) Role).setId (id);
+			((RoleData) role).setId (id);
 		}
 	}
 
@@ -65,10 +88,19 @@ public class RoleData implements Role, Serializable
 	/** The name of the role */
 	private String name;
 
+	/**
+	 * Static initializer to register the <code>RoleData</code> class with the
+	 * factories.
+	 */
+
 	static
 	{
 		(RoleFactory.getInstance ()).registerElement (RoleData.class, DefaultRoleBuilder.class, new RoleDataFactory ());
 	}
+
+	/**
+	 * Create the <code>Role</code> with null values.
+	 */
 
 	public RoleData ()
 	{
@@ -76,12 +108,30 @@ public class RoleData implements Role, Serializable
 		this.name = null;
 	}
 
+	/**
+	 * Create a new <code>Role</code> instance.
+	 *
+	 * @param  name The name of the <code>Role</code>, not null
+	 */
+
 	public RoleData (String name)
 	{
 		this ();
 
 		this.name = name;
 	}
+
+	/**
+	 * Compare two <code>Role</code> instances to determine if they are
+	 * equal.  The <code>Role</code> instances are compared based upon their
+	 * names.
+	 *
+	 * @param  obj The <code>Role</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Role</code> instances
+	 *             are equal, <code>False</code> otherwise
+	 */
 
 	@Override
 	public boolean equals (Object obj)
@@ -103,6 +153,13 @@ public class RoleData implements Role, Serializable
 		return result;
 	}
 
+	/**
+	 * Compute a <code>hashCode</code> of the <code>Role</code> instance.
+	 * The hash code is computed based upon the name of the instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
 	@Override
 	public int hashCode ()
 	{
@@ -115,15 +172,38 @@ public class RoleData implements Role, Serializable
 		return hbuilder.toHashCode ();
 	}
 
+	/**
+	 * Get the <code>DataStore</code> identifier for the <code>Role</code>
+	 * instance.
+	 *
+	 * @return a Long integer containing <code>DataStore</code> identifier
+	 */
+
 	public Long getId ()
 	{
 		return this.id;
 	}
 
+	/**
+	 * Set the <code>DataStore</code> identifier.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Role</code> instance is
+	 * loaded, or by the <code>RoleBuilder</code> implementation to set the
+	 * <code>DataStore</code> identifier, prior to storing a new <code>Role</code>
+	 * instance.
+	 *
+	 * @param  id The <code>DataStore</code> identifier, not null
+	 */
+
 	protected void setId (Long id)
 	{
 		this.id = id;
 	}
+
+	/**
+	 * Get the name of the <code>Role</code>.
+	 *
+	 * @return A <code>String</code> containing the name of the <code>Role</code>
+	 */
 
 	@Override
 	public String getName()
@@ -131,14 +211,34 @@ public class RoleData implements Role, Serializable
 		return this.name;
 	}
 
+	/**
+	 * Set the name of the <code>Role</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Role</code> instance is
+	 * loaded.
+	 *
+	 * @param name The name of the <code>Role</code>
+	 */
+
 	protected void setName (String name)
 	{
 		this.name = name;
 	}
 
+	/**
+	 * Get a <code>String</code> representation of the <code>Role</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the <code>Role</code>
+	 *         instance
+	 */
+
 	@Override
 	public String toString()
 	{
-		return this.name;
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("name", this.name);
+
+		return builder.toString ();
 	}
 }

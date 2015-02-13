@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,12 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
@@ -41,24 +44,132 @@ import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.EnrolmentManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager
  */
 
 public class UserEnrolmentData extends EnrolmentData implements Enrolment, Serializable
 {
+	/**
+	 * Implementation of the <code>EnrolmentElementFactory</code> interface.  Allows
+	 * the builders to create instances of <code>UserEnrolmentData</code>.
+	 */
+
 	private static final class UserEnrolmentDataFactory implements EnrolmentElementFactory
 	{
+		/**
+		 * Create a new <code>Enrolment</code> instance.
+		 *
+		 * @param  user   The <code>User</code> enrolled in the <code>Course</code>,
+		 *                not null
+		 * @param  course The <code>Course</code> in which the <code>User</code> is
+		 *                enrolled, not null
+		 * @param  role   The <code>Role</code> of the <code>User</code> in the
+		 *                <code>Course</code>, not null
+		 * @param  grade  The final grade assigned to the <code>User</code> in the
+		 *                <code>Course</code>
+		 * @param  usable Indication if the <code>User</code> has consented to their
+		 *                data being used for research
+		 *
+		 * @return        The new <code>Enrolment</code> instance
+		 */
+
 		@Override
 		public Enrolment create (User user, Course course, Role role, Integer grade, Boolean usable)
 		{
 			return new UserEnrolmentData (user, course, role, grade, usable);
 		}
 
+		/**
+		 * Write the specified <code>DataStore</code> ID number into the
+		 * <code>Enrolment</code>.
+		 *
+		 * @param  enrolment The <code>Enrolment</code> to which the ID number is
+		 *                   assigned, not null
+		 * @param  id        The ID number assigned to the <code>Enrolment</code>,
+		 *                   not null
+		 */
+
 		@Override
 		public void setId (Enrolment enrolment, Long id)
 		{
 			((UserEnrolmentData) enrolment).setId (id);
+		}
+
+		/**
+		 * Add the specified <code>Grade</code> to the specified
+		 * <code>Enrolment</code>.
+		 *
+		 * @param  enrolment The <code>Enrolment</code> to which the
+		 *                   <code>Grade</code> is to be added, not null
+		 * @param  grade     The <code>Grade</code> to add to the
+		 *                   <code>Enrolment</code>, not null
+		 *
+		 * @return           <code>True</code> if the <code>Grade</code> was
+		 *                   successfully added to the <code>Enrolment</code>,
+		 *                   <code>False</code> otherwise
+		 */
+
+		public boolean addGrade (Enrolment enrolment, Grade grade)
+		{
+			return ((UserEnrolmentData) enrolment).addGrade (grade);
+		}
+
+		/**
+		 * Remove the specified <code>Grade</code> from the specified
+		 * <code>Enrolment</code>.
+		 *
+		 * @param  enrolment The <code>Enrolment</code> from which the
+		 *                   <code>Grade</code> is to be removed, not null
+		 * @param  grade     The <code>Grade</code> to remove from the
+		 *                   <code>Enrolment</code>, not null
+		 *
+		 * @return           <code>True</code> if the <code>Grade</code> was
+		 *                   successfully removed from the <code>Enrolment</code>,
+		 *                   <code>False</code> otherwise
+		 */
+
+		public boolean removeGrade (Enrolment enrolment, Grade grade)
+		{
+			return ((UserEnrolmentData) enrolment).removeGrade (grade);
+		}
+
+		/**
+		 * Add the specified <code>LogEntry</code> to the specified
+		 * <code>Enrolment</code>.
+		 *
+		 * @param  enrolment The <code>Enrolment</code> to which the
+		 *                   <code>LogEntry</code> is to be added, not null
+		 * @param  entry     The <code>LogEntry</code> to add to the
+		 *                   <code>Enrolment</code>, not null
+		 *
+		 * @return           <code>True</code> if the <code>LogEntry</code> was
+		 *                   successfully added to the <code>Enrolment</code>,
+		 *                   <code>False</code> otherwise
+		 */
+
+		public boolean addLogEntry (Enrolment enrolment, LogEntry entry)
+		{
+			return ((UserEnrolmentData) enrolment).addLog (entry);
+		}
+
+		/**
+		 * Remove the specified <code>LogEntry</code> from the specified
+		 * <code>Enrolment</code>.
+		 *
+		 * @param  enrolment The <code>Enrolment</code> from which the
+		 *                   <code>LogEntry</code> is to be removed, not null
+		 * @param  entry     The <code>LogEntry</code> to remove from the
+		 *                   <code>Enrolment</code>, not null
+		 *
+		 * @return           <code>True</code> if the <code>LogEntry</code> was
+		 *                   successfully removed from the <code>Enrolment</code>,
+		 *                   <code>False</code> otherwise
+		 */
+
+		public boolean removeLogEntry (Enrolment enrolment, LogEntry entry)
+		{
+			return ((UserEnrolmentData) enrolment).removeLog (entry);
 		}
 	}
 
@@ -68,13 +179,18 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	/** The user which is associated with the enrolment */
 	private User user;
 
+	/**
+	 * Static initializer to register the <code>UserEnrolmentData</code> class
+	 * with the factories.
+	 */
+
 	static
 	{
 		(EnrolmentFactory.getInstance ()).registerElement (UserEnrolmentData.class, DefaultEnrolmentBuilder.class, new UserEnrolmentDataFactory ());
 	}
 
 	/**
-	 * Create the enrolment with null values
+	 * Create the <code>Enrolment</code> with null values.
 	 */
 
 	public UserEnrolmentData ()
@@ -83,12 +199,41 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		this.user = null;
 	}
 
+	/**
+	 * Create a new <code>Enrolment</code> instance.
+	 *
+	 * @param  user   The <code>User</code> enrolled in the <code>Course</code>,
+	 *                not null
+	 * @param  course The <code>Course</code> in which the <code>User</code> is
+	 *                enrolled, not null
+	 * @param  role   The <code>Role</code> of the <code>User</code> in the
+	 *                <code>Course</code>, not null
+	 * @param  grade  The final grade assigned to the <code>User</code> in the
+	 *                <code>Course</code>
+	 * @param  usable Indication if the <code>User</code> has consented to their
+	 *                data being used for research
+	 */
+
 	public UserEnrolmentData (User user, Course course, Role role, Integer grade, Boolean usable)
 	{
 		super (course, role, grade, usable);
 
 		this.user = user;
 	}
+
+	/**
+	 * Compare two <code>Enrolment</code> instances to determine if they are
+	 * equal.  The <code>Enrolment</code> instances are compared based upon the
+	 * associated <code>User</code> instance as well as the <code>equals</code>
+	 * method from the <code>EnrolmentData</code> class.
+	 *
+	 * @param  obj The <code>Enrolment</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Enrolment</code> instances
+	 *             are equal, <code>False</code> otherwise
+	 * @see        EnrolmentData#equals
+	 */
 
 	@Override
 	public boolean equals (Object obj)
@@ -111,6 +256,16 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		return result;
 	}
 
+	/**
+	 * Compute a <code>hashCode</code> of the <code>Enrolment</code> instance.
+	 * The hash code is computed based upon the associated <code>User</code>
+	 * instance, aw well as the <code>hashCode</code> method from the
+	 * <code>EnrolmentData</code> class.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 * @see    EnrolmentData#hashCode
+	 */
+
 	@Override
 	public int hashCode ()
 	{
@@ -124,11 +279,10 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		return hbuilder.toHashCode ();
 	}
 
-
 	/**
-	 * Get the user associated with this enrolment.
+	 * Get the <code>User</code> associated with the <code>Enrolment</code.
 	 *
-	 * @return The user which is associated with this enrolment.
+	 * @return The <code>User</code> instance
 	 */
 
 	public User getUser ()
@@ -137,10 +291,12 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	}
 
 	/**
-	 * Internal method used by the datastore and managers to set the associated
-	 * user.
+	 * Set the <code>user</code> instance which is associated with the
+	 * <code>Enrolment</code>. This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Enrolment</code> instance is loaded.
 	 *
-	 * @param user The user which is associated with this enrolment.
+	 * @param  user The <code>User</code> instance which is associated with the
+	 *              <code>Enrolment</code>
 	 */
 
 	protected void setUser (User user)
@@ -149,15 +305,41 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	}
 
 	/**
-	 * Override EnrolmentData's toString function to display the name of the 
-	 * user.
+	 * Get the name associated with the <code>Enrolment</code>.  The contents of
+	 * the <code>String</code> returned by this method are implementation
+	 * dependent.  If the implementation has access to the <code>User</code>
+	 * information this this method should return the result of the
+	 * <code>getName</code> method for the associated <code>User</code> instance,
+	 * otherwise it should return some other identifier, usually the identifier for
+	 * the <code>Enrolment</code> in the <code>DataStore</code>.
 	 *
-	 * @return A string identifying the enrolment.
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Enrolment</code>
+	 * @see    User#getName
 	 */
 
 	@Override
 	public String getName ()
 	{
 		return this.user.getName ();
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the
+	 * <code>UserEnrolmentData</code> instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>UserEnrolmentData</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.appendSuper (super.toString ());
+		builder.append ("user", this.user);
+
+		return builder.toString ();
 	}
 }

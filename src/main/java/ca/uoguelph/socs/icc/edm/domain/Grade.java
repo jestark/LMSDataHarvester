@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +16,72 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+/**
+ * A representation of the grade received by a <code>User</code> for a
+ * particular <code>Activity</code>.  Instances of the <code>Grade</code>
+ * interface are identified by the associated instances of the
+ * <code>Activity</code> and <code>Enrolment</code> interfaces.  As such, an
+ * <code>ElementManager</code> does not exist for the <code>Grade</code>
+ * interface.  The functionalit for adding and removing instances of the
+ * <code>Grade</code> interface from the <code>DataStore</code> is provided by
+ * instances of the <code>EnrolmentManager</code> interface.
+ * <p>
+ * Within the domain model, <code>Grade</code> is a leaf level interface.  No
+ * instances of any other domain model interface depend upon the existence of
+ * an instance of the <code>Grade</code> interface.  Instances of the
+ * <code>Grade</code> interface have strong dependencies upon instances of the
+ * <code>Activity</code> and <code>Enrolment</code> interfaces.  If an instance
+ * of the <code>Enrolment</code> or <code>Activity</code> interfaces is
+ * deleted, then all of the associated instances of the <code>Grade</code>
+ * interface must be deleted as well.
+ * <p>
+ * Once created, <code>Grade</code> instances are immutable. 
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     EnrolmentManager
+ * @see     GradeBuilder
+ */
+
 public interface Grade extends Element
 {
+	/**
+	 * Get the name of the <code>Enrolment</code> to which the <code>Grade</code>
+	 * is assigned.  This is a convenience method which return the result from the
+	 * <code>getName</code> method on the associated <code>Enrolment</code>
+	 * instance.
+	 *
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Enrolment</code>
+	 * @see    Enrolment#getName
+	 */
+
 	public abstract String getName ();
+
+	/**
+	 * Get the <code>Activity</code> for which the <code>Grade</code> is
+	 * assigned.
+	 *
+	 * @return The associated <code>Activity</code>
+	 */
+
 	public abstract Activity getActivity ();
+
+	/**
+	 * Get the <code>Enrolment</code>, for the student, to which the
+	 * <code>Grade</code> is assigned
+	 *
+	 * @return The associated <code>Enrolment</code>
+	 */
+
 	public abstract Enrolment getEnrolment ();
+
+	/**
+	 * Get the grade that the student received for the <code>Activity</code>.  The
+	 * grade will be an <code>Integer</code> with a value on the range of [0, 100].
+	 *
+	 * @return An <code>Integer</code> containing the assigned grade.
+	 */
+
 	public abstract Integer getGrade ();
 }

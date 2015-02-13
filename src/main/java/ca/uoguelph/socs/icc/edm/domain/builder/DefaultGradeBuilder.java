@@ -16,8 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
@@ -39,7 +39,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/** <code>ElementFactory</code> to build the user */
 	private final GradeElementFactory factory;
@@ -60,7 +60,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 
 		this.clear ();
 
-		this.log = LogFactory.getLog (DefaultGradeBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultGradeBuilder.class);
 	}
 
 	@Override

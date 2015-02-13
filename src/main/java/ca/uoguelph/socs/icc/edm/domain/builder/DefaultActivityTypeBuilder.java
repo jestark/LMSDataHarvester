@@ -16,8 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
@@ -38,7 +38,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/** <code>ElementFactory</code> to build the activity type */
 	private final ActivityTypeElementFactory factory;
@@ -54,7 +54,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 		super (manager);
 
 		this.factory = null;
-		this.log = LogFactory.getLog (DefaultActivityTypeBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultActivityTypeBuilder.class);
 	}
 
 	@Override

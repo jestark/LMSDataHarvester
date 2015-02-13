@@ -16,8 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
@@ -38,7 +38,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	}
 
 	/** The logger */
-	private final Log log;
+	private final Logger log;
 
 	/** <code>ElementFactory</code> to build the course */
 	private final CourseElementFactory factory;
@@ -57,7 +57,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 		super (manager);
 
 		this.factory = null;
-		this.log = LogFactory.getLog (DefaultCourseBuilder.class);
+		this.log = LoggerFactory.getLogger (DefaultCourseBuilder.class);
 	}
 
 	@Override

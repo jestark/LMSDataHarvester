@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,32 @@ import java.util.HashSet;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivity, E extends ActivityGroupMember> extends GenericGroupedActivityMember<T> implements ActivityGroup<E>, Serializable
+import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
+import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+
+/**
+ * A generic representation of a node in a sub-activity tree.  This class
+ * extends <code>GenericGroupedActivityMember</code> to act as an abstract base
+ * class for sub-activity tree nodes (elements of the tree with both parents and
+ * children) by implementing the <code>ActivityGroup</code> interface.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
+
+public abstract class GenericGroupedActivityGroup extends GenericGroupedActivityMember implements ActivityGroup, Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The set of sub-activities  */
-	private Set<E> children;
+	private Set<ActivityGroupMember> children;
+
+	/**
+	 * Create the <code>Activity</code> with null values.
+	 */
 
 	public GenericGroupedActivityGroup ()
 	{
@@ -38,12 +56,32 @@ public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivit
 		this.children = null;
 	}
 
-	public GenericGroupedActivityGroup (String name, T parent)
-	{
-		super (name, parent);
+	/**
+	 * Create the <code>Activity</code>.
+	 *
+	 * @param  parent The <code>ActivityGroup</code> containing this
+	 *                <code>Activity</code> instance
+	 * @param  name   The name of the <code>Activity</code>
+	 */
 
-		this.children = new HashSet<E> ();
+	public GenericGroupedActivityGroup (ActivityGroup parent, String name)
+	{
+		super (parent, name);
+
+		this.children = new HashSet<ActivityGroupMember> ();
 	}
+
+	/**
+	 * Compare two <code>Activity</code> instances to determine if they are
+	 * equal.  The <code>Activity</code> instances are compared based upon the
+	 * data contained in the superclass.
+	 *
+	 * @param  obj The <code>Activity</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Activity</code> instances
+	 *             are equal, <code>False</code> otherwise
+	 */
 
 	@Override
 	public boolean equals(Object obj)
@@ -65,6 +103,13 @@ public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivit
 		return result;
 	}
 
+	/**
+	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
+	 * The hash code is computed based upon the data contained in the superclass.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
 	@Override
 	public int hashCode()
 	{
@@ -77,18 +122,58 @@ public abstract class GenericGroupedActivityGroup<T extends AbstractNamedActivit
 		return hbuilder.toHashCode ();
 	}
 
-	public Set<E> getChildren()
+	/**
+	 * Get the <code>Set</code> of <code>ActivityGroupMember</code> instances (or
+	 * Sub-Activities) associated with the <code>ActvityGroup</code>.
+	 *
+	 * @return The <code>Set</code> of sub-activities
+	 */
+
+	public Set<ActivityGroupMember> getChildren ()
 	{
-		return new HashSet<E> (this.children);
+		return new HashSet<ActivityGroupMember> (this.children);
 	}
 
-	protected void setChildren(Set<E> children)
+	/**
+	 * Initialize the <code>Set</code> of sub-activity instances for the
+	 * <code>Activity</code>.  This method is intended to be used by a 
+	 * <code>DataStore</code> when the <code>Activity</code> instance is loaded.
+	 *
+	 * @param  children The <code>Set</code> of sub-activity instances, not null
+	 */
+
+	protected void setChildren (Set<ActivityGroupMember> children)
 	{
 		this.children = children;
 	}
 
-	public void addChild(E child)
+	/**
+	 * Add the specified <code>ActivityGroupMember</code> to the specified
+	 * <code>ActivityGroup</code>.
+	 *
+	 * @param  child The <code>ActivityGroupMember</code> to add, not null
+	 *
+	 * @return       <code>True</code> if the <code>ActivityGroupMember</code>
+	 *               was successfully added, <code>False</code> otherwise
+	 */
+
+	protected boolean addChild (ActivityGroupMember child)
 	{
-		this.children.add (child);
+		return this.children.add (child);
+	}
+
+	/**
+	 * Remove the specified <code>ActivityGroupMember</code> from the specified
+	 * <code>ActivityGroup</code>.
+	 *
+	 * @param  child The <code>ActivityGroupMember</code> to remove, not null
+	 *
+	 * @return       <code>True</code> if the <code>ActivityGroupMember</code>
+	 *               was successfully removed, <code>False</code> otherwise
+	 */
+
+	protected boolean removeChild (ActivityGroupMember child)
+	{
+		return this.children.remove (child);
 	}
 }

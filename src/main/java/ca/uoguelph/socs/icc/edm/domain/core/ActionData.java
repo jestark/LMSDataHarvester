@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import java.util.HashSet;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
@@ -38,24 +39,84 @@ import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.ActionBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.ActionManager
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActionBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultActionManager
  */
 
 public class ActionData implements Action, Serializable
 {
+	/**
+	 * Implementation of the <code>ActionElementFactory</code> interface.  Allows
+	 * the builders to create instances of <code>ActionData</code>.
+	 */
+
 	private static final class ActionDataFactory implements ActionElementFactory
 	{
+		/**
+		 * Create a new <code>Action</code> instance.
+		 *
+		 * @param  name The name of the <code>Action</code>, not null
+		 *
+		 * @return      The new <code>Action</code> instance
+		 */
+
 		@Override
 		public Action create (String name)
 		{
 			return new ActionData (name);
 		}
 
+		/**
+		 * Write the specified <code>DataStore</code> ID number into the
+		 * <code>Action</code>.
+		 *
+		 * @param  action The <code>Action</code> to which the ID number is assigned,
+		 *                not null
+		 * @param  id     The ID number assigned to the <code>Action</code>, not null
+		 */
+
 		@Override
-		public void setId (Action Action, Long id)
+		public void setId (Action action, Long id)
 		{
-			((ActionData) Action).setId (id);
+			((ActionData) action).setId (id);
+		}
+
+		/**
+		 * Add the specified <code>ActivityType</code> to the specified
+		 * <code>Action</code>.
+		 *
+		 * @param  action The <code>Action</code> to which the
+		 *                <code>ActivityType</code> is to be added, not null
+		 * @param  type   The <code>ActivityType</code> to add to the
+		 *                <code>Action</code>, not null
+		 *
+		 * @return        <code>True</code> if the <code>ActivityType</code> was
+		 *                successfully added to the <code>Action</code>,
+		 *                <code>False</code> otherwise
+		 */
+
+		public boolean addActivityType (Action action, ActivityType type)
+		{
+			return ((ActionData) action).addType (type);
+		}
+
+		/**
+		 * Remove the specified <code>ActivityType</code> from the specified
+		 * <code>Action</code>. 
+		 *
+		 * @param  action The <code>Action</code> from which the
+		 *                <code>ActivityType</code> is to be removed, not null
+		 * @param  type   The <code>ActivityType</code> to remove from the
+		 *                <code>Action</code>, not null
+		 *
+		 * @return        <code>True</code> if the <code>ActivityType</code> was
+		 *                successfully removed from the <code>Action</code>,
+		 *                <code>False</code> otherwise
+		 */
+
+		public boolean removeActivityType (Action action, ActivityType type)
+		{
+			return ((ActionData) action).removeType (type);
 		}
 	}
 
@@ -71,17 +132,18 @@ public class ActionData implements Action, Serializable
 	/** A set of the Activity Types associated with the action */
 	private Set<ActivityType> types;
 
+	/**
+	 * Static initializer to register the <code>ActionData</code> class with the
+	 * factories.
+	 */
+
 	static
 	{
 		(ActionFactory.getInstance ()).registerElement (ActionData.class, DefaultActionBuilder.class, new ActionDataFactory ());
 	}
 
 	/**
-	 * Create the <code>Action</code> with null values.  Default no-argument
-	 * constructor used by the <code>DataStore</code> (particularly the Java
-	 * Persistence API) when loading an instance of the class.  This constructor
-	 * initializes all values to null and expects that the values in the class
-	 * will be set via the (protected) mutator methods.
+	 * Create the <code>Action</code> with null values.
 	 */
 
 	public ActionData ()
@@ -90,6 +152,12 @@ public class ActionData implements Action, Serializable
 		this.name = null;
 		this.types = null;
 	}
+
+	/**
+	 * Create a new <code>Action</code> instance.
+	 *
+	 * @param  name The name of the <code>Action</code>, not null
+	 */
 
 	public ActionData (String name)
 	{
@@ -101,12 +169,15 @@ public class ActionData implements Action, Serializable
 	}
 
 	/**
-	 * Override java.lang.object's equals method to compare to Actions based on
-	 * their names.
+	 * Compare two <code>Action</code> instances to determine if they are
+	 * equal.  The <code>Action</code> instances are compared based upon their
+	 * names.
 	 *
-	 * @param  obj The reference object with which to compare
-	 * @return <code>true</code> if the two actions have the same name (or if
-	 * the references are identical), <code>false</code> otherwise.
+	 * @param  obj The <code>Action</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Action</code> instances
+	 *             are equal, <code>False</code> otherwise
 	 */
 
 	@Override
@@ -131,10 +202,10 @@ public class ActionData implements Action, Serializable
 	}
 
 	/**
-	 * Override of java.lang.object's hashCode method to compute a hash code
-	 * based on the name of the Action.
+	 * Compute a <code>hashCode</code> of the <code>Action</code> instance.
+	 * The hash code is computed based upon the name of the instance.
 	 *
-	 * @return The hash code.
+	 * @return An <code>Integer</code> containing the hash code
 	 */
 
 	@Override
@@ -150,9 +221,10 @@ public class ActionData implements Action, Serializable
 	}
 
 	/**
-	 * Get the datastore ID for the Action.
+	 * Get the <code>DataStore</code> identifier for the <code>Action</code>
+	 * instance.
 	 *
-	 * @return The unique numeric ID of the Action.
+	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
 	public Long getId ()
@@ -161,10 +233,13 @@ public class ActionData implements Action, Serializable
 	}
 
 	/**
-	 * Internal method used by the datastore and managers to set the datastore
-	 * ID for the Action.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Action</code> instance is
+	 * loaded, or by the <code>ActionBuilder</code> implementation to set the
+	 * <code>DataStore</code> identifier, prior to storing a new <code>Action</code>
+	 * instance.
 	 *
-	 * @param id The unique numeric ID of the Action.
+	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
 	protected void setId (Long id)
@@ -173,22 +248,25 @@ public class ActionData implements Action, Serializable
 	}
 
 	/**
-	 * Get a set containing all of the ActivityTypes associated with this
-	 * Action.
+	 * Get the <code>Set</code> of <code>ActivityType</code> instances containing
+	 * the action.
 	 *
-	 * @return The Set of Activity Types associated with this Action.
+	 * @return A <code>Set</code> of <code>ActivityType</code> instances
 	 */
 
+	@Override
 	public Set<ActivityType> getTypes ()
 	{
 		return new HashSet<ActivityType> (this.types);
 	}
 
 	/**
-	 * Internal method used by the datastore and managers to set the assocated
-	 * Activity Type.
+	 * Initialize the <code>Set</code> of associated <code>ActivityType</code>
+	 * instances.  This method is intended to be used by a <code>DataStore</code>
+	 * when the <code>Action</code> instance is loaded.
 	 *
-	 * @param types The Set of Activity Types associated with this Action.
+	 * @param  types The <code>Set</code> of <code>ActivityType</code> instances
+	 *               to be associated with the <code>Action</code>
 	 */
 
 	protected void setTypes (Set<ActivityType> types)
@@ -197,12 +275,14 @@ public class ActionData implements Action, Serializable
 	}
 
 	/**
-	 * Internal methos used by the managers to associate an activity type with
-	 * the action.
+	 * Associate the specified <code>ActivityType</code> with the
+	 * <code>Action</code>
 	 *
-	 * @param type The Activity Type to associate with the action.
-	 * @return <code>true</code> if the Activity Type was successfully added,
-	 * <code>false</code> otherwise.
+	 * @param  type The <code>ActivityType</code> associate with the
+	 *              <code>Action</code>
+	 *
+	 * @return      <code>True</code> if the <code>ActivityType</code> was
+	 *              successfully added, <code>False</code> otherwise.
 	 */
 
 	protected boolean addType (ActivityType type)
@@ -211,9 +291,25 @@ public class ActionData implements Action, Serializable
 	}
 
 	/**
-	 * Get the name of the Action.
+	 * Remove the association between the specified <code>ActivityType</code> and
+	 * the <code>Action</code>
 	 *
-	 * @return The name of the Action.
+	 * @param  type The <code>ActivityType</code> associate with the
+	 *              <code>Action</code>
+	 *
+	 * @return      <code>True</code> if the <code>ActivityType</code> was
+	 *              successfully added, <code>False</code> otherwise.
+	 */
+
+	protected boolean removeType (ActivityType type)
+	{
+		return this.types.remove (type);
+	}
+
+	/**
+	 * Get the name of the <code>Action</code>.
+	 *
+	 * @return A String containing the name of the <code>Action</code>
 	 */
 
 	public String getName()
@@ -222,10 +318,11 @@ public class ActionData implements Action, Serializable
 	}
 
 	/**
-	 * Internal method used by the datastore and managers to set the name of the
-	 * Action.
+	 * Set the name of the <code>Action</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Action</code> instance is
+	 * loaded.
 	 *
-	 * @param name The name of the Action.
+	 * @param  name The name of the <code>Action</code>
 	 */
 
 	protected void setName (String name)
@@ -234,15 +331,20 @@ public class ActionData implements Action, Serializable
 	}
 
 	/**
-	 * Override java.lang.Object's toString function to display the name of the
-	 * Action.
+	 * Get a <code>String</code> representation of the <code>Action</code>
+	 * instance, including the identifying fields.
 	 *
-	 * @return A string identifying the Action.
+	 * @return A <code>String</code> representation of the <code>Action</code>
+	 *         instance
 	 */
 
 	@Override
 	public String toString()
 	{
-		return this.name;
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("name", this.name);
+
+		return builder.toString ();
 	}
 }
