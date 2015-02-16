@@ -20,6 +20,8 @@ import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 /**
  * An instance of this class is used to generate unique random ID numbers.
  * The id numbers are generated using a 64bit cryptographically secure pseudo
@@ -34,6 +36,14 @@ import java.util.Set;
 
 public class RandomIdGenerator implements IdGenerator
 {
+	private static final class Factory implements IdGeneratorFactory
+	{
+		public IdGenerator create (DataStoreQuery<?> query)
+		{
+			return new RandomIdGenerator (new HashSet<Long> (query.queryAllIds ()));
+		}
+	}
+
 	/** The set of previously used id numbers. */
 	private Set<Long> usedids;
 	

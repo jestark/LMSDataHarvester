@@ -86,6 +86,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 		this.type = type;
 		this.impl = impl;
 
+		this.generator = null;
+
 		this.queries = new HashMap<String, TypedQuery<X>> ();
 	}
 
@@ -268,6 +270,11 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 
 	public Long nextId ()
 	{
+		if (this.generator == null)
+		{
+			this.generator = ();
+		}
+
 		return this.generator.nextId ();
 	}
 

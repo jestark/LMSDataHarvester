@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,9 @@ import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGeneratorFactory;
 
 public final class MappedIdGeneratorFactory
 {
+	/**  */
+	private static final MappedIdGeneratorFactory instance;
+
 	/** The logger */
 	private final Logger log;
 
@@ -53,7 +56,17 @@ public final class MappedIdGeneratorFactory
 	 * Create the <code>MappedIdGeneratorFactory</code>.
 	 */
 
-	public MappedIdGeneratorFactory ()
+	static
+	{
+		instance = new MappedIdGeneratorFactory ();
+	}
+
+	public static MappedIdGeneratorFactory getInstance ()
+	{
+		return MappedIdGeneratorFactory.instance ();
+	}
+
+	private MappedIdGeneratorFactory ()
 	{
 		this.log = LoggerFactory.getLogger (MappedManagerFactory.class);
 
@@ -138,14 +151,22 @@ public final class MappedIdGeneratorFactory
 	 * @see    MappedFactory#create
 	 */
 
-	public IdGenerator create (DataStore datastore)
+	public <T extends Element> IdGenerator create (Class<T> type, DataStoreQuery<T> query)
 	{
-		if (datastore == null)
+		if (query == null)
 		{
-			this.log.error ("Domain model is NULL");
+			this.log.error ("Query is NULL");
 			throw new NullPointerException ();
 		}
 
-		return null;
+		Class<? extends IdGenerator> generator = ((query.getDataStore ()).getProfile ()).getGenerator (type);
+
+		if (! this.generators.containsKey (generator))
+		{
+			this.log.error ();
+			throw new IllegalStateException ();
+		}
+
+		return (this.generator.get (generator)).create (query);
 	}
 }
