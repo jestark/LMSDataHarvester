@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGeneratorFactory;
 
 /**
  * Add, remove and retrieve data from a database using the Java Persistence
@@ -126,6 +127,7 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 		this.log.trace ("Close the Query");
 
 		this.queries.clear ();
+		this.generator = null;
 	}
 
 	/**
@@ -272,7 +274,7 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	{
 		if (this.generator == null)
 		{
-			this.generator = ();
+			this.generator = (IdGeneratorFactory.getInstance ()).create (this.type, this);
 		}
 
 		return this.generator.nextId ();

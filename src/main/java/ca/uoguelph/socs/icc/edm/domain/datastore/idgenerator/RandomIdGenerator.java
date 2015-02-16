@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 public class RandomIdGenerator implements IdGenerator
 {
-	private static final class Factory implements IdGeneratorFactory
+	private static final class Factory implements IdGeneratorImplFactory
 	{
 		public IdGenerator create (DataStoreQuery<?> query)
 		{
