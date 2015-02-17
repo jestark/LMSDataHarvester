@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.factory;
+package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 import java.util.Map;
 import java.util.Set;
@@ -26,51 +26,58 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGeneratorFactory;
-
 /**
- * Factory for creating <code>IdGenerator</code> objects.  This class is
- * implemented using a <code>MappedFactory<code>, requiring all of the
- * <code>IdGenerator</code> implementations to register a factory object
- * capable of instantiating and initializing the <code>IdGenerator</code>
- * with the factory
+ * Factory for creating <code>IdGenerator</code> instances.  This class 
+ * requires all of the <code>IdGenerator</code> implementations to register
+ * a factory object (extending the <code>IdGeneratorImplFactory</code>
+ * interface) capable of instantiating and initializing the
+ * <code>IdGenerator</code>. 
  * 
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGeneratorFactory
+ * @see     IdGeneratorImplFactory
  */
 
-public final class MappedIdGeneratorFactory
+public final class IdGeneratorFactory
 {
-	/**  */
-	private static final MappedIdGeneratorFactory instance;
+	/** Singleton instance */
+	private static final IdGeneratorFactory instance;
 
 	/** The logger */
 	private final Logger log;
 
 	/** Factory for the <code>IdGenerator</code> implementations */
-	private final Map<Class<? extends IdGenerator>, IdGeneratorFactory> generators;
+	private final Map<Class<? extends IdGenerator>, IdGeneratorImplFactory> generators;
 
 	/**
-	 * Create the <code>MappedIdGeneratorFactory</code>.
+	 * static initializer to create the <code>IdGeneratorFactory</code> singleton.
 	 */
 
 	static
 	{
-		instance = new MappedIdGeneratorFactory ();
+		instance = new IdGeneratorFactory ();
 	}
 
-	public static MappedIdGeneratorFactory getInstance ()
+	/**
+	 * Get the instance of the <code>IdGeneratorFactory</code>.
+	 *
+	 * @param The <code>IdGneratorFactory</code> instance
+	 */
+
+	public static IdGeneratorFactory getInstance ()
 	{
-		return MappedIdGeneratorFactory.instance ();
+		return IdGeneratorFactory.instance ();
 	}
 
-	private MappedIdGeneratorFactory ()
+	/**
+	 * Create the <code>IdGeneratorFactory</code>.
+	 */
+
+	private IdGeneratorFactory ()
 	{
 		this.log = LoggerFactory.getLogger (MappedManagerFactory.class);
 
-		this.generators = new HashMap<Class<? extends IdGenerator>, IdGeneratorFactory> ();
+		this.generators = new HashMap<Class<? extends IdGenerator>, IdGeneratorImplFactory> ();
 	}
 
 	/**
@@ -81,14 +88,14 @@ public final class MappedIdGeneratorFactory
 	 * @param  impl                     The <code>IdGenerator</code>
 	 *                                  implementation which is being registered,
 	 *                                  not null
-	 * @param  factory                  The <code>IdGeneratorFactory</code> used to
-	 *                                  create the <code>Idgenerator</code>,
-	 *                                  not null
+	 * @param  factory                  The <code>IdGeneratorImplFactory</code>
+	 *                                  used to create the
+	 *                                  <code>IdGenerator</code>, not null
 	 * @throws IllegalArgumentException If the <code>IdGenerator</code> is
 	 *                                  already registered with the factory
 	 */
 
-	public void registerClass (Class<? extends IdGenerator> impl, IdGeneratorFactory factory)
+	public void registerClass (Class<? extends IdGenerator> impl, IdGeneratorImplFactory factory)
 	{
 		this.log.trace ("Registering ID Generator: {} ({})", impl, factory);
 
@@ -141,11 +148,12 @@ public final class MappedIdGeneratorFactory
 
 	/**
 	 * Create a <code>IdGenerator</code> for the specified
-	 * <code>DomainModel</code>.
+	 * <code>DataStoreQuery</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code> for which the
-	 *                               manager is to be created, not null
-	 * @return                       The <code>IdGenerator</code>
+	 * @param  query                 The <code>DataStoreQuery</code> for which the
+	 *                               <code>IdGenerator</code> is to be created,
+	 *                               not null
+	 * @return                       The <code>IdGenerator</code> instance
 	 * @throws IllegalStateException if the <code>IdGenerator</code> implementation
 	 *                               class is not registered
 	 * @see    MappedFactory#create

@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,13 @@
 
 package ca.uoguelph.socs.icc.edm.domain.idgenerator;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+
 /**
- * A ID number generator which always returns a null reference.  This ID
- * number generator is intended for situations where the application logic
- * requires that an ID number is assigned, but the actual ID number will be
- * determined though other means (such as being automatically assigned by an
+ * An <code>IdGenerator</code> which always returns a null reference.  This
+ * <code>IdGenerator</code> is intended for situations where the application
+ * logic requires that an ID number is assigned, but the actual ID number will
+ * be determined though other means (such as being automatically assigned by an
  * underlying database).
  *
  * @author  James E. Stark
@@ -29,12 +31,42 @@ package ca.uoguelph.socs.icc.edm.domain.idgenerator;
 
 public class NullIdGenerator implements IdGenerator
 {
+	/**
+	 * Implementation of the <code>IdGeneratorImplFatory</code> to create
+	 * <code>RamdomIdGenerator</code> instances.
+	 */
+
+	private static final class Factory implements IDGeneratorImplFactory
+	{
+		/**
+		 * Create the <code>IdGenerator</code> using the specified
+		 * <code>DataStoreQuery</code>.
+		 *
+		 * @param  query The <code>DataStoreQuery</code>, not null
+		 *
+		 * @return The <code>IdGenerator</code> instance
+		 */
+
+		public IdGenerator create (DataStoreQuery<?> query)
+		{
+			return new NullIdGenerator ();
+		}
+	}
 
 	/**
-	 * Returns the next available Id number, which will always be a null 
-	 * reference.
+	 * Static initializer to register the <code>IdGenerator</code> with the
+	 * <code>IdGeneratorFactory</code>.
+	 */
+
+	static
+	{
+		(IdGeneratorFactory.getInstance ()).registerClass (NullIdGenerator.class, new Factory ());
+	}
+
+	/**
+	 * Return the next available ID number.  This method will always return null.
 	 *
-	 * @return null
+	 * @return A <code>Long</code> containing the next id number
 	 */
 
 	public Long nextId ()

@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,9 @@ package ca.uoguelph.socs.icc.edm.domain.idgenerator;
 
 /**
  * An ID number generator.  Classes implementing this interface will provide
- * ID numbers suitable for use with the relevant underlying data-store.  Each
- * class implementing this interface is responsible for determining how the 
- * ID numbers are calculated, with different classes providing different
+ * ID numbers suitable for use with the underlying <code>DataStore</code>.
+ * Each class implementing this interface is responsible for determining how
+ * the  ID numbers are calculated, with different classes providing different
  * distributions of ID numbers.  
  *
  * @author  James E. Stark
@@ -30,9 +30,9 @@ package ca.uoguelph.socs.icc.edm.domain.idgenerator;
 public interface IdGenerator
 {
 	/**
-	 * Returns the next available ID number.
+	 * Return the next available ID number.
 	 *
-	 * @return A Long containing the ID number
+	 * @return A <code>Long</code> containing the ID number
 	 */
 
 	public abstract Long nextId ();

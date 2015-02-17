@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,9 @@
 package ca.uoguelph.socs.icc.edm.domain.idgenerator;
 
 /**
- * An instance of this class will return a series of sequential ID numbers.
+ * An <code>IdGenerator</code> which return ID numbers from a sequence.  ID
+ * numbers returned by this <code>IdGenerator</code> come from a sequence which
+ * is incremented by one before the new ID number is returned.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -25,12 +27,43 @@ package ca.uoguelph.socs.icc.edm.domain.idgenerator;
 
 public class SequentialIdGenerator implements IdGenerator
 {
+	/**
+	 * Implementation of the <code>IdGeneratorImplFatory</code> to create
+	 * <code>RamdomIdGenerator</code> instances.
+	 */
+
+	private static final class Factory implements IDGeneratorImplFactory
+	{
+		/**
+		 * Create the <code>IdGenerator</code> using the specified
+		 * <code>DataStoreQuery</code>.
+		 *
+		 * @param  query The <code>DataStoreQuery</code>, not null
+		 *
+		 * @return The <code>IdGenerator</code> instance
+		 */
+
+		public IdGenerator create (DataStoreQuery<?> query)
+		{
+			return new SequentialIdGenerator (new HashSet<Long> (query.queryMaxId ()));
+		}	 
+	}
+
 	/** The next value to be returned by the generator. */
 	private long currentid;
 
 	/**
-	 * Creates a new sequential ID number generator, beginning the sequence at
-	 * zero.
+	 * Static initializer to register the <code>IdGenerator</code> with the
+	 * <code>IdGeneratorFactory</code>.
+	 */
+
+	static
+	{
+		(IdGeneratorFactory.getInstance ()).registerClass (SequentialIdGenerator.class, new Factory ());
+	}
+
+	/**
+	 * Create a new <code>SequentialIdGenerator</code>.
 	 */
 
 	public SequentialIdGenerator ()
@@ -39,10 +72,12 @@ public class SequentialIdGenerator implements IdGenerator
 	}
 
 	/**
-	 * Creates a new sequential ID number generator, while allowing the caller
-	 * to specify the first value of the sequence.
+	 * Create a new <code>SequentialIdGenerator</code>, with a specified starting
+	 * value for the sequence.  The first value returned by the
+	 * <code>IdGenerator</code> will be one greater than the specified starting
+	 * value.
 	 *
-	 * @param  startingid The first value to be returned by the generator.
+	 * @param  startingid The starting value of the sequence, not null
 	 */
 
 	public  SequentialIdGenerator (Long startingid)
@@ -51,9 +86,10 @@ public class SequentialIdGenerator implements IdGenerator
 	}
 
 	/**
-	 * Increments the ID number sequence, which returning the next available ID.
+	 * Return the next available id number.  This method increments the ID number
+	 * sequence and returns the newly calculated number.
 	 *
-	 * @return The next number in the sequence.
+	 * @return A <code>Long</code> containing the next id number
 	 */
 
 	public Long nextId ()
