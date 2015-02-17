@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.idgenerator;
+package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
@@ -36,7 +36,7 @@ public class NullIdGenerator implements IdGenerator
 	 * <code>RamdomIdGenerator</code> instances.
 	 */
 
-	private static final class Factory implements IDGeneratorImplFactory
+	private static final class Factory implements IdGeneratorImplFactory
 	{
 		/**
 		 * Create the <code>IdGenerator</code> using the specified

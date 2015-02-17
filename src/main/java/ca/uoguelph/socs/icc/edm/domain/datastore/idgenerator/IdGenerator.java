@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.idgenerator;
+package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 /**
  * An ID number generator.  Classes implementing this interface will provide

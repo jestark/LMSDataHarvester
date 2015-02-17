@@ -24,7 +24,9 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  * Factory for creating <code>IdGenerator</code> instances.  This class 
@@ -66,7 +68,7 @@ public final class IdGeneratorFactory
 
 	public static IdGeneratorFactory getInstance ()
 	{
-		return IdGeneratorFactory.instance ();
+		return IdGeneratorFactory.instance;
 	}
 
 	/**
@@ -75,7 +77,7 @@ public final class IdGeneratorFactory
 
 	private IdGeneratorFactory ()
 	{
-		this.log = LoggerFactory.getLogger (MappedManagerFactory.class);
+		this.log = LoggerFactory.getLogger (IdGeneratorFactory.class);
 
 		this.generators = new HashMap<Class<? extends IdGenerator>, IdGeneratorImplFactory> ();
 	}
@@ -169,12 +171,14 @@ public final class IdGeneratorFactory
 
 		Class<? extends IdGenerator> generator = ((query.getDataStore ()).getProfile ()).getGenerator (type);
 
+		this.log.debug ("Creating IdGenerator for interface {}, using implementation {}", type, generator);
+
 		if (! this.generators.containsKey (generator))
 		{
-			this.log.error ();
-			throw new IllegalStateException ();
+			this.log.error ("IdGenerator implementation class is not registered: {}", generator);
+			throw new IllegalStateException ("Unregistered IdGenerator implementation");
 		}
 
-		return (this.generator.get (generator)).create (query);
+		return (this.generators.get (generator)).create (query);
 	}
 }
