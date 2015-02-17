@@ -131,8 +131,46 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	}
 
 	/**
-	 * Create a TypedQuery corresponding to the specified name.  The query must
-	 * exist in the database mapping configuration.
+	 * Create a <code>TypedQuery</code> corresponding to the specified name.  This
+	 * method resolves the full name of the query and retrieves the corresponding
+	 * <code>TypedQuery</code> object from the <code>EntityManager</code>.
+	 *
+	 * @param  <Q>                      The return type of the query
+	 * @param  cls                      The return type of the query, not null
+	 * @param  name                     The name of the query to fetch, not null
+	 *
+	 * @return                          The typed query corresponding to the
+	 *                                  specified name
+	 * @throws IllegalArgumentException if the specified query does not exist
+	 */
+
+	private <Q> TypedQuery<Q> getQuery (Class<Q> cls, String name)
+	{
+		TypedQuery<Q> query = null;
+
+		if (name == null)
+		{
+			this.log.error ("Query name is NULL");
+			throw new NullPointerException ();
+		}
+
+		try
+		{
+			query = (this.datastore.getEntityManager ()).createNamedQuery (this.impl.getSimpleName () + ":" + name, cls);
+		}
+		catch (IllegalArgumentException ex)
+		{
+			this.log.error ("Failed to load query", ex);
+			throw ex;
+		}
+
+		return query;
+	}
+
+	/**
+	 * Create a <code>TypedQuery</code> corresponding to the specified name.  This
+	 * method will retrieve the specified query from the JPA
+	 * <code>EntityManager</code> is the query is not already cached.
 	 *
 	 * @param  name                     The name of the query to fetch, not null.
 	 * @return                          The typed query corresponding to the
@@ -144,32 +182,12 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	{
 		this.log.trace ("Fetch Query: {}", name);
 
-		// A null query name is invalid, about if we find one.
-		if (name == null)
+		if (! this.queries.containsKey (name))
 		{
-			this.log.error ("Query name is NULL");
-			throw new NullPointerException ();
+			this.queries.put (name, this.getQuery (this.impl, name));
 		}
 
-		String queryname = impl.getSimpleName () + ":" + name;
-
-		// Have the data store create the query only if there is no cached copy.  In
-		// that case we need to catch the illegal argument exception coming from the
-		// JPA entity manager to generate an error log.
-		if (! this.queries.containsKey (queryname))
-		{
-			try
-			{
-				this.queries.put (queryname, (this.datastore.getEntityManager ()).createNamedQuery (queryname, this.impl));
-			}
-			catch (IllegalArgumentException ex)
-			{
-				this.log.error ("Failed to load query", ex);
-				throw ex;
-			}
-		}
-
-		return this.queries.get (queryname);
+		return this.queries.get (name);
 	}
 
 	/**
@@ -313,7 +331,7 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	{
 		this.log.trace ("Get all ID numbers for: {}", this.impl);
 
-		return new ArrayList<Long> ((this.getQuery ("allid")).getResultList ());
+		return new ArrayList<Long> ((this.getQuery (Long.class, "allid")).getResultList ());
 	}
 
 	/**
@@ -331,7 +349,7 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 
 		try
 		{
-			result = (this.getQuery ("maxid")).getSingleResult ();
+			result = (this.getQuery (Long.class, "maxid")).getSingleResult ();
 		}
 		catch (NoResultException ex)
 		{
