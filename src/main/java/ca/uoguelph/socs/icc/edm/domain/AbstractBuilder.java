@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
-
 public abstract class AbstractBuilder<T extends Element>
 {
 	/** The manager (used to add new instances to the model) */
 	private final AbstractManager<T> manager;
-
-	/** The ID number generator */
-	private final IdGenerator generator;
 
 	/** The Logger */
 	private final Log log;
@@ -37,7 +32,6 @@ public abstract class AbstractBuilder<T extends Element>
 		this.log = LogFactory.getLog (AbstractBuilder.class);
 		
 		this.manager = manager;
-		this.generator = null;
 	}
 
 	public final T create ()

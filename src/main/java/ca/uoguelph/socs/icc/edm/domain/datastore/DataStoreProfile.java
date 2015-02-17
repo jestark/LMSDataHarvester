@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementManager;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * Meta-data describing the capabilities of a <code>DataStore</code>.  This

@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder;
 import ca.uoguelph.socs.icc.edm.domain.database.DatabaseFactory;
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.NullIdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.NullIdGenerator;
 
 public final class MoodleDatabaseFactory extends DatabaseFactory
 {

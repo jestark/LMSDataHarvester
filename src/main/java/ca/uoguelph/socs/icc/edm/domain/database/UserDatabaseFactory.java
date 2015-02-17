@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,8 @@ import ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager;
 
 import  ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder;
-import  ca.uoguelph.socs.icc.edm.domain.idgenerator.NullIdGenerator;
-import  ca.uoguelph.socs.icc.edm.domain.idgenerator.RandomIdGenerator;
+import  ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.NullIdGenerator;
+import  ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.RandomIdGenerator;
 
 public final class UserDatabaseFactory extends DatabaseFactory
 {
