@@ -40,9 +40,8 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
  * @param   <X> The builder interface created by this factory
  * @param   <Y> The element factory interface used by the builder created by
  *              this factory
- * @see     MappedFactory
- * @see     ca.uoguelph.socs.icc.edm.builder.BuilderFactory
- * @see     ca.uoguelph.socs.icc.edm.builder.ElementFactory
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory
  */
 
 public final class MappedBuilderFactory<T extends Element, X extends ElementBuilder<T>, Y extends ElementFactory<T>>

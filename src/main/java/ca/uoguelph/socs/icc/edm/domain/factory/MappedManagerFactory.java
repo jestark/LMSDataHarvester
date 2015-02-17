@@ -46,7 +46,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
  * @version 1.1
  * @param   <T> The domain model interface represented by this factory
  * @param   <X> The Manager interface created by this factory
- * @see     ca.uoguelph.socs.icc.edm.manager.ManagerFactory
+ * @see     ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory
  */
 
 public final class MappedManagerFactory<T extends Element, X extends ElementManager<T>>
