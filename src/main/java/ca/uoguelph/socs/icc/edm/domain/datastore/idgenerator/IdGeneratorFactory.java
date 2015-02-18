@@ -43,7 +43,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 public final class IdGeneratorFactory
 {
 	/** Singleton instance */
-	private static final IdGeneratorFactory instance;
+	private static final IdGeneratorFactory INSTANCE;
 
 	/** The logger */
 	private final Logger log;
@@ -52,12 +52,12 @@ public final class IdGeneratorFactory
 	private final Map<Class<? extends IdGenerator>, IdGeneratorImplFactory> generators;
 
 	/**
-	 * static initializer to create the <code>IdGeneratorFactory</code> singleton.
+	 * static initializer to create the singleton.
 	 */
 
 	static
 	{
-		instance = new IdGeneratorFactory ();
+		INSTANCE = new IdGeneratorFactory ();
 	}
 
 	/**
@@ -68,7 +68,7 @@ public final class IdGeneratorFactory
 
 	public static IdGeneratorFactory getInstance ()
 	{
-		return IdGeneratorFactory.instance;
+		return IdGeneratorFactory.INSTANCE;
 	}
 
 	/**
