@@ -40,7 +40,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  * @version 1.2
  */
 
-public final class MappedQueryFactory
+public final class QueryFactory<T extends Element>
 {
 	/**
 	 * Interface to hide the implementation class for the query factory from the
@@ -101,6 +101,9 @@ public final class MappedQueryFactory
 		}
 	}
 
+	/** Singleton instance */
+	private static final Map<Class<? extends Element>, QueryFactory<? extends Element>> INSTANCE;
+
 	/** The Log */
 	private final Logger log;
 
@@ -111,15 +114,48 @@ public final class MappedQueryFactory
 //	private final Map<DataStore, Map<Class<? extends Element>, DataStoreQuery<T>>> cache;
 
 	/**
-	 * Create the <code>MappedQueryFactory</code>.
+	 *  static initializer to create the singleton
+	 */
+
+	static
+	{
+		INSTANCE = new HashMap<Class<? extends Element>, QueryFactory<? extends Element>> ();
+	}
+
+	/**
+	 * Get an instance of the <code>QueryFactory</code>.
+	 *
+	 * @param  type The <code>Element</code> interface, not null
+	 *
+	 * @return      The <code>QueryFactory</code> instance
+	 */
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Element> QueryFactory<T> getInstance (Class<T> type)
+	{
+		if (type == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (! INSTANCE.containsKey (type))
+		{
+			INSTANCE.put (type, new QueryFactory<T> (type));
+		}
+
+		return (QueryFactory<T>) INSTANCE.get (type);
+	}
+
+	/**
+	 * Create the <code>QueryFactory</code>.
 	 *
 	 * @param  type The domain model interface class for which this factory is to
 	 *              create queries, not null
 	 */
 
-	public MappedQueryFactory ()
+	private QueryFactory (Class<T> type)
 	{
-		this.log = LoggerFactory.getLogger (MappedQueryFactory.class);
+		this.log = LoggerFactory.getLogger (QueryFactory.class);
 
 		this.queries = new HashMap<Class<? extends Element>, IntQueryFactory> ();
 //		this.cache = new HashMap<DataStore, Map<Class<? extends Element>, DataStoreQuery<T>>> ();
