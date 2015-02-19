@@ -63,7 +63,8 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 
 	static
 	{
-//		AbstractElement.registerElement (Grade.class, GradedActivity.class, DefaultGradeBuilder.class, new Factory ());
+		AbstractElement.registerBuilder (GradedActivity.class, DefaultGradeBuilder.class);
+		AbstractElement.registerFactory (GradedActivity.class, new Factory ());
 	}
 
 	public GradedActivity ()

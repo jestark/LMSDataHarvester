@@ -21,7 +21,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 
-public interface GradeElementFactory
+public interface GradeElementFactory extends ElementFactory<Grade>
 {
 	public abstract Grade create (Enrolment enrolment, Activity activity, Integer grade);
 }

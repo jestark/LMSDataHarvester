@@ -33,6 +33,19 @@ import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
 
 public abstract class AbstractElement implements Element
 {
+	protected static <T extends Element, X extends T> void registerQuery (Class<T> type, Class<X> impl)
+	{
+		(QueryFactory.getInstance (type)).registerClass (impl);
+	}
+
+	protected static <T extends Element, X extends T> void registerBuilder (Class<X> impl, Class<? extends ElementBuilder<T>> builder)
+	{
+	}
+
+	protected static <T extends Element, X extends T> void registerFactory (Class<X> impl, ElementFactory<T> factory)
+	{
+	}
+
 	/**
 	 * Register an <code>Element</code> implementation with the factories.
 	 *
@@ -44,6 +57,8 @@ public abstract class AbstractElement implements Element
 
 	protected static <T extends Element, X extends T> void registerElement (Class<T> type, Class<X> impl, Class<? extends ElementBuilder<T>> builder, ElementFactory<T> factory)
 	{
-		(QueryFactory.getInstance (type)).registerClass (impl);
+		registerBuilder (impl, builder);
+		registerFactory (impl, factory);
+		registerQuery (type, impl);
 	}
 }
