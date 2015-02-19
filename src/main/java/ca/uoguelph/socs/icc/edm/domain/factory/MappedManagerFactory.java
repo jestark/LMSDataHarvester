@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,10 +79,10 @@ public final class MappedManagerFactory<T extends ElementManager<? extends Eleme
 	/**
 	 * Get an instance of the <code>MappedManagerFactory</code>.
 	 *
-	 * @param  type The <code>Element</code> interface, not null
+	 * @param  type    The <code>Element</code> interface, not null
 	 * @param  manager The <code>ElementManager</code> interface, not null
 	 *
-	 * @return      The <code>QueryFactory</code> instance
+	 * @return         The <code>MappedManagerFactory</code> instance
 	 */
 
 	@SuppressWarnings("unchecked")
@@ -179,7 +180,7 @@ public final class MappedManagerFactory<T extends ElementManager<? extends Eleme
 
 	public Set<Class<? extends ElementManager<? extends Element>>> getRegisteredClasses ()
 	{
-		return this.managers.keySet ();
+		return new HashSet<Class<? extends ElementManager<? extends Element>>> (this.managers.keySet ());
 	}
 
 	/**
