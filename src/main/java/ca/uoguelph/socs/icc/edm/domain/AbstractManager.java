@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 import ca.uoguelph.socs.icc.edm.domain.factory.MappedManagerFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
 
@@ -76,7 +77,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	{
 		this.log.trace ("Getting query object from factory");
 
-		return null;
+		return (QueryFactory.getInstance (this.type)).create (this.model.getDataStore ());
 	}
 
 	/**
