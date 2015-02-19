@@ -28,7 +28,6 @@ import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActionElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
 
 /**
  * Implementation of the <code>Action</code> interface.  It is expected that
@@ -42,9 +41,9 @@ import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.ActionManager
  */
 
-public class ActionData implements Action, Serializable
+public class ActionData extends AbstractElement implements Action, Serializable
 {
-	private static final class ActionDataFactory implements ActionElementFactory
+	private static final class Factory implements ActionElementFactory
 	{
 		@Override
 		public Action create (String name)
@@ -73,7 +72,7 @@ public class ActionData implements Action, Serializable
 
 	static
 	{
-		(ActionFactory.getInstance ()).registerElement (ActionData.class, DefaultActionBuilder.class, new ActionDataFactory ());
+		AbstractElement.registerElement (Action.class, ActionData.class, DefaultActionBuilder.class, new Factory ());
 	}
 
 	/**

@@ -20,7 +20,7 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-public abstract class AbstractActivity implements Activity
+public abstract class AbstractActivity extends AbstractElement implements Activity
 {
 	protected AbstractActivity () {}
 	protected abstract boolean addGrade (Grade grade);

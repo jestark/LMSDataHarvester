@@ -35,7 +35,6 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.EnrolmentElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
 /**
  * Implementation of the <code>Enrolment</code> interface.  It is expected that
@@ -55,9 +54,9 @@ import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
  */
 
 
-public class EnrolmentData implements Enrolment, Serializable
+public class EnrolmentData extends AbstractElement implements Enrolment, Serializable
 {
-	private static final class EnrolmentDataFactory implements EnrolmentElementFactory
+	private static final class Factory implements EnrolmentElementFactory
 	{
 		@Override
 		public Enrolment create (User user, Course course, Role role, Integer grade, Boolean usable)
@@ -98,7 +97,7 @@ public class EnrolmentData implements Enrolment, Serializable
 
 	static
 	{
-		(EnrolmentFactory.getInstance ()).registerElement (EnrolmentData.class, DefaultEnrolmentBuilder.class, new EnrolmentDataFactory ());
+		AbstractElement.registerElement (Enrolment.class, EnrolmentData.class, DefaultEnrolmentBuilder.class, new Factory ());
 	}
 
 	public EnrolmentData ()
