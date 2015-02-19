@@ -47,7 +47,7 @@ public final class QueryFactory<T extends Element>
 	 * Map.
 	 */
 
-	private interface IntQueryFactory
+	private interface IntQueryFactory<T extends Element>
 	{
 		/**
 		 * Create a query.
@@ -57,7 +57,7 @@ public final class QueryFactory<T extends Element>
 		 * @return           The initialized query.
 		 */
 
-		public <T extends Element> DataStoreQuery<T> create (Class<T> type, DataStore datastore);
+		public DataStoreQuery<T> create (DataStore datastore);
 	}
 
 	/**
@@ -67,8 +67,11 @@ public final class QueryFactory<T extends Element>
 	 * @param   <X> The type of the implementation class
 	 */
 
-	private final class IntQueryFactoryImpl<X extends Element> implements IntQueryFactory
+	private final class IntQueryFactoryImpl<T extends Element, X extends T> implements IntQueryFactory<T>
 	{
+		/** The interface type of the query */
+		private final Class<T> type;
+
 		/** The implementation type of the query */
 		private final Class<X> impl;
 
@@ -81,8 +84,9 @@ public final class QueryFactory<T extends Element>
 		 *              not null
 		 */
 
-		public IntQueryFactoryImpl (Class<X> impl)
+		public IntQueryFactoryImpl (Class<T> type, Class<X> impl)
 		{
+			this.type = type;
 			this.impl = impl;
 		}
 
@@ -95,9 +99,9 @@ public final class QueryFactory<T extends Element>
 		 */
 
 		@Override
-		public <T extends Element> DataStoreQuery<T> create (Class<T> type, DataStore datastore)
+		public DataStoreQuery<T> create (DataStore datastore)
 		{
-			return datastore.createQuery (type, this.impl);
+			return datastore.createQuery (this.type, this.impl);
 		}
 	}
 
@@ -107,11 +111,14 @@ public final class QueryFactory<T extends Element>
 	/** The Log */
 	private final Logger log;
 
+	/** The interface type of the query */
+	private final Class<T> type;
+
 	/** Query factories */
-	private final Map<Class<? extends Element>, IntQueryFactory> queries;
+	private final Map<Class<? extends Element>, IntQueryFactory<T>> queries;
 
 	/** <code>DataStoreQuery</code> instance cache */
-//	private final Map<DataStore, Map<Class<? extends Element>, DataStoreQuery<T>>> cache;
+	private final Map<DataStore, Map<Class<? extends Element>, DataStoreQuery<T>>> cache;
 
 	/**
 	 *  static initializer to create the singleton
@@ -157,8 +164,16 @@ public final class QueryFactory<T extends Element>
 	{
 		this.log = LoggerFactory.getLogger (QueryFactory.class);
 
-		this.queries = new HashMap<Class<? extends Element>, IntQueryFactory> ();
-//		this.cache = new HashMap<DataStore, Map<Class<? extends Element>, DataStoreQuery<T>>> ();
+		if (type == null)
+		{
+			this.log.error ("Domain model interface type NULL");
+			throw new NullPointerException ();
+		}
+
+		this.type = type;
+
+		this.queries = new HashMap<Class<? extends Element>, IntQueryFactory<T>> ();
+		this.cache = new HashMap<DataStore, Map<Class<? extends Element>, DataStoreQuery<T>>> ();
 	}
 
 	/**
@@ -167,15 +182,9 @@ public final class QueryFactory<T extends Element>
 	 * @param  impl The implementation class to be used in the query, not null
 	 */
 
-	public <T extends Element, X extends T> void registerClass (Class<T> type, Class<X> impl)
+	public <X extends T> void registerClass (Class<X> impl)
 	{
-		this.log.trace ("Registering Element class: Type: {} Implementation {}", type, impl);
-
-		if (type == null)
-		{
-			this.log.error ("Attempting to register a NULL domain model interface class");
-			throw new NullPointerException ();
-		}
+		this.log.trace ("Registering Element class: Type: {} Implementation {}", this.type, impl);
 
 		if (impl == null)
 		{
@@ -189,7 +198,7 @@ public final class QueryFactory<T extends Element>
 			throw new IllegalArgumentException ("Duplicate class registration");
 		}
 
-		this.queries.put (impl, new IntQueryFactoryImpl<X> (impl));
+		this.queries.put (impl, new IntQueryFactoryImpl<T, X> (this.type, impl));
 	}
 
 	/**
@@ -230,9 +239,9 @@ public final class QueryFactory<T extends Element>
 	 *                               registered
 	 */
 
-	public <T extends Element> DataStoreQuery<T> create (Class<T> type, DataStore datastore)
+	public DataStoreQuery<T> create (DataStore datastore)
 	{
-		this.log.debug ("Creating query for interface {}, on using DataStore {}", type, datastore);
+		this.log.debug ("Creating query for interface {}, on using DataStore {}", this.type, datastore);
 
 		if (type == null)
 		{
@@ -246,7 +255,7 @@ public final class QueryFactory<T extends Element>
 			throw new NullPointerException ();
 		}
 
-		return this.create (type, (datastore.getProfile ()).getImplClass (type), datastore);
+		return this.create ((datastore.getProfile ()).getImplClass (this.type), datastore);
 	}
 
 	/**
@@ -264,9 +273,9 @@ public final class QueryFactory<T extends Element>
 	 *                               registered
 	 */
 
-	public  <T extends Element> DataStoreQuery<T> create (Class<T> type, Class<? extends Element> impl, DataStore datastore)
+	public  DataStoreQuery<T> create (Class<? extends Element> impl, DataStore datastore)
 	{
-		this.log.debug ("Creating query for interface {}, using implementation {}, on using DataStore {}", type, impl, datastore);
+		this.log.debug ("Creating query for interface {}, using implementation {}, on using DataStore {}", this.type, impl, datastore);
 
 		if (datastore == null)
 		{
@@ -281,24 +290,23 @@ public final class QueryFactory<T extends Element>
 		}
 
 		// If the Query is not in the cache then create it.
-//		if ((! this.cache.containsKey (datastore)) || (! (this.cache.get (datastore)).containsKey (impl)))
-//		{
+		if ((! this.cache.containsKey (datastore)) || (! (this.cache.get (datastore)).containsKey (impl)))
+		{
 			if (! this.queries.containsKey (impl))
 			{
 				this.log.error ("Element implementation class is not registered: {}", impl);
 				throw new IllegalStateException ("Unregistered Element implementation");
 			}
 
-//			if (! this.cache.containsKey (datastore))
-//			{
-//				this.cache.put (datastore, new HashMap<Class<? extends Element>, DataStoreQuery<T>> ());
-//			}
+			if (! this.cache.containsKey (datastore))
+			{
+				this.cache.put (datastore, new HashMap<Class<? extends Element>, DataStoreQuery<T>> ());
+			}
 
-//			(this.cache.get (datastore)).put (impl, (this.queries.get (impl)).create (datastore));
-//		}
+			(this.cache.get (datastore)).put (impl, (this.queries.get (impl)).create (datastore));
+		}
 
-//		return (this.cache.get (datastore)).get (impl);
-		return (this.queries.get (impl)).create (type, datastore);
+		return (this.cache.get (datastore)).get (impl);
 	}
 
 	/**
@@ -319,7 +327,7 @@ public final class QueryFactory<T extends Element>
 			throw new NullPointerException ();
 		}
 
-//		this.cache.remove (datastore);
+		this.cache.remove (datastore);
 	}
 
 	/**
@@ -330,6 +338,6 @@ public final class QueryFactory<T extends Element>
 	{
 		this.log.trace ("Flushing cache");
 
-//		this.cache.clear ();
+		this.cache.clear ();
 	}
 }
