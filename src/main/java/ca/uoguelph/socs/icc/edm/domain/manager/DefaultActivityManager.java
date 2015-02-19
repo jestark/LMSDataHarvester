@@ -32,8 +32,6 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
-
 /**
  *
  * @author  James E. Stark
@@ -48,7 +46,7 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 	 * <code>DefaultActivityManager</code>.
 	 */
 
-	private static final class DefaultActivityManagerFactory implements ManagerFactory<ActivityManager>
+	private static final class Factory implements ManagerFactory<ActivityManager>
 	{
 		/**
 		 * Create an instance of the <code>DefaultActivityManager</code>.
@@ -75,7 +73,7 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 
 	static
 	{
-		(ActivityFactory.getInstance ()).registerManager (DefaultActivityManager.class, new DefaultActivityManagerFactory ());
+		AbstractManager.registerManager (Activity.class, ActivityManager.class, DefaultActivityManager.class, new Factory ());
 	}
 
 	/**

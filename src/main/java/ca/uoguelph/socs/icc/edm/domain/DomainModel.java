@@ -28,15 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreTransaction;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivitySourceFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
+import ca.uoguelph.socs.icc.edm.domain.factory.MappedManagerFactory;
 
 /**
  *
@@ -131,7 +123,7 @@ public final class DomainModel
 			throw new IllegalStateException ("Action interface is not available");
 		}
 
-		return (ActionFactory.getInstance ()).createManager (this);
+		return (MappedManagerFactory.getInstance (ActionManager.class, Action.class)).create (this);
 	}
 
 	/**
@@ -151,7 +143,7 @@ public final class DomainModel
 			throw new IllegalStateException ("Activity interface is not available");
 		}
 
-		return (ActivityFactory.getInstance ()).createManager (this);
+		return (MappedManagerFactory.getInstance (ActivityManager.class, Activity.class)).create (this);
 	}
 
 	/**
@@ -173,7 +165,7 @@ public final class DomainModel
 			throw new IllegalStateException ("ActivitySource interface is not available");
 		}
 
-		return (ActivitySourceFactory.getInstance ()).createManager (this);
+		return (MappedManagerFactory.getInstance (ActivitySourceManager.class, ActivitySource.class)).create (this);
 	}
 
 	/**
@@ -194,7 +186,7 @@ public final class DomainModel
 			throw new IllegalStateException ("ActivityType interface is not available");
 		}
 
-		return (ActivityTypeFactory.getInstance ()).createManager (this);
+		return (MappedManagerFactory.getInstance (ActivityTypeManager.class, ActivityType.class)).create (this);
 	}
 
 	/**
@@ -213,7 +205,7 @@ public final class DomainModel
 			throw new IllegalStateException ("Course interface is not available");
 		}
 
-		return (CourseFactory.getInstance ()).createManager (this);
+		return (MappedManagerFactory.getInstance (CourseManager.class, Course.class)).create (this);
 	}
 
 	/**
@@ -234,7 +226,7 @@ public final class DomainModel
 			throw new IllegalStateException ("Enrolment interface is not available");
 		}
 
-		return (EnrolmentFactory.getInstance ()).createManager (this);
+		return (MappedManagerFactory.getInstance (EnrolmentManager.class, Enrolment.class)).create (this);
 	}
 
 	/**
@@ -254,7 +246,7 @@ public final class DomainModel
 			throw new IllegalStateException ("LogEntry interface is not available");
 		}
 
-		return (LogEntryFactory.getInstance ()).createManager (this);
+		return (MappedManagerFactory.getInstance (LogEntryManager.class, LogEntry.class)).create (this);
 	}
 
 	/**
@@ -273,7 +265,7 @@ public final class DomainModel
 			throw new IllegalStateException ("Role interface is not available");
 		}
 
-		return (RoleFactory.getInstance ()).createManager (this);
+		return (MappedManagerFactory.getInstance (RoleManager.class, Role.class)).create (this);
 	}
 
 	/**
@@ -292,6 +284,6 @@ public final class DomainModel
 			throw new IllegalStateException ("User interface is not available");
 		}
 
-		return (UserFactory.getInstance ()).createManager (this);
+		return (MappedManagerFactory.getInstance (UserManager.class, User.class)).create (this);
 	}
 }

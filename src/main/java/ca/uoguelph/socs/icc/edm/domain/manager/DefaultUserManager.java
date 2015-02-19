@@ -29,8 +29,6 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
-
 /**
  * Create, Insert and remove users from the data store.  Implementations of
  * this interface are responsible for adding users to and removing users from
@@ -52,7 +50,7 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	 * <code>DefaultUserManager</code>.
 	 */
 
-	private static final class DefaultUserManagerFactory implements ManagerFactory<UserManager>
+	private static final class Factory implements ManagerFactory<UserManager>
 	{
 		/**
 		 * Create an instance of the <code>DefaultUserManager</code>.
@@ -79,7 +77,7 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 
 	static
 	{
-		(UserFactory.getInstance ()).registerManager (DefaultUserManager.class, new DefaultUserManagerFactory ());
+		AbstractManager.registerManager (User.class, UserManager.class, DefaultUserManager.class, new Factory ());
 	}
 
 	/**

@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivitySourceFactory;
-
 /**
  * 
  *
@@ -47,7 +45,7 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 	 * <code>DefaultActivitySourceManager</code>.
 	 */
 
-	private static final class DefaultActivitySourceManagerFactory implements ManagerFactory<ActivitySourceManager>
+	private static final class Factory implements ManagerFactory<ActivitySourceManager>
 	{
 		/**
 		 * Create an instance of the <code>DefaultActivitySourceManager</code>.
@@ -74,7 +72,7 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 
 	static
 	{
-		(ActivitySourceFactory.getInstance ()).registerManager (DefaultActivitySourceManager.class, new DefaultActivitySourceManagerFactory ());
+		AbstractManager.registerManager (ActivitySource.class, ActivitySourceManager.class, DefaultActivitySourceManager.class, new Factory ());
 	}
 
 	/**

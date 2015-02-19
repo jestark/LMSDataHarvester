@@ -23,6 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
+import ca.uoguelph.socs.icc.edm.domain.factory.MappedManagerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
+
 /**
  * Top level interface for all operations involving the domain model and the
  * underlying data-store.  This class and its subclasses are responsible for
@@ -46,7 +50,10 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	/** The <code>DomainModel</code> instance which owns this manager. */
 	protected final DomainModel model;
 
-	private AbstractManagerFactory<T, ?, ?, ?> factory; 
+	protected static <T extends Element, X extends ElementManager<T>> void registerManager (Class<T> element, Class<X> manager, Class<? extends X> impl, ManagerFactory<X> factory)
+	{
+		(MappedManagerFactory.getInstance (manager, element)).registerClass (impl, factory);
+	}
 
 	/**
 	 * Create the <code>AbstractManager</code>.
@@ -65,16 +72,11 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 		this.model = model;
 	}
 
-	final void setFactory (AbstractManagerFactory<T, ?, ?, ?> factory)
-	{
-		this.factory = factory;
-	}
-
 	protected final DataStoreQuery<T> fetchQuery ()
 	{
 		this.log.trace ("Getting query object from factory");
 
-		return this.factory.createQuery (this.model);
+		return null;
 	}
 
 	/**
