@@ -27,11 +27,10 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
-import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
 public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> implements EnrolmentBuilder
 {
-	private static class DefaultEnrolmentBuilderFactory implements BuilderFactory<EnrolmentBuilder>
+	private static class Factory implements BuilderFactory<EnrolmentBuilder>
 	{
 		public EnrolmentBuilder create (DomainModel model)
 		{
@@ -59,6 +58,16 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 
 	/** Flag indicating if the user has given permission to use the data */
 	private Boolean usable;
+
+	/**
+	 * static initializer to register the <code>DefaultEnrolmentBuilder</code> with the
+	 * factory
+	 */
+
+	static
+	{
+		AbstractBuilder.registerBuilder (Enrolment.class, EnrolmentBuilder.class, DefaultEnrolmentBuilder.class, new Factory ());
+	}
 
 	protected DefaultEnrolmentBuilder (AbstractManager<Enrolment> manager)
 	{
