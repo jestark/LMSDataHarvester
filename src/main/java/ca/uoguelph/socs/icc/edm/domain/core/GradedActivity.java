@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.AbstractNoIdElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.GradeElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
-
 /**
  * Implementation of the <code>Grade</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Grade</code>
@@ -43,14 +41,14 @@ import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder
  */
 
-public class GradedActivity implements Grade, Serializable
+public class GradedActivity extends AbstractElement implements Grade, Serializable
 {
 	/**
 	 * Implementation of the <code>GradeElementFactory</code> interface.  Allows
 	 * the builders to create instances of <code>GradedActivity</code>.
 	 */
 
-	private static final class GradedActivityFactory extends AbstractNoIdElementFactory<Grade> implements GradeElementFactory
+	private static final class Factory extends AbstractNoIdElementFactory<Grade> implements GradeElementFactory
 	{
 		/**
 		 * Create a new <code>Grade</code> instance.
@@ -90,7 +88,8 @@ public class GradedActivity implements Grade, Serializable
 
 	static
 	{
-//		(EnrolmentFactory.getInstance ()).registerElement (GradedActivity.class, DefaultGradeBuilder.class, new GradedActivityFactory ());
+		AbstractElement.registerBuilder (GradedActivity.class, DefaultGradeBuilder.class);
+		AbstractElement.registerFactory (GradedActivity.class, new Factory ());
 	}
 
 	/**

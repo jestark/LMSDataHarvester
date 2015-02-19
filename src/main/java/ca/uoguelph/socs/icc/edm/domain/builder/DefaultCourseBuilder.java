@@ -25,11 +25,10 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
-import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
 
 public final class DefaultCourseBuilder extends AbstractBuilder<Course> implements CourseBuilder
 {
-	private static class DefaultCourseBuilderFactory implements BuilderFactory<CourseBuilder>
+	private static class Factory implements BuilderFactory<CourseBuilder>
 	{
 		public CourseBuilder create (DomainModel model)
 		{
@@ -51,6 +50,16 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 
 	/** The year of offering */
 	private Integer year;
+
+	/**
+	 * static initializer to register the <code>DefaultCourseBuilder</code> with the
+	 * factory
+	 */
+
+	static
+	{
+		AbstractBuilder.registerBuilder (Course.class, CourseBuilder.class, DefaultCourseBuilder.class, new Factory ());
+	}
 
 	protected DefaultCourseBuilder (AbstractManager<Course> manager)
 	{

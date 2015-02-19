@@ -74,7 +74,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.LogReferenceElementFactory;
  * @version 1.1
  */
 
-public abstract class LogReference implements LogEntry, Serializable
+public abstract class LogReference extends AbstractElement implements LogEntry, Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;

@@ -1,4 +1,4 @@
-/* Copyright (C) 2014,2015 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,10 +30,13 @@ import javax.persistence.NoResultException;
 import javax.persistence.Parameter;
 import javax.persistence.TypedQuery;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGeneratorFactory;
 
 /**
  * Add, remove and retrieve data from a database using the Java Persistence
@@ -49,6 +52,9 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public final class JPADataStoreQuery<T extends Element, X extends T> implements DataStoreQuery<T>
 {
+	/** The logger for this DataStoreQuery instance */
+	private final Logger log;
+
 	/** The data store instance which is being queried */
 	private final JPADataStore datastore;
 
@@ -58,11 +64,11 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	/** The class of objects to be queried from the database */
 	private final Class<X> impl;
 
+	/** <code>DataStore</code> ID number generator */
+	private IdGenerator generator;
+
 	/** Cache of database queries  */
 	private final Map<String, TypedQuery<X>> queries;
-
-	/** The logger for this DataStoreQuery instance */
-	private final Log log;
 
 	/**
 	 * Create the <code>JPADataStoreQuery</code>.
@@ -75,12 +81,15 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 
 	protected JPADataStoreQuery (JPADataStore datastore, Class<T> type, Class<X> impl)
 	{
+		this.log = LoggerFactory.getLogger (JPADataStoreQuery.class);
+		
 		this.datastore = datastore;
 		this.type = type;
 		this.impl = impl;
 
+		this.generator = null;
+
 		this.queries = new HashMap<String, TypedQuery<X>> ();
-		this.log = LogFactory.getLog (JPADataStoreQuery.class);
 	}
 
 	/**
@@ -115,12 +124,53 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 
 	protected void close ()
 	{
+		this.log.trace ("Close the Query");
+
 		this.queries.clear ();
+		this.generator = null;
 	}
 
 	/**
-	 * Create a TypedQuery corresponding to the specified name.  The query must
-	 * exist in the database mapping configuration.
+	 * Create a <code>TypedQuery</code> corresponding to the specified name.  This
+	 * method resolves the full name of the query and retrieves the corresponding
+	 * <code>TypedQuery</code> object from the <code>EntityManager</code>.
+	 *
+	 * @param  <Q>                      The return type of the query
+	 * @param  cls                      The return type of the query, not null
+	 * @param  name                     The name of the query to fetch, not null
+	 *
+	 * @return                          The typed query corresponding to the
+	 *                                  specified name
+	 * @throws IllegalArgumentException if the specified query does not exist
+	 */
+
+	private <Q> TypedQuery<Q> getQuery (Class<Q> cls, String name)
+	{
+		TypedQuery<Q> query = null;
+
+		if (name == null)
+		{
+			this.log.error ("Query name is NULL");
+			throw new NullPointerException ();
+		}
+
+		try
+		{
+			query = (this.datastore.getEntityManager ()).createNamedQuery (this.impl.getSimpleName () + ":" + name, cls);
+		}
+		catch (IllegalArgumentException ex)
+		{
+			this.log.error ("Failed to load query", ex);
+			throw ex;
+		}
+
+		return query;
+	}
+
+	/**
+	 * Create a <code>TypedQuery</code> corresponding to the specified name.  This
+	 * method will retrieve the specified query from the JPA
+	 * <code>EntityManager</code> is the query is not already cached.
 	 *
 	 * @param  name                     The name of the query to fetch, not null.
 	 * @return                          The typed query corresponding to the
@@ -130,32 +180,14 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 
 	private TypedQuery<X> getQuery (String name)
 	{
-		// A null query name is invalid, about if we find one.
-		if (name == null)
+		this.log.trace ("Fetch Query: {}", name);
+
+		if (! this.queries.containsKey (name))
 		{
-			this.log.error ("Query name is NULL");
-			throw new NullPointerException ();
+			this.queries.put (name, this.getQuery (this.impl, name));
 		}
 
-		String queryname = impl.getSimpleName () + ":" + name;
-
-		// Have the data store create the query only if there is no cached copy.  In
-		// that case we need to catch the illegal argument exception coming from the
-		// JPA entity manager to generate an error log.
-		if (! this.queries.containsKey (queryname))
-		{
-			try
-			{
-				this.queries.put (queryname, (this.datastore.getEntityManager ()).createNamedQuery (queryname, this.impl));
-			}
-			catch (IllegalArgumentException ex)
-			{
-				this.log.error ("Failed to load query", ex);
-				throw ex;
-			}
-		}
-
-		return this.queries.get (queryname);
+		return this.queries.get (name);
 	}
 
 	/**
@@ -193,6 +225,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 
 	private TypedQuery<X> getQuery (String name, Map<String, Object> parameters)
 	{
+		this.log.trace ("Fetch Query: {} ({})", name, parameters);
+
 		TypedQuery<X> query = this.getQuery (name);
 		Set<Parameter<?>> qparams = query.getParameters ();
 		Set<String> pnames = parameters.keySet ();
@@ -208,12 +242,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 				}
 				else
 				{
-					if (this.log.isErrorEnabled ())
-					{
-						this.log.error ("NULL value specified for parameter: " + param.getName ());
-					}
-
-					throw new NullPointerException ("NULL value specified for parameter: " + param.getName ());
+					this.log.error ("NULL value specified for parameter: {}", param.getName ());
+					throw new NullPointerException ("NULL value specified for parameter");
 				}
 			}
 			else if (query.isBound (param))
@@ -221,32 +251,51 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 				// The caller didn't supply a value for this parameter, so the previous
 				// value will be used.  It's not an error, but may lead to bad results so
 				// issue a warning
-				if (this.log.isWarnEnabled ())
-				{
-					this.log.warn ("Using previous value for parameter: " + param.getName ());
-				}
+				this.log.warn ("Using previous value for parameter: {}", param.getName ());
 			}
 			else
 			{
-				if (this.log.isErrorEnabled ())
-				{
-					this.log.error ("No value specified for parameter: " + param.getName ());
-				}
-
-				throw new IllegalArgumentException ("No value specified for parameter: " + param.getName ());
+				this.log.error ("No value specified for parameter: {}", param.getName ());
+				throw new IllegalArgumentException ("No value specified for parameter");
 			}
 		}
 
 		// Log INFO messages for any extra parameters.
 		for (String pname : pnames)
 		{
-			if (this.log.isInfoEnabled ())
-			{
-				this.log.info ("Unused parameter: " + pname);
-			}
+			this.log.info ("Unused parameter: {}", pname);
 		}
 
 		return query;
+	}
+
+	/**
+	 * Get a reference to the <code>DataStore</code> upon which the
+	 * <code>DataStoreQuery</code> operates.
+	 *
+	 * @return A reference to the <code>DataStore</code>
+	 */
+
+	public DataStore getDataStore ()
+	{
+		return this.datastore;
+	}
+	
+	/**
+	 * Get the next available DataStore ID number.  The number will be chosen by
+	 * the IdGenerator algorithm set in the <code>DataStoreProfile</code>
+	 *
+	 * @return A Long containing the ID number
+	 */
+
+	public Long nextId ()
+	{
+		if (this.generator == null)
+		{
+			this.generator = (IdGeneratorFactory.getInstance ()).create (this.type, this);
+		}
+
+		return this.generator.nextId ();
 	}
 
 	/**
@@ -259,6 +308,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 
 	public Set<String> getParameters (String name)
 	{
+		this.log.trace ("Get all parameters for query: {}", name);
+
 		Set<String> params = new HashSet<String> ();
 
 		for (Parameter<?> p : (this.getQuery (name)).getParameters ())
@@ -267,6 +318,50 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 		}
 
 		return params;
+	}
+
+	/**
+	 * Get all of the ID numbers for the class represented by this
+	 * <code>DataStoreQuery</code> in the <code>DataStore</code>.
+	 *
+	 * @return A (possibly empty) list of <code>Long</code> integers
+	 */
+
+	public List<Long> queryAllIds ()
+	{
+		this.log.trace ("Get all ID numbers for: {}", this.impl);
+
+		return new ArrayList<Long> ((this.getQuery (Long.class, "allid")).getResultList ());
+	}
+
+	/**
+	 * Get the largest ID number for the class represented by this
+	 * <code>dataStoreQuery</code> in the <code>DataStore</code>.
+	 *
+	 * @return A <code>Long</code> integer
+	 */
+
+	public Long queryMaxId ()
+	{
+		this.log.trace ("Get Maximum ID number for: {}", this.impl);
+
+		Long result = new Long (0);
+
+		try
+		{
+			result = (this.getQuery (Long.class, "maxid")).getSingleResult ();
+		}
+		catch (NoResultException ex)
+		{
+			this.log.debug ("Query did not return a result", ex);
+		}
+		catch (NonUniqueResultException ex)
+		{
+			this.log.error ("Query returned multiple results", ex);
+			throw ex;
+		}
+
+		return result;
 	}
 
 	/**
@@ -281,6 +376,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	@Override
 	public T query (Long id)
 	{
+		this.log.trace ("Retrieve Object with ID: {}", id);
+
 		if (id == null)
 		{
 			this.log.error ("Attempting to query using a NULL id");
@@ -289,11 +386,7 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 
 		if (id < 0)
 		{
-			if (this.log.isErrorEnabled ())
-			{
-				this.log.error ("query id: " + id + " < 0, positive values are required");
-			}
-
+			this.log.error ("query id: {} < 0, positive values are required", id);
 			throw new IllegalArgumentException ("Key ids must be greater then zero.");
 		}
 
@@ -337,6 +430,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	@Override
 	public T query (String name, Map<String, Object> parameters)
 	{
+		this.log.trace ("Retrieve Object: {} ({})", name, parameters);
+
 		T result = null;
 
 		try
@@ -345,18 +440,12 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 		}
 		catch (NoResultException ex)
 		{
-			if (this.log.isDebugEnabled ())
-			{
-				this.log.debug ("Query did not return a result: " + name, ex);
-			}
+			this.log.debug ("Query did not return a result", ex);
 		}
 		catch (NonUniqueResultException ex)
 		{
-			if (this.log.isFatalEnabled ())
-			{
-				this.log.fatal ("Query returned multiple results: " + name, ex);
-				throw ex;
-			}
+			this.log.error ("Query returned multiple results", ex);
+			throw ex;
 		}
 
 		return result;
@@ -373,6 +462,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	@Override
 	public List<T> queryAll ()
 	{
+		this.log.trace ("Retrieve all objects");
+
 		return new ArrayList<T> (this.getQuery ("all").getResultList ());
 	}
 
@@ -413,6 +504,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	@Override
 	public List<T> queryAll (String name, Map<String, Object> parameters)
 	{
+		this.log.trace ("Retrieve all objects: {} ({})", name, parameters);
+
 		return new ArrayList<T> (this.getQuery (name, parameters).getResultList ());
 	}
 
@@ -432,6 +525,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	@Override
 	public Boolean contains (T entity)
 	{
+		this.log.trace ("Testing for the existence of: {}", entity);
+
 		// Abort if the entity if the entity is null
 		if (entity == null)
 		{
@@ -442,12 +537,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 		// Abort if the entity is not an instance of the implementation type
 		if (! this.impl.isInstance (entity))
 		{
-			if (this.log.isErrorEnabled ())
-			{
-				this.log.error ("Object of type " + this.impl.getName () + " is required, received object of type " +  (entity.getClass ()).getName ());
-			}
-
-			throw new IllegalArgumentException (this.impl.getName () + " required, " + (entity.getClass ()).getName () + " found.");
+			this.log.error ("Object of type {} is required, received object of type {}", this.impl.getName (), (entity.getClass ()).getName ());
+			throw new IllegalArgumentException ("Entity is not an instance of the query implementation type");
 		}
 
 		return (this.datastore.getEntityManager ()).contains (entity);
@@ -467,6 +558,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	@Override
 	public void insert (T entity)
 	{
+		this.log.trace ("Inserting entity into the datastore: {}", entity);
+
 		// Abort if the entity if the entity is null
 		if (entity == null)
 		{
@@ -477,12 +570,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 		// Abort if the entity is not an instance of the implementation type
 		if (! this.impl.isInstance (entity))
 		{
-			if (this.log.isErrorEnabled ())
-			{
-				this.log.error ("Object of type " + this.impl.getName () + " is required, received object of type " +  (entity.getClass ()).getName ());
-			}
-
-			throw new IllegalArgumentException (this.impl.getName () + " required, " + (entity.getClass ()).getName () + " found.");
+			this.log.error ("Object of type {} is required, received object of type {}", this.impl.getName (), (entity.getClass ()).getName ());
+			throw new IllegalArgumentException ("Entity is not an instance of the query implementation type");
 		}
 
 		(this.datastore.getEntityManager ()).persist (entity);
@@ -502,6 +591,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	@Override
 	public void remove (T entity)
 	{
+		this.log.trace ("Removing entity from the datastore: {}", entity);
+
 		// Abort if the entity if the entity is null
 		if (entity == null)
 		{
@@ -512,12 +603,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 		// Abort if the entity is not an instance of the implementation type
 		if (! this.impl.isInstance (entity))
 		{
-			if (this.log.isErrorEnabled ())
-			{
-				this.log.error ("Object of type " + this.impl.getName () + " is required, received object of type " +  (entity.getClass ()).getName ());
-			}
-
-			throw new IllegalArgumentException (this.impl.getName () + " required, " + (entity.getClass ()).getName () + " found.");
+			this.log.error ("Object of type {} is required, received object of type {}", this.impl.getName (), (entity.getClass ()).getName ());
+			throw new IllegalArgumentException ("Entity is not an instance of the query implementation type");
 		}
 
 		(this.datastore.getEntityManager ()).remove (entity);

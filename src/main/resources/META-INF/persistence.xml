@@ -9,7 +9,7 @@
 		<description>Database mapping definition for the moodle Database</description>
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<mapping-file>mappings-moodledb-core.xml</mapping-file>
-		<mapping-file>mappings-moodledb-moodle.xml</mapping-file>
+		<!--		<mapping-file>mappings-moodledb-moodle.xml</mapping-file> -->
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://***REMOVED***?ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory"/>

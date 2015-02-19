@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,9 @@ package ca.uoguelph.socs.icc.edm.domain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.factory.MappedBuilderFactory;
 
 public abstract class AbstractBuilder<T extends Element>
 {
@@ -28,6 +30,11 @@ public abstract class AbstractBuilder<T extends Element>
 
 	/** The Logger */
 	private final Logger log;
+
+	protected static <T extends Element, X extends ElementBuilder<T>> void registerBuilder (Class<T> element, Class<X> builder, Class<? extends X> impl, BuilderFactory<X> factory)
+	{
+		(MappedBuilderFactory.getInstance (element, builder)).registerClass (impl, factory);
+	}
 
 	protected AbstractBuilder (AbstractManager<T> manager)
 	{

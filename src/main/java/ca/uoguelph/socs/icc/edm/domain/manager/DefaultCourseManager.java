@@ -32,8 +32,6 @@ import ca.uoguelph.socs.icc.edm.domain.Semester;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
-
 /**
  *
  * @author  James E. Stark
@@ -48,7 +46,7 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	 * <code>DefaultCourseManager</code>.
 	 */
 
-	private static final class DefaultCourseManagerFactory implements ManagerFactory<CourseManager>
+	private static final class Factory implements ManagerFactory<CourseManager>
 	{
 		/**
 		 * Create an instance of the <code>DefaultCourseManager</code>.
@@ -75,7 +73,7 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 
 	static
 	{
-		(CourseFactory.getInstance ()).registerManager (DefaultCourseManager.class, new DefaultCourseManagerFactory ());
+		AbstractManager.registerManager (Course.class, CourseManager.class, DefaultCourseManager.class, new Factory ());
 	}
 
 	/**

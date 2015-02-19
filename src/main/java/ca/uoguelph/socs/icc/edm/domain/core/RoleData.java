@@ -25,7 +25,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.RoleElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
 
 /**
  * Implementation of the <code>Role</code> interface.  It is expected that
@@ -40,14 +39,14 @@ import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
  */
 
 
-public class RoleData implements Role, Serializable
+public class RoleData extends AbstractElement implements Role, Serializable
 {
 	/**
 	 * Implementation of the <code>RoleElementFactory</code> interface.  Allows
 	 * the builders to create instances of <code>RoleData</code>.
 	 */
 
-	private static final class RoleDataFactory implements RoleElementFactory
+	private static final class Factory implements RoleElementFactory
 	{
 		/**
 		 * Create a new <code>Role</code> instance.
@@ -95,7 +94,7 @@ public class RoleData implements Role, Serializable
 
 	static
 	{
-		(RoleFactory.getInstance ()).registerElement (RoleData.class, DefaultRoleBuilder.class, new RoleDataFactory ());
+		AbstractElement.registerElement (Role.class, RoleData.class, DefaultRoleBuilder.class, new Factory ());
 	}
 
 	/**

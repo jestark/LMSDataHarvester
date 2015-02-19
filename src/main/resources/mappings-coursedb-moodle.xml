@@ -47,6 +47,12 @@
 
 	<entity name="MoodleForumActivityDiscussion" class="MoodleForumActivityDiscussion" metadata-complete="true">
 		<table name="activity_moodle_forum_discussion"/>
+		<named-query name="MoodleForumActivityDiscussion:maxid">
+			<query>SELECT MAX(a.id) FROM MoodleForumActivityDiscussion a</query>
+		</named-query>
+		<named-query name="MoodleForumActivityDiscussion:allid">
+			<query>SELECT a.id FROM MoodleForumActivityDiscussion a</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -66,6 +72,12 @@
 
 	<entity name="MoodleBookActivityChapter" class="MoodleBookActivityChapter" metadata-complete="true">
 		<table name="activity_moodle_book_chapter"/>
+		<named-query name="MoodleBookActivityChapter:maxid">
+			<query>SELECT MAX(a.id) FROM MoodleBookActivityChapter a</query>
+		</named-query>
+		<named-query name="MoodleBookActivityChapter:allid">
+			<query>SELECT a.id FROM MoodleBookActivityChapter a</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -83,6 +95,12 @@
 
 	<entity name="MoodleForumActivityPost" class="MoodleForumActivityPost" metadata-complete="true">
 		<table name="activity_moodle_forum_post"/>
+		<named-query name="MoodleForumActivityPost:maxid">
+			<query>SELECT MAX(a.id) FROM MoodleForumActivityPost a</query>
+		</named-query>
+		<named-query name="MoodleForumActivityPost:allid">
+			<query>SELECT a.id FROM MoodleForumActivityPost a</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -100,6 +118,12 @@
 
 	<entity name="MoodleLessonActivityPage" class="MoodleLessonActivityPage" metadata-complete="true">
 		<table name="activity_moodle_lesson_page"/>
+		<named-query name="MoodleLessonActivityPage:maxid">
+			<query>SELECT MAX(a.id) FROM MoodleLessonActivityPage a</query>
+		</named-query>
+		<named-query name="MoodleLessonActivityPage:allid">
+			<query>SELECT a.id FROM MoodleLessonActivityPage a</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -117,6 +141,12 @@
 
 	<entity name="MoodleWorkshopActivitySubmission" class="MoodleWorkshopActivitySubmission" metadata-complete="true">
 		<table name="activity_moodle_workshop_submission"/>
+		<named-query name="MoodleWorkShopActivitySubmission:maxid">
+			<query>SELECT MAX(a.id) FROM MoodleWorkShopActivitySubmission a</query>
+		</named-query>
+		<named-query name="MoodleWorkShopActivitySubmission:allid">
+			<query>SELECT a.id FROM MoodleWorkShopActivitySubmission a</query>
+		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>

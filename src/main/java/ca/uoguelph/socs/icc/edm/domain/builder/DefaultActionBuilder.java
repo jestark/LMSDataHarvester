@@ -24,11 +24,10 @@ import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
-import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
 
 public final class DefaultActionBuilder extends AbstractBuilder<Action> implements ActionBuilder
 {
-	private static class DefaultActionBuilderFactory implements BuilderFactory<ActionBuilder>
+	private static class Factory implements BuilderFactory<ActionBuilder>
 	{
 		public ActionBuilder create (DomainModel model)
 		{
@@ -45,9 +44,14 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 	/** The name of the Action */
 	private String name;
 
+	/**
+	 * static initializer to register the <code>DefaultActionBuilder</code> with the
+	 * factory
+	 */
+
 	static
 	{
-		(ActionFactory.getInstance ()).registerBuilder (DefaultActionBuilder.class, new DefaultActionBuilderFactory ());
+		AbstractBuilder.registerBuilder (Action.class, ActionBuilder.class, DefaultActionBuilder.class, new Factory ());
 	}
 
 	protected DefaultActionBuilder (AbstractManager<Action> manager)

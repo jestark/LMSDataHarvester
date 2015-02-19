@@ -31,7 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.CourseElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
 
 /**
  * Implementation of the <code>Course</code> interface.  It is expected that
@@ -45,14 +44,14 @@ import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager
  */
 
-public class CourseData implements Course, Serializable
+public class CourseData extends AbstractElement implements Course, Serializable
 {
 	/**
 	 * Implementation of the <code>CourseElementFactory</code> interface.  Allows
 	 * the builders to create instances of <code>CourseData</code>
 	 */
 
-	private static final class CourseDataFactory implements CourseElementFactory
+	private static final class Factory implements CourseElementFactory
 	{
 		/**
 		 * Create a new <code>Course</code> instance.
@@ -186,7 +185,7 @@ public class CourseData implements Course, Serializable
 
 	static
 	{
-		(CourseFactory.getInstance ()).registerElement (CourseData.class, DefaultCourseBuilder.class, new CourseDataFactory ());
+		AbstractElement.registerElement (Course.class, CourseData.class, DefaultCourseBuilder.class, new Factory ());
 	}
 
 	/**

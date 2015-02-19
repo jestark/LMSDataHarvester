@@ -24,11 +24,10 @@ import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivitySourceFactory;
 
 public final class DefaultActivitySourceBuilder extends AbstractBuilder<ActivitySource> implements ActivitySourceBuilder
 {
-	private static class DefaultActivitySourceBuilderFactory implements BuilderFactory<ActivitySourceBuilder>
+	private static class Factory implements BuilderFactory<ActivitySourceBuilder>
 	{
 		public ActivitySourceBuilder create (DomainModel model)
 		{
@@ -44,6 +43,16 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 
 	/** The name of the Activity Source */
 	private String name;
+
+	/**
+	 * static initializer to register the <code>DefaultActivitySourceBuilder</code> with the
+	 * factory
+	 */
+
+	static
+	{
+		AbstractBuilder.registerBuilder (ActivitySource.class, ActivitySourceBuilder.class, DefaultActivitySourceBuilder.class, new Factory ());
+	}
 
 	protected DefaultActivitySourceBuilder (AbstractManager<ActivitySource> manager)
 	{

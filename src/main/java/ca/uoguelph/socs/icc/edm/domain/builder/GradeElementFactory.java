@@ -36,7 +36,7 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
  * @see     java.lang.UnsupportedOperationException
  */
 
-public interface GradeElementFactory
+public interface GradeElementFactory extends ElementFactory<Grade>
 {
 	/**
 	 * Create a new <code>Grade</code> instance.

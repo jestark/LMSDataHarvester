@@ -30,7 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
 
 /**
  * Implementation of the <code>LogEntry</code> interface.  It is expected that
@@ -48,14 +47,14 @@ import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager
  */
 
-public class LogData implements LogEntry, Serializable
+public class LogData extends AbstractElement implements LogEntry, Serializable
 {
 	/**
 	 * Implementation of the <code>LogEntryElementFactory</code> interface.  Allows
 	 * the builders to create instances of <code>LogData</code>.
 	 */
 
-	private static final class LogDataFactory implements LogEntryElementFactory
+	private static final class Factory implements LogEntryElementFactory
 	{
 		/**
 		 * Create a new <code>LogEntry</code> instance.  Defaults to the current
@@ -143,7 +142,7 @@ public class LogData implements LogEntry, Serializable
 
 	static
 	{
-		(LogEntryFactory.getInstance ()).registerElement (LogData.class, DefaultLogEntryBuilder.class, new LogDataFactory ());
+		AbstractElement.registerElement (LogEntry.class, LogData.class, DefaultLogEntryBuilder.class, new Factory ());
 	}
 
 	/**

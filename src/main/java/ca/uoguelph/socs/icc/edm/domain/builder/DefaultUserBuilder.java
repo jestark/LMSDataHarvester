@@ -24,11 +24,10 @@ import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
-import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
 
 public final class DefaultUserBuilder extends AbstractBuilder<User> implements UserBuilder
 {
-	private static class DefaultUserBuilderFactory implements BuilderFactory<UserBuilder>
+	private static class Factory implements BuilderFactory<UserBuilder>
 	{
 		@Override
 		public UserBuilder create (DomainModel model)
@@ -56,12 +55,13 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	private String username;
 
 	/**
-	 *
+	 * static initializer to register the <code>DefaultUserBuilder</code> with the
+	 * factory
 	 */
 
 	static
 	{
-		(UserFactory.getInstance ()).registerBuilder (DefaultUserBuilder.class, new DefaultUserBuilderFactory ());
+		AbstractBuilder.registerBuilder (User.class, UserBuilder.class, DefaultUserBuilder.class, new Factory ());
 	}
 
 	/**

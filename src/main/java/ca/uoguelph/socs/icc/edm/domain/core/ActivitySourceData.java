@@ -29,7 +29,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivitySourceBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivitySourceElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivitySourceFactory;
 
 /**
  * Implementation of the <code>ActivitySource</code> interface.  It is expected
@@ -44,14 +43,14 @@ import ca.uoguelph.socs.icc.edm.domain.factory.ActivitySourceFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivitySourceManager
  */
 
-public class ActivitySourceData implements ActivitySource, Serializable
+public class ActivitySourceData extends AbstractElement implements ActivitySource, Serializable
 {
 	/**
 	 * Implementation of the <code>ActicitySourceElementFactory</code> interface.
 	 * Allows the builders to create instances of <code>ActivitySourceData</code>.
 	 */
 
-	private static final class ActivitySourceDataFactory implements ActivitySourceElementFactory
+	private static final class Factory implements ActivitySourceElementFactory
 	{
 		/**
 		 * Create a new <code>ActivitySource</code> instance.
@@ -143,7 +142,7 @@ public class ActivitySourceData implements ActivitySource, Serializable
 
 	static
 	{
-		(ActivitySourceFactory.getInstance ()).registerElement (ActivitySourceData.class, DefaultActivitySourceBuilder.class, new ActivitySourceDataFactory ());
+		AbstractElement.registerElement (ActivitySource.class, ActivitySourceData.class, DefaultActivitySourceBuilder.class, new Factory ());
 	}
 
 	/**

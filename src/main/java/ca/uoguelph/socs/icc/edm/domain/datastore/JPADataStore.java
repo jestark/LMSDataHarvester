@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -40,6 +40,9 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public final class JPADataStore implements DataStore
 {
+	/** The logger */
+	private final Logger log;
+
 	/** The JPA Entity manager factory for this database */
 	private final EntityManagerFactory emf;
 
@@ -51,9 +54,6 @@ public final class JPADataStore implements DataStore
 
 	/** The profile */
 	private final DataStoreProfile profile;
-
-	/** The logger */
-	private final Log log;
 
 	/**
 	 * Create the JPA data store.  This method will setup a connection to the
@@ -68,28 +68,32 @@ public final class JPADataStore implements DataStore
 
 	public JPADataStore (DataStoreProfile profile, String unitname, Map<String, String> properties)
 	{
-		this.log = LogFactory.getLog (JPADataStore.class);
-
+		this.log = LoggerFactory.getLogger (JPADataStore.class);
 		this.profile = profile;
 
 		try
 		{
+			this.log.debug ("Creating the JPA EntityManagerFactory");
 			this.emf = Persistence.createEntityManagerFactory (unitname);
+
+			this.log.debug ("Creating the JPA EntityManager");
 			this.em = this.emf.createEntityManager (properties);
 
 			this.transaction = new JPADataStoreTransaction (this);
 		}
 		catch (RuntimeException ex)
 		{
-			this.log.error (ex);
+			this.log.error ("Failed to create database connection", ex);
 
 			if (this.em != null)
 			{
+				this.log.debug ("Close EntityManager due to initialization failure");
 				this.em.close ();
 			}
 
 			if (this.emf != null)
 			{
+				this.log.debug ("Close EntityManagerFactory due to initialization failure");
 				this.emf.close ();
 			}
 
@@ -152,9 +156,11 @@ public final class JPADataStore implements DataStore
 		{
 			if ((this.em != null) && (this.em.isOpen ()))
 			{
+				this.log.debug ("Closing the EntityManager");
 				this.em.close ();
 			}
 
+			this.log.debug ("Closing the EntityManagerFactory");
 			this.emf.close ();
 		}
 	}
@@ -177,6 +183,8 @@ public final class JPADataStore implements DataStore
 	@Override
 	public <T extends Element, X extends T> DataStoreQuery<T> createQuery (Class<T> type, Class<X> impl)
 	{
+		this.log.trace ("Creating DataStoreQuery for: {} ({})", type, impl);
+
 		if (type == null)
 		{
 			this.log.error ("Interface type is NULL");

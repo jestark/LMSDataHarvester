@@ -50,6 +50,11 @@ public class App
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager");
 
+		// IdGenerator implementations
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.NullIdGenerator");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.RandomIdGenerator");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.SequentialIdGenerator");
+
 		// Core Element implementations
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActionData");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance");

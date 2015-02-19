@@ -29,6 +29,12 @@
 	<entity name="User" class="UserData" metadata-complete="true">
 		<description>Mapping definition for the Users</description>
 		<table name="mdl_user"/>
+		<named-query name="UserData:maxid">
+			<query>SELECT MAX(u.id) FROM User u</query>
+		</named-query>
+		<named-query name="UserData:allid">
+			<query>SELECT u.id FROM User u</query>
+		</named-query>
 		<named-query name="UserData:all">
 			<query>SELECT u FROM User u</query>
 		</named-query>

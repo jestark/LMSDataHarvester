@@ -30,7 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
  * @version 1.0
  */
 
-public abstract class AbstractActivity implements Activity
+public abstract class AbstractActivity extends AbstractElement implements Activity
 {
 	/**
 	 * Add the specified <code>Grade</code> to the

@@ -30,7 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityTypeElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
 
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
@@ -45,14 +44,14 @@ import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager
  */
 
-public class ActivityTypeData implements ActivityType, Serializable
+public class ActivityTypeData extends AbstractElement implements ActivityType, Serializable
 {
 	/**
 	 * Implementation of the <code>ActivityTypeElementFactory</code> interface.
 	 * Allows the builders to create instances of <code>ActivityTypeData</code>.
 	 */
 
-	private static final class ActivityTypeDataFactory implements ActivityTypeElementFactory
+	private static final class Factory implements ActivityTypeElementFactory
 	{
 		/**
 		 * Create a new <code>ActivityType</code> instance.
@@ -107,7 +106,7 @@ public class ActivityTypeData implements ActivityType, Serializable
 
 		/**
 		 * Remove the specified <code>Action</code> from the specified
-		 * <code>ActivityType</code>. 
+		 * <code>ActivityType</code>.
 		 *
 		 * @param  type   The <code>ActivityType</code> from which the <code>Action</code>
 		 *                is to be removed, not null
@@ -125,10 +124,10 @@ public class ActivityTypeData implements ActivityType, Serializable
 			return ((ActivityTypeData) type).removeAction (action);
 		}
 	}
-	
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
-	
+
 	/** The primary key of the activity type */
 	private Long id;
 
@@ -148,7 +147,7 @@ public class ActivityTypeData implements ActivityType, Serializable
 
 	static
 	{
-		(ActivityTypeFactory.getInstance ()).registerElement (ActivityTypeData.class, DefaultActivityTypeBuilder.class, new ActivityTypeDataFactory ());
+		AbstractElement.registerElement (ActivityType.class, ActivityTypeData.class, DefaultActivityTypeBuilder.class, new Factory ());
 	}
 
 	/**
@@ -361,7 +360,7 @@ public class ActivityTypeData implements ActivityType, Serializable
 
 	/**
 	 * Remove the specified <code>Action</code> from the
-	 * <code>ActivityType</code>. 
+	 * <code>ActivityType</code>.
 	 *
 	 * @param  action The <code>Action</code> to remove, not null
 	 *

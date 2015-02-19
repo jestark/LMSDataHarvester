@@ -34,7 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
 
 /**
  * Implementation of the <code>Activity</code> interface.  It is expected that
@@ -60,7 +59,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 * the builders to create instances of <code>ActivityInstance</code>.
 	 */
 
-	private static final class ActivityInstanceFactory implements ActivityElementFactory
+	private static final class Factory implements ActivityElementFactory
 	{
 		/**
 		 * Create a new <code>Activity</code> instance.
@@ -219,7 +218,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 
 	static
 	{
-		(ActivityFactory.getInstance ()).registerElement (ActivityInstance.class, DefaultActivityBuilder.class, new ActivityInstanceFactory ());
+		AbstractElement.registerElement (Activity.class, ActivityInstance.class, DefaultActivityBuilder.class, new Factory ());
 	}
 
 	/**

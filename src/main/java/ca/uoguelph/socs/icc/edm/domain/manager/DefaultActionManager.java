@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.ActionFactory;
-
 /**
  * Create, insert and remove actions from the domain model.  Through
  * implementations of this interface, Actions can be added to or removed
@@ -49,7 +47,7 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	 * <code>DefaultActionManager</code>.
 	 */
 
-	private static final class DefaultActionManagerFactory implements ManagerFactory<ActionManager>
+	private static final class Factory implements ManagerFactory<ActionManager>
 	{
 		/**
 		 * Create an instance of the <code>DefaultActionManager</code>.
@@ -76,7 +74,7 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 
 	static
 	{
-		(ActionFactory.getInstance ()).registerManager (DefaultActionManager.class, new DefaultActionManagerFactory ());
+		AbstractManager.registerManager (Action.class, ActionManager.class, DefaultActionManager.class, new Factory ());
 	}
 
 	/**

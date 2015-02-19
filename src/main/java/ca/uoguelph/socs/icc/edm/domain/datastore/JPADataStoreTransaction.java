@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author James E. Stark
@@ -24,21 +27,26 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 public final class JPADataStoreTransaction implements DataStoreTransaction
 {
+	/** The log */
+	private final Logger log;
+
 	/** The data store */
 	private final JPADataStore datastore;
 
 	/**
+	 * Create the <code>JPADataStoreTransaction</code>.
 	 *
 	 * @param datastore
 	 */
 
 	protected JPADataStoreTransaction (JPADataStore datastore)
 	{
+		this.log = LoggerFactory.getLogger (JPADataStoreTransaction.class);
 		this.datastore = datastore;
 	}
 
 	/**
-	 *
+	 * Determine if there is a transaction in progress.
 	 */
 
 	@Override
@@ -48,7 +56,7 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	}
 	
 	/**
-	 *
+	 * Determine if the current transaction must be rolled back.
 	 */
 
 	@Override
@@ -58,12 +66,14 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	}
 	
 	/**
-	 * 
+	 * Force the current transaction to be rolled back.
 	 */
 
 	@Override
 	public void setRollbackOnly ()
 	{
+		this.log.trace ("Force the transaction to be rolled back");
+
 		((this.datastore.getEntityManager ()).getTransaction ()).setRollbackOnly ();
 	}
 	
@@ -74,6 +84,8 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	@Override
 	public void begin ()
 	{
+		this.log.trace ("Begin a new transaction");
+
 		((this.datastore.getEntityManager ()).getTransaction ()).begin ();
 	}
 	
@@ -84,6 +96,8 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	@Override
 	public void commit ()
 	{
+		this.log.trace ("Commit the transaction");
+
 		((this.datastore.getEntityManager ()).getTransaction ()).commit ();
 	}
 	
@@ -94,6 +108,8 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	@Override
 	public void rollback ()
 	{
+		this.log.trace ("Rollback the transaction");
+
 		((this.datastore.getEntityManager ()).getTransaction ()).rollback ();
 	}
 }

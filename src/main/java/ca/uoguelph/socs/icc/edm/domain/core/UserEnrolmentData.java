@@ -30,7 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.EnrolmentElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
 /**
  * Implementation of the <code>Enrolment</code> interface with user data.  It
@@ -55,7 +54,7 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	 * the builders to create instances of <code>UserEnrolmentData</code>.
 	 */
 
-	private static final class UserEnrolmentDataFactory implements EnrolmentElementFactory
+	private static final class Factory implements EnrolmentElementFactory
 	{
 		/**
 		 * Create a new <code>Enrolment</code> instance.
@@ -186,7 +185,7 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 
 	static
 	{
-		(EnrolmentFactory.getInstance ()).registerElement (UserEnrolmentData.class, DefaultEnrolmentBuilder.class, new UserEnrolmentDataFactory ());
+		AbstractElement.registerElement (Enrolment.class, UserEnrolmentData.class, DefaultEnrolmentBuilder.class, new Factory ());
 	}
 
 	/**

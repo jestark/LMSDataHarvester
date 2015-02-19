@@ -30,7 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.UserElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
 
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
@@ -44,14 +43,14 @@ import ca.uoguelph.socs.icc.edm.domain.factory.UserFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager
  */
 
-public class UserData implements User, Serializable
+public class UserData extends AbstractElement implements User, Serializable
 {
 	/**
 	 * Implementation of the <code>UserElementFactory</code> interface.  Allows
 	 * the builders to create instances of <code>UserData</code>.
 	 */
 
-	private static final class UserDataFactory implements UserElementFactory
+	private static final class Factory implements UserElementFactory
 	{
 		/**
 		 * Create a new <code>User</code> instance.
@@ -154,7 +153,7 @@ public class UserData implements User, Serializable
 
 	static
 	{
-		(UserFactory.getInstance ()).registerElement (UserData.class, DefaultUserBuilder.class, new UserDataFactory ());
+		AbstractElement.registerElement (User.class, UserData.class, DefaultUserBuilder.class, new Factory ());
 	}
 
 	/**
