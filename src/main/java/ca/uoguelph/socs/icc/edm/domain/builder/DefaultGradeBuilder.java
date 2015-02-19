@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.GradeBuilder;
 
 public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements GradeBuilder
 {
-	private static class DefaultGradeBuilderFactory implements BuilderFactory<GradeBuilder>
+	private static class Factory implements BuilderFactory<GradeBuilder>
 	{
 		@Override
 		public GradeBuilder create (DomainModel model)
@@ -52,6 +52,16 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 
 	/** The grade */
 	private Integer grade;
+
+	/**
+	 * static initializer to register the <code>DefaultGradeBuilder</code> with the
+	 * factory
+	 */
+
+	static
+	{
+		AbstractBuilder.registerBuilder (Grade.class, GradeBuilder.class, DefaultGradeBuilder.class, new Factory ());
+	}
 
 	protected DefaultGradeBuilder (AbstractManager<Grade> manager)
 	{

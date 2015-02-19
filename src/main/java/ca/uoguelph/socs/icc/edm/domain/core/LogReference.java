@@ -21,7 +21,7 @@ import java.io.Serializable;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-public abstract class LogReference<T extends ActivityGroupMember> implements Serializable
+public abstract class LogReference<T extends ActivityGroupMember> extends AbstractElement implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;

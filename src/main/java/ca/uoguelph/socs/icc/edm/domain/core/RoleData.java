@@ -24,7 +24,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.RoleElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
 
 /**
  * Implementation of the <code>Role</code> interface.  It is expected that
@@ -39,9 +38,9 @@ import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
  */
 
 
-public class RoleData implements Role, Serializable
+public class RoleData extends AbstractElement implements Role, Serializable
 {
-	private static final class RoleDataFactory implements RoleElementFactory
+	private static final class Factory implements RoleElementFactory
 	{
 		@Override
 		public Role create (String name)
@@ -67,7 +66,7 @@ public class RoleData implements Role, Serializable
 
 	static
 	{
-		(RoleFactory.getInstance ()).registerElement (RoleData.class, DefaultRoleBuilder.class, new RoleDataFactory ());
+		AbstractElement.registerElement (Role.class, RoleData.class, DefaultRoleBuilder.class, new Factory ());
 	}
 
 	public RoleData ()

@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,62 +45,10 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory
  */
 
-public final class MappedBuilderFactory<T extends Element, X extends ElementBuilder<T>, Y extends ElementFactory<T>>
+public final class MappedBuilderFactory<T extends Element, X extends ElementBuilder<T>>
 {
-	/**
-	 * Internal carrier class containing the registration data provided by the
-	 * associated element.
-	 *
-	 * @param  <T> The associated <code>Element</code> interface
-	 * @param  <X> The associated <code>ElementBuilder</code> interface
-	 * @param  <Y> The associated <code>ElementFactory</code> interface
-	 */
-
-	private final class ElementData <T extends Element, X extends ElementBuilder<T>, Y extends ElementFactory<T>>
-	{
-		/** The builder implementation to be used with the <code>Element</code> */
-		private final Class<? extends X> builder;
-
-		/** The <code>ElementFactory</code> to be used by the builder instance */
-		private final Y factory;
-
-		/**
-		 * Crate the <code>ElementData</code> carrier.
-		 *
-		 * @param  builder The builder implementation to use with the associated
-		 *                 <code>Element</code>, not null
-		 * @param  factory The <code>ElementFactory</code> to be used by the
-		 *                 <code>ElementBuilder</code> instance
-		 */
-
-		public ElementData (Class<? extends X> builder, Y factory)
-		{
-			this.builder = builder;
-			this.factory = factory;
-		}
-
-		/**
-		 * Get the builder class.
-		 *
-		 * @return The builder class
-		 */
-
-		public Class<? extends X> getBuilder ()
-		{
-			return this.builder;
-		}
-
-		/**
-		 * Get the <code>ElementFactory</code>.
-		 *
-		 * @return The <code>ElementFactory</code>
-		 */
-
-		public Y getFactory ()
-		{
-			return factory;
-		}
-	}
+	/** Singleton instance */
+	private static final Map<Class<? extends ElementBuilder<? extends Element>>, MappedBuilderFactory<? extends Element, ? extends ElementBuilder<? extends Element>>> INSTANCE;
 
 	/** The logger */
 	private final Logger log;
@@ -111,7 +60,46 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 	private final Map<Class<? extends ElementBuilder<? extends Element>>, BuilderFactory<X>> builders;
 
 	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
-	private final Map<Class<? extends T>, ElementData<T, X, Y>> elements;
+	private final Map<Class<? extends T>, Class<? extends X>> elements;
+
+	/**
+	 *  static initializer to create the singleton
+	 */
+
+	static
+	{
+		INSTANCE = new HashMap<Class<? extends ElementBuilder<? extends Element>>, MappedBuilderFactory<? extends Element, ? extends ElementBuilder<? extends Element>>> ();
+	}
+
+	/**
+	 * Get an instance of the <code>MappedBuilderFactory</code>.
+	 *
+	 * @param  type    The <code>Element</code> interface, not null
+	 * @param  builder The <code>ElementBuilder</code> interface, not null
+	 *
+	 * @return         The <code>MappedBuilderFactory</code> instance
+	 */
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Element, X extends ElementBuilder<T>> MappedBuilderFactory<T, X> getInstance (Class<T> type, Class<X> builder)
+	{
+		if (type == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (builder == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (! INSTANCE.containsKey (builder))
+		{
+			INSTANCE.put (builder, new MappedBuilderFactory<T, X> (type));
+		}
+
+		return (MappedBuilderFactory<T, X>) INSTANCE.get (builder);
+	}
 
 	/**
 	 * Create the <code>MappedBuilderFactory</code>.
@@ -132,7 +120,7 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 
 		this.type = type;
 		this.builders = new HashMap<Class<? extends ElementBuilder<? extends Element>>, BuilderFactory<X>> ();
-		this.elements = new HashMap<Class<? extends T>, ElementData<T, X, Y>> ();
+		this.elements = new HashMap<Class<? extends T>, Class<? extends X>> ();
 	}
 
 	/**
@@ -140,7 +128,7 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 	 * This method is intended to be used by the implementation of
 	 * <code>ElementBuilder</code> when the classes initialize.
 	 *
-	 * @param  impl                     The <code>ElementBuilderr</code>
+	 * @param  impl                     The <code>ElementBuilder</code>
 	 *                                  implementation which is being registered,
 	 *                                  not null
 	 * @param  factory                  The <code>BuilderFactory</code> used to
@@ -184,16 +172,13 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 	 *                                  which is being registered, not null
 	 * @param  builder                  The builder class to be used to build the
 	 *                                  <code>Element</code>, not null
-	 * @param  factory                  The <code>ElementFactory</code> to be used
-	 *                                  by the <code>ElementBuilder</code>, not null
-	 *                                  instance to create the <code>Element</code>
 	 * @throws IllegalArgumentException If the <code>Element</code> is already
 	 *                                  registered with the factory
 	 */
 
-	public void registerElement (Class<? extends T> impl, Class<? extends X> builder, Y factory)
+	public void registerElement (Class<? extends T> impl, Class<? extends X> builder)
 	{
-		this.log.trace ("Registering Element: {} ({}, {})", impl, builder, factory);
+		this.log.trace ("Registering Element: {} ({})", impl, builder);
 
 		if (impl == null)
 		{
@@ -207,13 +192,13 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 			throw new NullPointerException ();
 		}
 
-		if (factory == null)
+		if (this.elements.containsKey (impl))
 		{
-			this.log.error ("Attempting to register an Element with a NULL ElementFactory");
-			throw new NullPointerException ();
+			this.log.error ("Class already registered: {}", impl);
+			throw new IllegalArgumentException ("Class already registered");
 		}
 
-		this.elements.put (impl, new ElementData<T, X, Y> (builder, factory));
+		this.elements.put (impl, builder);
 	}
 
 	/**
@@ -226,7 +211,7 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 
 	public Set<Class<? extends ElementBuilder<? extends Element>>> getRegisteredClasses ()
 	{
-		return this.builders.keySet ();
+		return new HashSet<Class<? extends ElementBuilder<? extends Element>>> (this.builders.keySet ());
 	}
 
 	/**
@@ -237,9 +222,9 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 	 *         <code>ElementBuilder</code> implementations
 	 */
 
-	public Set<Class<? extends T>> getRegisteredElements ()
+	public Set<Class<? extends Element>> getRegisteredElements ()
 	{
-		return this.elements.keySet ();
+		return new HashSet<Class<? extends Element>> (this.elements.keySet ());
 	}
 
 	/**
@@ -296,14 +281,12 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 			throw new IllegalStateException ("Element is not registered");
 		}
 
-		ElementData<T, X, Y> edata = this.elements.get ((model.getProfile ()).getImplClass (this.type));
-
-		if (! this.builders.containsKey (edata.getBuilder ()))
+		if (! this.builders.containsKey (this.elements.get ((model.getProfile ()).getImplClass (this.type))))
 		{
-			this.log.error ("Attempting to create an unregistered builder: {}", edata.getBuilder ());
+			this.log.error ("Attempting to create an unregistered builder: {}", this.elements.get ((model.getProfile ()).getImplClass (this.type)));
 			throw new IllegalStateException ("Builder is now registered");
 		}
 
-		return (this.builders.get (edata.getBuilder ())).create (model);
+		return (this.builders.get (this.elements.get ((model.getProfile ()).getImplClass (this.type)))).create (model);
 	}
 }

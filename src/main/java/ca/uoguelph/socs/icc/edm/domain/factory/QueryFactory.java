@@ -37,11 +37,10 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  * that element when they are requested.
  *
  * @author  James E. Stark
- * @version 1.1
- * @param   <T> The <code>Element</code> type of the queries to be created
+ * @version 1.2
  */
 
-public final class MappedQueryFactory<T extends Element>
+public final class QueryFactory<T extends Element>
 {
 	/**
 	 * Interface to hide the implementation class for the query factory from the
@@ -102,9 +101,12 @@ public final class MappedQueryFactory<T extends Element>
 		@Override
 		public DataStoreQuery<T> create (DataStore datastore)
 		{
-			return datastore.createQuery (type, impl);
+			return datastore.createQuery (this.type, this.impl);
 		}
 	}
+
+	/** Singleton instance */
+	private static final Map<Class<? extends Element>, QueryFactory<? extends Element>> INSTANCE;
 
 	/** The Log */
 	private final Logger log;
@@ -119,15 +121,48 @@ public final class MappedQueryFactory<T extends Element>
 	private final Map<DataStore, Map<Class<? extends Element>, DataStoreQuery<T>>> cache;
 
 	/**
-	 * Create the <code>MappedQueryFactory</code>.
+	 *  static initializer to create the singleton
+	 */
+
+	static
+	{
+		INSTANCE = new HashMap<Class<? extends Element>, QueryFactory<? extends Element>> ();
+	}
+
+	/**
+	 * Get an instance of the <code>QueryFactory</code>.
+	 *
+	 * @param  type The <code>Element</code> interface, not null
+	 *
+	 * @return      The <code>QueryFactory</code> instance
+	 */
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Element> QueryFactory<T> getInstance (Class<T> type)
+	{
+		if (type == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (! INSTANCE.containsKey (type))
+		{
+			INSTANCE.put (type, new QueryFactory<T> (type));
+		}
+
+		return (QueryFactory<T>) INSTANCE.get (type);
+	}
+
+	/**
+	 * Create the <code>QueryFactory</code>.
 	 *
 	 * @param  type The domain model interface class for which this factory is to
 	 *              create queries, not null
 	 */
 
-	public MappedQueryFactory (Class<T> type)
+	private QueryFactory (Class<T> type)
 	{
-		this.log = LoggerFactory.getLogger (MappedQueryFactory.class);
+		this.log = LoggerFactory.getLogger (QueryFactory.class);
 
 		if (type == null)
 		{
@@ -149,7 +184,7 @@ public final class MappedQueryFactory<T extends Element>
 
 	public <X extends T> void registerClass (Class<X> impl)
 	{
-		this.log.trace ("Registering Element implementation class: {} ({})", impl, this.type);
+		this.log.trace ("Registering Element class: Type: {} Implementation {}", this.type, impl);
 
 		if (impl == null)
 		{
@@ -186,7 +221,7 @@ public final class MappedQueryFactory<T extends Element>
 	 *         been registered, <code>false</code> otherwise
 	 */
 
-	public boolean isRegistered (Class<? extends T> impl)
+	public boolean isRegistered (Class<? extends Element> impl)
 	{
 		return this.queries.containsKey (impl);
 	}
@@ -194,13 +229,13 @@ public final class MappedQueryFactory<T extends Element>
 	/**
 	 * Create a <code>DataStoreQuery</code> for the specified
 	 * <code>DataStore</code>.  If the query already exists in the cache,
-	 * then the cached copy will be returned, otherwise a new 
+	 * then the cached copy will be returned, otherwise a new
 	 * <code>DataStoreQuery</code> will be created.
-	 * 
+	 *
 	 * @param  datastore             The <code>DataStore</code> for which the
 	 *                               query is to be created, not null
 	 * @return                       The <code>DataStoreQuery</code>
-	 * @throws IllegalStateException if the query implementation class is not 
+	 * @throws IllegalStateException if the query implementation class is not
 	 *                               registered
 	 */
 
@@ -208,13 +243,19 @@ public final class MappedQueryFactory<T extends Element>
 	{
 		this.log.debug ("Creating query for interface {}, on using DataStore {}", this.type, datastore);
 
+		if (type == null)
+		{
+			this.log.error ("Attempting to create a query for a NULL domain model interface");
+			throw new NullPointerException ();
+		}
+
 		if (datastore == null)
 		{
 			this.log.error ("Attempting to create a query for a NULL DataStore");
 			throw new NullPointerException ();
 		}
 
-		return this.create (datastore, (datastore.getProfile ()).getImplClass (this.type));
+		return this.create ((datastore.getProfile ()).getImplClass (this.type), datastore);
 	}
 
 	/**
@@ -222,17 +263,17 @@ public final class MappedQueryFactory<T extends Element>
 	 * <code>DataStore</code>, and <code>Element</code> implementation class.  If
 	 * the query already exists in the cache, then the cached copy will be
 	 * returned, otherwise a new <code>DataStoreQuery</code> will be created.
-	 * 
+	 *
 	 * @param  datastore             The <code>DataStore</code> for which the
 	 *                               query is to be created, not null
 	 * @param  impl                  The implementation class for which the query
 	 *                               is to be created, not null
 	 * @return                       The <code>DataStoreQuery</code>
-	 * @throws IllegalStateException if the query implementation class is not 
+	 * @throws IllegalStateException if the query implementation class is not
 	 *                               registered
 	 */
 
-	public DataStoreQuery<T> create (DataStore datastore, Class<? extends Element> impl)
+	public  DataStoreQuery<T> create (Class<? extends Element> impl, DataStore datastore)
 	{
 		this.log.debug ("Creating query for interface {}, using implementation {}, on using DataStore {}", this.type, impl, datastore);
 
@@ -286,7 +327,7 @@ public final class MappedQueryFactory<T extends Element>
 			throw new NullPointerException ();
 		}
 
-		this.queries.remove (datastore);
+		this.cache.remove (datastore);
 	}
 
 	/**
@@ -296,7 +337,7 @@ public final class MappedQueryFactory<T extends Element>
 	public void flush ()
 	{
 		this.log.trace ("Flushing cache");
-	
-		this.queries.clear ();
+
+		this.cache.clear ();
 	}
 }

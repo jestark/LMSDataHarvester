@@ -29,11 +29,10 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
-import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
 
 public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> implements LogEntryBuilder
 {
-	private static class DefaultLogEntryBuilderFactory implements BuilderFactory<LogEntryBuilder>
+	private static class Factory implements BuilderFactory<LogEntryBuilder>
 	{
 		public LogEntryBuilder create (DomainModel model)
 		{
@@ -61,6 +60,16 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 
 	/** The ip-address from with the user accessed the <code>Activity</code> */
 	private String ipaddress;
+
+	/**
+	 * static initializer to register the <code>DefaultLogEntryBuilder</code> with the
+	 * factory
+	 */
+
+	static
+	{
+		AbstractBuilder.registerBuilder (LogEntry.class, LogEntryBuilder.class, DefaultLogEntryBuilder.class, new Factory ());
+	}
 
 	protected DefaultLogEntryBuilder (AbstractManager<LogEntry> manager)
 	{

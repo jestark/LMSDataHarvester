@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.RoleManager;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
-
 /**
  *
  * @author  James E. Stark
@@ -45,7 +43,7 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 	 * <code>DefaultRoleManager</code>.
 	 */
 
-	private static final class DefaultRoleManagerFactory implements ManagerFactory<RoleManager>
+	private static final class Factory implements ManagerFactory<RoleManager>
 	{
 		/**
 		 * Create an instance of the <code>DefaultRoleManager</code>.
@@ -72,7 +70,7 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 
 	static
 	{
-		(RoleFactory.getInstance ()).registerManager (DefaultRoleManager.class, new DefaultRoleManagerFactory ());
+		AbstractManager.registerManager (Role.class, RoleManager.class, DefaultRoleManager.class, new Factory ());
 	}
 
 	/**

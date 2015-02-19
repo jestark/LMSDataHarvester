@@ -34,8 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
-
 /**
  *
  * @author  James E. Stark
@@ -49,7 +47,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	 * <code>DefaultEnrolmentManager</code>.
 	 */
 
-	private static final class DefaultEnrolmentManagerFactory implements ManagerFactory<EnrolmentManager>
+	private static final class Factory implements ManagerFactory<EnrolmentManager>
 	{
 		/**
 		 * Create an instance of the <code>DefaultEnrolmentManager</code>.
@@ -73,7 +71,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 
 	static
 	{
-		(EnrolmentFactory.getInstance ()).registerManager (DefaultEnrolmentManager.class, new DefaultEnrolmentManagerFactory ());
+		AbstractManager.registerManager (Enrolment.class, EnrolmentManager.class, DefaultEnrolmentManager.class, new Factory ());
 	}
 
 	/** The logger */

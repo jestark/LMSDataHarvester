@@ -29,7 +29,6 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
 
 /**
  * Implementation of the <code>LogEntry</code> interface.  It is expected that
@@ -43,9 +42,9 @@ import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.LogEntryManager
  */
 
-public class LogData implements LogEntry, Serializable
+public class LogData extends AbstractElement implements LogEntry, Serializable
 {
-	private static final class LogDataFactory implements LogEntryElementFactory
+	private static final class Factory implements LogEntryElementFactory
 	{
 		@Override
 		public LogEntry create (Action action, Activity activity, Enrolment enrolment, String ip, Date time)
@@ -86,7 +85,7 @@ public class LogData implements LogEntry, Serializable
 
 	static
 	{
-		(LogEntryFactory.getInstance ()).registerElement (LogData.class, DefaultLogEntryBuilder.class, new LogDataFactory ());
+		AbstractElement.registerElement (LogEntry.class, LogData.class, DefaultLogEntryBuilder.class, new Factory ());
 	}
 
 	public LogData ()

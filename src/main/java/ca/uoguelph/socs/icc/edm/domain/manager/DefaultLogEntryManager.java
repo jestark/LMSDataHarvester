@@ -33,8 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
-
 /**
  *
  *
@@ -49,7 +47,7 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	 * <code>DefaultLogEntryManager</code>.
 	 */
 
-	private static final class DefaultLogEntryManagerFactory implements ManagerFactory<LogEntryManager>
+	private static final class Factory implements ManagerFactory<LogEntryManager>
 	{
 		/**
 		 * Create an instance of the <code>DefaultLogEntryManager</code>.
@@ -76,7 +74,7 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 
 	static
 	{
-		(LogEntryFactory.getInstance ()).registerManager (DefaultLogEntryManager.class, new DefaultLogEntryManagerFactory ());
+		AbstractManager.registerManager (LogEntry.class, LogEntryManager.class, DefaultLogEntryManager.class, new Factory ());
 	}
 
 	/**

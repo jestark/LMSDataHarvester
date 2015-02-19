@@ -19,6 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.factory.MappedBuilderFactory;
+
 public abstract class AbstractBuilder<T extends Element>
 {
 	/** The manager (used to add new instances to the model) */
@@ -26,6 +30,11 @@ public abstract class AbstractBuilder<T extends Element>
 
 	/** The Logger */
 	private final Log log;
+
+	protected static <T extends Element, X extends ElementBuilder<T>> void registerBuilder (Class<T> element, Class<X> builder, Class<? extends X> impl, BuilderFactory<X> factory)
+	{
+		(MappedBuilderFactory.getInstance (element, builder)).registerClass (impl, factory);
+	}
 
 	protected AbstractBuilder (AbstractManager<T> manager)
 	{

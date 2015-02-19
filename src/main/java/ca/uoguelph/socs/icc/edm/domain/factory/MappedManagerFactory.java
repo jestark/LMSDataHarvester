@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,25 +44,67 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
  * will returned, otherwise a new instance will be created.
  *
  * @author  James E. Stark
- * @version 1.1
+ * @version 1.2
  * @param   <T> The domain model interface represented by this factory
  * @param   <X> The Manager interface created by this factory
  * @see     ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory
  */
 
-public final class MappedManagerFactory<T extends Element, X extends ElementManager<T>>
+public final class MappedManagerFactory<T extends ElementManager<? extends Element>>
 {
+	/** Singleton instance */
+	private static final Map<Class<? extends ElementManager<? extends Element>>, MappedManagerFactory<? extends ElementManager<? extends Element>>> INSTANCE;
+
 	/** The logger */
 	private final Logger log;
 
 	/** The type of the domain model interface associated with this factory*/
-	private final Class<T> type;
+	private final Class<? extends Element> type;
 
 	/** <code>ElementManager</code> factories */
-	private final Map<Class<? extends ElementManager<? extends Element>>, ManagerFactory<X>> managers;
+	private final Map<Class<? extends ElementManager<? extends Element>>, ManagerFactory<T>> managers;
 
 	/** <code>ElementManager</code> instance Cache */
-	private final Map<DomainModel, X> cache;
+	private final Map<DomainModel, T> cache;
+
+	/**
+	 *  static initializer to create the singleton
+	 */
+
+	static
+	{
+		INSTANCE = new HashMap<Class<? extends ElementManager<? extends Element>>, MappedManagerFactory<? extends ElementManager<? extends Element>>> ();
+	}
+
+	/**
+	 * Get an instance of the <code>MappedManagerFactory</code>.
+	 *
+	 * @param  type    The <code>Element</code> interface, not null
+	 * @param  manager The <code>ElementManager</code> interface, not null
+	 *
+	 * @return         The <code>MappedManagerFactory</code> instance
+	 */
+
+	@SuppressWarnings("unchecked")
+	public static <X extends Element, T extends ElementManager<X>> MappedManagerFactory<T> getInstance (Class<T> manager, Class<X> type)
+	{
+		if (manager == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (type == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (! INSTANCE.containsKey (manager))
+		{
+			INSTANCE.put (manager, new MappedManagerFactory<T> (type));
+		}
+
+		return (MappedManagerFactory<T>) INSTANCE.get (manager);
+	}
 
 	/**
 	 * Create the <code>MappedManagerFactory</code>.
@@ -70,7 +113,7 @@ public final class MappedManagerFactory<T extends Element, X extends ElementMana
 	 *              being created, not null
 	 */
 
-	public MappedManagerFactory (Class<T> type)
+	public MappedManagerFactory (Class<? extends Element> type)
 	{
 		this.log = LoggerFactory.getLogger (MappedManagerFactory.class);
 
@@ -82,9 +125,9 @@ public final class MappedManagerFactory<T extends Element, X extends ElementMana
 
 		this.type = type;
 
-		this.managers = new HashMap<Class<? extends ElementManager<? extends Element>>, ManagerFactory<X>> ();
+		this.managers = new HashMap<Class<? extends ElementManager<? extends Element>>, ManagerFactory<T>> ();
 
-		this.cache = new HashMap<DomainModel, X> ();
+		this.cache = new HashMap<DomainModel, T> ();
 	}
 
 	/**
@@ -102,7 +145,7 @@ public final class MappedManagerFactory<T extends Element, X extends ElementMana
 	 *                                  already registered with the factory
 	 */
 
-	public void registerClass (Class<? extends ElementManager<? extends Element>> impl, ManagerFactory<X> factory)
+	public void registerClass (Class<? extends ElementManager<? extends Element>> impl, ManagerFactory<T> factory)
 	{
 		this.log.trace ("Registering Class: {} ({})", impl, factory);
 
@@ -137,7 +180,7 @@ public final class MappedManagerFactory<T extends Element, X extends ElementMana
 
 	public Set<Class<? extends ElementManager<? extends Element>>> getRegisteredClasses ()
 	{
-		return this.managers.keySet ();
+		return new HashSet<Class<? extends ElementManager<? extends Element>>> (this.managers.keySet ());
 	}
 
 	/**
@@ -148,7 +191,7 @@ public final class MappedManagerFactory<T extends Element, X extends ElementMana
 	 *         has been registered, <code>false</code> otherwise
 	 */
 
-	public boolean isRegistered (Class<? extends X> impl)
+	public boolean isRegistered (Class<? extends ElementManager<? extends Element>> impl)
 	{
 		return this.managers.containsKey (impl);
 	}
@@ -166,7 +209,7 @@ public final class MappedManagerFactory<T extends Element, X extends ElementMana
 	 *                               registered
 	 */
 
-	public X create (DomainModel model)
+	public T create (DomainModel model)
 	{
 		this.log.debug ("Create manager for interface {}, on model {}", this.type, model);
 

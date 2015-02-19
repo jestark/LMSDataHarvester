@@ -25,11 +25,10 @@ import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
 
 public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType> implements ActivityTypeBuilder
 {
-	private static class DefaultActivityTypeBuilderFactory implements BuilderFactory<ActivityTypeBuilder>
+	private static class Factory implements BuilderFactory<ActivityTypeBuilder>
 	{
 		public ActivityTypeBuilder create (DomainModel model)
 		{
@@ -48,6 +47,16 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 
 	/** The name of the <code>ActivityType</code> */
 	private String name;
+
+	/**
+	 * static initializer to register the <code>DefaultActivityTypeBuilder</code> with the
+	 * factory
+	 */
+
+	static
+	{
+		AbstractBuilder.registerBuilder (ActivityType.class, ActivityTypeBuilder.class, DefaultActivityTypeBuilder.class, new Factory ());
+	}
 
 	protected DefaultActivityTypeBuilder (AbstractManager<ActivityType> manager)
 	{

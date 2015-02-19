@@ -26,7 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.GradeElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
 
 /**
  * Implementation of the <code>Grade</code> interface.  It is expected that
@@ -39,9 +38,9 @@ import ca.uoguelph.socs.icc.edm.domain.factory.EnrolmentFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.GradeBuilder
  */
 
-public class GradedActivity implements Grade, Serializable
+public class GradedActivity extends AbstractElement implements Grade, Serializable
 {
-	private static final class GradedActivityFactory implements GradeElementFactory
+	private static final class Factory implements GradeElementFactory
 	{
 		@Override
 		public Grade create (Enrolment enrolment, Activity activity, Integer mark)
@@ -64,7 +63,8 @@ public class GradedActivity implements Grade, Serializable
 
 	static
 	{
-//		(EnrolmentFactory.getInstance ()).registerElement (GradedActivity.class, DefaultGradeBuilder.class, new GradedActivityFactory ());
+		AbstractElement.registerBuilder (GradedActivity.class, DefaultGradeBuilder.class);
+		AbstractElement.registerFactory (GradedActivity.class, new Factory ());
 	}
 
 	public GradedActivity ()

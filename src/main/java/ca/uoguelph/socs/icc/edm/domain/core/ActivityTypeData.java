@@ -29,7 +29,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityTypeElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
 
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
@@ -44,9 +43,9 @@ import ca.uoguelph.socs.icc.edm.domain.factory.ActivityTypeFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager
  */
 
-public class ActivityTypeData implements ActivityType, Serializable
+public class ActivityTypeData extends AbstractElement implements ActivityType, Serializable
 {
-	private static final class ActivityTypeDataFactory implements ActivityTypeElementFactory
+	private static final class Factory implements ActivityTypeElementFactory
 	{
 		@Override
 		public ActivityType create (ActivitySource source, String name)
@@ -78,7 +77,7 @@ public class ActivityTypeData implements ActivityType, Serializable
 
 	static
 	{
-		(ActivityTypeFactory.getInstance ()).registerElement (ActivityTypeData.class, DefaultActivityTypeBuilder.class, new ActivityTypeDataFactory ());
+		AbstractElement.registerElement (ActivityType.class, ActivityTypeData.class, DefaultActivityTypeBuilder.class, new Factory ());
 	}
 
 	public ActivityTypeData ()

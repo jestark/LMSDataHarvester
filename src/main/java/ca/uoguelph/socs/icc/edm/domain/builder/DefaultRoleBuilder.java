@@ -24,11 +24,10 @@ import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
-import ca.uoguelph.socs.icc.edm.domain.factory.RoleFactory;
 
 public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements RoleBuilder
 {
-	private static class DefaultRoleBuilderFactory implements BuilderFactory<RoleBuilder>
+	private static class Factory implements BuilderFactory<RoleBuilder>
 	{
 		public RoleBuilder create (DomainModel model)
 		{
@@ -44,6 +43,16 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 
 	/** The name of the Role */
 	private String name;
+
+	/**
+	 * static initializer to register the <code>DefaultRoleBuilder</code> with the
+	 * factory
+	 */
+
+	static
+	{
+		AbstractBuilder.registerBuilder (Role.class, RoleBuilder.class, DefaultRoleBuilder.class, new Factory ());
+	}
 
 	protected DefaultRoleBuilder (AbstractManager<Role> manager)
 	{
