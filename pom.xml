@@ -51,11 +51,6 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>LATEST</version>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>LATEST</version>
-		</dependency>
 
 		<!-- Apache Commons Logging: Log4j -->
 		<dependency>
