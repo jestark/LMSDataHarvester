@@ -39,8 +39,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <li>ActivityType   = Quiz
  * <li>ClassName      = Quiz
  * <li>Builder        = DefaultNamedActivityBuilder
- * <li>HashBase       = 3061
- * <li>HashMult       = 353
  * </ul>
  *
  * @author  James E. Stark
@@ -108,26 +106,4 @@ public class Quiz extends GenericNamedActivity
 	{
 		super (instance, name);
 	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>Quiz</code> from the other
-	 * subclasses of the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 3061;
-		final int mult = 353;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
-	}
 }
-

@@ -43,8 +43,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * <li>ParentClass    = ${ParentClass}
  * <li>ChildClass     = ${ChildClass}
  * <li>Builder        = ${Builder}
- * <li>HashBase       = ${HashBase}
- * <li>HashMult       = ${HashMult}
  * </ul>
  *
  * @author  James E. Stark
@@ -120,26 +118,5 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 	public ${ClassName} (final ActivityGroup parent, final String name)
 	{
 		super (parent, name);
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>${ClassName}</code> from the other
-	 * subclasses of the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = ${HashBase};
-		final int mult = ${HashMult};
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
 	}
 }

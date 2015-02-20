@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <source name="moodle">
-	<activity name="Assign" type="Assign" builder="DefaultNamedActivityBuilder" base="3001" mult="397"/>
+	<activity name="Assign" type="Assign" builder="DefaultNamedActivityBuilder"/>
 	
-	<activity name="Book" type="Book" builder="DefaultNamedActivityBuilder" base="2003" mult="691">
-		<subactivity name="BookChapter" builder="DefaultActivityGroupMemberBuilder" base="2011" mult="683">
-			<log name="BookChapterLog" builder="DefaultLogReferenceBuilder" base="2081" mult="577"/>
+	<activity name="Book" type="Book" builder="DefaultNamedActivityBuilder">
+		<subactivity name="BookChapter" builder="DefaultActivityGroupMemberBuilder">
+			<log name="BookChapterLog" builder="DefaultLogReferenceBuilder"/>
 		</subactivity>
 	</activity>
 	
-	<activity name="Checklist" type="Checklist" builder="DefaultNamedActivityBuilder" base="3011" mult="389"/>
+	<activity name="Checklist" type="Checklist" builder="DefaultNamedActivityBuilder"/>
 	
-	<activity name="Choice" type="Choice" builder="DefaultNamedActivityBuilder" base="3019" mult="383"/>
+	<activity name="Choice" type="Choice" builder="DefaultNamedActivityBuilder"/>
 	
-	<activity name="Feedback" type="Feedback" builder="DefaultNamedActivityBuilder" base="3023" mult="379"/>
+	<activity name="Feedback" type="Feedback" builder="DefaultNamedActivityBuilder"/>
 	
-	<activity name="Folder" type="Folder" builder="DefaultNamedActivityBuilder" base="3037" mult="373"/>
+	<activity name="Folder" type="Folder" builder="DefaultNamedActivityBuilder"/>
 	
-	<activity name="Forum" type="Forum" builder="DefaultNamedActivityBuilder" base="2017" mult="677">
-		<subactivity name="ForumDiscussion" builder="DefaultActivityGroupMemberBuilder" base="2027" mult="673">
-			<subactivity name="ForumPost" builder="DefaultActivityGroupMemberBuilder" base="2029" mult="661">
-				<log name="ForumPostLog" builder="DefaultLogReferenceBuilder" base="2087" mult="569"/>
+	<activity name="Forum" type="Forum" builder="DefaultNamedActivityBuilder">
+		<subactivity name="ForumDiscussion" builder="DefaultActivityGroupMemberBuilder">
+			<subactivity name="ForumPost" builder="DefaultActivityGroupMemberBuilder">
+				<log name="ForumPostLog" builder="DefaultLogReferenceBuilder"/>
 			</subactivity>
-			<log name="ForumDiscussionLog" builder="DefaultLogReferenceBuilder" base="2083" mult="571"/>
+			<log name="ForumDiscussionLog" builder="DefaultLogReferenceBuilder"/>
 		</subactivity>
 	</activity>
 	
-	<activity name="Label" type="Label" builder="DefaultNamedActivityBuilder" base="3041" mult="367"/>
+	<activity name="Label" type="Label" builder="DefaultNamedActivityBuilder"/>
 
-	<activity name="Lesson" type="Lesson" builder="DefaultNamedActivityBuilder" base="2039" mult="601">
-		<subactivity name="LessonPage" builder="DefaultActivityGroupMemberBuilder" base="2053" mult="599">
-			<log name="LessonPageLog" builder="DefaultLogReferenceBuilder" base="2089" mult="563"/>
+	<activity name="Lesson" type="Lesson" builder="DefaultNamedActivityBuilder">
+		<subactivity name="LessonPage" builder="DefaultActivityGroupMemberBuilder">
+			<log name="LessonPageLog" builder="DefaultLogReferenceBuilder"/>
 		</subactivity>
 	</activity>
 
-	<activity name="Page" type="Page" builder="DefaultNamedActivityBuilder" base="3049" mult="359"/>
+	<activity name="Page" type="Page" builder="DefaultNamedActivityBuilder"/>
 	
-	<activity name="Quiz" type="Quiz" builder="DefaultNamedActivityBuilder" base="3061" mult="353"/>
+	<activity name="Quiz" type="Quiz" builder="DefaultNamedActivityBuilder"/>
 	
-	<activity name="Resource" type="Resource" builder="DefaultNamedActivityBuilder" base="3067" mult="349"/>
+	<activity name="Resource" type="Resource" builder="DefaultNamedActivityBuilder"/>
 	
-	<activity name="Scheduler" type="Scheduler" builder="DefaultNamedActivityBuilder" base="3079" mult="347"/>
+	<activity name="Scheduler" type="Scheduler" builder="DefaultNamedActivityBuilder"/>
 	
-	<activity name="URL" type="url" builder="DefaultNamedActivityBuilder" base="3083" mult="337"/>
+	<activity name="URL" type="url" builder="DefaultNamedActivityBuilder"/>
 
-	<activity name="Workshop" type="Workshop" builder="DefaultNamedActivityBuilder" base="2063" mult="593">
-		<subactivity name="WorkshopSubmission" builder="DefaultActivityGroupMemberBuilder" base="2069" mult="587">
-			<log name="WorkshopSubmissionLog" builder="DefaultLogReferenceBuilder" base="2099" mult="557"/>
+	<activity name="Workshop" type="Workshop" builder="DefaultNamedActivityBuilder">
+		<subactivity name="WorkshopSubmission" builder="DefaultActivityGroupMemberBuilder">
+			<log name="WorkshopSubmissionLog" builder="DefaultLogReferenceBuilder"/>
 		</subactivity>
 	</activity>
 </source>

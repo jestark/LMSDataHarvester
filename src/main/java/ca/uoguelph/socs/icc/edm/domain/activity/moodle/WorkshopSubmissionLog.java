@@ -41,8 +41,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
  * <li>ActivityType   = Workshop
  * <li>ClassName      = WorkshopSubmissionLog
  * <li>ActivityClass  = WorkshopSubmission
- * <li>HashBase       = 2099
- * <li>HashMult       = 557
  * </ul>
  *
  * @author  James E. Stark
@@ -107,26 +105,5 @@ class WorkshopSubmissionLog extends LogReference
 	public WorkshopSubmissionLog (final LogEntry entry, final ActivityGroupMember activity)
 	{
 		super (entry, activity);
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>WorkshopSubmission</code> from the other
-	 * subclasses of the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 2099;
-		final int mult = 557;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
 	}
 }

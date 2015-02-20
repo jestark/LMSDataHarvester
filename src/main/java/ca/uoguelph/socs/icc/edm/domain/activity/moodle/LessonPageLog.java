@@ -41,8 +41,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
  * <li>ActivityType   = Lesson
  * <li>ClassName      = LessonPageLog
  * <li>ActivityClass  = LessonPage
- * <li>HashBase       = 2089
- * <li>HashMult       = 563
  * </ul>
  *
  * @author  James E. Stark
@@ -107,26 +105,5 @@ class LessonPageLog extends LogReference
 	public LessonPageLog (final LogEntry entry, final ActivityGroupMember activity)
 	{
 		super (entry, activity);
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>LessonPage</code> from the other
-	 * subclasses of the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 2089;
-		final int mult = 563;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
 	}
 }

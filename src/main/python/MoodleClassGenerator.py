@@ -25,8 +25,6 @@ def processNode (node, data, template):
             processNode (child, params, template)
 
     else:
-        params ["HashBase"] = node.attrib ["base"]
-        params ["HashMult"] = node.attrib ["mult"]
         params ["Builder"] = node.attrib ["builder"]
         
         if (node.tag == "activity"):

@@ -43,8 +43,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <li>ClassName      = Lesson
  * <li>ChildClass     = LessonPage
  * <li>Builder        = DefaultNamedActivityBuilder
- * <li>HashBase       = 2039
- * <li>HashMult       = 601
  * </ul>
  *
  * @author  James E. Stark
@@ -60,6 +58,11 @@ public class Lesson extends GenericGroupedActivity
 
 	private static final class Factory extends GenericGroupedActivity.Factory
 	{
+		/**
+		 * Create an instance of the <code>Factory</code>, passing the child
+		 * <code>Class</code> to the super class.
+		 */
+
 		protected Factory ()
 		{
 			super (LessonPage.class);
@@ -118,26 +121,4 @@ public class Lesson extends GenericGroupedActivity
 	{
 		super (instance, name);
 	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>Lesson</code> from the other
-	 * subclasses of the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 2039;
-		final int mult = 601;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
-	}
 }
-

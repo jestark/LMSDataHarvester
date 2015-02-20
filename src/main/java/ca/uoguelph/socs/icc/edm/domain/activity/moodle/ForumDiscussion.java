@@ -43,8 +43,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * <li>ParentClass    = Forum
  * <li>ChildClass     = ForumPost
  * <li>Builder        = DefaultActivityGroupMemberBuilder
- * <li>HashBase       = 2027
- * <li>HashMult       = 673
  * </ul>
  *
  * @author  James E. Stark
@@ -60,6 +58,11 @@ public class ForumDiscussion extends GenericGroupedActivityGroup
 
 	private static final class Factory extends GenericGroupedActivityGroup.Factory
 	{
+		/**
+		 * Create an instance of the <code>Factory</code>, passing the child
+		 * <code>Class</code> to the super class.
+		 */
+
 		protected Factory ()
 		{
 			super (ForumPost.class);
@@ -115,26 +118,5 @@ public class ForumDiscussion extends GenericGroupedActivityGroup
 	public ForumDiscussion (final ActivityGroup parent, final String name)
 	{
 		super (parent, name);
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>ForumDiscussion</code> from the other
-	 * subclasses of the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 2027;
-		final int mult = 673;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
 	}
 }

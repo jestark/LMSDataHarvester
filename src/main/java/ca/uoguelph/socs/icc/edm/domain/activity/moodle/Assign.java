@@ -39,8 +39,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <li>ActivityType   = Assign
  * <li>ClassName      = Assign
  * <li>Builder        = DefaultNamedActivityBuilder
- * <li>HashBase       = 3001
- * <li>HashMult       = 397
  * </ul>
  *
  * @author  James E. Stark
@@ -108,26 +106,4 @@ public class Assign extends GenericNamedActivity
 	{
 		super (instance, name);
 	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>Assign</code> from the other
-	 * subclasses of the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 3001;
-		final int mult = 397;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
-	}
 }
-

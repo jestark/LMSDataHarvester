@@ -41,8 +41,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
  * <li>ActivityType   = Forum
  * <li>ClassName      = ForumDiscussionLog
  * <li>ActivityClass  = ForumDiscussion
- * <li>HashBase       = 2083
- * <li>HashMult       = 571
  * </ul>
  *
  * @author  James E. Stark
@@ -107,26 +105,5 @@ class ForumDiscussionLog extends LogReference
 	public ForumDiscussionLog (final LogEntry entry, final ActivityGroupMember activity)
 	{
 		super (entry, activity);
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>ForumDiscussion</code> from the other
-	 * subclasses of the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 2083;
-		final int mult = 571;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
 	}
 }

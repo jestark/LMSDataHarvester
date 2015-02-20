@@ -39,8 +39,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <li>ActivityType   = Choice
  * <li>ClassName      = Choice
  * <li>Builder        = DefaultNamedActivityBuilder
- * <li>HashBase       = 3019
- * <li>HashMult       = 383
  * </ul>
  *
  * @author  James E. Stark
@@ -108,26 +106,4 @@ public class Choice extends GenericNamedActivity
 	{
 		super (instance, name);
 	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>Choice</code> from the other
-	 * subclasses of the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 3019;
-		final int mult = 383;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
-	}
 }
-

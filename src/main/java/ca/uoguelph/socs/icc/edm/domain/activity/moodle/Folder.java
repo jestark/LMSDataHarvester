@@ -39,8 +39,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <li>ActivityType   = Folder
  * <li>ClassName      = Folder
  * <li>Builder        = DefaultNamedActivityBuilder
- * <li>HashBase       = 3037
- * <li>HashMult       = 373
  * </ul>
  *
  * @author  James E. Stark
@@ -108,26 +106,4 @@ public class Folder extends GenericNamedActivity
 	{
 		super (instance, name);
 	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>Folder</code> from the other
-	 * subclasses of the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 3037;
-		final int mult = 373;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
-	}
 }
-

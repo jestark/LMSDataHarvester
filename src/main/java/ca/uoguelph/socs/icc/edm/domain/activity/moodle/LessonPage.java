@@ -42,8 +42,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * <li>ClassName      = LessonPage
  * <li>ParentClass    = Lesson
  * <li>Builder        = DefaultActivityGroupMemberBuilder
- * <li>HashBase       = 2053
- * <li>HashMult       = 599
  * </ul>
  *
  * @author  James E. Stark
@@ -110,26 +108,4 @@ public class LessonPage extends GenericGroupedActivityMember
 	{
 		super (parent, name);
 	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed by the superclass, with unique values added
-	 * to separate the instances of <code>LessonPage</code> from the other
-	 * subclasses of the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 2053;
-		final int mult = 599;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
-	}
 }
-
