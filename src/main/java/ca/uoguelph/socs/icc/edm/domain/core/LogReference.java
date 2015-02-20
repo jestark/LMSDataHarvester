@@ -93,8 +93,12 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * @param  factory The <code>ElementFactory</code>, not null
 	 */	
 
-	protected static void registerLog (Class<? extends LogReference> impl, LogReferenceElementFactory factory)
+	protected static final void registerLog (final Class<? extends LogReference> impl, final LogReferenceElementFactory factory)
 	{
+		assert impl != null : "Implementation class is NULL";
+		assert factory != null : "factory is NULL";
+
+		AbstractElement.registerFactory (impl, factory);
 	}
 
 	/**
@@ -114,9 +118,12 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * @param  activity The Sub-activity
 	 */
 
-	public LogReference (LogEntry entry, ActivityGroupMember activity)
+	public LogReference (final LogEntry entry, final ActivityGroupMember activity)
 	{
 		this ();
+
+		assert entry != null : "entry is NULL";
+		assert activity != null : "activity is NULL";
 
 		this.entry = entry;
 		this.activity = activity;
@@ -207,8 +214,10 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * @param  entry The parent <code>LogEntry</code> instance, not null
 	 */
 
-	protected void setEntry (LogEntry entry)
+	protected void setEntry (final LogEntry entry)
 	{
+		assert entry != null : "entry is NULL";
+
 		this.entry = entry;
 	}
 
@@ -232,8 +241,10 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * @param  activity The sub-activity, not null
 	 */
 
-	protected void setActivity (ActivityGroupMember activity)
+	protected void setActivity (final ActivityGroupMember activity)
 	{
+		assert activity != null : "activity is NULL";
+
 		this.activity = activity;
 	}
 

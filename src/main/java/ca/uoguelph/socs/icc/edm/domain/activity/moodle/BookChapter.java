@@ -22,7 +22,6 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityGroupMemberBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
@@ -58,7 +57,7 @@ public class BookChapter extends GenericGroupedActivityMember
 	 * Allows the builders to create instances of <code>BookChapter</code>.
 	 */
 
-	private static final class Factory implements ActivityGroupMemberElementFactory
+	private static final class Factory extends GenericGroupedActivityMember.Factory
 	{
 		/**
 		 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.
@@ -70,29 +69,12 @@ public class BookChapter extends GenericGroupedActivityMember
 		 *                instance
 		 */
 
-		public ActivityGroupMember create (ActivityGroup parent, String name)
+		public ActivityGroupMember create (final ActivityGroup parent, final String name)
 		{
-			if (! (parent instanceof Book))
-			{
-				throw new IllegalArgumentException ("Parent is not an instance of Book");
-			}
+			assert parent instanceof Book : "parent is not an instance of Book";
+			assert name != null : "name is NULL";
 
 			return new BookChapter (parent, name);
-		}
-
-		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity The <code>Activity</code> to which the ID number is
-		 *                  assigned not null
-		 * @param  id       The ID number assigned to the <code>Activity</code>, not
-		 *                  null
-		 */
-
-		public void setId (Activity activity, Long id)
-		{
-			((BookChapter) activity).setId (id);
 		}
 	}
 
@@ -124,7 +106,7 @@ public class BookChapter extends GenericGroupedActivityMember
 	 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
 	 */
 
-	public BookChapter (ActivityGroup parent, String name)
+	public BookChapter (final ActivityGroup parent, final String name)
 	{
 		super (parent, name);
 	}

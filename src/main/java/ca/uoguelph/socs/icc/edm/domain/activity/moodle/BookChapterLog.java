@@ -65,12 +65,10 @@ class BookChapterLog extends LogReference
 		 *                  <code>LogEntry</code>)
 		 */
 
-		public LogEntry create (LogEntry entry, ActivityGroupMember activity)
+		public LogEntry create (final LogEntry entry, final ActivityGroupMember activity)
 		{
-			if (! (activity instanceof BookChapter))
-			{
-				throw new IllegalArgumentException ("Activity is not an instance of BookChapter");
-			}
+			assert entry != null : "entry is NULL";
+			assert activity instanceof BookChapter : "activity is not an instance of BookChapter";
 
 			return new BookChapterLog (entry, activity);
 		}
@@ -106,7 +104,7 @@ class BookChapterLog extends LogReference
 	 *                  is being referenced, not null
 	 */
 
-	public BookChapterLog (LogEntry entry, ActivityGroupMember activity)
+	public BookChapterLog (final LogEntry entry, final ActivityGroupMember activity)
 	{
 		super (entry, activity);
 	}

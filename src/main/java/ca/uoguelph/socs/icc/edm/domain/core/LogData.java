@@ -72,8 +72,12 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		 */
 
 		@Override
-		public LogEntry create (Action action, Activity activity, Enrolment enrolment, String ip, Date time)
+		public LogEntry create (final Action action, final Activity activity, final Enrolment enrolment, final String ip, final Date time)
 		{
+			assert action != null : "action is NULL";
+			assert activity != null : "activity is NULL";
+			assert enrolment != null : "enrolment is NULL";
+
 			return new LogData (action, activity, enrolment, ip, time);
 		}
 
@@ -87,8 +91,10 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		 */
 
 		@Override
-		public void setId (LogEntry entry, Long id)
+		public void setId (final LogEntry entry, final Long id)
 		{
+			assert entry != null : "entry is NULL";
+
 			((LogData) entry).setId (id);
 		}
 
@@ -105,8 +111,11 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		 *                   the <code>LogEntry</code>, not null
 		 */
 
-		public void setReference (LogEntry entry, LogReference reference)
+		public void setReference (final LogEntry entry, final LogReference reference)
 		{
+			assert entry != null : "entry is NULL";
+			assert reference != null : "reference is NULL";
+			
 			((LogData) entry).setReference (reference);
 		}
 	}
@@ -157,7 +166,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		this.activity = null;
 		this.enrolment = null;
 		this.reference = null;
-		this.time = null;
+		this.time = new Date ();
 	}
 
 	/**
@@ -173,15 +182,21 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  time      The time that the <code>Action</code> was performed
 	 */
 
-	public LogData (Action action, Activity activity, Enrolment enrolment, String ip, Date time)
+	public LogData (final Action action, final Activity activity, final Enrolment enrolment, final String ip, final Date time)
 	{
-		this ();
+		assert action != null : "action is NULL";
+		assert activity != null : "activity is NULL";
+		assert enrolment != null : "enrolment is NULL";
+		
+		this.id = null;
+		this.reference = null;
 
 		this.action = action;
 		this.activity = activity;
 		this.enrolment = enrolment;
 		this.ip = ip;
-		this.time = time;
+
+		this.time = (time != null) ? new Date (time.getTime ()) : new Date ();
 	}
 
 	/**
@@ -202,7 +217,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -298,7 +313,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
-	protected void setId (Long id)
+	protected void setId (final Long id)
 	{
 		this.id = id;
 	}
@@ -324,8 +339,10 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  action The <code>Action</code>, not null
 	 */
 
-	protected void setAction (Action action)
+	protected void setAction (final Action action)
 	{
+		assert action != null : "action is NULL";
+
 		this.action = action;
 	}
 
@@ -349,8 +366,10 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  activity The <code>Activity</code>, not null
 	 */
 
-	protected void setActivity (Activity activity)
+	protected void setActivity (final Activity activity)
 	{
+		assert activity != null : "activity is NULL";
+
 		this.activity = activity;
 	}
 
@@ -387,8 +406,10 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  enrolment The <code>Enrolment</code>, not null
 	 */
 
-	protected void setEnrolment (Enrolment enrolment)
+	protected void setEnrolment (final Enrolment enrolment)
 	{
+		assert enrolment != null : "enrolment is NULL";
+
 		this.enrolment = enrolment;
 	}
 
@@ -414,7 +435,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  ip A <code>String</code> containing the IP Address
 	 */
 
-	protected void setIPAddress (String ip)
+	protected void setIPAddress (final String ip)
 	{
 		this.ip = ip;
 	}
@@ -442,8 +463,10 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  reference The <code>LogReference</code> instance, not null
 	 */
 
-	protected void setReference (LogReference reference)
+	protected void setReference (final LogReference reference)
 	{
+		assert reference != null : "reference is NULL";
+
 		this.reference = reference;
 	}
 
@@ -467,8 +490,10 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  time The time, not null
 	 */
 
-	protected void setTime (Date time)
+	protected void setTime (final Date time)
 	{
+		assert time != null : "time is NULL";
+
 		this.time = time;
 	}
 

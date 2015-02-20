@@ -65,12 +65,10 @@ class ForumPostLog extends LogReference
 		 *                  <code>LogEntry</code>)
 		 */
 
-		public LogEntry create (LogEntry entry, ActivityGroupMember activity)
+		public LogEntry create (final LogEntry entry, final ActivityGroupMember activity)
 		{
-			if (! (activity instanceof ForumPost))
-			{
-				throw new IllegalArgumentException ("Activity is not an instance of ForumPost");
-			}
+			assert entry != null : "entry is NULL";
+			assert activity instanceof ForumPost : "activity is not an instance of ForumPost";
 
 			return new ForumPostLog (entry, activity);
 		}
@@ -106,7 +104,7 @@ class ForumPostLog extends LogReference
 	 *                  is being referenced, not null
 	 */
 
-	public ForumPostLog (LogEntry entry, ActivityGroupMember activity)
+	public ForumPostLog (final LogEntry entry, final ActivityGroupMember activity)
 	{
 		super (entry, activity);
 	}

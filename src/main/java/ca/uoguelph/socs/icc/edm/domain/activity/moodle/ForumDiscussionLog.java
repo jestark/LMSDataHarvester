@@ -65,12 +65,10 @@ class ForumDiscussionLog extends LogReference
 		 *                  <code>LogEntry</code>)
 		 */
 
-		public LogEntry create (LogEntry entry, ActivityGroupMember activity)
+		public LogEntry create (final LogEntry entry, final ActivityGroupMember activity)
 		{
-			if (! (activity instanceof ForumDiscussion))
-			{
-				throw new IllegalArgumentException ("Activity is not an instance of ForumDiscussion");
-			}
+			assert entry != null : "entry is NULL";
+			assert activity instanceof ForumDiscussion : "activity is not an instance of ForumDiscussion";
 
 			return new ForumDiscussionLog (entry, activity);
 		}
@@ -106,7 +104,7 @@ class ForumDiscussionLog extends LogReference
 	 *                  is being referenced, not null
 	 */
 
-	public ForumDiscussionLog (LogEntry entry, ActivityGroupMember activity)
+	public ForumDiscussionLog (final LogEntry entry, final ActivityGroupMember activity)
 	{
 		super (entry, activity);
 	}

@@ -26,6 +26,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMemberBuilder;
@@ -49,6 +50,30 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory
 
 public abstract class GenericGroupedActivityMember extends AbstractNamedActivity implements ActivityGroupMember, Serializable
 {
+	/**
+	 * Implementation of the common parts of the
+	 * <code>ActivityGroupMemberElementFactory</code> interface.
+	 */
+
+	protected static abstract class Factory implements ActivityGroupMemberElementFactory
+	{
+		/**
+		 * Write the specified <code>DataStore</code> ID number into the
+		 * <code>Activity</code>.
+		 *
+		 * @param  activity The <code>Activity</code> to which the ID number is
+		 *                  assigned not null
+		 * @param  id       The ID number assigned to the <code>Activity</code>
+		 */
+
+		public final void setId (final Activity activity, final Long id)
+		{
+			assert activity != null : "activity is NULL";
+
+			((GenericGroupedActivityMember) activity).setId (id);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -73,9 +98,17 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 * @param  factory The <code>ElementFactory</code>, not null
 	 */
 
-	protected static final <T extends GenericGroupedActivityMember> void registerActivity (Class<T> impl, Class<? extends ActivityGroup> parent, Class<? extends ActivityGroupMemberBuilder> builder, ActivityGroupMemberElementFactory factory)
+	protected static final <T extends GenericGroupedActivityMember> void registerActivity (final Class<T> impl, final Class<? extends ActivityGroup> parent, final Class<? extends ActivityGroupMemberBuilder> builder, final ActivityGroupMemberElementFactory factory)
 	{
+		assert impl != null : "Implementation Class is NULL";
+		assert parent != null : "Parent Class is NULL";
+		assert builder != null : "Builder is NULL";
+		assert factory != null : "Factory is NULL";
+
 		(ActivityDataMap.getInstance ()).registerRelationship (parent, impl);
+
+		AbstractElement.registerBuilder (impl, builder);
+		AbstractElement.registerFactory (impl, factory);
 	}
 
 	/**
@@ -98,9 +131,11 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 * @param  name   The name of the <code>Activity</code>
 	 */
 
-	public GenericGroupedActivityMember (ActivityGroup parent, String name)
+	public GenericGroupedActivityMember (final ActivityGroup parent, final String name)
 	{
 		super (name);
+
+		assert parent != null : "Parent element is null";
 
 		this.id = null;
 		this.parent = parent;
@@ -121,7 +156,7 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -184,7 +219,7 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
-	protected void setId (Long id)
+	protected void setId (final Long id)
 	{
 		this.id = id;
 	}
@@ -257,8 +292,10 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 */
 
 	@Override
-	protected boolean addGrade (Grade grade)
+	protected boolean addGrade (final Grade grade)
 	{
+		assert grade != null : "grade is NULL";
+
 		return ((AbstractActivity) this.parent).addGrade (grade);
 	}
 
@@ -273,8 +310,10 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 */
 
 	@Override
-	protected boolean removeGrade (Grade grade)
+	protected boolean removeGrade (final Grade grade)
 	{
+		assert grade != null : "grade is NULL";
+
 		return ((AbstractActivity) this.parent).removeGrade (grade);
 	}
 
@@ -301,8 +340,10 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 *             null
 	 */
 
-	protected void setLog (List<LogEntry> log)
+	protected void setLog (final List<LogEntry> log)
 	{
+		assert log != null : "log is NULL";
+
 		this.log = log;
 	}
 
@@ -317,8 +358,10 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 */
 
 	@Override
-	protected boolean addLog (LogEntry entry)
+	protected boolean addLog (final LogEntry entry)
 	{
+		assert entry != null : "entry is NULL";
+
 		return this.log.add (entry);
 	}
 
@@ -333,8 +376,10 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 */
 
 	@Override
-	protected boolean removeLog (LogEntry entry)
+	protected boolean removeLog (final LogEntry entry)
 	{
+		assert entry != null : "entry is NULL";
+
 		return this.log.remove (entry);
 	}
 
@@ -359,8 +404,10 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 *                <code>Activity</code> instance
 	 */
 
-	protected void setParent (ActivityGroup parent)
+	protected void setParent (final ActivityGroup parent)
 	{
+		assert parent != null : "parent is NULL";
+
 		this.parent = parent;
 	}
 

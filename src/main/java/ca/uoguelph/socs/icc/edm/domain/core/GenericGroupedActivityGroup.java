@@ -28,6 +28,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
+import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupElementFactory;
+
 /**
  * A generic representation of a node in a sub-activity tree.  This class
  * extends <code>GenericGroupedActivityMember</code> to act as an abstract base
@@ -40,6 +42,78 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 public abstract class GenericGroupedActivityGroup extends GenericGroupedActivityMember implements ActivityGroup, Serializable
 {
+	/**
+	 * Implementation of the <code>ActivityGroupElementFactory</code>.
+	 * Centralizes the implementation of the common add/remove operations.
+	 */
+
+	protected static abstract class Factory extends GenericGroupedActivityMember.Factory implements ActivityGroupElementFactory
+	{
+		/** The <code>Class</code> of the child <code>Element</code> */
+		private final Class<? extends ActivityGroupMember> child;
+
+		/**
+		 * Create an instance of the <code>Factory</code>.  This method sets the
+		 * <code>Class</code> of the child element to be used to enforce the safety
+		 * of the types in the tree.
+		 *
+		 * @param  child The Class of the child <code>Element</code>, not null
+		 */
+
+		protected Factory (final Class<? extends ActivityGroupMember> child)
+		{
+			assert child != null : "Child class is NULL";
+
+			this.child = child;
+		}
+
+		/**
+		 * Add the specified <code>ActivityGroupMember</code> to the specified
+		 * <code>ActivityGroup</code>.
+		 *
+		 * @param  group  The <code>ActivityGroup</code> to which the
+		 *                <code>ActivityGroupMember</code> is to be added, not null
+		 * @param  member The <code>ActivityGroupMember</code> to add to the
+		 *                <code>ActivityGroup</code>, not null
+		 *
+		 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
+		 *                was successfully added to the <code>ActvityGroup</code>,
+		 *                <code>False</code> otherwise
+		 */
+
+		public final boolean addChild (final ActivityGroup group, final ActivityGroupMember member)
+		{
+			assert group != null : "ActivityGroup is NULL";
+			assert member != null : "ActivityGroup Member is NULL";
+			assert this.child.isInstance (member) : "Required: " + this.child.getSimpleName () + " Found:" + (member.getClass ()).getSimpleName ();
+
+			return ((GenericGroupedActivityGroup) group).addChild (member);
+		}
+
+		/**
+		 * Remove the specified <code>ActivityGroupMember</code> from the specified
+		 * <code>ActivityGroup</code>.
+		 *
+		 * @param  group  The <code>ActivityGroup</code> from which the
+		 *                <code>ActivityGroupMember</code> is to be removed, not null
+		 * @param  member The <code>ActivityGroupMember</code> to remove from the
+		 *                <code>ActivityGroup</code>, not null
+		 *
+		 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
+		 *                was successfully removed from the <code>ActvityGroup</code>,
+		 *                <code>False</code> otherwise
+		 */
+
+		public final boolean removeChild (final ActivityGroup group, final ActivityGroupMember member)
+		{
+			assert group != null : "ActivityGroup is NULL";
+			assert member != null : "ActivityGroup Member is NULL";
+			assert this.child.isInstance (member) : "Required: " + this.child.getSimpleName () + " Found:" + (member.getClass ()).getSimpleName ();
+
+			return ((GenericGroupedActivityGroup) group).removeChild (member);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -64,7 +138,7 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 	 * @param  name   The name of the <code>Activity</code>
 	 */
 
-	public GenericGroupedActivityGroup (ActivityGroup parent, String name)
+	public GenericGroupedActivityGroup (final ActivityGroup parent, final String name)
 	{
 		super (parent, name);
 
@@ -84,7 +158,7 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 	 */
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(final Object obj)
 	{
 		boolean result = false;
 
@@ -142,8 +216,10 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 	 * @param  children The <code>Set</code> of sub-activity instances, not null
 	 */
 
-	protected void setChildren (Set<ActivityGroupMember> children)
+	protected void setChildren (final Set<ActivityGroupMember> children)
 	{
+		assert children != null : "children is NULL";
+
 		this.children = children;
 	}
 
@@ -157,8 +233,10 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 	 *               was successfully added, <code>False</code> otherwise
 	 */
 
-	protected boolean addChild (ActivityGroupMember child)
+	protected boolean addChild (final ActivityGroupMember child)
 	{
+		assert child != null : "child is NULL";
+
 		return this.children.add (child);
 	}
 
@@ -172,8 +250,10 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 	 *               was successfully removed, <code>False</code> otherwise
 	 */
 
-	protected boolean removeChild (ActivityGroupMember child)
+	protected boolean removeChild (final ActivityGroupMember child)
 	{
+		assert child != null : "child is NULL";
+
 		return this.children.remove (child);
 	}
 }

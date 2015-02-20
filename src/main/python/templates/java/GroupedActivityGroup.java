@@ -18,12 +18,9 @@ package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityGroup;
@@ -61,8 +58,18 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 	 * Allows the builders to create instances of <code>${ClassName}</code>.
 	 */
 
-	private static final class Factory implements ActivityGroupElementFactory, ActivityGroupMemberElementFactory
+	private static final class Factory extends GenericGroupedActivityGroup.Factory
 	{
+		/**
+		 * Create an instance of the <code>Factory</code>, passing the child
+		 * <code>Class</code> to the super class.
+		 */
+
+		protected Factory ()
+		{
+			super (${ChildClass}.class);
+		}
+
 		/**
 		 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.
 		 *
@@ -73,77 +80,12 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 		 *                instance
 		 */
 
-		public ActivityGroupMember create (ActivityGroup parent, String name)
+		public ActivityGroupMember create (final ActivityGroup parent, final String name)
 		{
-			if (! (parent instanceof ${ParentClass}))
-			{
-				throw new IllegalArgumentException ("Parent is not an instance of ${ParentClass}");
-			}
+			assert parent instanceof ${ParentClass} : "parent is not an instance of ${ParentClass}";
+			assert name != null : "name is NULL";
 
 			return new ${ClassName} (parent, name);
-		}
-
-		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity The <code>Activity</code> to which the ID number is
-		 *                  assigned not null
-		 * @param  id       The ID number assigned to the <code>Activity</code>, not
-		 *                  null
-		 */
-
-		public void setId (Activity activity, Long id)
-		{
-			((${ClassName}) activity).setId (id);
-		}
-
-		/**
-		 * Add the specified <code>ActivityGroupMember</code> to the specified
-		 * <code>ActivityGroup</code>.
-		 *
-		 * @param  group  The <code>ActivityGroup</code> to which the
-		 *                <code>ActivityGroupMember</code> is to be added, not null
-		 * @param  member The <code>ActivityGroupMember</code> to add to the
-		 *                <code>ActivityGroup</code>, not null
-		 *
-		 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
-		 *                was successfully added to the <code>ActvityGroup</code>,
-		 *                <code>False</code> otherwise
-		 */
-
-		public boolean addChild (ActivityGroup group, ActivityGroupMember member)
-		{
-			if (! (member instanceof ${ChildClass}))
-			{
-				throw new IllegalArgumentException ("Child is not an instance of ${ChildClass}");
-			}
-
-			return ((${ClassName}) group).addChild (member);
-		}
-
-		/**
-		 * Remove the specified <code>ActivityGroupMember</code> from the specified
-		 * <code>ActivityGroup</code>.
-		 *
-		 * @param  group  The <code>ActivityGroup</code> from which the
-		 *                <code>ActivityGroupMember</code> is to be removed, not null
-		 * @param  member The <code>ActivityGroupMember</code> to remove from the
-		 *                <code>ActivityGroup</code>, not null
-		 *
-		 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
-		 *                was successfully removed from the <code>ActvityGroup</code>,
-		 *                <code>False</code> otherwise
-		 */
-
-		public boolean removeChild (ActivityGroup group, ActivityGroupMember member)
-		{
-			if (! (member instanceof ${ChildClass}))
-			{
-				throw new IllegalArgumentException ("Child is not an instance of ${ChildClass}");
-			}
-
-			return ((${ClassName}) group).removeChild (member);
 		}
 	}
 
@@ -175,7 +117,7 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 	 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
 	 */
 
-	public ${ClassName} (ActivityGroup parent, String name)
+	public ${ClassName} (final ActivityGroup parent, final String name)
 	{
 		super (parent, name);
 	}

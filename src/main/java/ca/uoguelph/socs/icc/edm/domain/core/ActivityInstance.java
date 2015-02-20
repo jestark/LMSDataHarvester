@@ -75,8 +75,12 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		 */
 
 		@Override
-		public Activity create (ActivityType type, Course course, Boolean stealth)
+		public Activity create (final ActivityType type, final Course course, final Boolean stealth)
 		{
+			assert type != null : "type is NULL";
+			assert course != null : "course is NULL";
+			assert stealth != null : "stealth is NULL";
+			
 			return new ActivityInstance (type, course, stealth);
 		}
 
@@ -84,14 +88,17 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		 * Write the specified <code>DataStore</code> ID number into the
 		 * <code>Activity</code>.
 		 *
-		 * @param  action The <code>Action</code> to which the ID number is assigned,
-		 *                not null
-		 * @param  id     The ID number assigned to the <code>Action</code>, not null
+		 * @param  activity The <code>Activity</code> to which the ID number is
+		 *                  assigned, not null
+		 * @param  id       The ID number assigned to the <code>Activity</code>, not
+		 *                  null
 		 */
 
 		@Override
-		public void setId (Activity activity, Long id)
+		public void setId (final Activity activity, final Long id)
 		{
+			assert activity != null : "activity is null";
+
 			((ActivityInstance) activity).setId (id);
 		}
 
@@ -105,8 +112,11 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		 * @param  data     The data to add to the <code>Activity</code>, not null
 		 */
 
-		public void setInstaceData (Activity instance, Activity data)
+		public void setInstaceData (final Activity instance, final Activity data)
 		{
+			assert instance != null : "instance is NULL";
+			assert data != null : "data is NULL";
+
 			((ActivityInstance) instance).setActivity (data);
 		}
 
@@ -124,8 +134,11 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		 *                  <code>False</code> otherwise
 		 */
 
-		public boolean addGrade (Activity activity, Grade grade)
+		public boolean addGrade (final Activity activity, final Grade grade)
 		{
+			assert activity != null : "activity is NULL";
+			assert grade != null : "grade is NULL";
+			
 			return ((ActivityInstance) activity).addGrade (grade);
 		}
 
@@ -143,8 +156,11 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		 *                  <code>False</code> otherwise
 		 */
 
-		public boolean removeGrade (Activity activity, Grade grade)
+		public boolean removeGrade (final Activity activity, final Grade grade)
 		{
+			assert activity != null : "activity is NULL";
+			assert grade != null : "grade is NULL";
+			
 			return ((ActivityInstance) activity).removeGrade (grade);
 		}
 
@@ -162,8 +178,11 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		 *                  <code>False</code> otherwise
 		 */
 
-		public boolean addLogEntry (Activity activity, LogEntry entry)
+		public boolean addLogEntry (final Activity activity, final LogEntry entry)
 		{
+			assert activity != null : "activity is NULL";
+			assert entry != null : "entry is NULL";
+			
 			return ((ActivityInstance) activity).addLog (entry);
 		}
 
@@ -181,8 +200,11 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		 *                  <code>False</code> otherwise
 		 */
 
-		public boolean removeLogEntry (Activity activity, LogEntry entry)
+		public boolean removeLogEntry (final Activity activity, final LogEntry entry)
 		{
+			assert activity != null : "activity is NULL";
+			assert entry != null : "entry is NULL";
+
 			return ((ActivityInstance) activity).removeLog (entry);
 		}
 	}
@@ -235,7 +257,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		this.activity = null;
 		this.grades = null;
 
-		this.stealth = new Boolean (false);
+		this.stealth = Boolean.valueOf (false);
 	}
 
 	/**
@@ -249,9 +271,13 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 *                 system, not null
 	 */
 
-	public ActivityInstance (ActivityType type, Course course, Boolean stealth)
+	public ActivityInstance (final ActivityType type, final Course course, final Boolean stealth)
 	{
 		this ();
+
+		assert type != null : "type is NULL";
+		assert course != null : "course is NULL";
+		assert stealth != null : "stealth is NULL";
 
 		this.type = type;
 		this.course = course;
@@ -274,7 +300,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -358,7 +384,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
-	protected void setId (Long id)
+	protected void setId (final Long id)
 	{
 		this.id = id;
 	}
@@ -384,8 +410,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 * @param  course The <code>Course</code>, not null
 	 */
 
-	protected void setCourse (Course course)
+	protected void setCourse (final Course course)
 	{
+		assert course != null : "course is NULL";
+		
 		this.course = course;
 	}
 
@@ -409,8 +437,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 * @param  type The <code>ActivityType</code>, not null
 	 */
 
-	protected void setType (ActivityType type)
+	protected void setType (final ActivityType type)
 	{
+		assert type != null : "type is NULL";
+		
 		this.type = type;
 	}
 
@@ -435,8 +465,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 * @param  activity The data to add to the <code>Activity</code>, not null
 	 */
 
-	protected void setActivity (Activity activity)
+	protected void setActivity (final Activity activity)
 	{
+		assert activity != null : "activity is NULL";
+		
 		this.activity = activity;
 	}
 
@@ -465,8 +497,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 * @param  stealth The stealth flag, not null
 	 */
 
-	public void setStealth (Boolean stealth)
+	public void setStealth (final Boolean stealth)
 	{
+		assert stealth != null : "stealth is NULL";
+		
 		this.stealth = stealth;
 	}
 
@@ -495,8 +529,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 *                null
 	 */
 
-	protected void setGrades (Set<Grade> grades)
+	protected void setGrades (final Set<Grade> grades)
 	{
+		assert grades != null : "grades is NULL";
+		
 		this.grades = grades;
 	}
 
@@ -511,8 +547,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 */
 
 	@Override
-	protected boolean addGrade (Grade grade)
+	protected boolean addGrade (final Grade grade)
 	{
+		assert grade != null : "grade is NULL";
+		
 		return this.grades.add (grade);
 	}
 
@@ -526,8 +564,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 *                  successfully removed from, <code>False</code> otherwise
 	 */
 
-	protected boolean removeGrade (Grade grade)
+	protected boolean removeGrade (final Grade grade)
 	{
+		assert grade != null : "grade is NULL";
+		
 		return this.grades.remove (grade);
 	}
 
@@ -554,8 +594,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 *             null
 	 */
 
-	protected void setLog (List<LogEntry> log)
+	protected void setLog (final List<LogEntry> log)
 	{
+		assert log != null : "log is NULL";
+		
 		this.log = log;
 	}
 
@@ -570,8 +612,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 */
 
 	@Override
-	protected boolean addLog (LogEntry entry)
+	protected boolean addLog (final LogEntry entry)
 	{
+		assert entry != null : "entry is NULL";
+		
 		return this.log.add (entry);
 	}
 
@@ -585,8 +629,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 *                  successfully removed, <code>False</code> otherwise
 	 */
 
-	protected boolean removeLog (LogEntry entry)
+	protected boolean removeLog (final LogEntry entry)
 	{
+		assert entry != null : "entry is NULL";
+		
 		return this.log.remove (entry);
 	}
 

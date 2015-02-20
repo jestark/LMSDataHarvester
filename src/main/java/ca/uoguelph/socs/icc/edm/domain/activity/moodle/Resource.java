@@ -20,8 +20,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.AbstractNoIdElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
@@ -56,7 +54,7 @@ public class Resource extends GenericNamedActivity
 	 * builders to create instances of <code>Resource</code>.
 	 */
 
-	private static final class Factory extends AbstractNoIdElementFactory<Activity> implements NamedActivityElementFactory
+	private static final class Factory extends GenericNamedActivity.Factory
 	{
 		/**
 		 * Create a new <code>Activity</code> instance.
@@ -68,8 +66,11 @@ public class Resource extends GenericNamedActivity
 		 * @return          The new <code>Activity</code> instance
 		 */
 
-		public Activity create (Activity instance, String name)
+		public Activity create (final Activity instance, final String name)
 		{
+			assert instance != null : "instance is NULL";
+			assert name != null : "name is NULL";
+
 			return new Resource (instance, name);
 		}
 	}
@@ -103,7 +104,7 @@ public class Resource extends GenericNamedActivity
 	 * @param  name     The name of the <code>Activity</code>, not null
 	 */
 
-	public Resource (Activity instance, String name)
+	public Resource (final Activity instance, final String name)
 	{
 		super (instance, name);
 	}

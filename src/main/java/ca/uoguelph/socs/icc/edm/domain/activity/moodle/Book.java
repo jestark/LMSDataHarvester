@@ -22,9 +22,6 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.AbstractNoIdElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivity;
@@ -61,8 +58,13 @@ public class Book extends GenericGroupedActivity
 	 * builders to create instances of <code>Book</code>.
 	 */
 
-	private static final class Factory extends AbstractNoIdElementFactory<Activity> implements NamedActivityElementFactory, ActivityGroupElementFactory
+	private static final class Factory extends GenericGroupedActivity.Factory
 	{
+		protected Factory ()
+		{
+			super (BookChapter.class);
+		}
+
 		/**
 		 * Create a new <code>Activity</code> instance.
 		 *
@@ -73,58 +75,14 @@ public class Book extends GenericGroupedActivity
 		 * @return          The new <code>Activity</code> instance
 		 */
 
-		public Activity create (Activity instance, String name)
+		public Activity create (final Activity instance, final String name)
 		{
+			assert instance != null : "instance is NULL";
+			assert name != null : "name is NULL";
+
 			return new Book (instance, name);
 		}
 
-		/**
-		 * Add the specified <code>ActivityGroupMember</code> to the specified
-		 * <code>ActivityGroup</code>.
-		 *
-		 * @param  group  The <code>ActivityGroup</code> to which the
-		 *                <code>ActivityGroupMember</code> is to be added, not null
-		 * @param  member The <code>ActivityGroupMember</code> to add to the
-		 *                <code>ActivityGroup</code>, not null
-		 *
-		 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
-		 *                was successfully added to the <code>ActvityGroup</code>,
-		 *                <code>False</code> otherwise
-		 */
-
-		public boolean addChild (ActivityGroup group, ActivityGroupMember member)
-		{
-			if (! (member instanceof BookChapter))
-			{
-				throw new IllegalArgumentException ("Child is not a member of BookChapter");
-			}
-
-			return ((Book) group).addChild (member);
-		}
-
-		/**
-		 * Remove the specified <code>ActivityGroupMember</code> from the specified
-		 * <code>ActivityGroup</code>.
-		 *
-		 * @param  group  The <code>ActivityGroup</code> from which the
-		 *                <code>ActivityGroupMember</code> is to be removed, not null
-		 * @param  member The <code>ActivityGroupMember</code> to remove from the
-		 *                <code>ActivityGroup</code>, not null
-		 *
-		 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
-		 *                was successfully removed from the <code>ActvityGroup</code>,
-		 *                <code>False</code> otherwise
-		 */
-
-		public boolean removeChild (ActivityGroup group, ActivityGroupMember member)
-		{
-			if (! (member instanceof BookChapter))
-			{
-				throw new IllegalArgumentException ("Child is not a member of BookChapter");
-			}
-
-			return ((Book) group).removeChild (member);
-		}
 	}
 
 	/** Serial version id, required by the Serializable interface */
@@ -156,7 +114,7 @@ public class Book extends GenericGroupedActivity
 	 * @param  name     The name of the <code>Activity</code>, not null
 	 */
 
-	public Book (Activity instance, String name)
+	public Book (final Activity instance, final String name)
 	{
 		super (instance, name);
 	}

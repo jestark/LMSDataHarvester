@@ -56,12 +56,15 @@ public abstract class AbstractNamedActivity extends AbstractActivity implements 
 	/**
 	 * Create the <code>Activity</code>
 	 *
-	 * @param  name The name of the <code>Activity</code>
+	 * @param  name The name of the <code>Activity</code>, not null
 	 */
 
-	public AbstractNamedActivity (String name)
+	public AbstractNamedActivity (final String name)
 	{
 		super ();
+
+		assert name != null : "name is NULL";
+
 		this.name = name;
 	}
 
@@ -77,7 +80,7 @@ public abstract class AbstractNamedActivity extends AbstractActivity implements 
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -133,11 +136,13 @@ public abstract class AbstractNamedActivity extends AbstractActivity implements 
 	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
 	 * loaded.
 	 *
-	 * @param  name The name of the <code>Activity</code>
+	 * @param  name The name of the <code>Activity</code>, not null
 	 */
 
-	protected void setName (String name)
+	protected void setName (final String name)
 	{
+		assert name != null : "name is NULL";
+
 		this.name = name;
 	}
 

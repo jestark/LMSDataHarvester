@@ -65,12 +65,10 @@ class LessonPageLog extends LogReference
 		 *                  <code>LogEntry</code>)
 		 */
 
-		public LogEntry create (LogEntry entry, ActivityGroupMember activity)
+		public LogEntry create (final LogEntry entry, final ActivityGroupMember activity)
 		{
-			if (! (activity instanceof LessonPage))
-			{
-				throw new IllegalArgumentException ("Activity is not an instance of LessonPage");
-			}
+			assert entry != null : "entry is NULL";
+			assert activity instanceof LessonPage : "activity is not an instance of LessonPage";
 
 			return new LessonPageLog (entry, activity);
 		}
@@ -106,7 +104,7 @@ class LessonPageLog extends LogReference
 	 *                  is being referenced, not null
 	 */
 
-	public LessonPageLog (LogEntry entry, ActivityGroupMember activity)
+	public LessonPageLog (final LogEntry entry, final ActivityGroupMember activity)
 	{
 		super (entry, activity);
 	}

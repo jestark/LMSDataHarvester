@@ -65,12 +65,10 @@ class WorkshopSubmissionLog extends LogReference
 		 *                  <code>LogEntry</code>)
 		 */
 
-		public LogEntry create (LogEntry entry, ActivityGroupMember activity)
+		public LogEntry create (final LogEntry entry, final ActivityGroupMember activity)
 		{
-			if (! (activity instanceof WorkshopSubmission))
-			{
-				throw new IllegalArgumentException ("Activity is not an instance of WorkshopSubmission");
-			}
+			assert entry != null : "entry is NULL";
+			assert activity instanceof WorkshopSubmission : "activity is not an instance of WorkshopSubmission";
 
 			return new WorkshopSubmissionLog (entry, activity);
 		}
@@ -106,7 +104,7 @@ class WorkshopSubmissionLog extends LogReference
 	 *                  is being referenced, not null
 	 */
 
-	public WorkshopSubmissionLog (LogEntry entry, ActivityGroupMember activity)
+	public WorkshopSubmissionLog (final LogEntry entry, final ActivityGroupMember activity)
 	{
 		super (entry, activity);
 	}

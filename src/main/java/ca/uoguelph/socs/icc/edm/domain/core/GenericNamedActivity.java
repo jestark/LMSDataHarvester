@@ -34,6 +34,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.activity.ActivityDataMap;
 
+import ca.uoguelph.socs.icc.edm.domain.builder.AbstractNoIdElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
 /**
@@ -81,6 +82,27 @@ import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
 public abstract class GenericNamedActivity extends AbstractNamedActivity implements Serializable
 {
+	/**
+	 *
+	 */
+
+	protected static abstract class Factory extends AbstractNoIdElementFactory<Activity> implements NamedActivityElementFactory
+	{
+		/**
+		 *
+		 * @param  activity
+		 * @param  instance
+		 */
+
+		public final void setInstance (final Activity activity, final ActivityInstance instance)
+		{
+			assert activity != null : "activity is NULL";
+			assert instance != null : "instance is NULL";
+
+			((GenericNamedActivity) activity).setInstance (instance);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -99,9 +121,19 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	 * @param  type    The name of the <code>ActivityType</code> not null
 	 */
 
-	protected static final <T extends GenericNamedActivity> void registerActivity (Class<T> impl, Class<? extends ActivityBuilder> builder, NamedActivityElementFactory factory, String source, String type)
+	protected static final <T extends GenericNamedActivity> void registerActivity (final Class<T> impl, final Class<? extends ActivityBuilder> builder, final NamedActivityElementFactory factory, final String source, final String type)
 	{
+		assert impl != null : "Implementation Class is NULL";
+		assert builder != null : "Builder is NULL";
+		assert factory != null : "Factory is NULL";	
+		assert source != null : "source is NULL";
+		assert type != null : "type is NULL";
+		
 		(ActivityDataMap.getInstance ()).registerElement (source, type, impl);
+
+		AbstractElement.registerBuilder (impl, builder);
+		AbstractElement.registerFactory (impl, factory);
+		AbstractElement.registerQuery (Activity.class, impl);
 	}
 
 	/**
@@ -117,12 +149,15 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	/**
 	 * Create the <code>Activity</code>.
 	 *
-	 * @param  name The name of the <code>Activity</code>
+	 * @param  instance The <code>Activity</code> with the core data, not null
+	 * @param  name     The name of the <code>Activity</code>, not null
 	 */
 
-	public GenericNamedActivity (Activity instance, String name)
+	public GenericNamedActivity (final Activity instance, final String name)
 	{
 		super (name);
+
+		assert instance != null : "instance is NULL";
 
 		this.instance = (ActivityInstance) instance;
 	}
@@ -140,7 +175,7 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -172,25 +207,13 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	@Override
 	public int hashCode ()
 	{
-		return this.instance.hashCode ();
-	}
-	
-	/**
-	 * Compute the <code>hashCode</code> for the <code>GenericNamedActivity</code>
-	 * instance.  This method is intended to by used by the parent
-	 * <code>Activity</code> instance to get a <code>hashCode</code> for the
-	 * referenced <code>Activity</code> data.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	protected int actHashCode ()
-	{
 		final int base = 1019;
 		final int mult = 983;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.appendSuper (super.hashCode ());
+		hbuilder.append (this.instance.getCourse ());
+		hbuilder.append (this.instance.getType ());
 
 		return hbuilder.toHashCode ();
 	}
@@ -263,8 +286,10 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	 */
 
 	@Override
-	protected boolean addGrade (Grade grade)
+	protected boolean addGrade (final Grade grade)
 	{
+		assert grade != null : "grade is NULL";
+
 		return this.instance.addGrade (grade);
 	}
 
@@ -279,8 +304,10 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	 */
 
 	@Override
-	protected boolean removeGrade (Grade grade)
+	protected boolean removeGrade (final Grade grade)
 	{
+		assert grade != null : "grade is NULL";
+
 		return this.instance.removeGrade (grade);
 	}
 
@@ -306,8 +333,10 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	 *                  data
 	 */
 
-	protected void setInstance (ActivityInstance instance)
+	protected void setInstance (final ActivityInstance instance)
 	{
+		assert instance != null : "instance is NULL";
+
 		this.instance = instance;
 	}
 
@@ -335,8 +364,10 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	 */
 
 	@Override
-	protected boolean addLog (LogEntry entry)
+	protected boolean addLog (final LogEntry entry)
 	{
+		assert entry != null : "entry is NULL";
+
 		return this.instance.addLog (entry);
 	}
 
@@ -351,8 +382,10 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	 */
 
 	@Override
-	protected boolean removeLog (LogEntry entry)
+	protected boolean removeLog (final LogEntry entry)
 	{
+		assert entry != null : "entry is NULL";
+
 		return this.instance.removeLog (entry);
 	}
 
