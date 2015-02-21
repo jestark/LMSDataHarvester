@@ -9,6 +9,7 @@ import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 import ca.uoguelph.socs.icc.edm.domain.UserManager;
 import ca.uoguelph.socs.icc.edm.domain.database.UserDatabaseFactory;
 import ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleDatabaseFactory;
@@ -36,7 +37,16 @@ public class App
 //		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleDBLogEntry");
 //		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleEnrolmentUserData");
 
-		// Default Builder Implementations
+		// Default ElementBuilder Implementations
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultActionBuilder");
+//		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivitySourceBuilder");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder");
 
 		// Default ElementManager implementations
@@ -59,6 +69,7 @@ public class App
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActionData");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActivitySourceData");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActivityTypeData");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.CourseData");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.EnrolmentData");
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.GradedActivity");
@@ -68,26 +79,31 @@ public class App
 		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.core.UserEnrolmentData");
 
 		// Moodle Activity Data Classes
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleAssignActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleBookActivityChapter");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleBookActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleChecklistActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleChoiceActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleFeedbackActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleFolderActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleForumActivityDiscussion");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleForumActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleForumActivityPost");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleLabelActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleLessonActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleLessonActivityPage");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodlePageActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleQuizActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleResourceActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleSchedulerActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleURLActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleWorkshopActivity");
-		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.moodle.MoodleWorkshopActivitySubmission");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Assign");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Book");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.BookChapter");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.BookChapterLog");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Checklist");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Choice");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Feedback");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Folder");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Forum");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.ForumDiscussion");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.ForumDiscussionLog");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.ForumPost");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.ForumPostLog");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Label");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Lesson");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.LessonPage");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.LessonPageLog");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Page");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Quiz");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Resource");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Scheduler");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.URL");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Workshop");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.WorkshopSubmission");
+		App.loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.WorkshopSubmissionLog");
 	}
 
     public static void main(String[] args) throws Exception
