@@ -61,8 +61,10 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 		 */
 
 		@Override
-		public ActivitySource create (String name)
+		public ActivitySource create (final String name)
 		{
+			assert name != null : "name is NULL";
+
 			return new ActivitySourceData (name);
 		}
 
@@ -77,8 +79,10 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 		 */
 
 		@Override
-		public void setId (ActivitySource ActivitySource, Long id)
+		public void setId (final ActivitySource ActivitySource, final Long id)
 		{
+			assert source != null : "source is NULL";
+			
 			((ActivitySourceData) ActivitySource).setId (id);
 		}
 
@@ -97,8 +101,11 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 		 */
 
 		@Override
-		public boolean addActivityType (ActivitySource source, ActivityType type)
+		public boolean addActivityType (final ActivitySource source, final ActivityType type)
 		{
+			assert source != null : "source is NULL";
+			assert type != null : "type is NULL";
+
 			return ((ActivitySourceData) source).addType (type);
 		}
 
@@ -117,8 +124,11 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 		 */
 
 		@Override
-		public boolean removeActivityType (ActivitySource source, ActivityType type)
+		public boolean removeActivityType (final ActivitySource source, final ActivityType type)
 		{
+			assert source != null : "source is NULL";
+			assert type != null : "type is NULL";
+
 			return ((ActivitySourceData) source).removeType (type);
 		}
 	}
@@ -162,10 +172,11 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 * @param  name The name of the <code>ActivitySource</code>, not null
 	 */
 
-	public ActivitySourceData (String name)
+	public ActivitySourceData (final String name)
 	{
-		this ();
+		assert name != null : "name is NULL";
 
+		this.id = null;
 		this.name = name;
 
 		this.types = new HashSet<ActivityType> ();
@@ -184,7 +195,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -244,7 +255,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
-	protected void setId (Long id)
+	protected void setId (final Long id)
 	{
 		this.id = id;
 	}
@@ -270,8 +281,10 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 * @param name The name of the <code>ActivitySource</code>
 	 */
 
-	protected void setName (String name)
+	protected void setName (final String name)
 	{
+		assert name != null : "name is NULL";
+		
 		this.name = name;
 	}
 
@@ -299,8 +312,10 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 *               to be associated with the <code>ActivitySource</code>
 	 */
 
-	protected void setTypes (Set<ActivityType> types)
+	protected void setTypes (final Set<ActivityType> types)
 	{
+		assert types != null : "types is NULL";
+
 		this.types = types;
 	}
 
@@ -314,8 +329,10 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 *                successfully added, <code>False</code> otherwise
 	 */
 
-	protected boolean addType (ActivityType type)
+	protected boolean addType (final ActivityType type)
 	{
+		assert type != null : "type is NULL";
+
 		return this.types.add (type);
 	}
 
@@ -329,8 +346,10 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 *                successfully removed, <code>False</code> otherwise
 	 */
 
-	protected boolean removeType (ActivityType type)
+	protected boolean removeType (final ActivityType type)
 	{
+		assert type != null : "type is NULL";
+
 		return this.types.remove (type);
 	}
 

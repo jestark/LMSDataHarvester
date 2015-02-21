@@ -74,8 +74,14 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		 */
 
 		@Override
-		public Enrolment create (User user, Course course, Role role, Integer grade, Boolean usable)
+		public Enrolment create (final User user, final Course course, final Role role, final Integer grade, final Boolean usable)
 		{
+			assert user != null : "user is NULL";
+			assert course != null : "course is NULL";
+			assert role != null : "role is NULL";
+			assert grade != null : "grade is NULL";
+			assert usable != null : "usable is NULL";
+
 			return new UserEnrolmentData (user, course, role, grade, usable);
 		}
 
@@ -90,8 +96,10 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		 */
 
 		@Override
-		public void setId (Enrolment enrolment, Long id)
+		public void setId (final Enrolment enrolment, final Long id)
 		{
+			assert enrolment != null : "enrolment is NULL";
+			
 			((UserEnrolmentData) enrolment).setId (id);
 		}
 
@@ -109,8 +117,11 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		 *                   <code>False</code> otherwise
 		 */
 
-		public boolean addGrade (Enrolment enrolment, Grade grade)
+		public boolean addGrade (final Enrolment enrolment, final Grade grade)
 		{
+			assert enrolment != null : "enrolment is NULL";
+			assert grade != null : "grade is NULL";
+
 			return ((UserEnrolmentData) enrolment).addGrade (grade);
 		}
 
@@ -128,8 +139,11 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		 *                   <code>False</code> otherwise
 		 */
 
-		public boolean removeGrade (Enrolment enrolment, Grade grade)
+		public boolean removeGrade (final Enrolment enrolment, final Grade grade)
 		{
+			assert enrolment != null : "enrolment is NULL";
+			assert grade != null : "grade is NULL";
+
 			return ((UserEnrolmentData) enrolment).removeGrade (grade);
 		}
 
@@ -147,8 +161,11 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		 *                   <code>False</code> otherwise
 		 */
 
-		public boolean addLogEntry (Enrolment enrolment, LogEntry entry)
+		public boolean addLogEntry (final Enrolment enrolment, final LogEntry entry)
 		{
+			assert enrolment != null : "enrolment is NULL";
+			assert entry != null : "entry is NULL";
+
 			return ((UserEnrolmentData) enrolment).addLog (entry);
 		}
 
@@ -166,8 +183,11 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		 *                   <code>False</code> otherwise
 		 */
 
-		public boolean removeLogEntry (Enrolment enrolment, LogEntry entry)
+		public boolean removeLogEntry (final Enrolment enrolment, final LogEntry entry)
 		{
+			assert enrolment != null : "enrolment is NULL";
+			assert entry != null : "entry is NULL";
+
 			return ((UserEnrolmentData) enrolment).removeLog (entry);
 		}
 	}
@@ -213,9 +233,11 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	 *                data being used for research
 	 */
 
-	public UserEnrolmentData (User user, Course course, Role role, Integer grade, Boolean usable)
+	public UserEnrolmentData (final User user, final Course course, final Role role, final Integer grade, final Boolean usable)
 	{
 		super (course, role, grade, usable);
+
+		assert user != null : "user is NULL";
 
 		this.user = user;
 	}
@@ -235,7 +257,7 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -298,8 +320,10 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	 *              <code>Enrolment</code>
 	 */
 
-	protected void setUser (User user)
+	protected void setUser (final User user)
 	{
+		assert user != null : "user is NULL";
+		
 		this.user = user;
 	}
 

@@ -64,8 +64,13 @@ public class UserData extends AbstractElement implements User, Serializable
 		 */
 
 		@Override
-		public User create (Integer idnumber, String firstname, String lastname, String username)
+		public User create (final Integer idnumber, final String firstname, final String lastname, final String username)
 		{
+			assert idnumber != null : "idnumber is NULL";
+			assert firstname != null : "firstname is NULL";
+			assert lastname != null : "lastname is NULL";
+			assert username != null : "username is NULL";
+			
 			return new UserData (idnumber, firstname, lastname, username);
 		}
 
@@ -79,8 +84,10 @@ public class UserData extends AbstractElement implements User, Serializable
 		 */
 
 		@Override
-		public void setId (User user, Long id)
+		public void setId (final User user, final Long id)
 		{
+			assert user != null : "user is NULL";
+
 			((UserData) user).setId (id);
 		}
 
@@ -99,8 +106,11 @@ public class UserData extends AbstractElement implements User, Serializable
 		 */
 
 		@Override
-		public boolean addEnrolment (User user, Enrolment enrolment)
+		public boolean addEnrolment (final User user, final Enrolment enrolment)
 		{
+			assert user != null : "user is NULL";
+			assert enrolment != null : "enrolment is NULL";
+
 			return ((UserData) user).addEnrolment (enrolment);
 		}
 
@@ -119,8 +129,11 @@ public class UserData extends AbstractElement implements User, Serializable
 		 */
 
 		@Override
-		public boolean removeEnrolment (User user, Enrolment enrolment)
+		public boolean removeEnrolment (final User user, final Enrolment enrolment)
 		{
+			assert user != null : "user is NULL";
+			assert enrolment != null : "enrolment is NULL";
+			
 			return ((UserData) user).removeEnrolment (enrolment);
 		}
 	}
@@ -179,10 +192,14 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @param  username  The user's username, not null
 	 */
 
-	public UserData (Integer idnumber, String firstname, String lastname, String username)
+	public UserData (final Integer idnumber, final String firstname, final String lastname, final String username)
 	{
-		this ();
+		assert idnumber != null : "idnumber is NULL";
+		assert firstname != null : "firstname is NULL";
+		assert lastname != null : "lastname is NULL";
+		assert username != null : "username is NULL";
 
+		this.id = null;
 		this.idnumber = idnumber;
 		this.username = firstname;
 		this.lastname = lastname;
@@ -212,7 +229,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -286,7 +303,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
-	protected void setId (Long id)
+	protected void setId (final Long id)
 	{
 		this.id = id;
 	}
@@ -314,8 +331,10 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @param  idnumber The ID Number, not null
 	 */
 
-	protected void setIdNumber (Integer idnumber)
+	protected void setIdNumber (final Integer idnumber)
 	{
+		assert idnumber != null : "idnumber is NULL";
+
 		this.idnumber = idnumber;
 	}
 
@@ -343,8 +362,10 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @param  username The username, not null
 	 */
 
-	protected void setUsername (String username)
+	protected void setUsername (final String username)
 	{
+		assert username != null : "username is NULL";
+		
 		this.username = username;
 	}
 
@@ -369,8 +390,10 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @param  firstname The first name, not null
 	 */
 
-	protected void setFirstname (String firstname)
+	protected void setFirstname (final String firstname)
 	{
+		assert firstname != null : "firstname is NULL";
+		
 		this.firstname = firstname;
 	}
 
@@ -394,8 +417,10 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @param  lastname The last name, not null
 	 */
 
-	protected void setLastname (String lastname)
+	protected void setLastname (final String lastname)
 	{
+		assert lastname != null : "lastname is NULL";
+		
 		this.lastname = lastname;
 	}
 
@@ -425,7 +450,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 */
 
 	@Override
-	public Enrolment getEnrolment (Course course)
+	public Enrolment getEnrolment (final Course course)
 	{
 		Enrolment result = null;
 
@@ -465,8 +490,10 @@ public class UserData extends AbstractElement implements User, Serializable
 	 *                    instances, not null
 	 */
 
-	protected void setEnrolments (Set<Enrolment> enrolments)
+	protected void setEnrolments (final Set<Enrolment> enrolments)
 	{
+		assert enrolments != null : "enrolments is NULL";
+		
 		this.enrolments = enrolments;
 	}
 
@@ -478,8 +505,10 @@ public class UserData extends AbstractElement implements User, Serializable
 	 *                   <code>User</code> instance, <code>False</code> otherwise
 	 */
 
-	protected boolean addEnrolment (Enrolment enrolment)
+	protected boolean addEnrolment (final Enrolment enrolment)
 	{
+		assert enrolment != null : "enrolment is NULL";
+		
 		return this.enrolments.add (enrolment);
 	}
 
@@ -491,8 +520,10 @@ public class UserData extends AbstractElement implements User, Serializable
 	 *                   <code>User</code> instance, <code>False</code> otherwise
 	 */
 
-	protected boolean removeEnrolment (Enrolment enrolment)
+	protected boolean removeEnrolment (final Enrolment enrolment)
 	{
+		assert enrolment != null : "enrolment is NULL";
+
 		return this.enrolments.remove (enrolment);
 	}
 

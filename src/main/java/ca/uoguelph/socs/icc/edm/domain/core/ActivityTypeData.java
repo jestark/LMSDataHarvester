@@ -63,8 +63,11 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		 */
 
 		@Override
-		public ActivityType create (ActivitySource source, String name)
+		public ActivityType create (final ActivitySource source, final String name)
 		{
+			assert source != null : "source is NULL";
+			assert name != null : "name is NULL";
+
 			return new ActivityTypeData (source, name);
 		}
 
@@ -79,8 +82,10 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		 */
 
 		@Override
-		public void setId (ActivityType type, Long id)
+		public void setId (final ActivityType type, final Long id)
 		{
+			assert type != null : "type is NULL";
+
 			((ActivityTypeData) type).setId (id);
 		}
 
@@ -99,8 +104,11 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		 */
 
 		@Override
-		public boolean addAction (ActivityType type, Action action)
+		public boolean addAction (final ActivityType type, final Action action)
 		{
+			assert type != null : "type is NULL";
+			assert action != null : "action is NULL";
+
 			return ((ActivityTypeData) type).addAction (action);
 		}
 
@@ -119,8 +127,11 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		 */
 
 		@Override
-		public boolean removeAction (ActivityType type, Action action)
+		public boolean removeAction (final ActivityType type, final Action action)
 		{
+			assert type != null : "type is NULL";
+			assert action != null : "action is NULL";
+
 			return ((ActivityTypeData) type).removeAction (action);
 		}
 	}
@@ -170,10 +181,12 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 * @param  name   The name of the <code>ActivityType</code>, not null
 	 */
 
-	public ActivityTypeData (ActivitySource source, String name)
+	public ActivityTypeData (final ActivitySource source, final String name)
 	{
-		this ();
+		assert source != null : "source is NULL";
+		assert name != null : "name is NULL";
 
+		this.id = null;
 		this.name = name;
 		this.source = source;
 
@@ -193,7 +206,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -257,7 +270,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
-	protected void setId (Long id)
+	protected void setId (final Long id)
 	{
 		this.id = id;
 	}
@@ -283,8 +296,10 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 * @param  name The name of the <code>ActivityType</code>
 	 */
 
-	protected void setName (String name)
+	protected void setName (final String name)
 	{
+		assert name != null : "name is NULL";
+
 		this.name = name;
 	}
 
@@ -309,8 +324,10 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 *                <code>ActivityType</code>
 	 */
 
-	protected void setSource (ActivitySource source)
+	protected void setSource (final ActivitySource source)
 	{
+		assert source != null : "source is NULL";
+
 		this.source = source;
 	}
 
@@ -338,8 +355,10 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 *                 to be associated with the <code>ActivityType</code>
 	 */
 
-	protected void setActions (Set<Action> actions)
+	protected void setActions (final Set<Action> actions)
 	{
+		assert actions != null : "actions is NULL";
+
 		this.actions = actions;
 	}
 
@@ -353,8 +372,10 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 *                successfully added, <code>False</code> otherwise
 	 */
 
-	protected boolean addAction (Action action)
+	protected boolean addAction (final Action action)
 	{
+		assert action != null : "action is NULL";
+
 		return this.actions.add (action);
 	}
 
@@ -368,8 +389,10 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 *                successfully removed, <code>False</code> otherwise
 	 */
 
-	protected boolean removeAction (Action action)
+	protected boolean removeAction (final Action action)
 	{
+		assert action != null : "action is NULL";
+
 		return this.actions.remove (action);
 	}
 

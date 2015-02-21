@@ -81,8 +81,14 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		 */
 
 		@Override
-		public Enrolment create (User user, Course course, Role role, Integer grade, Boolean usable)
+		public Enrolment create (final User user, final Course course, final Role role, final Integer grade, final Boolean usable)
 		{
+			assert user != null : "user is NULL";
+			assert course != null : "course is NULL";
+			assert role != null : "role is NULL";
+			assert grade != null : "grade is NULL";
+			assert usable != null : "usable is NULL";
+
 			return new EnrolmentData (course, role, grade, usable);
 		}
 
@@ -97,8 +103,10 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		 */
 
 		@Override
-		public void setId (Enrolment enrolment, Long id)
+		public void setId (final Enrolment enrolment, final Long id)
 		{
+			assert enrolment != null : "enrolment is NULL";
+
 			((EnrolmentData) enrolment).setId (id);
 		}
 
@@ -117,8 +125,11 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		 */
 
 		@Override
-		public boolean addGrade (Enrolment enrolment, Grade grade)
+		public boolean addGrade (final Enrolment enrolment, final Grade grade)
 		{
+			assert enrolment != null : "enrolment is NULL";
+			assert grade != null : "grade is NULL";
+
 			return ((EnrolmentData) enrolment).addGrade (grade);
 		}
 
@@ -137,8 +148,11 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		 */
 
 		@Override
-		public boolean removeGrade (Enrolment enrolment, Grade grade)
+		public boolean removeGrade (final Enrolment enrolment, final Grade grade)
 		{
+			assert enrolment != null : "enrolment is NULL";
+			assert grade != null : "grade is NULL";
+
 			return ((EnrolmentData) enrolment).removeGrade (grade);
 		}
 
@@ -157,8 +171,11 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		 */
 
 		@Override
-		public boolean addLogEntry (Enrolment enrolment, LogEntry entry)
+		public boolean addLogEntry (final Enrolment enrolment, final LogEntry entry)
 		{
+			assert enrolment != null : "enrolment is NULL";
+			assert entry != null : "entry is NULL";
+
 			return ((EnrolmentData) enrolment).addLog (entry);
 		}
 
@@ -177,8 +194,11 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		 */
 
 		@Override
-		public boolean removeLogEntry (Enrolment enrolment, LogEntry entry)
+		public boolean removeLogEntry (final Enrolment enrolment, final LogEntry entry)
 		{
+			assert enrolment != null : "enrolment is NULL";
+			assert entry != null : "entry is NULL";
+
 			return ((EnrolmentData) enrolment).removeLog (entry);
 		}
 	}
@@ -227,7 +247,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		this.log = null;
 		this.role = null;
 		this.course = null;
-		this.usable = new Boolean (false);
+		this.usable = Boolean.valueOf (false);
 		this.finalgrade = null;
 		this.grades = null;
 	}
@@ -245,10 +265,16 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *                data being used for research
 	 */
 
-	public EnrolmentData (Course course, Role role, Integer grade, Boolean usable)
+	public EnrolmentData (final Course course, final Role role, final Integer grade, final Boolean usable)
 	{
-		this ();
+		assert course != null : "course is NULL";
+		assert role != null : "role is NULL";
+		assert usable != null : "usable is NULL";
+		
+		assert ((grade == null) || (grade >= 0)) : "Grade can not be negative";
+		assert ((grade == null) || (grade <= 100)) : "Grade can not be greater than 100%";
 
+		this.id = null;
 		this.course = course;
 		this.role = role;
 		this.finalgrade = grade;
@@ -271,7 +297,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -334,7 +360,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
-	protected void setId (Long id)
+	protected void setId (final Long id)
 	{
 		this.id = id;
 	}
@@ -360,8 +386,10 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 * @param  course The <code>Course</code>, not null
 	 */
 
-	protected void setCourse (Course course)
+	protected void setCourse (final Course course)
 	{
+		assert course != null : "course is NULL";
+		
 		this.course = course;
 	}
 
@@ -386,8 +414,10 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 * @param  role The <code>Role</code>, not null
 	 */
 
-	protected void setRole (Role role)
+	protected void setRole (final Role role)
 	{
+		assert role != null : "role is NULL";
+		
 		this.role = role;
 	}
 
@@ -404,15 +434,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	@Override
 	public String getName ()
 	{
-		String result = new String ("(unset)");
-		Long id = this.getId ();
-
-		if (id != null)
-		{
-			result = id.toString ();
-		}
-
-		return result;
+		return (this.id != null) ? this.id.toString () : "(unset)";
 	}
 
 	/**
@@ -425,7 +447,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 */
 
 	@Override
-	public Grade getGrade (Activity activity)
+	public Grade getGrade (final Activity activity)
 	{
 		Grade result = null;
 
@@ -464,8 +486,10 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *                null
 	 */
 
-	protected void setGrades (Set<Grade> grades)
+	protected void setGrades (final Set<Grade> grades)
 	{
+		assert grades != null : "grades is NULL";
+		
 		this.grades = grades;
 	}
 
@@ -478,8 +502,10 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *                successfully added, <code>False</code> otherwise
 	 */
 
-	protected boolean addGrade (Grade grade)
+	protected boolean addGrade (final Grade grade)
 	{
+		assert grade != null : "grade is NULL";
+
 		return this.grades.add (grade);
 	}
 
@@ -492,8 +518,10 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *               successfully removed, <code>False</code> otherwise
 	 */
 
-	protected boolean removeGrade (Grade grade)
+	protected boolean removeGrade (final Grade grade)
 	{
+		assert grade != null : "grade is NULL";
+
 		return this.grades.remove (grade);
 	}
 
@@ -522,8 +550,11 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *                    on the interval [0, 100]
 	 */
 
-	protected void setFinalGrade (Integer finalgrade)
+	protected void setFinalGrade (final Integer finalgrade)
 	{
+		assert ((finalgrade == null) || (finalgrade >= 0)) : "Grade can not be negative";
+		assert ((finalgrade == null) || (finalgrade <= 100)) : "Grade can not be greater than 100%";
+
 		this.finalgrade = finalgrade;
 	}
 
@@ -549,9 +580,11 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 * @param  usable Indication if the data may be used for research, not null
 	 */
 
-	protected void setUsable (Boolean usable)
+	protected void setUsable (final Boolean usable)
 	{
-		this.usable =usable;
+		assert usable != null : "usable is NULL";
+
+		this.usable = usable;
 	}
 
 	/**
@@ -578,8 +611,10 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *             null
 	 */
 
-	protected void setLog (List<LogEntry> log)
+	protected void setLog (final List<LogEntry> log)
 	{
+		assert log != null : "log is NULL";
+
 		this.log = log;
 	}
 
@@ -592,8 +627,10 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *               successfully added, <code>False</code> otherwise
 	 */
 
-	protected boolean addLog (LogEntry entry)
+	protected boolean addLog (final LogEntry entry)
 	{
+		assert entry != null : "entry is NULL";
+
 		return this.log.add (entry);
 	}
 
@@ -606,8 +643,10 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *               successfully removed, <code>False</code> otherwise
 	 */
 
-	protected boolean removeLog (LogEntry entry)
+	protected boolean removeLog (final LogEntry entry)
 	{
+		assert entry != null : "entry is NULL";
+
 		return this.log.remove (entry);
 	}
 

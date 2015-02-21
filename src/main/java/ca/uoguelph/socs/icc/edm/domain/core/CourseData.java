@@ -64,8 +64,12 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		 */
 
 		@Override
-		public Course create (String name, Semester semester, Integer year)
+		public Course create (final String name, final Semester semester, final Integer year)
 		{
+			assert name != null : "name is NULL";
+			assert semester != null : "semester is NULL";
+			assert year != null : "year is NULL";
+			
 			return new CourseData (name, semester, year);
 		}
 
@@ -79,8 +83,10 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		 */
 
 		@Override
-		public void setId (Course course, Long id)
+		public void setId (final Course course, final Long id)
 		{
+			assert course != null : "course is NULL";
+
 			((CourseData) course).setId (id);
 		}
 
@@ -97,8 +103,11 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		 *                   <code>False</code> otherwise
 		 */
 
-		public boolean addActivity (Course course, Activity activity)
+		public boolean addActivity (final Course course, final Activity activity)
 		{
+			assert course != null : "course is NULL";
+			assert activity != null : "activity is NULL";
+
 			return ((CourseData) course).addActivity (activity);
 		}
 
@@ -115,8 +124,11 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		 *                   <code>False</code> otherwise
 		 */
 
-		public boolean removeActivity (Course course, Activity activity)
+		public boolean removeActivity (final Course course, final Activity activity)
 		{
+			assert course != null : "course is NULL";
+			assert activity != null : "activity is NULL";
+
 			return ((CourseData) course).removeActivity (activity);
 		}
 
@@ -133,8 +145,11 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		 *                   <code>False</code> otherwise
 		 */
 
-		public boolean addEnrolment (Course course, Enrolment enrolment)
+		public boolean addEnrolment (final Course course, final Enrolment enrolment)
 		{
+			assert course != null : "course is NULL";
+			assert enrolment != null : "enrolment is NULL";
+
 			return ((CourseData) course).addEnrolment (enrolment);
 		}
 
@@ -152,8 +167,11 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		 *                   <code>False</code> otherwise
 		 */
 
-		public boolean removeEnrolment (Course course, Enrolment enrolment)
+		public boolean removeEnrolment (final Course course, final Enrolment enrolment)
 		{
+			assert course != null : "course is NULL";
+			assert enrolment != null : "enrolment is NULL";
+
 			return ((CourseData) course).removeEnrolment (enrolment);
 		}
 	}
@@ -210,9 +228,13 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 * @param  year     The year of offering, not null
 	 */
 
-	public CourseData (String name, Semester semester, Integer year)
+	public CourseData (final String name, final Semester semester, final Integer year)
 	{
-		this ();
+		assert name != null : "name is NULL";
+		assert semester != null : "semester is NULL";
+		assert year != null : "year is NULL";
+			
+		this.id = null;
 		this.name = name;
 		this.semester = semester;
 		this.year = year;
@@ -234,7 +256,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -326,8 +348,10 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 * @param  name The name of the <code>Course</code>
 	 */
 
-	public void setName (String name)
+	public void setName (final String name)
 	{
+		assert name != null : "name is NULL";
+		
 		this.name = name;
 	}
 
@@ -352,8 +376,10 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                  was offered
 	 */
 
-	protected void setSemester (Semester semester)
+	protected void setSemester (final Semester semester)
 	{
+		assert semester != null : "semester is NULL";
+		
 		this.semester = semester;
 	}
 
@@ -377,8 +403,10 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 * @param  year The year in which the <code>Course</code> was offered
 	 */
 
-	protected void setYear (Integer year)
+	protected void setYear (final Integer year)
 	{
+		assert year != null : "year is NULL";
+		
 		this.year = year;
 	}
 
@@ -407,8 +435,10 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                    instances, not null
 	 */
 
-	protected void setActivities (Set<Activity> activities)
+	protected void setActivities (final Set<Activity> activities)
 	{
+		assert activities != null : "activities is NULL";
+		
 		this.activities = activities;
 	}
 
@@ -421,8 +451,10 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                  successfully added, <code>False</code> otherwise
 	 */
 
-	protected boolean addActivity (Activity activity)
+	protected boolean addActivity (final Activity activity)
 	{
+		assert activity != null : "activity is NULL";
+		
 		return this.activities.add (activity);
 	}
 
@@ -435,8 +467,10 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                  successfully removed, <code>False</code> otherwise
 	 */
 
-	protected boolean removeActivity (Activity activity)
+	protected boolean removeActivity (final Activity activity)
 	{
+		assert activity != null : "activity is NULL";
+		
 		return this.activities.remove (activity);
 	}
 
@@ -464,8 +498,10 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                    instances, not null
 	 */
 
-	protected void setEnrolments (Set<Enrolment> enrolments)
+	protected void setEnrolments (final Set<Enrolment> enrolments)
 	{
+		assert enrolments != null : "enrolments is NULL";
+
 		this.enrolments = enrolments;
 	}
 
@@ -478,8 +514,10 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                   successfully added, <code>False</code> otherwise
 	 */
 
-	protected boolean addEnrolment (Enrolment enrolment)
+	protected boolean addEnrolment (final Enrolment enrolment)
 	{
+		assert enrolment != null : "enrolment is NULL";
+
 		return this.enrolments.add (enrolment);
 	}
 
@@ -492,8 +530,10 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                   successfully removed, <code>False</code> otherwise
 	 */
 
-	protected boolean removeEnrolment (Enrolment enrolment)
+	protected boolean removeEnrolment (final Enrolment enrolment)
 	{
+		assert enrolment != null : "enrolment is NULL";
+
 		return this.enrolments.remove (enrolment);
 	}
 

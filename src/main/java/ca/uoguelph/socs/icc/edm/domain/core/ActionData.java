@@ -60,8 +60,10 @@ public class ActionData extends AbstractElement implements Action, Serializable
 		 */
 
 		@Override
-		public Action create (String name)
+		public Action create (final String name)
 		{
+			assert name != null : "name is NULL";
+
 			return new ActionData (name);
 		}
 
@@ -75,8 +77,10 @@ public class ActionData extends AbstractElement implements Action, Serializable
 		 */
 
 		@Override
-		public void setId (Action action, Long id)
+		public void setId (final Action action, final Long id)
 		{
+			assert action != null : "action is NULL";
+
 			((ActionData) action).setId (id);
 		}
 
@@ -94,8 +98,11 @@ public class ActionData extends AbstractElement implements Action, Serializable
 		 *                <code>False</code> otherwise
 		 */
 
-		public boolean addActivityType (Action action, ActivityType type)
+		public boolean addActivityType (final Action action, final ActivityType type)
 		{
+			assert action != null : "action is NULL";
+			assert type != null : "type is NULL";
+
 			return ((ActionData) action).addType (type);
 		}
 
@@ -113,8 +120,11 @@ public class ActionData extends AbstractElement implements Action, Serializable
 		 *                <code>False</code> otherwise
 		 */
 
-		public boolean removeActivityType (Action action, ActivityType type)
+		public boolean removeActivityType (final Action action, final ActivityType type)
 		{
+			assert action != null : "action is NULL";
+			assert type != null : "type is NULL";
+			
 			return ((ActionData) action).removeType (type);
 		}
 	}
@@ -158,10 +168,11 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 * @param  name The name of the <code>Action</code>, not null
 	 */
 
-	public ActionData (String name)
+	public ActionData (final String name)
 	{
-		this ();
+		assert name != null : "name is NULL";
 
+		this.id = null;
 		this.name = name;
 
 		this.types = new HashSet<ActivityType> ();
@@ -180,7 +191,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -241,7 +252,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
-	protected void setId (Long id)
+	protected void setId (final Long id)
 	{
 		this.id = id;
 	}
@@ -268,7 +279,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 *               to be associated with the <code>Action</code>
 	 */
 
-	protected void setTypes (Set<ActivityType> types)
+	protected void setTypes (final Set<ActivityType> types)
 	{
 		this.types = types;
 	}
@@ -284,7 +295,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 *              successfully added, <code>False</code> otherwise.
 	 */
 
-	protected boolean addType (ActivityType type)
+	protected boolean addType (final ActivityType type)
 	{
 		return this.types.add (type);
 	}
@@ -300,7 +311,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 *              successfully added, <code>False</code> otherwise.
 	 */
 
-	protected boolean removeType (ActivityType type)
+	protected boolean removeType (final ActivityType type)
 	{
 		return this.types.remove (type);
 	}
@@ -324,8 +335,10 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 * @param  name The name of the <code>Action</code>
 	 */
 
-	protected void setName (String name)
+	protected void setName (final String name)
 	{
+		assert name != null : "name is NULL";
+
 		this.name = name;
 	}
 

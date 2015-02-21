@@ -63,9 +63,14 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 		 */
 
 		@Override
-		public Grade create (Enrolment enrolment, Activity activity, Integer mark)
+		public Grade create (final Enrolment enrolment, final Activity activity, final Integer grade)
 		{
-			return new GradedActivity (enrolment, activity, mark);
+			assert enrolment != null : "enrolment is NULL";
+			assert activity != null : "grade is NULL";
+			assert grade != null : "grade is NULL";
+			assert grade >= 0 : "grade can not be negative";
+
+			return new GradedActivity (enrolment, activity, grade);
 		}
 	}
 
@@ -113,9 +118,12 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 * @param  grade     The assigned grade, on the interval [0, 100], not null
 	 */
 
-	public GradedActivity (Enrolment enrolment, Activity activity, Integer grade)
+	public GradedActivity (final Enrolment enrolment, final Activity activity, final Integer grade)
 	{
-		this ();
+		assert enrolment != null : "enrolment is NULL";
+		assert activity != null : "grade is NULL";
+		assert grade != null : "grade is NULL";
+		assert grade >= 0 : "grade can not be negative";
 
 		this.grade = grade;
 		this.activity = activity;
@@ -135,7 +143,7 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -177,6 +185,37 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	}
 
 	/**
+	 * Get the <code>DataStore</code> identifier for the <code>Grade</code>
+	 * instance.  Since <code>GradedActivity</code> is dependent on the
+	 * <code>Enrolment</code> instance for its <code>DataStore</code>
+	 * identifier, the identifier from the associated <code>Enrolment</code> will
+	 * be returned.
+	 *
+	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
+	 */
+
+	public Long getId ()
+	{
+		return this.enrolment.getId ();
+	}
+
+	/**
+	 * Set the <code>DataStore</code> identifier.   Since
+	 * <code>GradedActivity</code> is dependent on the <code>Enrolment</code>
+	 * instance for its <code>DataStore</code> identifier, this method throws an
+	 * <code>UnsupportedOperationException</code>.
+	 *
+	 * @param  id                            The <code>DataStore</code>
+	 *                                       identifier, not null
+	 * @throws UnsupportedOperationException unconditionally
+	 */
+
+	protected void setId (final Long id)
+	{
+		throw new UnsupportedOperationException ();
+	}
+
+	/**
 	 * Get the <code>Activity</code> for which the <code>Grade</code> is
 	 * assigned.
 	 *
@@ -197,8 +236,10 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 * @param  activity The <code>Activity</code>, not null
 	 */
 
-	protected void setActivity (Activity activity)
+	protected void setActivity (final Activity activity)
 	{
+		assert activity != null : "grade is NULL";
+		
 		this.activity = activity;
 	}
 
@@ -223,8 +264,10 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 * @param  enrolment The <code>Enrolment</code>, not null
 	 */
 
-	public void setEnrolment (Enrolment enrolment)
+	public void setEnrolment (final Enrolment enrolment)
 	{
+		assert enrolment != null : "enrolment is NULL";
+
 		this.enrolment = enrolment;
 	}
 
@@ -249,8 +292,11 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 * @param  grade The grade, on the interval [0, 100], not null
 	 */
 
-	protected void setGrade (Integer grade)
+	protected void setGrade (final Integer grade)
 	{
+		assert grade != null : "grade is NULL";
+		assert grade >= 0 : "grade can not be negative";
+		
 		this.grade = grade;
 	}
 

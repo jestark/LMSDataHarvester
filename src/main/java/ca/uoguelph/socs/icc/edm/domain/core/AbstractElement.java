@@ -25,7 +25,10 @@ import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
 
 /**
  * Abstract base class for all of the domain model <code>Element</code>
- * implementations.
+ * implementations.  All classes implementing the <code>Element</code>
+ * interface or one of its sub-interfaces must extend this class.  This class
+ * provides the functionality for registering the <code>Element</code>
+ * implementations during initialization, and core protected interface.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -33,17 +36,57 @@ import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
 
 public abstract class AbstractElement implements Element
 {
-	protected static <T extends Element, X extends T> void registerQuery (Class<T> type, Class<X> impl)
+	/**
+	 * Register an <code>Element</code> implementation class with the
+	 * <code>QueryFactory</code>.
+	 *
+	 * @param  <T>  The interface type of the <code>Element</code>
+	 * @param  <X>  The implementation type of the <code>Element</code>
+	 * @param  type The <code>Element</code> interface class, not null
+	 * @param  impl The <code>Element</code> implementation class, not null
+	 */
+
+	protected static <T extends Element, X extends T> void registerQuery (final Class<T> type, final Class<X> impl)
 	{
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+
 		(QueryFactory.getInstance (type)).registerClass (impl);
 	}
 
-	protected static <T extends Element, X extends T> void registerBuilder (Class<X> impl, Class<? extends ElementBuilder<T>> builder)
+	/**
+	 * Register the association between an <code>Element</code> implementation and
+	 * the appropriate <code>ElementBuilder</code> implementation with the
+	 * <code>ElementBuilder</code> factory.
+	 *
+	 * @param  <T>     The interface type of the <code>Element</code>
+	 * @param  <X>     The implementation type of the <code>Element</code>
+	 * @param  impl    The implementation class, not null
+	 * @param  builder The <code>ElementBuilder</code> implementation class, not
+	 *                 null
+	 */
+
+	protected static <T extends Element, X extends T> void registerBuilder (final Class<X> impl, final Class<? extends ElementBuilder<T>> builder)
 	{
+		assert impl != null : "impl is NULL";
+		assert builder != null : "builder is NULL";
 	}
 
-	protected static <T extends Element, X extends T> void registerFactory (Class<X> impl, ElementFactory<T> factory)
+	/**
+	 * Register an <code>ElementFactory</code> for an <code>Element</code>
+	 * implementation so that it can be used by the <code>ElementBuilder</code>
+	 * instances.
+	 *
+	 * @param  <T>     The interface type of the <code>Element</code>
+	 * @param  <X>     The implementation type of the <code>Element</code>
+	 * @param  impl    The implementation class, not null
+	 * @param  factory The <code>ElementFactory</code> to register, not null
+	 */
+
+	protected static <T extends Element, X extends T> void registerFactory (final Class<X> impl, final ElementFactory<T> factory)
 	{
+		assert impl != null : "impl is NULL";
+		assert factory != null : "factory is NULL";
 	}
 
 	/**
@@ -55,10 +98,32 @@ public abstract class AbstractElement implements Element
 	 * @param  factory The <code>ElementFactory</code>, instance not null
 	 */
 
-	protected static <T extends Element, X extends T> void registerElement (Class<T> type, Class<X> impl, Class<? extends ElementBuilder<T>> builder, ElementFactory<T> factory)
+	protected static <T extends Element, X extends T> void registerElement (final Class<T> type, final Class<X> impl, final Class<? extends ElementBuilder<T>> builder, final ElementFactory<T> factory)
 	{
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+		assert builder != null : "builder is NULL";
+		assert factory != null : "factory is NULL";
+
 		registerBuilder (impl, builder);
 		registerFactory (impl, factory);
 		registerQuery (type, impl);
 	}
+
+	/**
+	 * Set the <code>DataStore</code> identifier.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Element</code> instance is
+	 * loaded, or by the <code>ElementBuilder</code> implementation to set the
+	 * <code>DataStore</code> identifier, prior to storing a new <code>Element</code>
+	 * instance.
+	 * <p>
+	 * <code>Element</code> implementations which are dependent on other
+	 * <code>Element</code> interfaces for their <code>DataStore</code> identifier
+	 * should throw an <code>UnsupportedOperationException</code> when this method
+	 * is called.
+	 *
+	 * @param  id The <code>DataStore</code> identifier, not null
+	 */
+
+	protected abstract void setId (Long id);
 }

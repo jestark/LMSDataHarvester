@@ -225,10 +225,30 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 		return hbuilder.toHashCode ();
 	}
 
+	/**
+	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
+	 * instance.  Since <code>GenericNamedActivity</code> is dependent on the
+	 * core <code>Activity</code> instance for its <code>DataStore</code>
+	 * identifier, the identifier from the instance will be returned.
+	 *
+	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
+	 */
+
 	public Long getId ()
 	{
 		return this.instance.getId ();
 	}
+
+	/**
+	 * Set the <code>DataStore</code> identifier.   Since
+	 * <code>GenericNamedActivity</code> is dependent on the core
+	 * <code>Activity</code> instance for its <code>DataStore</code> identifier,
+	 * this method throws an <code>UnsupportedOperationException</code>.
+	 *
+	 * @param  id                            The <code>DataStore</code>
+	 *                                       identifier, not null
+	 * @throws UnsupportedOperationException unconditionally
+	 */
 
 	protected void setId (final Long id)
 	{

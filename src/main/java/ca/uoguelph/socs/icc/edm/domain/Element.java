@@ -17,13 +17,12 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 /**
- * Root level interface for all of the elements of the domain model.  Since
- * there is no common behaviors shared by all of the elements in the domain
- * model the <code>Element</code> interface does not contain any methods. The
- * purpose of the <code>Element</code> interface is to allow instances of the
- * <code>ElementBuilder</code> and <code>ElementManager</code> interfaces along
- * with their supporting infrastructure to refer to use bounded generic types
- * when referring to the domain model interfaces and their implementations.
+ * Root level interface for all of the elements of the domain model.  The
+ * primary purpose of the <code>Element</code> interface is to allow instances
+ * of the <code>ElementBuilder</code> and <code>ElementManager</code>
+ * interfaces along with their supporting infrastructure to refer to use
+ * bounded generic types when referring to the domain model interfaces and
+ * their implementations.  
  *
  * @author  James E. Stark
  * @version 1.0
@@ -33,4 +32,15 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 public interface Element
 {
+	/**
+	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
+	 * instance.  Some <code>Element</code> interfaces are dependent on other
+	 * <code>Element</code> interfaces for their identification.  The dependent
+	 * interface implementations should return the <code>DataStore</code>
+	 * identifier from the interface on which they depend.
+	 *
+	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
+	 */
+
+	public abstract Long getId ();
 }

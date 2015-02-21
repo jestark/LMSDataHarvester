@@ -57,8 +57,10 @@ public class RoleData extends AbstractElement implements Role, Serializable
 		 */
 
 		@Override
-		public Role create (String name)
+		public Role create (final String name)
 		{
+			assert name != null : "name is NULL";
+
 			return new RoleData (name);
 		}
 
@@ -72,8 +74,10 @@ public class RoleData extends AbstractElement implements Role, Serializable
 		 */
 
 		@Override
-		public void setId (Role role, Long id)
+		public void setId (final Role role, final Long id)
 		{
+			assert role != null : "role is NULL";
+
 			((RoleData) role).setId (id);
 		}
 	}
@@ -113,10 +117,12 @@ public class RoleData extends AbstractElement implements Role, Serializable
 	 * @param  name The name of the <code>Role</code>, not null
 	 */
 
-	public RoleData (String name)
+	public RoleData (final String name)
 	{
 		this ();
 
+		assert name != null : "name is NULL";
+		
 		this.name = name;
 	}
 
@@ -133,7 +139,7 @@ public class RoleData extends AbstractElement implements Role, Serializable
 	 */
 
 	@Override
-	public boolean equals (Object obj)
+	public boolean equals (final Object obj)
 	{
 		boolean result = false;
 
@@ -193,7 +199,7 @@ public class RoleData extends AbstractElement implements Role, Serializable
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
-	protected void setId (Long id)
+	protected void setId (final Long id)
 	{
 		this.id = id;
 	}
@@ -218,8 +224,10 @@ public class RoleData extends AbstractElement implements Role, Serializable
 	 * @param name The name of the <code>Role</code>
 	 */
 
-	protected void setName (String name)
+	protected void setName (final String name)
 	{
+		assert name != null : "name is NULL";
+
 		this.name = name;
 	}
 
