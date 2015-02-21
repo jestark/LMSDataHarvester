@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 
+import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
+
 /**
  * Factory interface to create new <code>Activity</code> instances.
  * Implementations of this interface provide the functionality required to
@@ -49,4 +51,19 @@ public interface NamedActivityElementFactory extends ElementFactory<Activity>
 	 */
 
 	public abstract Activity create (Activity instance, String name);
+
+	/**
+	 * Set the reference to the <code>Activity</code> instance which contains the
+	 * core activity data.  This method should only be used in cases where an
+	 * instance is loaded without the core data.  Usually the reference should be
+	 * set during instance creation, or when the instance is loaded from the
+	 * <code>DataStore</code>.  Implementation should fail if the reference is
+	 * already set.
+	 *
+	 * @param  activity The <code>Activity</code> to which the core data is to be
+	 *                  added, not null
+	 * @param  instance The core <code>Activity</code> instance data, not null
+	 */
+
+	public void setInstance (Activity activity, ActivityInstance instance);
 }
