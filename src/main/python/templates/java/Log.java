@@ -21,9 +21,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.AbstractNoIdElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.LogReferenceElementFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.core.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
 
 /**
@@ -49,7 +49,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
 
 class ${ClassName} extends LogReference
 {
-	private static final class Factory extends AbstractNoIdElementFactory<LogEntry> implements LogReferenceElementFactory
+	private static final class Factory extends AbstractElement.Factory<LogEntry> implements LogReferenceElementFactory
 	{
 		/**
 		 * Create a new <code>LogReference</code> instance.

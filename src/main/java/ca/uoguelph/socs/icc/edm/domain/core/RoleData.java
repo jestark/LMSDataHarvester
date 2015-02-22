@@ -46,7 +46,7 @@ public class RoleData extends AbstractElement implements Role, Serializable
 	 * the builders to create instances of <code>RoleData</code>.
 	 */
 
-	private static final class Factory implements RoleElementFactory
+	private static final class Factory extends AbstractElement.Factory<Role> implements RoleElementFactory
 	{
 		/**
 		 * Create a new <code>Role</code> instance.
@@ -62,23 +62,6 @@ public class RoleData extends AbstractElement implements Role, Serializable
 			assert name != null : "name is NULL";
 
 			return new RoleData (name);
-		}
-
-		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Role</code>.
-		 *
-		 * @param  role The <code>Role</code> to which the ID number is assigned, not
-		 *              null
-		 * @param  id   The ID number assigned to the <code>Role</code>, not null
-		 */
-
-		@Override
-		public void setId (final Role role, final Long id)
-		{
-			assert role != null : "role is NULL";
-
-			((RoleData) role).setId (id);
 		}
 	}
 

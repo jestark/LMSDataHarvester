@@ -59,7 +59,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	 * the builders to create instances of <code>ActivityInstance</code>.
 	 */
 
-	private static final class Factory implements ActivityElementFactory
+	private static final class Factory extends AbstractElement.Factory<Activity> implements ActivityElementFactory
 	{
 		/**
 		 * Create a new <code>Activity</code> instance.
@@ -85,24 +85,6 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		}
 
 		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity The <code>Activity</code> to which the ID number is
-		 *                  assigned, not null
-		 * @param  id       The ID number assigned to the <code>Activity</code>, not
-		 *                  null
-		 */
-
-		@Override
-		public void setId (final Activity activity, final Long id)
-		{
-			assert activity != null : "activity is null";
-
-			((ActivityInstance) activity).setId (id);
-		}
-
-		/**
 		 * Add the instance specific data to the activity.  Note that the data to be
 		 * added must not already be a part of another <code>Activity</code>, and the
 		 * <code>Activity</code> must not already have data associated with it.
@@ -114,7 +96,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 
 		public void setInstaceData (final Activity instance, final Activity data)
 		{
-			assert instance != null : "instance is NULL";
+			assert instance instanceof ActivityInstance : "instance is not an instance of ActivityInstance";
 			assert data != null : "data is NULL";
 
 			((ActivityInstance) instance).setActivity (data);
@@ -136,7 +118,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 
 		public boolean addGrade (final Activity activity, final Grade grade)
 		{
-			assert activity != null : "activity is NULL";
+			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
 			assert grade != null : "grade is NULL";
 			
 			return ((ActivityInstance) activity).addGrade (grade);
@@ -158,7 +140,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 
 		public boolean removeGrade (final Activity activity, final Grade grade)
 		{
-			assert activity != null : "activity is NULL";
+			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
 			assert grade != null : "grade is NULL";
 			
 			return ((ActivityInstance) activity).removeGrade (grade);
@@ -180,7 +162,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 
 		public boolean addLogEntry (final Activity activity, final LogEntry entry)
 		{
-			assert activity != null : "activity is NULL";
+			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
 			assert entry != null : "entry is NULL";
 			
 			return ((ActivityInstance) activity).addLog (entry);
@@ -202,7 +184,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 
 		public boolean removeLogEntry (final Activity activity, final LogEntry entry)
 		{
-			assert activity != null : "activity is NULL";
+			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
 			assert entry != null : "entry is NULL";
 
 			return ((ActivityInstance) activity).removeLog (entry);

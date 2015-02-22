@@ -51,7 +51,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 * Allows the builders to create instances of <code>ActivityTypeData</code>.
 	 */
 
-	private static final class Factory implements ActivityTypeElementFactory
+	private static final class Factory extends AbstractElement.Factory<ActivityType> implements ActivityTypeElementFactory
 	{
 		/**
 		 * Create a new <code>ActivityType</code> instance.
@@ -72,24 +72,6 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		}
 
 		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Action</code>.
-		 *
-		 * @param  type The <code>ActivityType</code> to which the ID number is
-		 *              assigned, not null
-		 * @param  id   The ID number assigned to the <code>ActivityType</code>, not
-		 *              null
-		 */
-
-		@Override
-		public void setId (final ActivityType type, final Long id)
-		{
-			assert type != null : "type is NULL";
-
-			((ActivityTypeData) type).setId (id);
-		}
-
-		/**
 		 * Add the specified <code>Action</code> to the specified
 		 * <code>ActivityType</code>.
 		 *
@@ -106,7 +88,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		@Override
 		public boolean addAction (final ActivityType type, final Action action)
 		{
-			assert type != null : "type is NULL";
+			assert type instanceof ActivityTypeData : "type is not an instance of ActivityTypeData";
 			assert action != null : "action is NULL";
 
 			return ((ActivityTypeData) type).addAction (action);
@@ -129,7 +111,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		@Override
 		public boolean removeAction (final ActivityType type, final Action action)
 		{
-			assert type != null : "type is NULL";
+			assert type instanceof ActivityTypeData : "type is not an instance of ActivityTypeData";
 			assert action != null : "action is NULL";
 
 			return ((ActivityTypeData) type).removeAction (action);

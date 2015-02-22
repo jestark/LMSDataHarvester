@@ -49,7 +49,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 * the builders to create instances of <code>ActionData</code>.
 	 */
 
-	private static final class Factory implements ActionElementFactory
+	private static final class Factory extends AbstractElement.Factory<Action> implements ActionElementFactory
 	{
 		/**
 		 * Create a new <code>Action</code> instance.
@@ -68,23 +68,6 @@ public class ActionData extends AbstractElement implements Action, Serializable
 		}
 
 		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Action</code>.
-		 *
-		 * @param  action The <code>Action</code> to which the ID number is assigned,
-		 *                not null
-		 * @param  id     The ID number assigned to the <code>Action</code>, not null
-		 */
-
-		@Override
-		public void setId (final Action action, final Long id)
-		{
-			assert action != null : "action is NULL";
-
-			((ActionData) action).setId (id);
-		}
-
-		/**
 		 * Add the specified <code>ActivityType</code> to the specified
 		 * <code>Action</code>.
 		 *
@@ -100,7 +83,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 
 		public boolean addActivityType (final Action action, final ActivityType type)
 		{
-			assert action != null : "action is NULL";
+			assert action instanceof ActionData : "action is not an instance of ActionData";
 			assert type != null : "type is NULL";
 
 			return ((ActionData) action).addType (type);
@@ -122,7 +105,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 
 		public boolean removeActivityType (final Action action, final ActivityType type)
 		{
-			assert action != null : "action is NULL";
+			assert action instanceof ActionData : "action is not an instance of ActionData";
 			assert type != null : "type is NULL";
 			
 			return ((ActionData) action).removeType (type);

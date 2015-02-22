@@ -61,7 +61,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 * the builders to create instances of <code>EnrolmentData</code>.
 	 */
 
-	private static final class Factory implements EnrolmentElementFactory
+	private static final class Factory extends AbstractElement.Factory<Enrolment> implements EnrolmentElementFactory
 	{
 		/**
 		 * Create a new <code>Enrolment</code> instance.
@@ -93,24 +93,6 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		}
 
 		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Enrolment</code>.
-		 *
-		 * @param  enrolment The <code>Enrolment</code> to which the ID number is
-		 *                   assigned, not null
-		 * @param  id        The ID number assigned to the <code>Enrolment</code>,
-		 *                   not null
-		 */
-
-		@Override
-		public void setId (final Enrolment enrolment, final Long id)
-		{
-			assert enrolment != null : "enrolment is NULL";
-
-			((EnrolmentData) enrolment).setId (id);
-		}
-
-		/**
 		 * Add the specified <code>Grade</code> to the specified
 		 * <code>Enrolment</code>.
 		 *
@@ -127,7 +109,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		@Override
 		public boolean addGrade (final Enrolment enrolment, final Grade grade)
 		{
-			assert enrolment != null : "enrolment is NULL";
+			assert enrolment instanceof EnrolmentData : "enrolment is not an instance of EnrolmentData";
 			assert grade != null : "grade is NULL";
 
 			return ((EnrolmentData) enrolment).addGrade (grade);
@@ -150,7 +132,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		@Override
 		public boolean removeGrade (final Enrolment enrolment, final Grade grade)
 		{
-			assert enrolment != null : "enrolment is NULL";
+			assert enrolment instanceof EnrolmentData : "enrolment is not an instance of EnrolmentData";
 			assert grade != null : "grade is NULL";
 
 			return ((EnrolmentData) enrolment).removeGrade (grade);
@@ -173,7 +155,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		@Override
 		public boolean addLogEntry (final Enrolment enrolment, final LogEntry entry)
 		{
-			assert enrolment != null : "enrolment is NULL";
+			assert enrolment instanceof EnrolmentData : "enrolment is not an instance of EnrolmentData";
 			assert entry != null : "entry is NULL";
 
 			return ((EnrolmentData) enrolment).addLog (entry);
@@ -196,7 +178,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		@Override
 		public boolean removeLogEntry (final Enrolment enrolment, final LogEntry entry)
 		{
-			assert enrolment != null : "enrolment is NULL";
+			assert enrolment instanceof EnrolmentData : "enrolment is not an instance of EnrolmentData";
 			assert entry != null : "entry is NULL";
 
 			return ((EnrolmentData) enrolment).removeLog (entry);

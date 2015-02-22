@@ -26,7 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.AbstractNoIdElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.GradeElementFactory;
 
@@ -48,7 +47,7 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 * the builders to create instances of <code>GradedActivity</code>.
 	 */
 
-	private static final class Factory extends AbstractNoIdElementFactory<Grade> implements GradeElementFactory
+	private static final class Factory extends AbstractElement.Factory<Grade> implements GradeElementFactory
 	{
 		/**
 		 * Create a new <code>Grade</code> instance.

@@ -34,7 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.activity.ActivityDataMap;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.AbstractNoIdElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
 /**
@@ -87,7 +86,7 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	 * <code>NamedActivityElementFactory</code> interface.
 	 */
 
-	protected static abstract class Factory extends AbstractNoIdElementFactory<Activity> implements NamedActivityElementFactory
+	protected static abstract class Factory extends AbstractElement.Factory<Activity> implements NamedActivityElementFactory
 	{
 		/**
 		 * Set the reference to the <code>Activity</code> instance which contains the
@@ -103,7 +102,7 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 
 		public final void setInstance (final Activity activity, final ActivityInstance instance)
 		{
-			assert activity != null : "activity is NULL";
+			assert activity instanceof GenericNamedActivity : "activity is not an instance of GenericNamedActivity";
 			assert instance != null : "instance is NULL";
 
 			((GenericNamedActivity) activity).setInstance (instance);

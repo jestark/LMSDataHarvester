@@ -23,7 +23,9 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityGroupMemberBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.core.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
 
 /**
@@ -55,7 +57,7 @@ public class ForumPost extends GenericGroupedActivityMember
 	 * Allows the builders to create instances of <code>ForumPost</code>.
 	 */
 
-	private static final class Factory extends GenericGroupedActivityMember.Factory
+	private static final class Factory extends AbstractElement.Factory<Activity> implements ActivityGroupMemberElementFactory
 	{
 		/**
 		 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.

@@ -51,7 +51,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 * the builders to create instances of <code>CourseData</code>
 	 */
 
-	private static final class Factory implements CourseElementFactory
+	private static final class Factory extends AbstractElement.Factory<Course> implements CourseElementFactory
 	{
 		/**
 		 * Create a new <code>Course</code> instance.
@@ -74,23 +74,6 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		}
 
 		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>course</code>.
-		 *
-		 * @param  course The <code>Course</code> to which the ID number is assigned,
-		 *                not null
-		 * @param  id     The ID number assigned to the <code>Course</code>, not null
-		 */
-
-		@Override
-		public void setId (final Course course, final Long id)
-		{
-			assert course != null : "course is NULL";
-
-			((CourseData) course).setId (id);
-		}
-
-		/**
 		 * Add the specified <code>Activity</code> to the specified <code>Course</code>.
 		 *
 		 * @param  course    The <code>Course</code> to which the <code>Activity</code>
@@ -105,7 +88,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 		public boolean addActivity (final Course course, final Activity activity)
 		{
-			assert course != null : "course is NULL";
+			assert course instanceof CourseData : "course is not and instance of CourseData";
 			assert activity != null : "activity is NULL";
 
 			return ((CourseData) course).addActivity (activity);
@@ -126,7 +109,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 		public boolean removeActivity (final Course course, final Activity activity)
 		{
-			assert course != null : "course is NULL";
+			assert course instanceof CourseData : "course is not and instance of CourseData";
 			assert activity != null : "activity is NULL";
 
 			return ((CourseData) course).removeActivity (activity);
@@ -147,7 +130,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 		public boolean addEnrolment (final Course course, final Enrolment enrolment)
 		{
-			assert course != null : "course is NULL";
+			assert course instanceof CourseData : "course is not and instance of CourseData";
 			assert enrolment != null : "enrolment is NULL";
 
 			return ((CourseData) course).addEnrolment (enrolment);
@@ -169,7 +152,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 		public boolean removeEnrolment (final Course course, final Enrolment enrolment)
 		{
-			assert course != null : "course is NULL";
+			assert course instanceof CourseData : "course is not and instance of CourseData";
 			assert enrolment != null : "enrolment is NULL";
 
 			return ((CourseData) course).removeEnrolment (enrolment);

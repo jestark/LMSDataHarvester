@@ -50,7 +50,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * the builders to create instances of <code>UserData</code>.
 	 */
 
-	private static final class Factory implements UserElementFactory
+	private static final class Factory extends AbstractElement.Factory<User> implements UserElementFactory
 	{
 		/**
 		 * Create a new <code>User</code> instance.
@@ -75,23 +75,6 @@ public class UserData extends AbstractElement implements User, Serializable
 		}
 
 		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>User</code>.
-		 *
-		 * @param  user The <code>User</code> to which the ID number is assigned, not
-		 *              null
-		 * @param  id   The ID number assigned to the <code>User</code>, not null
-		 */
-
-		@Override
-		public void setId (final User user, final Long id)
-		{
-			assert user != null : "user is NULL";
-
-			((UserData) user).setId (id);
-		}
-
-		/**
 		 * Add the specified <code>Enrolment</code> to the specified
 		 * <code>User</code>.
 		 *
@@ -108,7 +91,7 @@ public class UserData extends AbstractElement implements User, Serializable
 		@Override
 		public boolean addEnrolment (final User user, final Enrolment enrolment)
 		{
-			assert user != null : "user is NULL";
+			assert user instanceof UserData : "user is not an instance of UserData";
 			assert enrolment != null : "enrolment is NULL";
 
 			return ((UserData) user).addEnrolment (enrolment);
@@ -131,7 +114,7 @@ public class UserData extends AbstractElement implements User, Serializable
 		@Override
 		public boolean removeEnrolment (final User user, final Enrolment enrolment)
 		{
-			assert user != null : "user is NULL";
+			assert user instanceof UserData : "user is not an instance of UserData";
 			assert enrolment != null : "enrolment is NULL";
 			
 			return ((UserData) user).removeEnrolment (enrolment);

@@ -54,7 +54,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * the builders to create instances of <code>LogData</code>.
 	 */
 
-	private static final class Factory implements LogEntryElementFactory
+	private static final class Factory extends AbstractElement.Factory<LogEntry> implements LogEntryElementFactory
 	{
 		/**
 		 * Create a new <code>LogEntry</code> instance.  Defaults to the current
@@ -82,23 +82,6 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		}
 
 		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Action</code>.
-		 *
-		 * @param  entry The <code>LogEntry</code> to which the ID number is assigned,
-		 *               not null
-		 * @param  id    The ID number assigned to the <code>LogEntry</code>, not null
-		 */
-
-		@Override
-		public void setId (final LogEntry entry, final Long id)
-		{
-			assert entry != null : "entry is NULL";
-
-			((LogData) entry).setId (id);
-		}
-
-		/**
 		 * Add the reference to the Sub-Activity to the <code>LogEntry</code>.  Some
 		 * <code>LogEntry</code> instances will record an <code>Action</code> upon a
 		 * sub-activity, rather than the <code>Activity</code> itself.  This method
@@ -113,7 +96,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 
 		public void setReference (final LogEntry entry, final LogReference reference)
 		{
-			assert entry != null : "entry is NULL";
+			assert entry instanceof LogData : "entry is not an instance of LogData";
 			assert reference != null : "reference is NULL";
 			
 			((LogData) entry).setReference (reference);

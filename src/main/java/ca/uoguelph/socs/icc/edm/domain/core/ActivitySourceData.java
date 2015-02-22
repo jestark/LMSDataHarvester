@@ -50,7 +50,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 * Allows the builders to create instances of <code>ActivitySourceData</code>.
 	 */
 
-	private static final class Factory implements ActivitySourceElementFactory
+	private static final class Factory extends AbstractElement.Factory<ActivitySource> implements ActivitySourceElementFactory
 	{
 		/**
 		 * Create a new <code>ActivitySource</code> instance.
@@ -66,24 +66,6 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 			assert name != null : "name is NULL";
 
 			return new ActivitySourceData (name);
-		}
-
-		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>ActivitySource</code>.
-		 *
-		 * @param  source The <code>ActivitySource</code> to which the ID number is
-		 *                assigned, not null
-		 * @param  id     The ID number assigned to the <code>ActivitySource</code>,
-		 *                not null
-		 */
-
-		@Override
-		public void setId (final ActivitySource ActivitySource, final Long id)
-		{
-			assert source != null : "source is NULL";
-			
-			((ActivitySourceData) ActivitySource).setId (id);
 		}
 
 		/**
@@ -103,7 +85,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 		@Override
 		public boolean addActivityType (final ActivitySource source, final ActivityType type)
 		{
-			assert source != null : "source is NULL";
+			assert source instanceof ActivitySourceData : "source is not an instance of ActivitySourceData";
 			assert type != null : "type is NULL";
 
 			return ((ActivitySourceData) source).addType (type);
@@ -126,7 +108,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 		@Override
 		public boolean removeActivityType (final ActivitySource source, final ActivityType type)
 		{
-			assert source != null : "source is NULL";
+			assert source instanceof ActivitySourceData : "source is not an instance of ActivitySourceData";
 			assert type != null : "type is NULL";
 
 			return ((ActivitySourceData) source).removeType (type);

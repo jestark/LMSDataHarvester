@@ -50,30 +50,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory
 
 public abstract class GenericGroupedActivityMember extends AbstractNamedActivity implements ActivityGroupMember, Serializable
 {
-	/**
-	 * Implementation of the common parts of the
-	 * <code>ActivityGroupMemberElementFactory</code> interface.
-	 */
-
-	protected static abstract class Factory implements ActivityGroupMemberElementFactory
-	{
-		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity The <code>Activity</code> to which the ID number is
-		 *                  assigned not null
-		 * @param  id       The ID number assigned to the <code>Activity</code>
-		 */
-
-		public final void setId (final Activity activity, final Long id)
-		{
-			assert activity != null : "activity is NULL";
-
-			((GenericGroupedActivityMember) activity).setId (id);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 

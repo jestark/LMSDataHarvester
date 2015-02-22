@@ -25,10 +25,12 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
 
 /**
  * A generic representation of a node in a sub-activity tree.  This class
@@ -47,10 +49,13 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 	 * Centralizes the implementation of the common add/remove operations.
 	 */
 
-	protected static abstract class Factory extends GenericGroupedActivityMember.Factory implements ActivityGroupElementFactory
+	protected static abstract class Factory extends AbstractElement.Factory<Activity> implements ActivityGroupElementFactory, ActivityGroupMemberElementFactory
 	{
+		/** The <code>Class</code> of the parent <code>Element</code> */
+		private final Class<?> parent;
+
 		/** The <code>Class</code> of the child <code>Element</code> */
-		private final Class<? extends ActivityGroupMember> child;
+		private final Class<?> child;
 
 		/**
 		 * Create an instance of the <code>Factory</code>.  This method sets the
@@ -65,6 +70,7 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 			assert child != null : "Child class is NULL";
 
 			this.child = child;
+			this.parent = (this.getClass ()).getEnclosingClass ();
 		}
 
 		/**
@@ -83,9 +89,8 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 
 		public final boolean addChild (final ActivityGroup group, final ActivityGroupMember member)
 		{
-			assert group != null : "ActivityGroup is NULL";
-			assert member != null : "ActivityGroup Member is NULL";
-			assert this.child.isInstance (member) : "Required: " + this.child.getSimpleName () + " Found:" + (member.getClass ()).getSimpleName ();
+			assert this.parent.isInstance (group) : "group is not an instance of " + this.parent.getSimpleName ();
+			assert this.child.isInstance (member) : "member is not an instance of " + this.child.getSimpleName ();
 
 			return ((GenericGroupedActivityGroup) group).addChild (member);
 		}
@@ -106,9 +111,8 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 
 		public final boolean removeChild (final ActivityGroup group, final ActivityGroupMember member)
 		{
-			assert group != null : "ActivityGroup is NULL";
-			assert member != null : "ActivityGroup Member is NULL";
-			assert this.child.isInstance (member) : "Required: " + this.child.getSimpleName () + " Found:" + (member.getClass ()).getSimpleName ();
+			assert this.parent.isInstance (group) : "group is not an instance of " + this.parent.getSimpleName ();
+			assert this.child.isInstance (member) : "member is not an instance of " + this.child.getSimpleName ();
 
 			return ((GenericGroupedActivityGroup) group).removeChild (member);
 		}

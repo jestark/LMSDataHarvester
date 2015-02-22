@@ -50,8 +50,11 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 
 	protected static abstract class Factory extends GenericNamedActivity.Factory implements ActivityGroupElementFactory
 	{
+		/** The <code>Class</code> of the parent <code>Element</code> */
+		private final Class<?> parent; 
+
 		/** The <code>Class</code> of the child <code>Element</code> */
-		private final Class<? extends ActivityGroupMember> child;
+		private final Class<?> child;
 
 		/**
 		 * Create an instance of the <code>Factory</code>.  This method sets the
@@ -66,6 +69,7 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 			assert child != null : "Child class is NULL";
 
 			this.child = child;
+			this.parent = (this.getClass ()).getEnclosingClass ();
 		}
 
 		/**
@@ -84,9 +88,8 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 
 		public final boolean addChild (final ActivityGroup group, final ActivityGroupMember member)
 		{
-			assert group != null : "ActivityGroup is NULL";
-			assert member != null : "ActivityGroup Member is NULL";
-			assert this.child.isInstance (member) : "Required: " + this.child.getSimpleName () + " Found:" + (member.getClass ()).getSimpleName ();
+			assert this.parent.isInstance (group) : "group is not an instance of " + this.parent.getSimpleName ();
+			assert this.child.isInstance (member) : "member is not an instance of " + this.child.getSimpleName ();
 
 			return ((GenericGroupedActivity) group).addChild (member);
 		}
@@ -107,9 +110,8 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 
 		public final boolean removeChild (final ActivityGroup group, final ActivityGroupMember member)
 		{
-			assert group != null : "ActivityGroup is NULL";
-			assert member != null : "ActivityGroup Member is NULL";
-			assert this.child.isInstance (member) : "Required: " + this.child.getSimpleName () + " Found:" + (member.getClass ()).getSimpleName ();
+			assert this.parent.isInstance (group) : "group is not an instance of " + this.parent.getSimpleName ();
+			assert this.child.isInstance (member) : "member is not an instance of " + this.child.getSimpleName ();
 
 			return ((GenericGroupedActivity) group).removeChild (member);
 		}
