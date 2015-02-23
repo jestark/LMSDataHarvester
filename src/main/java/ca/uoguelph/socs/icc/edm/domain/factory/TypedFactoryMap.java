@@ -28,14 +28,20 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class TypedFactoryMap<T extends Class<?>, U extends Class<?>, V>
-{
-	private static final class FactoryKey<T, U>
-	{
-		private T type;
-		private U impl;
+/**
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
 
-		public FactoryKey (final T type, final U impl)
+final class TypedFactoryMap<T>
+{
+	private static final class FactoryKey
+	{
+		private Class<?> type;
+		private Class<?> impl;
+
+		public FactoryKey (final Class<?> type, final Class<?> impl)
 		{
 			this.type = type;
 			this.impl = impl;
@@ -72,12 +78,12 @@ final class TypedFactoryMap<T extends Class<?>, U extends Class<?>, V>
 			return hbuilder.hashCode ();
 		}
 
-		public T getType ()
+		public Class<?> getType ()
 		{
 			return this.type;
 		}
 
-		public U getImpl ()
+		public Class<?> getImpl ()
 		{
 			return this.impl;
 		}
@@ -87,13 +93,13 @@ final class TypedFactoryMap<T extends Class<?>, U extends Class<?>, V>
 	private final Logger log;
 
 	/** Factory for the <code>ElementBuilder</code> implementations */
-	private final Map<FactoryKey<T, U>, V> factories;
+	private final Map<FactoryKey, T> factories;
 
 	public TypedFactoryMap ()
 	{
 		this.log = LoggerFactory.getLogger (TypedFactoryMap.class);
 
-		this.factories = new HashMap<FactoryKey<T, U>, V> ();
+		this.factories = new HashMap<FactoryKey, T> ();
 	}
 
 	/**
@@ -103,7 +109,7 @@ final class TypedFactoryMap<T extends Class<?>, U extends Class<?>, V>
 	 * @param  factory
 	 */
 
-	public void put (final T type, final U impl, final V factory)
+	public void registerFactory (final Class<?> type, final Class<?> impl, final T factory)
 	{
 		this.log.trace ("Registering Class: {}, with type {} and factory {}", type, impl, factory);
 
@@ -111,7 +117,7 @@ final class TypedFactoryMap<T extends Class<?>, U extends Class<?>, V>
 		assert impl != null : "impl is NULL";
 		assert factory != null : "factory is NULL";
 
-		FactoryKey<T, U> key = new FactoryKey<T, U> (type, impl);
+		FactoryKey key = new FactoryKey (type, impl);
 
 		if (this.factories.containsKey (key))
 		{
@@ -130,11 +136,11 @@ final class TypedFactoryMap<T extends Class<?>, U extends Class<?>, V>
 	 *         instances
 	 */
 
-	public Set<U> getRegisteredClasses ()
+	public Set<Class<?>> getRegisteredFactories ()
 	{
-		Set<U> result = new HashSet<U> ();
+		Set<Class<?>> result = new HashSet<Class<?>> ();
 
-		for (FactoryKey<T, U> key : this.factories.keySet ())
+		for (FactoryKey key : this.factories.keySet ())
 		{
 			result.add (key.getImpl ());
 		}
@@ -150,14 +156,14 @@ final class TypedFactoryMap<T extends Class<?>, U extends Class<?>, V>
 	 * @return 
 	 */
 
-	public V get (final T type, final U impl)
+	public T getFactory (final Class<?> type, final Class<?> impl)
 	{
 		this.log.trace ("Retrieve the factory for class: {} (type {})", impl, type);
 		
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 
-		FactoryKey<T, U> key = new FactoryKey<T, U> (type, impl);
+		FactoryKey key = new FactoryKey (type, impl);
 
 		if (! this.factories.containsKey (key))
 		{

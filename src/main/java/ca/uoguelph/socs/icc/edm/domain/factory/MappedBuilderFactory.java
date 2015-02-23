@@ -47,7 +47,7 @@ public final class MappedBuilderFactory
 	private final Logger log;
 
 	/** Factory for the <code>ElementBuilder</code> implementations */
-	private final TypedFactoryMap<Class<?>, Class<?>, BuilderFactory<? extends Element>> factories;
+	private final TypedFactoryMap<BuilderFactory<? extends ElementBuilder<? extends Element>>> factories;
 
 	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
 	private final Map<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> elements;
@@ -63,7 +63,7 @@ public final class MappedBuilderFactory
 	{
 		this.log = LoggerFactory.getLogger (MappedBuilderFactory.class);
 
-		this.factories = new TypedFactoryMap<Class<?>, Class<?>, BuilderFactory<? extends Element>> ();
+		this.factories = new TypedFactoryMap<BuilderFactory<? extends ElementBuilder<? extends Element>>> ();
 		this.elements = new HashMap<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ();
 	}
 
@@ -80,21 +80,15 @@ public final class MappedBuilderFactory
 	 *                                  not null
 	 */
 
-	public <T extends ElementBuilder<U>, U extends Element> void registerClass (Class<T> impl, BuilderFactory<U> factory)
+	public <T extends ElementBuilder<? extends Element>> void registerFactory (final Class<T> type, final Class<? extends T> impl, final BuilderFactory<T> factory)
 	{
 		this.log.trace ("Registering Builder: {} ({})", impl, factory);
 
+		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
-		assert ! impl.isInterface () : "impl is an interface";
 		assert factory != null : "factory is NULL";
 
-		for (Class<?> type : impl.getInterfaces ())
-		{
-			if ((Element.class).isAssignableFrom (type))
-			{
-				this.factories.put (type, impl, factory);
-			}
-		}
+		this.factories.registerFactory (type, impl, factory);
 	}
 
 	/**
@@ -127,9 +121,9 @@ public final class MappedBuilderFactory
 	 *         <code>ElementBuilder</code> implementations
 	 */
 
-	public Set<Class<?>> getRegisteredClasses ()
+	public Set<Class<?>> getRegisteredFactories ()
 	{
-		return null;
+		return factories.getRegisteredFactories ();
 	}
 
 	/**
@@ -140,9 +134,9 @@ public final class MappedBuilderFactory
 	 *         <code>ElementBuilder</code> implementations
 	 */
 
-	public Set<Class<? extends Element>> getRegisteredElements ()
+	public Set<Class<?>> getRegisteredElements ()
 	{
-		return new HashSet<Class<? extends Element>> (this.elements.keySet ());
+		return new HashSet<Class<?>> (this.elements.keySet ());
 	}
 
 	/**
@@ -157,7 +151,8 @@ public final class MappedBuilderFactory
 	 *                               implementation classes is not registered
 	 */
 
-	public <T extends ElementBuilder<U>, U extends Element> T create (Class<T> type, Class<? extends U> impl, AbstractManager<U> manager)
+	@SuppressWarnings("unchecked")
+	public <T extends ElementBuilder<U>, U extends Element> T create (final Class<T> type, final Class<? extends T> impl, final AbstractManager<U> manager)
 	{
 		this.log.debug ("Creating builder for interface {} on manager {}", type, manager);
 
@@ -167,6 +162,6 @@ public final class MappedBuilderFactory
 		
 		assert this.elements.containsKey (impl) : "Element class is not registered: " + impl.getSimpleName ();
 
-		return ((BuilderFactory<T>) this.factories.get (type, impl)).create (manager.getDomainModel ());
+		return ((BuilderFactory<T>) this.factories.getFactory (type, impl)).create (manager.getDomainModel ());
 	}
 }

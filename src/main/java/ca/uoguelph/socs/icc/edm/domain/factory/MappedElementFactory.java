@@ -44,7 +44,7 @@ public final class MappedElementFactory
 	private final Logger log;
 
 	/** Factory for the <code>ElementBuilder</code> implementations */
-	private final TypedFactoryMap<Class<?>, Class<?>, ElementFactory<? extends Element>> factories;
+	private final TypedFactoryMap<ElementFactory<? extends Element>> factories;
 
 	/**
 	 * Create the <code>MappedBuilderFactory</code>.
@@ -57,7 +57,7 @@ public final class MappedElementFactory
 	{
 		this.log = LoggerFactory.getLogger (MappedElementFactory.class);
 
-		this.factories = new TypedFactoryMap<Class<?>, Class<?>, ElementFactory<? extends Element>> ();
+		this.factories = new TypedFactoryMap<ElementFactory<? extends Element>> ();
 	}
 
 	/**
@@ -75,20 +75,15 @@ public final class MappedElementFactory
 	 *                                  already registered with the factory
 	 */
 
-	public <T extends ElementFactory<U>, U extends Element> void registerClass (Class<? extends U> impl, T factory)
+	public <T extends ElementFactory<U>, U extends Element> void registerFactory (final Class<T> type, final Class<? extends U> impl, final T factory)
 	{
 		this.log.trace ("Registering ElementFactory: {} ({})", impl, factory);
 
+		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 		assert factory != null : "factory is NULL";
 
-		for (Class<?> type : (factory.getClass ()).getInterfaces ())
-		{
-			if ((ElementFactory.class).isAssignableFrom (type))
-			{
-				this.factories.put (type, impl, factory);
-			}
-		}
+		this.factories.registerFactory (type, impl, factory);
 	}
 
 	/**
@@ -99,16 +94,16 @@ public final class MappedElementFactory
 	 *         <code>ElementBuilder</code> implementations
 	 */
 
-	public Set<Class<? extends Element>> getRegisteredClasses ()
+	public Set<Class<?>> getRegisteredFactories ()
 	{
-		return null;
+		return this.factories.getRegisteredFactories ();
 	}
 
-	public <T extends ElementFactory<U>, U extends Element> T get (Class<T> type, Class<? extends U> impl)
+	public <T extends ElementFactory<U>, U extends Element> T get (final Class<T> type, final Class<? extends U> impl)
 	{
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 
-		return type.cast (this.factories.get (type, impl));
+		return type.cast (this.factories.getFactory (type, impl));
 	}
 }
