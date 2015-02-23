@@ -25,7 +25,7 @@ import java.util.HashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
@@ -37,70 +37,20 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
  * 
  * @author  James E.Stark
  * @version 1.0
- * @param   <T> The domain model interface represented by this factory
- * @param   <X> The builder interface created by this factory
- * @param   <Y> The element factory interface used by the builder created by
- *              this factory
- * @see     MappedFactory
- * @see     ca.uoguelph.socs.icc.edm.builder.BuilderFactory
- * @see     ca.uoguelph.socs.icc.edm.builder.ElementFactory
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory
  */
 
-public final class MappedBuilderFactory<T extends Element, X extends ElementBuilder<T>>
+public final class MappedBuilderFactory
 {
-	/** Singleton instance */
-	private static final Map<Class<? extends ElementBuilder<? extends Element>>, MappedBuilderFactory<? extends Element, ? extends ElementBuilder<? extends Element>>> INSTANCE;
-
 	/** The logger */
 	private final Logger log;
 
-	/** The type of the domain model interface associated with this factory */
-	private final Class<T> type;
-
 	/** Factory for the <code>ElementBuilder</code> implementations */
-	private final Map<Class<? extends ElementBuilder<? extends Element>>, BuilderFactory<X>> builders;
+	private final TypedFactoryMap<Class<?>, Class<?>, BuilderFactory<? extends Element>> factories;
 
 	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
-	private final Map<Class<? extends T>, Class<? extends X>> elements;
-
-	/**
-	 *  static initializer to create the singleton
-	 */
-
-	static
-	{
-		INSTANCE = new HashMap<Class<? extends ElementBuilder<? extends Element>>, MappedBuilderFactory<? extends Element, ? extends ElementBuilder<? extends Element>>> ();
-	}
-
-	/**
-	 * Get an instance of the <code>MappedBuilderFactory</code>.
-	 *
-	 * @param  type    The <code>Element</code> interface, not null
-	 * @param  builder The <code>ElementBuilder</code> interface, not null
-	 *
-	 * @return         The <code>MappedBuilderFactory</code> instance
-	 */
-
-	@SuppressWarnings("unchecked")
-	public static <T extends Element, X extends ElementBuilder<T>> MappedBuilderFactory<T, X> getInstance (Class<T> type, Class<X> builder)
-	{
-		if (type == null)
-		{
-			throw new NullPointerException ();
-		}
-
-		if (builder == null)
-		{
-			throw new NullPointerException ();
-		}
-
-		if (! INSTANCE.containsKey (builder))
-		{
-			INSTANCE.put (builder, new MappedBuilderFactory<T, X> (type));
-		}
-
-		return (MappedBuilderFactory<T, X>) INSTANCE.get (builder);
-	}
+	private final Map<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> elements;
 
 	/**
 	 * Create the <code>MappedBuilderFactory</code>.
@@ -109,19 +59,12 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 	 *              being created, not null
 	 */
 
-	public MappedBuilderFactory (Class<T> type)
+	public MappedBuilderFactory ()
 	{
 		this.log = LoggerFactory.getLogger (MappedBuilderFactory.class);
 
-		if (type == null)
-		{
-			this.log.error ("Type is NULL");
-			throw new NullPointerException ("Type is NULL");
-		}
-
-		this.type = type;
-		this.builders = new HashMap<Class<? extends ElementBuilder<? extends Element>>, BuilderFactory<X>> ();
-		this.elements = new HashMap<Class<? extends T>, Class<? extends X>> ();
+		this.factories = new TypedFactoryMap<Class<?>, Class<?>, BuilderFactory<? extends Element>> ();
+		this.elements = new HashMap<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ();
 	}
 
 	/**
@@ -135,33 +78,23 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 	 * @param  factory                  The <code>BuilderFactory</code> used to
 	 *                                  create the <code>ElementBuilder</code>,
 	 *                                  not null
-	 * @throws IllegalArgumentException If the <code>ElementBuilder</code> is
-	 *                                  already registered with the factory
 	 */
 
-	public void registerClass (Class<? extends ElementBuilder<? extends Element>> impl, BuilderFactory<X> factory)
+	public <T extends ElementBuilder<U>, U extends Element> void registerClass (Class<T> impl, BuilderFactory<U> factory)
 	{
 		this.log.trace ("Registering Builder: {} ({})", impl, factory);
 
-		if (impl == null)
-		{
-			this.log.error ("Implementation class is NULL");
-			throw new NullPointerException ();
-		}
+		assert impl != null : "impl is NULL";
+		assert ! impl.isInterface () : "impl is an interface";
+		assert factory != null : "factory is NULL";
 
-		if (factory == null)
+		for (Class<?> type : impl.getInterfaces ())
 		{
-			this.log.error ("Factory is NULL");
-			throw new NullPointerException ();
+			if ((Element.class).isAssignableFrom (type))
+			{
+				this.factories.put (type, impl, factory);
+			}
 		}
-
-		if (this.builders.containsKey (impl))
-		{
-			this.log.error ("Class has already been registered: {}", impl);
-			throw new IllegalArgumentException ("Duplicate class registration");
-		}
-
-		this.builders.put (impl, factory);
 	}
 
 	/**
@@ -173,31 +106,15 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 	 *                                  which is being registered, not null
 	 * @param  builder                  The builder class to be used to build the
 	 *                                  <code>Element</code>, not null
-	 * @throws IllegalArgumentException If the <code>Element</code> is already
-	 *                                  registered with the factory
 	 */
 
-	public void registerElement (Class<? extends T> impl, Class<? extends X> builder)
+	public <T extends ElementBuilder<U>, U extends Element> void registerElement (Class<? extends U> impl, Class<T> builder)
 	{
 		this.log.trace ("Registering Element: {} ({})", impl, builder);
 
-		if (impl == null)
-		{
-			this.log.error ("Attempting to register a NULL Element");
-			throw new NullPointerException ();
-		}
-
-		if (builder == null)
-		{
-			this.log.error ("Attempting to register an Element with a NULL Builder");
-			throw new NullPointerException ();
-		}
-
-		if (this.elements.containsKey (impl))
-		{
-			this.log.error ("Class already registered: {}", impl);
-			throw new IllegalArgumentException ("Class already registered");
-		}
+		assert impl != null : "impl is NULL";
+		assert builder != null : "builder is NULL";
+		assert ! this.elements.containsKey (impl) : "Class already registered: " + impl.getSimpleName ();
 
 		this.elements.put (impl, builder);
 	}
@@ -210,9 +127,9 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 	 *         <code>ElementBuilder</code> implementations
 	 */
 
-	public Set<Class<? extends ElementBuilder<? extends Element>>> getRegisteredClasses ()
+	public Set<Class<?>> getRegisteredClasses ()
 	{
-		return new HashSet<Class<? extends ElementBuilder<? extends Element>>> (this.builders.keySet ());
+		return null;
 	}
 
 	/**
@@ -229,32 +146,6 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 	}
 
 	/**
-	 * Determine if the specified <code>ElementBuilder</code> implementation class
-	 * has been registered with the factory.
-	 *
-	 * @return <code>true</code> if the <code>ElementManager</code> implementation
-	 *         has been registered, <code>false</code> otherwise
-	 */
-
-	public boolean isRegistered (Class<? extends X> impl)
-	{
-		return this.builders.containsKey (impl);
-	}
-
-	/**
-	 * Determine if the specified <code>Element</code> implementation class has
-	 * been registered with the factory.
-	 *
-	 * @return  <code>true</code> if the <code>Element</code> implementation
-	 *         has been registered, <code>false</code> otherwise
-	 */
-
-	public boolean isElementRegistered (Class<? extends Element> impl)
-	{
-		return this.elements.containsKey (impl);
-	}
-
-	/**
 	 * Create a <code>ElementBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
@@ -266,28 +157,16 @@ public final class MappedBuilderFactory<T extends Element, X extends ElementBuil
 	 *                               implementation classes is not registered
 	 */
 
-	public X create (DomainModel model)
+	public <T extends ElementBuilder<U>, U extends Element> T create (Class<T> type, Class<? extends U> impl, AbstractManager<U> manager)
 	{
-		this.log.debug ("Creating builder for interface {} on model {}", this.type, model);
+		this.log.debug ("Creating builder for interface {} on manager {}", type, manager);
 
-		if (model == null)
-		{
-			this.log.error ("DomainModel is null");
-			throw new NullPointerException ();
-		}
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+		assert manager != null : "manager is NULL";
+		
+		assert this.elements.containsKey (impl) : "Element class is not registered: " + impl.getSimpleName ();
 
-		if (! this.elements.containsKey ((model.getProfile ()).getImplClass (this.type)))
-		{
-			this.log.error ("Attempting to create a builder for an unregistered Element: {}", (model.getProfile ()).getImplClass (this.type));
-			throw new IllegalStateException ("Element is not registered");
-		}
-
-		if (! this.builders.containsKey (this.elements.get ((model.getProfile ()).getImplClass (this.type))))
-		{
-			this.log.error ("Attempting to create an unregistered builder: {}", this.elements.get ((model.getProfile ()).getImplClass (this.type)));
-			throw new IllegalStateException ("Builder is now registered");
-		}
-
-		return (this.builders.get (this.elements.get ((model.getProfile ()).getImplClass (this.type)))).create (model);
+		return ((BuilderFactory<T>) this.factories.get (type, impl)).create (manager.getDomainModel ());
 	}
 }
