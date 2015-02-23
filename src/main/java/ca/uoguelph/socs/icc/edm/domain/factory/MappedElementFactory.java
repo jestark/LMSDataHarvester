@@ -16,10 +16,16 @@
 
 package ca.uoguelph.socs.icc.edm.domain.factory;
 
+import java.util.Map;
 import java.util.Set;
+
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -44,7 +50,7 @@ public final class MappedElementFactory
 	private final Logger log;
 
 	/** Factory for the <code>ElementBuilder</code> implementations */
-	private final TypedFactoryMap<ElementFactory<? extends Element>> factories;
+	private final Map<Pair<Class<?>, Class<?>>, ElementFactory<? extends Element>> factories;
 
 	/**
 	 * Create the <code>MappedBuilderFactory</code>.
@@ -57,7 +63,7 @@ public final class MappedElementFactory
 	{
 		this.log = LoggerFactory.getLogger (MappedElementFactory.class);
 
-		this.factories = new TypedFactoryMap<ElementFactory<? extends Element>> ();
+		this.factories = new HashMap<Pair<Class<?>, Class<?>>, ElementFactory<? extends Element>> ();
 	}
 
 	/**
@@ -71,8 +77,6 @@ public final class MappedElementFactory
 	 * @param  factory                  The <code>BuilderFactory</code> used to
 	 *                                  create the <code>ElementBuilder</code>,
 	 *                                  not null
-	 * @throws IllegalArgumentException If the <code>ElementBuilder</code> is
-	 *                                  already registered with the factory
 	 */
 
 	public <T extends ElementFactory<U>, U extends Element> void registerFactory (final Class<T> type, final Class<? extends U> impl, final T factory)
@@ -83,27 +87,22 @@ public final class MappedElementFactory
 		assert impl != null : "impl is NULL";
 		assert factory != null : "factory is NULL";
 
-		this.factories.registerFactory (type, impl, factory);
+		Pair<Class<?>, Class<?>> key = new ImmutablePair<Class<?>, Class<?>> (type, impl);
+
+		assert (! this.factories.containsKey (key)) : "Class already registered: " + impl.getSimpleName ();
+
+		this.factories.put (key, factory);
 	}
 
-	/**
-	 * Get the <code>Set</code> of <code>ElementBuilder</code> implementations
-	 * which have been registered with the factory.
-	 *
-	 * @return A <code>Set</code> containing the registered
-	 *         <code>ElementBuilder</code> implementations
-	 */
-
-	public Set<Class<?>> getRegisteredFactories ()
-	{
-		return this.factories.getRegisteredFactories ();
-	}
-
-	public <T extends ElementFactory<U>, U extends Element> T get (final Class<T> type, final Class<? extends U> impl)
+	public <T extends ElementFactory<U>, U extends Element> T getFactory (final Class<T> type, final Class<? extends U> impl)
 	{
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 
-		return type.cast (this.factories.getFactory (type, impl));
+		Pair<Class<?>, Class<?>> key = new ImmutablePair<Class<?>, Class<?>> (type, impl);
+
+		assert this.factories.containsKey (key) : "Class not registered: " + impl.getSimpleName ();
+
+		return type.cast (this.factories.get (key));
 	}
 }

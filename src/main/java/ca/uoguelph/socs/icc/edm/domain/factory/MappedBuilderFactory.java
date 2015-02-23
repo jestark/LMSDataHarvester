@@ -20,10 +20,12 @@ import java.util.Map;
 import java.util.Set;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -47,7 +49,7 @@ public final class MappedBuilderFactory
 	private final Logger log;
 
 	/** Factory for the <code>ElementBuilder</code> implementations */
-	private final TypedFactoryMap<BuilderFactory<? extends ElementBuilder<? extends Element>>> factories;
+	private final Map<Pair<Class<?>, Class<?>>, BuilderFactory<? extends ElementBuilder<? extends Element>>> factories;
 
 	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
 	private final Map<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> elements;
@@ -63,7 +65,7 @@ public final class MappedBuilderFactory
 	{
 		this.log = LoggerFactory.getLogger (MappedBuilderFactory.class);
 
-		this.factories = new TypedFactoryMap<BuilderFactory<? extends ElementBuilder<? extends Element>>> ();
+		this.factories = new HashMap<Pair<Class<?>, Class<?>>, BuilderFactory<? extends ElementBuilder<? extends Element>>> ();
 		this.elements = new HashMap<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ();
 	}
 
@@ -88,7 +90,11 @@ public final class MappedBuilderFactory
 		assert impl != null : "impl is NULL";
 		assert factory != null : "factory is NULL";
 
-		this.factories.registerFactory (type, impl, factory);
+		ImmutablePair<Class<?>, Class<?>> key = new ImmutablePair<Class<?>, Class<?>> (type, impl);
+
+		assert (! this.factories.containsKey (key)) : "Class already registered: " + impl.getSimpleName ();
+
+		this.factories.put (key, factory);
 	}
 
 	/**
@@ -114,32 +120,6 @@ public final class MappedBuilderFactory
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>ElementBuilder</code> implementations
-	 * which have been registered with the factory.
-	 *
-	 * @return A <code>Set</code> containing the registered
-	 *         <code>ElementBuilder</code> implementations
-	 */
-
-	public Set<Class<?>> getRegisteredFactories ()
-	{
-		return factories.getRegisteredFactories ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>ElementBuilder</code> implementations
-	 * which have been registered with the factory.
-	 *
-	 * @return A <code>Set</code> containing the registered
-	 *         <code>ElementBuilder</code> implementations
-	 */
-
-	public Set<Class<?>> getRegisteredElements ()
-	{
-		return new HashSet<Class<?>> (this.elements.keySet ());
-	}
-
-	/**
 	 * Create a <code>ElementBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
@@ -151,7 +131,6 @@ public final class MappedBuilderFactory
 	 *                               implementation classes is not registered
 	 */
 
-	@SuppressWarnings("unchecked")
 	public <T extends ElementBuilder<U>, U extends Element> T create (final Class<T> type, final Class<? extends T> impl, final AbstractManager<U> manager)
 	{
 		this.log.debug ("Creating builder for interface {} on manager {}", type, manager);
@@ -162,6 +141,11 @@ public final class MappedBuilderFactory
 		
 		assert this.elements.containsKey (impl) : "Element class is not registered: " + impl.getSimpleName ();
 
-		return ((BuilderFactory<T>) this.factories.getFactory (type, impl)).create (manager.getDomainModel ());
+		@SuppressWarnings("unchecked")
+		BuilderFactory<T> factory = (BuilderFactory<T>) this.factories.get (ImmutablePair.of (type, this.elements.get (impl)));
+
+		assert factory != null : "No builder registered for class: " + impl.getSimpleName ();
+
+		return factory.create (manager.getDomainModel ());
 	}
 }
