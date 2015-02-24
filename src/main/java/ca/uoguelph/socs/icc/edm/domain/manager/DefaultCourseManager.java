@@ -73,7 +73,7 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 
 	static
 	{
-		AbstractManager.registerManager (Course.class, CourseManager.class, DefaultCourseManager.class, new Factory ());
+		AbstractManager.registerManager (CourseManager.class, DefaultCourseManager.class, new Factory ());
 	}
 
 	/**

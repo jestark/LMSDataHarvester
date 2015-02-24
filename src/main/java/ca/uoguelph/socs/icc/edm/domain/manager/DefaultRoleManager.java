@@ -70,7 +70,7 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 
 	static
 	{
-		AbstractManager.registerManager (Role.class, RoleManager.class, DefaultRoleManager.class, new Factory ());
+		AbstractManager.registerManager (RoleManager.class, DefaultRoleManager.class, new Factory ());
 	}
 
 	/**

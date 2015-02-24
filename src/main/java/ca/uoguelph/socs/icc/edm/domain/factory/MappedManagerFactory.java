@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.factory;
 
+import java.lang.ref.WeakReference;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -24,6 +26,12 @@ import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -44,90 +52,31 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
  * will returned, otherwise a new instance will be created.
  *
  * @author  James E. Stark
- * @version 1.2
- * @param   <T> The domain model interface represented by this factory
- * @param   <X> The Manager interface created by this factory
+ * @version 1.3
  * @see     ca.uoguelph.socs.icc.edm.manager.ManagerFactory
  */
 
-public final class MappedManagerFactory<T extends ElementManager<? extends Element>>
+public final class MappedManagerFactory
 {
-	/** Singleton instance */
-	private static final Map<Class<? extends ElementManager<? extends Element>>, MappedManagerFactory<? extends ElementManager<? extends Element>>> INSTANCE;
-
 	/** The logger */
 	private final Logger log;
 
-	/** The type of the domain model interface associated with this factory*/
-	private final Class<? extends Element> type;
-
 	/** <code>ElementManager</code> factories */
-	private final Map<Class<? extends ElementManager<? extends Element>>, ManagerFactory<T>> managers;
+	private final Map<Pair<Class<?>, Class<?>>, ManagerFactory<? extends ElementManager<? extends Element>>> factories;
 
 	/** <code>ElementManager</code> instance Cache */
-	private final Map<DomainModel, T> cache;
-
-	/**
-	 *  static initializer to create the singleton
-	 */
-
-	static
-	{
-		INSTANCE = new HashMap<Class<? extends ElementManager<? extends Element>>, MappedManagerFactory<? extends ElementManager<? extends Element>>> ();
-	}
-
-	/**
-	 * Get an instance of the <code>MappedManagerFactory</code>.
-	 *
-	 * @param  type    The <code>Element</code> interface, not null
-	 * @param  manager The <code>ElementManager</code> interface, not null
-	 *
-	 * @return         The <code>MappedManagerFactory</code> instance
-	 */
-
-	@SuppressWarnings("unchecked")
-	public static <X extends Element, T extends ElementManager<X>> MappedManagerFactory<T> getInstance (Class<T> manager, Class<X> type)
-	{
-		if (manager == null)
-		{
-			throw new NullPointerException ();
-		}
-
-		if (type == null)
-		{
-			throw new NullPointerException ();
-		}
-
-		if (! INSTANCE.containsKey (manager))
-		{
-			INSTANCE.put (manager, new MappedManagerFactory<T> (type));
-		}
-
-		return (MappedManagerFactory<T>) INSTANCE.get (manager);
-	}
+	private final Map<Triple<DomainModel, Class<?>, Class<?>>, WeakReference<ElementManager<? extends Element>>> cache;
 
 	/**
 	 * Create the <code>MappedManagerFactory</code>.
-	 *
-	 * @param  type The domain model interface class for which the managers are
-	 *              being created, not null
 	 */
 
-	public MappedManagerFactory (Class<? extends Element> type)
+	public MappedManagerFactory ()
 	{
 		this.log = LoggerFactory.getLogger (MappedManagerFactory.class);
 
-		if (type == null)
-		{
-			this.log.error ("domain model interface type NULL");
-			throw new NullPointerException ();
-		}
-
-		this.type = type;
-
-		this.managers = new HashMap<Class<? extends ElementManager<? extends Element>>, ManagerFactory<T>> ();
-
-		this.cache = new HashMap<DomainModel, T> ();
+		this.factories = new HashMap<Pair<Class<?>, Class<?>>, ManagerFactory<? extends ElementManager<? extends Element>>> ();
+		this.cache = new HashMap<Triple<DomainModel, Class<?>, Class<?>>, WeakReference<ElementManager<? extends Element>>> ();
 	}
 
 	/**
@@ -135,65 +84,27 @@ public final class MappedManagerFactory<T extends ElementManager<? extends Eleme
 	 * This method is intended to be used by the implementation of
 	 * <code>ElementManager</code> when the classes initialize.
 	 *
-	 * @param  impl                     The <code>ElementManager</code>
-	 *                                  implementation which is being registered,
-	 *                                  not null
-	 * @param  factory                  The <code>ManagerFactory</code> used to
-	 *                                  create the <code>ElementManager</code>,
-	 *                                  not null
-	 * @throws IllegalArgumentException If the <code>ElementManager</code> is
-	 *                                  already registered with the factory
+	 * @param  <T>     The <code>ElementManager</code> type being registered
+	 * @param  manager The <code>ElementManager</code> interface class, not null
+	 * @param  impl    The <code>ElementManager</code> implementation class, not
+	 *                 null
+	 * @param  factory The <code>ManagerFactory</code> used to create the
+	 *                 <code>ElementManager</code> implementation class, not null
 	 */
 
-	public void registerClass (Class<? extends ElementManager<? extends Element>> impl, ManagerFactory<T> factory)
+	public <T extends ElementManager<? extends Element>> void registerFactory (final Class<T> manager, final Class<? extends T> impl, final ManagerFactory<T> factory)
 	{
 		this.log.trace ("Registering Class: {} ({})", impl, factory);
 
-		if (impl == null)
-		{
-			this.log.error ("Implementation class is NULL");
-			throw new NullPointerException ();
-		}
+		assert manager != null : "manager is NULL";
+		assert impl != null : "impl is NULL";
+		assert factory != null : "factory is NULL";
 
-		if (factory == null)
-		{
-			this.log.error ("Factory is NULL");
-			throw new NullPointerException ();
-		}
+		Pair<Class<?>, Class<?>> key = new ImmutablePair<Class<?>, Class<?>> (manager, impl);
 
-		if (this.managers.containsKey (impl))
-		{
-			this.log.error ("Class has already been registered: {}", impl);
-			throw new IllegalArgumentException ("Duplicate class registration");
-		}
+		assert (! this.factories.containsKey (key)) : "Class already registered: " + impl.getSimpleName ();
 
-		this.managers.put (impl, factory);
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>ElementManager</code> implementations
-	 * which have been registered with the factory.
-	 *
-	 * @return A <code>Set</code> containing the registered
-	 *         <code>ElementManager</code> implementations
-	 */
-
-	public Set<Class<? extends ElementManager<? extends Element>>> getRegisteredClasses ()
-	{
-		return new HashSet<Class<? extends ElementManager<? extends Element>>> (this.managers.keySet ());
-	}
-
-	/**
-	 * Determine if the specified <code>ElementManager</code> implementation class
-	 * has been registered with the factory.
-	 *
-	 * @return <code>true</code> if the <code>ElementManager</code> implementation
-	 *         has been registered, <code>false</code> otherwise
-	 */
-
-	public boolean isRegistered (Class<? extends ElementManager<? extends Element>> impl)
-	{
-		return this.managers.containsKey (impl);
+		this.factories.put (key, factory);
 	}
 
 	/**
@@ -202,37 +113,37 @@ public final class MappedManagerFactory<T extends ElementManager<? extends Eleme
 	 * exists in the cache, then the cached copy will be returned, otherwise a new
 	 * <code>ElementManager</code> will be created.
 	 *
-	 * @param  model                 The <code>DomainModel</code> for which the
-	 *                               manager is to be created, not null
-	 * @return                       The <code>ElementManager</code>
-	 * @throws IllegalStateException if the manager implementation class is not
-	 *                               registered
+	 * @param  <T>     The <code>ElementManager</code> type to return
+	 * @param  <U>     The <code>Element</code> represented by the <code>ElementManager</code>
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  manager The <code>ElementManager</code> interface class, not null
+	 * @param  model   The <code>DomainModel</code> for which the, not null
+	 * @return         The <code>ElementManager</code>
 	 */
 
-	public T create (DomainModel model)
+	@SuppressWarnings("unchecked")
+	public <T extends ElementManager<U>, U extends Element> T create (final Class<U> element, final Class<T> manager, final DomainModel model)
 	{
-		this.log.debug ("Create manager for interface {}, on model {}", this.type, model);
+		this.log.debug ("Creating manager for element {}, using manager {}, on DomainModel {}", element, manager, model);
 
-		if (model == null)
+		assert element != null : "element is NULL";
+		assert manager != null : "manager is NULL";
+		assert model != null : "model is NULL";
+
+		Class<?> impl = (model.getProfile ()).getManagerClass (element);
+
+		Triple<DomainModel, Class<?>, Class<?>> cacheKey = new ImmutableTriple<DomainModel, Class<?>, Class<?>> (model, manager, impl);
+
+		if ((! this.cache.containsKey (cacheKey)) || ((this.cache.get (cacheKey)).get () == null))
 		{
-			this.log.error ("Domain model is NULL");
-			throw new NullPointerException ();
-		}
+			Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (manager, impl);
 
-		if (! this.cache.containsKey (model))
-		{
-			Class<? extends ElementManager<? extends Element>> manager = (model.getProfile ()).getManagerClass (this.type);
-
-			if (! this.managers.containsKey (manager))
-			{
-				this.log.error ("Attempting to create manager for unregistered class: {}", manager);
-				throw new IllegalStateException ("ElementManager implementation is not registered");
-			}
+			assert this.factories.containsKey (factoryKey) : "";
 			
-			this.cache.put (model, (this.managers.get (manager)).create (model));
+			this.cache.put (cacheKey, new WeakReference<ElementManager<? extends Element>> (((ManagerFactory<T>) this.factories.get (factoryKey)).create (model)));
 		}
 
-		return this.cache.get (model);
+		return manager.cast ((this.cache.get (cacheKey)).get ());
 	}
 
 	/**
@@ -243,17 +154,19 @@ public final class MappedManagerFactory<T extends ElementManager<? extends Eleme
 	 *               managers are to be purged, not null
 	 */
 
-	public void remove (DomainModel model)
+	public void remove (final DomainModel model)
 	{
 		this.log.trace ("Removing all ElementManager instances for {}", model);
 
-		if (model == null)
-		{
-			this.log.error ("Attempting to remove cached ElementManagers for a NULL DomainModel");
-			throw new NullPointerException ();
-		}
+		assert model != null : "model is NULL";
 
-		this.managers.remove (model);
+		for (Triple<DomainModel, Class<?>, Class<?>> key : this.cache.keySet ())
+		{
+			if (model.equals (key.getLeft ()))
+			{
+				this.cache.remove (key);
+			}
+		}
 	}
 
 	/**
@@ -264,6 +177,6 @@ public final class MappedManagerFactory<T extends ElementManager<? extends Eleme
 	{
 		this.log.trace ("Flushing cache");
 
-		this.managers.clear ();
+		this.cache.clear ();
 	}
 }

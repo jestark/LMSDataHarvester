@@ -72,7 +72,7 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 
 	static
 	{
-		AbstractManager.registerManager (ActivitySource.class, ActivitySourceManager.class, DefaultActivitySourceManager.class, new Factory ());
+		AbstractManager.registerManager (ActivitySourceManager.class, DefaultActivitySourceManager.class, new Factory ());
 	}
 
 	/**

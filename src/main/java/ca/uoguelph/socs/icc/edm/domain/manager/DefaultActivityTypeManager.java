@@ -74,7 +74,7 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 
 	static
 	{
-		AbstractManager.registerManager (ActivityType.class, ActivityTypeManager.class, DefaultActivityTypeManager.class, new Factory ());
+		AbstractManager.registerManager (ActivityTypeManager.class, DefaultActivityTypeManager.class, new Factory ());
 	}
 
 	/**

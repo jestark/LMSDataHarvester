@@ -73,7 +73,7 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 
 	static
 	{
-		AbstractManager.registerManager (Activity.class, ActivityManager.class, DefaultActivityManager.class, new Factory ());
+		AbstractManager.registerManager (ActivityManager.class, DefaultActivityManager.class, new Factory ());
 	}
 
 	/**

@@ -74,7 +74,7 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 
 	static
 	{
-		AbstractManager.registerManager (LogEntry.class, LogEntryManager.class, DefaultLogEntryManager.class, new Factory ());
+		AbstractManager.registerManager (LogEntryManager.class, DefaultLogEntryManager.class, new Factory ());
 	}
 
 	/**

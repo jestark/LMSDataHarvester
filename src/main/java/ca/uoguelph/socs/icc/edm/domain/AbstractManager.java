@@ -42,6 +42,8 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
 
 public abstract class AbstractManager<T extends Element> implements ElementManager<T>
 {
+	private static final MappedManagerFactory FACTORY;
+
 	/** The logger */
 	private final Logger log;
 
@@ -51,9 +53,19 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	/** The <code>DomainModel</code> instance which owns this manager. */
 	protected final DomainModel model;
 
-	protected static <T extends Element, X extends ElementManager<T>> void registerManager (Class<T> element, Class<X> manager, Class<? extends X> impl, ManagerFactory<X> factory)
+	static
 	{
-		(MappedManagerFactory.getInstance (manager, element)).registerClass (impl, factory);
+		FACTORY = new MappedManagerFactory ();
+	}
+
+	public static final <T extends ElementManager<U>, U extends Element> T getInstance (final Class<U> element, final Class<T> manager, final DomainModel model)
+	{
+		return FACTORY.create (element, manager, model);
+	}
+
+	protected static final <T extends ElementManager<? extends Element>> void registerManager (final Class<T> manager, Class<? extends T> impl, ManagerFactory<T> factory)
+	{
+		FACTORY.registerFactory (manager, impl, factory);
 	}
 
 	/**
@@ -77,7 +89,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	{
 		this.log.trace ("Getting query object from factory");
 
-		return (QueryFactory.getInstance (this.type)).create (this.model.getDataStore ());
+		return (QueryFactory.getInstance ()).create (this.type, this.model.getDataStore ());
 	}
 
 	/**

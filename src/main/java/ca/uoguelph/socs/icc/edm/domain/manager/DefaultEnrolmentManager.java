@@ -71,7 +71,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 
 	static
 	{
-		AbstractManager.registerManager (Enrolment.class, EnrolmentManager.class, DefaultEnrolmentManager.class, new Factory ());
+		AbstractManager.registerManager (EnrolmentManager.class, DefaultEnrolmentManager.class, new Factory ());
 	}
 
 	/** The logger */
