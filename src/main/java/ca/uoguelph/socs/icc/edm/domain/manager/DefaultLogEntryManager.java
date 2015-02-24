@@ -26,10 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
@@ -51,15 +51,17 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 		/**
 		 * Create an instance of the <code>DefaultLogEntryManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>DefaultLogEntryManager</code>
+		 * @param  datastore The <code>DataStore</code> upon which the
+		 *               <code>DefaultLogEntryManager</code> will operate, not null
 		 * @return       The <code>DefaultLogEntryManager</code>
 		 */
 
 		@Override
-		public LogEntryManager create (DomainModel model)
+		public LogEntryManager create (DataStore datastore)
 		{
-			return new DefaultLogEntryManager (model);
+			assert datastore != null : "datastore is NULL";
+
+			return new DefaultLogEntryManager (datastore);
 		}
 	}
 
@@ -79,13 +81,13 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	/**
 	 * Create the <code>LogEntryManager</code>.
 	 *
-	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>LogEntryManager</code> is to be created, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which the
+	 *                   <code>LogEntryManager</code> will operate, not null
 	 */
 
-	public DefaultLogEntryManager (DomainModel model)
+	public DefaultLogEntryManager (final DataStore datastore)
 	{
-		super (LogEntry.class, model);
+		super (LogEntry.class, datastore);
 
 		this.log = LoggerFactory.getLogger (LogEntryManager.class);
 	}
@@ -99,7 +101,7 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	 * @return        A list of <code>LogEntry</code> objects
 	 */
 
-	public List<LogEntry> fetchAllforCourse (Course course)
+	public List<LogEntry> fetchAllforCourse (final Course course)
 	{
 		this.log.trace ("Fetching all Log Entries for course: {}", course);
 
@@ -113,27 +115,5 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 		params.put ("course", course);
 
 		return (this.fetchQuery ()).queryAll ("course", params);
-	}
-
-	/**
-	 * Set the time on a specified <code>LogEntry</code>.
-	 *
-	 * @param  entry The <code>LogEntry</code> to modify, not null
-	 * @param  time  The new value for the time
-	 */
-
-	public void setTime (LogEntry entry, Date time)
-	{
-	}
-
-	/**
-	 * Set the IP Address for a specified <code>LogEntry</code>.
-	 *
-	 * @param  entry The <code>LogEntry<code> to modify, not null
-	 * @param  ip    The value for the new IP Address
-	 */
-
-	public void setIPAddress (LogEntry entry, String ip)
-	{
 	}
 }

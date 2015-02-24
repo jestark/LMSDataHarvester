@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySourceManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
@@ -49,15 +49,18 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 		/**
 		 * Create an instance of the <code>DefaultActivitySourceManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>DefaultActivitySourceManager</code>
-		 * @return       The <code>DefaultActivitySourceManager</code>
+		 * @param  datastore The <code>DataStore</code> upon which the
+		 *                   <code>DefaultActivitySourceManager</code> will operate,
+		 *                   not null
+		 * @return           The <code>DefaultActivitySourceManager</code>
 		 */
 
 		@Override
-		public ActivitySourceManager create (DomainModel model)
+		public ActivitySourceManager create (DataStore datastore)
 		{
-			return new DefaultActivitySourceManager (model);
+			assert datastore != null : "datastore is NULL";
+
+			return new DefaultActivitySourceManager (datastore);
 		}
 	}
 
@@ -77,13 +80,13 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 	/**
 	 * Create the <code>ActivitySourceManager</code>.
 	 *
-	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>ActivitySourceManager</code> is to be created, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which the
+	 *                   <code>ActivitySourceManager</code> will operate, not null
 	 */
 
-	public DefaultActivitySourceManager (DomainModel model)
+	public DefaultActivitySourceManager (final DataStore datastore)
 	{
-		super (ActivitySource.class, model);
+		super (ActivitySource.class, datastore);
 
 		this.log = LoggerFactory.getLogger (ActivitySourceManager.class);
 	}
@@ -98,7 +101,7 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 	 *              specified name
 	 */
 
-	public ActivitySource fetchByName (String name)
+	public ActivitySource fetchByName (final String name)
 	{
 		this.log.trace ("Fetching ActvitySource {}", name);
 

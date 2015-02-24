@@ -33,9 +33,10 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementManager;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Factory for creating <code>ElementManager</code> objects.  This class 
@@ -45,7 +46,7 @@ import ca.uoguelph.socs.icc.edm.domain.ElementManager;
  * <p>
  * As a caching factory, this factory will ensure that the
  * is no more than one instance of a given <code>ElementManager</code> 
- * implementation for a given <code>DomainModel</code> at any time.  If the
+ * implementation for a given <code>DataStorel</code> at any time.  If the
  * requested <code>Elementmanager</code> already exists then the cached copy
  * will returned, otherwise a new instance will be created.
  *
@@ -63,7 +64,7 @@ final class ElementManagerFactory
 	private final Map<Pair<Class<?>, Class<?>>, ManagerFactory<? extends ElementManager<? extends Element>>> factories;
 
 	/** <code>ElementManager</code> instance Cache */
-	private final Map<Triple<DomainModel, Class<?>, Class<?>>, WeakReference<ElementManager<? extends Element>>> cache;
+	private final Map<Triple<DataStore, Class<?>, Class<?>>, WeakReference<ElementManager<? extends Element>>> cache;
 
 	/**
 	 * Create the <code>MappedManagerFactory</code>.
@@ -74,7 +75,7 @@ final class ElementManagerFactory
 		this.log = LoggerFactory.getLogger (ElementManagerFactory.class);
 
 		this.factories = new HashMap<Pair<Class<?>, Class<?>>, ManagerFactory<? extends ElementManager<? extends Element>>> ();
-		this.cache = new HashMap<Triple<DomainModel, Class<?>, Class<?>>, WeakReference<ElementManager<? extends Element>>> ();
+		this.cache = new HashMap<Triple<DataStore, Class<?>, Class<?>>, WeakReference<ElementManager<? extends Element>>> ();
 	}
 
 	/**
@@ -106,61 +107,64 @@ final class ElementManagerFactory
 	}
 
 	/**
-	 * Create a <code>ElementManager</code> for the specified
-	 * <code>DomainModel</code>.  If the <code>ElementManager</code> already
+	 * Create a <code>ElementManager</code> to act upon the specified
+	 * <code>DataStore</code>.  If the <code>ElementManager</code> already
 	 * exists in the cache, then the cached copy will be returned, otherwise a new
 	 * <code>ElementManager</code> will be created.
 	 *
-	 * @param  <T>     The <code>ElementManager</code> type to return
-	 * @param  <U>     The <code>Element</code> represented by the <code>ElementManager</code>
-	 * @param  element The <code>Element</code> interface class, not null
-	 * @param  manager The <code>ElementManager</code> interface class, not null
-	 * @param  model   The <code>DomainModel</code> for which the, not null
-	 * @return         The <code>ElementManager</code>
+	 * @param  <T>       The <code>ElementManager</code> type to return
+	 * @param  <U>       The <code>Element</code> represented by the
+	 *                   <code>ElementManager</code>
+	 * @param  element   The <code>Element</code> interface class, not null
+	 * @param  manager   The <code>ElementManager</code> interface class, not null
+	 * @param  datastore The <code>DataStore</code> upon which the
+	 *                   <code>ElementManager</code> will be acting, not null
+	 * @return           The <code>ElementManager</code>
 	 */
 
 	@SuppressWarnings("unchecked")
-	public <T extends ElementManager<U>, U extends Element> T create (final Class<U> element, final Class<T> manager, final DomainModel model)
+	public <T extends ElementManager<U>, U extends Element> T create (final Class<U> element, final Class<T> manager, final DataStore datastore)
 	{
-		this.log.debug ("Creating manager for element {}, using manager {}, on DomainModel {}", element, manager, model);
+		this.log.debug ("Creating manager for element {}, using manager {}, on DataStore {}", element, manager, datastore);
 
 		assert element != null : "element is NULL";
 		assert manager != null : "manager is NULL";
-		assert model != null : "model is NULL";
+		assert datastore != null : "datastore is NULL";
 
-		Class<?> impl = (model.getProfile ()).getManagerClass (element);
+		Class<?> impl = (datastore.getProfile ()).getManagerClass (element);
 
-		Triple<DomainModel, Class<?>, Class<?>> cacheKey = new ImmutableTriple<DomainModel, Class<?>, Class<?>> (model, manager, impl);
+		Triple<DataStore, Class<?>, Class<?>> cacheKey = new ImmutableTriple<DataStore, Class<?>, Class<?>> (datastore, manager, impl);
 
 		if ((! this.cache.containsKey (cacheKey)) || ((this.cache.get (cacheKey)).get () == null))
 		{
 			Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (manager, impl);
 
-			assert this.factories.containsKey (factoryKey) : "";
+			assert this.factories.containsKey (factoryKey) : "Manager implementation Class not registered: " + impl.getSimpleName ();
 			
-			this.cache.put (cacheKey, new WeakReference<ElementManager<? extends Element>> (((ManagerFactory<T>) this.factories.get (factoryKey)).create (model)));
+			this.cache.put (cacheKey, new WeakReference<ElementManager<? extends Element>> (((ManagerFactory<T>) this.factories.get (factoryKey)).create (datastore)));
 		}
 
 		return manager.cast ((this.cache.get (cacheKey)).get ());
 	}
 
 	/**
-	 * Remove all of the <code>ElementManagers</code> for the specified
-	 * <code>DomainModel</code> from the cache.
+	 * Remove all of the <code>ElementManager</code> instances for the specified
+	 * <code>DataStore</code> from the cache.
 	 *
-	 * @param  model The <code>DomainModel</code> for which all of the cached
-	 *               managers are to be purged, not null
+	 * @param  datastore The <code>DataStore</code> for which all of the cached
+	 *                   <code>ElementManager</code> instances are to be purged,
+	 *                   not null
 	 */
 
-	public void remove (final DomainModel model)
+	public void remove (final DataStore datastore)
 	{
-		this.log.trace ("Removing all ElementManager instances for {}", model);
+		this.log.trace ("Removing all ElementManager instances for {}", datastore);
 
-		assert model != null : "model is NULL";
+		assert datastore != null : "datastore is NULL";
 
-		for (Triple<DomainModel, Class<?>, Class<?>> key : this.cache.keySet ())
+		for (Triple<DataStore, Class<?>, Class<?>> key : this.cache.keySet ())
 		{
-			if (model.equals (key.getLeft ()))
+			if (datastore.equals (key.getLeft ()))
 			{
 				this.cache.remove (key);
 			}

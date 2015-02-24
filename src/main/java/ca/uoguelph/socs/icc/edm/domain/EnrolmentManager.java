@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 
 /**
+ * Retrieve, add and remove <code>Enrolment</code> instances from the
+ * <code>DataStore</code>.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -36,33 +38,6 @@ public interface EnrolmentManager extends ElementManager<Enrolment>
 	 */
 
 	public abstract List<Enrolment> fetchAllForRole (Role role);
-
-	/**
-	 * Set the final grade for the specified <code>Enrolment</code>.
-	 *
-	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
-	 * @param  grade     The value for the final grade, not null
-	 */
-
-	public abstract void setFinalGrade (Enrolment enrolment, Integer grade);
-
-	/**
-	 * Remove the final grade from the specified <code>Enrolment</code>.
-	 *
-	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
-	 */
-
-	public abstract void clearFinalGrade (Enrolment enrolment);
-
-	/**
-	 * Set the usable flag to the specified value on the given
-	 * <code>Enrolment</code>.
-	 *
-	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
-	 * @param  usable    The new value for the usable flag, not null
-	 */
-
-	public abstract void setUsable (Enrolment enrolment, Boolean usable);
 
 	/**
 	 * Add a grade, for the specified activity to the <code>Enrolment</code>.

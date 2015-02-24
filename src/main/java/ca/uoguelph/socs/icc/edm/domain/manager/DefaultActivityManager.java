@@ -27,8 +27,8 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
@@ -50,15 +50,17 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 		/**
 		 * Create an instance of the <code>DefaultActivityManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>DefaultActivityManager</code>
-		 * @return       The <code>DefaultActivityManager</code>
+		 * @param  datastore The <code>DataStore</code> upon which the
+		 *                   <code>DefaultActivityManager</code> will operate, not null
+		 * @return           The <code>DefaultActivityManager</code>
 		 */
 
 		@Override
-		public ActivityManager create (DomainModel model)
+		public ActivityManager create (final DataStore datastore)
 		{
-			return new DefaultActivityManager (model);
+			assert datastore != null : "datastore is NULL";
+
+			return new DefaultActivityManager (datastore);
 		}
 	}
 
@@ -78,13 +80,13 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 	/**
 	 * Create the Activity manager.
 	 *
-	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>ActivityManager</code> is to be created, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which the
+	 *                   <code>ActivityManager</code> will operate, not null
 	 */
 
-	public DefaultActivityManager (DomainModel model)
+	public DefaultActivityManager (final DataStore datastore)
 	{
-		super (Activity.class, model);
+		super (Activity.class, datastore);
 
 		this.log = LoggerFactory.getLogger (ActivityManager.class);
 	}
@@ -96,7 +98,7 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 	 * @param  type The <code>ActivityType</code>, not null
 	 */
 
-	public List<Activity> fetchAllForType (ActivityType type)
+	public List<Activity> fetchAllForType (final ActivityType type)
 	{
 		this.log.trace ("Fetching all Activities with ActivityType: {}", type);
 
@@ -110,16 +112,5 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 		params.put ("type", type);
 
 		return (this.fetchQuery ()).queryAll ("type", params);
-	}
-
-	/**
-	 * Modify the value of the stealth flag on a given activity.
-	 *
-	 * @param  activity The <code>Activity</code> to modify, not null
-	 * @param  stealth  The new value of the stealth flag, not null
-	 */
-
-	public void setStealth (Activity activity, Boolean stealth)
-	{
 	}
 }

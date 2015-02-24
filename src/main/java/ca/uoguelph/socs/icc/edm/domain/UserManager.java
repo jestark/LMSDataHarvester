@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,17 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 /**
- * Create, Insert and remove users from the data store.  Implementations of
- * this interface are responsible for adding users to and removing users from
- * the data store.
- *
- * It should be noted that since the binding between users and enrolments is
- * weak, a recursive removal of a user will not remove the associated
- * enrolments, and the existence of associated enrolments will not prevent
- * the non-recursive removal of a user.
+ * Create, Insert and remove users from the <code>DataStore</code>.
+ * Implementations of this interface are responsible for adding users to and
+ * removing users from the <code>DataStore</code>.
+ * <p>
+ * Since the binding between users and enrolments is weak, a recursive removal
+ * of a user will not remove the associated enrolments, and the existence of
+ * associated enrolments will not prevent the non-recursive removal of a user.
  *
  * @author  James E. Stark
  * @version 1.0
+ * @see     UserBuilder
  */
 
 public interface UserManager extends ElementManager<User>
@@ -36,7 +36,9 @@ public interface UserManager extends ElementManager<User>
 	 * Retrieve a single <code>User</code> object, with the specified id number,
 	 * from the data-store.
 	 *
-	 * @param  idnumber The id number of the <code>User</code> to retrieve, not null
+	 * @param  idnumber The id number of the <code>User</code> to retrieve, not
+	 *                  null
+	 *
 	 * @return          The <code>User</code> object associated with the id number
 	 */
 
@@ -47,6 +49,7 @@ public interface UserManager extends ElementManager<User>
 	 * from the data-store.
 	 *
 	 * @param  username The username of the entry to retrieve, not null
+	 *
 	 * @return          The <code>User</code> object associated with the username
 	 */
 

@@ -51,16 +51,11 @@ public final class DomainModel
 	 *                   represented by this <code>DomainModel</code>, not null
 	 */
 
-	public DomainModel (DataStore datastore)
+	public DomainModel (final DataStore datastore)
 	{
 		this.datastore = datastore;
 
 		this.log = LoggerFactory.getLogger (DomainModel.class);
-	}
-
-	protected DataStore getDataStore ()
-	{
-		return this.datastore;
 	}
 
 	/**
@@ -121,7 +116,7 @@ public final class DomainModel
 	 *                               available for the <code>DomainModel</code>
 	 */
 
-	public <T extends ElementManager<U>, U extends Element> T getManager (Class<U> element, Class<T> manager)
+	public <T extends ElementManager<U>, U extends Element> T getManager (final Class<U> element, final Class<T> manager)
 	{
 		this.log.trace ("get Manager instance {} for element {}", manager, element);
 
@@ -143,7 +138,7 @@ public final class DomainModel
 			throw new IllegalStateException ("");
 		}
 
-		return AbstractManager.getInstance (element, manager, this);
+		return AbstractManager.getInstance (element, manager, this.datastore);
 	}
 
 	/**

@@ -25,12 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentManager;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
@@ -51,15 +51,18 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 		/**
 		 * Create an instance of the <code>DefaultEnrolmentManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>DefaultEnrolmentManager</code>
-		 * @return       The <code>DefaultEnrolmentManager</code>
+		 * @param  datastore The <code>DataStore</code> upon which the
+		 *                   <code>DefaultEnrolmentManager</code> will operate, not
+		 *                   null
+		 * @return           The <code>DefaultEnrolmentManager</code>
 		 */
 
 		@Override
-		public EnrolmentManager create (DomainModel model)
+		public EnrolmentManager create (DataStore datastore)
 		{
-			return new DefaultEnrolmentManager (model);
+			assert datastore != null : "datastore is NULL";
+
+			return new DefaultEnrolmentManager (datastore);
 		}
 	}
 
@@ -79,14 +82,14 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	/**
 	 * Create the <code>DefaultEnrolmentManager</code>.
 	 *
-	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>DefaultEnrolmentManager</code> is to be created, not
-	 *               null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which the
+	 *                   <code>DefaultEnrolmentManager</code> will operate, not
+	 *                   null
 	 */
 
-	public DefaultEnrolmentManager (DomainModel model)
+	public DefaultEnrolmentManager (final DataStore datastore)
 	{
-		super (Enrolment.class, model);
+		super (Enrolment.class, datastore);
 
 		this.log = LoggerFactory.getLogger (EnrolmentManager.class);
 	}
@@ -100,7 +103,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	 * @return      A list of enrolment objects.
 	 */
 
-	public List<Enrolment> fetchAllForRole (Role role)
+	public List<Enrolment> fetchAllForRole (final Role role)
 	{
 		this.log.trace ("Fetching all Enrolments with Role: {}", role);
 
@@ -117,39 +120,6 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	}
 
 	/**
-	 * Set the final grade for the specified <code>Enrolment</code>.
-	 *
-	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
-	 * @param  grade     The value for the final grade, not null
-	 */
-
-	public void setFinalGrade (Enrolment enrolment, Integer grade)
-	{
-	}
-
-	/**
-	 * Remove the final grade from the specified <code>Enrolment</code>.
-	 *
-	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
-	 */
-
-	public void clearFinalGrade (Enrolment enrolment)
-	{
-	}
-
-	/**
-	 * Set the usable flag to the specified value on the given
-	 * <code>Enrolment</code>.
-	 *
-	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
-	 * @param  usable    The new value for the usable flag, not null
-	 */
-
-	public void setUsable (Enrolment enrolment, Boolean usable)
-	{
-	}
-
-	/**
 	 * Add a grade, for the specified activity to the <code>Enrolment</code>.
 	 *
 	 * @param  enrolment The <code>Enrolment</code> object to modify, not null
@@ -158,7 +128,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	 * @param  grade     The value for the grade, not null
 	 */
 
-	public void addGrade (Enrolment enrolment, Activity activity, Integer grade)
+	public void addGrade (final Enrolment enrolment, final Activity activity, final Integer grade)
 	{
 	}
 
@@ -169,7 +139,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	 * @param  grade     The <code>Grade</code> to add, not null
 	 */
 
-	public void addGrade (Enrolment enrolment, Grade grade)
+	public void addGrade (final Enrolment enrolment, final Grade grade)
 	{
 	}
 
@@ -180,7 +150,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	 * @param  grade     The <code>Grade</code> to remove, not null
 	 */
 
-	public void removeGrade (Enrolment enrolment, Grade grade)
+	public void removeGrade (final Enrolment enrolment, final Grade grade)
 	{
 	}
 }

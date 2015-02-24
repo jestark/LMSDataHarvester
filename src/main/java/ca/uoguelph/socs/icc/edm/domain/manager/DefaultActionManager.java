@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActionManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
@@ -51,15 +51,17 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 		/**
 		 * Create an instance of the <code>DefaultActionManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>DefaultActionManager</code>
-		 * @return       The <code>DefaultActionManager</code>
+		 * @param  datastore The <code>DataStore</code> upon which the
+		 *                   <code>DefaultActionManager</code> will operate, not null
+		 * @return           The <code>DefaultActionManager</code>
 		 */
 
 		@Override
-		public ActionManager create (DomainModel model)
+		public ActionManager create (DataStore datastore)
 		{
-			return new DefaultActionManager (model);
+			assert datastore != null : "datastore is NULL";
+
+			return new DefaultActionManager (datastore);
 		}
 	}
 
@@ -79,13 +81,13 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	/**
 	 * Create the <code>ActionManager</code>
 	 *
-	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>ActionManager</code> is to be created, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which the
+	 *               <code>ActionManager</code> will operate, not null
 	 */
 
-	public DefaultActionManager (DomainModel model)
+	public DefaultActionManager (DataStore datastore)
 	{
-		super (Action.class, model);
+		super (Action.class, datastore);
 
 		this.log = LoggerFactory.getLogger (ActionManager.class);
 	}

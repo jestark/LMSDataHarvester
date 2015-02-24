@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
@@ -54,15 +54,17 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 		/**
 		 * Create an instance of the <code>DefaultUserManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>DefaultUserManager</code>
-		 * @return       The <code>DefaultUserManager</code>
+		 * @param  datastore The <code>DataStore</code> upon which the
+		 *                   <code>DefaultUserManager</code> will be acting, not null
+		 * @return           The <code>DefaultUserManager</code>
 		 */
 
 		@Override
-		public UserManager create (DomainModel model)
+		public UserManager create (final DataStore datastore)
 		{
-			return new DefaultUserManager (model);
+			assert datastore != null : "datastore is NULL";
+
+			return new DefaultUserManager (datastore);
 		}
 	}
 
@@ -82,13 +84,14 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	/**
 	 * Create the <code>DefaultUserManager</code>.
 	 *
-	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>DefaultUserManager</code> is to be created, not null
+	 * @param  datastore The <code>DataStore</code> instance which the
+	 *                   <code>DefaultUserManager</code> will be manipulating, not
+	 *                   null
 	 */
 
-	public DefaultUserManager (DomainModel model)
+	public DefaultUserManager (final DataStore datastore)
 	{
-		super (User.class, model);
+		super (User.class, datastore);
 
 		this.log = LoggerFactory.getLogger (UserManager.class);
 	}
@@ -101,7 +104,7 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	 * @return          The <code>User</code> object associated with the id number
 	 */
 
-	public User fetchByIdNumber (Integer idnumber)
+	public User fetchByIdNumber (final Integer idnumber)
 	{
 		this.log.trace ("Fetching user with ID number: {}", idnumber);
 
@@ -125,7 +128,7 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	 * @return          The <code>User</code> object associated with the username
 	 */
 
-	public User fetchByUsername (String username)
+	public User fetchByUsername (final String username)
 	{
 		this.log.trace ("Fetching user with username: {}", username);
 

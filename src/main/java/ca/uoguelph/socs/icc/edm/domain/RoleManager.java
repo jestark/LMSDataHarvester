@@ -29,6 +29,7 @@ public interface RoleManager extends ElementManager<Role>
 	 * its name.
 	 *
 	 * @param  name The name of the <code>Role</code>, not null
+	 *
 	 * @return      A <code>Role</code> object
 	 */
 
