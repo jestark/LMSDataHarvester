@@ -24,6 +24,12 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -37,10 +43,10 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  * that element when they are requested.
  *
  * @author  James E. Stark
- * @version 1.2
+ * @version 1.3
  */
 
-public final class QueryFactory<T extends Element>
+public final class QueryFactory
 {
 	/**
 	 * Interface to hide the implementation class for the query factory from the
@@ -67,13 +73,13 @@ public final class QueryFactory<T extends Element>
 	 * @param   <X> The type of the implementation class
 	 */
 
-	private final class IntQueryFactoryImpl<T extends Element, X extends T> implements IntQueryFactory<T>
+	private final class IntQueryFactoryImpl<T extends Element, U extends T> implements IntQueryFactory<T>
 	{
 		/** The interface type of the query */
 		private final Class<T> type;
 
 		/** The implementation type of the query */
-		private final Class<X> impl;
+		private final Class<U> impl;
 
 		/**
 		 * Create the <code>QueryFactory</code>.
@@ -84,8 +90,11 @@ public final class QueryFactory<T extends Element>
 		 *              not null
 		 */
 
-		public IntQueryFactoryImpl (Class<T> type, Class<X> impl)
+		public IntQueryFactoryImpl (final Class<T> type, final Class<U> impl)
 		{
+			assert type != null : "type is NULL";
+			assert impl != null : "impl is NULL";
+
 			this.type = type;
 			this.impl = impl;
 		}
@@ -99,58 +108,43 @@ public final class QueryFactory<T extends Element>
 		 */
 
 		@Override
-		public DataStoreQuery<T> create (DataStore datastore)
+		public DataStoreQuery<T> create (final DataStore datastore)
 		{
+			assert datastore != null : "datastore is NULL";
+
 			return datastore.createQuery (this.type, this.impl);
 		}
 	}
 
 	/** Singleton instance */
-	private static final Map<Class<? extends Element>, QueryFactory<? extends Element>> INSTANCE;
+	private static final QueryFactory INSTANCE;
 
 	/** The Log */
 	private final Logger log;
 
-	/** The interface type of the query */
-	private final Class<T> type;
-
 	/** Query factories */
-	private final Map<Class<? extends Element>, IntQueryFactory<T>> queries;
-
+	private final Map<Pair<Class<?>, Class<?>>, IntQueryFactory<? extends Element>> factories;
+		
 	/** <code>DataStoreQuery</code> instance cache */
-	private final Map<DataStore, Map<Class<? extends Element>, DataStoreQuery<T>>> cache;
+	private final Map<Triple<DataStore, Class<?>, Class<?>>, DataStoreQuery<? extends Element>> cache;
 
 	/**
 	 *  static initializer to create the singleton
 	 */
-
 	static
 	{
-		INSTANCE = new HashMap<Class<? extends Element>, QueryFactory<? extends Element>> ();
+		INSTANCE = new QueryFactory ();
 	}
 
 	/**
 	 * Get an instance of the <code>QueryFactory</code>.
 	 *
-	 * @param  type The <code>Element</code> interface, not null
-	 *
 	 * @return      The <code>QueryFactory</code> instance
 	 */
 
-	@SuppressWarnings("unchecked")
-	public static <T extends Element> QueryFactory<T> getInstance (Class<T> type)
+	public static QueryFactory getInstance ()
 	{
-		if (type == null)
-		{
-			throw new NullPointerException ();
-		}
-
-		if (! INSTANCE.containsKey (type))
-		{
-			INSTANCE.put (type, new QueryFactory<T> (type));
-		}
-
-		return (QueryFactory<T>) INSTANCE.get (type);
+		return INSTANCE;
 	}
 
 	/**
@@ -160,102 +154,33 @@ public final class QueryFactory<T extends Element>
 	 *              create queries, not null
 	 */
 
-	private QueryFactory (Class<T> type)
+	private QueryFactory ()
 	{
 		this.log = LoggerFactory.getLogger (QueryFactory.class);
 
-		if (type == null)
-		{
-			this.log.error ("Domain model interface type NULL");
-			throw new NullPointerException ();
-		}
-
-		this.type = type;
-
-		this.queries = new HashMap<Class<? extends Element>, IntQueryFactory<T>> ();
-		this.cache = new HashMap<DataStore, Map<Class<? extends Element>, DataStoreQuery<T>>> ();
+		this.factories = new HashMap<Pair<Class<?>, Class<?>>, IntQueryFactory<? extends Element>> ();
+		this.cache = new HashMap<Triple<DataStore, Class<?>, Class<?>>, DataStoreQuery<? extends Element>> ();
 	}
 
 	/**
-	 * Register an element class.
+	 * Register an element class.  
 	 *
+	 * @param  type The <code>Element</code> interface class, not null
 	 * @param  impl The implementation class to be used in the query, not null
 	 */
 
-	public <X extends T> void registerClass (Class<X> impl)
+	public <T extends Element, U extends T> void registerClass (final Class<T> type, final Class<U> impl)
 	{
-		this.log.trace ("Registering Element class: Type: {} Implementation {}", this.type, impl);
+		this.log.trace ("Registering Element class: Type: {} Implementation {}", type, impl);
 
-		if (impl == null)
-		{
-			this.log.error ("Attempting to register a NULL implementation class");
-			throw new NullPointerException ();
-		}
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is null";
 
-		if (this.queries.containsKey (impl))
-		{
-			this.log.error ("Class has already been registered: {}", impl);
-			throw new IllegalArgumentException ("Duplicate class registration");
-		}
+		Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (type, impl);
 
-		this.queries.put (impl, new IntQueryFactoryImpl<T, X> (this.type, impl));
-	}
+		assert (! this.factories.containsKey (factoryKey)) : "Class has already been registered: " + impl.getSimpleName ();
 
-	/**
-	 * Get a <code>Set</code> of all of the <code>Element</code> implementations
-	 * that have been registered with the factory.
-	 *
-	 * @return A <code>Set</code> of all of the registered classes
-	 */
-
-	public Set<Class<? extends Element>> getRegisteredClasses ()
-	{
-		return this.queries.keySet ();
-	}
-
-	/**
-	 * Determine if the specified <code>Element</code> implementation class has
-	 * been registered with the factory.
-	 *
-	 * @return <code>true</code> if the <code>Element</code> implementation has
-	 *         been registered, <code>false</code> otherwise
-	 */
-
-	public boolean isRegistered (Class<? extends Element> impl)
-	{
-		return this.queries.containsKey (impl);
-	}
-
-	/**
-	 * Create a <code>DataStoreQuery</code> for the specified
-	 * <code>DataStore</code>.  If the query already exists in the cache,
-	 * then the cached copy will be returned, otherwise a new
-	 * <code>DataStoreQuery</code> will be created.
-	 *
-	 * @param  datastore             The <code>DataStore</code> for which the
-	 *                               query is to be created, not null
-	 * @return                       The <code>DataStoreQuery</code>
-	 * @throws IllegalStateException if the query implementation class is not
-	 *                               registered
-	 */
-
-	public DataStoreQuery<T> create (DataStore datastore)
-	{
-		this.log.debug ("Creating query for interface {}, on using DataStore {}", this.type, datastore);
-
-		if (type == null)
-		{
-			this.log.error ("Attempting to create a query for a NULL domain model interface");
-			throw new NullPointerException ();
-		}
-
-		if (datastore == null)
-		{
-			this.log.error ("Attempting to create a query for a NULL DataStore");
-			throw new NullPointerException ();
-		}
-
-		return this.create ((datastore.getProfile ()).getImplClass (this.type), datastore);
+		this.factories.put (factoryKey, new IntQueryFactoryImpl<T, U> (type, impl));
 	}
 
 	/**
@@ -264,49 +189,62 @@ public final class QueryFactory<T extends Element>
 	 * the query already exists in the cache, then the cached copy will be
 	 * returned, otherwise a new <code>DataStoreQuery</code> will be created.
 	 *
-	 * @param  datastore             The <code>DataStore</code> for which the
-	 *                               query is to be created, not null
-	 * @param  impl                  The implementation class for which the query
-	 *                               is to be created, not null
-	 * @return                       The <code>DataStoreQuery</code>
-	 * @throws IllegalStateException if the query implementation class is not
-	 *                               registered
+	 * @param  type      The <code>Element</code> interface class, not null
+	 * @param  impl      The implementation class for which the query is to be
+	 *                   created, not null
+	 * @param  datastore The <code>DataStore</code> for which the query is to be
+	 *                   created, not null
+	 * @return           The <code>DataStoreQuery</code>
 	 */
 
-	public  DataStoreQuery<T> create (Class<? extends Element> impl, DataStore datastore)
+	@SuppressWarnings("unchecked")
+	public <T extends Element> DataStoreQuery<T> create (final Class<T> element, final Class<? extends Element> implclass, final DataStore datastore)
 	{
-		this.log.debug ("Creating query for interface {}, using implementation {}, on using DataStore {}", this.type, impl, datastore);
+		this.log.debug ("Creating query for interface {}, using implementation {}, on using DataStore {}", type, impl, datastore);
 
-		if (datastore == null)
-		{
-			this.log.error ("Attempting to create a query for a NULL DataStore");
-			throw new NullPointerException ();
-		}
+		assert element != null : "element is NULL";
+		assert implclass != null : "implclass is NULL";
+		assert datastore != null : "datastore is NULL";
 
-		if (impl == null)
-		{
-			this.log.error ("Attempting to create a query for a NULL implementation class");
-			throw new NullPointerException ();
-		}
+		Triple<DataStore, Class<?>, Class<?>> cacheKey = new ImmutableTriple<DataStore, Class<?>, Class<?>> (datastore, type, impl);
+
+		DataStoreQuery<T> query = (DataStoreQuery<T>) this.cache.get (cacheKey);
 
 		// If the Query is not in the cache then create it.
-		if ((! this.cache.containsKey (datastore)) || (! (this.cache.get (datastore)).containsKey (impl)))
+		if (query == null)
 		{
-			if (! this.queries.containsKey (impl))
-			{
-				this.log.error ("Element implementation class is not registered: {}", impl);
-				throw new IllegalStateException ("Unregistered Element implementation");
-			}
+			Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (type, impl);
 
-			if (! this.cache.containsKey (datastore))
-			{
-				this.cache.put (datastore, new HashMap<Class<? extends Element>, DataStoreQuery<T>> ());
-			}
+			assert this.queries.containsKey (factoryKey) : "";
 
-			(this.cache.get (datastore)).put (impl, (this.queries.get (impl)).create (datastore));
+			query = ((IntQueryFactory<T>) this.queries.get (factoryKey)).create (datastore);
+
+			this.cache.put (cacheKey, query);
 		}
 
-		return (this.cache.get (datastore)).get (impl);
+		return query;
+	}
+
+	/**
+	 * Create a <code>DataStoreQuery</code> for the specified
+	 * <code>DataStore</code>.  If the query already exists in the cache,
+	 * then the cached copy will be returned, otherwise a new
+	 * <code>DataStoreQuery</code> will be created.
+	 *
+	 * @param  type      The <code>Element</code> interface class, not null
+	 * @param  datastore The <code>DataStore</code> for which the query is to be
+	 *                   created, not null
+	 * @return           The <code>DataStoreQuery</code>
+	 */
+
+	public <T extends Element> DataStoreQuery<T> create (final Class<T> type, final DataStore datastore)
+	{
+		this.log.debug ("Creating query for interface {}, on using DataStore {}", type, datastore);
+
+		assert type != null : "type is NULL";
+		assert datastore != null : "datastore is NULL";
+
+		return this.create (type, (datastore.getProfile ()).getImplClass (type), datastore);
 	}
 
 	/**
@@ -317,17 +255,19 @@ public final class QueryFactory<T extends Element>
 	 *                   queries are to be purged, not null
 	 */
 
-	public void remove (DataStore datastore)
+	public void remove (final DataStore datastore)
 	{
 		this.log.trace ("Removing all cached query instances for DataStore: {}", datastore);
 
-		if (datastore == null)
-		{
-			this.log.error ("Attempting to remove cached queries for a NULL DataStore");
-			throw new NullPointerException ();
-		}
+		assert datastore != null : "datastore is NULL";
 
-		this.cache.remove (datastore);
+		for (Triple<DataStore, Class<?>, Class<?>> key : this.cache.keySet ())
+		{
+			if (datastore.equals (key.getLeft ()))
+			{
+				this.cache.remove (key);
+			}
+		}
 	}
 
 	/**
