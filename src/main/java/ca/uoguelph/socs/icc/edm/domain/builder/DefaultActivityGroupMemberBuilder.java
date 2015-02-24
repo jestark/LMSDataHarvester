@@ -19,13 +19,13 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMemberBuilder;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 public final class DefaultActivityGroupMemberBuilder extends AbstractBuilder<Activity> implements ActivityGroupMemberBuilder
 {
