@@ -34,26 +34,9 @@ public interface LogEntryManager extends ElementManager<LogEntry>
 	 *
 	 * @param  course The <code>Course</code> for which the list of
 	 *                <code>LogEntry</code> objects should be retrieved, not null
+	 *
 	 * @return        A list of <code>LogEntry</code> objects
 	 */
 
-	public List<LogEntry> fetchAllforCourse (Course course);
-
-	/**
-	 * Set the time on a specified <code>LogEntry</code>.
-	 *
-	 * @param  entry The <code>LogEntry</code> to modify, not null
-	 * @param  time  The new value for the time
-	 */
-
-	public void setTime (LogEntry entry, Date time);
-
-	/**
-	 * Set the IP Address for a specified <code>LogEntry</code>.
-	 *
-	 * @param  entry The <code>LogEntry<code> to modify, not null
-	 * @param  ip    The value for the new IP Address
-	 */
-
-	public void setIPAddress (LogEntry entry, String ip);
+	public abstract List<LogEntry> fetchAllforCourse (Course course);
 }

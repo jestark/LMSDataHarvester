@@ -32,71 +32,79 @@ import java.util.List;
 public interface ElementManager<T extends Element>
 {
 	/**
-	 * Get the <code>DomainModel</code> which is associated with this
-	 * <code>ElementManager</code> instance.
+	 * Retrieve a <code>Element</code> instance from the <code>DataStore</code>
+	 * based upon is <code>DataStore</code> identifier.  
 	 *
-	 * @return A reference to the associated <code>DomainModel</code>
-	 */
-
-	public abstract DomainModel getDomainModel ();
-
-	/**
-	 * Retrieve an object from the data store based on its primary key.
+	 * @param  id The <code>DataStore</code> identifier of the
+	 *            <code>Element</code> instance to retrieve, not null
 	 *
-	 * @param  id The value of the primary key of the object to retrieve, not null
-	 * @return    The requested object.
+	 * @return    The requested <code>Element</code> instance
 	 */
 
 	public abstract T fetchById (Long id);
 
 	/**
-	 * Retrieve a list of all of the entities from the underlying data store.
+	 * Retrieve a <code>List</code> of all of the <code>Element</code> instances
+	 * represented by the <code>ElementManager</code> instance from the
+	 * <code>DataStore</code>.
 	 *
-	 * @return A list of objects.
+	 * @return A <code>List</code> of <code>Element</code> instances
 	 */
 
 	public abstract List<T> fetchAll ();
 
 	/**
-	 * Insert an entity into the domain model and the underlying data store. This
-	 * method is a convenience method which performs a non-recursive insert of the
-	 * given entity into the domain model and underlying data store.
+	 * Insert the specified <code>Element</code> instance into the
+	 * <code>DataStore</code>. This method is a convenience method which performs
+	 * a non-recursive insert of the specified <code>Element</code> instance into
+	 * the </code>DomainModel</code> and the underlying </code>DataStore</code>.
 	 *
-	 * @param  entity The entity to insert into the domain model, not null
-	 * @return        A reference to the inserted entity
+	 * @param  element The <code>Element</code> to insert, not null
+	 *
+	 * @return         A reference to the <code>Element</code> instance in the
+	 *                 <code>DataStore</code>
 	 * @see    #insert(Element, Boolean) insert(T, Boolean)
 	 */
 
-	public abstract T insert (T entity);
+	public abstract T insert (T element);
 
 	/**
-	 * Insert an entity into the domain model and the underlying data store.
+	 * Insert the specified <code>Element</code> instance into the
+	 * <code>DataStore</code>.
 	 *
-	 * @param  entity    The entity to insert into the domain model, not null
-	 * @param  recursive <code>true</code> if dependent entities should also be
-	 *                   inserted, <code>false</code> otherwise, not null
-	 * @return           A reference to the inserted entity
+	 * @param  element   The <code>Element</code> to insert, not null
+	 * @param  recursive <code>true</code> if dependent <code>Element</code>
+	 *                   instances should also be inserted, <code>false</code>
+	 *                   otherwise, not null
+	 *
+	 * @return           A reference to the <code>Element</code> instance in the
+	 *                   <code>DataStore</code>
 	 */
 
 	public abstract T insert (T entity, Boolean recursive);
 
 	/**
-	 * Remove an entity from the domain model and the underlying data store. This
-	 * is a convenience method that performs a non-recursive removal of the
-	 * given entity from the domain model and underlying data store.
+	 * Remove the specified <code>Element</code> instance from the
+	 * <code>DataStore</code>. This is a convenience method that performs a
+	 * non-recursive removal of the specified <code>Element</code> instance from
+	 * the <code>DomainModel</code> and the underlying <code>DataStore</code>.
 	 *
-	 * @param  entity The entity to remove from the domain model, not null
+	 * @param  element The <code>Element</code> to remove, not null
+	 *
 	 * @see    #remove(Element, Boolean) remove(T, Boolean)
 	 */
 
 	public abstract void remove (T entity);
 
 	/**
-	 * Remove an entity from the domain model and the underlying data store.
+	 * Remove the specified <code>Element</code> instance from the
+	 * <code>DataStore</code>.
 	 *
-	 * @param  entity    The entity to remove from the domain model, not null
-	 * @param  recursive <code>true</code> if dependent entities should also be
-	 *                   removed, <code>false</code> otherwise, not null
+	 * @param  element   The <code>Element</code> to remove, not null
+	 *
+	 * @param  recursive <code>true</code> if dependent <code>Element</code>
+	 *                   instances should also be removed, <code>false</code>
+	 *                   otherwise, not null
 	 */
 
 	public abstract void remove (T entity, Boolean recursive);

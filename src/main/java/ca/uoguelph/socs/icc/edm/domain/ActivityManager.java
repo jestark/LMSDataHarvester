@@ -35,13 +35,4 @@ public interface ActivityManager extends ElementManager<Activity>
 	 */
 
 	public abstract List<Activity> fetchAllForType (ActivityType type);
-
-	/**
-	 * Modify the value of the stealth flag on a given activity.
-	 *
-	 * @param  activity The <code>Activity</code> to modify, not null
-	 * @param  stealth  The new value of the stealth flag, not null
-	 */
-
-	public abstract void setStealth (Activity activity, Boolean stealth);
 }

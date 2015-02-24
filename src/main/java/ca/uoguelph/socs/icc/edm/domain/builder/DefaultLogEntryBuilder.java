@@ -21,14 +21,14 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> implements LogEntryBuilder
 {
@@ -68,7 +68,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 
 	static
 	{
-		AbstractBuilder.registerBuilder (LogEntry.class, LogEntryBuilder.class, DefaultLogEntryBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (LogEntryBuilder.class, DefaultLogEntryBuilder.class, new Factory ());
 	}
 
 	protected DefaultLogEntryBuilder (AbstractManager<LogEntry> manager)

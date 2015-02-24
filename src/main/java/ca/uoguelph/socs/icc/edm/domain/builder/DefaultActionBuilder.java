@@ -19,11 +19,11 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
-import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 public final class DefaultActionBuilder extends AbstractBuilder<Action> implements ActionBuilder
 {
@@ -51,7 +51,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 
 	static
 	{
-		AbstractBuilder.registerBuilder (Action.class, ActionBuilder.class, DefaultActionBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (ActionBuilder.class, DefaultActionBuilder.class, new Factory ());
 	}
 
 	protected DefaultActionBuilder (AbstractManager<Action> manager)

@@ -24,12 +24,11 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
@@ -51,15 +50,17 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 		/**
 		 * Create an instance of the <code>DefaultCourseManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>DefaultCourseManager</code>
-		 * @return       The <code>DefaultCourseManager</code>
+		 * @param  datastore The <code>DataStore</code> upon which the
+		 *                   <code>DefaultCourseManager</code> will operate, not null
+		 * @return           The <code>DefaultCourseManager</code>
 		 */
 
 		@Override
-		public CourseManager create (DomainModel model)
+		public CourseManager create (DataStore datastore)
 		{
-			return new DefaultCourseManager (model);
+			assert datastore != null : "datastore is NULL";
+
+			return new DefaultCourseManager (datastore);
 		}
 	}
 
@@ -73,19 +74,19 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 
 	static
 	{
-		AbstractManager.registerManager (Course.class, CourseManager.class, DefaultCourseManager.class, new Factory ());
+		AbstractManager.registerManager (CourseManager.class, DefaultCourseManager.class, new Factory ());
 	}
 
 	/**
 	 * Create the <code>CourseManager</code>.
 	 *
-	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>CourseManager</code> is to be created, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which the
+	 *                   <code>CourseManager</code> will operate, not null
 	 */
 
-	public DefaultCourseManager (DomainModel model)
+	public DefaultCourseManager (final DataStore datastore)
 	{
-		super (Course.class, model);
+		super (Course.class, datastore);
 
 		this.log = LoggerFactory.getLogger (CourseManager.class);
 	}
@@ -99,7 +100,7 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	 * @return          A list of <code>Course</code> objects
 	 */
 
-	public List<Course> fetchAllForOffering (Semester semester, Integer year)
+	public List<Course> fetchAllForOffering (final Semester semester, final Integer year)
 	{
 		this.log.trace ("Fetching all courses offered in year {} and semester {}", year, semester);
 
@@ -133,7 +134,7 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	 * @return          A list of <code>Course</code> objects
 	 */
 
-	public List<Course> fetchAllForOffering (String name, Semester semester, Integer year)
+	public List<Course> fetchAllForOffering (final String name, final Semester semester, final Integer year)
 	{
 		this.log.trace ("Fetching all courses offered in year {} and semester {}, with name {}", year, semester, name);
 
@@ -173,7 +174,7 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	 * @return          A single <code>Course</code> object
 	 */
 
-	public Course fetchByOffering (String name, Semester semester, Integer year)
+	public Course fetchByOffering (final String name, final Semester semester, final Integer year)
 	{
 		this.log.trace ("Fetching course: {} (offered in year {} and semester {})", name, year, semester);
 

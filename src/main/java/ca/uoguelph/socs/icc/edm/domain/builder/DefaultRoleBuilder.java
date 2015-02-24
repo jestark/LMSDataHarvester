@@ -19,11 +19,11 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements RoleBuilder
 {
@@ -51,7 +51,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 
 	static
 	{
-		AbstractBuilder.registerBuilder (Role.class, RoleBuilder.class, DefaultRoleBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (RoleBuilder.class, DefaultRoleBuilder.class, new Factory ());
 	}
 
 	protected DefaultRoleBuilder (AbstractManager<Role> manager)

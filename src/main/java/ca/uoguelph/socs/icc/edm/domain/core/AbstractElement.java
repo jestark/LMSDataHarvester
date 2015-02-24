@@ -21,7 +21,7 @@ import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
+import ca.uoguelph.socs.icc.edm.domain.datastore.QueryFactory;
 
 /**
  * Abstract base class for all of the domain model <code>Element</code>
@@ -79,7 +79,7 @@ public abstract class AbstractElement implements Element
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 
-		(QueryFactory.getInstance (type)).registerClass (impl);
+		(QueryFactory.getInstance ()).registerClass (type, impl);
 	}
 
 	/**

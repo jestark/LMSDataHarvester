@@ -1,4 +1,4 @@
-/* Copyright (C) 2014,2015 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,19 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.ElementManager;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
-
-import ca.uoguelph.socs.icc.edm.domain.factory.MappedManagerFactory;
-import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
-
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
+import ca.uoguelph.socs.icc.edm.domain.datastore.QueryFactory;
 
 /**
  * Top level interface for all operations involving the domain model and the
@@ -41,6 +41,9 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
 
 public abstract class AbstractManager<T extends Element> implements ElementManager<T>
 {
+	/** The manager factory */
+	private static final ElementManagerFactory FACTORY;
+
 	/** The logger */
 	private final Logger log;
 
@@ -48,11 +51,25 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	private final Class<T> type;
 
 	/** The <code>DomainModel</code> instance which owns this manager. */
-	protected final DomainModel model;
+	protected final DataStore datastore;
 
-	protected static <T extends Element, X extends ElementManager<T>> void registerManager (Class<T> element, Class<X> manager, Class<? extends X> impl, ManagerFactory<X> factory)
+	/**
+	 * static initializer to create the factory.
+	 */
+
+	static
 	{
-		(MappedManagerFactory.getInstance (manager, element)).registerClass (impl, factory);
+		FACTORY = new ElementManagerFactory ();
+	}
+
+	public static final <T extends ElementManager<U>, U extends Element> T getInstance (final Class<U> element, final Class<T> manager, final DataStore datastore)
+	{
+		return FACTORY.create (element, manager, datastore);
+	}
+
+	protected static final <T extends ElementManager<? extends Element>> void registerManager (final Class<T> manager, Class<? extends T> impl, ManagerFactory<T> factory)
+	{
+		FACTORY.registerFactory (manager, impl, factory);
 	}
 
 	/**
@@ -64,31 +81,26 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	 *               null
 	 */
 
-	protected AbstractManager (Class<T> type, DomainModel model)
+	public AbstractManager (final Class<T> type, final DataStore datastore)
 	{
 		this.log = LoggerFactory.getLogger (AbstractManager.class);
 		
 		this.type = type;
-		this.model = model;
+		this.datastore = datastore;
 	}
 
 	protected final DataStoreQuery<T> fetchQuery ()
 	{
 		this.log.trace ("Getting query object from factory");
 
-		return (QueryFactory.getInstance (this.type)).create (this.model.getDataStore ());
+		return null;
 	}
 
-	/**
-	 * Get the <code>DomainModel</code> which is associated with this
-	 * <code>AbstractManager</code> instance.
-	 *
-	 * @return A reference to the associated <code>DomainModel</code>
-	 */
-
-	public DomainModel getDomainModel ()
+	protected final DataStoreQuery<T> fetchQuery (final Class<? extends T> impl)
 	{
-		return this.model;
+		this.log.trace ("Get query object for class: {}", impl);
+
+		return (QueryFactory.getInstance ()).create (this.type, impl, this.datastore);
 	}
 
 	/**
@@ -98,7 +110,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	 * @return    The requested object.
 	 */
 
-	public T fetchById (Long id)
+	public T fetchById (final Long id)
 	{
 		this.log.trace ("Fetching entity from DataStore with ID: {}", id);
 
@@ -128,7 +140,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	 * @see    #insert(Element, Boolean) insert(T, Boolean)
 	 */
 
-	public final T insert (T entity)
+	public final T insert (final T entity)
 	{
 		return this.insert (entity, new Boolean (false));
 	}
@@ -142,7 +154,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	 * @return           A reference to the inserted entity
 	 */
 
-	public T insert (T entity, Boolean recursive)
+	public T insert (final T entity, final Boolean recursive)
 	{
 		this.log.trace ("Insert entity into data store: {} (recursively: {})", entity, recursive);
 
@@ -158,7 +170,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	 * @see    #remove(Element, Boolean) remove(T, Boolean)
 	 */
 
-	public final void remove (T entity)
+	public final void remove (final T entity)
 	{
 		this.remove (entity, new Boolean (false));
 	}
@@ -171,7 +183,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	 *                   removed, <code>false</code> otherwise, not null
 	 */
 
-	public void remove (T entity, Boolean recursive)
+	public void remove (final T entity, final Boolean recursive)
 	{
 		this.log.trace ("Remove entity from data store: {} (recursively: {})", entity, recursive);
 	}

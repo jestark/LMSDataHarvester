@@ -19,14 +19,14 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> implements EnrolmentBuilder
 {
@@ -66,7 +66,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 
 	static
 	{
-		AbstractBuilder.registerBuilder (Enrolment.class, EnrolmentBuilder.class, DefaultEnrolmentBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (EnrolmentBuilder.class, DefaultEnrolmentBuilder.class, new Factory ());
 	}
 
 	protected DefaultEnrolmentBuilder (AbstractManager<Enrolment> manager)

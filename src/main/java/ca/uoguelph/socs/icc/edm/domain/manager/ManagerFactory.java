@@ -16,19 +16,21 @@
 
 package ca.uoguelph.socs.icc.edm.domain.manager;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.ElementManager;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
- * Create an <code>ElementManager</code> for the specified
- * <code>DomainModel</code>.  Implementations of this interface are intended to
- * be used with the <code>AbstractManagerFactory</code> to create a specific
+ * Create an <code>ElementManager</code> to operate upon the specified
+ * <code>DataStore</code>.  Implementations of this interface are intended to
+ * be used with the <code>registerFactory</code> and <code>getInstance</code>
+ * methods in the <code>AbstractManager</code> to create a specific
  * <code>ElementManager</code>.
  *
  * @author  James E. Stark
- * @version 1.1
+ * @version 1.2
  * @param   <T> The type of manager returned by the factory
- * @see     ca.uoguelph.socs.icc.edm.domain.AbstractManagerFactory
+ * @see     AbstractManager
  */
 
 public interface ManagerFactory<T>
@@ -36,10 +38,10 @@ public interface ManagerFactory<T>
 	/**
 	 * Create the <code>ElementManager</code>.
 	 *
-	 * @param  model The <code>DomainModel</code> to be associated with the
-	 *               <code>ElementManager</code>
-	 * @return       The <code>ElementManager</code>
+	 * @param  datastore The <code>DataStore</code> upon which the
+	 *                   <code>ElementManager</code> will operate, not null
+	 * @return           The <code>ElementManager</code>
 	 */
 
-	public abstract T create (DomainModel model);
+	public abstract T create (DataStore datastore);
 }

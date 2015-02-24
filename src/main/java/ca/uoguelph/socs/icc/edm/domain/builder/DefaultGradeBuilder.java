@@ -19,13 +19,13 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
-import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.GradeBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements GradeBuilder
 {
@@ -60,7 +60,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 
 	static
 	{
-		AbstractBuilder.registerBuilder (Grade.class, GradeBuilder.class, DefaultGradeBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (GradeBuilder.class, DefaultGradeBuilder.class, new Factory ());
 	}
 
 	protected DefaultGradeBuilder (AbstractManager<Grade> manager)

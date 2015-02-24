@@ -20,15 +20,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreTransaction;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.MappedManagerFactory;
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 /**
  *
@@ -42,7 +42,7 @@ public final class DomainModel
 	private final DataStore datastore;
 
 	/** The log */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * Create the <code>DomainModel</code>
@@ -51,16 +51,11 @@ public final class DomainModel
 	 *                   represented by this <code>DomainModel</code>, not null
 	 */
 
-	public DomainModel (DataStore datastore)
+	public DomainModel (final DataStore datastore)
 	{
 		this.datastore = datastore;
 
-		this.log = LogFactory.getLog (DomainModel.class);
-	}
-
-	protected DataStore getDataStore ()
-	{
-		return this.datastore;
+		this.log = LoggerFactory.getLogger (DomainModel.class);
 	}
 
 	/**
@@ -108,6 +103,45 @@ public final class DomainModel
 	}
 
 	/**
+	 * Get an instance of the specified <code>ElementManager</code> for the
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  element               The <code>Element</code> interface class,
+	 *                               not null
+	 * @param  manager               The <code>ElementManager</code> interface
+	 *                               class, not null
+	 *
+	 * @return                       A reference to the <code>ActionManager</code>
+	 * @throws IllegalStateException If the <code>Action</code> interface is not
+	 *                               available for the <code>DomainModel</code>
+	 */
+
+	public <T extends ElementManager<U>, U extends Element> T getManager (final Class<U> element, final Class<T> manager)
+	{
+		this.log.trace ("get Manager instance {} for element {}", manager, element);
+
+		if (element == null)
+		{
+			this.log.error ("Attempting to get a manager instance for a NULL element");
+			throw new NullPointerException ();
+		}
+
+		if (manager == null)
+		{
+			this.log.error ("Attempting to get a NULL manager instance");
+			throw new NullPointerException ();
+		}
+
+		if (! (this.datastore.getProfile ()).isAvailable (element))
+		{
+			this.log.error ("");
+			throw new IllegalStateException ("");
+		}
+
+		return AbstractManager.getInstance (element, manager, this.datastore);
+	}
+
+	/**
 	 * Get the <code>ActionManager</code> for the <code>DomainModel</code>.
 	 *
 	 * @return                       A reference to the <code>ActionManager</code>
@@ -117,13 +151,7 @@ public final class DomainModel
 
 	public ActionManager getActionManager ()
 	{
-		if (! (this.datastore.getProfile ()).isAvailable (Action.class))
-		{
-			this.log.error ("Action interface is not represented by the data store");
-			throw new IllegalStateException ("Action interface is not available");
-		}
-
-		return (MappedManagerFactory.getInstance (ActionManager.class, Action.class)).create (this);
+		return this.getManager (Action.class, ActionManager.class);
 	}
 
 	/**
@@ -137,13 +165,7 @@ public final class DomainModel
 
 	public ActivityManager getActivityManager ()
 	{
-		if (! (this.datastore.getProfile ()).isAvailable (Activity.class))
-		{
-			this.log.error ("Activity interface is not represented by the data store");
-			throw new IllegalStateException ("Activity interface is not available");
-		}
-
-		return (MappedManagerFactory.getInstance (ActivityManager.class, Activity.class)).create (this);
+		return this.getManager (Activity.class, ActivityManager.class);
 	}
 
 	/**
@@ -159,13 +181,7 @@ public final class DomainModel
 
 	public ActivitySourceManager getActivitySourceManager ()
 	{
-		if (! (this.datastore.getProfile ()).isAvailable (ActivitySource.class))
-		{
-			this.log.error ("ActivitySource interface is not represented by the data store");
-			throw new IllegalStateException ("ActivitySource interface is not available");
-		}
-
-		return (MappedManagerFactory.getInstance (ActivitySourceManager.class, ActivitySource.class)).create (this);
+		return this.getManager (ActivitySource.class, ActivitySourceManager.class);
 	}
 
 	/**
@@ -180,13 +196,7 @@ public final class DomainModel
 
 	public ActivityTypeManager getActivityTypeManager ()
 	{
-		if (! (this.datastore.getProfile ()).isAvailable (ActivityType.class))
-		{
-			this.log.error ("ActivityType interface is not represented by the data store");
-			throw new IllegalStateException ("ActivityType interface is not available");
-		}
-
-		return (MappedManagerFactory.getInstance (ActivityTypeManager.class, ActivityType.class)).create (this);
+		return this.getManager (ActivityType.class, ActivityTypeManager.class);
 	}
 
 	/**
@@ -199,13 +209,7 @@ public final class DomainModel
 
 	public CourseManager getCourseManager ()
 	{
-		if (! (this.datastore.getProfile ()).isAvailable (Course.class))
-		{
-			this.log.error ("Course interface is not represented by the data store");
-			throw new IllegalStateException ("Course interface is not available");
-		}
-
-		return (MappedManagerFactory.getInstance (CourseManager.class, Course.class)).create (this);
+		return this.getManager (Course.class, CourseManager.class);
 	}
 
 	/**
@@ -220,13 +224,7 @@ public final class DomainModel
 
 	public EnrolmentManager getEnrolmentManager ()
 	{
-		if (! (this.datastore.getProfile ()).isAvailable (Enrolment.class))
-		{
-			this.log.error ("Enrolment interface is not represented by the data store");
-			throw new IllegalStateException ("Enrolment interface is not available");
-		}
-
-		return (MappedManagerFactory.getInstance (EnrolmentManager.class, Enrolment.class)).create (this);
+		return this.getManager (Enrolment.class, EnrolmentManager.class);
 	}
 
 	/**
@@ -240,13 +238,7 @@ public final class DomainModel
 
 	public LogEntryManager getLogEntryManager ()
 	{
-		if (! (this.datastore.getProfile ()).isAvailable (LogEntry.class))
-		{
-			this.log.error ("LogEntry interface is not represented by the data store");
-			throw new IllegalStateException ("LogEntry interface is not available");
-		}
-
-		return (MappedManagerFactory.getInstance (LogEntryManager.class, LogEntry.class)).create (this);
+		return this.getManager (LogEntry.class, LogEntryManager.class);
 	}
 
 	/**
@@ -259,13 +251,7 @@ public final class DomainModel
 
 	public RoleManager getRoleManager ()
 	{
-		if (! (this.datastore.getProfile ()).isAvailable (Role.class))
-		{
-			this.log.error ("Role interface is not represented by the data store");
-			throw new IllegalStateException ("Role interface is not available");
-		}
-
-		return (MappedManagerFactory.getInstance (RoleManager.class, Role.class)).create (this);
+		return this.getManager (Role.class, RoleManager.class);
 	}
 
 	/**
@@ -278,12 +264,6 @@ public final class DomainModel
 
 	public UserManager getUserManager ()
 	{
-		if (! (this.datastore.getProfile ()).isAvailable (User.class))
-		{
-			this.log.error ("User interface is not represented by the data store");
-			throw new IllegalStateException ("User interface is not available");
-		}
-
-		return (MappedManagerFactory.getInstance (UserManager.class, User.class)).create (this);
+		return this.getManager (User.class, UserManager.class);
 	}
 }

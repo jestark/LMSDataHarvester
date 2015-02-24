@@ -23,11 +23,10 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.RoleManager;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
@@ -48,15 +47,17 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 		/**
 		 * Create an instance of the <code>DefaultRoleManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>DefaultRoleManager</code>
+		 * @param  model The <code>DataStore</code> upon which the
+		 *               <code>DefaultRoleManager</code> will operate, not null
 		 * @return       The <code>DefaultRoleManager</code>
 		 */
 
 		@Override
-		public RoleManager create (DomainModel model)
+		public RoleManager create (DataStore datastore)
 		{
-			return new DefaultRoleManager (model);
+			assert datastore != null : "datastore is NULL";
+
+			return new DefaultRoleManager (datastore);
 		}
 	}
 
@@ -70,19 +71,19 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 
 	static
 	{
-		AbstractManager.registerManager (Role.class, RoleManager.class, DefaultRoleManager.class, new Factory ());
+		AbstractManager.registerManager (RoleManager.class, DefaultRoleManager.class, new Factory ());
 	}
 
 	/**
 	 * Create the <code>DefaultRoleManager</code>.
 	 *
-	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>DefaultRoleManager</code> is to be created, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which the
+	 *               <code>DefaultRoleManager</code> will operate, not null
 	 */
 
-	public DefaultRoleManager (DomainModel model)
+	public DefaultRoleManager (final DataStore datastore)
 	{
-		super (Role.class, model);
+		super (Role.class, datastore);
 
 		this.log = LoggerFactory.getLogger (RoleManager.class);
 	}
@@ -95,7 +96,7 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 	 * @return      A <code>Role</code> object
 	 */
 
-	public Role fetchByName (String name)
+	public Role fetchByName (final String name)
 	{
 		this.log.trace ("Fetching Role with name: {}", name);
 

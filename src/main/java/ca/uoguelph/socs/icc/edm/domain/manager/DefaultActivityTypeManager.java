@@ -23,13 +23,12 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
@@ -52,15 +51,18 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 		/**
 		 * Create an instance of the <code>DefaultActivityTypeManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>DefaultActivityTypeManager</code>
-		 * @return       The <code>DefaultActivityTypeManager</code>
+		 * @param  datastore The <code>DataStore</code> upon which the
+		 *                   <code>DefaultActivityTypeManager</code> will operate,
+		 *                   not null
+		 * @return           The <code>DefaultActivityTypeManager</code>
 		 */
 
 		@Override
-		public ActivityTypeManager create (DomainModel model)
+		public ActivityTypeManager create (DataStore datastore)
 		{
-			return new DefaultActivityTypeManager (model);
+			assert datastore != null : "datastore is NULL";
+
+			return new DefaultActivityTypeManager (datastore);
 		}
 	}
 
@@ -74,19 +76,19 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 
 	static
 	{
-		AbstractManager.registerManager (ActivityType.class, ActivityTypeManager.class, DefaultActivityTypeManager.class, new Factory ());
+		AbstractManager.registerManager (ActivityTypeManager.class, DefaultActivityTypeManager.class, new Factory ());
 	}
 
 	/**
 	 * Create the <code>ActivityType</code> manager.
 	 *
-	 * @param  model The instance of the <code>DomainModel</code> upon which the
-	 *               <code>ActivityTypeManager</code> is to be created, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which the
+	 *                   <code>ActivityTypeManager</code> will operate, not null
 	 */
 
-	public DefaultActivityTypeManager (DomainModel model)
+	public DefaultActivityTypeManager (final DataStore datastore)
 	{
-		super (ActivityType.class, model);
+		super (ActivityType.class, datastore);
 
 		this.log = LoggerFactory.getLogger (ActivityTypeManager.class);
 	}
@@ -102,7 +104,7 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 	 *                with the specified source and name
 	 */
 
-	public ActivityType fetchByName (ActivitySource source, String name)
+	public ActivityType fetchByName (final ActivitySource source, final String name)
 	{
 		this.log.trace ("Fetching ActivityType {}, with ActivitySource {}", name, source);
 
@@ -137,7 +139,7 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 	 *                <code>ActivityType</code>, not null
 	 */
 
-	public void addAction (ActivityType type, Action action)
+	public void addAction (final ActivityType type, final Action action)
 	{
 	}
 
@@ -158,7 +160,7 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 	 *                <code>ActivityType</code>, not null
 	 */
 
-	public void removeAction (ActivityType type, Action action)
+	public void removeAction (final ActivityType type, final Action action)
 	{
 	}
 }

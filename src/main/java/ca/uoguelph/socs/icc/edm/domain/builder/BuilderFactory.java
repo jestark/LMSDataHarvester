@@ -16,9 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 public interface BuilderFactory<T>
 {

@@ -19,12 +19,12 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 public final class DefaultCourseBuilder extends AbstractBuilder<Course> implements CourseBuilder
 {
@@ -58,7 +58,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 
 	static
 	{
-		AbstractBuilder.registerBuilder (Course.class, CourseBuilder.class, DefaultCourseBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (CourseBuilder.class, DefaultCourseBuilder.class, new Factory ());
 	}
 
 	protected DefaultCourseBuilder (AbstractManager<Course> manager)
