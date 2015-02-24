@@ -19,13 +19,13 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 public final class DefaultActivityBuilder extends AbstractBuilder<Activity> implements ActivityBuilder
 {

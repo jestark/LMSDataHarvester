@@ -19,11 +19,11 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 public final class DefaultUserBuilder extends AbstractBuilder<User> implements UserBuilder
 {
@@ -61,7 +61,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 
 	static
 	{
-		AbstractBuilder.registerBuilder (User.class, UserBuilder.class, DefaultUserBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (UserBuilder.class, DefaultUserBuilder.class, new Factory ());
 	}
 
 	/**

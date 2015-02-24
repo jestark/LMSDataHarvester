@@ -19,12 +19,12 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractBuilder;
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType> implements ActivityTypeBuilder
 {
@@ -55,7 +55,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 
 	static
 	{
-		AbstractBuilder.registerBuilder (ActivityType.class, ActivityTypeBuilder.class, DefaultActivityTypeBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (ActivityTypeBuilder.class, DefaultActivityTypeBuilder.class, new Factory ());
 	}
 
 	protected DefaultActivityTypeBuilder (AbstractManager<ActivityType> manager)

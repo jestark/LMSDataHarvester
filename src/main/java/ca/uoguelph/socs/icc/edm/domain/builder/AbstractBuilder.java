@@ -14,19 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
-
-import ca.uoguelph.socs.icc.edm.domain.factory.MappedBuilderFactory;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
-
-import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
 
 /**
  *
@@ -34,19 +30,16 @@ import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
  * @version 1.0
  */
 
-public abstract class AbstractBuilder<T extends Element>
+public abstract class AbstractBuilder<T extends Element> implements ElementBuilder<T>
 {
 	/** The builder factory */
-	private static final MappedBuilderFactory FACTORY;
+	private static final ElementBuilderFactory FACTORY;
 	
 	/** The manager (used to add new instances to the model) */
 	private final AbstractManager<T> manager;
 
-	/** The ID number generator */
-	private final IdGenerator generator;
-
 	/** The Logger */
-	private final Log log;
+	private final Logger log;
 
 	/**
 	 * static initializer to create the factory.
@@ -54,7 +47,7 @@ public abstract class AbstractBuilder<T extends Element>
 
 	static
 	{
-		FACTORY = new MappedBuilderFactory ();
+		FACTORY = new ElementBuilderFactory ();
 	}
 
 	/**
@@ -90,10 +83,9 @@ public abstract class AbstractBuilder<T extends Element>
 
 	protected AbstractBuilder (AbstractManager<T> manager)
 	{
-		this.log = LogFactory.getLog (AbstractBuilder.class);
+		this.log = LoggerFactory.getLogger (AbstractBuilder.class);
 		
 		this.manager = manager;
-		this.generator = null;
 	}
 
 	public final T create ()

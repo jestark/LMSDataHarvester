@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.factory;
+package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import java.util.Map;
 import java.util.Set;
@@ -31,9 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 /**
@@ -41,11 +38,11 @@ import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
  * 
  * @author  James E.Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory
+ * @see     BuilderFactory
+ * @see     ElementFactory
  */
 
-public final class MappedBuilderFactory
+final class ElementBuilderFactory
 {
 	/** The logger */
 	private final Logger log;
@@ -57,15 +54,15 @@ public final class MappedBuilderFactory
 	private final Map<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> elements;
 
 	/**
-	 * Create the <code>MappedBuilderFactory</code>.
+	 * Create the <code>ElementBuilderFactory</code>.
 	 *
 	 * @param  type The domain model interface class for which the builders are
 	 *              being created, not null
 	 */
 
-	public MappedBuilderFactory ()
+	public ElementBuilderFactory ()
 	{
-		this.log = LoggerFactory.getLogger (MappedBuilderFactory.class);
+		this.log = LoggerFactory.getLogger (ElementBuilderFactory.class);
 
 		this.factories = new HashMap<Pair<Class<?>, Class<?>>, BuilderFactory<? extends ElementBuilder<? extends Element>>> ();
 		this.elements = new HashMap<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ();
