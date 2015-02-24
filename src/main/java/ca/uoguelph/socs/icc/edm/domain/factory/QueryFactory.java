@@ -198,12 +198,12 @@ public final class QueryFactory
 	 */
 
 	@SuppressWarnings("unchecked")
-	public <T extends Element> DataStoreQuery<T> create (final Class<T> element, final Class<? extends Element> implclass, final DataStore datastore)
+	public <T extends Element> DataStoreQuery<T> create (final Class<T> type, final Class<? extends Element> impl, final DataStore datastore)
 	{
 		this.log.debug ("Creating query for interface {}, using implementation {}, on using DataStore {}", type, impl, datastore);
 
-		assert element != null : "element is NULL";
-		assert implclass != null : "implclass is NULL";
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
 		assert datastore != null : "datastore is NULL";
 
 		Triple<DataStore, Class<?>, Class<?>> cacheKey = new ImmutableTriple<DataStore, Class<?>, Class<?>> (datastore, type, impl);
@@ -215,9 +215,9 @@ public final class QueryFactory
 		{
 			Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (type, impl);
 
-			assert this.queries.containsKey (factoryKey) : "";
+			assert this.factories.containsKey (factoryKey) : "";
 
-			query = ((IntQueryFactory<T>) this.queries.get (factoryKey)).create (datastore);
+			query = ((IntQueryFactory<T>) this.factories.get (factoryKey)).create (datastore);
 
 			this.cache.put (cacheKey, query);
 		}
