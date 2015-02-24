@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreTransaction;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.MappedManagerFactory;
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 /**
  *

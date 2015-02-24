@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.factory;
+package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.lang.ref.WeakReference;
 
@@ -37,8 +37,6 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementManager;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
-
 /**
  * Factory for creating <code>ElementManager</code> objects.  This class 
  * requires all of the <code>ElementManager</code> implementations to register
@@ -53,10 +51,10 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
  *
  * @author  James E. Stark
  * @version 1.3
- * @see     ca.uoguelph.socs.icc.edm.manager.ManagerFactory
+ * @see     ManagerFactory
  */
 
-public final class MappedManagerFactory
+final class ElementManagerFactory
 {
 	/** The logger */
 	private final Logger log;
@@ -71,9 +69,9 @@ public final class MappedManagerFactory
 	 * Create the <code>MappedManagerFactory</code>.
 	 */
 
-	public MappedManagerFactory ()
+	public ElementManagerFactory ()
 	{
-		this.log = LoggerFactory.getLogger (MappedManagerFactory.class);
+		this.log = LoggerFactory.getLogger (ElementManagerFactory.class);
 
 		this.factories = new HashMap<Pair<Class<?>, Class<?>>, ManagerFactory<? extends ElementManager<? extends Element>>> ();
 		this.cache = new HashMap<Triple<DomainModel, Class<?>, Class<?>>, WeakReference<ElementManager<? extends Element>>> ();

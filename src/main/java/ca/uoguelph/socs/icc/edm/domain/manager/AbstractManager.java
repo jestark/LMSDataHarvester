@@ -14,19 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.manager;
 
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.ElementManager;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.MappedManagerFactory;
 import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
-
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
 
 /**
  * Top level interface for all operations involving the domain model and the
@@ -37,12 +38,11 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The type of <code>Element</code> to be processed
- * @param   <X> The type of <code>ElementBuilder</code> to be returned
  */
 
 public abstract class AbstractManager<T extends Element> implements ElementManager<T>
 {
-	private static final MappedManagerFactory FACTORY;
+	private static final ElementManagerFactory FACTORY;
 
 	/** The logger */
 	private final Logger log;
@@ -55,7 +55,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 
 	static
 	{
-		FACTORY = new MappedManagerFactory ();
+		FACTORY = new ElementManagerFactory ();
 	}
 
 	public static final <T extends ElementManager<U>, U extends Element> T getInstance (final Class<U> element, final Class<T> manager, final DomainModel model)
@@ -89,7 +89,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	{
 		this.log.trace ("Getting query object from factory");
 
-		return (QueryFactory.getInstance ()).create (this.type, this.model.getDataStore ());
+		return null; // (QueryFactory.getInstance ()).create (this.type, this.model.getDataStore ());
 	}
 
 	/**
