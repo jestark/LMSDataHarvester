@@ -26,8 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.ElementManager;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
-
-import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
+import ca.uoguelph.socs.icc.edm.domain.datastore.QueryFactory;
 
 /**
  * Top level interface for all operations involving the domain model and the

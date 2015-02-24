@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.factory;
+package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.Map;
 import java.util.Set;
@@ -31,9 +31,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  * Factory for creating <code>DataStoreQuery</code> objects.  This class

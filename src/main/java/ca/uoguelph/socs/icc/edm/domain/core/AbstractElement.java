@@ -21,7 +21,7 @@ import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.QueryFactory;
+import ca.uoguelph.socs.icc.edm.domain.datastore.QueryFactory;
 
 /**
  * Abstract base class for all of the domain model <code>Element</code>
@@ -35,7 +35,7 @@ public abstract class AbstractElement implements Element
 {
 	protected static <T extends Element, X extends T> void registerQuery (Class<T> type, Class<X> impl)
 	{
-		(QueryFactory.getInstance (type)).registerClass (impl);
+		(QueryFactory.getInstance ()).registerClass (type, impl);
 	}
 
 	protected static <T extends Element, X extends T> void registerBuilder (Class<X> impl, Class<? extends ElementBuilder<T>> builder)
