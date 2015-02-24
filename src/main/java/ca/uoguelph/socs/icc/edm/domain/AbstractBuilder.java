@@ -20,13 +20,25 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.factory.MappedBuilderFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+
 import ca.uoguelph.socs.icc.edm.domain.idgenerator.IdGenerator;
+
+/**
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
 
 public abstract class AbstractBuilder<T extends Element>
 {
+	/** The builder factory */
+	private static final MappedBuilderFactory FACTORY;
+	
 	/** The manager (used to add new instances to the model) */
 	private final AbstractManager<T> manager;
 
@@ -36,9 +48,44 @@ public abstract class AbstractBuilder<T extends Element>
 	/** The Logger */
 	private final Log log;
 
-	protected static <T extends Element, X extends ElementBuilder<T>> void registerBuilder (Class<T> element, Class<X> builder, Class<? extends X> impl, BuilderFactory<X> factory)
+	/**
+	 * static initializer to create the factory.
+	 */
+
+	static
 	{
-		(MappedBuilderFactory.getInstance (element, builder)).registerClass (impl, factory);
+		FACTORY = new MappedBuilderFactory ();
+	}
+
+	/**
+	 *
+	 * @param  <T>     The <code>ElementBuilder</code> type to be returned
+	 * @param  <U>     The <code>Element</code> type produced by the builder
+	 * @param  type    The <code>ElementBuilder</code> interface class, not null
+	 * @param  manager The <code>ElementManager</code> instance, not null
+	 */
+
+	public static <T extends ElementBuilder<U>, U extends Element> T getInstance (final Class<T> type, final AbstractManager<U> manager)
+	{
+		return null; //FACTORY.create (type, manager);
+	}
+
+	/**
+	 *
+	 * @param  <T>
+	 * @param  <U>
+	 * @param  builder
+	 * @param  impl
+	 * @param  factory
+	 */
+
+	protected static <T extends ElementBuilder<? extends Element>> void registerBuilder (final Class<T> builder, final Class<? extends T> impl, final BuilderFactory<T> factory)
+	{
+		assert builder != null : "builder is NULL";
+		assert factory != null : "factory is NULL";
+		assert impl != null : "impl is NULL";
+
+		FACTORY.registerFactory (builder, impl, factory);
 	}
 
 	protected AbstractBuilder (AbstractManager<T> manager)

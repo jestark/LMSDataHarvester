@@ -27,12 +27,14 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.BuilderFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 
 /**
  * Factory for creating <code>ElementBuilder</code> objects.   
@@ -74,27 +76,26 @@ public final class MappedBuilderFactory
 	 * This method is intended to be used by the implementation of
 	 * <code>ElementBuilder</code> when the classes initialize.
 	 *
-	 * @param  impl                     The <code>ElementBuilder</code>
-	 *                                  implementation which is being registered,
-	 *                                  not null
-	 * @param  factory                  The <code>BuilderFactory</code> used to
-	 *                                  create the <code>ElementBuilder</code>,
-	 *                                  not null
+	 * @param  builder The <code>ElementBuilder</code> interface class, not null
+	 * @param  impl    The <code>ElementBuilder</code> implementation class, not
+	 *                 null
+	 * @param  factory The <code>BuilderFactory</code> used to create the
+	 *                 <code>ElementBuilder</code>, not null
 	 */
 
-	public <T extends ElementBuilder<? extends Element>> void registerFactory (final Class<T> type, final Class<? extends T> impl, final BuilderFactory<T> factory)
+	public <T extends ElementBuilder<? extends Element>> void registerFactory (final Class<T> builder, final Class<? extends T> impl, final BuilderFactory<T> factory)
 	{
 		this.log.trace ("Registering Builder: {} ({})", impl, factory);
 
-		assert type != null : "type is NULL";
+		assert builder != null : "builder is NULL";
 		assert impl != null : "impl is NULL";
 		assert factory != null : "factory is NULL";
 
-		ImmutablePair<Class<?>, Class<?>> key = new ImmutablePair<Class<?>, Class<?>> (type, impl);
+		Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (builder, impl);
 
-		assert (! this.factories.containsKey (key)) : "Class already registered: " + impl.getSimpleName ();
+		assert (! this.factories.containsKey (factoryKey)) : "Class already registered: " + impl.getSimpleName ();
 
-		this.factories.put (key, factory);
+		this.factories.put (factoryKey, factory);
 	}
 
 	/**
@@ -102,50 +103,47 @@ public final class MappedBuilderFactory
 	 * This method is intended to be used by the implementation of
 	 * <code>Element</code> when the classes initialize.
 	 *
-	 * @param  impl                     The <code>Element</code> implementation
-	 *                                  which is being registered, not null
-	 * @param  builder                  The builder class to be used to build the
-	 *                                  <code>Element</code>, not null
+	 * @param  element The <code>Element</code> implementation class, not null
+	 * @param  builder The builder class to be used to build the
+	 *                 <code>Element</code>, not null
 	 */
 
-	public <T extends ElementBuilder<U>, U extends Element> void registerElement (Class<? extends U> impl, Class<T> builder)
+	public <T extends ElementBuilder<U>, U extends Element> void registerElement (final Class<? extends U> element, final Class<T> builder)
 	{
-		this.log.trace ("Registering Element: {} ({})", impl, builder);
+		this.log.trace ("Registering Element: {} ({})", element, builder);
 
-		assert impl != null : "impl is NULL";
+		assert element != null : "element is NULL";
 		assert builder != null : "builder is NULL";
-		assert ! this.elements.containsKey (impl) : "Class already registered: " + impl.getSimpleName ();
+		assert ! this.elements.containsKey (element) : "Class already registered: " + element.getSimpleName ();
 
-		this.elements.put (impl, builder);
+		this.elements.put (element, builder);
 	}
 
 	/**
 	 * Create a <code>ElementBuilder</code> for the specified
-	 * <code>DomainModel</code>.
+	 * <code>ElementManager</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code> for which the
-	 *                               <code>ElementBuilder</code> is to be created,
-	 *                               not null
-	 * @return                       The <code>ElementBuilder</code>
-	 * @throws IllegalStateException if the either of the element or builder 
-	 *                               implementation classes is not registered
+	 * @param  builder The <code>ElementBuilder</code> interface class, not null
+	 * @param  element The <code>Element</code> implementation class, not null
+	 * @param  manager The <code>ElementManager</code>, not null
+	 * @return         The <code>ElementBuilder</code>
 	 */
 
-	public <T extends ElementBuilder<U>, U extends Element> T create (final Class<T> type, final Class<? extends T> impl, final AbstractManager<U> manager)
+	@SuppressWarnings("unchecked")
+	public <T extends ElementBuilder<U>, U extends Element> T create (final Class<T> builder, final Class<? extends U> element, final DomainModel manager)
 	{
-		this.log.debug ("Creating builder for interface {} on manager {}", type, manager);
+		this.log.debug ("Creating builder {} for element {} on manager {}", builder, element, manager);
 
-		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
+		assert builder != null : "type is NULL";
+		assert element != null : "impl is NULL";
 		assert manager != null : "manager is NULL";
 		
-		assert this.elements.containsKey (impl) : "Element class is not registered: " + impl.getSimpleName ();
+		assert this.elements.containsKey (element) : "Element class is not registered: " + element.getSimpleName ();
 
-		@SuppressWarnings("unchecked")
-		BuilderFactory<T> factory = (BuilderFactory<T>) this.factories.get (ImmutablePair.of (type, this.elements.get (impl)));
+		Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (builder, this.elements.get (element));
 
-		assert factory != null : "No builder registered for class: " + impl.getSimpleName ();
+		assert this.factories.containsKey (factoryKey) : "Class not registered: " + (this.elements.get (element)).getSimpleName ();
 
-		return factory.create (manager.getDomainModel ());
+		return ((BuilderFactory<T>) this.factories.get (factoryKey)).create (manager);
 	}
 }

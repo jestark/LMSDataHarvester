@@ -55,7 +55,7 @@ public final class MappedIdGeneratorFactory
 
 	public MappedIdGeneratorFactory ()
 	{
-		this.log = LoggerFactory.getLogger (MappedManagerFactory.class);
+		this.log = LoggerFactory.getLogger (MappedIdGeneratorFactory.class);
 
 		this.generators = new HashMap<Class<? extends IdGenerator>, IdGeneratorFactory> ();
 	}
