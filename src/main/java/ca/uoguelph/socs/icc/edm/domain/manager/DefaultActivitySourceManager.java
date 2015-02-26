@@ -34,7 +34,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ActivitySource
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivitySource
  */
 
 public final class DefaultActivitySourceManager extends AbstractManager<ActivitySource> implements ActivitySourceManager
@@ -92,8 +92,39 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 	}
 
 	/**
+	 * Retrieve an <code>ActivitySource</code> from the <code>DataStore</code>
+	 * which identifies the same as the specified <code>ActivitySource</code>.
+	 *
+	 * @param  source The <code>ActivitySource</code> to retrieve, not null
+	 *
+	 * @return        A reference to the <code>ActivitySource</code> in the
+	 *                <code>DataStore</code>, may be null
+	 */
+
+	@Override
+	public ActivitySource fetch (final ActivitySource source)
+	{
+		this.log.trace ("Fetching ActivitySource with the same identity as: {}", source);
+
+		if (source == null)
+		{
+			this.log.error ("The specified ActivitySource is NULL");
+			throw new NullPointerException ();
+		}
+
+		ActivitySource result = source;
+
+		if (! (this.fetchQuery ()).contains (source))
+		{
+			result = this.fetchByName (source.getName ());
+		}
+
+		return result;
+	}
+
+	/**
 	 * Retrieve the <code>ActivitySource</code> object associated with the
-	 * specified name from the underlying data-store.
+	 * specified name from the underlying <code>DataStore</code>.
 	 *
 	 * @param  name The name of the <code>ActivitySource</code> to retrieve, not
 	 *              null

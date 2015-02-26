@@ -35,7 +35,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Activity
+ * @see     ca.uoguelph.socs.icc.edm.domain.Activity
  */
 
 public final class DefaultActivityManager extends AbstractManager<Activity> implements ActivityManager
@@ -78,7 +78,7 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 	}
 
 	/**
-	 * Create the Activity manager.
+	 * Create the <code>ActivityManager</code>.
 	 *
 	 * @param  datastore The instance of the <code>DataStore</code> upon which the
 	 *                   <code>ActivityManager</code> will operate, not null
@@ -89,6 +89,37 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 		super (Activity.class, datastore);
 
 		this.log = LoggerFactory.getLogger (ActivityManager.class);
+	}
+
+	/**
+	 * Retrieve an <code>Activity</code> from the <code>DataStore</code> which
+	 * identifies the same as the specified <code>Activity</code>.
+	 *
+	 * @param  activity The <code>Activity</code> to retrieve, not null
+	 *
+	 * @return          A reference to the <code>Activity</code> in the
+	 *                  <code>DataStore</code>, may be null
+	 */
+
+	@Override
+	public Activity fetch (final Activity activity)
+	{
+		this.log.trace ("Fetching Activity with the same identity as: {}", activity);
+
+		if (activity == null)
+		{
+			this.log.error ("The specified Activity is NULL");
+			throw new NullPointerException ();
+		}
+
+		Activity result = activity;
+
+		if (! (this.fetchQuery ()).contains (activity))
+		{
+			result = null; // this.fetchByName (activity.getName ());
+		}
+
+		return result;
 	}
 
 	/**

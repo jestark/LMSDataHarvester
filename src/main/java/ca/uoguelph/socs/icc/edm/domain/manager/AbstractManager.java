@@ -75,10 +75,10 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	/**
 	 * Create the <code>AbstractManager</code>.
 	 *
-	 * @param  type  The type of <code>Element</code> which is being managed, not
-	 *               null
-	 * @param  model The <code>DomainModel</code> instance for this manager, not
-	 *               null
+	 * @param  type      The type of <code>Element</code> which is being managed,
+	 *                   not null
+	 * @param  datastore The <code>DataStore</code> upon which this
+	 *                   <code>ElementManager</code> will operate, not null
 	 */
 
 	public AbstractManager (final Class<T> type, final DataStore datastore)
@@ -101,6 +101,24 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 		this.log.trace ("Get query object for class: {}", impl);
 
 		return (QueryFactory.getInstance ()).create (this.type, impl, this.datastore);
+	}
+
+	/**
+	 * Test an instance of an <code>Element</code> to determine if a reference to
+	 * that <code>Element</code> instance exists in the <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code> instance to test, not null
+	 *
+	 * @return          <code>True</code> if the <code>DataStore</code> instance
+	 *                  contains a reference to the <code>Element</code>,
+	 *                  <code>False</code> otherwise
+	 */
+
+	public final boolean contains (final T element)
+	{
+		this.log.trace ("Determine if the element is owned by me {}", element);
+
+		return (this.fetchQuery ()).contains (element);
 	}
 
 	/**
@@ -137,26 +155,23 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	 *
 	 * @param  entity The entity to insert into the domain model, not null
 	 * @return        A reference to the inserted entity
-	 * @see    #insert(Element, Boolean) insert(T, Boolean)
 	 */
 
-	public final T insert (final T entity)
+	public final T insert (final T element)
 	{
-		return this.insert (entity, new Boolean (false));
-	}
+		this.log.trace ("Inserting element into the DataStore: {}", element);
 
-	/**
-	 * Insert an entity into the domain model and the underlying data store.
-	 *
-	 * @param  entity    The entity to insert into the domain model, not null
-	 * @param  recursive <code>true</code> if dependent entities should also be
-	 *                   inserted, <code>false</code> otherwise, not null
-	 * @return           A reference to the inserted entity
-	 */
+		if (element == null)
+		{
+			this.log.error ("Attempting to insert a NULL element into the datastore");
+			throw new NullPointerException ();
+		}
 
-	public T insert (final T entity, final Boolean recursive)
-	{
-		this.log.trace ("Insert entity into data store: {} (recursively: {})", entity, recursive);
+		if (! ((this.datastore.getProfile ()).isMutable ()))
+		{
+			this.log.error ("Attempting to insert an element into an immutable datastore");
+			throw new IllegalStateException ("DataStore is immutable");
+		}
 
 		return null;
 	}
@@ -167,24 +182,9 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	 * given entity from the domain model and underlying data store.
 	 *
 	 * @param  entity The entity to remove from the domain model, not null
-	 * @see    #remove(Element, Boolean) remove(T, Boolean)
 	 */
 
 	public final void remove (final T entity)
 	{
-		this.remove (entity, new Boolean (false));
-	}
-
-	/**
-	 * Remove an entity from the domain model and the underlying data store.
-	 *
-	 * @param  entity    The entity to remove from the domain model, not null
-	 * @param  recursive <code>true</code> if dependent entities should also be
-	 *                   removed, <code>false</code> otherwise, not null
-	 */
-
-	public void remove (final T entity, final Boolean recursive)
-	{
-		this.log.trace ("Remove entity from data store: {} (recursively: {})", entity, recursive);
 	}
 }

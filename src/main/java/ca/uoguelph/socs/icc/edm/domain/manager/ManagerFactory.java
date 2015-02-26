@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  *
  * @author  James E. Stark
  * @version 1.2
- * @param   <T> The type of manager returned by the factory
+ * @param   <T> The type of <code>ElementManager</code> returned by the factory
  * @see     AbstractManager
  */
 

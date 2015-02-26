@@ -97,8 +97,39 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	}
 
 	/**
-	 * Retrieve a single <code>User</code> object, with the specified id number,
-	 * from the data-store.
+	 * Retrieve an <code>User</code> from the <code>DataStore</code> which
+	 * identifies the same as the specified <code>User</code>.
+	 *
+	 * @param  User The <code>user</code> to retrieve, not null
+	 *
+	 * @return        A reference to the <code>User</code> in the
+	 *                <code>DataStore</code>, may be null
+	 */
+
+	@Override
+	public User fetch (final User user)
+	{
+		this.log.trace ("Fetching User with the same identity as: {}", user);
+
+		if (user == null)
+		{
+			this.log.error ("The specified User is NULL");
+			throw new NullPointerException ();
+		}
+
+		User result = user;
+
+		if (! (this.fetchQuery ()).contains (user))
+		{
+			result = this.fetchByIdNumber (user.getIdNumber ());
+		}
+
+		return result;
+	}
+
+	/**
+	 * Retrieve a single <code>User</code> object, with the specified ID number,
+	 * from the <code>DataStore</code>.
 	 *
 	 * @param  idnumber The id number of the <code>User</code> to retrieve, not null
 	 * @return          The <code>User</code> object associated with the id number
@@ -122,7 +153,7 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 
 	/**
 	 * Retrieve a single <code>User</code> object, with the specified username,
-	 * from the data-store.
+	 * from the <code>DataStore</code>.
 	 *
 	 * @param  username The username of the entry to retrieve, not null
 	 * @return          The <code>User</code> object associated with the username

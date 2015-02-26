@@ -93,6 +93,37 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	}
 
 	/**
+	 * Retrieve an <code>LogEntry</code> from the <code>DataStore</code> which
+	 * identifies the same as the specified <code>LogEntry</code>.
+	 *
+	 * @param  entry The <code>LogEntry</code> to retrieve, not null
+	 *
+	 * @return        A reference to the <code>LogEntry</code> in the
+	 *                <code>DataStore</code>, may be null
+	 */
+
+	@Override
+	public LogEntry fetch (final LogEntry entry)
+	{
+		this.log.trace ("Fetching LogEntry with the same identity as: {}", entry);
+
+		if (entry == null)
+		{
+			this.log.error ("The specified LogEntry is NULL");
+			throw new NullPointerException ();
+		}
+
+		LogEntry result = entry;
+
+		if (! (this.fetchQuery ()).contains (entry))
+		{
+			result = null; // this.fetchByName (entry.getName ());
+		}
+
+		return result;
+	}
+
+	/**
 	 * Retrieve a list of <code>LogEntry</code> objects, which are associated with
 	 * the specified course, from the underlying data-store.
 	 *

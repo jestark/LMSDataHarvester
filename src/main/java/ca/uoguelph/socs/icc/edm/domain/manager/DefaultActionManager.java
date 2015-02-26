@@ -30,13 +30,12 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Create, insert and remove actions from the domain model.  Through
- * implementations of this interface, Actions can be added to or removed
- * from the domain model.
+ * Create, insert and remove <code>Action</code> instances from the
+ * <code>DataStore</code>.
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
- * @see     Action
+ * @see     ca.uoguelph.socs.icc.edm.domain.Action
  */
 
 public final class DefaultActionManager extends AbstractManager<Action> implements ActionManager
@@ -57,7 +56,7 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 		 */
 
 		@Override
-		public ActionManager create (DataStore datastore)
+		public ActionManager create (final DataStore datastore)
 		{
 			assert datastore != null : "datastore is NULL";
 
@@ -82,10 +81,10 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	 * Create the <code>ActionManager</code>
 	 *
 	 * @param  datastore The instance of the <code>DataStore</code> upon which the
-	 *               <code>ActionManager</code> will operate, not null
+	 *                   <code>ActionManager</code> will operate, not null
 	 */
 
-	public DefaultActionManager (DataStore datastore)
+	public DefaultActionManager (final DataStore datastore)
 	{
 		super (Action.class, datastore);
 
@@ -93,13 +92,45 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	}
 
 	/**
-	 * Retrieve the Action with the specified name from the data-store.
+	 * Retrieve an <code>Action</code> from the <code>DataStore</code> which
+	 * identifies the same as the specified <code>Action</code>.
+	 *
+	 * @param  action The <code>Action</code> to retrieve, not null
+	 *
+	 * @return        A reference to the <code>Action</code> in the
+	 *                <code>DataStore</code>, may be null
+	 */
+
+	@Override
+	public Action fetch (final Action action)
+	{
+		this.log.trace ("Fetching Action with the same identity as: {}", action);
+
+		if (action == null)
+		{
+			this.log.error ("The specified Action is NULL");
+			throw new NullPointerException ();
+		}
+
+		Action result = action;
+
+		if (! (this.fetchQuery ()).contains (action))
+		{
+			result = this.fetchByName (action.getName ());
+		}
+
+		return result;
+	}
+
+	/**
+	 * Retrieve the <code>Action</code> with the specified name from the
+	 * <code>DataStore</code>.
 	 *
 	 * @param  name The name of the <code>Action</code> to retrieve, not null
 	 * @return      The <code>Action</code> associated with the specified name.
 	 */
 
-	public Action fetchByName (String name)
+	public Action fetchByName (final String name)
 	{
 		this.log.trace ("Fetching Action with name: {}", name);
 

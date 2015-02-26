@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,54 @@ import java.util.List;
 public interface ElementManager<T extends Element>
 {
 	/**
+	 * Test an instance of an <code>Element</code> to determine if a reference to
+	 * that <code>Element</code> instance exists in the <code>DataStore</code>.
+	 * The exact behaviour of this method is determined by the implementation of
+	 * the <code>DataStore</code>.
+	 * <p>
+	 * If the <code>Element</code> instance was created by the current instance of
+	 * the <code>DataStore</code> then this method, should return
+	 * <code>True</code>.  Otherwise, this method should return
+	 * <code>False</code>, even if an identical <code>Element</code> instance
+	 * exists in the <code>DataStore</code>.  Use the <code>fetch</code> method to
+	 * retrieve an instance from the <code>DataStore</code>, if one exists.
+	 *
+	 * @param  element The <code>Element</code> instance to test, not null
+	 *
+	 * @return          <code>True</code> if the <code>DataStore</code> instance
+	 *                  contains a reference to the <code>Element</code>,
+	 *                  <code>False</code> otherwise
+	 */
+
+	public abstract boolean contains (T element);
+
+	/**
+	 * Retrieve an <code>Element</code> from the <code>DataStore</code> which
+	 * identifies the same as the specified <code>Element</code>.  If the
+	 * specified <code>Element</code> came from the current instance of the
+	 * <code>DataStore</code> then the same <code>Element</code> will be returned.
+	 * Otherwise, if there exists an <code>Element</code> in the
+	 * <code>DataStore</code> which identifies to be the same as the specified
+	 * <code>Element</code>, that <code>Element</code> will be returned.  This
+	 * method will return <code>null</code> if there is no matching
+	 * <code>Element</code> in the <code>DataStore</code>.
+	 * <p>
+	 * It should be noted that an <code>Element</code> which identifies the same
+	 * as another <code>Element</code> may not be equal to that other
+	 * <code>Element</code>.  Some <code>Element</code> instances (particularly
+	 * <code>Activity</code> and <code>Enrolment</code>) have fields which are not
+	 * to identify the <code>Element</code>.  Use the <code>equals</code> method
+	 * to determine if the <code>Element</code> instances are equal.
+	 *
+	 * @param  element The <code>Element</code> to retrieve, not null
+	 *
+	 * @return         A reference to the <code>Element</code> in the
+	 *                 <code>DataStore</code>, may be null
+	 */
+
+	public abstract T fetch (T element);
+
+	/**
 	 * Retrieve a <code>Element</code> instance from the <code>DataStore</code>
 	 * based upon is <code>DataStore</code> identifier.  
 	 *
@@ -55,57 +103,22 @@ public interface ElementManager<T extends Element>
 
 	/**
 	 * Insert the specified <code>Element</code> instance into the
-	 * <code>DataStore</code>. This method is a convenience method which performs
-	 * a non-recursive insert of the specified <code>Element</code> instance into
-	 * the </code>DomainModel</code> and the underlying </code>DataStore</code>.
+	 * <code>DataStore</code>.
 	 *
 	 * @param  element The <code>Element</code> to insert, not null
 	 *
 	 * @return         A reference to the <code>Element</code> instance in the
 	 *                 <code>DataStore</code>
-	 * @see    #insert(Element, Boolean) insert(T, Boolean)
 	 */
 
 	public abstract T insert (T element);
 
 	/**
-	 * Insert the specified <code>Element</code> instance into the
-	 * <code>DataStore</code>.
-	 *
-	 * @param  element   The <code>Element</code> to insert, not null
-	 * @param  recursive <code>true</code> if dependent <code>Element</code>
-	 *                   instances should also be inserted, <code>false</code>
-	 *                   otherwise, not null
-	 *
-	 * @return           A reference to the <code>Element</code> instance in the
-	 *                   <code>DataStore</code>
-	 */
-
-	public abstract T insert (T entity, Boolean recursive);
-
-	/**
 	 * Remove the specified <code>Element</code> instance from the
-	 * <code>DataStore</code>. This is a convenience method that performs a
-	 * non-recursive removal of the specified <code>Element</code> instance from
-	 * the <code>DomainModel</code> and the underlying <code>DataStore</code>.
+	 * <code>DataStore</code>.
 	 *
 	 * @param  element The <code>Element</code> to remove, not null
-	 *
-	 * @see    #remove(Element, Boolean) remove(T, Boolean)
 	 */
 
-	public abstract void remove (T entity);
-
-	/**
-	 * Remove the specified <code>Element</code> instance from the
-	 * <code>DataStore</code>.
-	 *
-	 * @param  element   The <code>Element</code> to remove, not null
-	 *
-	 * @param  recursive <code>true</code> if dependent <code>Element</code>
-	 *                   instances should also be removed, <code>false</code>
-	 *                   otherwise, not null
-	 */
-
-	public abstract void remove (T entity, Boolean recursive);
+	public abstract void remove (T element);
 }

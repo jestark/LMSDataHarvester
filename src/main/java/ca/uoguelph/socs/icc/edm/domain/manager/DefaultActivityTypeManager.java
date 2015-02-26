@@ -36,7 +36,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ActivityType
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivityType
  */
 
 public final class DefaultActivityTypeManager extends AbstractManager<ActivityType> implements ActivityTypeManager
@@ -58,7 +58,7 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 		 */
 
 		@Override
-		public ActivityTypeManager create (DataStore datastore)
+		public ActivityTypeManager create (final DataStore datastore)
 		{
 			assert datastore != null : "datastore is NULL";
 
@@ -94,8 +94,40 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 	}
 
 	/**
+	 * Retrieve an <code>ActivityType</code> from the <code>DataStore</code> which
+	 * identifies the same as the specified <code>ActivityType</code>.
+	 *
+	 * @param  type The <code>ActivityType</code> to retrieve, not null
+	 *
+	 * @return      A reference to the <code>ActivityType</code> in the
+	 *              <code>DataStore</code>, may be null
+	 */
+
+	@Override
+	public ActivityType fetch (final ActivityType type)
+	{
+		this.log.trace ("Fetching ActivityType with the same identity as: {}", type);
+
+		if (type == null)
+		{
+			this.log.error ("The specified ActivityType is NULL");
+			throw new NullPointerException ();
+		}
+
+		ActivityType result = type;
+
+		if (! (this.fetchQuery ()).contains (type))
+		{
+			result = this.fetchByName (type.getSource (), type.getName ());
+		}
+
+		return result;
+	}
+
+	/**
 	 * Retrieve the <code>ActivityType</code> object from the underlying 
-	 * data-store which has the specified <code>ActivitySource</code> and name.
+	 * <code>DataStore</code> which has the specified <code>ActivitySource</code>
+	 * and name.
 	 *
 	 * @param  source The <code>ActivitySource</code> containing the 
 	 *                <code>ActivityType</code>, not null
@@ -129,10 +161,10 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 
 	/**
 	 * Create an association between a <code>ActivityType</code> and a 
-	 * <code>Action</code>.  Both the <code>ActivityType</code> and the action
-	 * must already exist in the domain model associated with the
-	 * <code>ActivityTypeManager</code> that to create the association between
-	 * them.
+	 * <code>Action</code>.  Both the <code>ActivityType</code> and the
+	 * <code>Action</code> must already exist in the <code>DataStore</code>
+	 * associated with the <code>ActivityTypeManager</code> that to create the
+	 * association between them.
 	 *
 	 * @param  type   The <code>ActivityType</code> to modify, not null
 	 * @param  action The <code>Action</code> to be associated with the
