@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 /**
  *
@@ -36,7 +36,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	private static final ElementBuilderFactory FACTORY;
 	
 	/** The manager (used to add new instances to the model) */
-	private final AbstractManager<T> manager;
+	private final ManagerProxy<T> manager;
 
 	/** The Logger */
 	private final Logger log;
@@ -58,7 +58,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 * @param  manager The <code>ElementManager</code> instance, not null
 	 */
 
-	public static <T extends ElementBuilder<U>, U extends Element> T getInstance (final Class<T> type, final AbstractManager<U> manager)
+	public static <T extends ElementBuilder<U>, U extends Element> T getInstance (final Class<T> type, final ManagerProxy<U> manager)
 	{
 		return null; //FACTORY.create (type, manager);
 	}
@@ -72,7 +72,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 * @param  factory
 	 */
 
-	protected static <T extends ElementBuilder<? extends Element>> void registerBuilder (final Class<T> builder, final Class<? extends T> impl, final BuilderFactory<T> factory)
+	protected static <T extends ElementBuilder<U>, U extends Element> void registerBuilder (final Class<T> builder, final Class<? extends T> impl, final BuilderFactory<U, T> factory)
 	{
 		assert builder != null : "builder is NULL";
 		assert factory != null : "factory is NULL";
@@ -81,19 +81,15 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 		FACTORY.registerFactory (builder, impl, factory);
 	}
 
-	protected AbstractBuilder (AbstractManager<T> manager)
+	protected AbstractBuilder (ManagerProxy<T> manager)
 	{
 		this.log = LoggerFactory.getLogger (AbstractBuilder.class);
 		
 		this.manager = manager;
 	}
 
-	public final T create ()
+	public T build ()
 	{
-		return this.build ();
+		return null;
 	}
-
-	protected abstract T build ();
-
-	public abstract void clear ();
 }

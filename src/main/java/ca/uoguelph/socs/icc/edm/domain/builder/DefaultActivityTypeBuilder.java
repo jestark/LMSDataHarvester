@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,25 +22,39 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType> implements ActivityTypeBuilder
 {
-	private static class Factory implements BuilderFactory<ActivityTypeBuilder>
+	/**
+	 * Implementation of the <code>BuilderFactory</code> to create a
+	 * <code>DefaultActivityTypeBuilder</code>.
+	 */
+
+	private static class Factory implements BuilderFactory<ActivityType, ActivityTypeBuilder>
 	{
-		public ActivityTypeBuilder create (DomainModel model)
+		/**
+		 * Create the <code>ActivityTypeBuilder</code>.  The supplied
+		 * <code>ManagerProxy</code> will be used by the builder to access the
+		 * <code>ActivityTypeManager</code> to perform operations on the
+		 * <code>DataStore</code>.
+		 *
+		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 *                 <code>ActivityTypeManager</code> instance, not null
+		 *
+		 * @return         The <code>ActivityTypeBuilder</code>
+		 */
+
+		@Override
+		public ActivityTypeBuilder create (final ManagerProxy<ActivityType> manager)
 		{
-			return new DefaultActivityTypeBuilder ((AbstractManager<ActivityType>) model.getActivityTypeManager ());
+			return new DefaultActivityTypeBuilder (manager);
 		}
 	}
 
 	/** The logger */
 	private final Logger log;
-
-	/** <code>ElementFactory</code> to build the activity type */
-	private final ActivityTypeElementFactory factory;
 
 	/** The source of the <code>ActivityType</code> */
 	private ActivitySource source;
@@ -58,16 +72,15 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 		AbstractBuilder.registerBuilder (ActivityTypeBuilder.class, DefaultActivityTypeBuilder.class, new Factory ());
 	}
 
-	protected DefaultActivityTypeBuilder (AbstractManager<ActivityType> manager)
+	protected DefaultActivityTypeBuilder (final ManagerProxy<ActivityType> manager)
 	{
 		super (manager);
 
-		this.factory = null;
 		this.log = LoggerFactory.getLogger (DefaultActivityTypeBuilder.class);
 	}
 
 	@Override
-	protected ActivityType build ()
+	public ActivityType build ()
 	{
 		if (this.source == null)
 		{
@@ -81,7 +94,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 			throw new IllegalStateException ("name not set");
 		}
 
-		return this.factory.create (this.source, this.name);
+		return null; //this.factory.create (this.source, this.name);
 	}
 
 	@Override
@@ -98,7 +111,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	}
 
 	@Override
-	public ActivityTypeBuilder setName (String name)
+	public ActivityTypeBuilder setName (final String name)
 	{
 		if (name == null)
 		{
@@ -118,7 +131,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	}
 
 	@Override
-	public ActivityTypeBuilder setActivitySource (ActivitySource source)
+	public ActivityTypeBuilder setActivitySource (final ActivitySource source)
 	{
 		if (source == null)
 		{

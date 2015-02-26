@@ -23,9 +23,8 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity> implements ActivityBuilder
 {
@@ -41,7 +40,7 @@ public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity> i
 	/** Is the activity stealth? */
 	private Boolean stealth;
 
-	public DefaultActivityBuilder (AbstractManager<Activity> manager)
+	public DefaultActivityBuilder (final ManagerProxy<Activity> manager)
 	{
 		super (manager);
 
@@ -49,7 +48,7 @@ public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity> i
 	}
 
 	@Override
-	protected Activity build ()
+	public Activity build ()
 	{
 		if (this.course == null)
 		{

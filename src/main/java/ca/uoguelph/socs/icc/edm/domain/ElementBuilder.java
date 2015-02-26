@@ -18,6 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 public interface ElementBuilder<T extends Element>
 {
-	public abstract T create ();
+	public abstract T build ();
 	public abstract void clear ();
 }

@@ -27,11 +27,10 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 /**
  * Factory for creating <code>ElementBuilder</code> objects.   
@@ -48,7 +47,7 @@ final class ElementBuilderFactory
 	private final Logger log;
 
 	/** Factory for the <code>ElementBuilder</code> implementations */
-	private final Map<Pair<Class<?>, Class<?>>, BuilderFactory<? extends ElementBuilder<? extends Element>>> factories;
+	private final Map<Pair<Class<?>, Class<?>>, BuilderFactory<?, ?>> factories;
 
 	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
 	private final Map<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> elements;
@@ -64,7 +63,7 @@ final class ElementBuilderFactory
 	{
 		this.log = LoggerFactory.getLogger (ElementBuilderFactory.class);
 
-		this.factories = new HashMap<Pair<Class<?>, Class<?>>, BuilderFactory<? extends ElementBuilder<? extends Element>>> ();
+		this.factories = new HashMap<Pair<Class<?>, Class<?>>, BuilderFactory<?, ?>> ();
 		this.elements = new HashMap<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ();
 	}
 
@@ -73,6 +72,8 @@ final class ElementBuilderFactory
 	 * This method is intended to be used by the implementation of
 	 * <code>ElementBuilder</code> when the classes initialize.
 	 *
+	 * @param  <T>
+	 * @param  <U>
 	 * @param  builder The <code>ElementBuilder</code> interface class, not null
 	 * @param  impl    The <code>ElementBuilder</code> implementation class, not
 	 *                 null
@@ -80,7 +81,7 @@ final class ElementBuilderFactory
 	 *                 <code>ElementBuilder</code>, not null
 	 */
 
-	public <T extends ElementBuilder<? extends Element>> void registerFactory (final Class<T> builder, final Class<? extends T> impl, final BuilderFactory<T> factory)
+	public <T extends ElementBuilder<U>, U extends Element> void registerFactory (final Class<T> builder, final Class<? extends T> impl, final BuilderFactory<U, T> factory)
 	{
 		this.log.trace ("Registering Builder: {} ({})", impl, factory);
 
@@ -100,6 +101,8 @@ final class ElementBuilderFactory
 	 * This method is intended to be used by the implementation of
 	 * <code>Element</code> when the classes initialize.
 	 *
+	 * @param  <T>
+	 * @param  <U>
 	 * @param  element The <code>Element</code> implementation class, not null
 	 * @param  builder The builder class to be used to build the
 	 *                 <code>Element</code>, not null
@@ -120,6 +123,8 @@ final class ElementBuilderFactory
 	 * Create a <code>ElementBuilder</code> for the specified
 	 * <code>ElementManager</code>.
 	 *
+	 * @param  <T>
+	 * @param  <U>
 	 * @param  builder The <code>ElementBuilder</code> interface class, not null
 	 * @param  element The <code>Element</code> implementation class, not null
 	 * @param  manager The <code>ElementManager</code>, not null
@@ -127,7 +132,7 @@ final class ElementBuilderFactory
 	 */
 
 	@SuppressWarnings("unchecked")
-	public <T extends ElementBuilder<U>, U extends Element> T create (final Class<T> builder, final Class<? extends U> element, final DomainModel manager)
+	public <T extends ElementBuilder<U>, U extends Element> T create (final Class<T> builder, final Class<? extends U> element, final ManagerProxy<U> manager)
 	{
 		this.log.debug ("Creating builder {} for element {} on manager {}", builder, element, manager);
 
@@ -141,6 +146,6 @@ final class ElementBuilderFactory
 
 		assert this.factories.containsKey (factoryKey) : "Class not registered: " + (this.elements.get (element)).getSimpleName ();
 
-		return ((BuilderFactory<T>) this.factories.get (factoryKey)).create (manager);
+		return ((BuilderFactory<U, T>) this.factories.get (factoryKey)).create (manager);
 	}
 }

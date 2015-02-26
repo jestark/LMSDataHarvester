@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,29 +20,43 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> implements EnrolmentBuilder
 {
-	private static class Factory implements BuilderFactory<EnrolmentBuilder>
+	/**
+	 * Implementation of the <code>BuilderFactory</code> to create a
+	 * <code>DefaultEnrolmentBuilder</code>.
+	 */
+
+	private static class Factory implements BuilderFactory<Enrolment, EnrolmentBuilder>
 	{
-		public EnrolmentBuilder create (DomainModel model)
+		/**
+		 * Create the <code>EnrolmentBuilder</code>.  The supplied
+		 * <code>ManagerProxy</code> will be used by the builder to access the
+		 * <code>EnrolmentManager</code> to perform operations on the
+		 * <code>DataStore</code>.
+		 *
+		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 *                 <code>EnrolmentManager</code> instance, not null
+		 *
+		 * @return         The <code>EnrolmentBuilder</code>
+		 */
+
+		@Override
+		public EnrolmentBuilder create (final ManagerProxy<Enrolment> manager)
 		{
-			return new DefaultEnrolmentBuilder ((AbstractManager<Enrolment>) model.getEnrolmentManager ());
+			return new DefaultEnrolmentBuilder (manager);
 		}
 	}
 
 	/** The logger */
 	private final Logger log;
-
-	/** <code>ElementFactory</code> to build the enrolment */
-	private final EnrolmentElementFactory factory;
 
 	/** The course in which the user is enrolled */
 	private Course course;
@@ -69,16 +83,15 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 		AbstractBuilder.registerBuilder (EnrolmentBuilder.class, DefaultEnrolmentBuilder.class, new Factory ());
 	}
 
-	protected DefaultEnrolmentBuilder (AbstractManager<Enrolment> manager)
+	protected DefaultEnrolmentBuilder (final ManagerProxy<Enrolment> manager)
 	{
 		super (manager);
 
-		this.factory = null;
 		this.log = LoggerFactory.getLogger (DefaultEnrolmentBuilder.class);
 	}
 
 	@Override
-	protected Enrolment build ()
+	public Enrolment build ()
 	{
 		if (this.user == null)
 		{
@@ -98,7 +111,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 			throw new IllegalStateException ("course not set");
 		}
 
-		return this.factory.create (this.user, this.course, this.role, this.grade, this.usable);
+		return null; //this.factory.create (this.user, this.course, this.role, this.grade, this.usable);
 	}
 
 	@Override
@@ -107,7 +120,6 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 		this.course = null;
 		this.grade = null;
 		this.role = null;
-		this.usable = new Boolean (false);
 		this.user = null;
 	}
 
@@ -118,7 +130,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	}
 
 	@Override
-	public EnrolmentBuilder setCourse (Course course)
+	public EnrolmentBuilder setCourse (final Course course)
 	{
 		if (course == null)
 		{
@@ -138,7 +150,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	}
 
 	@Override
-	public EnrolmentBuilder setRole (Role role)
+	public EnrolmentBuilder setRole (final Role role)
 	{
 		if (role == null)
 		{
@@ -158,7 +170,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	}
 
 	@Override
-	public EnrolmentBuilder setUser (User user)
+	public EnrolmentBuilder setUser (final User user)
 	{
 		if (user == null)
 		{
@@ -178,7 +190,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	}
 
 	@Override
-	public EnrolmentBuilder setFinalGrade (Integer finalgrade)
+	public EnrolmentBuilder setFinalGrade (final Integer finalgrade)
 	{
 		if ((grade != null) && ((grade < 0) || (grade > 100)))
 		{
@@ -198,7 +210,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	}
 
 	@Override
-	public EnrolmentBuilder setUsable (Boolean usable)
+	public EnrolmentBuilder setUsable (final Boolean usable)
 	{
 		if (usable == null)
 		{

@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,19 +19,36 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements RoleBuilder
 {
-	private static class Factory implements BuilderFactory<RoleBuilder>
+	/**
+	 * Implementation of the <code>BuilderFactory</code> to create a
+	 * <code>DefaultRoleBuilder</code>.
+	 */
+
+	private static class Factory implements BuilderFactory<Role, RoleBuilder>
 	{
-		public RoleBuilder create (DomainModel model)
+		/**
+		 * Create the <code>RoleBuilder</code>.  The supplied
+		 * <code>ManagerProxy</code> will be used by the builder to access the
+		 * <code>RoleManager</code> to perform operations on the
+		 * <code>DataStore</code>.
+		 *
+		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 *                 <code>RoleManager</code> instance, not null
+		 *
+		 * @return         The <code>RoleBuilder</code>
+		 */
+
+		@Override
+		public RoleBuilder create (final ManagerProxy<Role> manager)
 		{
-			return new DefaultRoleBuilder ((AbstractManager<Role>) model.getRoleManager ());
+			return new DefaultRoleBuilder (manager);
 		}
 	}
 
@@ -54,7 +71,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 		AbstractBuilder.registerBuilder (RoleBuilder.class, DefaultRoleBuilder.class, new Factory ());
 	}
 
-	protected DefaultRoleBuilder (AbstractManager<Role> manager)
+	protected DefaultRoleBuilder (final ManagerProxy<Role> manager)
 	{
 		super (manager);
 
@@ -63,7 +80,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 	}
 
 	@Override
-	protected Role build ()
+	public Role build ()
 	{
 		if (this.name == null)
 		{
@@ -71,7 +88,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 			throw new IllegalStateException ("name not set");		
 		}
 
-		return this.factory.create (this.name);
+		return null; //this.factory.create (this.name);
 	}
 
 	@Override
@@ -87,7 +104,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 	}
 
 	@Override
-	public RoleBuilder setName (String name)
+	public RoleBuilder setName (final String name)
 	{
 		if (name != null)
 		{

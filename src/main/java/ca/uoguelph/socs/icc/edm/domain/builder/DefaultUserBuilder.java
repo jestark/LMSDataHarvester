@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,28 +19,41 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 public final class DefaultUserBuilder extends AbstractBuilder<User> implements UserBuilder
 {
-	private static class Factory implements BuilderFactory<UserBuilder>
+	/**
+	 * Implementation of the <code>BuilderFactory</code> to create a
+	 * <code>DefaultUserBuilder</code>.
+	 */
+
+	private static class Factory implements BuilderFactory<User, UserBuilder>
 	{
+		/**
+		 * Create the <code>UserBuilder</code>.  The supplied
+		 * <code>ManagerProxy</code> will be used by the builder to access the
+		 * <code>UserManager</code> to perform operations on the
+		 * <code>DataStore</code>.
+		 *
+		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 *                 <code>UserManager</code> instance, not null
+		 *
+		 * @return         The <code>UserBuilder</code>
+		 */
+
 		@Override
-		public UserBuilder create (DomainModel model)
+		public UserBuilder create (final ManagerProxy<User> manager)
 		{
-			return new DefaultUserBuilder ((AbstractManager<User>) model.getUserManager ());
+			return new DefaultUserBuilder (manager);
 		}
 	}
 
 	/** The logger */
 	private final Logger log;
-
-	/** <code>ElementFactory</code> to build the user */
-	private final UserElementFactory factory;
 
 	/** The user's (student) ID number */
 	private Integer idnumber;
@@ -70,18 +83,16 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	 * @param  manager The instance of the <code>UserManager</code>, not null
 	 */
 
-	protected DefaultUserBuilder (AbstractManager<User> manager)
+	protected DefaultUserBuilder (final ManagerProxy<User> manager)
 	{
 		super (manager);
-		this.factory = null;
-
-		this.clear ();
 
 		this.log = LoggerFactory.getLogger (DefaultUserBuilder.class);
+		this.clear ();
 	}
 
 	@Override
-	protected User build ()
+	public User build ()
 	{
 		if (this.idnumber == null)
 		{
@@ -107,7 +118,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new IllegalStateException ("user name not set");
 		}
 
-		return this.factory.create (this.idnumber, this.firstname, this.lastname, this.username);
+		return null; //this.factory.create (this.idnumber, this.firstname, this.lastname, this.username);
 	}
 
 	@Override
@@ -120,8 +131,12 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	}
 
 	/**
+	 * Get the (student) ID number of the <code>User</code>.  This will be the
+	 * student number, or a similar identifier used to track the <code>User</code>
+	 * by the institution from which the data was harvested.  While the ID number
+	 * is not used as the database identifier it is expected to be unique.
 	 *
-	 * @return The ID number of the user
+	 * @return An Integer representation of the ID number
 	 */
 
 	@Override
@@ -131,13 +146,15 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	}
 
 	/**
+	 * Set the (student) ID number of the <code>User</code>.
 	 *
-	 * @param  idnumber The ID number of the user, not null
-	 * @return          This <code>UserBuilder</code>
+	 * @param  idnumber The ID Number, not null
+	 *
+	 * @return A reference to this <code>UserBuilder</code>
 	 */
 
 	@Override
-	public UserBuilder setIdNumber (Integer idnumber)
+	public UserBuilder setIdNumber (final Integer idnumber)
 	{
 		if (idnumber == null)
 		{
@@ -157,7 +174,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	}
 
 	@Override
-	public UserBuilder setFirstname (String firstname)
+	public UserBuilder setFirstname (final String firstname)
 	{
 		if (firstname == null)
 		{
@@ -177,7 +194,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	}
 
 	@Override
-	public UserBuilder setLastname (String lastname)
+	public UserBuilder setLastname (final String lastname)
 	{
 		if (lastname == null)
 		{
@@ -190,26 +207,14 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 		return this;
 	}
 
-	/**
-	 * 
-	 */
-
 	@Override
 	public String getUsername ()
 	{
 		return this.username;
 	}
 
-	/**
-	 * Set the login id (username) for the user object to be built.
-	 *
-	 * @param  username                  The username of the user, not null
-	 * @return                           The Same UserBuilder instance
-	 * @throws IllegalArguementException if the username is empty
-	 */
-
 	@Override
-	public UserBuilder setUsername (String username)
+	public UserBuilder setUsername (final String username)
 	{
 		if (username == null)
 		{

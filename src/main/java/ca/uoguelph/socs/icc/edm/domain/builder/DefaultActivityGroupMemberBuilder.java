@@ -23,17 +23,34 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMemberBuilder;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 public final class DefaultActivityGroupMemberBuilder extends AbstractBuilder<Activity> implements ActivityGroupMemberBuilder
 {
-	private static final class Factory implements BuilderFactory<ActivityGroupMemberBuilder>
+	/**
+	 * Implementation of the <code>BuilderFactory</code> to create a
+	 * <code>DefaultActivityGroupMemberBuilder</code>.
+	 */
+
+	private static class Factory implements BuilderFactory<Activity, ActivityGroupMemberBuilder>
 	{
-		public ActivityGroupMemberBuilder create (DomainModel model)
+		/**
+		 * Create the <code>ElementBuilder</code>.  The supplied
+		 * <code>ManagerProxy</code> will be used by the builder to access the
+		 * <code>ActivityManager</code> to perform operations on the
+		 * <code>DataStore</code>.
+		 *
+		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 *                 <code>ActivityManager</code> instance, not null
+		 *
+		 * @return         The <code>ActivitGroupMemberyBuilder</code>
+		 */
+
+		@Override
+		public ActivityGroupMemberBuilder create (final ManagerProxy<Activity> manager)
 		{
-			return new DefaultActivityGroupMemberBuilder ((AbstractManager<Activity>) model.getActivityManager ());
+			return new DefaultActivityGroupMemberBuilder (manager);
 		}
 	}
 
@@ -46,14 +63,14 @@ public final class DefaultActivityGroupMemberBuilder extends AbstractBuilder<Act
 	/** The name of the <code>Activity</code> */
 	private String name;
 
-	public DefaultActivityGroupMemberBuilder (AbstractManager<Activity> manager)
+	public DefaultActivityGroupMemberBuilder (final ManagerProxy<Activity> manager)
 	{
 		super (manager);
 		this.log = LoggerFactory.getLogger (DefaultActivityGroupMemberBuilder.class);
 	}
 
 	@Override
-	protected Activity build ()
+	public Activity build ()
 	{
 		return null;
 	}

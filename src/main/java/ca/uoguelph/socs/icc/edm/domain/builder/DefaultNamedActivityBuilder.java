@@ -21,17 +21,34 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 public final class DefaultNamedActivityBuilder extends DefaultActivityBuilder
 {
-	private static final class Factory implements BuilderFactory<ActivityBuilder>
+	/**
+	 * Implementation of the <code>BuilderFactory</code> to create a
+	 * <code>DefaultNamedActivityBuilder</code>.
+	 */
+
+	private static class Factory implements BuilderFactory<Activity, ActivityBuilder>
 	{
-		public ActivityBuilder create (DomainModel model)
+		/**
+		 * Create the <code>ActivityBuilder</code>.  The supplied
+		 * <code>ManagerProxy</code> will be used by the builder to access the
+		 * <code>ActivityManager</code> to perform operations on the
+		 * <code>DataStore</code>.
+		 *
+		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 *                 <code>ActivityManager</code> instance, not null
+		 *
+		 * @return         The <code>ActivityBuilder</code>
+		 */
+
+		@Override
+		public ActivityBuilder create (final ManagerProxy<Activity> manager)
 		{
-			return new DefaultNamedActivityBuilder ((AbstractManager<Activity>) model.getActivityManager ());
+			return new DefaultNamedActivityBuilder (manager);
 		}
 	}
 
@@ -41,14 +58,14 @@ public final class DefaultNamedActivityBuilder extends DefaultActivityBuilder
 	/** The name of the <code>Activity</code> */
 	private String name;
 
-	public DefaultNamedActivityBuilder (AbstractManager<Activity> manager)
+	public DefaultNamedActivityBuilder (final ManagerProxy<Activity> manager)
 	{
 		super (manager);
 		this.log = LoggerFactory.getLogger (DefaultNamedActivityBuilder.class);
 	}
 
 	@Override
-	protected Activity build ()
+	public Activity build ()
 	{
 		return null;
 	}

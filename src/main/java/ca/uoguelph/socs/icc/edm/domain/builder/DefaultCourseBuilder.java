@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,26 +21,40 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 public final class DefaultCourseBuilder extends AbstractBuilder<Course> implements CourseBuilder
 {
-	private static class Factory implements BuilderFactory<CourseBuilder>
+	/**
+	 * Implementation of the <code>BuilderFactory</code> to create a
+	 * <code>DefaultCourseBuilder</code>.
+	 */
+
+	private static class Factory implements BuilderFactory<Course, CourseBuilder>
 	{
-		public CourseBuilder create (DomainModel model)
+		/**
+		 * Create the <code>CourseBuilder</code>.  The supplied
+		 * <code>ManagerProxy</code> will be used by the builder to access the
+		 * <code>CourseManager</code> to perform operations on the
+		 * <code>DataStore</code>.
+		 *
+		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 *                 <code>CourseManager</code> instance, not null
+		 *
+		 * @return         The <code>CourseBuilder</code>
+		 */
+
+		@Override
+		public CourseBuilder create (final ManagerProxy<Course> manager)
 		{
-			return new DefaultCourseBuilder ((AbstractManager<Course>) model.getCourseManager ());
+			return new DefaultCourseBuilder (manager);
 		}
 	}
 
 	/** The logger */
 	private final Logger log;
-
-	/** <code>ElementFactory</code> to build the course */
-	private final CourseElementFactory factory;
 
 	/** The name of the course */
 	private String name;
@@ -61,16 +75,15 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 		AbstractBuilder.registerBuilder (CourseBuilder.class, DefaultCourseBuilder.class, new Factory ());
 	}
 
-	protected DefaultCourseBuilder (AbstractManager<Course> manager)
+	protected DefaultCourseBuilder (final ManagerProxy<Course> manager)
 	{
 		super (manager);
 
-		this.factory = null;
 		this.log = LoggerFactory.getLogger (DefaultCourseBuilder.class);
 	}
 
 	@Override
-	protected Course build ()
+	public Course build ()
 	{
 		if (this.name == null)
 		{
@@ -90,7 +103,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 			throw new IllegalStateException ("year not set");
 		}
 
-		return this.factory.create (this.name, this.semester, this.year);
+		return null; //this.factory.create (this.name, this.semester, this.year);
 	}
 
 	@Override
@@ -108,7 +121,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	}
 
 	@Override
-	public CourseBuilder setName (String name)
+	public CourseBuilder setName (final String name)
 	{
 		if (name == null)
 		{
@@ -128,7 +141,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	}
 
 	@Override
-	public CourseBuilder setSemester (Semester semester)
+	public CourseBuilder setSemester (final Semester semester)
 	{
 		if (semester == null)
 		{
@@ -148,7 +161,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	}
 
 	@Override
-	public CourseBuilder setName (Integer year)
+	public CourseBuilder setName (final Integer year)
 	{
 		if (year == null)
 		{

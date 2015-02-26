@@ -21,25 +21,45 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+
+/**
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
 
 public final class DefaultActionBuilder extends AbstractBuilder<Action> implements ActionBuilder
 {
-	private static class Factory implements BuilderFactory<ActionBuilder>
+	/**
+	 * Implementation of the <code>BuilderFactory</code> to create a
+	 * <code>DefaultActionBuilder</code>.
+	 */
+
+	private static class Factory implements BuilderFactory<Action, ActionBuilder>
 	{
-		public ActionBuilder create (DomainModel model)
+		/**
+		 * Create the <code>ActionBuilder</code>.  The supplied
+		 * <code>ManagerProxy</code> will be used by the builder to access the
+		 * <code>ActionManager</code> to perform operations on the
+		 * <code>DataStore</code>.
+		 *
+		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 *                 <code>ActionManager</code> instance, not null
+		 *
+		 * @return         The <code>ActionBuilder</code>
+		 */
+
+		@Override
+		public ActionBuilder create (final ManagerProxy<Action> manager)
 		{
-			return new DefaultActionBuilder ((AbstractManager<Action>) model.getActionManager ());
+			return new DefaultActionBuilder (manager);
 		}
 	}
 
 	/** The logger */
 	private final Logger log;
-
-	/** <code>ElementFactory</code> to build the action */
-	private final ActionElementFactory factory;
 
 	/** The name of the Action */
 	private String name;
@@ -54,16 +74,15 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 		AbstractBuilder.registerBuilder (ActionBuilder.class, DefaultActionBuilder.class, new Factory ());
 	}
 
-	protected DefaultActionBuilder (AbstractManager<Action> manager)
+	protected DefaultActionBuilder (final ManagerProxy<Action> manager)
 	{
 		super (manager);
 
-		this.factory = null;
 		this.log = LoggerFactory.getLogger (DefaultActionBuilder.class);
 	}
 
 	@Override
-	protected Action build ()
+	public Action build ()
 	{
 		if (this.name == null)
 		{
@@ -71,7 +90,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 			throw new IllegalStateException ("name not set");		
 		}
 
-		return this.factory.create (this.name);
+		return null; //this.factory.create (this.name);
 	}
 
 	@Override
@@ -87,7 +106,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 	}
 
 	@Override
-	public ActionBuilder setName (String name)
+	public ActionBuilder setName (final String name)
 	{
 		if (name == null)
 		{

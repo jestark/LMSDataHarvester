@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,29 +20,42 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.GradeBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements GradeBuilder
 {
-	private static class Factory implements BuilderFactory<GradeBuilder>
+	/**
+	 * Implementation of the <code>BuilderFactory</code> to create a
+	 * <code>DefaultGradeBuilder</code>.
+	 */
+
+	private static class Factory implements BuilderFactory<Grade, GradeBuilder>
 	{
+		/**
+		 * Create the <code>GradeBuilder</code>.  The supplied
+		 * <code>ManagerProxy</code> will be used by the builder to access the
+		 * <code>GradeManager</code> to perform operations on the
+		 * <code>DataStore</code>.
+		 *
+		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 *                 <code>GradeManager</code> instance, not null
+		 *
+		 * @return         The <code>GradeBuilder</code>
+		 */
+
 		@Override
-		public GradeBuilder create (DomainModel model)
+		public GradeBuilder create (final ManagerProxy<Grade> manager)
 		{
-			return new DefaultGradeBuilder ((AbstractManager<Grade>) null);
+			return new DefaultGradeBuilder (manager);
 		}
 	}
 
 	/** The logger */
 	private final Logger log;
-
-	/** <code>ElementFactory</code> to build the user */
-	private final GradeElementFactory factory;
 
 	/** The activity associated with the grade */
 	private Activity activity;
@@ -63,18 +76,17 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 		AbstractBuilder.registerBuilder (GradeBuilder.class, DefaultGradeBuilder.class, new Factory ());
 	}
 
-	protected DefaultGradeBuilder (AbstractManager<Grade> manager)
+	protected DefaultGradeBuilder (final ManagerProxy<Grade> manager)
 	{
 		super (manager);
-		this.factory = null;
+		
+		this.log = LoggerFactory.getLogger (DefaultGradeBuilder.class);
 
 		this.clear ();
-
-		this.log = LoggerFactory.getLogger (DefaultGradeBuilder.class);
 	}
 
 	@Override
-	protected Grade build ()
+	public Grade build ()
 	{
 		if (this.activity == null)
 		{
@@ -94,7 +106,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 			throw new IllegalStateException ("grade not set");
 		}
 
-		return this.factory.create (this.enrolment, this.activity, this.grade);
+		return null; //this.factory.create (this.enrolment, this.activity, this.grade);
 	}
 
 	@Override
@@ -112,7 +124,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	}
 
 	@Override
-	public GradeBuilder setActivity (Activity activity)
+	public GradeBuilder setActivity (final Activity activity)
 	{
 		if (grade == null)
 		{
@@ -132,7 +144,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	}
 
 	@Override
-	public GradeBuilder setEnrolment (Enrolment enrolment)
+	public GradeBuilder setEnrolment (final Enrolment enrolment)
 	{
 		if (grade == null)
 		{
@@ -152,7 +164,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	}
 
 	@Override
-	public GradeBuilder setGrade (Integer grade)
+	public GradeBuilder setGrade (final Integer grade)
 	{
 		if (grade == null)
 		{

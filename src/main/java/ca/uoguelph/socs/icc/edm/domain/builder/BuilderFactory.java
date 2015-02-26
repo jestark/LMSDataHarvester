@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,12 +16,39 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
-public interface BuilderFactory<T>
+/**
+ * Create an <code>ElementBuilder</code> which will create new
+ * <code>Element</code> instances against the <code>DataStore</code>.
+ * Implementations of this interface are intended to be used with the
+ * <code>registerFactory</code> and <code>getInstance</code> methods in the
+ * <code>AbstractBuilder</code> to create a specific
+ * <code>ElementBuilder</code>.
+ *
+ * @author  James E. Stark
+ * @version 1.1
+ * @param   <T> The <code>Element</code> type of the factory
+ * @param   <U> The type of <code>ElementBuilder</code> returned by the factory
+ * @see     AbstractBuilder
+ */
+
+public interface BuilderFactory<T extends Element, U extends ElementBuilder<T>>
 {
-	public abstract T create (DomainModel model);
+	/**
+	 * Create the <code>ElementBuilder</code>.  The supplied
+	 * <code>ManagerProxy</code> will be used by the builder to access the
+	 * <code>ElementManager</code> to perform operations on the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  manager The <code>ManagerProxy</code> used to the 
+	 *                 <code>ElementManager</code> instance, not null
+	 *
+	 * @return         The <code>ElementBuilder</code>
+	 */
+
+	public abstract U create (ManagerProxy<T> manager);
 }

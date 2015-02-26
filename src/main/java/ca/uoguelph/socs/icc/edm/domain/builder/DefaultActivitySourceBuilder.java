@@ -21,25 +21,39 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 public final class DefaultActivitySourceBuilder extends AbstractBuilder<ActivitySource> implements ActivitySourceBuilder
 {
-	private static class Factory implements BuilderFactory<ActivitySourceBuilder>
+	/**
+	 * Implementation of the <code>BuilderFactory</code> to create a
+	 * <code>DefaultActivitySourceBuilder</code>.
+	 */
+
+	private static class Factory implements BuilderFactory<ActivitySource, ActivitySourceBuilder>
 	{
-		public ActivitySourceBuilder create (DomainModel model)
+		/**
+		 * Create the <code>ActivitySourceBuilder</code>.  The supplied
+		 * <code>ManagerProxy</code> will be used by the builder to access the
+		 * <code>ActivitySourceManager</code> to perform operations on the
+		 * <code>DataStore</code>.
+		 *
+		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 *                 <code>ActivitySourceManager</code> instance, not null
+		 *
+		 * @return         The <code>ActivitySourceBuilder</code>
+		 */
+
+		@Override
+		public ActivitySourceBuilder create (final ManagerProxy<ActivitySource> manager)
 		{
-			return new DefaultActivitySourceBuilder ((AbstractManager<ActivitySource>) model.getActivitySourceManager ());
+			return new DefaultActivitySourceBuilder (manager);
 		}
 	}
 
 	/** The logger */
 	private final Logger log;
-
-	/** <code>ElementFactory</code> to build the activity source */
-	private final ActivitySourceElementFactory factory;
 
 	/** The name of the Activity Source */
 	private String name;
@@ -54,16 +68,15 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 		AbstractBuilder.registerBuilder (ActivitySourceBuilder.class, DefaultActivitySourceBuilder.class, new Factory ());
 	}
 
-	protected DefaultActivitySourceBuilder (AbstractManager<ActivitySource> manager)
+	protected DefaultActivitySourceBuilder (final ManagerProxy<ActivitySource> manager)
 	{
 		super (manager);
 
-		this.factory = null;
 		this.log = LoggerFactory.getLogger (DefaultActivitySourceBuilder.class);
 	}
 
 	@Override
-	protected ActivitySource build ()
+	public ActivitySource build ()
 	{
 		if (this.name == null)
 		{
@@ -71,7 +84,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 			throw new IllegalStateException ("name not set");		
 		}
 
-		return this.factory.create (this.name);
+		return null; //this.factory.create (this.name);
 	}
 
 	@Override
@@ -87,7 +100,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	}
 
 	@Override
-	public ActivitySourceBuilder setName (String name)
+	public ActivitySourceBuilder setName (final String name)
 	{
 		if (name == null)
 		{

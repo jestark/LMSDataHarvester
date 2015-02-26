@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,28 +23,42 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
+import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> implements LogEntryBuilder
 {
-	private static class Factory implements BuilderFactory<LogEntryBuilder>
+	/**
+	 * Implementation of the <code>BuilderFactory</code> to create a
+	 * <code>DefaultLogEntryBuilder</code>.
+	 */
+
+	private static class Factory implements BuilderFactory<LogEntry, LogEntryBuilder>
 	{
-		public LogEntryBuilder create (DomainModel model)
+		/**
+		 * Create the <code>LogEntryBuilder</code>.  The supplied
+		 * <code>ManagerProxy</code> will be used by the builder to access the
+		 * <code>LogEntryManager</code> to perform operations on the
+		 * <code>DataStore</code>.
+		 *
+		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 *                 <code>LogEntryManager</code> instance, not null
+		 *
+		 * @return         The <code>LogEntryBuilder</code>
+		 */
+
+		@Override
+		public LogEntryBuilder create (final ManagerProxy<LogEntry> manager)
 		{
-			return new DefaultLogEntryBuilder ((AbstractManager<LogEntry>) model.getLogEntryManager ());
+			return new DefaultLogEntryBuilder (manager);
 		}
 	}
 
 	/** The logger */
 	private final Logger log;
-
-	/** <code>ElementFactory</code> to build the log entry */
-	private final LogEntryElementFactory factory;
 
 	/** The <code>Action</code> performed by the user */
 	private Action action;
@@ -71,16 +85,15 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 		AbstractBuilder.registerBuilder (LogEntryBuilder.class, DefaultLogEntryBuilder.class, new Factory ());
 	}
 
-	protected DefaultLogEntryBuilder (AbstractManager<LogEntry> manager)
+	protected DefaultLogEntryBuilder (final ManagerProxy<LogEntry> manager)
 	{
 		super (manager);
 
-		this.factory = null;
 		this.log = LoggerFactory.getLogger (DefaultLogEntryBuilder.class);
 	}
 
 	@Override
-	protected LogEntry build ()
+	public LogEntry build ()
 	{
 		if (this.action == null)
 		{
@@ -100,7 +113,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 			throw new IllegalStateException ("enrolment not set");
 		}
 
-		return this.factory.create (this.action, this.activity, this.enrolment, this.ipaddress, this.time);
+		return null; //this.factory.create (this.action, this.activity, this.enrolment, this.ipaddress, this.time);
 	}
 
 	@Override
@@ -120,7 +133,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	}
 
 	@Override
-	public LogEntryBuilder setAction (Action action)
+	public LogEntryBuilder setAction (final Action action)
 	{
 		if (action == null)
 		{
@@ -140,7 +153,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	}
 
 	@Override
-	public LogEntryBuilder setActivity (Activity activity)
+	public LogEntryBuilder setActivity (final Activity activity)
 	{
 		if (activity == null)
 		{
@@ -160,7 +173,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	}
 
 	@Override
-	public LogEntryBuilder setEnrolment (Enrolment enrolment)
+	public LogEntryBuilder setEnrolment (final Enrolment enrolment)
 	{
 		if (enrolment == null)
 		{
@@ -180,7 +193,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	}
 
 	@Override
-	public LogEntryBuilder setTime (Date time)
+	public LogEntryBuilder setTime (final Date time)
 	{
 		if (time == null)
 		{
@@ -201,7 +214,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	}
 
 	@Override
-	public LogEntryBuilder setIPAddress (String ipaddress)
+	public LogEntryBuilder setIPAddress (final String ipaddress)
 	{
 		if (ipaddress != null)
 		{
