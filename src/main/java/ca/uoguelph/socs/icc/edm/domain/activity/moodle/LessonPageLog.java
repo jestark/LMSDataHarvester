@@ -81,7 +81,7 @@ class LessonPageLog extends LogReference
 
 	static
 	{
-		LogReference.registerLog (LessonPageLog.class, new Factory ());
+		LogReference.registerLog (LessonPageLog.class, LogReferenceElementFactory.class, new Factory ());
 	}
 
 	/**

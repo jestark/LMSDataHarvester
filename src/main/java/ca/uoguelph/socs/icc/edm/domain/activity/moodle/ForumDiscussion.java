@@ -22,6 +22,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityGroupMemberBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
@@ -93,7 +94,7 @@ public class ForumDiscussion extends GenericGroupedActivityGroup
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (ForumDiscussion.class, Forum.class, DefaultActivityGroupMemberBuilder.class, new Factory ());
+		GenericGroupedActivityMember.registerActivity (ForumDiscussion.class, Forum.class, DefaultActivityGroupMemberBuilder.class, ActivityGroupMemberElementFactory.class, new Factory ());
 	}
 
 	/** Serial version id, required by the Serializable interface */

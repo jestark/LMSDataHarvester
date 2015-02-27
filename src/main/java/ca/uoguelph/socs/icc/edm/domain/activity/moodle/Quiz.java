@@ -21,6 +21,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
@@ -82,7 +83,7 @@ public class Quiz extends GenericNamedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Quiz.class, DefaultNamedActivityBuilder.class, new Factory (), "moodle", "Quiz");
+		GenericNamedActivity.registerActivity (Quiz.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "Quiz");
 	}
 
 	/**

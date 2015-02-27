@@ -149,7 +149,7 @@ public class UserData extends AbstractElement implements User, Serializable
 
 	static
 	{
-		AbstractElement.registerElement (User.class, UserData.class, DefaultUserBuilder.class, new Factory ());
+		AbstractElement.registerElement (User.class, UserData.class, DefaultUserBuilder.class, UserElementFactory.class, new Factory ());
 	}
 
 	/**

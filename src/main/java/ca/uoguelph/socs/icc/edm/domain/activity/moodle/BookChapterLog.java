@@ -81,7 +81,7 @@ class BookChapterLog extends LogReference
 
 	static
 	{
-		LogReference.registerLog (BookChapterLog.class, new Factory ());
+		LogReference.registerLog (BookChapterLog.class, LogReferenceElementFactory.class, new Factory ());
 	}
 
 	/**

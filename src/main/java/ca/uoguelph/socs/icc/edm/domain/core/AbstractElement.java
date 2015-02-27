@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.core;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
+import ca.uoguelph.socs.icc.edm.domain.builder.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.QueryFactory;
@@ -69,17 +70,17 @@ public abstract class AbstractElement implements Element
 	 * <code>QueryFactory</code>.
 	 *
 	 * @param  <T>  The interface type of the <code>Element</code>
-	 * @param  <X>  The implementation type of the <code>Element</code>
-	 * @param  type The <code>Element</code> interface class, not null
-	 * @param  impl The <code>Element</code> implementation class, not null
+	 * @param  <U>  The implementation type of the <code>Element</code>
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  elementImpl The <code>Element</code> implementation class, not null
 	 */
 
-	protected static <T extends Element, X extends T> void registerQuery (final Class<T> type, final Class<X> impl)
+	protected static <T extends Element, U extends T> void registerQuery (final Class<T> element, final Class<U> elementImpl)
 	{
-		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
+		assert element != null : "element is NULL";
+		assert elementImpl != null : "elementImpl is NULL";
 
-		(QueryFactory.getInstance ()).registerClass (type, impl);
+		(QueryFactory.getInstance ()).registerClass (element, elementImpl);
 	}
 
 	/**
@@ -88,16 +89,20 @@ public abstract class AbstractElement implements Element
 	 * <code>ElementBuilder</code> factory.
 	 *
 	 * @param  <T>     The interface type of the <code>Element</code>
-	 * @param  <X>     The implementation type of the <code>Element</code>
-	 * @param  impl    The implementation class, not null
+	 * @param  <U>     The implementation type of the <code>Element</code>
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  elementImpl The <code>Element</code> implementation class, not null
 	 * @param  builder The <code>ElementBuilder</code> implementation class, not
 	 *                 null
 	 */
 
-	protected static <T extends Element, X extends T> void registerBuilder (final Class<X> impl, final Class<? extends ElementBuilder<T>> builder)
+	protected static <T extends ElementBuilder<U>, U extends Element> void registerBuilder (final Class<U> element, final Class<? extends U> elementImpl, final Class<T> builder)
 	{
-		assert impl != null : "impl is NULL";
+		assert element != null : "element is NULL";
+		assert elementImpl != null : "elementImpl is NULL";
 		assert builder != null : "builder is NULL";
+
+		AbstractBuilder.registerElement (elementImpl, builder);
 	}
 
 	/**
@@ -111,10 +116,14 @@ public abstract class AbstractElement implements Element
 	 * @param  factory The <code>ElementFactory</code> to register, not null
 	 */
 
-	protected static <T extends Element, X extends T> void registerFactory (final Class<X> impl, final ElementFactory<T> factory)
+	protected static <T extends ElementFactory<U>, U extends Element> void registerFactory (final Class<U> element, final Class<? extends U> elementImpl, final Class<T> factory, final T factoryImpl)
 	{
-		assert impl != null : "impl is NULL";
+		assert element != null : "element is NULL";
+		assert elementImpl != null : "elementImpl is NULL";
 		assert factory != null : "factory is NULL";
+		assert factoryImpl != null : "factoryImpl is NULL";
+
+		AbstractBuilder.registerFactory (elementImpl, factory, factoryImpl);
 	}
 
 	/**
@@ -126,16 +135,17 @@ public abstract class AbstractElement implements Element
 	 * @param  factory The <code>ElementFactory</code>, instance not null
 	 */
 
-	protected static <T extends Element, X extends T> void registerElement (final Class<T> type, final Class<X> impl, final Class<? extends ElementBuilder<T>> builder, final ElementFactory<T> factory)
+	protected static <R extends Element, S extends R, T extends ElementBuilder<R>, U extends ElementFactory<R>> void registerElement (final Class<R> element, final Class<S> elementImpl, final Class<T> builder, final Class<U> factory, final U factoryImpl)
 	{
-		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
+		assert element != null : "element is NULL";
+		assert elementImpl != null : "elementImpl is NULL";
 		assert builder != null : "builder is NULL";
 		assert factory != null : "factory is NULL";
+		assert factoryImpl != null : "factoryImpl is NULL";
 
-		registerBuilder (impl, builder);
-		registerFactory (impl, factory);
-		registerQuery (type, impl);
+		registerQuery (element, elementImpl);
+		registerBuilder (element, elementImpl, builder);
+		registerFactory (element, elementImpl, factory, factoryImpl);
 	}
 
 	/**

@@ -23,6 +23,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
+import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
@@ -97,7 +98,7 @@ public class ${ClassName} extends GenericGroupedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (${ClassName}.class, ${Builder}.class, new Factory (), "${ActivitySource}", "${ActivityType}");
+		GenericNamedActivity.registerActivity (${ClassName}.class, ${Builder}.class, NamedActivityElementFactory.class, new Factory (), "${ActivitySource}", "${ActivityType}");
 	}
 
 	/**

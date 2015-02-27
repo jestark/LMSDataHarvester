@@ -87,7 +87,7 @@ public class LessonPage extends GenericGroupedActivityMember
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (LessonPage.class, Lesson.class, DefaultActivityGroupMemberBuilder.class, new Factory ());
+		GenericGroupedActivityMember.registerActivity (LessonPage.class, Lesson.class, DefaultActivityGroupMemberBuilder.class, ActivityGroupMemberElementFactory.class, new Factory ());
 	}
 
 	/**

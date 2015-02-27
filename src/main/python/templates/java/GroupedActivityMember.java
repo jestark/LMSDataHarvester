@@ -87,7 +87,7 @@ public class ${ClassName} extends GenericGroupedActivityMember
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (${ClassName}.class, ${ParentClass}.class, ${Builder}.class, new Factory ());
+		GenericGroupedActivityMember.registerActivity (${ClassName}.class, ${ParentClass}.class, ${Builder}.class, ActivityGroupMemberElementFactory.class, new Factory ());
 	}
 
 	/**

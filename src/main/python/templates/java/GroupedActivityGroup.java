@@ -22,6 +22,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
+import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
@@ -93,7 +94,7 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (${ClassName}.class, ${ParentClass}.class, ${Builder}.class, new Factory ());
+		GenericGroupedActivityMember.registerActivity (${ClassName}.class, ${ParentClass}.class, ${Builder}.class, ActivityGroupMemberElementFactory.class, new Factory ());
 	}
 
 	/** Serial version id, required by the Serializable interface */

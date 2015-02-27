@@ -186,7 +186,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 	static
 	{
-		AbstractElement.registerElement (Course.class, CourseData.class, DefaultCourseBuilder.class, new Factory ());
+		AbstractElement.registerElement (Course.class, CourseData.class, DefaultCourseBuilder.class, CourseElementFactory.class, new Factory ());
 	}
 
 	/**

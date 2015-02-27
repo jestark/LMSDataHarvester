@@ -216,7 +216,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 
 	static
 	{
-		AbstractElement.registerElement (Enrolment.class, EnrolmentData.class, DefaultEnrolmentBuilder.class, new Factory ());
+		AbstractElement.registerElement (Enrolment.class, EnrolmentData.class, DefaultEnrolmentBuilder.class, EnrolmentElementFactory.class, new Factory ());
 	}
 
 	/**

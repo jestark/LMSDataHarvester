@@ -67,24 +67,26 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	 * factories.  This method handles the registrations for the subclasses to
 	 * reduce code duplication.
 	 *
-	 * @param  impl    The implementation class, not null
-	 * @param  parent  The parent <code>Activity</code> class, not null
-	 * @param  builder The <code>ActivityGroupMemberBuilder</code> implementation,
-	 *                 not null
-	 * @param  factory The <code>ElementFactory</code>, not null
+	 * @param  elementImpl The implementation class, not null
+	 * @param  parent      The parent <code>Activity</code> class, not null
+	 * @param  builder     The <code>ActivityGroupMemberBuilder</code>
+	 *                     implementation, not null
+	 * @param  factory     The <code>ElementFactory</code> interface, not null
+	 * @param  factoryImpl The <code>ElementFactory</code>, not null
 	 */
 
-	protected static final <T extends GenericGroupedActivityMember> void registerActivity (final Class<T> impl, final Class<? extends ActivityGroup> parent, final Class<? extends ActivityGroupMemberBuilder> builder, final ActivityGroupMemberElementFactory factory)
+	protected static final <S extends ActivityGroupMember, T extends ActivityGroupMemberBuilder, U extends ActivityGroupMemberElementFactory> void registerActivity (final Class<S> elementImpl, final Class<? extends ActivityGroup> parent, final Class<T> builder, final Class<U> factory, final U factoryImpl)
 	{
-		assert impl != null : "Implementation Class is NULL";
-		assert parent != null : "Parent Class is NULL";
-		assert builder != null : "Builder is NULL";
-		assert factory != null : "Factory is NULL";
+		assert elementImpl != null : "elementImpl is NULL";
+		assert parent != null : "parent Class is NULL";
+		assert builder != null : "builder is NULL";
+		assert factory != null : "factory is NULL";
+		assert factoryImpl != null : "factoryImpl is NULL";
 
-		(ActivityDataMap.getInstance ()).registerRelationship (parent, impl);
+		(ActivityDataMap.getInstance ()).registerRelationship (parent, elementImpl);
 
-		AbstractElement.registerBuilder (impl, builder);
-		AbstractElement.registerFactory (impl, factory);
+		AbstractElement.registerBuilder (Activity.class, elementImpl, builder);
+		AbstractElement.registerFactory (Activity.class, elementImpl, factory, factoryImpl);
 	}
 
 	/**

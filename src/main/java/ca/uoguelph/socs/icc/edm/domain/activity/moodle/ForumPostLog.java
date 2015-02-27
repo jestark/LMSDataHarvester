@@ -81,7 +81,7 @@ class ForumPostLog extends LogReference
 
 	static
 	{
-		LogReference.registerLog (ForumPostLog.class, new Factory ());
+		LogReference.registerLog (ForumPostLog.class, LogReferenceElementFactory.class, new Factory ());
 	}
 
 	/**

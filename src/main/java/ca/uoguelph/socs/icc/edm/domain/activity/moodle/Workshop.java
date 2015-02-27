@@ -23,6 +23,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
@@ -97,7 +98,7 @@ public class Workshop extends GenericGroupedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Workshop.class, DefaultNamedActivityBuilder.class, new Factory (), "moodle", "Workshop");
+		GenericNamedActivity.registerActivity (Workshop.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "Workshop");
 	}
 
 	/**

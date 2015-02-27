@@ -21,6 +21,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
@@ -82,7 +83,7 @@ public class Resource extends GenericNamedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Resource.class, DefaultNamedActivityBuilder.class, new Factory (), "moodle", "Resource");
+		GenericNamedActivity.registerActivity (Resource.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "Resource");
 	}
 
 	/**

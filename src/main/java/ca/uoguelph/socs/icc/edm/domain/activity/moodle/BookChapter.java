@@ -87,7 +87,7 @@ public class BookChapter extends GenericGroupedActivityMember
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (BookChapter.class, Book.class, DefaultActivityGroupMemberBuilder.class, new Factory ());
+		GenericGroupedActivityMember.registerActivity (BookChapter.class, Book.class, DefaultActivityGroupMemberBuilder.class, ActivityGroupMemberElementFactory.class, new Factory ());
 	}
 
 	/**

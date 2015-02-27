@@ -81,7 +81,7 @@ class WorkshopSubmissionLog extends LogReference
 
 	static
 	{
-		LogReference.registerLog (WorkshopSubmissionLog.class, new Factory ());
+		LogReference.registerLog (WorkshopSubmissionLog.class, LogReferenceElementFactory.class, new Factory ());
 	}
 
 	/**

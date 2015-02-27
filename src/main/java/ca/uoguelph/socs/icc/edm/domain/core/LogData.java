@@ -134,7 +134,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 
 	static
 	{
-		AbstractElement.registerElement (LogEntry.class, LogData.class, DefaultLogEntryBuilder.class, new Factory ());
+		AbstractElement.registerElement (LogEntry.class, LogData.class, DefaultLogEntryBuilder.class, LogEntryElementFactory.class, new Factory ());
 	}
 
 	/**

@@ -81,7 +81,7 @@ public class RoleData extends AbstractElement implements Role, Serializable
 
 	static
 	{
-		AbstractElement.registerElement (Role.class, RoleData.class, DefaultRoleBuilder.class, new Factory ());
+		AbstractElement.registerElement (Role.class, RoleData.class, DefaultRoleBuilder.class, RoleElementFactory.class, new Factory ());
 	}
 
 	/**

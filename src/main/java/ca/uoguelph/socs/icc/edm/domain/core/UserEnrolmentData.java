@@ -187,7 +187,7 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 
 	static
 	{
-		AbstractElement.registerElement (Enrolment.class, UserEnrolmentData.class, DefaultEnrolmentBuilder.class, new Factory ());
+		AbstractElement.registerElement (Enrolment.class, UserEnrolmentData.class, DefaultEnrolmentBuilder.class, EnrolmentElementFactory.class, new Factory ());
 	}
 
 	/**

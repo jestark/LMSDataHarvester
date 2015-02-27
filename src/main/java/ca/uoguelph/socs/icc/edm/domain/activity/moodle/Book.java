@@ -23,6 +23,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
@@ -97,7 +98,7 @@ public class Book extends GenericGroupedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Book.class, DefaultNamedActivityBuilder.class, new Factory (), "moodle", "Book");
+		GenericNamedActivity.registerActivity (Book.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "Book");
 	}
 
 	/**

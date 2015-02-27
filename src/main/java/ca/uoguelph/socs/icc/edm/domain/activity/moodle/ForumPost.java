@@ -87,7 +87,7 @@ public class ForumPost extends GenericGroupedActivityMember
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (ForumPost.class, ForumDiscussion.class, DefaultActivityGroupMemberBuilder.class, new Factory ());
+		GenericGroupedActivityMember.registerActivity (ForumPost.class, ForumDiscussion.class, DefaultActivityGroupMemberBuilder.class, ActivityGroupMemberElementFactory.class, new Factory ());
 	}
 
 	/**

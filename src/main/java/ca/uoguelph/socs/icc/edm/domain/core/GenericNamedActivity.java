@@ -127,19 +127,20 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	 * @param  type    The name of the <code>ActivityType</code> not null
 	 */
 
-	protected static final <T extends GenericNamedActivity> void registerActivity (final Class<T> impl, final Class<? extends ActivityBuilder> builder, final NamedActivityElementFactory factory, final String source, final String type)
+	protected static final <S extends Activity, T extends ActivityBuilder, U extends NamedActivityElementFactory> void registerActivity (final Class<S> elementImpl, final Class<T> builder, final Class<U> factory, final U factoryImpl, final String source, final String type)
 	{
-		assert impl != null : "Implementation Class is NULL";
-		assert builder != null : "Builder is NULL";
-		assert factory != null : "Factory is NULL";	
+		assert elementImpl != null : "elementImpl Class is NULL";
+		assert builder != null : "builder is NULL";
+		assert factory != null : "factory is NULL";	
+		assert factoryImpl != null : "factoryImpl is NULL";	
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
 		
-		(ActivityDataMap.getInstance ()).registerElement (source, type, impl);
+		(ActivityDataMap.getInstance ()).registerElement (source, type, elementImpl);
 
-		AbstractElement.registerBuilder (impl, builder);
-		AbstractElement.registerFactory (impl, factory);
-		AbstractElement.registerQuery (Activity.class, impl);
+		AbstractElement.registerQuery (Activity.class, elementImpl);
+		AbstractElement.registerBuilder (Activity.class, elementImpl, builder);
+		AbstractElement.registerFactory (Activity.class, elementImpl, factory, factoryImpl);
 	}
 
 	/**

@@ -87,7 +87,7 @@ public class WorkshopSubmission extends GenericGroupedActivityMember
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (WorkshopSubmission.class, Workshop.class, DefaultActivityGroupMemberBuilder.class, new Factory ());
+		GenericGroupedActivityMember.registerActivity (WorkshopSubmission.class, Workshop.class, DefaultActivityGroupMemberBuilder.class, ActivityGroupMemberElementFactory.class, new Factory ());
 	}
 
 	/**

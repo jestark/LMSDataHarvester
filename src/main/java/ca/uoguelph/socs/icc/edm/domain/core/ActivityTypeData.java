@@ -140,7 +140,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 
 	static
 	{
-		AbstractElement.registerElement (ActivityType.class, ActivityTypeData.class, DefaultActivityTypeBuilder.class, new Factory ());
+		AbstractElement.registerElement (ActivityType.class, ActivityTypeData.class, DefaultActivityTypeBuilder.class, ActivityTypeElementFactory.class, new Factory ());
 	}
 
 	/**

@@ -81,7 +81,7 @@ class ${ClassName} extends LogReference
 
 	static
 	{
-		LogReference.registerLog (${ClassName}.class, new Factory ());
+		LogReference.registerLog (${ClassName}.class, LogReferenceElementFactory.class, new Factory ());
 	}
 
 	/**

@@ -93,12 +93,13 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * @param  factory The <code>ElementFactory</code>, not null
 	 */	
 
-	protected static final void registerLog (final Class<? extends LogReference> impl, final LogReferenceElementFactory factory)
+	protected static final <T extends LogReference, U extends LogReferenceElementFactory> void registerLog (final Class<T> elementImpl, final Class<U> factory, final U factoryImpl)
 	{
-		assert impl != null : "Implementation class is NULL";
+		assert elementImpl != null : "elementImpl is NULL";
 		assert factory != null : "factory is NULL";
+		assert factoryImpl != null : "factoryImpl is NULL";
 
-		AbstractElement.registerFactory (impl, factory);
+		AbstractElement.registerFactory (LogEntry.class, elementImpl, factory, factoryImpl);
 	}
 
 	/**

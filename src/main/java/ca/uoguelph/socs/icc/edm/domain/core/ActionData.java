@@ -131,7 +131,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 
 	static
 	{
-		AbstractElement.registerElement (Action.class, ActionData.class, DefaultActionBuilder.class, new Factory ());
+		AbstractElement.registerElement (Action.class, ActionData.class, DefaultActionBuilder.class, ActionElementFactory.class, new Factory ());
 	}
 
 	/**

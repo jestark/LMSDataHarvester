@@ -222,7 +222,7 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 
 	static
 	{
-		AbstractElement.registerElement (Activity.class, ActivityInstance.class, DefaultActivityBuilder.class, new Factory ());
+		AbstractElement.registerElement (Activity.class, ActivityInstance.class, DefaultActivityBuilder.class, ActivityElementFactory.class, new Factory ());
 	}
 
 	/**

@@ -134,7 +134,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 
 	static
 	{
-		AbstractElement.registerElement (ActivitySource.class, ActivitySourceData.class, DefaultActivitySourceBuilder.class, new Factory ());
+		AbstractElement.registerElement (ActivitySource.class, ActivitySourceData.class, DefaultActivitySourceBuilder.class, ActivitySourceElementFactory.class, new Factory ());
 	}
 
 	/**
