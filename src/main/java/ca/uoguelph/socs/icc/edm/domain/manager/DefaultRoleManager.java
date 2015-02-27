@@ -24,12 +24,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
+import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
 import ca.uoguelph.socs.icc.edm.domain.RoleManager;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
+ * Default implementation of the <code>RoleManager</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -78,7 +80,7 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 	 * Create the <code>DefaultRoleManager</code>.
 	 *
 	 * @param  datastore The instance of the <code>DataStore</code> upon which the
-	 *               <code>DefaultRoleManager</code> will operate, not null
+	 *                   <code>DefaultRoleManager</code> will operate, not null
 	 */
 
 	public DefaultRoleManager (final DataStore datastore)
@@ -86,6 +88,19 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 		super (Role.class, datastore);
 
 		this.log = LoggerFactory.getLogger (RoleManager.class);
+	}
+
+	/**
+	 * Get an instance of the <code>RoleBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
+	 *
+	 * @return An <code>RoleBuilder</code> instance
+	 */
+
+	@Override
+	public RoleBuilder getBuilder ()
+	{
+		return this.getBuilder (RoleBuilder.class);
 	}
 
 	/**

@@ -24,17 +24,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
+import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySourceManager;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * 
+ * Default implementation of the <code>ActivitySourceManager</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.ActivitySource
  */
 
 public final class DefaultActivitySourceManager extends AbstractManager<ActivitySource> implements ActivitySourceManager
@@ -92,6 +92,19 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 	}
 
 	/**
+	 * Get an instance of the <code>ActivitySourceBuilder</code> interface,
+	 * suitable for use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>ActivitySourceBuilder</code> instance
+	 */
+
+	@Override
+	public ActivitySourceBuilder getBuilder ()
+	{
+		return this.getBuilder (ActivitySourceBuilder.class);
+	}
+
+	/**
 	 * Retrieve an <code>ActivitySource</code> from the <code>DataStore</code>
 	 * which identifies the same as the specified <code>ActivitySource</code>.
 	 *
@@ -124,11 +137,12 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 
 	/**
 	 * Retrieve the <code>ActivitySource</code> object associated with the
-	 * specified name from the underlying <code>DataStore</code>.
+	 * specified name from the <code>DataStore</code>.
 	 *
 	 * @param  name The name of the <code>ActivitySource</code> to retrieve, not
 	 *              null
-	 * @return      The <code>ActivitySource</code> object associated with the
+	 *
+	 * @return      The <code>ActivitySource</code> instance associated with the
 	 *              specified name
 	 */
 

@@ -22,7 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ElementManager;
+
+import ca.uoguelph.socs.icc.edm.domain.builder.AbstractBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
@@ -101,6 +104,11 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 		this.log.trace ("Get query object for class: {}", impl);
 
 		return (QueryFactory.getInstance ()).create (this.type, impl, this.datastore);
+	}
+
+	protected final <B extends ElementBuilder<T>> B getBuilder (final Class<B> builder)
+	{
+		return AbstractBuilder.getInstance (builder, (this.datastore.getProfile ()).getImplClass (this.type), new ManagerProxy<T> (this));
 	}
 
 	/**

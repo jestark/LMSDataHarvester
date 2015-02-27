@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,22 +17,32 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 /**
- * Create, insert and remove actions from the domain model.  Through
- * implementations of this interface, Actions can be added to or removed
- * from the domain model.
+ * Manage <code>Action</code> instances in the <code>DataStore</code>.  This
+ * interface extends <code>ElementManager</code> with the extra functionality
+ * required to handle <code>Action</code> instances.
  *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
- * @see     Action
+ * @see     ActionBuilder
  */
 
 public interface ActionManager extends ElementManager<Action>
 {
 	/**
+	 * Get an instance of the <code>ActionBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
+	 *
+	 * @return An <code>ActionBuilder</code> instance
+	 */
+
+	public abstract ActionBuilder getBuilder ();
+
+	/**
 	 * Retrieve the Action with the specified name from the data-store.
 	 *
 	 * @param  name The name of the <code>Action</code> to retrieve, not null
-	 * @return      The <code>Action</code> associated with the specified name.
+	 *
+	 * @return      The <code>Action</code> associated with the specified name
 	 */
 
 	public abstract Action fetchByName (String name);

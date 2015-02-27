@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,29 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 
 /**
+ * Manage <code>Activity</code> instances in the <code>DataStore</code>.  This
+ * interface extends <code>ElementManager</code> with the extra functionality
+ * required to handle <code>Activity</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Activity
+ * @see     ActivityBuilder
  */
 
 public interface ActivityManager extends ElementManager<Activity>
 {
 	/**
-	 * Get a list of all of the activities which are associated with a particular
-	 * <code>ActivityType</code>.
+	 * Get an instance of the <code>ActivityBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>ActivityBuilder</code> instance
+	 */
+
+	public abstract ActivityBuilder getBuilder ();
+
+	/**
+	 * Get a <code>List</code> of all of the <code>Activity</code> instances which
+	 * are associated with a particular <code>ActivityType</code>.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null
 	 */

@@ -17,13 +17,13 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 /**
- * Create, Insert and remove users from the <code>DataStore</code>.
- * Implementations of this interface are responsible for adding users to and
- * removing users from the <code>DataStore</code>.
+ * Manage <code>User</code> instances in the <code>DataStore</code>.  This
+ * interface extends <code>ElementManager</code> with the extra functionality
+ * required to handle <code>User</code> instances.
  * <p>
- * Since the binding between users and enrolments is weak, a recursive removal
- * of a user will not remove the associated enrolments, and the existence of
- * associated enrolments will not prevent the non-recursive removal of a user.
+ * Since the binding between <code>User</code> instances and
+ * <code>enrolment</code> instances is weak, a <code>User</code> instance may
+ * be removed from the <code>DataStore</code>
  *
  * @author  James E. Stark
  * @version 1.0
@@ -33,20 +33,29 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface UserManager extends ElementManager<User>
 {
 	/**
-	 * Retrieve a single <code>User</code> object, with the specified id number,
-	 * from the data-store.
+	 * Get an instance of the <code>UserBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
 	 *
-	 * @param  idnumber The id number of the <code>User</code> to retrieve, not
+	 * @return An <code>UserBuilder</code> instance
+	 */
+
+	public abstract UserBuilder getBuilder ();
+
+	/**
+	 * Retrieve a single <code>User</code> object, with the specified id number,
+	 * from the <code>DataStore</code>.
+	 *
+	 * @param  idnumber The ID number of the <code>User</code> to retrieve, not
 	 *                  null
 	 *
-	 * @return          The <code>User</code> object associated with the id number
+	 * @return          The <code>User</code> object associated with the ID number
 	 */
 
 	public abstract User fetchByIdNumber (Integer idnumber);
 
 	/**
 	 * Retrieve a single <code>User</code> object, with the specified username,
-	 * from the data-store.
+	 * from the <code>DataStore</code>.
 	 *
 	 * @param  username The username of the entry to retrieve, not null
 	 *

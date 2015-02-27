@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
+import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentManager;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.Role;
@@ -34,6 +35,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
+ * Default implementation of the <code>EnrolmentManager</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -95,6 +97,19 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	}
 
 	/**
+	 * Get an instance of the <code>EnrolmentBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
+	 *
+	 * @return An <code>EnrolmentBuilder</code> instance
+	 */
+
+	@Override
+	public EnrolmentBuilder getBuilder ()
+	{
+		return this.getBuilder (EnrolmentBuilder.class);
+	}
+
+	/**
 	 * Retrieve an <code>Enrolment</code> from the <code>DataStore</code> which
 	 * identifies the same as the specified <code>Enrolment</code>.
 	 *
@@ -126,12 +141,13 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	}
 
 	/**
-	 * Retrieve a list of <code>Enrolment</code> objects from the underlying
-	 * data-store for the given role.
+	 * Retrieve a list of <code>Enrolment</code> objects from the
+	 * <code>DataStore</code> for the specified <code>Role</code>.
 	 *
-	 * @param  role The role for which the enrolments should be retrieved, not
+	 * @param  role The <code>Role</code> for which the <code>List</code> of
+	 *              <code>Enrolment</code> instances should be retrieved, not
 	 *              null
-	 * @return      A list of enrolment objects.
+	 * @return      A <code>List</code> of <code>Enrolment</code> instances
 	 */
 
 	public List<Enrolment> fetchAllForRole (final Role role)

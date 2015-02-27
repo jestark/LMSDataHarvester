@@ -23,20 +23,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.User;
+import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 import ca.uoguelph.socs.icc.edm.domain.UserManager;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Create, Insert and remove users from the data store.  Implementations of
- * this interface are responsible for adding users to and removing users from
- * the data store.
- *
- * It should be noted that since the binding between users and enrolments is
- * weak, a recursive removal of a user will not remove the associated
- * enrolments, and the existence of associated enrolments will not prevent
- * the non-recursive removal of a user.
+ * Default implementation of the <code>UserManager</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -97,10 +91,23 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	}
 
 	/**
+	 * Get an instance of the <code>UserBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
+	 *
+	 * @return An <code>UserBuilder</code> instance
+	 */
+
+	@Override
+	public UserBuilder getBuilder ()
+	{
+		return this.getBuilder (UserBuilder.class);
+	}
+
+	/**
 	 * Retrieve an <code>User</code> from the <code>DataStore</code> which
 	 * identifies the same as the specified <code>User</code>.
 	 *
-	 * @param  User The <code>user</code> to retrieve, not null
+	 * @param  User The <code>User</code> to retrieve, not null
 	 *
 	 * @return        A reference to the <code>User</code> in the
 	 *                <code>DataStore</code>, may be null
@@ -131,8 +138,9 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	 * Retrieve a single <code>User</code> object, with the specified ID number,
 	 * from the <code>DataStore</code>.
 	 *
-	 * @param  idnumber The id number of the <code>User</code> to retrieve, not null
-	 * @return          The <code>User</code> object associated with the id number
+	 * @param  idnumber The ID number of the <code>User</code> to retrieve, not null
+	 *
+	 * @return          The <code>User</code> object associated with the ID number
 	 */
 
 	public User fetchByIdNumber (final Integer idnumber)
@@ -156,6 +164,7 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	 * from the <code>DataStore</code>.
 	 *
 	 * @param  username The username of the entry to retrieve, not null
+	 *
 	 * @return          The <code>User</code> object associated with the username
 	 */
 

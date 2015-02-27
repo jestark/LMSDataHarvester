@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,22 +19,34 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 
 /**
- * Retrieve, add and remove <code>Enrolment</code> instances from the
- * <code>DataStore</code>.
+ * Manage <code>Enrolment</code> instances in the <code>DataStore</code>.  This
+ * interface extends <code>ElementManager</code> with the extra functionality
+ * required to handle <code>Enrolment</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
+ * @see     EnrolmentBuilder
  */
 
 public interface EnrolmentManager extends ElementManager<Enrolment>
 {
 	/**
-	 * Retrieve a list of <code>Enrolment</code> objects from the underlying
-	 * data-store for the given role.
+	 * Get an instance of the <code>EnrolmentBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
 	 *
-	 * @param  role The role for which the enrolments should be retrieved, not
+	 * @return An <code>EnrolmentBuilder</code> instance
+	 */
+
+	public abstract EnrolmentBuilder getBuilder ();
+
+	/**
+	 * Retrieve a list of <code>Enrolment</code> objects from the
+	 * <code>DataStore</code> for the specified <code>Role</code>.
+	 *
+	 * @param  role The <code>Role</code> for which the <code>List</code> of
+	 *              <code>Enrolment</code> instances should be retrieved, not
 	 *              null
-	 * @return      A list of enrolment objects.
+	 * @return      A <code>List</code> of <code>Enrolment</code> instances
 	 */
 
 	public abstract List<Enrolment> fetchAllForRole (Role role);

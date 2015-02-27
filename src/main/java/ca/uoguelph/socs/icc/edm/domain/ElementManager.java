@@ -19,10 +19,13 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 
 /**
- * Top level interface for all operations involving the domain model and the
- * underlying data-store.  This class and its subclasses are responsible for
- * all operations related to adding, retrieving or removing elements from the
- * domain model and its underlying data-store.
+ * Retrieve and manage instances of <code>Element</code> implementations in the
+ * <code>DataStore</code>.  Implementations of this interface are responsible
+ * for fetching, adding and removing <code>Element</code> instances from the
+ * <code>DataStore</code>.  Instances of the appropriate
+ * <code>ElementBuilder</code> interface are used along with the
+ * <code>ElementManager</code> to create new <code>Element</code> instances and
+ * add them to the <code>DataStore</code>.
  *
  * @author  James E. Stark
  * @version 1.0

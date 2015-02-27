@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,26 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Manage <code>LogEntry</code> instances in the <code>DataStore</code>.  This
+ * interface extends <code>ElementManager</code> with the extra functionality
+ * required to handle <code>LogEntry</code> instances.
  *
- *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
+ * @see     LogEntryBuilder
  */
 
 public interface LogEntryManager extends ElementManager<LogEntry>
 {
+	/**
+	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
+	 *
+	 * @return An <code>LogEntryBuilder</code> instance
+	 */
+
+	public abstract LogEntryBuilder getBuilder ();
+
 	/**
 	 * Retrieve a list of <code>LogEntry</code> objects, which are associated with
 	 * the specified course, from the underlying data-store.

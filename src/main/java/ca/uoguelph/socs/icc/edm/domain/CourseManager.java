@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,34 +19,49 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 
 /**
+ * Manage <code>Course</code> instances in the <code>DataStore</code>.  This
+ * interface extends <code>ElementManager</code> with the extra functionality
+ * required to handle <code>Course</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Course
+ * @see     CourseBuilder
  */
 
 public interface CourseManager extends ElementManager<Course>
 {
 	/**
-	 * Retrieve a list of courses from the underlying data-store based on the
-	 * time of offering.
+	 * Get an instance of the <code>CourseBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
+	 *
+	 * @return An <code>CourseBuilder</code> instance
+	 */
+
+	public abstract CourseBuilder getBuilder ();
+
+	/**
+	 *  Retrieve a <code>List</code> of <code>Course</code> instances from the
+	 * <code>DataStore</code> based on the time of offering.
 	 *
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
-	 * @return          A list of <code>Course</code> objects
+	 *
+	 * @return          A <code>List</code> of <code>Course</code> instances
 	 */
 
 	public abstract List<Course> fetchAllForOffering (Semester semester, Integer year);
 
 	/**
-	 * Retrieve a list of courses from the underlying data-store based on the
-	 * time of offering, and a regular expression matching the courses name.
+	 * Retrieve a <code>List</code> of <code>Course</code> instances from the
+	 * <code>DataStore</code> based on the time of offering, and a regular
+	 * expression matching the courses name.
 	 *
-	 * @param  name     The regular expression to match against the courses name,
-	 *                  not null
+	 * @param  name     The regular expression to match against the name of the
+	 *                  <code>Course</code>, not null
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
-	 * @return          A list of <code>Course</code> objects
+	 *
+	 * @return          A <code>List</code> of <code>Course</code> instances
 	 */
 
 	public abstract List<Course> fetchAllForOffering (String name, Semester semester, Integer year);
@@ -58,6 +73,7 @@ public interface CourseManager extends ElementManager<Course>
 	 * @param  name     The name of the course, not null
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
+	 *
 	 * @return          A single <code>Course</code> object
 	 */
 

@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.CourseManager;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
@@ -32,10 +33,10 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
+ * Default implementation of the <code>CourseManager</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Course
  */
 
 public final class DefaultCourseManager extends AbstractManager<Course> implements CourseManager
@@ -92,7 +93,20 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	}
 
 	/**
-	 * Retrieve an <code>Course</code> from the <code>DataStore</code> which
+	 * Get an instance of the <code>CourseBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
+	 *
+	 * @return An <code>CourseBuilder</code> instance
+	 */
+
+	@Override
+	public CourseBuilder getBuilder ()
+	{
+		return this.getBuilder (CourseBuilder.class);
+	}
+
+	/**
+	 * Retrieve a <code>Course</code> from the <code>DataStore</code> which
 	 * identifies the same as the specified <code>Course</code>.
 	 *
 	 * @param  course The <code>Course</code> to retrieve, not null
@@ -123,12 +137,12 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	}
 
 	/**
-	 * Retrieve a list of courses from the underlying data-store based on the
-	 * time of offering.
+	 *  Retrieve a <code>List</code> of <code>Course</code> instances from the
+	 * <code>DataStore</code> based on the time of offering.
 	 *
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
-	 * @return          A list of <code>Course</code> objects
+	 * @return          A <code>List</code> of <code>Course</code> instances
 	 */
 
 	public List<Course> fetchAllForOffering (final Semester semester, final Integer year)
@@ -155,14 +169,15 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	}
 
 	/**
-	 * Retrieve a list of courses from the underlying data-store based on the
-	 * time of offering, and a regular expression matching the courses name.
+	 * Retrieve a <code>List</code> of <code>Course</code> instances from the
+	 * <code>DataStore</code> based on the time of offering, and a regular
+	 * expression matching the courses name.
 	 *
-	 * @param  name     The regular expression to match against the courses name,
-	 *                  not null
+	 * @param  name     The regular expression to match against the name of the
+	 *                  <code>Course</code>, not null
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
-	 * @return          A list of <code>Course</code> objects
+	 * @return          A <code>List</code> of <code>Course</code> instances
 	 */
 
 	public List<Course> fetchAllForOffering (final String name, final Semester semester, final Integer year)

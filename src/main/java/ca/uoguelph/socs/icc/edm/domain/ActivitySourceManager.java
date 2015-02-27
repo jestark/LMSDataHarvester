@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,22 +17,34 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 /**
- * 
+ * Manage <code>ActivitySource</code> instances in the <code>DataStore</code>.
+ * This interface extends <code>ElementManager</code> with the extra
+ * functionality required to handle <code>ActivitySource</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ActivitySource
+ * @see     ActivitySourceBuilder
  */
 
 public interface ActivitySourceManager extends ElementManager<ActivitySource>
 {
 	/**
+	 * Get an instance of the <code>ActivitySourceBuilder</code> interface, 
+	 * suitable for use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>ActivitySourceBuilder</code> instance
+	 */
+
+	public abstract ActivitySourceBuilder getBuilder ();
+
+	/**
 	 * Retrieve the <code>ActivitySource</code> object associated with the
-	 * specified name from the underlying data-store.
+	 * specified name from the <code>DataStore</code>.
 	 *
 	 * @param  name The name of the <code>ActivitySource</code> to retrieve, not
 	 *              null
-	 * @return      The <code>ActivitySource</code> object associated with the
+	 *
+	 * @return      The <code>ActivitySource</code> instance associated with the
 	 *              specified name
 	 */
 

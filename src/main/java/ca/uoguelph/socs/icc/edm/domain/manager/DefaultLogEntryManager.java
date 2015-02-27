@@ -27,15 +27,16 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
+ * Default implementation of the <code>LogEntryManager</code> interface.
  *
- *
- * @author James E. Stark
+ * @author  James E. Stark
  * @version 1.0
  */
 
@@ -93,6 +94,19 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	}
 
 	/**
+	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>LogEntryBuilder</code> instance
+	 */
+
+	@Override
+	public LogEntryBuilder getBuilder ()
+	{
+		return this.getBuilder (LogEntryBuilder.class);
+	}
+
+	/**
 	 * Retrieve an <code>LogEntry</code> from the <code>DataStore</code> which
 	 * identifies the same as the specified <code>LogEntry</code>.
 	 *
@@ -125,9 +139,9 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 
 	/**
 	 * Retrieve a list of <code>LogEntry</code> objects, which are associated with
-	 * the specified course, from the underlying data-store.
+	 * the specified <code>Course</code>, from the <code>DataStore</code>.
 	 *
-	 * @param  course The <code>Course</code> for which the list of
+	 * @param  course The <code>Course</code> for which the <code>List</code> of
 	 *                <code>LogEntry</code> objects should be retrieved, not null
 	 * @return        A list of <code>LogEntry</code> objects
 	 */

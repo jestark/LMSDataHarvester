@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,26 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 /**
+ * Manage <code>Role</code> instances in the <code>DataStore</code>.  This
+ * interface extends <code>ElementManager</code> with the extra functionality
+ * required to handle <code>Role</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
+ * @see     RoleBuilder
  */
 
 public interface RoleManager extends ElementManager<Role>
 {
+	/**
+	 * Get an instance of the <code>RoleBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
+	 *
+	 * @return An <code>RoleBuilder</code> instance
+	 */
+
+	public abstract RoleBuilder getBuilder ();
+
 	/**
 	 * Retrieve a <code>Role</code> object from the underlying data-store based on
 	 * its name.

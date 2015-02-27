@@ -24,18 +24,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
+import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActionManager;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Create, insert and remove <code>Action</code> instances from the
- * <code>DataStore</code>.
+ * Default implementation of the <code>ActionManager</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.Action
  */
 
 public final class DefaultActionManager extends AbstractManager<Action> implements ActionManager
@@ -92,6 +91,19 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	}
 
 	/**
+	 * Get an instance of the <code>ActionBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
+	 *
+	 * @return An <code>ActionBuilder</code> instance
+	 */
+
+	@Override
+	public ActionBuilder getBuilder ()
+	{
+		return this.getBuilder (ActionBuilder.class);
+	}
+
+	/**
 	 * Retrieve an <code>Action</code> from the <code>DataStore</code> which
 	 * identifies the same as the specified <code>Action</code>.
 	 *
@@ -127,7 +139,8 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	 * <code>DataStore</code>.
 	 *
 	 * @param  name The name of the <code>Action</code> to retrieve, not null
-	 * @return      The <code>Action</code> associated with the specified name.
+	 *
+	 * @return      The <code>Action</code> associated with the specified name
 	 */
 
 	public Action fetchByName (final String name)

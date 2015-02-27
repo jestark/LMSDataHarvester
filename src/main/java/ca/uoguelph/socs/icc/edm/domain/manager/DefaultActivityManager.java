@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
@@ -32,10 +33,10 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
+ * Default implementation of the <code>ActivityManager</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.Activity
  */
 
 public final class DefaultActivityManager extends AbstractManager<Activity> implements ActivityManager
@@ -92,6 +93,19 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 	}
 
 	/**
+	 * Get an instance of the <code>ActivityBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>ActivityBuilder</code> instance
+	 */
+
+	@Override
+	public ActivityBuilder getBuilder ()
+	{
+		return this.getBuilder (ActivityBuilder.class);
+	}
+
+	/**
 	 * Retrieve an <code>Activity</code> from the <code>DataStore</code> which
 	 * identifies the same as the specified <code>Activity</code>.
 	 *
@@ -123,8 +137,8 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 	}
 
 	/**
-	 * Get a list of all of the activities which are associated with a particular
-	 * <code>ActivityType</code>.
+	 * Get a <code>List</code> of all of the <code>Activity</code> instances which
+	 * are associated with a particular <code>ActivityType</code>.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null
 	 */
