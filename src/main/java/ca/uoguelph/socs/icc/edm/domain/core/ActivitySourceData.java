@@ -145,7 +145,8 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	{
 		this.id = null;
 		this.name = null;
-		this.types = null;
+		
+		this.types = new HashSet<ActivityType> ();
 	}
 
 	/**

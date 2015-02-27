@@ -21,10 +21,6 @@ import java.util.Set;
 
 import java.util.HashSet;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
@@ -131,7 +127,8 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 	public GenericGroupedActivityGroup ()
 	{
 		super ();
-		this.children = null;
+
+		this.children = new HashSet<ActivityGroupMember> ();
 	}
 
 	/**
@@ -147,57 +144,6 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 		super (parent, name);
 
 		this.children = new HashSet<ActivityGroupMember> ();
-	}
-
-	/**
-	 * Compare two <code>Activity</code> instances to determine if they are
-	 * equal.  The <code>Activity</code> instances are compared based upon the
-	 * data contained in the superclass.
-	 *
-	 * @param  obj The <code>Activity</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>Activity</code> instances
-	 *             are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals(final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof GenericGroupedActivityGroup)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.appendSuper (super.equals (obj));
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed based upon the data contained in the superclass.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode()
-	{
-		final int base = 1033;
-		final int mult = 967;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
 	}
 
 	/**

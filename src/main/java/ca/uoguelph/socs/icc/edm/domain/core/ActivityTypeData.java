@@ -152,7 +152,8 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		this.id = null;
 		this.name = null;
 		this.source = null;
-		this.actions = null;
+		
+		this.actions = new HashSet<Action> ();
 	}
 
 	/**

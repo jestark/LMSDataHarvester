@@ -232,14 +232,16 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	public ActivityInstance ()
 	{
 		super ();
+		
 		this.id = null;
-		this.log = null;
 		this.type = null;
 		this.course = null;
 		this.activity = null;
-		this.grades = null;
 
 		this.stealth = Boolean.valueOf (false);
+		
+		this.grades = new HashSet<Grade> ();
+		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**
@@ -264,9 +266,6 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		this.type = type;
 		this.course = course;
 		this.stealth = stealth;
-
-		this.grades = new HashSet<Grade> ();
-		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**
@@ -292,9 +291,9 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		}
 		else if (obj instanceof ActivityInstance)
 		{
-			if (((ActivityInstance) obj).activity != null)
+			if (this.activity != null)
 			{
-				result = ((ActivityInstance) obj).activity.equals (((ActivityInstance) obj).activity);
+				result = this.activity.equals (((ActivityInstance) obj).activity);
 			}
 			else
 			{

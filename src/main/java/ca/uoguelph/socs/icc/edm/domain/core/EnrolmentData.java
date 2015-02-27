@@ -226,12 +226,14 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	public EnrolmentData ()
 	{
 		this.id = null;
-		this.log = null;
 		this.role = null;
 		this.course = null;
-		this.usable = Boolean.valueOf (false);
 		this.finalgrade = null;
-		this.grades = null;
+
+		this.usable = Boolean.valueOf (false);
+		
+		this.grades = new HashSet<Grade> ();
+		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**

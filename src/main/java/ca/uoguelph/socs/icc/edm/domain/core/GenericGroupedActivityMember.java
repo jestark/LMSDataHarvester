@@ -95,8 +95,9 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	{
 		super ();
 		this.id = null;
-		this.log = null;
 		this.parent = null;
+
+		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**

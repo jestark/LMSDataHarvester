@@ -199,8 +199,9 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		this.name = null;
 		this.semester = null;
 		this.year = null;
-		this.activities = null;
-		this.enrolments = null;
+
+		this.activities = new HashSet<Activity> ();
+		this.enrolments = new HashSet<Enrolment> ();
 	}
 
 	/**

@@ -142,7 +142,8 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	{
 		this.id= null;
 		this.name = null;
-		this.types = null;
+
+		this.types = new HashSet<ActivityType> ();
 	}
 
 	/**
