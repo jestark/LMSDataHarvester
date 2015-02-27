@@ -132,7 +132,7 @@ final class ElementBuilderFactory
 	 */
 
 	@SuppressWarnings("unchecked")
-	public <T extends ElementBuilder<U>, U extends Element> T create (final Class<T> builder, final Class<? extends U> element, final ManagerProxy<U> manager)
+	public <T extends ElementBuilder<U>, U extends Element> T create (final Class<T> builder, final Class<? extends Element> element, final ManagerProxy<U> manager)
 	{
 		this.log.debug ("Creating builder {} for element {} on manager {}", builder, element, manager);
 

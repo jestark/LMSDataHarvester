@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,31 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+/**
+ *
+ * @author  James E. Stark
+ * @version 1.1
+ */
+
 public interface ElementBuilder<T extends Element>
 {
+	/**
+	 * Create an instance of the <code>Element</code>.  
+	 */
+
 	public abstract T build ();
+	
+	/**
+	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
+	 * fields for the <code>Element</code> to be built to <code>null</code>.
+	 */
+
 	public abstract void clear ();
+
+	/**
+	 * Load an <code>Element</code> instance into the <code>ElementBuilder</code>.
+	 *
+	 */
+
+	public abstract void load (T element);
 }
