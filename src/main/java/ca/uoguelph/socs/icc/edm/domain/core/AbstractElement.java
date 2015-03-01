@@ -164,4 +164,21 @@ public abstract class AbstractElement implements Element
 	 */
 
 	protected abstract void setId (Long id);
+
+	/**
+	 * Determine if two <code>Element</code> instances are identical.  This method
+	 * is a default implementation which calls the equals method, and is suitable
+	 * for those <code>Element</code> implementations for which all of the fields
+	 * must be unique.
+	 *
+	 * @param  element The <code>Element</code> to compare to the current instance
+	 *
+	 * @return         <code>True</code> if the <code>Element</code> instances are
+	 *                 logically identical, <code>False</code> otherwise
+	 */
+
+	public boolean identicalTo (final Element element)
+	{
+		return this.equals (element);
+	}
 }
