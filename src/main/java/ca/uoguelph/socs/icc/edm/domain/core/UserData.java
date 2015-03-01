@@ -26,6 +26,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder;
@@ -195,20 +196,12 @@ public class UserData extends AbstractElement implements User, Serializable
 	/**
 	 * Compare two <code>User</code> instances to determine if they are
 	 * equal.  The <code>User</code> instances are compared based upon the
-	 * following fields:
-	 * <p>
-	 * <ul>
-	 * <li>The id number
-	 * <li>The username
-	 * <li>The first name
-	 * <li>The last name
-	 * <ul>
-	 * <p>
+	 * this ID number and the username.
 	 *
-	 * @param  obj The <code>ActionData</code> instance to compare to the one
+	 * @param  obj The <code>User</code> instance to compare to the one
 	 *             represented by the called instance
 	 *
-	 * @return     <code>True</code> if the two <code>ActionData</code> instances
+	 * @return     <code>True</code> if the two <code>User</code> instances
 	 *             are equal, <code>False</code> otherwise
 	 */
 
@@ -221,13 +214,11 @@ public class UserData extends AbstractElement implements User, Serializable
 		{
 			result = true;
 		}
-		else if (obj instanceof UserData)
+		else if (obj instanceof User)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.idnumber, ((UserData) obj).idnumber);
-			ebuilder.append (this.username, ((UserData) obj).username);
-			ebuilder.append (this.lastname, ((UserData) obj).lastname);
-			ebuilder.append (this.firstname, ((UserData) obj).firstname);
+			ebuilder.append (this.idnumber, ((User) obj).getIdNumber ());
+			ebuilder.append (this.username, ((User) obj).getUsername ());
 
 			result = ebuilder.isEquals ();
 		}
@@ -237,15 +228,8 @@ public class UserData extends AbstractElement implements User, Serializable
 
 	/**
 	 * Compute a <code>hashCode</code> of the <code>User</code> instance.
-	 * The hash code is computed based upon the following fields:
-	 * <p>
-	 * <ul>
-	 * <li>The id number
-	 * <li>The username
-	 * <li>The first name
-	 * <li>The last name
-	 * <ul>
-	 * <p>
+	 * The hash code is computed based upon the following fields ID number and the
+	 * username.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
 	 */
@@ -259,10 +243,44 @@ public class UserData extends AbstractElement implements User, Serializable
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.append (this.idnumber);
 		hbuilder.append (this.username);
-		hbuilder.append (this.lastname);
-		hbuilder.append (this.firstname);
 
 		return hbuilder.toHashCode ();
+	}
+
+	/**
+	 * Determine if two <code>User</code> instances are identical.  This method
+	 * acts as a stricter form of the equals method.  The equals method only
+	 * compares properties that are required to be unique (and therefore immutable)
+	 * for the <code>User</code> instance, while this method compares all of the
+	 * properties.
+	 *
+	 * @param  element The <code>Element</code> to compare to the current instance
+	 *
+	 * @return         <code>True</code> if the <code>Element</code> instances are
+	 *                 logically identical, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean identicalTo (final Element element)
+	{
+		boolean result = false;
+
+		if (element == this)
+		{
+			result = true;
+		}
+		else if (element instanceof User)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.idnumber, ((User) element).getIdNumber ());
+			ebuilder.append (this.username, ((User) element).getUsername ());
+			ebuilder.append (this.lastname, ((User) element).getLastname ());
+			ebuilder.append (this.firstname, ((User) element).getFirstname ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
 	}
 
 	/**

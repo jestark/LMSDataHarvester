@@ -23,6 +23,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 
@@ -150,11 +151,11 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 		{
 			result = true;
 		}
-		else if (obj instanceof GradedActivity)
+		else if (obj instanceof Grade)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.activity, ((GradedActivity) obj).activity);
-			ebuilder.append (this.enrolment, ((GradedActivity) obj).enrolment);
+			ebuilder.append (this.activity, ((Grade) obj).getActivity ());
+			ebuilder.append (this.enrolment, ((Grade) obj).getEnrolment ());
 
 			result = ebuilder.isEquals ();
 		}
@@ -181,6 +182,41 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 		hbuilder.append (this.enrolment);
 
 		return hbuilder.toHashCode ();
+	}
+
+	/**
+	 * Determine if two <code>Grade</code> instances are identical.  This method
+	 * acts as a stricter form of the equals method.  The equals method only
+	 * compares properties that are required to be unique (and therefore immutable)
+	 * for the <code>Grade</code> instance, while this method compares all of the
+	 * properties.
+	 *
+	 * @param  element The <code>Element</code> to compare to the current instance
+	 *
+	 * @return         <code>True</code> if the <code>Element</code> instances are
+	 *                 logically identical, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean identicalTo (final Element element)
+	{
+		boolean result = false;
+
+		if (element == this)
+		{
+			result = true;
+		}
+		else if (element instanceof Grade)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.activity, ((Grade) element).getActivity ());
+			ebuilder.append (this.enrolment, ((Grade) element).getEnrolment ());
+			ebuilder.append (this.grade, ((Grade) element).getGrade ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
 	}
 
 	/**
