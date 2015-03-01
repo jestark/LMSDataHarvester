@@ -186,10 +186,10 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 		{
 			result = true;
 		}
-		else if (obj instanceof ActivitySourceData)
+		else if (obj instanceof ActivitySource)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.name, ((ActivitySourceData) obj).name);
+			ebuilder.append (this.name, ((ActivitySource) obj).getName ());
 
 			result = ebuilder.isEquals ();
 		}

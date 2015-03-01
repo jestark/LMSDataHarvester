@@ -130,10 +130,10 @@ public class RoleData extends AbstractElement implements Role, Serializable
 		{
 			result = true;
 		}
-		else if (obj instanceof RoleData)
+		else if (obj instanceof Role)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.name, ((RoleData) obj).name);
+			ebuilder.append (this.name, ((Role) obj).getName ());
 
 			result = ebuilder.isEquals ();
 		}

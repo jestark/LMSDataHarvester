@@ -152,7 +152,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		this.id = null;
 		this.name = null;
 		this.source = null;
-		
+
 		this.actions = new HashSet<Action> ();
 	}
 
@@ -197,12 +197,11 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		{
 			result = true;
 		}
-		else if (obj instanceof ActivityTypeData)
+		else if (obj instanceof ActivityType)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.appendSuper (super.equals (obj));
-			ebuilder.append (this.name, ((ActivityTypeData) obj).name);
-			ebuilder.append (this.source, ((ActivityTypeData) obj).source);
+			ebuilder.append (this.name, ((ActivityType) obj).getName ());
+			ebuilder.append (this.source, ((ActivityType) obj).getSource ());
 
 			result = ebuilder.isEquals ();
 		}

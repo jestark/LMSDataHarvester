@@ -248,13 +248,12 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		{
 			result = true;
 		}
-		else if (obj instanceof CourseData)
+		else if (obj instanceof Course)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.appendSuper (super.equals (obj));
-			ebuilder.append (this.name, ((CourseData) obj).name);
-			ebuilder.append (this.year, ((CourseData) obj).year);
-			ebuilder.append (this.semester, ((CourseData) obj).semester);
+			ebuilder.append (this.name, ((Course) obj).getName ());
+			ebuilder.append (this.year, ((Course) obj).getYear ());
+			ebuilder.append (this.semester, ((Course) obj).getSemester ());
 
 			result = ebuilder.isEquals ();
 		}

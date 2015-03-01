@@ -183,11 +183,10 @@ public class ActionData extends AbstractElement implements Action, Serializable
 		{
 			result = true;
 		}
-		else if (obj instanceof ActionData)
+		else if (obj instanceof Action)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.appendSuper (super.equals (obj));
-			ebuilder.append (this.name, ((ActionData) obj).name);
+			ebuilder.append (this.name, ((Action) obj).getName ());
 
 			result = ebuilder.isEquals ();
 		}
