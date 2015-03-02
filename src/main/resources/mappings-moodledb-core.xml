@@ -13,14 +13,6 @@
 	<!--  Mapped super classes used by activities                            -->
 	<!--*********************************************************************-->
 
-	<mapped-superclass class="AbstractNamedActivity" metadata-complete="true">
-		<description>Default mapping for Name attribute for all activities</description>
-		<attributes>
-			<basic name="name">
-				<column name="name"/>
-			</basic>
-		</attributes>
-	</mapped-superclass>
 
 	<!--*********************************************************************-->
 	<!-- Core data mapping: Users                                            -->
@@ -152,6 +144,9 @@
 		<inheritance strategy="TABLE_PER_CLASS"/>
 		<attributes>
 			<transient name="instance"/><one-to-one name="instance" mapped-by="activity"/>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
 			<transient name="course"/>
 			<transient name="type"/>
 			<transient name="gradable"/>

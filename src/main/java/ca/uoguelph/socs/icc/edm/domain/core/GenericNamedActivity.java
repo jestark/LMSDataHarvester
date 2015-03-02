@@ -79,7 +79,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
  * @version 1.0
  */
 
-public abstract class GenericNamedActivity extends AbstractNamedActivity implements Serializable
+public abstract class GenericNamedActivity extends AbstractActivity implements Serializable
 {
 	/**
 	 * Implementation of the common components of the
@@ -111,6 +111,9 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
+
+	/** The name of the activity */
+	private String name;
 
 	/** The activity instance */
 	private ActivityInstance instance;
@@ -150,6 +153,7 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	public GenericNamedActivity ()
 	{
 		super ();
+		this.name = null;
 		this.instance = null;
 	}
 
@@ -162,10 +166,12 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 
 	public GenericNamedActivity (final Activity instance, final String name)
 	{
-		super (name);
+		super ();
 
 		assert instance != null : "instance is NULL";
+		assert name != null : "name is NULL";
 
+		this.name = name;
 		this.instance = (ActivityInstance) instance;
 	}
 
@@ -194,7 +200,7 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
 			
-			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.name, ((Activity) obj).getName ());
 			ebuilder.append (this.instance.getCourse (), ((Activity) obj).getCourse ());
 			ebuilder.append (this.instance.getType (), ((Activity) obj).getType ());
 
@@ -218,7 +224,7 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 		final int mult = 983;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
+		hbuilder.append (this.name);
 		hbuilder.append (this.instance.getCourse ());
 		hbuilder.append (this.instance.getType ());
 
@@ -349,6 +355,34 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 	}
 
 	/**
+	 * Get the name of the <code>Activity</code>.  
+	 *
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Activity</code>
+	 */
+
+	@Override
+	public String getName ()
+	{
+		return this.name;
+	}
+
+	/**
+	 * Set the name of the <code>Activity</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
+	 *
+	 * @param  name The name of the <code>Activity</code>, not null
+	 */
+
+	protected void setName (final String name)
+	{
+		assert name != null : "name is NULL";
+
+		this.name = name;
+	}
+
+	/**
 	 * Get an <code>Activity</code> instance which directly contains the core
 	 * data.  The core data for an <code>Activity</code> includes the associated
 	 * <code>Course</code> and <code>ActivityType</code>.
@@ -442,7 +476,7 @@ public abstract class GenericNamedActivity extends AbstractNamedActivity impleme
 		builder.append ("type", this.instance.getType ());
 		builder.append ("course", this.instance.getCourse ());
 		builder.append ("stealth", this.instance.isStealth ());
-		builder.appendSuper (super.toString ());
+		builder.append ("name", this.name);
 
 		return builder.toString ();
 	}

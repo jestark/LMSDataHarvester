@@ -48,13 +48,16 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory
  * @version 1.0
  */
 
-public abstract class GenericGroupedActivityMember extends AbstractNamedActivity implements ActivityGroupMember, Serializable
+public abstract class GenericGroupedActivityMember extends AbstractActivity implements ActivityGroupMember, Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key for the sub-activity */
 	private Long id;
+
+	/** The name of the activity */
+	private String name;
 
 	/** The sub-activity's parent activity */
 	private ActivityGroup parent;
@@ -97,6 +100,7 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	{
 		super ();
 		this.id = null;
+		this.name = null;
 		this.parent = null;
 
 		this.log = new ArrayList<LogEntry> ();
@@ -112,12 +116,14 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 
 	public GenericGroupedActivityMember (final ActivityGroup parent, final String name)
 	{
-		super (name);
+		super ();
 
 		assert parent != null : "Parent element is null";
+		assert name != null : "name is null";
 
 		this.id = null;
 		this.parent = parent;
+		this.name = name;
 
 		this.log = new ArrayList<LogEntry> ();
 	}
@@ -146,7 +152,7 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 		else if (obj instanceof GenericGroupedActivityMember)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.name, ((GenericGroupedActivityMember) obj).name);
 			ebuilder.append (this.parent, ((GenericGroupedActivityMember) obj).parent);
 
 			result = ebuilder.isEquals ();
@@ -170,7 +176,7 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 		final int mult = 971;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
+		hbuilder.append (this.name);
 		hbuilder.append (this.parent);
 
 		return hbuilder.toHashCode ();
@@ -243,6 +249,34 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	public Boolean isStealth ()
 	{
 		return this.parent.isStealth ();
+	}
+
+	/**
+	 * Get the name of the <code>Activity</code>.  
+	 *
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Activity</code>
+	 */
+
+	@Override
+	public String getName ()
+	{
+		return this.name;
+	}
+
+	/**
+	 * Set the name of the <code>Activity</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
+	 *
+	 * @param  name The name of the <code>Activity</code>, not null
+	 */
+
+	protected void setName (final String name)
+	{
+		assert name != null : "name is NULL";
+
+		this.name = name;
 	}
 
 	/**
@@ -403,7 +437,7 @@ public abstract class GenericGroupedActivityMember extends AbstractNamedActivity
 	{
 		ToStringBuilder builder = new ToStringBuilder (this);
 
-		builder.appendSuper (super.toString ());
+		builder.append ("name", this.name);
 		builder.append ("parent", this.parent);
 
 		return builder.toString ();
