@@ -61,14 +61,14 @@ public final class UserDatabaseFactory extends DatabaseFactory
 		UserDatabaseFactory.instance = new UserDatabaseFactory ();
 	}
 
-	public UserDatabaseFactory getInstance ()
+	public static UserDatabaseFactory getInstance ()
 	{
 		return UserDatabaseFactory.instance;
 	}
 
 	private UserDatabaseFactory ()
 	{
-		super ("userdb");
+		super ("coursedb");
 	}
 
 	protected void buildProfile (DomainModelBuilder builder)

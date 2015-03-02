@@ -5,14 +5,20 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.User;
-import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
+import ca.uoguelph.socs.icc.edm.domain.Role;
+import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
+import ca.uoguelph.socs.icc.edm.domain.RoleManager;
+import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserManager;
+
 import ca.uoguelph.socs.icc.edm.domain.database.UserDatabaseFactory;
 import ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleDatabaseFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreTransaction;
 
 public class App
 {
@@ -109,12 +115,14 @@ public class App
     public static void main(String[] args) throws Exception
     {
 		DomainModel moodledb = null;
+		DomainModel coursedb = null;
 
 		App.init ();
 
 		try
 		{
 			moodledb = (MoodleDatabaseFactory.getInstance ()).createDomainModel ();
+			coursedb = (UserDatabaseFactory.getInstance ()).createDomainModel ();
 
 			UserManager umanager = moodledb.getUserManager ();
 
@@ -122,12 +130,30 @@ public class App
 			System.out.println (umanager.fetchByUsername ("starkj"));
 
 			System.out.println ("--------------------++++++++++++++++++++++++++++++++++++++++--------------------");
+
+			DataStoreTransaction trans = coursedb.getTransaction ();
+			trans.begin ();
+
+			RoleManager rmanager = coursedb.getRoleManager ();
+			RoleBuilder rbuilder = rmanager.getBuilder ();
+
+			rbuilder.setName ("student");
+			Role role = rbuilder.build ();
+
+			trans.commit ();
+
+			System.out.println (role);
 		}
 		finally
 		{
 			if (moodledb != null)
 			{
 				moodledb.close ();
+			}
+
+			if (coursedb != null)
+			{
+				coursedb.close ();
 			}
 		}
     }
