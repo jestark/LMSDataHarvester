@@ -76,6 +76,34 @@ public class UserData extends AbstractElement implements User, Serializable
 		}
 
 		/**
+		 * Set the first name of the <code>User</code>.
+		 *
+		 * @param  firstname The first name, not null
+		 */
+
+		public void setFirstname (final User user, final String firstname)
+		{
+			assert user instanceof UserData : "user is not an instance of UserData";
+			assert firstname != null : "firstname is NULL";
+
+			((UserData) user).setFirstname (firstname);
+		}
+
+		/**
+		 * Set the last name of the <code>User</code>.
+		 *
+		 * @param  lastname The last name, not null
+		 */
+
+		public void setLastname (final User user, final String lastname)
+		{
+			assert user instanceof UserData : "user is not an instance of UserData";
+			assert lastname != null : "lastname is NULL";
+
+			((UserData) user).setLastname (lastname);
+		}
+
+		/**
 		 * Add the specified <code>Enrolment</code> to the specified
 		 * <code>User</code>.
 		 *

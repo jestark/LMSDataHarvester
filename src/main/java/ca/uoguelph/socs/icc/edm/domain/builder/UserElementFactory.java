@@ -49,6 +49,26 @@ public interface UserElementFactory extends ElementFactory<User>
 	public abstract User create (Integer idnumber, String firstname, String lastname, String username);
 
 	/**
+	 * Set the first name of the <code>User</code>.
+	 *
+	 * @param  user      The <code>User</code> upon which the first name is to be
+	 *                   set not null
+	 * @param  firstname The first name, not null
+	 */
+
+	public abstract void setFirstname (User user, String firstname);
+
+	/**
+	 * Set the last name of the <code>User</code>.
+	 *
+	 * @param  user     The <code>User</code> upon which the last name is to be
+	 *                  set not null
+	 * @param  lastname The last name, not null
+	 */
+
+	public abstract void setLastname (User user, String lastname);
+
+	/**
 	 * Add the specified <code>Enrolment</code> to the specified <code>User</code>.
 	 *
 	 * @param  user      The <code>User</code> to which the <code>Enrolment</code>
