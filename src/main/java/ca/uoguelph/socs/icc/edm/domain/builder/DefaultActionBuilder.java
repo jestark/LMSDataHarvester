@@ -25,12 +25,13 @@ import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 /**
+ * Default implementation of the <code>ActionBuilder</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class DefaultActionBuilder extends AbstractBuilder<Action> implements ActionBuilder
+public final class DefaultActionBuilder extends AbstractBuilder<Action, ActionElementFactory> implements ActionBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
@@ -45,7 +46,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 		 * <code>ActionManager</code> to perform operations on the
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 * @param  manager The <code>ManagerProxy</code> used to the
 		 *                 <code>ActionManager</code> instance, not null
 		 *
 		 * @return         The <code>ActionBuilder</code>
@@ -74,36 +75,108 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 		AbstractBuilder.registerBuilder (ActionBuilder.class, DefaultActionBuilder.class, new Factory ());
 	}
 
+	/**
+	 * Create the <code>DefaultActionBuilder</code>.
+	 *
+	 * @param  manager The <code>ActionManager</code> which the
+	 *                 <code>ActionBuilder</code> will use to operate on the
+	 *                 <code>DataStore</code>
+	 */
+
 	protected DefaultActionBuilder (final ManagerProxy<Action> manager)
 	{
-		super (manager);
+		super (Action.class, ActionElementFactory.class, manager);
 
 		this.log = LoggerFactory.getLogger (DefaultActionBuilder.class);
 	}
 
 	@Override
-	public Action build ()
+	protected Action buildElement ()
 	{
 		if (this.name == null)
 		{
 			this.log.error ("Can not build: The action's name is not set");
-			throw new IllegalStateException ("name not set");		
+			throw new IllegalStateException ("name not set");
 		}
 
-		return null; //this.factory.create (this.name);
+		Action result = this.element;
+
+		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
+		{
+			result = (getFactory (ActionElementFactory.class, this.manager.getElementImplClass (Action.class))).create (this.name);
+		}
+
+		return result;
 	}
+
+	@Override
+	protected void postInsert ()
+	{
+	}
+
+	@Override
+	protected void postRemove ()
+	{
+	}
+
+	/**
+	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
+	 * fields for the <code>Element</code> to be built to <code>null</code>.
+	 */
 
 	@Override
 	public void clear ()
 	{
+		this.log.trace ("Reseting the builder");
+
+		super.clear ();
 		this.name = null;
 	}
+
+	/**
+	 * Load a <code>Action</code> instance into the <code>ActionBuilder</code>.
+	 * This method resets the <code>ActionBuilder</code> and initializes all of
+	 * its parameters from the specified <code>Action</code> instance.  The
+	 * parameters are validated as they are set.
+	 *
+	 * @param  action                   The <code>Action</code> to load into the
+	 *                                  <code>ActionBuilder</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>Action</code> instance to be loaded
+	 *                                  are not valid
+	 */
+
+	@Override
+	public void load (final Action action)
+	{
+		this.log.trace ("Load Action: {}", action);
+
+		super.load (action);
+		this.setName (action.getName ());
+	}
+
+	/**
+	 * Get the name of the <code>Action</code>.
+	 *
+	 * @return A String containing the name of the <code>Action</code>
+	 */
 
 	@Override
 	public String getName ()
 	{
 		return this.name;
 	}
+
+	/**
+	 * Set the name of the <code>Action</code>.
+	 *
+	 * @param  name                     The name of the <code>Action</code>, not
+	 *                                  null
+	 *
+	 * @return                          This <code>ActionBuilder</code>
+	 * @throws IllegalArgumentException If the name is an empty
+	 */
 
 	@Override
 	public ActionBuilder setName (final String name)
@@ -112,6 +185,12 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 		{
 			this.log.error ("name is NULL");
 			throw new NullPointerException ("name is NULL");
+		}
+
+		if (name.length () == 0)
+		{
+			this.log.error ("name is an empty string");
+			throw new IllegalArgumentException ("name is empty");
 		}
 
 		this.name = name;

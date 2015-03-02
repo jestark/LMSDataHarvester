@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @see     ca.uoguelph.socs.icc.edm.domain.ElementManager
  */
 
-public abstract class AbstractBuilder<T extends Element> implements ElementBuilder<T>
+public abstract class AbstractBuilder<T extends Element, U extends ElementFactory<T>> implements ElementBuilder<T>
 {
 	/** The builder factory */
 	private static final ElementBuilderFactory FACTORY;
@@ -39,11 +39,20 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	/** The <code>ElementFactory</code> implementations */
 	private static final MappedElementFactory ELEMENTS;
 	
-	/** The manager (used to add new instances to the model) */
-	private final ManagerProxy<T> manager;
-
 	/** The Logger */
 	private final Logger log;
+
+	/** The <code>Element</code> being produced */
+	private final Class<T> type;
+
+	/** The manager (used to add new instances to the model) */
+	protected final ManagerProxy<T> manager;
+
+	/** The factory used to create and edit the <code>Element</code> */
+	protected final U factory;
+
+	/** The <code>Element</code> produced by the <code>ElementBuilder</code> */
+	protected T element;
 
 	/**
 	 * static initializer to create the factory.
@@ -61,7 +70,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 * implementations to register themselves with the factory so that they may
 	 * be instantiated on demand.
 	 *
-	 * @param  <T>         The <code>ElementBuilder</code> type to be registered
+	 <F4>* @param  <T>         The <code>ElementBuilder</code> type to be registered
 	 * @param  <U>         The <code>Element</code> type produced by the builder
 	 * @param  builder     The <code>ElementBuilder</code> interface class, not
 	 *                     null
@@ -96,7 +105,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 * @return The <code>ElementFactory</code>
 	 */
 
-	protected static final <T extends ElementFactory<U>, U extends Element> T getFactory (final Class<T> factory, final Class<? extends U> element)
+	protected static final <T extends ElementFactory<U>, U extends Element> T getFactory (final Class<T> factory, final Class<? extends Element> element)
 	{
 		assert factory != null : "factory is NULL";
 		assert element != null : "element is NULL";
@@ -177,24 +186,130 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	/**
 	 * Create the <code>AbstractBuilder</code>.
 	 *
+	 * @param  type    The <code>Element</code> type produced by the
+	 *                 <code>ElementBuilder</code>
 	 * @param  manager The <code>ElementManager</code> which the
 	 *                 <code>ElementBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>.
+	 *                 <code>DataStore</code>
 	 */
 
-	protected AbstractBuilder (final ManagerProxy<T> manager)
+	protected AbstractBuilder (final Class<T> type, final Class<U> factory, final ManagerProxy<T> manager)
 	{
+		assert type != null : "type is NULL";
+		assert manager != null : "manager is NULL";
+
 		this.log = LoggerFactory.getLogger (AbstractBuilder.class);
 		
+		this.type = type;
 		this.manager = manager;
+		this.factory = AbstractBuilder.getFactory (factory, this.manager.getElementImplClass (this.type));
 	}
 
-	public T build ()
+	/**
+	 *
+	 */
+
+	protected <F extends ElementFactory<E>, E extends Element> F getElementFactory (final Class<E> element, final Class<F> factory)
 	{
-		return null;
+		return AbstractBuilder.getFactory (factory, this.manager.getElementImplClass (element));
 	}
 
-	public void load (T element)
+	/**
+	 *
+	 */
+
+	protected abstract T buildElement ();
+
+	/**
+	 *
+	 */
+
+	protected abstract void postInsert ();
+
+	/**
+	 *
+	 */
+
+	protected abstract void postRemove ();
+
+	/**
+	 *
+	 * @return
+	 * @throws IllegalStateException
+	 */
+
+	@Override
+	public final T build ()
 	{
+		this.log.trace ("Building an Element");
+
+		T element = this.buildElement ();
+
+		if (element != this.element)
+		{
+			this.log.debug ("Checking if the Element is already in the DataStore");
+
+			this.element = this.manager.fetch (element);
+
+			if (this.element == null)
+			{
+				this.log.debug ("Inserting Element into the DataStore: {}", element);
+				
+				this.factory.setId (element, this.manager.nextId ());
+				this.element = this.manager.insertElement (element);
+				this.postInsert ();
+			}
+			else if (this.element.identicalTo (element))
+			{
+				this.log.warn ("Identical Element already exists in the DataStore: {}", element);
+			}
+			else
+			{
+				this.log.error ("Element already exists in the DataStore (and it is not identical): {}", element);
+				throw new IllegalStateException ("Element already exists in DataStore");
+			}
+		}
+
+		return this.element;
+	}
+
+	/**
+	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
+	 * fields for the <code>Element</code> to be built to <code>null</code>.
+	 */
+
+	@Override
+	public void clear ()
+	{
+		this.log.trace ("Reseting the builder");
+
+		this.element = null;
+	}
+
+	/**
+	 * Load a <code>Element</code> instance into the <code>ElementBuilder</code>.
+	 * This method resets the <code>ElementBuilder</code> and initializes all of
+	 * its parameters from the specified <code>Element</code> instance.  The
+	 * parameters are validated as they are set.
+	 *
+	 * @param  element                  The <code>Element</code> to load into the
+	 *                                  <code>ElementBuilder</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>Element</code> instance to be loaded
+	 *                                  are not valid
+	 */
+
+	@Override
+	public void load (final T element)
+	{
+		this.log.trace ("Loading Element into the builder: {}", element);
+
+		this.clear ();
+
+		if (this.manager.contains (element))
+		{
+			this.element = element;
+		}
 	}
 }

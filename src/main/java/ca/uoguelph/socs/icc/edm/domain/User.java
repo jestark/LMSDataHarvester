@@ -51,7 +51,7 @@ public interface User extends Element
 	 * by the institution from which the data was harvested.  While the ID number
 	 * is not used as the database identifier it is expected to be unique.
 	 *
-	 * @return An Integer representation of the ID number.
+	 * @return An <code>Integer</code> representation of the ID number.
 	 */
 
 	public abstract Integer getIdNumber ();

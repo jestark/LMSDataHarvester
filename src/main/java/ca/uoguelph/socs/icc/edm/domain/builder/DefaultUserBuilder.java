@@ -24,7 +24,14 @@ import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
-public final class DefaultUserBuilder extends AbstractBuilder<User> implements UserBuilder
+/**
+ * Default implementation of the <code>UserBuilder</code> interface.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
+
+public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementFactory> implements UserBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
@@ -78,22 +85,24 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	}
 
 	/**
-	 * create an instance of the <code>DefaultUserBuilder</code>.
+	 * Create an instance of the <code>DefaultUserBuilder</code>.
 	 *
 	 * @param  manager The instance of the <code>UserManager</code>, not null
 	 */
 
 	protected DefaultUserBuilder (final ManagerProxy<User> manager)
 	{
-		super (manager);
+		super (User.class, UserElementFactory.class, manager);
 
 		this.log = LoggerFactory.getLogger (DefaultUserBuilder.class);
 		this.clear ();
 	}
 
 	@Override
-	public User build ()
+	protected User buildElement ()
 	{
+		this.log.trace ("build the User");
+
 		if (this.idnumber == null)
 		{
 			this.log.error ("Can not build: The user's idnumber is not set");
@@ -118,16 +127,89 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new IllegalStateException ("user name not set");
 		}
 
-		return null; //this.factory.create (this.idnumber, this.firstname, this.lastname, this.username);
+		User result = this.element;
+
+		if ((this.element == null) || (! this.username.equals (this.element.getUsername ()) || (! this.idnumber.equals (this.element.getIdNumber ()))))
+		{
+			this.log.debug ("Creating a new User Instance");
+
+			result = this.factory.create (this.idnumber, this.firstname, this.lastname, this.username);
+		}
+		else
+		{
+			if (! this.firstname.equals (this.element.getFirstname ()))
+			{
+				this.factory.setFirstname (this.element, this.firstname);
+			}
+
+			if (! this.firstname.equals (this.element.getFirstname ()))
+			{
+				this.factory.setLastname (this.element, this.lastname);
+			}
+		}
+
+		return result;
 	}
+
+	@Override
+	protected void postInsert ()
+	{
+		// User is a root element, so do nothing
+	}
+
+	@Override
+	protected void postRemove ()
+	{
+		// User is a root element, so do nothing
+	}
+
+	/**
+	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
+	 * fields for the <code>Element</code> to be built to <code>null</code>.
+	 */
 
 	@Override
 	public void clear ()
 	{
+		this.log.trace ("Reseting the builder");
+
+		super.clear ();
 		this.idnumber = null;
 		this.firstname = null;
 		this.lastname = null;
 		this.username = null;
+	}
+
+	/**
+	 * Load a <code>User</code> instance into the <code>UserBuilder</code>.  This
+	 * method resets the <code>UserBuilder</code> and initializes all of its
+	 * parameters from the specified <code>User</code> instance.  The parameters
+	 * are validated as they are set.
+	 *
+	 * @param  user                     The <code>User</code> to load into the
+	 *                                  <code>UserBuilder</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the 
+	 *                                  <code>User</code> instance to be loaded
+	 *                                  are not valid
+	 */
+
+	@Override
+	public void load (final User user)
+	{
+		this.log.trace ("Load User: {}", user);
+
+		if (user == null)
+		{
+			this.log.error ("Attempting to load a NULL User");
+			throw new NullPointerException ();
+		}
+
+		super.load (user);
+		this.setIdNumber (user.getIdNumber ());
+		this.setUsername (user.getUsername ());
+		this.setLastname (user.getLastname ());
+		this.setFirstname (user.getFirstname ());
 	}
 
 	/**
@@ -148,9 +230,12 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	/**
 	 * Set the (student) ID number of the <code>User</code>.
 	 *
-	 * @param  idnumber The ID Number, not null
+	 * @param  idnumber                 The ID Number, not null
 	 *
-	 * @return A reference to this <code>UserBuilder</code>
+	 * @return                          A reference to this
+	 *                                  <code>UserBuilder</code>
+	 *
+	 * @throws IllegalArgumentException If the ID number is negative
 	 */
 
 	@Override
@@ -162,16 +247,39 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new NullPointerException ("The specified ID number is NULL");
 		}
 
+		if (idnumber < 0)
+		{
+			this.log.error ("Trying to set a negative id number");
+			throw new IllegalArgumentException ("idnumber is negative");
+		}
+
 		this.idnumber = idnumber;
 
 		return this;
 	}
+
+	/**
+	 * Get the first name (given name) of the <code>User</code>.
+	 *
+	 * @return A <code>String</code> containing the given name of the
+	 *         <code>User</code>
+	 */
 
 	@Override
 	public String getFirstname ()
 	{
 		return this.firstname;
 	}
+
+	/**
+	 * Set the first name of the <code>User</code>.
+	 *
+	 * @param  firstname                The firstname of the <code>User</code>,
+	 *                                  not null
+	 *
+	 * @return                          This <code>UserBuilder</code>
+	 * @throws IllegalArgumentException If the firstname is an empty
+	 */
 
 	@Override
 	public UserBuilder setFirstname (final String firstname)
@@ -182,16 +290,38 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new NullPointerException ("The specified first name is NULL");
 		}
 
+		if (firstname.length () == 0)
+		{
+			this.log.error ("firstname is an empty string");
+			throw new IllegalArgumentException ("firstname is empty");
+		}
+
 		this.firstname = firstname;
 
 		return this;
 	}
+
+	/**
+	 * Get the last name (surname) of the <code>User</code>.
+	 *
+	 * @return A String containing the surname of the <code>User</code>.
+	 */
 
 	@Override
 	public String getLastname ()
 	{
 		return this.lastname;
 	}
+
+	/**
+	 * Set the last name of the <code>User</code>.
+	 *
+	 * @param  lastname                 The lastname of the <code>User</code>, not
+	 *                                  null
+	 *
+	 * @return                          This <code>UserBuilder</code>
+	 * @throws IllegalArgumentException If the lastname is an empty
+	 */
 
 	@Override
 	public UserBuilder setLastname (final String lastname)
@@ -202,16 +332,42 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new NullPointerException ("The specified last name is NULL");
 		}
 
+		if (lastname.length () == 0)
+		{
+			this.log.error ("lastname is an empty string");
+			throw new IllegalArgumentException ("lastname is empty");
+		}
+
 		this.lastname = lastname;
 
 		return this;
 	}
+
+	/**
+	 * Get the username for the <code>User</code>.  This will be the username that
+	 * the <code>User</code> used to access the LMS from which the data associated
+	 * with the <code>User</code> was harvested.  The username is expected to be
+	 * unique.
+	 *
+	 * @return A <code>String</code> containing the username for the
+	 *         <code>User</code>
+	 */
 
 	@Override
 	public String getUsername ()
 	{
 		return this.username;
 	}
+
+	/**
+	 * Set the username of the <code>User</code>.
+	 *
+	 * @param  username                 The username of the <code>User</code>, not
+	 *                                  null
+	 *
+	 * @return                          This <code>UserBuilder</code>
+	 * @throws IllegalArgumentException If the username is an empty
+	 */
 
 	@Override
 	public UserBuilder setUsername (final String username)

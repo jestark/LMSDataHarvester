@@ -38,8 +38,17 @@ public interface ElementBuilder<T extends Element>
 	public abstract void clear ();
 
 	/**
-	 * Load an <code>Element</code> instance into the <code>ElementBuilder</code>.
+	 * Load a <code>Element</code> instance into the <code>ElementBuilder</code>.
+	 * This method resets the <code>ElementBuilder</code> and initializes all of
+	 * its parameters from the specified <code>Element</code> instance.  The
+	 * parameters are validated as they are set.
 	 *
+	 * @param  element                  The <code>Element</code> to load into the
+	 *                                  <code>ElementBuilder</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the 
+	 *                                  <code>Element</code> instance to be loaded
+	 *                                  are not valid
 	 */
 
 	public abstract void load (T element);
