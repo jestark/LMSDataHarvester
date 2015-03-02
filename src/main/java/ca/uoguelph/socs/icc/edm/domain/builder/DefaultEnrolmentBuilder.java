@@ -27,7 +27,7 @@ import ca.uoguelph.socs.icc.edm.domain.User;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
-public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> implements EnrolmentBuilder
+public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, EnrolmentElementFactory> implements EnrolmentBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
@@ -83,15 +83,23 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 		AbstractBuilder.registerBuilder (EnrolmentBuilder.class, DefaultEnrolmentBuilder.class, new Factory ());
 	}
 
+	/**
+	 * Create the <code>DefaultEnrolmentBuilder</code>.
+	 *
+	 * @param  manager The <code>EnrolmentManager</code> which the 
+	 *                 <code>EnrolmentBuilder</code> will use to operate on the
+	 *                 <code>DataStore</code>
+	 */
+
 	protected DefaultEnrolmentBuilder (final ManagerProxy<Enrolment> manager)
 	{
-		super (manager);
+		super (Enrolment.class, EnrolmentElementFactory.class, manager);
 
 		this.log = LoggerFactory.getLogger (DefaultEnrolmentBuilder.class);
 	}
 
 	@Override
-	public Enrolment build ()
+	protected Enrolment buildElement ()
 	{
 		if (this.user == null)
 		{
@@ -115,12 +123,59 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	}
 
 	@Override
+	protected void postInsert ()
+	{
+	}
+
+	@Override
+	protected void postRemove ()
+	{
+	}
+
+	/**
+	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
+	 * fields for the <code>Element</code> to be built to <code>null</code>.
+	 */
+
+	@Override
 	public void clear ()
 	{
+		this.log.trace ("Reseting the builder");
+
+		super.clear ();
 		this.course = null;
 		this.grade = null;
 		this.role = null;
 		this.user = null;
+	}
+
+	/**
+	 * Load a <code>Enrolment</code> instance into the
+	 * <code>EnrolmentBuilder</code>.  This method resets the
+	 * <code>EnrolmentBuilder</code> and initializes all of its parameters from
+	 * the specified <code>Enrolment</code> instance.  The parameters are
+	 * validated as they are set.
+	 *
+	 * @param  enrolment                The <code>Enrolment</code> to load into
+	 *                                  the <code>EnrolmentBuilder</code>, not
+	 *                                  null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the 
+	 *                                  <code>Enrolment</code> instance to be
+	 *                                  loaded are not valid
+	 */
+
+	@Override
+	public void load (final Enrolment enrolment)
+	{
+		this.log.trace ("Load Enrolment: {}", enrolment);
+
+		super.load (enrolment);
+		this.setCourse (enrolment.getCourse ());
+		this.setFinalGrade (enrolment.getFinalGrade ());
+		this.setRole (enrolment.getRole ());
+
+		// user ??
 	}
 
 	@Override

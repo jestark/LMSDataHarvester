@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
-public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> implements LogEntryBuilder
+public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogEntryElementFactory> implements LogEntryBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
@@ -85,15 +85,23 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 		AbstractBuilder.registerBuilder (LogEntryBuilder.class, DefaultLogEntryBuilder.class, new Factory ());
 	}
 
+	/**
+	 * Create the <code>DefaultLogEntryBuilder</code>.
+	 *
+	 * @param  manager The <code>LogEntryManager</code> which the 
+	 *                 <code>LogEntryBuilder</code> will use to operate on the
+	 *                 <code>DataStore</code>
+	 */
+
 	protected DefaultLogEntryBuilder (final ManagerProxy<LogEntry> manager)
 	{
-		super (manager);
+		super (LogEntry.class, LogEntryElementFactory.class, manager);
 
 		this.log = LoggerFactory.getLogger (DefaultLogEntryBuilder.class);
 	}
 
 	@Override
-	public LogEntry build ()
+	protected LogEntry buildElement ()
 	{
 		if (this.action == null)
 		{
@@ -117,13 +125,61 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	}
 
 	@Override
+	protected void postInsert ()
+	{
+	}
+
+	@Override
+	protected void postRemove ()
+	{
+	}
+
+	/**
+	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
+	 * fields for the <code>Element</code> to be built to <code>null</code>.
+	 */
+
+	@Override
 	public void clear ()
 	{
+		this.log.trace ("Reseting the builder");
+
+		super.clear ();
 		this.action = null;
 		this.activity = null;
 		this.enrolment = null;
 		this.ipaddress = null;
 		this.time = new Date ();
+	}
+
+	/**
+	 * Load a <code>LogEntry</code> instance into the
+	 * <code>LogEntryBuilder</code>.  This method resets the
+	 * <code>LogEntryBuilder</code> and initializes all of its parameters from the
+	 * specified <code>LogEntry</code> instance.  The parameters are validated as
+	 * they are set.
+	 *
+	 * @param  entry                    The <code>LogEntry</code> to load into the
+	 *                                  <code>LogEntryBuilder</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the 
+	 *                                  <code>LogEntry</code> instance to be loaded
+	 *                                  are not valid
+	 */
+
+	@Override
+	public void load (final LogEntry entry)
+	{
+		this.log.trace ("Load LogEntry: {}", entry);
+
+		super.load (entry);
+		this.setAction (entry.getAction ());
+		this.setActivity (entry.getActivity ());
+		this.setEnrolment (entry.getEnrolment ());
+		this.setIPAddress (entry.getIPAddress ());
+		this.setTime (entry.getTime ());
+
+		// reference ??
 	}
 
 	@Override

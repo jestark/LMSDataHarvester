@@ -26,7 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.GradeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
-public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements GradeBuilder
+public final class DefaultGradeBuilder extends AbstractBuilder<Grade, GradeElementFactory> implements GradeBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
@@ -41,7 +41,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 		 * <code>GradeManager</code> to perform operations on the
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 * @param  manager The <code>ManagerProxy</code> used to the
 		 *                 <code>GradeManager</code> instance, not null
 		 *
 		 * @return         The <code>GradeBuilder</code>
@@ -76,17 +76,25 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 		AbstractBuilder.registerBuilder (GradeBuilder.class, DefaultGradeBuilder.class, new Factory ());
 	}
 
+	/**
+	 * Create the <code>DefaultGradeBuilder</code>.
+	 *
+	 * @param  manager The <code>EnrolmentManager</code> which the
+	 *                 <code>GradeBuilder</code> will use to operate on the
+	 *                 <code>DataStore</code>
+	 */
+
 	protected DefaultGradeBuilder (final ManagerProxy<Grade> manager)
 	{
-		super (manager);
-		
+		super (Grade.class, GradeElementFactory.class, manager);
+
 		this.log = LoggerFactory.getLogger (DefaultGradeBuilder.class);
 
 		this.clear ();
 	}
 
 	@Override
-	public Grade build ()
+	protected Grade buildElement ()
 	{
 		if (this.activity == null)
 		{
@@ -110,12 +118,62 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	}
 
 	@Override
+	protected void postInsert ()
+	{
+	}
+
+	@Override
+	protected void postRemove ()
+	{
+	}
+
+	/**
+	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
+	 * fields for the <code>Element</code> to be built to <code>null</code>.
+	 */
+
+	@Override
 	public void clear ()
 	{
+		this.log.trace ("Reseting the builder");
+
+		super.clear ();
 		this.activity = null;
 		this.enrolment = null;
 		this.grade = null;
 	}
+
+	/**
+	 * Load a <code>Grade</code> instance into the <code>GradeBuilder</code>.  This
+	 * method resets the <code>GradeBuilder</code> and initializes all of its
+	 * parameters from the specified <code>Grade</code> instance.  The parameters
+	 * are validated as they are set.
+	 *
+	 * @param  grade                    The <code>Grade</code> to load into the
+	 *                                  <code>GradeBuilder</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>Grade</code> instance to be loaded
+	 *                                  are not valid
+	 */
+
+	@Override
+	public void load (final Grade grade)
+	{
+		this.log.trace ("Load Grade: {}", grade);
+
+		super.load (grade);
+		this.setActivity (grade.getActivity ());
+		this.setEnrolment (grade.getEnrolment ());
+		this.setGrade (grade.getGrade ());
+	}
+
+	/**
+	 * Get the <code>Activity</code> for which the <code>Grade</code> is
+	 * assigned.
+	 *
+	 * @return The associated <code>Activity</code>, may be null
+	 */
 
 	@Override
 	public Activity getActivity ()
@@ -137,6 +195,13 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 		return this;
 	}
 
+	/**
+	 * Get the <code>Enrolment</code>, for the student, to which the
+	 * <code>Grade</code> is assigned
+	 *
+	 * @return The associated <code>Enrolment</code>, may be null
+	 */
+
 	@Override
 	public Enrolment getEnrolment ()
 	{
@@ -157,11 +222,29 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 		return this;
 	}
 
+	/**
+	 * Get the grade that the student received for the <code>Activity</code>.  The
+	 * grade will be an <code>Integer</code> with a value on the range of [0, 100].
+	 *
+	 * @return An <code>Integer</code> containing the assigned grade, may be null
+	 */
+
 	@Override
 	public Integer getGrade ()
 	{
 		return this.grade;
 	}
+
+	/**
+	 * Set the value of the <code>Grade</code>.
+	 *
+	 * @param  grade                    The value of the <code>Grade</code>, not
+	 *                                  null
+	 *
+	 * @return                          This <code>GradeBuilder</code>
+	 * @throws IllegalArgumentException If the value is less than zero or greater
+	 *                                  than 100
+	 */
 
 	@Override
 	public GradeBuilder setGrade (final Integer grade)
@@ -170,6 +253,18 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 		{
 			this.log.error ("The specified grade is NULL");
 			throw new NullPointerException ("The specified grade is NULL");
+		}
+
+		if (grade < 0)
+		{
+			this.log.error ("Grades can not be negative: {}", grade);
+			throw new IllegalArgumentException ("Grade is negative");
+		}
+
+		if (grade > 100)
+		{
+			this.log.error ("Grades can not be greater than 100%: {}", grade);
+			throw new IllegalArgumentException ("Grade is greater than 100%");
 		}
 
 		this.grade = grade;

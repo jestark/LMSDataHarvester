@@ -58,6 +58,14 @@ public final class DefaultNamedActivityBuilder extends DefaultActivityBuilder
 	/** The name of the <code>Activity</code> */
 	private String name;
 
+	/**
+	 * Create the <code>DefaultNamedActivityBuilder</code>.
+	 *
+	 * @param  manager The <code>NamedActivityManager</code> which the 
+	 *                 <code>NamedActivityBuilder</code> will use to operate on the
+	 *                 <code>DataStore</code>
+	 */
+
 	public DefaultNamedActivityBuilder (final ManagerProxy<Activity> manager)
 	{
 		super (manager);
@@ -65,10 +73,25 @@ public final class DefaultNamedActivityBuilder extends DefaultActivityBuilder
 	}
 
 	@Override
-	public Activity build ()
+	protected Activity buildElement ()
 	{
 		return null;
 	}
+
+	@Override
+	protected void postInsert ()
+	{
+	}
+
+	@Override
+	protected void postRemove ()
+	{
+	}
+
+	/**
+	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
+	 * fields for the <code>Element</code> to be built to <code>null</code>.
+	 */
 
 	@Override
 	public void clear ()
@@ -77,6 +100,30 @@ public final class DefaultNamedActivityBuilder extends DefaultActivityBuilder
 
 		super.clear ();
 		this.name = null;
+	}
+
+	/**
+	 * Load a <code>Activity</code> instance into the
+	 * <code>ActivityBuilder</code>.  This method resets the
+	 * <code>ActivityBuilder</code> and initializes all of its parameters from the
+	 * specified <code>Activity</code> instance.  The parameters are validated as
+	 * they are set.
+	 *
+	 * @param  activity                 The <code>Activity</code> to load into the
+	 *                                  <code>ActivityBuilder</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the 
+	 *                                  <code>Activity</code> instance to be
+	 *                                  loaded are not valid
+	 */
+
+	@Override
+	public void load (final Activity activity)
+	{
+		this.log.trace ("Load Activity: {}", activity);
+
+		super.load (activity);
+		this.setName (activity.getName ());
 	}
 
 	public String getName ()

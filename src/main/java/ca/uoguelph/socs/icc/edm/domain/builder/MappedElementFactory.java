@@ -89,7 +89,7 @@ public final class MappedElementFactory
 	 * @return The <code>ElementFactory</code> instance
 	 */
 
-	public <T extends ElementFactory<U>, U extends Element> T getFactory (final Class<T> factory, final Class<? extends U> element)
+	public <T extends ElementFactory<U>, U extends Element> T getFactory (final Class<T> factory, final Class<? extends Element> element)
 	{
 		assert factory != null : "factory is NULL";
 		assert element != null : "element is NULL";

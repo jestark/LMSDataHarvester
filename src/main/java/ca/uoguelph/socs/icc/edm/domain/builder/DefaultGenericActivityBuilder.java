@@ -55,6 +55,14 @@ public final class DefaultGenericActivityBuilder extends DefaultActivityBuilder
 	/** The logger */
 	private final Logger log;
 
+	/**
+	 * Create the <code>DefaultGenericActivityBuilder</code>.
+	 *
+	 * @param  manager The <code>GenericActivityManager</code> which the 
+	 *                 <code>GenericActivityBuilder</code> will use to operate on the
+	 *                 <code>DataStore</code>
+	 */
+
 	public DefaultGenericActivityBuilder (final ManagerProxy<Activity> manager)
 	{
 		super (manager);
@@ -63,10 +71,43 @@ public final class DefaultGenericActivityBuilder extends DefaultActivityBuilder
 	}
 
 	@Override
-	public Activity build ()
+	protected Activity buildElement ()
 	{
 		this.log.trace ("Building Generic Activity");
 
 		return super.build (); 
+	}
+
+	/**
+	 * Load a <code>Activity</code> instance into the
+	 * <code>ActivityBuilder</code>.  This method resets the
+	 * <code>ActivityBuilder</code> and initializes all of its parameters from the
+	 * specified <code>Activity</code> instance.  The parameters are validated as
+	 * they are set.
+	 *
+	 * @param  activity                 The <code>Activity</code> to load into the
+	 *                                  <code>ActivityBuilder</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the 
+	 *                                  <code>Activity</code> instance to be
+	 *                                  loaded are not valid
+	 */
+
+	@Override
+	public void load (final Activity activity)
+	{
+		this.log.trace ("Load Activity: {}", activity);
+
+		super.load (activity);
+	}
+	
+	@Override
+	protected void postInsert ()
+	{
+	}
+
+	@Override
+	protected void postRemove ()
+	{
 	}
 }

@@ -26,7 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
-public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity> implements ActivityBuilder
+public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity, ActivityElementFactory> implements ActivityBuilder
 {
 	/** The logger */
 	private final Logger log;
@@ -40,15 +40,23 @@ public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity> i
 	/** Is the activity stealth? */
 	private Boolean stealth;
 
+	/**
+	 * Create the <code>DefaultActivityBuilder</code>.
+	 *
+	 * @param  manager The <code>ActivityManager</code> which the 
+	 *                 <code>ActivityBuilder</code> will use to operate on the
+	 *                 <code>DataStore</code>
+	 */
+
 	public DefaultActivityBuilder (final ManagerProxy<Activity> manager)
 	{
-		super (manager);
+		super (Activity.class, ActivityElementFactory.class, manager);
 
 		this.log = LoggerFactory.getLogger (DefaultActivityBuilder.class);
 	}
 
 	@Override
-	public Activity build ()
+	protected Activity buildElement ()
 	{
 		if (this.course == null)
 		{
@@ -66,11 +74,56 @@ public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity> i
 	}
 
 	@Override
+	protected void postInsert ()
+	{
+	}
+
+	@Override
+	protected void postRemove ()
+	{
+	}
+
+	/**
+	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
+	 * fields for the <code>Element</code> to be built to <code>null</code>.
+	 */
+
+	@Override
 	public void clear ()
 	{
+		this.log.trace ("Reseting the builder");
+
+		super.clear ();
 		this.course = null;
 		this.stealth = null;
 		this.type = null;
+	}
+
+	/**
+	 * Load a <code>Activity</code> instance into the
+	 * <code>ActivityBuilder</code>.  This method resets the
+	 * <code>ActivityBuilder</code> and initializes all of its parameters from the
+	 * specified <code>Activity</code> instance.  The parameters are validated as
+	 * they are set.
+	 *
+	 * @param  activity                 The <code>Activity</code> to load into the
+	 *                                  <code>ActivityBuilder</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the 
+	 *                                  <code>Activity</code> instance to be
+	 *                                  loaded are not valid
+	 */
+
+	@Override
+	public void load (final Activity activity)
+	{
+		this.log.trace ("Load Activity: {}", activity);
+
+		super.load (activity);
+		this.setCourse (activity.getCourse ());
+		this.setStealth (activity.isStealth ());
+
+		// this.type = activity.getType ();
 	}
 
 	@Override
