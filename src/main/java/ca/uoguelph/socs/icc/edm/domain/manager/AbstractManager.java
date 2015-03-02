@@ -28,6 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.ElementManager;
 import ca.uoguelph.socs.icc.edm.domain.builder.AbstractBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 import ca.uoguelph.socs.icc.edm.domain.datastore.QueryFactory;
 
@@ -96,7 +97,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	{
 		this.log.trace ("Getting query object from factory");
 
-		return null;
+		return (QueryFactory.getInstance ()).create (this.type, this.datastore);
 	}
 
 	protected final DataStoreQuery<T> fetchQuery (final Class<? extends T> impl)
@@ -109,6 +110,66 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	protected final <B extends ElementBuilder<T>> B getBuilder (final Class<B> builder)
 	{
 		return AbstractBuilder.getInstance (builder, (this.datastore.getProfile ()).getImplClass (this.type), new ManagerProxy<T> (this));
+	}
+
+	protected final <M extends ElementManager<E>, E extends Element> M getManager (final Class<E> element, final Class<M> manager)
+	{
+		return AbstractManager.getInstance (element, manager, this.datastore);
+	}
+
+	protected final Long nextId ()
+	{
+		return (this.fetchQuery ()).nextId ();
+	}
+
+	protected T insertElement (final T element)
+	{
+		try
+		{
+			(this.fetchQuery ()).insert (element);
+			return this.fetch (element);
+		}
+		catch (Exception ex)
+		{
+			this.log.error ("Insert Element into DataStore Failed: {}", ex);
+			throw new IllegalStateException ("DataStore Insert failed", ex);
+		}
+	}
+
+	/**
+	 * Determine if the <code>DomainModel</code> is mutable.
+	 *
+	 * @return <code>True</code> if the <code>DomainModel</code> is mutable,
+	 *         <code>False</code> otherwise
+	 */
+
+	public boolean isMutable ()
+	{
+		return (this.getProfile()).isMutable ();
+	}
+
+	/**
+	 * Determine if the underlying <code>DataStore</code> is open.
+	 *
+	 * @return <code>True</code> if the underlying <code>DataStore</code> is open,
+	 *         <code>False</code> otherwise
+	 * @see    ca.uoguelph.socs.icc.edm.domain.datastore.DataStore#isOpen
+	 */
+
+	public boolean isOpen ()
+	{
+		return this.datastore.isOpen ();
+	}
+
+	/**
+	 * Get a copy of the <code>DataStoreProfile</code>.
+	 *
+	 * @return The <code>DataStoreProfile</code>
+	 */
+
+	public DataStoreProfile getProfile ()
+	{
+		return this.datastore.getProfile ();
 	}
 
 	/**

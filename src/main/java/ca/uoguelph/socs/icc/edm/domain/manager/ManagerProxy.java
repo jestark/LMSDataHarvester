@@ -64,4 +64,24 @@ public final class ManagerProxy<T extends Element>
 
 		return this.manager.fetch (element);
 	}
+
+	public Class<? extends Element> getElementImplClass (final Class<? extends Element> element)
+	{
+		return (this.manager.getProfile ()).getImplClass (element);
+	}
+
+	public <M extends ElementManager<E>, E extends Element> M getManager (final Class<E> element, final Class<M> manager)
+	{
+		return this.manager.getManager (element, manager);
+	}
+
+	public Long nextId ()
+	{
+		return this.manager.nextId ();
+	}
+
+	public T insertElement (final T element)
+	{
+		return this.manager.insertElement (element);
+	}
 }

@@ -61,8 +61,8 @@ public final class DomainModel
 	/**
 	 * Determine if the <code>DomainModel</code> is mutable.
 	 *
-	 * @return <code>true</code> if the <code>DomainModel</code> is mutable,
-	 *         <code>false</code> otherwise
+	 * @return <code>True</code> if the <code>DomainModel</code> is mutable,
+	 *         <code>False</code> otherwise
 	 */
 
 	public Boolean isMutable ()
@@ -73,8 +73,8 @@ public final class DomainModel
 	/**
 	 * Determine if the underlying <code>DataStore</code> is open.
 	 *
-	 * @return <code>true</code> if the underlying <code>DataStore</code> is open,
-	 *         <code>false</code> otherwise
+	 * @return <code>True</code> if the underlying <code>DataStore</code> is open,
+	 *         <code>False</code> otherwise
 	 * @see    ca.uoguelph.socs.icc.edm.domain.datastore.DataStore#isOpen
 	 */
 
