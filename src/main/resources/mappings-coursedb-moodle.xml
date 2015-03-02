@@ -5,7 +5,7 @@
 				 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
 				 version="2.1">
 	<description>Entity mappings for the moodle specific components of the course database</description>
-	<package>ca.uoguelph.socs.icc.edm.domain.moodle</package>
+	<package>ca.uoguelph.socs.icc.edm.domain.activity.moodle</package>
 
 	<access>PROPERTY</access>
 
@@ -13,28 +13,28 @@
 	<!-- Moodle data mapping:  Subclasses of GenericGroupedActivity          -->
 	<!--*********************************************************************-->
 
-	<entity name="MoodleBookActivity" class="MoodleBookActivity" metadata-complete="true">
+	<entity name="Book" class="Book" metadata-complete="true">
 		<table name="activity_moodle_book"/>
 		<attributes>
 			<one-to-many name="children" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleForumActivity" class="MoodleForumActivity" metadata-complete="true">
+	<entity name="Forum" class="Forum" metadata-complete="true">
 		<table name="activity_moodle_forum"/>
 		<attributes>
 			<one-to-many name="children" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleLessonActivity" class="MoodleLessonActivity" metadata-complete="true">
+	<entity name="Lesson" class="Lesson" metadata-complete="true">
 		<table name="activity_moodle_lesson"/>
 		<attributes>
 			<one-to-many name="children" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleWorkshopActivity" class="MoodleWorkshopActivity" metadata-complete="true">
+	<entity name="Workshop" class="Workshop" metadata-complete="true">
 		<table name="activity_moodle_workshop"/>
 		<attributes>
 			<one-to-many name="children" mapped-by="parent"/>
@@ -45,13 +45,13 @@
 	<!-- Moodle data mapping:  Subclasses of GenericGroupedActivityGroup     -->
 	<!--*********************************************************************-->
 
-	<entity name="MoodleForumActivityDiscussion" class="MoodleForumActivityDiscussion" metadata-complete="true">
+	<entity name="ForumDiscussion" class="ForumDiscussion" metadata-complete="true">
 		<table name="activity_moodle_forum_discussion"/>
-		<named-query name="MoodleForumActivityDiscussion:maxid">
-			<query>SELECT MAX(a.id) FROM MoodleForumActivityDiscussion a</query>
+		<named-query name="ForumDiscussion:maxid">
+			<query>SELECT MAX(a.id) FROM ForumDiscussion a</query>
 		</named-query>
-		<named-query name="MoodleForumActivityDiscussion:allid">
-			<query>SELECT a.id FROM MoodleForumActivityDiscussion a</query>
+		<named-query name="ForumDiscussion:allid">
+			<query>SELECT a.id FROM ForumDiscussion a</query>
 		</named-query>
 		<attributes>
 			<id name="id">
@@ -70,13 +70,13 @@
 	<!-- Moodle data mapping:  Subclasses of GenericGroupedActivityMember    -->
 	<!--*********************************************************************-->
 
-	<entity name="MoodleBookActivityChapter" class="MoodleBookActivityChapter" metadata-complete="true">
+	<entity name="BookChapter" class="BookChapter" metadata-complete="true">
 		<table name="activity_moodle_book_chapter"/>
-		<named-query name="MoodleBookActivityChapter:maxid">
-			<query>SELECT MAX(a.id) FROM MoodleBookActivityChapter a</query>
+		<named-query name="BookChapter:maxid">
+			<query>SELECT MAX(a.id) FROM BookChapter a</query>
 		</named-query>
-		<named-query name="MoodleBookActivityChapter:allid">
-			<query>SELECT a.id FROM MoodleBookActivityChapter a</query>
+		<named-query name="BookChapter:allid">
+			<query>SELECT a.id FROM BookChapter a</query>
 		</named-query>
 		<attributes>
 			<id name="id">
@@ -93,13 +93,13 @@
 		</attributes>
 	</entity>
 
-	<entity name="MoodleForumActivityPost" class="MoodleForumActivityPost" metadata-complete="true">
+	<entity name="ForumPost" class="ForumPost" metadata-complete="true">
 		<table name="activity_moodle_forum_post"/>
-		<named-query name="MoodleForumActivityPost:maxid">
-			<query>SELECT MAX(a.id) FROM MoodleForumActivityPost a</query>
+		<named-query name="ForumPost:maxid">
+			<query>SELECT MAX(a.id) FROM ForumPost a</query>
 		</named-query>
-		<named-query name="MoodleForumActivityPost:allid">
-			<query>SELECT a.id FROM MoodleForumActivityPost a</query>
+		<named-query name="ForumPost:allid">
+			<query>SELECT a.id FROM ForumPost a</query>
 		</named-query>
 		<attributes>
 			<id name="id">
@@ -116,13 +116,13 @@
 		</attributes>
 	</entity>
 
-	<entity name="MoodleLessonActivityPage" class="MoodleLessonActivityPage" metadata-complete="true">
+	<entity name="LessonPage" class="LessonPage" metadata-complete="true">
 		<table name="activity_moodle_lesson_page"/>
-		<named-query name="MoodleLessonActivityPage:maxid">
-			<query>SELECT MAX(a.id) FROM MoodleLessonActivityPage a</query>
+		<named-query name="LessonPage:maxid">
+			<query>SELECT MAX(a.id) FROM LessonPage a</query>
 		</named-query>
-		<named-query name="MoodleLessonActivityPage:allid">
-			<query>SELECT a.id FROM MoodleLessonActivityPage a</query>
+		<named-query name="LessonPage:allid">
+			<query>SELECT a.id FROM LessonPage a</query>
 		</named-query>
 		<attributes>
 			<id name="id">
@@ -139,13 +139,13 @@
 		</attributes>
 	</entity>
 
-	<entity name="MoodleWorkshopActivitySubmission" class="MoodleWorkshopActivitySubmission" metadata-complete="true">
+	<entity name="WorkshopSubmission" class="WorkshopSubmission" metadata-complete="true">
 		<table name="activity_moodle_workshop_submission"/>
-		<named-query name="MoodleWorkShopActivitySubmission:maxid">
-			<query>SELECT MAX(a.id) FROM MoodleWorkShopActivitySubmission a</query>
+		<named-query name="WorkShopSubmission:maxid">
+			<query>SELECT MAX(a.id) FROM WorkshopSubmission a</query>
 		</named-query>
-		<named-query name="MoodleWorkShopActivitySubmission:allid">
-			<query>SELECT a.id FROM MoodleWorkShopActivitySubmission a</query>
+		<named-query name="WorkShopSubmission:allid">
+			<query>SELECT a.id FROM WorkshopSubmission a</query>
 		</named-query>
 		<attributes>
 			<id name="id">
@@ -166,47 +166,47 @@
 	<!-- MoodleDataMapping:  Subclasses of GenericNamedActivity              -->
 	<!--*********************************************************************-->
 
-	<entity name="MoodleAssignActivity" class="MoodleAssignActivity" metadata-complete="true">
+	<entity name="Assign" class="Assign" metadata-complete="true">
 		<table name="activity_moodle_assign"/>
 	</entity>
 
-	<entity name="MoodleChecklistActivity" class="MoodleChecklistActivity" metadata-complete="true">
+	<entity name="Checklist" class="Checklist" metadata-complete="true">
 		<table name="activity_moodle_checklist"/>
 	</entity>
 
-	<entity name="MoodleChoiceActivity" class="MoodleChoiceActivity" metadata-complete="true">
+	<entity name="Choice" class="Choice" metadata-complete="true">
 		<table name="activity_moodle_choice"/>
 	</entity>
 
-	<entity name="MoodleFeedbackActivity" class="MoodleFeedbackActivity" metadata-complete="true">
+	<entity name="Feedback" class="Feedback" metadata-complete="true">
 		<table name="activity_moodle_feedback"/>
 	</entity>
 
-	<entity name="MoodleFolderActivity" class="MoodleFolderActivity" metadata-complete="true">
+	<entity name="Folder" class="Folder" metadata-complete="true">
 		<table name="activity_moodle_folder"/>
 	</entity>
 
-	<entity name="MoodleLabelActivity" class="MoodleLabelActivity" metadata-complete="true">
+	<entity name="Label" class="Label" metadata-complete="true">
 		<table name="activity_moodle_label"/>
 	</entity>
 
-	<entity name="MoodlePageActivity" class="MoodlePageActivity" metadata-complete="true">
+	<entity name="Page" class="Page" metadata-complete="true">
 		<table name="activity_moodle_page"/>
 	</entity>
 
-	<entity name="MoodleQuizActivity" class="MoodleQuizActivity" metadata-complete="true">
+	<entity name="Quiz" class="Quiz" metadata-complete="true">
 		<table name="activity_moodle_quiz"/>
 	</entity>
 
-	<entity name="MoodleResourceActivity" class="MoodleResourceActivity" metadata-complete="true">
+	<entity name="Resource" class="Resource" metadata-complete="true">
 		<table name="activity_moodle_resource"/>
 	</entity>
 
-	<entity name="MoodleSchedulerActivity" class="MoodleSchedulerActivity" metadata-complete="true">
+	<entity name="Scheduler" class="Scheduler" metadata-complete="true">
 		<table name="activity_moodle_scheduler"/>
 	</entity>
 
-	<entity name="MoodleURLActivity" class="MoodleURLActivity" metadata-complete="true">
+	<entity name="URL" class="URL" metadata-complete="true">
 		<table name="activity_moodle_url"/>
 	</entity>
 
@@ -214,7 +214,7 @@
 	<!-- Moodle data mapping:  Subclasses of LogReference                    -->
 	<!--*********************************************************************-->
 
-	<entity name="MoodlBookActivityChapterLog" class="MoodleBookActivityChapterLog" metadata-complete="true">
+	<entity name="MoodlBookActivityChapterLog" class="BookChapterLog" metadata-complete="true">
 		<table name="log_moodle_book_chapter"/>
 		<attributes>
 			<many-to-one name="activity" target-entity="MoodlBookActivityChapter">
@@ -223,37 +223,37 @@
 		</attributes>
 	</entity>
 
-	<entity name="MoodleForumActivityDiscussionLog" class="MoodleForumActivityDiscussionLog" metadata-complete="true">
+	<entity name="ForumDiscussionLog" class="ForumDiscussionLog" metadata-complete="true">
 		<table name="log_moodle_forum_discussion"/>
 		<attributes>
-			<many-to-one name="activity" target-entity="MoodleForumActivityDiscussion">
+			<many-to-one name="activity" target-entity="ForumDiscussion">
 				<join-column name="discussion_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleForumActivityPostLog" class="MoodleForumActivityPostLog" metadata-complete="true">
+	<entity name="ForumPostLog" class="ForumPostLog" metadata-complete="true">
 		<table name="log_moodle_forum_post"/>
 		<attributes>
-			<many-to-one name="activity" target-entity="MoodleForumActivityPostLog">
+			<many-to-one name="activity" target-entity="ForumPostLog">
 				<join-column name="post_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleLessonActivityPageLog" class="MoodleLessonActivityPageLog" metadata-complete="true">
+	<entity name="LessonPageLog" class="LessonPageLog" metadata-complete="true">
 		<table name="log_moodle_lesson_page"/>
 		<attributes>
-			<many-to-one name="activity" target-entity="MoodleLessonActivityPageLog">
+			<many-to-one name="activity" target-entity="LessonPageLog">
 				<join-column name="page_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleWorkshopActivitySubmissionLog" class="MoodleWorkshopActivitySubmissionLog" metadata-complete="true">
+	<entity name="WorkshopSubmissionLog" class="WorkshopSubmissionLog" metadata-complete="true">
 		<table name="log_moodle_workshop_submission"/>
 		<attributes>
-			<many-to-one name="activity" target-entity="MoodleWorkshopActivitySubmission">
+			<many-to-one name="activity" target-entity="WorkshopSubmission">
 				<join-column name="submission_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 		</attributes>

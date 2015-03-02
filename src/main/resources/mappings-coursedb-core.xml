@@ -5,7 +5,7 @@
                                      http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
                  version="2.1">
 	<description>Entity mappings for the course database</description>
-	<package>ca.uoguelph.socs.icc.edm.domain</package>
+	<package>ca.uoguelph.socs.icc.edm.domain.core</package>
 
 	<access>PROPERTY</access>
 
@@ -39,18 +39,18 @@
 			<query>SELECT u FROM User u</query>
 		</named-query>
 		<named-query name="UserData:idnumber">
-			<query>SELECT u FROM User u WHERE i.idnumber = :idnumber</query>
+			<query>SELECT u FROM User u WHERE u.idNumber = :idnumber</query>
 		</named-query>
 		<named-query name="UserData:username">
 			<query>SELECT u FROM User u WHERE u.username = :username</query>
 		</named-query>
 		<attributes>
-			<id>
+			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 				<generated-value strategy="SEQUENCE" generator="user_id_seq"/>
 				<sequence-generator name="user_id_seq" sequence-name="user_id_seq" initial-value="1" allocation-size="1"/>
 			</id>
-			<basic name="idnumber">
+			<basic name="idNumber">
 				<column name="id_number" />
 			</basic>
 			<basic name="username">
@@ -62,8 +62,9 @@
 			<basic name="lastname">
 				<column name="last_name" nullable="false"/>
 			</basic>
-			<one-to-many name="enrolments" targer-entity="UserEnrolmentData" mapped-by="users"/>
-			<transient name="enrolment"/>
+			<one-to-many name="enrolments" target-entity="UserEnrolmentData" mapped-by="user"/>
+			<!--			<transient name="enrolment"/>-->
+			<transient name="name"/>
 		</attributes>
 	</entity>
 
@@ -155,6 +156,9 @@
 	<entity name="Enrolment" class="EnrolmentData" metadata-complete="true">
 		<description>Record for a user enrolled in a course</description>
 		<table name="enrolment"/>
+		<secondary-table name="enrolment_final_grade">
+			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
+		</secondary-table>
 		<named-query name="EnrolmentData:maxid">
 			<query>SELECT MAX(e.id) FROM Enrolment e</query>
 		</named-query>
@@ -167,9 +171,6 @@
 		<named-query name="EnrolmentData:role">
 			<query>SELECT e FROM Enrolment e WHERE e.role = :role</query>
 		</named-query>
-		<secondary-table name="enrolment_final_grade">
-			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
-		</secondary-table>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -199,10 +200,10 @@
 	<entity name="UserEnrolment" class="UserEnrolmentData" metadata-complete="true">
 		<table name="enrolment"/>
 		<named-query name="UserEnrolmentData:maxid">
-			<query>SELECT MAX(c.id) FROM UserEnrolment c</query>
+			<query>SELECT MAX(e.id) FROM UserEnrolment e</query>
 		</named-query>
 		<named-query name="UserEnrolmentData:allid">
-			<query>SELECT c.id FROM UserEnrolment c</query>
+			<query>SELECT e.id FROM UserEnrolment e</query>
 		</named-query>
 		<named-query name="UserEnrolmentData:all">
 			<query>SELECT e FROM UserEnrolment e</query>
@@ -211,7 +212,7 @@
 			<query>SELECT e FROM UserEnrolment e WHERE e.role = :role</query>
 		</named-query>
 		<attributes>
-			<many-to-one name="users" target-entity="UserData" optional="false">
+			<many-to-one name="user" target-entity="UserData" optional="false">
 				<join-table schema="userdb" name="user_enrolments">
 					<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
 					<inverse-join-column name="user_id" nullable="false" referenced-column-name="id"/>
@@ -272,7 +273,7 @@
 		</attributes>
 	</entity>
 
-	<entity name="ActivityTypeData" class="ActivityTypeData" metadata-complete="true">
+	<entity name="ActivityType" class="ActivityTypeData" metadata-complete="true">
 		<description>The type of the activity (or the module)</description>
 		<table name="activity"/>
 		<named-query name="ActivityTypeData:maxid">
@@ -321,7 +322,7 @@
 			<query>SELECT a FROM Action a</query>
 		</named-query>
 		<named-query name="ActionData:name">
-			<query>SELECT a FROM Action s WHERE a.name = :name</query>
+			<query>SELECT a FROM Action a WHERE a.name = :name</query>
 		</named-query>
 		<attributes>
 			<id name="id">
@@ -354,9 +355,6 @@
 				<generated-value strategy="SEQUENCE" generator="activity_instance_id_seq"/>
 				<sequence-generator name="activity_instance_id_seq" sequence-name="activity_instance_id_seq" initial-value="1" allocation-size="1"/>
 			</id>
-			<basic name="gradable">
-				<column name="gradable" nullable="false"/>
-			</basic>
 			<basic name="stealth">
 				<column name="stealth" nullable="false"/>
 			</basic>
@@ -367,7 +365,7 @@
 				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<one-to-many name="grades" target-entity="GradedActivity" mapped-by="activity"/>
-			<one-to-many name="log" target-entity="LogData" mapped-by="activitydb">
+			<one-to-many name="log" target-entity="LogData" mapped-by="activity">
 				<cascade>
 					<cascade-all/>
 				</cascade>
@@ -386,13 +384,12 @@
 		<inheritance strategy="TABLE_PER_CLASS"/>
 		<attributes>
 			<id name="instance"/>
-			<one-to-one name="instance" optional="false">
+			<one-to-one name="instance" target-entity="ActivityInstance" optional="false">
 				<join-column name="activityid" nullable="false" referenced-column-name="id"/>
 			</one-to-one>
 			<transient name="log"/>
 			<transient name="course"/>
 			<transient name="type"/>
-			<transient name="gradable"/>
 			<transient name="stealth"/>
 			<transient name="grades"/>
 		</attributes>
@@ -410,7 +407,6 @@
 			<transient name="log"/>
 			<transient name="course"/>
 			<transient name="type"/>
-			<transient name="gradable"/>
 			<transient name="stealth"/>
 			<transient name="grades"/>
 			<transient name="parent"/>
@@ -426,6 +422,9 @@
 	<entity name="LogEntry" class="LogData" metadata-complete="true">
 		<description>The course activity log</description>
 		<table name="log"/>
+		<secondary-table name="log_ip">
+			<primary-key-join-column name="log_id" referenced-column-name="id"/>
+		</secondary-table>
 		<named-query name="LogData:maxid">
 			<query>SELECT MAX(e.id) FROM LogEntry e</query>
 		</named-query>
@@ -436,11 +435,8 @@
 			<query>SELECT e FROM LogEntry e</query>
 		</named-query>
 		<named-query name="LogData:course">
-			<query>SELECT e FROM LogEntry e JOIN Activity a WHERE where a.course = :course ORDER BY e.id</query>
+			<query>SELECT e FROM LogEntry e JOIN e.activity a WHERE a.course = :course ORDER BY e.id</query>
 		</named-query>
-		<secondary-table name="log_ip">
-			<primary-key-join-column name="log_id" referenced-column-name="id"/>
-		</secondary-table>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
@@ -454,7 +450,7 @@
 			<basic name="IPAddress" optional="false">
 				<column name="ipaddress" nullable="false"/>
 			</basic>
-			<many-to-one name="activitydb" target-entity="ActivityInstance" optional="false">
+			<many-to-one name="activity" target-entity="ActivityInstance" optional="false">
 				<join-column name="instance_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<many-to-one name="action" target-entity="ActionData" optional="false">
@@ -464,7 +460,6 @@
 				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<one-to-one name="reference" target-entity="LogReference" mapped-by="entry"/>
-			<transient name="activity"/>
 			<transient name="course"/>
 		</attributes>
 	</entity>
@@ -477,7 +472,12 @@
 			<one-to-one name="entry" target-entity="LogData" optional="false">
 				<join-column name="log_id" nullable="false" referenced-column-name="id"/>
 			</one-to-one>
+			<transient name="action"/>
 			<transient name="activity"/>
+			<transient name="course"/>
+			<transient name="enrolment"/>
+			<transient name="IPAddress"/>
+			<transient name="time"/>
 		</attributes>
 	</entity>
 </entity-mappings>
