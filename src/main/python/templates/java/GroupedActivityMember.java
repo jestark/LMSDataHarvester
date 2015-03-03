@@ -25,7 +25,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.core.AbstractElement;
+import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
 
 /**
@@ -57,7 +57,7 @@ public class ${ClassName} extends GenericGroupedActivityMember
 	 * Allows the builders to create instances of <code>${ClassName}</code>.
 	 */
 
-	private static final class Factory extends AbstractElement.Factory<Activity> implements ActivityGroupMemberElementFactory
+	private static final class Factory extends AbstractActivity.Factory implements ActivityGroupMemberElementFactory
 	{
 		/**
 		 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.

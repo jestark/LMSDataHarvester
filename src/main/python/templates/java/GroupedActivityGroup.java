@@ -57,7 +57,7 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 	 * Allows the builders to create instances of <code>${ClassName}</code>.
 	 */
 
-	private static final class Factory extends GenericGroupedActivityGroup.Factory
+	private static final class Factory extends GenericGroupedActivityGroup.Factory implements ActivityGroupMemberElementFactory
 	{
 		/**
 		 * Create an instance of the <code>Factory</code>, passing the child

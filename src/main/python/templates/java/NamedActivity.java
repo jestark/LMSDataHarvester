@@ -19,10 +19,13 @@ package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.Course;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
 import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 /**
@@ -53,24 +56,30 @@ public class ${ClassName} extends GenericNamedActivity
 	 * builders to create instances of <code>${ClassName}</code>.
 	 */
 
-	private static final class Factory extends GenericNamedActivity.Factory
+	private static final class Factory extends ActivityInstance.Factory implements NamedActivityElementFactory
 	{
 		/**
 		 * Create a new <code>Activity</code> instance.
 		 *
-		 * @param  instance The <code>Activity</code> containing the instance data,
-		 *                  not null
-		 * @param  name     The name of the <code>Activity</code>, not null
+		 * @param  type    The <code>ActivityType</code> of the
+		 *                 <code>Activity</code>, not null
+		 * @param  course  The <code>Course</code> which is associated with the
+		 *                 <code>Activity</code> instance, not null
+		 * @param  stealth Indicator if the <code>Activity</code> was added by the
+		 *                 system, not null
+		 * @param  name    The name of the <code>Activity</code>, not null
 		 *
-		 * @return          The new <code>Activity</code> instance
+		 * @return         The new <code>Activity</code> instance
 		 */
 
-		public Activity create (final Activity instance, final String name)
+		public Activity create (final ActivityType type, final Course course, final Boolean stealth, final String name)
 		{
-			assert instance != null : "instance is NULL";
+			assert type != null : "type is NULL";
+			assert course != null : "course is NULL";
+			assert stealth != null : "stealth is NULL";
 			assert name != null : "name is NULL";
 
-			return new ${ClassName} (instance, name);
+			return new ${ClassName} (type, course, stealth, name);
 		}
 	}
 
@@ -98,13 +107,17 @@ public class ${ClassName} extends GenericNamedActivity
 	/**
 	 * Create the <code>Activity</code> instance.
 	 *
-	 * @param  instance The <code>Activity</code> containing the instance data,
-	 *                  not null
-	 * @param  name     The name of the <code>Activity</code>, not null
+	 * @param  type    The <code>ActivityType</code> of the
+	 *                 <code>Activity</code>, not null
+	 * @param  course  The <code>Course</code> which is associated with the
+	 *                 <code>Activity</code> instance, not null
+	 * @param  stealth Indicator if the <code>Activity</code> was added by the
+	 *                 system, not null
+	 * @param  name    The name of the <code>Activity</code>, not null
 	 */
 
-	public ${ClassName} (final Activity instance, final String name)
+	public ${ClassName} (final ActivityType type, final Course course, final Boolean stealth, final String name)
 	{
-		super (instance, name);
+		super (type, course, stealth, name);
 	}
 }
