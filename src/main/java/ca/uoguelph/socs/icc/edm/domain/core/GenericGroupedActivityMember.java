@@ -17,10 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
-
-import java.util.ArrayList;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -53,17 +50,11 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
-	/** The primary key for the sub-activity */
-	private Long id;
-
 	/** The name of the activity */
 	private String name;
 
 	/** The sub-activity's parent activity */
 	private ActivityGroup parent;
-
-	/** The log entries which are associated with the sub-activity */
-	private List<LogEntry> log;
 
 	/**
 	 * Register the activity with the <code>ActivityDataMap</code> and the
@@ -99,11 +90,8 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	public GenericGroupedActivityMember ()
 	{
 		super ();
-		this.id = null;
 		this.name = null;
 		this.parent = null;
-
-		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**
@@ -121,11 +109,8 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 		assert parent != null : "Parent element is null";
 		assert name != null : "name is null";
 
-		this.id = null;
 		this.parent = parent;
 		this.name = name;
-
-		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**
@@ -180,33 +165,6 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 		hbuilder.append (this.parent);
 
 		return hbuilder.toHashCode ();
-	}
-
-	/**
-	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
-	 * instance.
-	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
-	 */
-
-	public Long getId ()
-	{
-		return this.id;
-	}
-
-	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded, or by the <code>ActivityBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new <code>Activity</code>
-	 * instance.
-	 *
-	 * @param  id The <code>DataStore</code> identifier, not null
-	 */
-
-	protected void setId (final Long id)
-	{
-		this.id = id;
 	}
 
 	/**
@@ -331,77 +289,12 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	}
 
 	/**
-	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances which
-	 * act upon the <code>Activity</code>.
-	 *
-	 * @return A <code>List</code> of <code>LogEntry</code> instances
-	 */
-
-	@Override
-	public List<LogEntry> getLog ()
-	{
-		return new ArrayList<LogEntry> (this.log);
-	}
-
-	/**
-	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
-	 * associated with the <code>Activity</code> instance.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
-	 *
-	 * @param  log The <code>List</code> of <code>LogEntry</code> instances, not
-	 *             null
-	 */
-
-	protected void setLog (final List<LogEntry> log)
-	{
-		assert log != null : "log is NULL";
-
-		this.log = log;
-	}
-
-	/**
-	 * Add the specified <code>LogEntry</code> to the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to add, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully added, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean addLog (final LogEntry entry)
-	{
-		assert entry != null : "entry is NULL";
-
-		return this.log.add (entry);
-	}
-
-	/**
-	 * Remove the specified <code>LogEntry</code> from the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to remove, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully removed, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean removeLog (final LogEntry entry)
-	{
-		assert entry != null : "entry is NULL";
-
-		return this.log.remove (entry);
-	}
-
-	/**
 	 * Get the parent <code>ActivityGroup</code> instance for the sub-activity.
 	 *
 	 * @return The parent <code>ActivityGroup</code>
 	 */
 
+	@Override
 	public ActivityGroup getParent ()
 	{
 		return this.parent;

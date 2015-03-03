@@ -18,7 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
 
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -40,83 +39,18 @@ import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
  * Generic representation of an <code>Activity</code> which has a name.  This
  * class acts as an abstract base class for all of the <code>Activity</code>
  * implementations which have a name.
- * <p>
- * Note that there exists a co-dependency between this class and
- * <code>ActivityInstance</code>. Instances of this class require the data in
- * <code>ActivityInstance</code> to be uniquely identified, and when this class
- * is present the instances of <code>ActivityInstance</code> require data in
- * this class to be uniquely identified.  The co-dependency effects the
- * implementations for the <code>equals</code>, <code>hashCode</code> and
- * <code>toString</code> methods.
- * <p>
- * Normally, the implementation of the relation ship between two classes we see
- * each class call the others <code>equals</code>, <code>hashCode</code> or
- * <code>toString</code> method when it is needed.  With the co-dependency each
- * class calling the others <code>equals</code>, <code>hashCode</code> or
- * <code>toString</code> method would lead to an infinite mutual recursion.  To
- * avoid the infinite mutual recursion, this class re-implements the 
- * <code>equals</code>, <code>hashCode</code> and <code>toString</code> methods
- * from <code>ActivityInstance</code> using the methods from the
- * <code>Activity</code> interface.  When this class is present, 
- * <code>ActivityInstance</code> calls the <code>equals</code>,
- * <code>hashCode</code> and <code>toString</code> methods from this class
- * rather than doing the computations itself.
- * <p>
- * Ideally, <code>ActivityInstance</code> would be encapsulated by this class
- * and the depedency would be one way (from this class to
- * <code>ActivityInstance</code>).  However, limitations imposed by the
- * database and the Java Persistence API require that these classes are
- * co-dependant.  Since this class is optional, <code>ActivityInstance</code>
- * needs to be able to stand alone.  There is no way to tell JPA to encapsulate
- * <code>ActivityInstance</code> within the instance of this class, when this
- * class is present.  So from the point of view of the database,
- * <code>ActivityInstance</code> encapsulates this class.  However, it is
- * expected that some programs will treat this class as encapsulating
- * <code>ActivityInstance</code>, so the instances of both classes need to be
- * able to be resolved starting from either class.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public abstract class GenericNamedActivity extends AbstractActivity implements Serializable
+public abstract class GenericNamedActivity extends ActivityInstance implements Serializable
 {
-	/**
-	 * Implementation of the common components of the
-	 * <code>NamedActivityElementFactory</code> interface.
-	 */
-
-	protected static abstract class Factory extends AbstractElement.Factory<Activity> implements NamedActivityElementFactory
-	{
-		/**
-		 * Set the reference to the <code>Activity</code> instance which contains the
-		 * core activity data.  This method should only be used in cases where an
-		 * instance is loaded without the core data.  Usually the reference should be
-		 * set during instance creation, or when the instance is loaded from the
-		 * <code>DataStore</code>.  
-		 *
-		 * @param  activity The <code>Activity</code> to which the core data is to be
-		 *                  added, not null
-		 * @param  instance The core <code>Activity</code> instance data, not null
-		 */
-
-		public final void setInstance (final Activity activity, final ActivityInstance instance)
-		{
-			assert activity instanceof GenericNamedActivity : "activity is not an instance of GenericNamedActivity";
-			assert instance != null : "instance is NULL";
-
-			((GenericNamedActivity) activity).setInstance (instance);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The name of the activity */
 	private String name;
-
-	/** The activity instance */
-	private ActivityInstance instance;
 
 	/**
 	 * Register the activity with the <code>ActivityDataMap</code> and the
@@ -147,32 +81,34 @@ public abstract class GenericNamedActivity extends AbstractActivity implements S
 	}
 
 	/**
-	 * Create the <code>Activity</code> with null values.
+	 * Create the <code>GenericNamedActivity</code> with null values.
 	 */
 
 	public GenericNamedActivity ()
 	{
 		super ();
 		this.name = null;
-		this.instance = null;
 	}
 
 	/**
-	 * Create the <code>Activity</code>.
+	 * Create the <code>GenericNamedActivity</code>.
 	 *
-	 * @param  instance The <code>Activity</code> with the core data, not null
-	 * @param  name     The name of the <code>Activity</code>, not null
+	 * @param  type    The <code>ActivityType</code> of the
+	 *                 <code>Activity</code>, not null
+	 * @param  course  The <code>Course</code> which is associated with the
+	 *                 <code>Activity</code> instance, not null
+	 * @param  stealth Indicator if the <code>Activity</code> was added by the
+	 *                 system, not null
+	 * @param  name    The name of the <code>Activity</code>, not null
 	 */
 
-	public GenericNamedActivity (final Activity instance, final String name)
+	public GenericNamedActivity (final ActivityType type, final Course course, final Boolean stealth, final String name)
 	{
-		super ();
+		super (type, course, stealth);
 
-		assert instance != null : "instance is NULL";
 		assert name != null : "name is NULL";
 
 		this.name = name;
-		this.instance = (ActivityInstance) instance;
 	}
 
 	/**
@@ -200,9 +136,8 @@ public abstract class GenericNamedActivity extends AbstractActivity implements S
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
 			
+			ebuilder.appendSuper (super.equals (obj));
 			ebuilder.append (this.name, ((Activity) obj).getName ());
-			ebuilder.append (this.instance.getCourse (), ((Activity) obj).getCourse ());
-			ebuilder.append (this.instance.getType (), ((Activity) obj).getType ());
 
 			result = ebuilder.isEquals ();
 		}
@@ -224,134 +159,10 @@ public abstract class GenericNamedActivity extends AbstractActivity implements S
 		final int mult = 983;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.appendSuper (super.hashCode ());
 		hbuilder.append (this.name);
-		hbuilder.append (this.instance.getCourse ());
-		hbuilder.append (this.instance.getType ());
 
 		return hbuilder.toHashCode ();
-	}
-
-	/**
-	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
-	 * instance.  Since <code>GenericNamedActivity</code> is dependent on the
-	 * core <code>Activity</code> instance for its <code>DataStore</code>
-	 * identifier, the identifier from the instance will be returned.
-	 *
-	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
-	 */
-
-	public Long getId ()
-	{
-		return this.instance.getId ();
-	}
-
-	/**
-	 * Set the <code>DataStore</code> identifier.   Since
-	 * <code>GenericNamedActivity</code> is dependent on the core
-	 * <code>Activity</code> instance for its <code>DataStore</code> identifier,
-	 * this method throws an <code>UnsupportedOperationException</code>.
-	 *
-	 * @param  id                            The <code>DataStore</code>
-	 *                                       identifier, not null
-	 * @throws UnsupportedOperationException unconditionally
-	 */
-
-	protected void setId (final Long id)
-	{
-		throw new UnsupportedOperationException ();
-	}
-
-	/**
-	 * Get the <code>Course</code> with which the <code>Activity</code> is
-	 * associated.
-	 *
-	 * @return The <code>Course</code> instance
-	 */
-
-	@Override
-	public Course getCourse ()
-	{
-		return this.instance.getCourse ();
-	}
-
-	/**
-	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
-	 *
-	 * @return The <code>ActivityType</code> instance
-	 */
-
-	@Override
-	public ActivityType getType ()
-	{
-		return this.instance.getType ();
-	}
-
-	/**
-	 * Get an indication if the <code>Activity</code> was explicitly added to the
-	 * <code>Course</code>.  Some <code>Activity</code> instances are added to a
-	 * <code>Course</code> by the system, rather than being added by the
-	 * instructor.  For these <code>Activity</code> instances, the stealth flag
-	 * will be set.
-	 *
-	 * @return <code>True</code> if the stealth flag is set, <code>False</code>
-	 *         otherwise
-	 */
-
-	@Override
-	public Boolean isStealth ()
-	{
-		return this.instance.isStealth ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Grade</code> instances which are
-	 * associated with the <code>Activity</code>.  Not all <code>Activity</code>
-	 * instances are graded.  If the <code>Activity</code> does is not graded
-	 * then the <code>Set</code> will be empty.
-	 *
-	 * @return A <code>Set</code> of <code>Grade</code> instances
-	 */
-
-	@Override
-	public Set<Grade> getGrades ()
-	{
-		return this.instance.getGrades ();
-	}
-
-	/**
-	 * Add the specified <code>Grade</code> to the
-	 * <code>Activity</code>.
-	 *
-	 * @param  grade The <code>Grade</code> to add, not null
-	 *
-	 * @return       <code>True</code> if the <code>Grade</code> was
-	 *               successfully added, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean addGrade (final Grade grade)
-	{
-		assert grade != null : "grade is NULL";
-
-		return this.instance.addGrade (grade);
-	}
-
-	/**
-	 * Remove the specified <code>Grade</code> from the
-	 * <code>Activity</code>.
-	 *
-	 * @param  grade The <code>Grade</code> to remove, not null
-	 *
-	 * @return       <code>True</code> if the <code>Grade</code> was
-	 *               successfully removed from, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean removeGrade (final Grade grade)
-	{
-		assert grade != null : "grade is NULL";
-
-		return this.instance.removeGrade (grade);
 	}
 
 	/**
@@ -383,84 +194,6 @@ public abstract class GenericNamedActivity extends AbstractActivity implements S
 	}
 
 	/**
-	 * Get an <code>Activity</code> instance which directly contains the core
-	 * data.  The core data for an <code>Activity</code> includes the associated
-	 * <code>Course</code> and <code>ActivityType</code>.
-	 *
-	 * @return An <code>Activity</code> containing the core data
-	 */
-
-	public Activity getInstance ()
-	{
-		return this.instance;
-	}
-
-	/**
-	 * Set the link to that <code>Activity</code> instance that contains the core
-	 * <code>Activity</code> data.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is loaded.
-	 *
-	 * @param  instance The <code>Activity</code> instance containing the core
-	 *                  data
-	 */
-
-	protected void setInstance (final ActivityInstance instance)
-	{
-		assert instance != null : "instance is NULL";
-
-		this.instance = instance;
-	}
-
-	/**
-	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances which
-	 * act upon the <code>Activity</code>.
-	 *
-	 * @return A <code>List</code> of <code>LogEntry</code> instances
-	 */
-
-	@Override
-	public List<LogEntry> getLog ()
-	{
-		return this.instance.getLog ();
-	}
-
-	/**
-	 * Add the specified <code>LogEntry</code> to the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to add, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully added, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean addLog (final LogEntry entry)
-	{
-		assert entry != null : "entry is NULL";
-
-		return this.instance.addLog (entry);
-	}
-
-	/**
-	 * Remove the specified <code>LogEntry</code> from the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to remove, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully removed, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean removeLog (final LogEntry entry)
-	{
-		assert entry != null : "entry is NULL";
-
-		return this.instance.removeLog (entry);
-	}
-
-	/**
 	 * Get a <code>String</code> representation of the <code>Activity</code>
 	 * instance, including the identifying fields.
 	 *
@@ -473,9 +206,7 @@ public abstract class GenericNamedActivity extends AbstractActivity implements S
 	{
 		ToStringBuilder builder = new ToStringBuilder (this);
 
-		builder.append ("type", this.instance.getType ());
-		builder.append ("course", this.instance.getCourse ());
-		builder.append ("stealth", this.instance.isStealth ());
+		builder.appendSuper (super.toString ());
 		builder.append ("name", this.name);
 
 		return builder.toString ();

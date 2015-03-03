@@ -26,7 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupElementFactory;
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
 
 /**
  * A generic representation of a node in a sub-activity tree.  This class
@@ -45,7 +44,7 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 	 * Centralizes the implementation of the common add/remove operations.
 	 */
 
-	protected static abstract class Factory extends AbstractElement.Factory<Activity> implements ActivityGroupElementFactory, ActivityGroupMemberElementFactory
+	protected static abstract class Factory extends AbstractActivity.Factory implements ActivityGroupElementFactory
 	{
 		/** The <code>Class</code> of the parent <code>Element</code> */
 		private final Class<?> parent;

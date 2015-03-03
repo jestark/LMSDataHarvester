@@ -18,10 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
 import java.util.Set;
-import java.util.List;
 
 import java.util.HashSet;
-import java.util.ArrayList;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -36,72 +34,29 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
 
 /**
- * Implementation of the <code>Activity</code> interface.  It is expected that
- * instances of this class will be accessed though the <code>Activity</code>
- * interface, along with the relevant manager, and builder.  See the
- * <code>Activity</code> interface documentation for details.
- * <p>
- * Note that there is a co-dependency between this class and
- * <code>GenericNamedActivity</code>.  See <code>GenericNamedActivity</code>
- * for the details.
+ * Abstract implementation of the <code>Activity</code> interface.  This class
+ * acts as an abstract base class, containing the common <code>Element</code>
+ * references, for all of the classes implementing the <code>Activity</code>
+ * interface, which are not sub-activities.  It is expected that instances of
+ * this class will be accessed though the <code>Activity</code> interface,
+ * along with the relevant manager, and builder.  See the <code>Activity</code>
+ * interface documentation for details.
  *
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder
  * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager
- * @see     GenericNamedActivity
  */
 
-public class ActivityInstance extends AbstractActivity implements Serializable
+public abstract class ActivityInstance extends AbstractActivity implements Serializable
 {
 	/**
 	 * Implementation of the <code>ActivityElementFactory</code> interface.  Allows
 	 * the builders to create instances of <code>ActivityInstance</code>.
 	 */
 
-	private static final class Factory extends AbstractElement.Factory<Activity> implements ActivityElementFactory
+	protected static abstract class Factory extends AbstractActivity.Factory implements ActivityElementFactory
 	{
-		/**
-		 * Create a new <code>Activity</code> instance.
-		 *
-		 * @param  type    The <code>ActivityType</code> of the
-		 *                 <code>Activity</code>, not null
-		 * @param  course  The <code>Course</code> which is associated with the
-		 *                 <code>Activity</code> instance, not null
-		 * @param  stealth Indicator if the <code>Activity</code> was added by the
-		 *                 system, not null
-		 *
-		 * @return         The new <code>Activity</code> instance
-		 */
-
-		@Override
-		public Activity create (final ActivityType type, final Course course, final Boolean stealth)
-		{
-			assert type != null : "type is NULL";
-			assert course != null : "course is NULL";
-			assert stealth != null : "stealth is NULL";
-			
-			return new ActivityInstance (type, course, stealth);
-		}
-
-		/**
-		 * Add the instance specific data to the activity.  Note that the data to be
-		 * added must not already be a part of another <code>Activity</code>, and the
-		 * <code>Activity</code> must not already have data associated with it.
-		 *
-		 * @param  instance The <code>Activity</code> to which the data is to be
-		 *                  added, not null
-		 * @param  data     The data to add to the <code>Activity</code>, not null
-		 */
-
-		public void setInstaceData (final Activity instance, final Activity data)
-		{
-			assert instance instanceof ActivityInstance : "instance is not an instance of ActivityInstance";
-			assert data != null : "data is NULL";
-
-			((ActivityInstance) instance).setActivity (data);
-		}
-
 		/**
 		 * Add the specified <code>Grade</code> to the specified
 		 * <code>Activity</code>.
@@ -145,57 +100,10 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 			
 			return ((ActivityInstance) activity).removeGrade (grade);
 		}
-
-		/**
-		 * Add the specified <code>LogEntry</code> to the specified
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity The <code>Activity</code> to which the
-		 *                  <code>LogEntry</code> is to be added, not null
-		 * @param  entry    The <code>LogEntry</code> to add to the
-		 *                  <code>Activity</code>, not null
-		 *
-		 * @return          <code>True</code> if the <code>LogEntry</code> was
-		 *                  successfully added to the <code>Activity</code>,
-		 *                  <code>False</code> otherwise
-		 */
-
-		public boolean addLogEntry (final Activity activity, final LogEntry entry)
-		{
-			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
-			assert entry != null : "entry is NULL";
-			
-			return ((ActivityInstance) activity).addLog (entry);
-		}
-
-		/**
-		 * Remove the specified <code>LogEntry</code> from the specified
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity The <code>Activity</code> from which the
-		 *                  <code>LogEntry</code> is to be removed, not null
-		 * @param  entry    The <code>LogEntry</code> to remove from the
-		 *                  <code>Activity</code>, not null
-		 *
-		 * @return          <code>True</code> if the <code>LogEntry</code> was
-		 *                  successfully removed from the <code>Activity</code>,
-		 *                  <code>False</code> otherwise
-		 */
-
-		public boolean removeLogEntry (final Activity activity, final LogEntry entry)
-		{
-			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
-			assert entry != null : "entry is NULL";
-
-			return ((ActivityInstance) activity).removeLog (entry);
-		}
 	}
 
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
-
-	/** The primary key for the activity */
-	private Long id;
 
 	/** Flag indicting if the activity is a "system" activity */
 	private Boolean stealth;
@@ -203,27 +111,11 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	/** The course with which the activity is associated */
 	private Course course;
 
-	/** The data associated with the activity */
-	private Activity activity;
-
 	/** The type of the activity*/
 	private ActivityType type;
 
 	/** The set of grades for the activity */
 	private Set<Grade> grades;
-
-	/** The log entries associated with the activity*/
-	private List<LogEntry> log;
-
-	/**
-	 * Static initializer to register the <code>ActivityInstance</code> class with
-	 * the factories.
-	 */
-
-	static
-	{
-		AbstractElement.registerElement (Activity.class, ActivityInstance.class, DefaultActivityBuilder.class, ActivityElementFactory.class, new Factory ());
-	}
 
 	/**
 	 * Create the <code>Activity</code> with null values.
@@ -233,15 +125,12 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	{
 		super ();
 		
-		this.id = null;
 		this.type = null;
 		this.course = null;
-		this.activity = null;
 
 		this.stealth = Boolean.valueOf (false);
 		
 		this.grades = new HashSet<Grade> ();
-		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**
@@ -291,19 +180,12 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		}
 		else if (obj instanceof ActivityInstance)
 		{
-			if (this.activity != null)
-			{
-				result = this.activity.equals (((ActivityInstance) obj).activity);
-			}
-			else
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.appendSuper (super.equals (obj));
-				ebuilder.append (this.type, ((ActivityInstance) obj).type);
-				ebuilder.append (this.course, ((ActivityInstance) obj).course);
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.type, ((ActivityInstance) obj).type);
+			ebuilder.append (this.course, ((ActivityInstance) obj).course);
 
-				result = ebuilder.isEquals ();
-			}
+			result = ebuilder.isEquals ();
 		}
 
 		return result;
@@ -323,51 +205,12 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		final int base = 1039;
 		final int mult = 953;
 
-		int result = 0;
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+	
+		hbuilder.append (this.type);
+		hbuilder.append (this.course);
 
-		if (this.activity != null)
-		{
-			result = this.activity.hashCode ();
-		}
-		else
-		{
-			HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		
-			hbuilder.append (this.type);
-			hbuilder.append (this.course);
-			hbuilder.append (this.activity);
-
-			result = hbuilder.hashCode ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
-	 * instance.
-	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
-	 */
-
-	public Long getId ()
-	{
-		return this.id;
-	}
-
-	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded, or by the <code>ActivityBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new
-	 * <code>Activity</code> instance.
-	 *
-	 * @param  id The <code>DataStore</code> identifier, not null
-	 */
-
-	protected void setId (final Long id)
-	{
-		this.id = id;
+		return hbuilder.hashCode ();
 	}
 
 	/**
@@ -423,34 +266,6 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 		assert type != null : "type is NULL";
 		
 		this.type = type;
-	}
-
-	/**
-	 * Get the instance specific data for the <code>Activity</code>.  The instance
-	 * specific data includes the name of the <code>Activity</code> and
-	 * sub-activities.  This method is intended to be used internally.
-	 *
-	 * @return A <code>Activity</code> with the instance specific data
-	 */
-
-	public Activity getActivity ()
-	{
-		return this.activity;
-	}
-
-	/**
-	 * Add the instance specific data to the activity.  Note that the data to be
-	 * added must not already be a part of another <code>Activity</code>, and the
-	 * <code>Activity</code> must not already have data associated with it.
-	 *
-	 * @param  activity The data to add to the <code>Activity</code>, not null
-	 */
-
-	protected void setActivity (final Activity activity)
-	{
-		assert activity != null : "activity is NULL";
-		
-		this.activity = activity;
 	}
 
 	/**
@@ -553,94 +368,6 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	}
 
 	/**
-	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances which
-	 * act upon the <code>Activity</code>.
-	 *
-	 * @return A <code>List</code> of <code>LogEntry</code> instances
-	 */
-
-	@Override
-	public List<LogEntry> getLog ()
-	{
-		return new ArrayList<LogEntry> (this.log);
-	}
-
-	/**
-	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
-	 * associated with the <code>Activity</code> instance.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
-	 *
-	 * @param  log The <code>List</code> of <code>LogEntry</code> instances, not
-	 *             null
-	 */
-
-	protected void setLog (final List<LogEntry> log)
-	{
-		assert log != null : "log is NULL";
-		
-		this.log = log;
-	}
-
-	/**
-	 * Add the specified <code>LogEntry</code> to the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to add, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully added, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean addLog (final LogEntry entry)
-	{
-		assert entry != null : "entry is NULL";
-		
-		return this.log.add (entry);
-	}
-
-	/**
-	 * Remove the specified <code>LogEntry</code> from the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to remove, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully removed, <code>False</code> otherwise
-	 */
-
-	protected boolean removeLog (final LogEntry entry)
-	{
-		assert entry != null : "entry is NULL";
-		
-		return this.log.remove (entry);
-	}
-
-	/**
-	 * Get the name of the <code>Activity</code>.  Not all <code>Activity</code>
-	 * instances have names.  For those <code>Activity</code> instances which do
-	 * not have names, the name of the associated <code>ActivityType</code> will
-	 * be returned.
-	 *
-	 * @return A <code>String</code> containing the name of the
-	 *         <code>Activity</code>
-	 */
-
-	@Override
-	public String getName ()
-	{
-		String name = this.type.getName ();
-
-		if (this.activity != null)
-		{
-			name = this.activity.getName();
-		}
-
-		return name;
-	}
-
-	/**
 	 * Get a <code>String</code> representation of the <code>Activity</code>
 	 * instance, including the identifying fields.
 	 *
@@ -651,24 +378,12 @@ public class ActivityInstance extends AbstractActivity implements Serializable
 	@Override
 	public String toString ()
 	{
-		String result = null;
+		ToStringBuilder builder = new ToStringBuilder (this);
 
-		if (this.activity != null)
-		{
-			result = this.activity.toString ();
-		}
-		else
-		{
-			ToStringBuilder builder = new ToStringBuilder (this);
+		builder.append ("type", this.type);
+		builder.append ("course", this.course);
+		builder.append ("stealth", this.stealth);
 
-			builder.append ("type", this.type);
-			builder.append ("course", this.course);
-			builder.append ("stealth", this.stealth);
-			builder.append ("activity", this.activity);
-
-			result = builder.toString ();
-		}
-
-		return result;
+		return builder.toString ();
 	}
 }

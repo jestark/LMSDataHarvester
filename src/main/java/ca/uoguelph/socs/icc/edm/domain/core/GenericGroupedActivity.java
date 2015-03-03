@@ -24,6 +24,8 @@ import java.util.HashSet;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.Course;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupElementFactory;
 
@@ -131,14 +133,20 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 	}
 
 	/**
-	 * Create the <code>Activity</code>.
+	 * Create the <code>GenericGroupedActivity</code>.
 	 *
-	 * @param  name The name of the <code>Activity</code>
+	 * @param  type    The <code>ActivityType</code> of the
+	 *                 <code>Activity</code>, not null
+	 * @param  course  The <code>Course</code> which is associated with the
+	 *                 <code>Activity</code> instance, not null
+	 * @param  stealth Indicator if the <code>Activity</code> was added by the
+	 *                 system, not null
+	 * @param  name    The name of the <code>Activity</code>
 	 */
 
-	public GenericGroupedActivity (final Activity instance, final String name)
+	public GenericGroupedActivity (final ActivityType type, final Course course, final Boolean stealth, final String name)
 	{
-		super (instance, name);
+		super (type, course, stealth, name);
 
 		this.children = new HashSet<ActivityGroupMember> ();
 	}
