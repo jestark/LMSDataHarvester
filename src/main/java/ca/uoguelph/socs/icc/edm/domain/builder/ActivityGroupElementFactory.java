@@ -35,7 +35,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
  * @see     ca.uoguelph.socs.icc.edm.domain.ActivityGroupMemberBuilder
  */
 
-public interface ActivityGroupElementFactory extends ElementFactory<Activity>
+public interface ActivityGroupElementFactory extends AbstractActivityElementFactory
 {
 	/**
 	 * Add the specified <code>ActivityGroupMember</code> to the specified

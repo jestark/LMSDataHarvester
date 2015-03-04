@@ -25,15 +25,14 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
  * Implementations of this interface provide the functionality required to
  * create new instances of a class implementing the
  * <code>ActivityGroupMember</code> interface (a sub-interface of
- * <code>Activity</code>).  It also provides the functionality required to set the
- * <code>DataStore</code> ID for the <code>ActivityGroupMember</code> instance.
+ * <code>Activity</code>).
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.ActivityGroupMemberBuilder
  */
 
-public interface ActivityGroupMemberElementFactory extends ElementFactory<Activity>
+public interface ActivityGroupMemberElementFactory extends AbstractActivityElementFactory
 {
 	/**
 	 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.

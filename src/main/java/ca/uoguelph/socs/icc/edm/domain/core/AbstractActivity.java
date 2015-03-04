@@ -24,7 +24,7 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.AbstractActivityElementFactory;
 
 /**
  * Abstract base class for all of the <code>Activity</code> implementations.
@@ -43,7 +43,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * the builders to create instances of <code>ActivityInstance</code>.
 	 */
 
-	protected static abstract class Factory extends AbstractElement.Factory<Activity> implements ActivityElementFactory
+	protected static abstract class Factory extends AbstractElement.Factory<Activity> implements AbstractActivityElementFactory
 	{
 		/**
 		 * Add the specified <code>LogEntry</code> to the specified
@@ -59,6 +59,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		 *                  <code>False</code> otherwise
 		 */
 
+		@Override
 		public boolean addLogEntry (final Activity activity, final LogEntry entry)
 		{
 			assert activity instanceof AbstractActivity : "activity is not an instance of AbstractActivity";
@@ -81,6 +82,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		 *                  <code>False</code> otherwise
 		 */
 
+		@Override
 		public boolean removeLogEntry (final Activity activity, final LogEntry entry)
 		{
 			assert activity instanceof AbstractActivity : "activity is not an instance of AbstractActivity";
@@ -95,6 +97,10 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 
 	/** The log entries associated with the activity*/
 	private List<LogEntry> log;
+
+	/**
+	 * Create the <code>AbstractActivity</code> with null values.
+	 */
 
 	protected AbstractActivity ()
 	{
@@ -125,34 +131,11 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
+	@Override
 	protected void setId (final Long id)
 	{
 		this.id = id;
 	}
-
-	/**
-	 * Add the specified <code>Grade</code> to the
-	 * <code>Activity</code>.
-	 *
-	 * @param  grade    The <code>Grade</code> to add, not null
-	 *
-	 * @return          <code>True</code> if the <code>Grade</code> was
-	 *                  successfully added, <code>False</code> otherwise
-	 */
-
-	protected abstract boolean addGrade (Grade grade);
-
-	/**
-	 * Remove the specified <code>Grade</code> from the
-	 * <code>Activity</code>.
-	 *
-	 * @param  grade    The <code>Grade</code> to remove, not null
-	 *
-	 * @return          <code>True</code> if the <code>Grade</code> was
-	 *                  successfully removed from, <code>False</code> otherwise
-	 */
-
-	protected abstract boolean removeGrade (Grade grade);
 
 	/**
 	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances which

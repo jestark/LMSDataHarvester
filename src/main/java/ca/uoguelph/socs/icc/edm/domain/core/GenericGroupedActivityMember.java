@@ -253,42 +253,6 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	}
 
 	/**
-	 * Add the specified <code>Grade</code> to the
-	 * <code>Activity</code>.
-	 *
-	 * @param  grade The <code>Grade</code> to add, not null
-	 *
-	 * @return       <code>True</code> if the <code>Grade</code> was
-	 *               successfully added, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean addGrade (final Grade grade)
-	{
-		assert grade != null : "grade is NULL";
-
-		return ((AbstractActivity) this.parent).addGrade (grade);
-	}
-
-	/**
-	 * Remove the specified <code>Grade</code> from the
-	 * <code>Activity</code>.
-	 *
-	 * @param  grade The <code>Grade</code> to remove, not null
-	 *
-	 * @return       <code>True</code> if the <code>Grade</code> was
-	 *               successfully removed from, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean removeGrade (final Grade grade)
-	{
-		assert grade != null : "grade is NULL";
-
-		return ((AbstractActivity) this.parent).removeGrade (grade);
-	}
-
-	/**
 	 * Get the parent <code>ActivityGroup</code> instance for the sub-activity.
 	 *
 	 * @return The parent <code>ActivityGroup</code>

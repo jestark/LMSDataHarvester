@@ -82,6 +82,7 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 		 *                <code>False</code> otherwise
 		 */
 
+		@Override
 		public final boolean addChild (final ActivityGroup group, final ActivityGroupMember member)
 		{
 			assert this.parent.isInstance (group) : "group is not an instance of " + this.parent.getSimpleName ();
@@ -104,6 +105,7 @@ public abstract class GenericGroupedActivityGroup extends GenericGroupedActivity
 		 *                <code>False</code> otherwise
 		 */
 
+		@Override
 		public final boolean removeChild (final ActivityGroup group, final ActivityGroupMember member)
 		{
 			assert this.parent.isInstance (group) : "group is not an instance of " + this.parent.getSimpleName ();

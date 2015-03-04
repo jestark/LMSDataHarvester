@@ -71,6 +71,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 		 *                  <code>False</code> otherwise
 		 */
 
+		@Override
 		public boolean addGrade (final Activity activity, final Grade grade)
 		{
 			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
@@ -93,6 +94,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 		 *                  <code>False</code> otherwise
 		 */
 
+		@Override
 		public boolean removeGrade (final Activity activity, final Grade grade)
 		{
 			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
@@ -342,7 +344,6 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	 *                  successfully added, <code>False</code> otherwise
 	 */
 
-	@Override
 	protected boolean addGrade (final Grade grade)
 	{
 		assert grade != null : "grade is NULL";

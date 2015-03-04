@@ -17,28 +17,23 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
+import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
 
 /**
  * Factory interface to create new <code>Activity</code> instances.
  * Implementations of this interface provide the functionality required to
  * create new instances of a class providing supplementary data for the
- * <code>Activity</code> domain model interface.  It is intended to be used
- * along with an implementation of the <code>ActivityElementFactory</code>
- * interface.  Since instances of the classes that provide supplementary data
- * for the <code>Activity</code> interface do not have <code>DataStore</code>
- * ID's, the implementations of the <code>setId</code> method must throw a
- * <code>UnsupportedOperationException</code>.
+ * <code>Activity</code> domain model interface.
  *
  * @author  James E. Stark
  * @version 1.0
  * @see     ActivityElementFactory
  * @see     ca.uoguelph.socs.icc.edm.domain.ActivityBuilder
- * @see     java.lang.UnsupportedOperationException
  */
 
-public interface NamedActivityElementFactory extends ElementFactory<Activity>
+public interface NamedActivityElementFactory extends ActivityElementFactory
 {
 	/**
 	 * Create a new <code>Activity</code> instance.
@@ -50,20 +45,5 @@ public interface NamedActivityElementFactory extends ElementFactory<Activity>
 	 * @return          The new <code>Activity</code> instance
 	 */
 
-	public abstract Activity create (Activity instance, String name);
-
-	/**
-	 * Set the reference to the <code>Activity</code> instance which contains the
-	 * core activity data.  This method should only be used in cases where an
-	 * instance is loaded without the core data.  Usually the reference should be
-	 * set during instance creation, or when the instance is loaded from the
-	 * <code>DataStore</code>.  Implementation should fail if the reference is
-	 * already set.
-	 *
-	 * @param  activity The <code>Activity</code> to which the core data is to be
-	 *                  added, not null
-	 * @param  instance The core <code>Activity</code> instance data, not null
-	 */
-
-	public void setInstance (Activity activity, ActivityInstance instance);
+	public abstract Activity create (ActivityType type, Course course, Boolean stealth, String name);
 }
