@@ -28,12 +28,6 @@ import java.util.Set;
  * <code>Activity</code> instances will have <code>Grade</code> instances
  * associated with them.
  * <p>
- * Among the <code>Activity</code> instances for a <code>Course</code> there
- * may be some <code>Activity</code> instances which were created by the 
- * Learning Management System from which the data was harvested.  These 
- * <code>Activity</code> instances will have their <code>stealth</code> flag
- * set to <code>True</code>.
- * <p>
  * Since the <code>Activity</code> interface represents all of the content of a
  * <code>Course</code>, its implementation can be complex.  Each instance of the
  * <code>Activity</code> interface must contain the <code>ActviityType</code>, the
@@ -93,19 +87,6 @@ public interface Activity extends Element
 	 */
 
 	public abstract Course getCourse ();
-
-	/**
-	 * Get an indication if the <code>Activity</code> was explicitly added to the
-	 * <code>Course</code>.  Some <code>Activity</code> instances are added to a
-	 * <code>Course</code> by the system, rather than being added by the
-	 * instructor.  For these <code>Activity</code> instances, the stealth flag
-	 * will be set.
-	 *
-	 * @return <code>True</code> if the stealth flag is set, <code>False</code>
-	 *         otherwise
-	 */
-
-	public abstract Boolean isStealth ();
 
 	/**
 	 * Get the <code>Set</code> of <code>Grade</code> instances which are

@@ -38,12 +38,14 @@ public interface NamedActivityElementFactory extends ActivityElementFactory
 	/**
 	 * Create a new <code>Activity</code> instance.
 	 *
-	 * @param  instance The <code>Activity</code> containing the instance data,
-	 *                  not null
-	 * @param  name     The name of the <code>Activity</code>, not null
+	 * @param  type   The <code>ActivityType</code> of the <code>Activity</code>,
+	 *                not null
+	 * @param  course The <code>Course</code> which is associated with the
+	 *                <code>Activity</code> instance, not null
+	 * @param  name   The name of the <code>Activity</code>, not null
 	 *
-	 * @return          The new <code>Activity</code> instance
+	 * @return        The new <code>Activity</code> instance
 	 */
 
-	public abstract Activity create (ActivityType type, Course course, Boolean stealth, String name);
+	public abstract Activity create (ActivityType type, Course course, String name);
 }

@@ -21,6 +21,4 @@ public interface ActivityBuilder extends ElementBuilder<Activity>
 	public abstract ActivityType getActivityType ();
 	public abstract Course getCourse ();
 	public abstract ActivityBuilder setCourse (Course course);
-	public abstract Boolean getStealth ();
-	public abstract ActivityBuilder setStealth (Boolean stealth);
 }

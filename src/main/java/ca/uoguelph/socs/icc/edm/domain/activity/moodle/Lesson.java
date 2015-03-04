@@ -78,21 +78,18 @@ public class Lesson extends GenericGroupedActivity
 		 *                 <code>Activity</code>, not null
 		 * @param  course  The <code>Course</code> which is associated with the
 		 *                 <code>Activity</code> instance, not null
-		 * @param  stealth Indicator if the <code>Activity</code> was added by the
-		 *                 system, not null
 		 * @param  name    The name of the <code>Activity</code>, not null
 		 *
 		 * @return         The new <code>Activity</code> instance
 		 */
 
-		public Activity create (final ActivityType type, final Course course, final Boolean stealth, final String name)
+		public Activity create (final ActivityType type, final Course course, final String name)
 		{
 			assert type != null : "type is NULL";
 			assert course != null : "course is NULL";
-			assert stealth != null : "stealth is NULL";
 			assert name != null : "name is NULL";
 
-			return new Lesson (type, course, stealth, name);
+			return new Lesson (type, course, name);
 		}
 
 	}
@@ -125,13 +122,11 @@ public class Lesson extends GenericGroupedActivity
 	 *                 <code>Activity</code>, not null
 	 * @param  course  The <code>Course</code> which is associated with the
 	 *                 <code>Activity</code> instance, not null
-	 * @param  stealth Indicator if the <code>Activity</code> was added by the
-	 *                 system, not null
 	 * @param  name    The name of the <code>Activity</code>, not null
 	 */
 
-	public Lesson (final ActivityType type, final Course course, final Boolean stealth, final String name)
+	public Lesson (final ActivityType type, final Course course, final String name)
 	{
-		super (type, course, stealth, name);
+		super (type, course, name);
 	}
 }

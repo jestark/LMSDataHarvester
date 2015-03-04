@@ -55,7 +55,10 @@ create table if not exists activity_instance (
 	id bigserial primary key,
 	course_id bigint not null references course (id) on delete restrict on update cascade,
 	activity_id bigint not null references activity (id) on delete restrict on update cascade,
-	stealth boolean not null default false
+);
+
+create table if not exists activity_instance_stealth (
+	instance_id bigint primary key references activity_instance (id) on delete restrict on update cascade
 );
 
 comment on table activity is 'The type of activity/module';
@@ -63,6 +66,7 @@ comment on table activity_source is 'The source of the activity data';
 comment on table activity_action is 'All of the actions that can ber performed on the activities.';
 comment on table activity_action_map is 'All of the actions associated with a given activity.';
 comment on table activity_instance is 'All of the activities associated with a course offering';
+comment on table activity_instance_stealth is 'Activities found in the log but not added to the course by the instructor';
 comment on column activity.name is 'Name of the Activity type, for moodle activities it must match the module name';
 
 --****************************************************************************--

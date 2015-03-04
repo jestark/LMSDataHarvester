@@ -37,9 +37,6 @@ public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity, A
 	/** The course which uses the Activity */
 	private Course course;
 
-	/** Is the activity stealth? */
-	private Boolean stealth;
-
 	/**
 	 * Create the <code>DefaultActivityBuilder</code>.
 	 *
@@ -64,13 +61,7 @@ public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity, A
 			throw new IllegalStateException ("course not set");
 		}
 
-		if (this.stealth == null)
-		{
-			this.log.error ("Can not build: The activity's stealth flag is NULL");
-			throw new IllegalStateException ("stealth flag is NULL");
-		}
-
-		return null; //this.factory.create (type, course, stealth);
+		return null; //this.factory.create (type, course);
 	}
 
 	@Override
@@ -95,7 +86,6 @@ public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity, A
 
 		super.clear ();
 		this.course = null;
-		this.stealth = null;
 		this.type = null;
 	}
 
@@ -121,7 +111,6 @@ public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity, A
 
 		super.load (activity);
 		this.setCourse (activity.getCourse ());
-		this.setStealth (activity.isStealth ());
 
 		// this.type = activity.getType ();
 	}
@@ -148,26 +137,6 @@ public abstract class DefaultActivityBuilder extends AbstractBuilder<Activity, A
 		}
 
 		this.course = course;
-
-		return this;
-	}
-
-	@Override
-	public final Boolean getStealth ()
-	{
-		return this.stealth;
-	}
-
-	@Override
-	public final ActivityBuilder setStealth (final Boolean stealth)
-	{
-		if (stealth == null)
-		{
-			this.log.error ("stealth is NULL");
-			throw new NullPointerException ("stealth is NULL");
-		}
-
-		this.stealth = stealth;
 
 		return this;
 	}

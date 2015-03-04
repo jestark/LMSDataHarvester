@@ -193,23 +193,6 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	}
 
 	/**
-	 * Get an indication if the <code>Activity</code> was explicitly added to the
-	 * <code>Course</code>.  Some <code>Activity</code> instances are added to a
-	 * <code>Course</code> by the system, rather than being added by the
-	 * instructor.  For these <code>Activity</code> instances, the stealth flag
-	 * will be set.
-	 *
-	 * @return <code>True</code> if the stealth flag is set, <code>False</code>
-	 *         otherwise
-	 */
-
-	@Override
-	public Boolean isStealth ()
-	{
-		return this.parent.isStealth ();
-	}
-
-	/**
 	 * Get the name of the <code>Activity</code>.  
 	 *
 	 * @return A <code>String</code> containing the name of the

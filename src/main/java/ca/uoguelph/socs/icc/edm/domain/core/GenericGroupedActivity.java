@@ -141,14 +141,12 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 	 *                 <code>Activity</code>, not null
 	 * @param  course  The <code>Course</code> which is associated with the
 	 *                 <code>Activity</code> instance, not null
-	 * @param  stealth Indicator if the <code>Activity</code> was added by the
-	 *                 system, not null
 	 * @param  name    The name of the <code>Activity</code>
 	 */
 
-	public GenericGroupedActivity (final ActivityType type, final Course course, final Boolean stealth, final String name)
+	public GenericGroupedActivity (final ActivityType type, final Course course, final String name)
 	{
-		super (type, course, stealth, name);
+		super (type, course, name);
 
 		this.children = new HashSet<ActivityGroupMember> ();
 	}

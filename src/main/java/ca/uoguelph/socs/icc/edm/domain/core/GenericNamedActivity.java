@@ -97,14 +97,12 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	 *                 <code>Activity</code>, not null
 	 * @param  course  The <code>Course</code> which is associated with the
 	 *                 <code>Activity</code> instance, not null
-	 * @param  stealth Indicator if the <code>Activity</code> was added by the
-	 *                 system, not null
 	 * @param  name    The name of the <code>Activity</code>, not null
 	 */
 
-	public GenericNamedActivity (final ActivityType type, final Course course, final Boolean stealth, final String name)
+	public GenericNamedActivity (final ActivityType type, final Course course, final String name)
 	{
-		super (type, course, stealth);
+		super (type, course);
 
 		assert name != null : "name is NULL";
 

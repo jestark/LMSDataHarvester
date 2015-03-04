@@ -107,9 +107,6 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
-	/** Flag indicting if the activity is a "system" activity */
-	private Boolean stealth;
-
 	/** The course with which the activity is associated */
 	private Course course;
 
@@ -130,8 +127,6 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 		this.type = null;
 		this.course = null;
 
-		this.stealth = Boolean.valueOf (false);
-		
 		this.grades = new HashSet<Grade> ();
 	}
 
@@ -142,21 +137,17 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	 *                 <code>Activity</code>, not null
 	 * @param  course  The <code>Course</code> which is associated with the
 	 *                 <code>Activity</code> instance, not null
-	 * @param  stealth Indicator if the <code>Activity</code> was added by the
-	 *                 system, not null
 	 */
 
-	public ActivityInstance (final ActivityType type, final Course course, final Boolean stealth)
+	public ActivityInstance (final ActivityType type, final Course course)
 	{
 		this ();
 
 		assert type != null : "type is NULL";
 		assert course != null : "course is NULL";
-		assert stealth != null : "stealth is NULL";
 
 		this.type = type;
 		this.course = course;
-		this.stealth = stealth;
 	}
 
 	/**
@@ -271,38 +262,6 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	}
 
 	/**
-	 * Get an indication if the <code>Activity</code> was explicitly added to the
-	 * <code>Course</code>.  Some <code>Activity</code> instances are added to a
-	 * <code>Course</code> by the system, rather than being added by the
-	 * instructor.  For these <code>Activity</code> instances, the stealth flag
-	 * will be set.
-	 *
-	 * @return <code>True</code> if the stealth flag is set, <code>False</code>
-	 *         otherwise
-	 */
-
-	@Override
-	public Boolean isStealth ()
-	{
-		return this.stealth;
-	}
-
-	/**
-	 * Set the stealth flag for the <code>Activity</code>.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Activity</code> instance is loaded.
-	 *
-	 * @param  stealth The stealth flag, not null
-	 */
-
-	public void setStealth (final Boolean stealth)
-	{
-		assert stealth != null : "stealth is NULL";
-		
-		this.stealth = stealth;
-	}
-
-	/**
 	 * Get the <code>Set</code> of <code>Grade</code> instances which are
 	 * associated with the <code>Activity</code>.  Not all <code>Activity</code>
 	 * instances are graded.  If the <code>Activity</code> does is not graded
@@ -383,7 +342,6 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 
 		builder.append ("type", this.type);
 		builder.append ("course", this.course);
-		builder.append ("stealth", this.stealth);
 
 		return builder.toString ();
 	}

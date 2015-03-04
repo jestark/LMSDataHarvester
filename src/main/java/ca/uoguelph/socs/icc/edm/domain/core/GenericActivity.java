@@ -60,20 +60,17 @@ public class GenericActivity extends ActivityInstance implements Serializable
 		 *                 <code>Activity</code>, not null
 		 * @param  course  The <code>Course</code> which is associated with the
 		 *                 <code>Activity</code> instance, not null
-		 * @param  stealth Indicator if the <code>Activity</code> was added by the
-		 *                 system, not null
 		 *
 		 * @return         The new <code>Activity</code> instance
 		 */
 
 		@Override
-		public Activity create (final ActivityType type, final Course course, final Boolean stealth)
+		public Activity create (final ActivityType type, final Course course)
 		{
 			assert type != null : "type is NULL";
 			assert course != null : "course is NULL";
-			assert stealth != null : "stealth is NULL";
-			
-			return new GenericActivity (type, course, stealth);
+
+			return new GenericActivity (type, course);
 		}
 	}
 
@@ -106,13 +103,11 @@ public class GenericActivity extends ActivityInstance implements Serializable
 	 *                 <code>Activity</code>, not null
 	 * @param  course  The <code>Course</code> which is associated with the
 	 *                 <code>Activity</code> instance, not null
-	 * @param  stealth Indicator if the <code>Activity</code> was added by the
-	 *                 system, not null
 	 */
 
-	public GenericActivity (final ActivityType type, final Course course, final Boolean stealth)
+	public GenericActivity (final ActivityType type, final Course course)
 	{
-		super (type, course, stealth);
+		super (type, course);
 	}
 
 	/**
