@@ -89,8 +89,8 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * Register the <code>LogReference</code> with the factories.  This method
 	 * handles the registrations for the subclasses to reduce code duplication.
 	 *
-	 * @param  impl    The implementation class, not null
-	 * @param  factory The <code>ElementFactory</code>, not null
+	 * @param  elementImpl The <code>Element</code> implementation class, not null
+	 * @param  factory     The <code>ElementFactory</code>, not null
 	 */	
 
 	protected static final <T extends LogReference, U extends LogReferenceElementFactory> void registerLog (final Class<T> elementImpl, final Class<U> factory, final U factoryImpl)

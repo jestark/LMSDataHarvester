@@ -390,7 +390,7 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 			throw new IllegalArgumentException ("Key ids must be greater then zero.");
 		}
 
-		return (this.datastore.getEntityManager ()).find (this.type, id);
+		return (this.datastore.getEntityManager ()).find (this.impl, id);
 	}
 
 	/**

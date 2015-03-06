@@ -234,8 +234,8 @@ public abstract class AbstractBuilder<T extends Element, U extends ElementFactor
 
 	/**
 	 *
-	 * @return
-	 * @throws IllegalStateException
+	 * @return                       The new <code>Element</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
 	 */
 
 	@Override

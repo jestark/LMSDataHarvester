@@ -107,7 +107,7 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 	 * Retrieve an <code>Role</code> from the <code>DataStore</code> which
 	 * identifies the same as the specified <code>Role</code>.
 	 *
-	 * @param  Role The <code>Role</code> to retrieve, not null
+	 * @param  role The <code>Role</code> to retrieve, not null
 	 *
 	 * @return        A reference to the <code>Role</code> in the
 	 *                <code>DataStore</code>, may be null

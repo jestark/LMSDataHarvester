@@ -110,10 +110,11 @@ public abstract class AbstractElement implements Element
 	 * implementation so that it can be used by the <code>ElementBuilder</code>
 	 * instances.
 	 *
-	 * @param  <T>     The interface type of the <code>Element</code>
-	 * @param  <X>     The implementation type of the <code>Element</code>
-	 * @param  impl    The implementation class, not null
-	 * @param  factory The <code>ElementFactory</code> to register, not null
+	 * @param  <T>         The interface type of the <code>Element</code>
+	 * @param  <U>         The implementation type of the <code>Element</code>
+	 * @param  element     The <code>Element</code> interface class, not null
+	 * @param  elementImpl The <code>Element</code> implementation class, not null
+	 * @param  factory     The <code>ElementFactory</code> to register, not null
 	 */
 
 	protected static <T extends ElementFactory<U>, U extends Element> void registerFactory (final Class<U> element, final Class<? extends U> elementImpl, final Class<T> factory, final T factoryImpl)
@@ -129,10 +130,10 @@ public abstract class AbstractElement implements Element
 	/**
 	 * Register an <code>Element</code> implementation with the factories.
 	 *
-	 * @param  type    The <code>Element</code> interface class, not null
-	 * @param  impl    The <code>Element</code> implementation class, not null
-	 * @param  builder The <code>ElementBuilder</code> implementation, not null
-	 * @param  factory The <code>ElementFactory</code>, instance not null
+	 * @param  element     The <code>Element</code> interface class, not null
+	 * @param  elementImpl The <code>Element</code> implementation class, not null
+	 * @param  builder     The <code>ElementBuilder</code> implementation, not null
+	 * @param  factory     The <code>ElementFactory</code>, instance not null
 	 */
 
 	protected static <R extends Element, S extends R, T extends ElementBuilder<R>, U extends ElementFactory<R>> void registerElement (final Class<R> element, final Class<S> elementImpl, final Class<T> builder, final Class<U> factory, final U factoryImpl)

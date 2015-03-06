@@ -162,7 +162,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseEl
 	 * its parameters from the specified <code>Course</code> instance.  The
 	 * parameters are validated as they are set.
 	 *
-	 * @param  Course                   The <code>Course</code> to load into the
+	 * @param  course                   The <code>Course</code> to load into the
 	 *                                  <code>CourseBuilder</code>, not null
 	 *
 	 * @throws IllegalArgumentException If any of the fields in the

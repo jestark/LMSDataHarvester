@@ -63,7 +63,7 @@ public final class IdGeneratorFactory
 	/**
 	 * Get the instance of the <code>IdGeneratorFactory</code>.
 	 *
-	 * @param The <code>IdGneratorFactory</code> instance
+	 * @return The <code>IdGneratorFactory</code> instance
 	 */
 
 	public static IdGeneratorFactory getInstance ()
@@ -139,6 +139,8 @@ public final class IdGeneratorFactory
 	 * Determine if the specified <code>IdGenerator</code> implementation class
 	 * has been registered with the factory.
 	 *
+	 * @param  impl The IgGenerator implementation class, not null
+	 *
 	 * @return <code>true</code> if the <code>IdGenerator</code> implementation
 	 *         has been registered, <code>false</code> otherwise
 	 */
@@ -152,13 +154,16 @@ public final class IdGeneratorFactory
 	 * Create a <code>IdGenerator</code> for the specified
 	 * <code>DataStoreQuery</code>.
 	 *
+	 * @param  <T>                   The type of <code>Element</code> returned by
+	 *                               the <code>DataStoreQuery</code>
+	 * @param  type                  The <code>Element</code> interface class, not
+	 *                               null
 	 * @param  query                 The <code>DataStoreQuery</code> for which the
 	 *                               <code>IdGenerator</code> is to be created,
 	 *                               not null
 	 * @return                       The <code>IdGenerator</code> instance
 	 * @throws IllegalStateException if the <code>IdGenerator</code> implementation
 	 *                               class is not registered
-	 * @see    MappedFactory#create
 	 */
 
 	public <T extends Element> IdGenerator create (Class<T> type, DataStoreQuery<T> query)

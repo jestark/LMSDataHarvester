@@ -222,8 +222,8 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	 * method is a convenience method which performs a non-recursive insert of the
 	 * given entity into the domain model and underlying data store.
 	 *
-	 * @param  entity The entity to insert into the domain model, not null
-	 * @return        A reference to the inserted entity
+	 * @param  element The entity to insert into the domain model, not null
+	 * @return         A reference to the inserted entity
 	 */
 
 	public final T insert (final T element)

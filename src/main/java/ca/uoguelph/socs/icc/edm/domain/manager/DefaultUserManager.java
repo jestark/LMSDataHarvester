@@ -107,7 +107,7 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	 * Retrieve an <code>User</code> from the <code>DataStore</code> which
 	 * identifies the same as the specified <code>User</code>.
 	 *
-	 * @param  User The <code>User</code> to retrieve, not null
+	 * @param  user The <code>User</code> to retrieve, not null
 	 *
 	 * @return        A reference to the <code>User</code> in the
 	 *                <code>DataStore</code>, may be null
