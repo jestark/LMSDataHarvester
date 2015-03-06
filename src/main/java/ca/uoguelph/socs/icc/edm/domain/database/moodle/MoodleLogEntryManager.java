@@ -22,14 +22,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.LogEntryFactory;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
 
@@ -58,15 +58,16 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 		/**
 		 * Create an instance of the <code>MoodleLogEntryManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>MoodleLogEntryManager</code>
+		 * @param  datastore The <code>DataStore</code> upon which the
+		 *               <code>DefaultLogEntryManager</code> will operate, not null
+		 *
 		 * @return       The <code>MoodleLogEntryManager</code>
 		 */
 
 		@Override
-		public LogEntryManager create (DomainModel model)
+		public LogEntryManager create (final DataStore datastore)
 		{
-			return new MoodleLogEntryManager (model);
+			return new MoodleLogEntryManager (datastore);
 		}
 	}
 
@@ -83,32 +84,63 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 
 	static
 	{
-		(LogEntryFactory.getInstance ()).registerManager (MoodleLogEntryManager.class, new MoodleLogEntryManagerFactory ());
+		AbstractManager.registerManager (LogEntryManager.class, MoodleLogEntryManager.class, new MoodleLogEntryManagerFactory ());
 	}
 
 	/**
 	 * Create the <code>MoodleLogEntryManager</code>.
 	 *
-	 * @param  model The <code>DomainModel</code> instance for this manager, not
-	 *               null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which the
+	 *                   <code>LogEntryManager</code> will operate, not null
 	 */
 
-	public MoodleLogEntryManager (DomainModel model)
+	public MoodleLogEntryManager (final DataStore datastore)
 	{
-		super (LogEntry.class, model);
+		super (LogEntry.class, datastore);
 
 		this.log = LoggerFactory.getLogger (MoodleLogEntryManager.class);
-		this.manager = new DefaultLogEntryManager (model);
+		this.manager = new DefaultLogEntryManager (datastore);
 	}
 
-		/**
+	/**
+	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>LogEntryBuilder</code> instance
+	 */
+
+	@Override
+	public LogEntryBuilder getBuilder ()
+	{
+		return this.getBuilder (LogEntryBuilder.class);
+	}
+
+	/**
+	 * Retrieve an <code>LogEntry</code> from the <code>DataStore</code> which
+	 * identifies the same as the specified <code>LogEntry</code>.
+	 *
+	 * @param  entry The <code>LogEntry</code> to retrieve, not null
+	 *
+	 * @return        A reference to the <code>LogEntry</code> in the
+	 *                <code>DataStore</code>, may be null
+	 */
+
+	@Override
+	public LogEntry fetch (final LogEntry entry)
+	{
+		this.log.trace ("Fetching LogEntry with the same identity as: {}", entry);
+
+		return this.manager.fetch (entry);
+	}
+
+	/**
 	 * Retrieve an object from the data store based on its primary key.
 	 *
 	 * @param  id The value of the primary key of the object to retrieve, not null
 	 * @return    The requested object.
 	 */
 
-	public LogEntry fetchById (Long id)
+	public LogEntry fetchById (final Long id)
 	{
 		this.log.trace ("Fetch Log Entry (with activity data) with ID: {}", id);
 
@@ -141,63 +173,12 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 	 * @return        A list of <code>LogEntry</code> objects
 	 */
 
-	public List<LogEntry> fetchAllforCourse (Course course)
+	public List<LogEntry> fetchAllforCourse (final Course course)
 	{
 		this.log.trace ("Fetch all Log Entries (with activity data) for course: {}", course);
 
 		List<LogEntry> entries = this.manager.fetchAllforCourse (course);
 
 		return entries;
-	}
-
-	/**
-	 * Insert an entity into the domain model and the underlying data store.
-	 *
-	 * @param  entity    The entity to insert into the domain model, not null
-	 * @param  recursive <code>true</code> if dependent entities should also be
-	 *                   inserted, <code>false</code> otherwise, not null
-	 * @return           A reference to the inserted entity
-	 */
-
-	public LogEntry insert (LogEntry entity, Boolean recursive)
-	{
-		return this.manager.insert (entity, recursive);
-	}
-
-	/**
-	 * Remove an entity from the domain model and the underlying data store.
-	 *
-	 * @param  entity    The entity to remove from the domain model, not null
-	 * @param  recursive <code>true</code> if dependent entities should also be
-	 *                   removed, <code>false</code> otherwise, not null
-	 */
-
-	public void remove (LogEntry entity, Boolean recursive)
-	{
-		this.manager.remove (entity, recursive);
-	}
-
-	/**
-	 * Set the time on a specified <code>LogEntry</code>.
-	 *
-	 * @param  entry The <code>LogEntry</code> to modify, not null
-	 * @param  time  The new value for the time
-	 */
-
-	public void setTime (LogEntry entry, Date time)
-	{
-		this.manager.setTime (entry, time);
-	}
-
-	/**
-	 * Set the IP Address for a specified <code>LogEntry</code>.
-	 *
-	 * @param  entry The <code>LogEntry<code> to modify, not null
-	 * @param  ip    The value for the new IP Address
-	 */
-
-	public void setIPAddress (LogEntry entry, String ip)
-	{
-		this.manager.setIPAddress (entry, ip);
 	}
 }

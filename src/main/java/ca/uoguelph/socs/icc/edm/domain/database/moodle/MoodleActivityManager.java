@@ -21,14 +21,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.ActivityFactory;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
 
@@ -56,15 +56,16 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 		/**
 		 * Create an instance of the <code>MoodleActivityManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>MoodleActivityManager</code>
+		 * @param  datastore The <code>DataStore</code> upon which the
+		 *                   <code>DefaultActivityManager</code> will operate, not null
+		 *
 		 * @return       The <code>MoodleActivityManager</code>
 		 */
 
 		@Override
-		public ActivityManager create (DomainModel model)
+		public ActivityManager create (final DataStore datastore)
 		{
-			return new MoodleActivityManager (model);
+			return new MoodleActivityManager (datastore);
 		}
 	}
 
@@ -81,22 +82,53 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 
 	static
 	{
-		(ActivityFactory.getInstance ()).registerManager (MoodleActivityManager.class, new MoodleActivityManagerFactory ());
+		AbstractManager.registerManager (ActivityManager.class, MoodleActivityManager.class, new MoodleActivityManagerFactory ());
 	}
 
 	/**
 	 * Create the <code>MoodleActvityManager</code>.
 	 *
-	 * @param  model The <code>DomainModel</code> instance for this manager, not
-	 *               null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which the
+	 *                   <code>ActivityManager</code> will operate, not null
 	 */
 
-	public MoodleActivityManager (DomainModel model)
+	public MoodleActivityManager (final DataStore datastore)
 	{
-		super (Activity.class, model);
+		super (Activity.class, datastore);
 
 		this.log = LoggerFactory.getLogger (MoodleActivityManager.class);
-		this.manager = new DefaultActivityManager (model);
+		this.manager = new DefaultActivityManager (datastore);
+	}
+
+	/**
+	 * Get an instance of the <code>ActivityBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>ActivityBuilder</code> instance
+	 */
+
+	@Override
+	public ActivityBuilder getBuilder ()
+	{
+		return this.getBuilder (ActivityBuilder.class);
+	}
+
+	/**
+	 * Retrieve an <code>Activity</code> from the <code>DataStore</code> which
+	 * identifies the same as the specified <code>Activity</code>.
+	 *
+	 * @param  activity The <code>Activity</code> to retrieve, not null
+	 *
+	 * @return          A reference to the <code>Activity</code> in the
+	 *                  <code>DataStore</code>, may be null
+	 */
+
+	@Override
+	public Activity fetch (final Activity activity)
+	{
+		this.log.trace ("Fetching Activity with the same identity as: {}", activity);
+
+		return this.manager.fetch (activity);
 	}
 
 	/**
@@ -107,7 +139,7 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 	 */
 
 	@Override
-	public Activity fetchById (Long id)
+	public Activity fetchById (final Long id)
 	{
 		this.log.trace ("Fetch Activity (with Activity Data) for ID: {}", id);
 
@@ -140,54 +172,12 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 	 */
 
 	@Override
-	public List<Activity> fetchAllForType (ActivityType type)
+	public List<Activity> fetchAllForType (final ActivityType type)
 	{
 		this.log.trace ("Fetch all Activities (with activity data) for ActivityType: {}", type);
 
 		List<Activity> activities = this.manager.fetchAllForType (type);
 
 		return activities;
-	}
-
-	/**
-	 * Insert an entity into the domain model and the underlying data store.
-	 *
-	 * @param  entity    The entity to insert into the domain model, not null
-	 * @param  recursive <code>true</code> if dependent entities should also be
-	 *                   inserted, <code>false</code> otherwise, not null
-	 * @return           A reference to the inserted entity
-	 */
-
-	@Override
-	public Activity insert (Activity entity, Boolean recursive)
-	{
-		return this.manager.insert (entity, recursive);
-	}
-
-	/**
-	 * Remove an entity from the domain model and the underlying data store.
-	 *
-	 * @param  entity    The entity to remove from the domain model, not null
-	 * @param  recursive <code>true</code> if dependent entities should also be
-	 *                   removed, <code>false</code> otherwise, not null
-	 */
-
-	@Override
-	public void remove (Activity entity, Boolean recursive)
-	{
-		this.manager.remove (entity, recursive);
-	}
-
-	/**
-	 * Modify the value of the stealth flag on a given activity.
-	 *
-	 * @param  activity The <code>Activity</code> to modify, not null
-	 * @param  stealth  The new value of the stealth flag, not null
-	 */
-
-	@Override
-	public void setStealth (Activity activity, Boolean stealth)
-	{
-		this.manager.setStealth (activity, stealth);
 	}
 }

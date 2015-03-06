@@ -21,14 +21,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.CourseManager;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
-import ca.uoguelph.socs.icc.edm.domain.factory.CourseFactory;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
 
@@ -58,15 +58,16 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 		/**
 		 * Create an instance of the <code>MoodleCourseManager</code>.
 		 *
-		 * @param  model The <code>DomainModel</code> to be associated with the
-		 *               <code>MoodleCourseManager</code>
+		 * @param  datastore The <code>DataStore</code> upon which the
+		 *                   <code>DefaultCourseManager</code> will operate, not null
+		 *
 		 * @return       The <code>MoodleCourseManager</code>
 		 */
 
 		@Override
-		public CourseManager create (DomainModel model)
+		public CourseManager create (final DataStore datastore)
 		{
-			return new MoodleCourseManager (model);
+			return new MoodleCourseManager (datastore);
 		}
 	}
 
@@ -83,32 +84,62 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 
 	static
 	{
-		(CourseFactory.getInstance ()).registerManager (MoodleCourseManager.class, new MoodleCourseManagerFactory ());
+		AbstractManager.registerManager (CourseManager.class, MoodleCourseManager.class, new MoodleCourseManagerFactory ());
 	}
 
 	/**
 	 * Create the <code>MoodleCourseManager</code>.
 	 *
-	 * @param  model The <code>DomainModel</code> instance for this manager, not
-	 *               null
+	 * @param  datastore The <code>DataStore</code> upon which the
+	 *                   <code>DefaultCourseManager</code> will operate, not null
 	 */
 
-	public MoodleCourseManager (DomainModel model)
+	public MoodleCourseManager (final DataStore datastore)
 	{
-		super (Course.class, model);
+		super (Course.class, datastore);
 
 		this.log = LoggerFactory.getLogger (MoodleCourseManager.class);
-		this.manager = new DefaultCourseManager (model);
+		this.manager = new DefaultCourseManager (datastore);
+	}
+
+	/**
+	 * Get an instance of the <code>CourseBuilder</code> interface, suitable for use
+	 * with the <code>DataStore</code>.
+	 *
+	 * @return An <code>CourseBuilder</code> instance
+	 */
+
+	@Override
+	public CourseBuilder getBuilder ()
+	{
+		return this.getBuilder (CourseBuilder.class);
+	}
+
+	/**
+	 * Retrieve a <code>Course</code> from the <code>DataStore</code> which
+	 * identifies the same as the specified <code>Course</code>.
+	 *
+	 * @param  course The <code>Course</code> to retrieve, not null
+	 *
+	 * @return        A reference to the <code>Course</code> in the
+	 *                <code>DataStore</code>, may be null
+	 */
+
+	@Override
+	public Course fetch (final Course course)
+	{
+		return this.manager.fetch (course);
 	}
 
 	/**
 	 * Retrieve an object from the data store based on its primary key.
 	 *
 	 * @param  id The value of the primary key of the object to retrieve, not null
+	 *
 	 * @return    The requested object.
 	 */
 
-	public Course fetchById (Long id)
+	public Course fetchById (final Long id)
 	{
 		this.log.trace ("Fetch Course (with Activity Data) for ID: {}", id);
 
@@ -141,7 +172,7 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	 * @return          A list of <code>Course</code> objects
 	 */
 
-	public List<Course> fetchAllForOffering (Semester semester, Integer year)
+	public List<Course> fetchAllForOffering (final Semester semester, final Integer year)
 	{
 		this.log.trace ("Fetch all Courses (with Activity Data) offered in semester {} and year {}", semester, year);
 
@@ -161,7 +192,7 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	 * @return          A list of <code>Course</code> objects
 	 */
 
-	public List<Course> fetchAllForOffering (String name, Semester semester, Integer year)
+	public List<Course> fetchAllForOffering (final String name, final Semester semester, final Integer year)
 	{
 		this.log.trace ("Fetch all Courses (with Activity Data) with name matching {} offered in semester {} and year {}", name, semester, year);
 
@@ -180,39 +211,12 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	 * @return          A single <code>Course</code> object
 	 */
 
-	public Course fetchByOffering (String name, Semester semester, Integer year)
+	public Course fetchByOffering (final String name, final Semester semester, final Integer year)
 	{
 		this.log.trace ("Fetch Course (with Activity Data) with name {} offered in semester {} and year {}", name, semester, year);
 
 		Course course = this.manager.fetchByOffering (name, semester, year);
 
 		return course;
-	}
-
-	/**
-	 * Insert an entity into the domain model and the underlying data store.
-	 *
-	 * @param  entity    The entity to insert into the domain model, not null
-	 * @param  recursive <code>true</code> if dependent entities should also be
-	 *                   inserted, <code>false</code> otherwise, not null
-	 * @return           A reference to the inserted entity
-	 */
-
-	public Course insert (Course entity, Boolean recursive)
-	{
-		return this.manager.insert (entity, recursive);
-	}
-
-	/**
-	 * Remove an entity from the domain model and the underlying data store.
-	 *
-	 * @param  entity    The entity to remove from the domain model, not null
-	 * @param  recursive <code>true</code> if dependent entities should also be
-	 *                   removed, <code>false</code> otherwise, not null
-	 */
-
-	public void remove (Course entity, Boolean recursive)
-	{
-		this.manager.remove (entity, recursive);
 	}
 }
