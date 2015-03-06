@@ -57,11 +57,12 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	 * factories.  This method handles the registrations for the subclasses to
 	 * reduce code duplication.
 	 *
-	 * @param  impl    The implementation class, not null
-	 * @param  builder The <code>ActivityBuilder</code> implementation, not null
-	 * @param  factory The <code>ElementFactory</code>, not null
-	 * @param  source  The name of the <code>ActivitySource</code> not null
-	 * @param  type    The name of the <code>ActivityType</code> not null
+	 * @param  elementImpl The <code>Element</code> implementation class, not null
+	 * @param  builder     The <code>ActivityBuilder</code> implementation, not
+	 *                     null
+	 * @param  factory     The <code>ElementFactory</code>, not null
+	 * @param  source      The name of the <code>ActivitySource</code> not null
+	 * @param  type        The name of the <code>ActivityType</code> not null
 	 */
 
 	protected static final <S extends Activity, T extends ActivityBuilder, U extends NamedActivityElementFactory> void registerActivity (final Class<S> elementImpl, final Class<T> builder, final Class<U> factory, final U factoryImpl, final String source, final String type)
@@ -135,7 +136,7 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 			EqualsBuilder ebuilder = new EqualsBuilder ();
 			
 			ebuilder.appendSuper (super.equals (obj));
-			ebuilder.append (this.name, ((Activity) obj).getName ());
+			ebuilder.append (this.name, ((GenericNamedActivity) obj).name);
 
 			result = ebuilder.isEquals ();
 		}

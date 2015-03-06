@@ -174,7 +174,6 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 		else if (obj instanceof ActivityInstance)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.appendSuper (super.equals (obj));
 			ebuilder.append (this.type, ((ActivityInstance) obj).type);
 			ebuilder.append (this.course, ((ActivityInstance) obj).course);
 

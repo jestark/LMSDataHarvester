@@ -111,6 +111,34 @@ public class GenericActivity extends ActivityInstance implements Serializable
 	}
 
 	/**
+	 * Compare two <code>Activity</code> instances to determine if they are
+	 * equal.
+	 *
+	 * @param  obj The <code>Activity</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Activity</code> instances
+	 *             are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof GenericActivity)
+		{
+			result = super.equals (obj);
+		}
+
+		return result;
+	}
+
+	/**
 	 * Get the name of the <code>Activity</code>.  Not all <code>Activity</code>
 	 * instances have names.  For those <code>Activity</code> instances which do
 	 * not have names, the name of the associated <code>ActivityType</code> will
