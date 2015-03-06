@@ -178,6 +178,41 @@ public class MoodleActivity extends ActivityInstance
 	}
 
 	/**
+	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
+	 * <p>
+	 * This method overrides and wraps the method in the superclass, to work
+	 * around a limitation in JPA that requires the method to exist in this class
+	 * to properly map the ActivityType association in the Moodle database.
+	 *
+	 * @return The <code>ActivityType</code> instance
+	 */
+
+	@Override
+	public ActivityType getType ()
+	{
+		return super.getType ();
+	}
+
+	/**
+	 * Set the <code>ActvityType</code> with which the <code>Activity</code> is
+	 * associated.  This method is intended to be used by a <code>DataStore</code>
+	 * when the <code>Activity</code> instance is loaded.
+	 * <p>
+	 * This method overrides and wraps the method in the superclass, to work
+	 * around a limitation in JPA that requires the method to exist in this class
+	 * to properly map the ActivityType association in the Moodle database.
+	 *
+	 * @param  type The <code>ActivityType</code>, not null
+	 */
+
+	protected void setType (final ActivityType type)
+	{
+		assert type != null : "type is NULL";
+		
+		super.setType (type);
+	}
+
+	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
 	 * containing the instance specific data for the <code>Activity</code>.
 	 *
