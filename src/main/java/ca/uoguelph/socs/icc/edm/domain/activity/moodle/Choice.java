@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 /**
- * Implementation of the <code>Activity</code> interface for the moodle/Choice
+ * Implementation of the <code>Activity</code> interface for the moodle/choice
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>Activity</code> interface,
  * along with the relevant manager, and builder.  See the <code>Activity</code>
@@ -40,7 +40,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
- * <li>ActivityType   = Choice
+ * <li>ActivityType   = choice
  * <li>ClassName      = Choice
  * <li>Builder        = DefaultNamedActivityBuilder
  * </ul>
@@ -89,7 +89,7 @@ public class Choice extends GenericNamedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Choice.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "Choice");
+		GenericNamedActivity.registerActivity (Choice.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "choice");
 	}
 
 	/**

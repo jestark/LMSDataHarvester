@@ -38,7 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
- * <li>ActivityType   = Forum
+ * <li>ActivityType   = forum
  * <li>ClassName      = ForumDiscussionLog
  * <li>ActivityClass  = ForumDiscussion
  * </ul>

@@ -318,27 +318,27 @@ comment on table log_moodle_workshop_submission is 'Relationship table for mappi
 --  List of Known Modules (Activities)
 --****************************************************************************--
 
-insert into activity_source (name) values ('Moodle');
+insert into activity_source (name) values ('moodle');
 
-insert into activity (source_id, name) select id, 'Blog' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Calendar' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Course' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Grade' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Notes' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Role' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'User' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Assign' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Book' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Checklist' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Choice' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Feedback' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Folder' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Forum' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Label' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Lesson' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Page' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Quiz' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Resource' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Scheduler' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'url' from activity_source where name='Moodle';
-insert into activity (source_id, name) select id, 'Workshop' from activity_source where name='Moodle';
+insert into activity (source_id, name) select id, 'blog' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'calendar' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'course' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'grade' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'notes' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'role' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'user' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'assign' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'book' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'checklist' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'choice' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'feedback' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'folder' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'forum' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'label' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'lesson' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'page' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'quiz' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'resource' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'scheduler' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'url' from activity_source where name='moodle';
+insert into activity (source_id, name) select id, 'workshop' from activity_source where name='moodle';

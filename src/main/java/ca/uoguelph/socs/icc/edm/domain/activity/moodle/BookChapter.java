@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
 
 /**
- * Implementation of the <code>Activity</code> interface for the moodle/Book
+ * Implementation of the <code>Activity</code> interface for the moodle/book
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>ActivityGroup</code> interface,
  * along with the relevant manager, and builder.  See the
@@ -40,7 +40,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
- * <li>ActivityType   = Book
+ * <li>ActivityType   = book
  * <li>ClassName      = BookChapter
  * <li>ParentClass    = Book
  * <li>Builder        = DefaultActivityGroupMemberBuilder

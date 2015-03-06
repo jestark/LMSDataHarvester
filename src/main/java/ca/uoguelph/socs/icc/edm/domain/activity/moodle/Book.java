@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 /**
- * Implementation of the <code>Activity</code> interface for the moodle/Book
+ * Implementation of the <code>Activity</code> interface for the moodle/book
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>ActivityGroup</code> interface,
  * along with the relevant manager, and builder.  See the
@@ -42,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
- * <li>ActivityType   = Book
+ * <li>ActivityType   = book
  * <li>ClassName      = Book
  * <li>ChildClass     = BookChapter
  * <li>Builder        = DefaultNamedActivityBuilder
@@ -103,7 +103,7 @@ public class Book extends GenericGroupedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Book.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "Book");
+		GenericNamedActivity.registerActivity (Book.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "book");
 	}
 
 	/**

@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 /**
- * Implementation of the <code>Activity</code> interface for the moodle/Workshop
+ * Implementation of the <code>Activity</code> interface for the moodle/workshop
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>ActivityGroup</code> interface,
  * along with the relevant manager, and builder.  See the
@@ -42,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
- * <li>ActivityType   = Workshop
+ * <li>ActivityType   = workshop
  * <li>ClassName      = Workshop
  * <li>ChildClass     = WorkshopSubmission
  * <li>Builder        = DefaultNamedActivityBuilder
@@ -103,7 +103,7 @@ public class Workshop extends GenericGroupedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Workshop.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "Workshop");
+		GenericNamedActivity.registerActivity (Workshop.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "workshop");
 	}
 
 	/**

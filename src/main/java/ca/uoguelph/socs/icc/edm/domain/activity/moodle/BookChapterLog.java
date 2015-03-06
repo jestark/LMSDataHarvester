@@ -38,7 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
- * <li>ActivityType   = Book
+ * <li>ActivityType   = book
  * <li>ClassName      = BookChapterLog
  * <li>ActivityClass  = BookChapter
  * </ul>

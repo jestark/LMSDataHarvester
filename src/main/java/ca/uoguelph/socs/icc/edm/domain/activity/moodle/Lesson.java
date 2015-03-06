@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 /**
- * Implementation of the <code>Activity</code> interface for the moodle/Lesson
+ * Implementation of the <code>Activity</code> interface for the moodle/lesson
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>ActivityGroup</code> interface,
  * along with the relevant manager, and builder.  See the
@@ -42,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
- * <li>ActivityType   = Lesson
+ * <li>ActivityType   = lesson
  * <li>ClassName      = Lesson
  * <li>ChildClass     = LessonPage
  * <li>Builder        = DefaultNamedActivityBuilder
@@ -103,7 +103,7 @@ public class Lesson extends GenericGroupedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Lesson.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "Lesson");
+		GenericNamedActivity.registerActivity (Lesson.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "lesson");
 	}
 
 	/**

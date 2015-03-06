@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 /**
- * Implementation of the <code>Activity</code> interface for the moodle/Checklist
+ * Implementation of the <code>Activity</code> interface for the moodle/checklist
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>Activity</code> interface,
  * along with the relevant manager, and builder.  See the <code>Activity</code>
@@ -40,7 +40,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
- * <li>ActivityType   = Checklist
+ * <li>ActivityType   = checklist
  * <li>ClassName      = Checklist
  * <li>Builder        = DefaultNamedActivityBuilder
  * </ul>
@@ -89,7 +89,7 @@ public class Checklist extends GenericNamedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Checklist.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "Checklist");
+		GenericNamedActivity.registerActivity (Checklist.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "checklist");
 	}
 
 	/**

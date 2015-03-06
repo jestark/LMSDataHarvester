@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
 
 /**
- * Implementation of the <code>Activity</code> interface for the moodle/Forum
+ * Implementation of the <code>Activity</code> interface for the moodle/forum
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>ActivityGroup</code> interface,
  * along with the relevant manager, and builder.  See the
@@ -39,7 +39,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
- * <li>ActivityType   = Forum
+ * <li>ActivityType   = forum
  * <li>ClassName      = ForumDiscussion
  * <li>ParentClass    = Forum
  * <li>ChildClass     = ForumPost

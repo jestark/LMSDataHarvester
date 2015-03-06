@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 /**
- * Implementation of the <code>Activity</code> interface for the moodle/Assign
+ * Implementation of the <code>Activity</code> interface for the moodle/assign
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>Activity</code> interface,
  * along with the relevant manager, and builder.  See the <code>Activity</code>
@@ -40,7 +40,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
- * <li>ActivityType   = Assign
+ * <li>ActivityType   = assign
  * <li>ClassName      = Assign
  * <li>Builder        = DefaultNamedActivityBuilder
  * </ul>
@@ -89,7 +89,7 @@ public class Assign extends GenericNamedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Assign.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "Assign");
+		GenericNamedActivity.registerActivity (Assign.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "assign");
 	}
 
 	/**
