@@ -5,7 +5,7 @@
 									 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
 				 version="2.1">
 	<description>Entity mappings for the activity data components of the moodle database</description>
-	<package>ca.uoguelph.socs.icc.edm.domain.moodle</package>
+	<package>ca.uoguelph.socs.icc.edm.domain.activity.moodle</package>
 
 	<access>PROPERTY</access>
 
@@ -13,31 +13,31 @@
 	<!-- MoodleDataMapping:  Subclasses of GenericGroupedActivity            -->
 	<!--*********************************************************************-->
 
-	<entity name="MoodleBookActivity" class="MoodleBookActivity" metadata-complete="true">
+	<entity name="Book" class="Book" metadata-complete="true">
 		<table name="mdl_book"/>
 		<attributes>
-			<one-to-many name="children" mapped-by="parent"/>
+			<one-to-many name="children" target-entity="BookChapter" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleForumActivity" class="MoodleForumActivity" metadata-complete="true">
+	<entity name="Forum" class="Forum" metadata-complete="true">
 		<table name="mdl_forum"/>
 		<attributes>
-			<one-to-many name="children" mapped-by="parent"/>
+			<one-to-many name="children" target-entity="ForumDiscussion" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleLessonActivity" class="MoodleLessonActivity" metadata-complete="true">
+	<entity name="Lesson" class="Lesson" metadata-complete="true">
 		<table name="mdl_lesson"/>
 		<attributes>
-			<one-to-many name="children" mapped-by="parent"/>
+			<one-to-many name="children" target-entity="LessonPage" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleWorkshopActivity" class="MoodleWorkshopActivity" metadata-complete="true">
+	<entity name="Workshop" class="Workshop" metadata-complete="true">
 		<table name="mdl_workshop"/>
 		<attributes>
-			<one-to-many name="children" mapped-by="parent"/>
+			<one-to-many name="children" target-entity="WorkshopSubmission" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
@@ -45,13 +45,13 @@
 	<!-- Moodle data mapping:  Subclasses of GenericGroupedActivityGroup     -->
 	<!--*********************************************************************-->
 
-	<entity name="MoodleForumActivityDiscussion" class="MoodleForumActivityDiscussion" metadata-complete="true">
+	<entity name="ForumDiscussion" class="ForumDiscussion" metadata-complete="true">
 		<table name="mdl_forum_discussions"/>
 		<attributes>
-			<many-to-one name="parent">
+			<many-to-one name="parent" target-entity="Forum" optional="false">
 				<join-column name="forum"/>
 			</many-to-one>
-			<one-to-many name="children" mapped-by="parent"/>
+			<one-to-many name="children" target-entity="ForumPost" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
@@ -59,49 +59,49 @@
 	<!-- Moodle data mapping:  Subclasses of GenericGroupedActivityMember    -->
 	<!--*********************************************************************-->
 
-	<entity name="MoodleBookActivityChapter" class="MoodleBookActivityChapter" metadata-complete="true">
+	<entity name="BookChapter" class="BookChapter" metadata-complete="true">
 		<table name="mdl_book_chapters"/>
 		<attributes>
 			<basic name="name">
 				<column name="title"/>
 			</basic>
-			<many-to-one name="parent">
-				<join-column name="bookid"/>
+			<many-to-one name="parent" target-entity="Book" optional="false">
+				<join-column name="bookid" referenced-column-name="id" nullable="false" updatable="false"/>
 			</many-to-one>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleForumActivityPost" class="MoodleForumActivityPost" metadata-complete="true">
+	<entity name="ForumPost" class="ForumPost" metadata-complete="true">
 		<table name="mdl_forum_posts"/>
 		<attributes>
 			<basic name="name">
 				<column name="subject"/>
 			</basic>
-			<many-to-one name="parent">
+			<many-to-one name="parent" target-entity="ForumDiscussion" optional="false">
 				<join-column name="discussion"/>
 			</many-to-one>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleLessonActivityPage" class="MoodleLessonActivityPage" metadata-complete="true">
+	<entity name="LessonPage" class="LessonPage" metadata-complete="true">
 		<table name="mdl_lesson_pages"/>
 		<attributes>
 			<basic name="name">
 				<column name="title"/>
 			</basic>
-			<many-to-one name="parent">
+			<many-to-one name="parent" target-entity="Lesson" optional="false">
 				<join-column name="lessonid"/>
 			</many-to-one>
 		</attributes>
 	</entity>
 
-	<entity name="MoodleWorkshopActivitySubmission" class="MoodleWorkshopActivitySubmission" metadata-complete="true">
+	<entity name="WorkshopSubmission" class="WorkshopSubmission" metadata-complete="true">
 		<table name="mdl_workshop_submissions"/>
 		<attributes>
 			<basic name="name">
 				<column name="title"/>
 			</basic>
-			<many-to-one name="parent">
+			<many-to-one name="parent" target-entity="Workshop" optional="false">
 				<join-column name="workshopid"/>
 			</many-to-one>
 		</attributes>
@@ -111,47 +111,47 @@
 	<!-- Moodle data mapping:  Subclasses of GenericNamedActivity            -->
 	<!--*********************************************************************-->
 
-	<entity name="MoodleAssignActivity" class="MoodleAssignActivity" metadata-complete="true">
+	<entity name="Assign" class="Assign" metadata-complete="true">
 		<table name="mdl_assign"/>
 	</entity>
 
-	<entity name="MoodleChecklistActivity" class="MoodleChecklistActivity" metadata-complete="true">
+	<entity name="Checklist" class="Checklist" metadata-complete="true">
 		<table name="mdl_checklist"/>
 	</entity>
 
-	<entity name="MoodleChoiceActivity" class="MoodleChoiceActivity" metadata-complete="true">
+	<entity name="Choice" class="Choice" metadata-complete="true">
 		<table name="mdl_choice"/>
 	</entity>
 
-	<entity name="MoodleFeedbackActivity" class="MoodleFeedbackActivity" metadata-complete="true">
+	<entity name="Feedback" class="Feedback" metadata-complete="true">
 		<table name="mdl_feedback"/>
 	</entity>
 
-	<entity name="MoodleFolderActivity" class="MoodleFolderActivity" metadata-complete="true">
+	<entity name="Folder" class="Folder" metadata-complete="true">
 		<table name="mdl_folder"/>
 	</entity>
 
-	<entity name="MoodleLabelActivity" class="MoodleLabelActivity" metadata-complete="true">
+	<entity name="Label" class="Label" metadata-complete="true">
 		<table name="mdl_label"/>
 	</entity>
 
-	<entity name="MoodlePageActivity" class="MoodlePageActivity" metadata-complete="true">
+	<entity name="Page" class="Page" metadata-complete="true">
 		<table name="mdl_page"/>
 	</entity>
 
-	<entity name="MoodleQuizActivity" class="MoodleQuizActivity" metadata-complete="true">
+	<entity name="Quiz" class="Quiz" metadata-complete="true">
 		<table name="mdl_quiz"/>
 	</entity>
 
-	<entity name="MoodleResourceActivity" class="MoodleResourceActivity" metadata-complete="true">
+	<entity name="Resource" class="Resource" metadata-complete="true">
 		<table name="mdl_resource"/>
 	</entity>
 
-	<entity name="MoodleSchedulerActivity" class="MoodleSchedulerActivity" metadata-complete="true">
+	<entity name="Scheduler" class="Scheduler" metadata-complete="true">
 		<table name="mdl_scheduler"/>
 	</entity>
 
-	<entity name="MoodleURLActivity" class="MoodleURLActivity" metadata-complete="true">
+	<entity name="URL" class="URL" metadata-complete="true">
 		<table name="mdl_url"/>
 	</entity>
 </entity-mappings>
