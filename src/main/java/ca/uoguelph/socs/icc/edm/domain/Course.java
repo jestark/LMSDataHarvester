@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -72,15 +73,15 @@ public interface Course extends Element
 	public abstract Integer getYear ();
 
 	/**
-	 * Get the <code>Set</code> of <code>Activity</code> instances which are
-	 * associated with the <code>Course</code>.  The <code>Set</code> will be
+	 * Get the <code>List</code> of <code>Activity</code> instances which are
+	 * associated with the <code>Course</code>.  The <code>List</code> will be
 	 * empty if there are no <code>Activity</code> instances associated with the
 	 * <code>Course</code>.
 	 *
-	 * @return A <code>Set</code> of <code>Activity</code> instances
+	 * @return A <code>List</code> of <code>Activity</code> instances
 	 */
 
-	public abstract Set<Activity> getActivities ();
+	public abstract List<Activity> getActivities ();
 
 	/**
 	 * Get the <code>Set</code> of <code>Enrolment</code> instances which are

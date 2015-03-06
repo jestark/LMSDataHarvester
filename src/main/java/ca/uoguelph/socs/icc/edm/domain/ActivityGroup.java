@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * A representation of a parent element in a hierarchy of <code>Activity</code>
@@ -37,11 +37,11 @@ import java.util.Set;
 public interface ActivityGroup extends Activity
 {
 	/**
-	 * Get the <code>Set</code> of <code>ActivityGroupMember</code> instances (or
+	 * Get the <code>List</code> of <code>ActivityGroupMember</code> instances (or
 	 * Sub-Activities) associated with the <code>ActvityGroup</code>.
 	 *
-	 * @return The <code>Set</code> of sub-activities
+	 * @return The <code>List</code> of sub-activities
 	 */
 
-	public abstract Set<ActivityGroupMember> getChildren();
+	public abstract List<ActivityGroupMember> getChildren();
 }

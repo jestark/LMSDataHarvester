@@ -17,9 +17,12 @@
 package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -167,16 +170,16 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	/** The name of the course. */
 	private String name;
 
-	/** The semester in which the course was offered. */
+	/** The <code>Semester</code> in which the course was offered. */
 	private Semester semester;
 
 	/** The year in which the course was offered. */
 	private Integer year;
 
-	/** The set of Activities which are associated with the course. */
-	private Set<Activity> activities;
+	/** The <code>List</code> of <code>Activity</code> instances */
+	private List<Activity> activities;
 
-	/** The set of individuals which are enrolled in the course. */
+	/** The <code>Set</code> of individuals which are enrolled in the course. */
 	private Set<Enrolment> enrolments;
 
 	/**
@@ -200,7 +203,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		this.semester = null;
 		this.year = null;
 
-		this.activities = new HashSet<Activity> ();
+		this.activities = new LinkedList<Activity> ();
 		this.enrolments = new HashSet<Enrolment> ();
 	}
 
@@ -223,7 +226,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		this.semester = semester;
 		this.year = year;
 
-		this.activities = new HashSet<Activity> ();
+		this.activities = new LinkedList<Activity> ();
 		this.enrolments = new HashSet<Enrolment> ();
 	}	
 
@@ -394,31 +397,31 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>Activity</code> instances which are
-	 * associated with the <code>Course</code>.  The <code>Set</code> will be
+	 * Get the <code>List</code> of <code>Activity</code> instances which are
+	 * associated with the <code>Course</code>.  The <code>List</code> will be
 	 * empty if there are no <code>Activity</code> instances associated with the
 	 * <code>Course</code>.
 	 *
-	 * @return A <code>Set</code> of <code>Activity</code> instances
+	 * @return A <code>List</code> of <code>Activity</code> instances
 	 */
 
 	@Override
-	public Set<Activity> getActivities ()
+	public List<Activity> getActivities ()
 	{
-		return new HashSet<Activity> (this.activities);
+		return new ArrayList<Activity> (this.activities);
 	}
 
 	/**
-	 * Initialize the <code>Set</code> of <code>Activity</code> instances
+	 * Initialize the <code>List</code> of <code>Activity</code> instances
 	 * associated with the <code>Course</code> instance.  This method is intended to
 	 * be used by a <code>DataStore</code> when the <code>Course</code> instance is
 	 * loaded.
 	 *
-	 * @param  activities The <code>Set</code> of <code>Activity</code>
+	 * @param  activities The <code>List</code> of <code>Activity</code>
 	 *                    instances, not null
 	 */
 
-	protected void setActivities (final Set<Activity> activities)
+	protected void setActivities (final List<Activity> activities)
 	{
 		assert activities != null : "activities is NULL";
 		

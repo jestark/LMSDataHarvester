@@ -17,9 +17,10 @@
 package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
@@ -121,7 +122,7 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 	private static final long serialVersionUID = 1L;
 
 	/** The set of sub-activities  */
-	private Set<ActivityGroupMember> children;
+	private List<ActivityGroupMember> children;
 
 	/**
 	 * Create the <code>Activity</code> with null values.
@@ -131,7 +132,7 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 	{
 		super ();
 
-		this.children = new HashSet<ActivityGroupMember> ();
+		this.children = new LinkedList<ActivityGroupMember> ();
 	}
 
 	/**
@@ -148,30 +149,30 @@ public abstract class GenericGroupedActivity extends GenericNamedActivity implem
 	{
 		super (type, course, name);
 
-		this.children = new HashSet<ActivityGroupMember> ();
+		this.children = new LinkedList<ActivityGroupMember> ();
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>ActivityGroupMember</code> instances (or
+	 * Get the <code>List</code> of <code>ActivityGroupMember</code> instances (or
 	 * Sub-Activities) associated with the <code>ActvityGroup</code>.
 	 *
-	 * @return The <code>Set</code> of sub-activities
+	 * @return The <code>List</code> of sub-activities
 	 */
 
-	public Set<ActivityGroupMember> getChildren()
+	public List<ActivityGroupMember> getChildren ()
 	{
-		return new HashSet<ActivityGroupMember> (this.children);
+		return new ArrayList<ActivityGroupMember> (this.children);
 	}
 
 	/**
-	 * Initialize the <code>Set</code> of sub-activity instances for the
+	 * Initialize the <code>List</code> of sub-activity instances for the
 	 * <code>Activity</code>.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>Activity</code> instance is loaded.
 	 *
-	 * @param  children The <code>Set</code> of sub-activity instances, not null
+	 * @param  children The <code>List</code> of sub-activity instances, not null
 	 */
 
-	protected void setChildren (final Set<ActivityGroupMember> children)
+	protected void setChildren (final List<ActivityGroupMember> children)
 	{
 		assert children != null : "children is NULL";
 
