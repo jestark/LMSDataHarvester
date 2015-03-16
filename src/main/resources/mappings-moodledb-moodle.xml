@@ -61,10 +61,10 @@
 
 	<entity name="BookChapter" class="BookChapter" metadata-complete="true">
 		<table name="mdl_book_chapters"/>
+		<attribute-override name="name">
+			<column name="title"/>
+		</attribute-override>
 		<attributes>
-			<basic name="name">
-				<column name="title"/>
-			</basic>
 			<many-to-one name="parent" target-entity="Book" optional="false">
 				<join-column name="bookid" referenced-column-name="id" nullable="false" updatable="false"/>
 			</many-to-one>
@@ -73,10 +73,10 @@
 
 	<entity name="ForumPost" class="ForumPost" metadata-complete="true">
 		<table name="mdl_forum_posts"/>
+		<attribute-override name="name">
+			<column name="subject"/>
+		</attribute-override>
 		<attributes>
-			<basic name="name">
-				<column name="subject"/>
-			</basic>
 			<many-to-one name="parent" target-entity="ForumDiscussion" optional="false">
 				<join-column name="discussion"/>
 			</many-to-one>
@@ -85,10 +85,10 @@
 
 	<entity name="LessonPage" class="LessonPage" metadata-complete="true">
 		<table name="mdl_lesson_pages"/>
+		<attribute-override name="name">
+			<column name="title"/>
+		</attribute-override>
 		<attributes>
-			<basic name="name">
-				<column name="title"/>
-			</basic>
 			<many-to-one name="parent" target-entity="Lesson" optional="false">
 				<join-column name="lessonid"/>
 			</many-to-one>
@@ -97,10 +97,10 @@
 
 	<entity name="WorkshopSubmission" class="WorkshopSubmission" metadata-complete="true">
 		<table name="mdl_workshop_submissions"/>
+		<attribute-override name="name">
+			<column name="title"/>
+		</attribute-override>
 		<attributes>
-			<basic name="name">
-				<column name="title"/>
-			</basic>
 			<many-to-one name="parent" target-entity="Workshop" optional="false">
 				<join-column name="workshopid"/>
 			</many-to-one>

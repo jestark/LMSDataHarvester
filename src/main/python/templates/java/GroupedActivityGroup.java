@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
@@ -119,5 +119,77 @@ public class ${ClassName} extends GenericGroupedActivityGroup
 	public ${ClassName} (final ActivityGroup parent, final String name)
 	{
 		super (parent, name);
+	}
+
+	/**
+	 * Get the <code>List</code> of <code>ActivityGroupMember</code> instances (or
+	 * Sub-Activities) associated with the <code>ActvityGroup</code>.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
+	 *
+	 * @return The <code>List</code> of sub-activities
+	 */
+
+	public List<ActivityGroupMember> getChildren ()
+	{
+		return super.getChildren ();
+	}
+
+	/**
+	 * Initialize the <code>List</code> of sub-activity instances for the
+	 * <code>Activity</code>.  This method is intended to be used by a 
+	 * <code>DataStore</code> when the <code>Activity</code> instance is loaded.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
+	 *
+	 * @param  children The <code>List</code> of sub-activity instances, not null
+	 */
+
+	protected void setChildren (final List<ActivityGroupMember> children)
+	{
+		assert children != null : "children is NULL";
+
+		super.setChildren (children);
+	}
+
+	/**
+	 * Get the parent <code>ActivityGroup</code> instance for the sub-activity.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * parent class.
+	 *
+	 * @return The parent <code>ActivityGroup</code>
+	 */
+
+	@Override
+	public ActivityGroup getParent ()
+	{
+		return super.getParent ();
+	}
+
+	/**
+	 * Set the <code>ActivityGroup</code> instance which contains the
+	 * sub-activity.  This method is intended to be used by a 
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * parent class.
+	 *
+	 * @param  parent The <code>ActivityGroup</code> containing this
+	 *                <code>Activity</code> instance
+	 */
+
+	protected void setParent (final ActivityGroup parent)
+	{
+		assert parent != null : "parent is NULL";
+
+		super.setParent (parent);
 	}
 }

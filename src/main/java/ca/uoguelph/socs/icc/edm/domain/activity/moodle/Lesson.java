@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
@@ -128,5 +128,40 @@ public class Lesson extends GenericGroupedActivity
 	public Lesson (final ActivityType type, final Course course, final String name)
 	{
 		super (type, course, name);
+	}
+
+	/**
+	 * Get the <code>List</code> of <code>ActivityGroupMember</code> instances (or
+	 * Sub-Activities) associated with the <code>ActvityGroup</code>.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
+	 *
+	 * @return The <code>List</code> of sub-activities
+	 */
+
+	public List<ActivityGroupMember> getChildren ()
+	{
+		return super.getChildren ();
+	}
+
+	/**
+	 * Initialize the <code>List</code> of sub-activity instances for the
+	 * <code>Activity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is loaded.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
+	 *
+	 * @param  children The <code>List</code> of sub-activity instances, not null
+	 */
+
+	protected void setChildren (final List<ActivityGroupMember> children)
+	{
+		assert children != null : "children is NULL";
+
+		super.setChildren (children);
 	}
 }

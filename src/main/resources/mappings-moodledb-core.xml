@@ -23,6 +23,18 @@
 		</attributes>
 	</mapped-superclass>
 
+	<mapped-superclass class="GenericGroupedActivityMember" metadata-complete="true">
+		<description></description>
+		<attributes>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<transient name="course"/>
+			<transient name="type"/>
+			<transient name="grades"/>
+		</attributes>
+	</mapped-superclass>
+
 	<!--*********************************************************************-->
 	<!-- Core data mapping: Users                                            -->
 	<!--*********************************************************************-->
@@ -138,10 +150,13 @@
 		</attributes>
 	</entity>
 
-	<entity name="GenericActivity" class="GenericActivity" metadata-complete="true">
-		<description>Mapping For the Generic Activity and the relationship the the instance</description>
+	<entity name="MoodleActivity" class="ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleActivity" metadata-complete="true">
+		<description>Activity mapping with moodle instance data</description>
 		<table name="mdl_course_modules"/>
 		<attributes>
+			<basic name="instanceId">
+				<column name="instance"/>
+			</basic>
 			<many-to-one name="type" target-entity="ActivityTypeData" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
@@ -157,4 +172,6 @@
 			</basic>
 		</attributes>
 	</entity>
+
+
 </entity-mappings>
