@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.activity;
+package ca.uoguelph.socs.icc.edm.domain.core;
 
 import java.util.Map;
 import java.util.Set;
@@ -30,9 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.core.ActivitySourceData;
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityTypeData;
-
 /**
  * Mapping between <code>ActivityType</code> objects and the classes containing
  * the data for the associated <code>Activity</code>.
@@ -41,11 +38,8 @@ import ca.uoguelph.socs.icc.edm.domain.core.ActivityTypeData;
  * @version 1.0
  */
 
-public final class ActivityDataMap
+final class ActivityDataMap
 {
-	/** Singleton instance */
-	private static final ActivityDataMap instance;
-
 	/** The log */
 	private final Logger log;
 
@@ -62,30 +56,10 @@ public final class ActivityDataMap
 	private final Map<Class<? extends ActivityGroup>, Class<? extends ActivityGroupMember>> children;
 
 	/**
-	 * Create the singleton instance when the class is loaded
-	 */
-
-	static
-	{
-		instance = new ActivityDataMap ();
-	}
-
-	/**
-	 * Get an instance of the <code>ActivityDataMap</code>.
-	 *
-	 * @return The <code>ActivityDataMap</code> instance
-	 */
-
-	public static ActivityDataMap getInstance ()
-	{
-		return ActivityDataMap.instance;
-	}
-
-	/**
 	 * Create the <code>ActivityDataMap</code>.
 	 */
 
-	private ActivityDataMap ()
+	public ActivityDataMap ()
 	{
 		this.log = LoggerFactory.getLogger (ActivityDataMap.class);
 
@@ -108,27 +82,13 @@ public final class ActivityDataMap
 	 * @param  impl   The implementation class, not null
 	 */
 
-	public void registerElement (String source, String type, Class<? extends Activity> impl)
+	public void registerElement (final String source, final String type, final Class<? extends Activity> impl)
 	{
-		this.log.trace ("Register ActivityType -> implementation map {} ({}) -> {}", type, source, impl);
+		this.log.trace ("registerElement {}, {}, {}", type, source, impl);
 
-		if (source == null)
-		{
-			this.log.error ("Attempting to Register a NULL ActivitySource");
-			throw new NullPointerException ();
-		}
-
-		if (type == null)
-		{
-			this.log.error ("Attempting to Register a NULL ActivityType");
-			throw new NullPointerException ();
-		}
-
-		if (impl == null)
-		{
-			this.log.error ("Attempting to Register a NULL Activity implementation");
-			throw new NullPointerException ();
-		}
+		assert source != null : "source is NULL";
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
 
 		if (! this.sources.containsKey (source))
 		{
@@ -150,76 +110,21 @@ public final class ActivityDataMap
 	 * Register a parent child relationship between the classes implementing the
 	 * sub-activities.
 	 *
-	 * @param  parent                   The parent class, not null
-	 * @param  child                    The child class, not null
-	 *
-	 * @throws IllegalArgumentException If the parent of child class is already
-	 *                                  registered
+	 * @param  parent The parent class, not null
+	 * @param  child  The child class, not null
 	 */
 
-	public void registerRelationship (Class<? extends ActivityGroup> parent, Class<? extends ActivityGroupMember> child)
+	public void registerRelationship (final Class<? extends ActivityGroup> parent, final Class<? extends ActivityGroupMember> child)
 	{
-		this.log.trace ("Register parent -> Child relationship: {} -> {}", parent, child);
+		this.log.trace ("registerReplationship {}, {}", parent, child);
 
-		if (parent == null)
-		{
-			this.log.error ("Attempting to register a NULL parent");
-			throw new NullPointerException ();
-		}
-
-		if (child == null)
-		{
-			this.log.error ("Attempting to register a NULL child");
-			throw new NullPointerException ();
-		}
-
-		if (this.parents.containsKey (child))
-		{
-			this.log.error ("Child already registered: {}", child);
-			throw new IllegalArgumentException ("Child already registered");
-		}
-
-		if (this.children.containsKey (parent))
-		{
-			this.log.error ("Parent already registered: {}", parent);
-			throw new IllegalArgumentException ("Parent already registered");
-		}
+		assert parent != null : "parent is NULL";
+		assert child != null : "child is NULL";
+		assert (! this.parents.containsKey (child)) : "child is already registered";
+		assert (! this.children.containsKey (parent)) : "parent is already registered";
 
 		this.parents.put (child, parent);
 		this.children.put (parent, child);
-	}
-
-	/**
-	 * Get the <code>Set</code> of registered <code>ActivityType</code> objects.
-	 *
-	 * @return The <code>Set</code> of <code>ActivityType</code> objects
-	 */
-
-	public Set<ActivityType> getRegisteredElements ()
-	{
-		return this.types.keySet ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of registered parent classes.
-	 *
-	 * @return The <code>Set</code> of registered parent classes
-	 */
-
-	public Set<Class<? extends ActivityGroup>> getRegisteredParents ()
-	{
-		return this.children.keySet ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of registered child classes.
-	 *
-	 * @return The <code>Set</code> of registered child classes
-	 */
-
-	public Set<Class<? extends ActivityGroupMember>> getRegisteredChildren ()
-	{
-		return this.parents.keySet ();
 	}
 
 	/**
@@ -227,17 +132,14 @@ public final class ActivityDataMap
 	 * specific data for the specified <code>ActivityType</code>.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null
+	 *
 	 * @return      The <code>Activity </code> data class for the given
 	 *              <code>ActivityType</code>
 	 */
 
-	public Class<? extends Activity> getElement (ActivityType type)
+	public Class<? extends Activity> getElement (final ActivityType type)
 	{
-		if (type == null)
-		{
-			this.log.error ("Attempting to get implementation mapping for a NULL ActivityType");
-			throw new NullPointerException ();
-		}
+		assert type != null : "type is null";
 
 		return this.types.get (type);
 	}
@@ -247,11 +149,14 @@ public final class ActivityDataMap
 	 * <code>Class</code>.
 	 *
 	 * @param  child The child class
+	 *
 	 * @return       The parent class, or null if the child is not registered
 	 */
 
-	public Class<? extends ActivityGroup> getParent (ActivityGroupMember child)
+	public Class<? extends ActivityGroup> getParent (final Class<? extends ActivityGroupMember> child)
 	{
+		assert child != null : "Child is NULL";
+
 		return this.parents.get (child);
 	}
 
@@ -260,11 +165,14 @@ public final class ActivityDataMap
 	 * <code>Class</code>.
 	 *
 	 * @param  parent The parent class
+	 *
 	 * @return        The child class, or null if the parent is not registered
 	 */
 
-	public Class<? extends ActivityGroupMember> getChild (ActivityGroup parent)
+	public Class<? extends ActivityGroupMember> getChild (final Class<? extends ActivityGroup> parent)
 	{
+		assert parent != null : "parent is NULL";
+
 		return this.children.get (parent);
 	}
 }

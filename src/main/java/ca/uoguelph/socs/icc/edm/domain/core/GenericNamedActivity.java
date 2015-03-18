@@ -31,8 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.activity.ActivityDataMap;
-
 import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
 /**
@@ -74,7 +72,7 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
 		
-		(ActivityDataMap.getInstance ()).registerElement (source, type, elementImpl);
+		AbstractActivity.registerImplClass (source, type, elementImpl);
 
 		AbstractElement.registerQuery (Activity.class, elementImpl);
 		AbstractElement.registerBuilder (Activity.class, elementImpl, builder);

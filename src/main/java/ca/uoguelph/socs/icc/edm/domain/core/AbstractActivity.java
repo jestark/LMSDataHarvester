@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.ArrayList;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
+import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
@@ -92,11 +95,97 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		}
 	}
 
+	/** Mapping of <code>ActivityType</code> instances ti implementation classes */
+	private static final ActivityDataMap implementations;
+
 	/** The primary key for the activity */
 	private Long id;
 
 	/** The log entries associated with the activity*/
 	private List<LogEntry> log;
+
+	static
+	{
+		implementations = new ActivityDataMap ();
+	}
+
+	/**
+	 * Get the implementation class which contains the <code>Activity</code>
+	 * specific data for the specified <code>ActivityType</code>.
+	 *
+	 * @param  type The <code>ActivityType</code>, not null
+	 *
+	 * @return      The <code>Activity </code> data class for the given
+	 *              <code>ActivityType</code>
+	 */
+
+	public static final Class<? extends Activity> getImplClass (final ActivityType type)
+	{
+		return AbstractActivity.implementations.getElement (type);
+	}
+
+	/**
+	 * Get the parent <code>Class</code> for the specified child
+	 * <code>Class</code>.
+	 *
+	 * @param  child The child class
+	 *
+	 * @return       The parent class, or null if the child is not registered
+	 */
+
+	public static final Class<? extends ActivityGroup> getParent (final Class<? extends ActivityGroupMember> child)
+	{
+		return AbstractActivity.implementations.getParent (child);
+	}
+
+	/**
+	 * Get the child <code>Class</code> for the specified parent
+	 * <code>Class</code>.
+	 *
+	 * @param  parent The parent class
+	 *
+	 * @return        The child class, or null if the parent is not registered
+	 */
+
+	public static final Class<? extends ActivityGroupMember> getChild (final Class<? extends ActivityGroup> parent)
+	{
+		return AbstractActivity.implementations.getChild (parent);
+	}
+
+	/**
+	 * Register a <code>ActivityType</code> to implementation class mapping.  
+	 *
+	 * @param  source A <code>String</code> representation of the
+	 *                <code>ActivitySource</code>, not null
+	 * @param  type   A <code>String</code> representation of the
+	 *                <code>ActivityType</code>, not null
+	 * @param  impl   The implementation class, not null
+	 */
+
+	protected static final void registerImplClass (final String source, final String type, final Class<? extends Activity> impl)
+	{
+		assert source != null : "source is NULL";
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+		
+		AbstractActivity.implementations.registerElement (source, type, impl);
+	}
+
+	/**
+	 * Register a parent child relationship between the classes implementing the
+	 * sub-activities.
+	 *
+	 * @param  parent The parent class, not null
+	 * @param  child  The child class, not null
+	 */
+
+	protected static final void registerRelationship (final Class<? extends ActivityGroup> parent, final Class<? extends ActivityGroupMember> child)
+	{
+		assert parent != null : "parent is NULL";
+		assert child != null : "child is NULL";
+
+		AbstractActivity.implementations.registerRelationship (parent, child);
+	}
 
 	/**
 	 * Create the <code>AbstractActivity</code> with null values.

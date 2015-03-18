@@ -32,8 +32,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.activity.ActivityDataMap;
-
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
 
 /**
@@ -77,7 +75,7 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 		assert factory != null : "factory is NULL";
 		assert factoryImpl != null : "factoryImpl is NULL";
 
-		(ActivityDataMap.getInstance ()).registerRelationship (parent, elementImpl);
+		AbstractActivity.registerRelationship (parent, elementImpl);
 
 		AbstractElement.registerBuilder (Activity.class, elementImpl, builder);
 		AbstractElement.registerFactory (Activity.class, elementImpl, factory, factoryImpl);
