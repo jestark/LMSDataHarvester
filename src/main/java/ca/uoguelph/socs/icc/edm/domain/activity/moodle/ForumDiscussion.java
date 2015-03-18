@@ -25,7 +25,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.SubActivityElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
-import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
+import ca.uoguelph.socs.icc.edm.domain.core.GenericSubActivity;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
@@ -34,8 +34,8 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * along with the relevant manager, and builder.  See the <code>Activity</code>
  * interface documentation for details.
  * <p>
- * This class was generated from the <code>GroupedActivityGroup</code>
- * template, with the following values:
+ * This class was generated from the <code>SubActivityGroup</code> template,
+ * with the following values:
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
@@ -49,7 +49,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * @version 1.2
  */
 
-public class ForumDiscussion extends GenericGroupedActivityMember
+public class ForumDiscussion extends GenericSubActivity
 {
 	/**
 	 * Implementation of the <code>SubActivityElementFactory</code>.
@@ -82,7 +82,7 @@ public class ForumDiscussion extends GenericGroupedActivityMember
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (ForumDiscussion.class, Forum.class, DefaultSubActivityBuilder.class, SubActivityElementFactory.class, new Factory ());
+		GenericSubActivity.registerActivity (ForumDiscussion.class, Forum.class, DefaultSubActivityBuilder.class, SubActivityElementFactory.class, new Factory ());
 	}
 
 	/** Serial version id, required by the Serializable interface */

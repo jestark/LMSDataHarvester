@@ -20,14 +20,12 @@ import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-import ca.uoguelph.socs.icc.edm.domain.Course;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
-import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.SubActivityElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
-import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
+import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
+import ca.uoguelph.socs.icc.edm.domain.core.GenericSubActivity;
 
 /**
  * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
@@ -36,54 +34,47 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * along with the relevant manager, and builder.  See the <code>Activity</code>
  * interface documentation for details.
  * <p>
- * This class was generated from the <code>GroupedActivity</code> template, with
- * the following values:
+ * This class was generated from the <code>SubActivityGroup</code> template,
+ * with the following values:
  * <p>
  * <ul>
  * <li>ActivitySource = ${ActivitySource}
  * <li>ActivityType   = ${ActivityType}
  * <li>ClassName      = ${ClassName}
+ * <li>ParentClass    = ${ParentClass}
  * <li>Builder        = ${Builder}
  * </ul>
  *
  * @author  James E. Stark
- * @version 1.3
+ * @version 1.2
  */
 
-public class ${ClassName} extends GenericNamedActivity
+public class ${ClassName} extends GenericSubActivity
 {
 	/**
-	 * Implementation of the <code>NamedActivityElementFactory</code>.  Allows the
-	 * builders to create instances of <code>${ClassName}</code>.
+	 * Implementation of the <code>SubActivityElementFactory</code>.
+	 * Allows the builders to create instances of <code>${ClassName}</code>.
 	 */
 
-	private static final class Factory extends ActivityInstance.Factory implements NamedActivityElementFactory
+	private static final class Factory extends AbstractActivity.Factory implements SubActivityElementFactory
 	{
 		/**
-		 * Create a new <code>Activity</code> instance.
+		 * Create a new sub-activity (<code>SubActivity</code>) instance.
 		 *
-		 * @param  type    The <code>ActivityType</code> of the
-		 *                 <code>Activity</code>, not null
-		 * @param  course  The <code>Course</code> which is associated with the
-		 *                 <code>Activity</code> instance, not null
-		 * @param  name    The name of the <code>Activity</code>, not null
+		 * @param  activity The parent <code>Activity</code>, not null
+		 * @param  name     The name of the <code>SubActivity</code>, not null
 		 *
-		 * @return         The new <code>Activity</code> instance
+		 * @return          The new <code>SubActivity</code> instance
 		 */
 
-		public Activity create (final ActivityType type, final Course course, final String name)
+		public SubActivity create (final Activity activity, final String name)
 		{
-			assert type != null : "type is NULL";
-			assert course != null : "course is NULL";
+			assert activity instanceof ${ParentClass} : "activity is not an instance of ${ParentClass}";
 			assert name != null : "name is NULL";
 
-			return new ${ClassName} (type, course, name);
+			return new ${ClassName} (activity, name);
 		}
-
 	}
-
-	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Register the <code>${ClassName}</code> with the factories on initialization.
@@ -91,8 +82,11 @@ public class ${ClassName} extends GenericNamedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (${ClassName}.class, ${Builder}.class, NamedActivityElementFactory.class, new Factory (), "${ActivitySource}", "${ActivityType}");
+		GenericSubActivity.registerActivity (${ClassName}.class, ${ParentClass}.class, ${Builder}.class, SubActivityElementFactory.class, new Factory ());
 	}
+
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
@@ -104,18 +98,15 @@ public class ${ClassName} extends GenericNamedActivity
 	}
 
 	/**
-	 * Create a new <code>Activity</code> instance.
+	 * Create a <code>SubActivity</code> instance.
 	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
+	 * @param  activity The parent <code>Activity</code>, not null
+	 * @param  name   The name of the <code>SubActivity</code>, not null
 	 */
 
-	public ${ClassName} (final ActivityType type, final Course course, final String name)
+	public ${ClassName} (final Activity activity, final String name)
 	{
-		super (type, course, name);
+		super (activity, name);
 	}
 
 	/**
@@ -129,7 +120,6 @@ public class ${ClassName} extends GenericNamedActivity
 	 * @return The <code>List</code> of <code>SubActivity</code> instances
 	 */
 
-	@Override
 	public List<SubActivity> getSubActivities ()
 	{
 		return super.getSubActivities ();
@@ -137,7 +127,7 @@ public class ${ClassName} extends GenericNamedActivity
 
 	/**
 	 * Initialize the <code>List</code> of <code>SubActivity</code> instances for
-	 * the <code>Activity</code>.  This method is intended to be used by a
+	 * the <code>Activity</code>.  This method is intended to be used by a 
 	 * <code>DataStore</code> when the <code>Activity</code> instance is loaded.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
@@ -148,11 +138,48 @@ public class ${ClassName} extends GenericNamedActivity
 	 *                       instances, not null
 	 */
 
-	@Override
 	protected void setSubActivities (final List<SubActivity> subactivities)
 	{
 		assert subactivities != null : "subactivities is NULL";
 
 		super.setSubActivities (subactivities);
+	}
+
+	/**
+	 * Get the parent <code>Activity</code> instance for the
+	 * <code>SubActivity</code>.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * parent class.
+	 *
+	 * @return The parent <code>Activity</code>
+	 */
+
+	@Override
+	public Activity getParent ()
+	{
+		return super.getParent ();
+	}
+
+	/**
+	 * Set the <code>Activity</code> instance which contains the
+	 * <code>SubActivity</code>.  This method is intended to be used by a 
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * parent class.
+	 *
+	 * @param  activity The <code>Activity</code> containing this
+	 *                  <code>SubActivity</code> instance
+	 */
+
+	protected void setParent (final Activity activity)
+	{
+		assert activity != null : "activity is NULL";
+
+		super.setParent (activity);
 	}
 }

@@ -36,8 +36,8 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * along with the relevant manager, and builder.  See the <code>Activity</code>
  * interface documentation for details.
  * <p>
- * This class was generated from the <code>GroupedActivity</code> template, with
- * the following values:
+ * This class was generated from the <code>NamedActivityGroup</code> template,
+ * with the following values:
  * <p>
  * <ul>
  * <li>ActivitySource = moodle

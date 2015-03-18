@@ -34,14 +34,15 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.SubActivityElementFactory;
 
 /**
- * An generic representation of a sub-activity in the domain model.  This class
- * acts as an abstract base class for all of the <code>SubActivity</code> instances.
+ * An generic representation of a <code>SubActivity</code> in the domain model.
+ * This class acts as an abstract base class for all of the
+ * <code>SubActivity</code> instances.
  *
  * @author  James E. Stark
  * @version 1.1
  */
 
-public abstract class GenericGroupedActivityMember extends AbstractActivity implements SubActivity, Serializable
+public abstract class GenericSubActivity extends AbstractActivity implements SubActivity, Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -83,7 +84,7 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	 * Create the <code>Activity</code> with null values.
 	 */
 
-	public GenericGroupedActivityMember ()
+	public GenericSubActivity ()
 	{
 		super ();
 		this.name = null;
@@ -98,7 +99,7 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	 * @param  name   The name of the <code>Activity</code>
 	 */
 
-	public GenericGroupedActivityMember (final Activity parent, final String name)
+	public GenericSubActivity (final Activity parent, final String name)
 	{
 		super ();
 
@@ -130,11 +131,11 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 		{
 			result = true;
 		}
-		else if (obj instanceof GenericGroupedActivityMember)
+		else if (obj instanceof GenericSubActivity)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.name, ((GenericGroupedActivityMember) obj).name);
-			ebuilder.append (this.parent, ((GenericGroupedActivityMember) obj).parent);
+			ebuilder.append (this.name, ((GenericSubActivity) obj).name);
+			ebuilder.append (this.parent, ((GenericSubActivity) obj).parent);
 
 			result = ebuilder.isEquals ();
 		}

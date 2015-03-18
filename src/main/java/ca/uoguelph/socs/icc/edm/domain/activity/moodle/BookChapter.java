@@ -25,7 +25,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.SubActivityElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
-import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
+import ca.uoguelph.socs.icc.edm.domain.core.GenericSubActivity;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/book
@@ -34,8 +34,8 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * interface, along with the relevant manager, and builder.  See the
  * <code>SubActivity</code> interface documentation for details.
  * <p>
- * This class was generated from the <code>GroupedActivityMember</code>
- * template, with the following values:
+ * This class was generated from the <code>SubActivity</code> template, with
+ * the following values:
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
@@ -49,7 +49,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * @version 1.2
  */
 
-public class BookChapter extends GenericGroupedActivityMember
+public class BookChapter extends GenericSubActivity
 {
 	/**
 	 * Implementation of the <code>SubActivityElementFactory</code>.
@@ -85,7 +85,7 @@ public class BookChapter extends GenericGroupedActivityMember
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (BookChapter.class, Book.class, DefaultSubActivityBuilder.class, SubActivityElementFactory.class, new Factory ());
+		GenericSubActivity.registerActivity (BookChapter.class, Book.class, DefaultSubActivityBuilder.class, SubActivityElementFactory.class, new Factory ());
 	}
 
 	/**

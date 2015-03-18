@@ -67,9 +67,9 @@ def processNode (node, data, template):
 
 template = dict ()
 template ["Named"] = loadTemplate ("templates/java/NamedActivity.java")
-template ["Group"] = loadTemplate ("templates/java/GroupedActivity.java")
-template ["SubGroup"] = loadTemplate ("templates/java/GroupedActivityGroup.java")
-template ["Member"] = loadTemplate ("templates/java/GroupedActivityMember.java")
+template ["Group"] = loadTemplate ("templates/java/NamedActivityGroup.java")
+template ["Member"] = loadTemplate ("templates/java/SubActivity.java")
+template ["SubGroup"] = loadTemplate ("templates/java/SubActivityGroup.java")
 template ["Log"] = loadTemplate ("templates/java/Log.java");
 
 config = xml.etree.ElementTree.parse (sys.argv[1]);
