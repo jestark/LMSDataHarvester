@@ -38,7 +38,6 @@ def processNode (node, data, template):
 
                 if (tag == "subactivity"):
                     entry = "Group"
-                    params ["ChildClass"] = child.attrib ["name"]
 
         elif (node.tag == "subactivity"):
             entry = "Member"
@@ -51,7 +50,6 @@ def processNode (node, data, template):
 
                 if (tag == "subactivity"):
                     entry = "SubGroup"
-                    params ["ChildClass"] = child.attrib ["name"]
 
         elif (node.tag == "log"):
             entry = "Log"

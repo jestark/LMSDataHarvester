@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
@@ -50,10 +49,10 @@ final class ActivityDataMap
 	private final Map<ActivityType, Class<? extends Activity>> types;
 
 	/** <code>ActivityGroupMember</code> parent class mapping */
-	private final Map<Class<? extends ActivityGroupMember>, Class<? extends ActivityGroup>> parents;
+	private final Map<Class<? extends ActivityGroupMember>, Class<? extends Activity>> parents;
 
-	/** <code>ActivityGroup</code> child class mapping */
-	private final Map<Class<? extends ActivityGroup>, Class<? extends ActivityGroupMember>> children;
+	/** <code>Activity</code> child class mapping */
+	private final Map<Class<? extends Activity>, Class<? extends ActivityGroupMember>> children;
 
 	/**
 	 * Create the <code>ActivityDataMap</code>.
@@ -65,8 +64,8 @@ final class ActivityDataMap
 
 		this.sources = new HashMap<String, ActivitySource> ();
 		this.types = new HashMap<ActivityType, Class<? extends Activity>> ();
-		this.parents = new HashMap<Class<? extends ActivityGroupMember>, Class<? extends ActivityGroup>> ();
-		this.children = new HashMap<Class<? extends ActivityGroup>, Class<? extends ActivityGroupMember>> ();
+		this.parents = new HashMap<Class<? extends ActivityGroupMember>, Class<? extends Activity>> ();
+		this.children = new HashMap<Class<? extends Activity>, Class<? extends ActivityGroupMember>> ();
 	}
 
 	/**
@@ -114,7 +113,7 @@ final class ActivityDataMap
 	 * @param  child  The child class, not null
 	 */
 
-	public void registerRelationship (final Class<? extends ActivityGroup> parent, final Class<? extends ActivityGroupMember> child)
+	public void registerRelationship (final Class<? extends Activity> parent, final Class<? extends ActivityGroupMember> child)
 	{
 		this.log.trace ("registerReplationship {}, {}", parent, child);
 
@@ -153,7 +152,7 @@ final class ActivityDataMap
 	 * @return       The parent class, or null if the child is not registered
 	 */
 
-	public Class<? extends ActivityGroup> getParent (final Class<? extends ActivityGroupMember> child)
+	public Class<? extends Activity> getParent (final Class<? extends ActivityGroupMember> child)
 	{
 		assert child != null : "Child is NULL";
 
@@ -169,7 +168,7 @@ final class ActivityDataMap
 	 * @return        The child class, or null if the parent is not registered
 	 */
 
-	public Class<? extends ActivityGroupMember> getChild (final Class<? extends ActivityGroup> parent)
+	public Class<? extends ActivityGroupMember> getChild (final Class<? extends Activity> parent)
 	{
 		assert parent != null : "parent is NULL";
 

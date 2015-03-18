@@ -19,9 +19,9 @@ package ca.uoguelph.socs.icc.edm.domain.core;
 import java.util.List;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
@@ -48,6 +48,26 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 
 	protected static abstract class Factory extends AbstractElement.Factory<Activity> implements AbstractActivityElementFactory
 	{
+		/** The <code>Class</code> of the parent <code>Element</code> */
+		private final Class<?> parent;
+
+		/** The <code>Class</code> of the child <code>Element</code> */
+		private final Class<?> child;
+
+		/**
+		 * Create an instance of the <code>Factory</code>.  This method sets the
+		 * <code>Class</code> of the child element to be used to enforce the safety
+		 * of the types in the tree.
+		 *
+		 * @param  child The Class of the child <code>Element</code>, not null
+		 */
+
+		protected Factory ()
+		{
+			this.child = null;
+			this.parent = (this.getClass ()).getEnclosingClass ();
+		}
+
 		/**
 		 * Add the specified <code>LogEntry</code> to the specified
 		 * <code>Activity</code>.
@@ -93,6 +113,52 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 
 			return ((AbstractActivity) activity).removeLog (entry);
 		}
+
+		/**
+		 * Add the specified <code>ActivityGroupMember</code> to the specified
+		 * <code>Activity</code>.
+		 *
+		 * @param  group  The <code>Activity</code> to which the
+		 *                <code>ActivityGroupMember</code> is to be added, not null
+		 * @param  member The <code>ActivityGroupMember</code> to add to the
+		 *                <code>Activity</code>, not null
+		 *
+		 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
+		 *                was successfully added to the <code>ActvityGroup</code>,
+		 *                <code>False</code> otherwise
+		 */
+
+		@Override
+		public final boolean addChild (final Activity group, final ActivityGroupMember member)
+		{
+			assert this.parent.isInstance (group) : "group is not an instance of " + this.parent.getSimpleName ();
+			assert this.child.isInstance (member) : "member is not an instance of " + this.child.getSimpleName ();
+
+			return ((AbstractActivity) group).addChild (member);
+		}
+
+		/**
+		 * Remove the specified <code>ActivityGroupMember</code> from the specified
+		 * <code>Activity</code>.
+		 *
+		 * @param  group  The <code>Activity</code> from which the
+		 *                <code>ActivityGroupMember</code> is to be removed, not null
+		 * @param  member The <code>ActivityGroupMember</code> to remove from the
+		 *                <code>Activity</code>, not null
+		 *
+		 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
+		 *                was successfully removed from the <code>ActvityGroup</code>,
+		 *                <code>False</code> otherwise
+		 */
+
+		@Override
+		public final boolean removeChild (final Activity group, final ActivityGroupMember member)
+		{
+			assert this.parent.isInstance (group) : "group is not an instance of " + this.parent.getSimpleName ();
+			assert this.child.isInstance (member) : "member is not an instance of " + this.child.getSimpleName ();
+
+			return ((AbstractActivity) group).removeChild (member);
+		}
 	}
 
 	/** Mapping of <code>ActivityType</code> instances ti implementation classes */
@@ -100,6 +166,9 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 
 	/** The primary key for the activity */
 	private Long id;
+
+	/** The set of sub-activities  */
+	private List<ActivityGroupMember> children;
 
 	/** The log entries associated with the activity*/
 	private List<LogEntry> log;
@@ -133,7 +202,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @return       The parent class, or null if the child is not registered
 	 */
 
-	public static final Class<? extends ActivityGroup> getParent (final Class<? extends ActivityGroupMember> child)
+	public static final Class<? extends Activity> getParent (final Class<? extends ActivityGroupMember> child)
 	{
 		return AbstractActivity.implementations.getParent (child);
 	}
@@ -147,7 +216,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @return        The child class, or null if the parent is not registered
 	 */
 
-	public static final Class<? extends ActivityGroupMember> getChild (final Class<? extends ActivityGroup> parent)
+	public static final Class<? extends ActivityGroupMember> getChild (final Class<? extends Activity> parent)
 	{
 		return AbstractActivity.implementations.getChild (parent);
 	}
@@ -179,7 +248,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @param  child  The child class, not null
 	 */
 
-	protected static final void registerRelationship (final Class<? extends ActivityGroup> parent, final Class<? extends ActivityGroupMember> child)
+	protected static final void registerRelationship (final Class<? extends Activity> parent, final Class<? extends ActivityGroupMember> child)
 	{
 		assert parent != null : "parent is NULL";
 		assert child != null : "child is NULL";
@@ -195,7 +264,8 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	{
 		this.id = null;
 
-		this.log = new ArrayList<LogEntry> ();
+		this.children = new LinkedList<ActivityGroupMember> ();
+		this.log = new LinkedList<LogEntry> ();
 	}
 
 	/**
@@ -288,5 +358,73 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		assert entry != null : "entry is NULL";
 		
 		return this.log.remove (entry);
+	}
+
+	@Override
+	public boolean hasChildren ()
+	{
+		return ! this.children.isEmpty ();
+	}
+
+	/**
+	 * Get the <code>List</code> of <code>ActivityGroupMember</code> instances (or
+	 * Sub-Activities) associated with the <code>Actvity</code>.
+	 *
+	 * @return The <code>List</code> of sub-activities
+	 */
+
+	@Override
+	public List<ActivityGroupMember> getChildren ()
+	{
+		return new ArrayList<ActivityGroupMember> (this.children);
+	}
+
+	/**
+	 * Initialize the <code>List</code> of sub-activity instances for the
+	 * <code>Activity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is loaded.
+	 *
+	 * @param  children The <code>List</code> of sub-activity instances, not null
+	 */
+
+	protected void setChildren (final List<ActivityGroupMember> children)
+	{
+		assert children != null : "children is NULL";
+
+		this.children = children;
+	}
+
+	/**
+	 * Add the specified <code>ActivityGroupMember</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  child The <code>ActivityGroupMember</code> to add, not null
+	 *
+	 * @return       <code>True</code> if the <code>ActivityGroupMember</code>
+	 *               was successfully added, <code>False</code> otherwise
+	 */
+
+	protected boolean addChild (final ActivityGroupMember child)
+	{
+		assert child != null : "child is NULL";
+
+		return this.children.add (child);
+	}
+
+	/**
+	 * Remove the specified <code>ActivityGroupMember</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  child The <code>ActivityGroupMember</code> to remove, not null
+	 *
+	 * @return       <code>True</code> if the <code>ActivityGroupMember</code>
+	 *               was successfully removed, <code>False</code> otherwise
+	 */
+
+	protected boolean removeChild (final ActivityGroupMember child)
+	{
+		assert child != null : "child is NULL";
+
+		return this.children.remove (child);
 	}
 }

@@ -17,6 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -66,4 +67,36 @@ public interface AbstractActivityElementFactory extends ElementFactory<Activity>
 	 */
 
 	public abstract boolean removeLogEntry (Activity activity, LogEntry entry);
+
+	/**
+	 * Add the specified <code>ActivityGroupMember</code> to the specified
+	 * <code>Activity</code>.
+	 *
+	 * @param  group  The <code>Activity</code> to which the
+	 *                <code>ActivityGroupMember</code> is to be added, not null
+	 * @param  member The <code>ActivityGroupMember</code> to add to the
+	 *                <code>Activity</code>, not null
+	 *
+	 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
+	 *                was successfully added to the <code>Activity</code>,
+	 *                <code>False</code> otherwise
+	 */
+
+	public abstract boolean addChild (Activity group, ActivityGroupMember member);
+
+	/**
+	 * Remove the specified <code>ActivityGroupMember</code> from the specified
+	 * <code>Activity</code>.
+	 *
+	 * @param  group  The <code>Activity</code> from which the
+	 *                <code>ActivityGroupMember</code> is to be removed, not null
+	 * @param  member The <code>ActivityGroupMember</code> to remove from the
+	 *                <code>Activity</code>, not null
+	 *
+	 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
+	 *                was successfully removed from the <code>Activity</code>,
+	 *                <code>False</code> otherwise
+	 */
+
+	public abstract boolean removeChild (Activity group, ActivityGroupMember member);
 }

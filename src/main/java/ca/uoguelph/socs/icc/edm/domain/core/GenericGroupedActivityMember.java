@@ -24,7 +24,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMemberBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
@@ -52,7 +51,7 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	private String name;
 
 	/** The sub-activity's parent activity */
-	private ActivityGroup parent;
+	private Activity parent;
 
 	/**
 	 * Register the activity with the <code>ActivityDataMap</code> and the
@@ -67,7 +66,7 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	 * @param  factoryImpl The <code>ElementFactory</code>, not null
 	 */
 
-	protected static final <S extends ActivityGroupMember, T extends ActivityGroupMemberBuilder, U extends ActivityGroupMemberElementFactory> void registerActivity (final Class<S> elementImpl, final Class<? extends ActivityGroup> parent, final Class<T> builder, final Class<U> factory, final U factoryImpl)
+	protected static final <S extends ActivityGroupMember, T extends ActivityGroupMemberBuilder, U extends ActivityGroupMemberElementFactory> void registerActivity (final Class<S> elementImpl, final Class<? extends Activity> parent, final Class<T> builder, final Class<U> factory, final U factoryImpl)
 	{
 		assert elementImpl != null : "elementImpl is NULL";
 		assert parent != null : "parent Class is NULL";
@@ -95,12 +94,12 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	/**
 	 * Create the <code>Activity</code>
 	 *
-	 * @param  parent The <code>ActivityGroup</code> containing this
+	 * @param  parent The <code>Activity</code> containing this
 	 *                <code>Activity</code> instance
 	 * @param  name   The name of the <code>Activity</code>
 	 */
 
-	public GenericGroupedActivityMember (final ActivityGroup parent, final String name)
+	public GenericGroupedActivityMember (final Activity parent, final String name)
 	{
 		super ();
 
@@ -234,28 +233,28 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	}
 
 	/**
-	 * Get the parent <code>ActivityGroup</code> instance for the sub-activity.
+	 * Get the parent <code>Activity</code> instance for the sub-activity.
 	 *
-	 * @return The parent <code>ActivityGroup</code>
+	 * @return The parent <code>Activity</code>
 	 */
 
 	@Override
-	public ActivityGroup getParent ()
+	public Activity getParent ()
 	{
 		return this.parent;
 	}
 
 	/**
-	 * Set the <code>ActivityGroup</code> instance which contains the
+	 * Set the <code>Activity</code> instance which contains the
 	 * sub-activity.  This method is intended to be used by a 
 	 * <code>DataStore</code> when the <code>Activity</code> instance is
 	 * loaded.
 	 *
-	 * @param  parent The <code>ActivityGroup</code> containing this
+	 * @param  parent The <code>Activity</code> containing this
 	 *                <code>Activity</code> instance
 	 */
 
-	protected void setParent (final ActivityGroup parent)
+	protected void setParent (final Activity parent)
 	{
 		assert parent != null : "parent is NULL";
 

@@ -107,4 +107,24 @@ public interface Activity extends Element
 	 */
 
 	public abstract List<LogEntry> getLog ();
+
+	/**
+	 * Determine if there are <code>ActivityGroupMember</code> instances
+	 * associated with the <code>Activity</code> instance.
+	 *
+	 * @return <code>True</code> if the <code>Activity</code> instance has
+	 *         <code>ActivityGroupMember</code> instances associated with it.
+	 *         <code>False</code> otherwise
+	 */
+
+	public abstract boolean hasChildren ();
+
+	/**
+	 * Get the <code>List</code> of <code>ActivityGroupMember</code> instances (or
+	 * Sub-Activities) associated with the <code>Actvity</code>.
+	 *
+	 * @return The <code>List</code> of sub-activities
+	 */
+
+	public abstract List<ActivityGroupMember> getChildren ();
 }

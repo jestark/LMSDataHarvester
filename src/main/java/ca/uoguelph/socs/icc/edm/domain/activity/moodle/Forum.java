@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
@@ -27,15 +26,15 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivity;
+import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
- * this class will be accessed though the <code>ActivityGroup</code> interface,
- * along with the relevant manager, and builder.  See the
- * <code>ActivityGroup</code> interface documentation for details.
+ * this class will be accessed though the <code>Activity</code> interface,
+ * along with the relevant manager, and builder.  See the <code>Activity</code>
+ * interface documentation for details.
  * <p>
  * This class was generated from the <code>GroupedActivity</code> template, with
  * the following values:
@@ -44,33 +43,22 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
  * <li>ActivitySource = moodle
  * <li>ActivityType   = forum
  * <li>ClassName      = Forum
- * <li>ChildClass     = ForumDiscussion
  * <li>Builder        = DefaultNamedActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
- * @version 1.1
+ * @version 1.3
  */
 
-public class Forum extends GenericGroupedActivity
+public class Forum extends GenericNamedActivity
 {
 	/**
 	 * Implementation of the <code>NamedActivityElementFactory</code>.  Allows the
 	 * builders to create instances of <code>Forum</code>.
 	 */
 
-	private static final class Factory extends GenericGroupedActivity.Factory implements NamedActivityElementFactory
+	private static final class Factory extends ActivityInstance.Factory implements NamedActivityElementFactory
 	{
-		/**
-		 * Create an instance of the <code>Factory</code>, passing the child
-		 * <code>Class</code> to the super class.
-		 */
-
-		protected Factory ()
-		{
-			super (ForumDiscussion.class);
-		}
-
 		/**
 		 * Create a new <code>Activity</code> instance.
 		 *
@@ -132,7 +120,7 @@ public class Forum extends GenericGroupedActivity
 
 	/**
 	 * Get the <code>List</code> of <code>ActivityGroupMember</code> instances (or
-	 * Sub-Activities) associated with the <code>ActvityGroup</code>.
+	 * Sub-Activities) associated with the <code>Actvity</code>.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
 	 * exists solely to allow JPA to map the relationship to the instances of the

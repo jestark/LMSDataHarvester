@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
 import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 
 /**
@@ -37,12 +36,12 @@ public interface ActivityGroupMemberElementFactory extends AbstractActivityEleme
 	/**
 	 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.
 	 *
-	 * @param  parent The parent <code>ActivityGroup</code>, not null
+	 * @param  parent The parent <code>Activity</code>, not null
 	 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
 	 *
 	 * @return        The new sub-activity (<code>ActivityGroupMember</code>)
 	 *                instance
 	 */
 
-	public abstract ActivityGroupMember create (ActivityGroup parent, String name);
+	public abstract ActivityGroupMember create (Activity parent, String name);
 }

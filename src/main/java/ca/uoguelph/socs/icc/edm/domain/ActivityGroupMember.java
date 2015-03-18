@@ -20,27 +20,19 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 
 /**
  * A representation of a child element in a hierarchy of <code>Activity</code>
- * instances.  This interface along with <code>ActivityGroup</code> represents
- * a hierarchy of sub-activities.  Sub-activities will implement one or both of
- * <code>ActivityGroup</code> and <code>ActivityGroupMember</code>.  The
- * <code>Activity</code> at the top of the hierarchy and any sub-activities
- * in the middle of the hierarchy will implement <code>ActivityGroup</code>
- * while <code>ActivityGroupMember</code> will be implemented by any
- * sub-activities in the middle of the hierarchy and the sub-activity forming
- * the bottom of the hierarchy.
+ * instances.  This interface must be implemented by all of the Sub-Activities.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ActivityGroup
  */
 
 public interface ActivityGroupMember extends Activity
 {
 	/**
-	 * Get the parent <code>ActivityGroup</code> instance for the sub-activity.
+	 * Get the parent <code>Activity</code> instance for the sub-activity.
 	 *
-	 * @return The parent <code>ActivityGroup</code>
+	 * @return The parent <code>Activity</code>
 	 */
 
-	public abstract ActivityGroup getParent ();
+	public abstract Activity getParent ();
 }
