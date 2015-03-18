@@ -19,10 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityGroupMemberBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.SubActivityElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
@@ -30,9 +30,9 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/workshop
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
- * this class will be accessed though the <code>ActivityGroupMember</code>
+ * this class will be accessed though the <code>SubActivity</code>
  * interface, along with the relevant manager, and builder.  See the
- * <code>ActivityGroupMember</code> interface documentation for details.
+ * <code>SubActivity</code> interface documentation for details.
  * <p>
  * This class was generated from the <code>GroupedActivityMember</code>
  * template, with the following values:
@@ -42,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
  * <li>ActivityType   = workshop
  * <li>ClassName      = WorkshopSubmission
  * <li>ParentClass    = Workshop
- * <li>Builder        = DefaultActivityGroupMemberBuilder
+ * <li>Builder        = DefaultSubActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
@@ -52,28 +52,27 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
 public class WorkshopSubmission extends GenericGroupedActivityMember
 {
 	/**
-	 * Implementation of the <code>ActivityGroupMemberElementFactory</code>.
+	 * Implementation of the <code>SubActivityElementFactory</code>.
 	 * Allows the builders to create instances of <code>WorkshopSubmission</code>.
 	 */
 
-	private static final class Factory extends AbstractActivity.Factory implements ActivityGroupMemberElementFactory
+	private static final class Factory extends AbstractActivity.Factory implements SubActivityElementFactory
 	{
 		/**
-		 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.
+		 * Create a new <code>SubActivity</code> instance.
 		 *
-		 * @param  parent The parent <code>Activity</code>, not null
-		 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
+		 * @param  activity The parent <code>Activity</code>, not null
+		 * @param  name     The name of the <code>SubActivity</code>, not null
 		 *
-		 * @return        The new sub-activity (<code>ActivityGroupMember</code>)
-		 *                instance
+		 * @return          The new <code>SubActivity</code> instance
 		 */
 
-		public ActivityGroupMember create (final Activity parent, final String name)
+		public SubActivity create (final Activity activity, final String name)
 		{
-			assert parent instanceof Workshop : "parent is not an instance of Workshop";
+			assert activity instanceof Workshop : "activity is not an instance of Workshop";
 			assert name != null : "name is NULL";
 
-			return new WorkshopSubmission (parent, name);
+			return new WorkshopSubmission (activity, name);
 		}
 	}
 
@@ -86,7 +85,7 @@ public class WorkshopSubmission extends GenericGroupedActivityMember
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (WorkshopSubmission.class, Workshop.class, DefaultActivityGroupMemberBuilder.class, ActivityGroupMemberElementFactory.class, new Factory ());
+		GenericGroupedActivityMember.registerActivity (WorkshopSubmission.class, Workshop.class, DefaultSubActivityBuilder.class, SubActivityElementFactory.class, new Factory ());
 	}
 
 	/**
@@ -99,19 +98,20 @@ public class WorkshopSubmission extends GenericGroupedActivityMember
 	}
 
 	/**
-	 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.
+	 * Create a new <code>SubActivity</code> instance.
 	 *
-	 * @param  parent The parent <code>Activity</code>, not null
-	 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
+	 * @param  activity The parent <code>Activity</code>, not null
+	 * @param  name     The name of the <code>SubActivity</code>, not null
 	 */
 
-	public WorkshopSubmission (final Activity parent, final String name)
+	public WorkshopSubmission (final Activity activity, final String name)
 	{
-		super (parent, name);
+		super (activity, name);
 	}
 
 	/**
-	 * Get the parent <code>Activity</code> instance for the sub-activity.
+	 * Get the parent <code>Activity</code> instance for the
+	 * <code>SubActivity</code>.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
 	 * exists solely to allow JPA to map the relationship to the instances of the
@@ -128,7 +128,7 @@ public class WorkshopSubmission extends GenericGroupedActivityMember
 
 	/**
 	 * Set the <code>Activity</code> instance which contains the
-	 * sub-activity.  This method is intended to be used by a 
+	 * <code>SubActivity</code>.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>Activity</code> instance is
 	 * loaded.
 	 * <p>
@@ -136,14 +136,14 @@ public class WorkshopSubmission extends GenericGroupedActivityMember
 	 * exists solely to allow JPA to map the relationship to the instances of the
 	 * parent class.
 	 *
-	 * @param  parent The <code>Activity</code> containing this
-	 *                <code>Activity</code> instance
+	 * @param  activity The <code>Activity</code> containing this
+	 *                  <code>SubActivity</code> instance
 	 */
 
-	protected void setParent (final Activity parent)
+	protected void setParent (final Activity activity)
 	{
-		assert parent != null : "parent is NULL";
+		assert activity != null : "activity is NULL";
 
-		super.setParent (parent);
+		super.setParent (activity);
 	}
 }

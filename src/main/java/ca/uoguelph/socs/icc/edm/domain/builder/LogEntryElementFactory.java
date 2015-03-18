@@ -20,7 +20,6 @@ import java.util.Date;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;

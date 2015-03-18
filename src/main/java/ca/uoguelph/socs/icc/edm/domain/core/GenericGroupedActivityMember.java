@@ -24,25 +24,24 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMemberBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.SubActivityElementFactory;
 
 /**
  * An generic representation of a sub-activity in the domain model.  This class
- * acts as an abstract base class for all of the sub-activities by implementing
- * the <code>ActivityGroupMember</code> interface.
+ * acts as an abstract base class for all of the <code>SubActivity</code> instances.
  *
  * @author  James E. Stark
- * @version 1.0
+ * @version 1.1
  */
 
-public abstract class GenericGroupedActivityMember extends AbstractActivity implements ActivityGroupMember, Serializable
+public abstract class GenericGroupedActivityMember extends AbstractActivity implements SubActivity, Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -50,7 +49,7 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	/** The name of the activity */
 	private String name;
 
-	/** The sub-activity's parent activity */
+	/** The parent activity */
 	private Activity parent;
 
 	/**
@@ -60,13 +59,13 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	 *
 	 * @param  elementImpl The implementation class, not null
 	 * @param  parent      The parent <code>Activity</code> class, not null
-	 * @param  builder     The <code>ActivityGroupMemberBuilder</code>
+	 * @param  builder     The <code>SubActivityBuilder</code>
 	 *                     implementation, not null
 	 * @param  factory     The <code>ElementFactory</code> interface, not null
 	 * @param  factoryImpl The <code>ElementFactory</code>, not null
 	 */
 
-	protected static final <S extends ActivityGroupMember, T extends ActivityGroupMemberBuilder, U extends ActivityGroupMemberElementFactory> void registerActivity (final Class<S> elementImpl, final Class<? extends Activity> parent, final Class<T> builder, final Class<U> factory, final U factoryImpl)
+	protected static final <S extends SubActivity, T extends SubActivityBuilder, U extends SubActivityElementFactory> void registerActivity (final Class<S> elementImpl, final Class<? extends Activity> parent, final Class<T> builder, final Class<U> factory, final U factoryImpl)
 	{
 		assert elementImpl != null : "elementImpl is NULL";
 		assert parent != null : "parent Class is NULL";
@@ -233,7 +232,8 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 	}
 
 	/**
-	 * Get the parent <code>Activity</code> instance for the sub-activity.
+	 * Get the parent <code>Activity</code> instance for the
+	 * <code>SubActivity</code>.
 	 *
 	 * @return The parent <code>Activity</code>
 	 */
@@ -246,19 +246,19 @@ public abstract class GenericGroupedActivityMember extends AbstractActivity impl
 
 	/**
 	 * Set the <code>Activity</code> instance which contains the
-	 * sub-activity.  This method is intended to be used by a 
+	 * <code>SubActivity</code>.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>Activity</code> instance is
 	 * loaded.
 	 *
-	 * @param  parent The <code>Activity</code> containing this
-	 *                <code>Activity</code> instance
+	 * @param  activity The <code>Activity</code> containing this
+	 *                  <code>SubActivity</code> instance
 	 */
 
-	protected void setParent (final Activity parent)
+	protected void setParent (final Activity activity)
 	{
-		assert parent != null : "parent is NULL";
+		assert activity != null : "activity is NULL";
 
-		this.parent = parent;
+		this.parent = activity;
 	}
 
 	/**

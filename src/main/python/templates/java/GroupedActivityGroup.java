@@ -19,10 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityGroupMemberElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.SubActivityElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
@@ -52,28 +52,27 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericGroupedActivityMember;
 public class ${ClassName} extends GenericGroupedActivityMember
 {
 	/**
-	 * Implementation of the <code>ActivityGroupMemberElementFactory</code>.
+	 * Implementation of the <code>SubActivityElementFactory</code>.
 	 * Allows the builders to create instances of <code>${ClassName}</code>.
 	 */
 
-	private static final class Factory extends AbstractActivity.Factory implements ActivityGroupMemberElementFactory
+	private static final class Factory extends AbstractActivity.Factory implements SubActivityElementFactory
 	{
 		/**
-		 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.
+		 * Create a new sub-activity (<code>SubActivity</code>) instance.
 		 *
-		 * @param  parent The parent <code>Activity</code>, not null
-		 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
+		 * @param  activity The parent <code>Activity</code>, not null
+		 * @param  name     The name of the <code>SubActivity</code>, not null
 		 *
-		 * @return        The new sub-activity (<code>ActivityGroupMember</code>)
-		 *                instance
+		 * @return          The new <code>SubActivity</code> instance
 		 */
 
-		public ActivityGroupMember create (final Activity parent, final String name)
+		public SubActivity create (final Activity activity, final String name)
 		{
-			assert parent instanceof ${ParentClass} : "parent is not an instance of ${ParentClass}";
+			assert activity instanceof ${ParentClass} : "activity is not an instance of ${ParentClass}";
 			assert name != null : "name is NULL";
 
-			return new ${ClassName} (parent, name);
+			return new ${ClassName} (activity, name);
 		}
 	}
 
@@ -83,7 +82,7 @@ public class ${ClassName} extends GenericGroupedActivityMember
 
 	static
 	{
-		GenericGroupedActivityMember.registerActivity (${ClassName}.class, ${ParentClass}.class, ${Builder}.class, ActivityGroupMemberElementFactory.class, new Factory ());
+		GenericGroupedActivityMember.registerActivity (${ClassName}.class, ${ParentClass}.class, ${Builder}.class, SubActivityElementFactory.class, new Factory ());
 	}
 
 	/** Serial version id, required by the Serializable interface */
@@ -99,60 +98,62 @@ public class ${ClassName} extends GenericGroupedActivityMember
 	}
 
 	/**
-	 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.
+	 * Create a <code>SubActivity</code> instance.
 	 *
-	 * @param  parent The parent <code>Activity</code>, not null
-	 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
+	 * @param  activity The parent <code>Activity</code>, not null
+	 * @param  name   The name of the <code>SubActivity</code>, not null
 	 */
 
-	public ${ClassName} (final Activity parent, final String name)
+	public ${ClassName} (final Activity activity, final String name)
 	{
-		super (parent, name);
+		super (activity, name);
 	}
 
 	/**
-	 * Get the <code>List</code> of <code>ActivityGroupMember</code> instances (or
-	 * Sub-Activities) associated with the <code>Actvity</code>.
+	 * Get the <code>List</code> of <code>SubActivity</code> instances associated
+	 * with the <code>Activity</code>.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
 	 * exists solely to allow JPA to map the relationship to the instances of the
 	 * child class.
 	 *
-	 * @return The <code>List</code> of sub-activities
+	 * @return The <code>List</code> of <code>SubActivity</code> instances
 	 */
 
-	public List<ActivityGroupMember> getChildren ()
+	public List<SubActivity> getSubActivities ()
 	{
-		return super.getChildren ();
+		return super.getSubActivities ();
 	}
 
 	/**
-	 * Initialize the <code>List</code> of sub-activity instances for the
-	 * <code>Activity</code>.  This method is intended to be used by a 
+	 * Initialize the <code>List</code> of <code>SubActivity</code> instances for
+	 * the <code>Activity</code>.  This method is intended to be used by a 
 	 * <code>DataStore</code> when the <code>Activity</code> instance is loaded.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
 	 * exists solely to allow JPA to map the relationship to the instances of the
 	 * child class.
 	 *
-	 * @param  children The <code>List</code> of sub-activity instances, not null
+	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
+	 *                       instances, not null
 	 */
 
-	protected void setChildren (final List<ActivityGroupMember> children)
+	protected void setSubActivities (final List<SubActivity> subactivities)
 	{
-		assert children != null : "children is NULL";
+		assert subactivities != null : "subactivities is NULL";
 
-		super.setChildren (children);
+		super.setSubActivities (subactivities);
 	}
 
 	/**
-	 * Get the parent <code>Activity</code> instance for the sub-activity.
+	 * Get the parent <code>Activity</code> instance for the
+	 * <code>SubActivity</code>.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
 	 * exists solely to allow JPA to map the relationship to the instances of the
 	 * parent class.
 	 *
-	 * @return The parent <code>ActivityGroup</code>
+	 * @return The parent <code>Activity</code>
 	 */
 
 	@Override
@@ -163,7 +164,7 @@ public class ${ClassName} extends GenericGroupedActivityMember
 
 	/**
 	 * Set the <code>Activity</code> instance which contains the
-	 * sub-activity.  This method is intended to be used by a 
+	 * <code>SubActivity</code>.  This method is intended to be used by a 
 	 * <code>DataStore</code> when the <code>Activity</code> instance is
 	 * loaded.
 	 * <p>
@@ -171,14 +172,14 @@ public class ${ClassName} extends GenericGroupedActivityMember
 	 * exists solely to allow JPA to map the relationship to the instances of the
 	 * parent class.
 	 *
-	 * @param  parent The <code>ActivityGroup</code> containing this
-	 *                <code>Activity</code> instance
+	 * @param  activity The <code>Activity</code> containing this
+	 *                  <code>SubActivity</code> instance
 	 */
 
-	protected void setParent (final Activity parent)
+	protected void setParent (final Activity activity)
 	{
-		assert parent != null : "parent is NULL";
+		assert activity != null : "activity is NULL";
 
-		super.setParent (parent);
+		super.setParent (activity);
 	}
 }

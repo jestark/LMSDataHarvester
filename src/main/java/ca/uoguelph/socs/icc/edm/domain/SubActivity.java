@@ -26,10 +26,11 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
  * @version 1.0
  */
 
-public interface ActivityGroupMember extends Activity
+public interface SubActivity extends Activity
 {
 	/**
-	 * Get the parent <code>Activity</code> instance for the sub-activity.
+	 * Get the parent <code>Activity</code> instance for the
+	 * <code>SubActivity</code>.
 	 *
 	 * @return The parent <code>Activity</code>
 	 */

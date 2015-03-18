@@ -17,16 +17,15 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 /**
  * Factory interface to create new <code>LogReference</code> instances.
  * Implementations of this interface provide the functionality required to
  * create new instances of a sub-class of <code>LogReference</code> which is
- * used to refer a <code>LogEntry</code> to a Sub-Activity.  Since
- * <code>LogReference</code> and it's sub-classes do not have
+ * used to refer a <code>LogEntry</code> to a <code>SubActivity</code>.  Since
+ * <code>LogReference</code> and its sub-classes do not have
  * <code>DataStore</code> ID's, the <code>setId</code> method will throw a
  * <code>UnsupportedOperationException</code>.
  *
@@ -42,14 +41,14 @@ public interface LogReferenceElementFactory extends ElementFactory<LogEntry>
 	/**
 	 * Create a new <code>LogReference</code> instance.
 	 *
-	 * @param  entry    The <code>LogEntry</code> which refers to the
-	 *                  sub-activity, not null
-	 * @param  activity The Sub-Activity (<code>ActivityGroupMember</code>) which
-	 *                  is being referenced, not null
+	 * @param  entry       The <code>LogEntry</code> which refers to the
+	 *                     <code>SubActivity</code>, not null
+	 * @param  subactivity The <code>SubActivity</code> which is being
+	 *                     referenced, not null
 	 *
-	 * @return          The new <code>LogReference</code> (as a
-	 *                  <code>LogEntry</code>)
+	 * @return             The new <code>LogReference</code> (as a
+	 *                     <code>LogEntry</code>)
 	 */
 
-	public abstract LogEntry create (LogEntry entry, ActivityGroupMember activity);
+	public abstract LogEntry create (LogEntry entry, SubActivity subactivity);
 }

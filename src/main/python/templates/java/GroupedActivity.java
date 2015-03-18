@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 
@@ -119,37 +119,40 @@ public class ${ClassName} extends GenericNamedActivity
 	}
 
 	/**
-	 * Get the <code>List</code> of <code>ActivityGroupMember</code> instances (or
-	 * Sub-Activities) associated with the <code>Actvity</code>.
+	 * Get the <code>List</code> of <code>SubActivity</code> instances associated
+	 * with the <code>Activity</code>.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
 	 * exists solely to allow JPA to map the relationship to the instances of the
 	 * child class.
 	 *
-	 * @return The <code>List</code> of sub-activities
+	 * @return The <code>List</code> of <code>SubActivity</code> instances
 	 */
 
-	public List<ActivityGroupMember> getChildren ()
+	@Override
+	public List<SubActivity> getSubActivities ()
 	{
-		return super.getChildren ();
+		return super.getSubActivities ();
 	}
 
 	/**
-	 * Initialize the <code>List</code> of sub-activity instances for the
-	 * <code>Activity</code>.  This method is intended to be used by a
+	 * Initialize the <code>List</code> of <code>SubActivity</code> instances for
+	 * the <code>Activity</code>.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>Activity</code> instance is loaded.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
 	 * exists solely to allow JPA to map the relationship to the instances of the
 	 * child class.
 	 *
-	 * @param  children The <code>List</code> of sub-activity instances, not null
+	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
+	 *                       instances, not null
 	 */
 
-	protected void setChildren (final List<ActivityGroupMember> children)
+	@Override
+	protected void setSubActivities (final List<SubActivity> subactivities)
 	{
-		assert children != null : "children is NULL";
+		assert subactivities != null : "subactivities is NULL";
 
-		super.setChildren (children);
+		super.setSubActivities (subactivities);
 	}
 }

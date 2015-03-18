@@ -4,7 +4,7 @@
 	<activity name="Assign" type="assign" builder="DefaultNamedActivityBuilder"/>
 	
 	<activity name="Book" type="book" builder="DefaultNamedActivityBuilder">
-		<subactivity name="BookChapter" builder="DefaultActivityGroupMemberBuilder">
+		<subactivity name="BookChapter" builder="DefaultSubActivityBuilder">
 			<log name="BookChapterLog" builder="DefaultLogReferenceBuilder"/>
 		</subactivity>
 	</activity>
@@ -18,8 +18,8 @@
 	<activity name="Folder" type="folder" builder="DefaultNamedActivityBuilder"/>
 	
 	<activity name="Forum" type="forum" builder="DefaultNamedActivityBuilder">
-		<subactivity name="ForumDiscussion" builder="DefaultActivityGroupMemberBuilder">
-			<subactivity name="ForumPost" builder="DefaultActivityGroupMemberBuilder">
+		<subactivity name="ForumDiscussion" builder="DefaultSubActivityBuilder">
+			<subactivity name="ForumPost" builder="DefaultSubActivityBuilder">
 				<log name="ForumPostLog" builder="DefaultLogReferenceBuilder"/>
 			</subactivity>
 			<log name="ForumDiscussionLog" builder="DefaultLogReferenceBuilder"/>
@@ -29,7 +29,7 @@
 	<activity name="Label" type="label" builder="DefaultNamedActivityBuilder"/>
 
 	<activity name="Lesson" type="lesson" builder="DefaultNamedActivityBuilder">
-		<subactivity name="LessonPage" builder="DefaultActivityGroupMemberBuilder">
+		<subactivity name="LessonPage" builder="DefaultSubActivityBuilder">
 			<log name="LessonPageLog" builder="DefaultLogReferenceBuilder"/>
 		</subactivity>
 	</activity>
@@ -45,7 +45,7 @@
 	<activity name="URL" type="url" builder="DefaultNamedActivityBuilder"/>
 
 	<activity name="Workshop" type="workshop" builder="DefaultNamedActivityBuilder">
-		<subactivity name="WorkshopSubmission" builder="DefaultActivityGroupMemberBuilder">
+		<subactivity name="WorkshopSubmission" builder="DefaultSubActivityBuilder">
 			<log name="WorkshopSubmissionLog" builder="DefaultLogReferenceBuilder"/>
 		</subactivity>
 	</activity>

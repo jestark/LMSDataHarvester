@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
@@ -36,7 +36,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.AbstractActivityElementFactory;
  * <code>Activity</code> implementations.
  *
  * @author  James E. Stark
- * @version 1.0
+ * @version 1.1
  */
 
 public abstract class AbstractActivity extends AbstractElement implements Activity
@@ -115,49 +115,50 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		}
 
 		/**
-		 * Add the specified <code>ActivityGroupMember</code> to the specified
+		 * Add the specified <code>SubActivity</code> to the specified
 		 * <code>Activity</code>.
 		 *
-		 * @param  group  The <code>Activity</code> to which the
-		 *                <code>ActivityGroupMember</code> is to be added, not null
-		 * @param  member The <code>ActivityGroupMember</code> to add to the
-		 *                <code>Activity</code>, not null
+		 * @param  activity    The <code>Activity</code> to which the
+		 *                     <code>SubActivity</code> is to be added, not null
+		 * @param  subactivity The <code>SubActivity</code> to add to the
+		 *                     <code>Activity</code>, not null
 		 *
-		 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
-		 *                was successfully added to the <code>ActvityGroup</code>,
-		 *                <code>False</code> otherwise
+		 * @return             <code>True</code> if the <code>SubActivity</code>
+		 *                     was successfully added to the <code>Actvity</code>,
+		 *                     <code>False</code> otherwise
 		 */
 
 		@Override
-		public final boolean addChild (final Activity group, final ActivityGroupMember member)
+		public final boolean addSubActivity (final Activity activity, final SubActivity subactivity)
 		{
-			assert this.parent.isInstance (group) : "group is not an instance of " + this.parent.getSimpleName ();
-			assert this.child.isInstance (member) : "member is not an instance of " + this.child.getSimpleName ();
+			assert this.parent.isInstance (activity) : "activity is not an instance of " + this.parent.getSimpleName ();
+			assert this.child.isInstance (subactivity) : "subactivity is not an instance of " + this.child.getSimpleName ();
 
-			return ((AbstractActivity) group).addChild (member);
+			return ((AbstractActivity) activity).addSubActivity (subactivity);
 		}
 
 		/**
-		 * Remove the specified <code>ActivityGroupMember</code> from the specified
+		 * Remove the specified <code>SubActivity</code> from the specified
 		 * <code>Activity</code>.
 		 *
-		 * @param  group  The <code>Activity</code> from which the
-		 *                <code>ActivityGroupMember</code> is to be removed, not null
-		 * @param  member The <code>ActivityGroupMember</code> to remove from the
-		 *                <code>Activity</code>, not null
+		 * @param  activity    The <code>Activity</code> from which the
+		 *                     <code>SubActivity</code> is to be removed, not null
+		 * @param  subactivity The <code>SubActivity</code> to remove from the
+		 *                     <code>Activity</code>, not null
 		 *
-		 * @return        <code>True</code> if the <code>ActivityGroupMember</code>
-		 *                was successfully removed from the <code>ActvityGroup</code>,
-		 *                <code>False</code> otherwise
+		 * @return             <code>True</code> if the <code>SubActivity</code>
+		 *                     was successfully removed from the
+		 *                     <code>Actvity</code>, <code>False</code>
+		 *                     otherwise
 		 */
 
 		@Override
-		public final boolean removeChild (final Activity group, final ActivityGroupMember member)
+		public final boolean removeSubActivity (final Activity activity, final SubActivity subactivity)
 		{
-			assert this.parent.isInstance (group) : "group is not an instance of " + this.parent.getSimpleName ();
-			assert this.child.isInstance (member) : "member is not an instance of " + this.child.getSimpleName ();
+			assert this.parent.isInstance (activity) : "activity is not an instance of " + this.parent.getSimpleName ();
+			assert this.child.isInstance (subactivity) : "subactivity is not an instance of " + this.child.getSimpleName ();
 
-			return ((AbstractActivity) group).removeChild (member);
+			return ((AbstractActivity) activity).removeSubActivity (subactivity);
 		}
 	}
 
@@ -168,7 +169,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	private Long id;
 
 	/** The set of sub-activities  */
-	private List<ActivityGroupMember> children;
+	private List<SubActivity> subactivities;
 
 	/** The log entries associated with the activity*/
 	private List<LogEntry> log;
@@ -202,7 +203,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @return       The parent class, or null if the child is not registered
 	 */
 
-	public static final Class<? extends Activity> getParent (final Class<? extends ActivityGroupMember> child)
+	public static final Class<? extends Activity> getParent (final Class<? extends SubActivity> child)
 	{
 		return AbstractActivity.implementations.getParent (child);
 	}
@@ -216,7 +217,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @return        The child class, or null if the parent is not registered
 	 */
 
-	public static final Class<? extends ActivityGroupMember> getChild (final Class<? extends Activity> parent)
+	public static final Class<? extends SubActivity> getChild (final Class<? extends Activity> parent)
 	{
 		return AbstractActivity.implementations.getChild (parent);
 	}
@@ -248,7 +249,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @param  child  The child class, not null
 	 */
 
-	protected static final void registerRelationship (final Class<? extends Activity> parent, final Class<? extends ActivityGroupMember> child)
+	protected static final void registerRelationship (final Class<? extends Activity> parent, final Class<? extends SubActivity> child)
 	{
 		assert parent != null : "parent is NULL";
 		assert child != null : "child is NULL";
@@ -264,8 +265,8 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	{
 		this.id = null;
 
-		this.children = new LinkedList<ActivityGroupMember> ();
 		this.log = new LinkedList<LogEntry> ();
+		this.subactivities = new LinkedList<SubActivity> ();
 	}
 
 	/**
@@ -360,71 +361,80 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		return this.log.remove (entry);
 	}
 
-	@Override
-	public boolean hasChildren ()
-	{
-		return ! this.children.isEmpty ();
-	}
-
 	/**
-	 * Get the <code>List</code> of <code>ActivityGroupMember</code> instances (or
-	 * Sub-Activities) associated with the <code>Actvity</code>.
+	 * Determine if there are <code>SubActivity</code> instances associated with
+	 * the <code>Activity</code> instance.
 	 *
-	 * @return The <code>List</code> of sub-activities
+	 * @return <code>True</code> if the <code>Activity</code> instance has
+	 *         <code>SubActivity</code> instances associated with it.
+	 *         <code>False</code> otherwise
 	 */
 
 	@Override
-	public List<ActivityGroupMember> getChildren ()
+	public boolean hasSubActivities ()
 	{
-		return new ArrayList<ActivityGroupMember> (this.children);
+		return ! this.subactivities.isEmpty ();
 	}
 
 	/**
-	 * Initialize the <code>List</code> of sub-activity instances for the
-	 * <code>Activity</code>.  This method is intended to be used by a
+	 * Get the <code>List</code> of <code>SubActivity</code> instances associated
+	 * with the <code>Actvity</code>.
+	 *
+	 * @return The <code>List</code> of <code>SubActivity</code> instances
+	 */
+
+	@Override
+	public List<SubActivity> getSubActivities ()
+	{
+		return new ArrayList<SubActivity> (this.subactivities);
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>SubActivity</code> instances for
+	 * the <code>Activity</code>.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>Activity</code> instance is loaded.
 	 *
-	 * @param  children The <code>List</code> of sub-activity instances, not null
+	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
+	 *                       instances, not null
 	 */
 
-	protected void setChildren (final List<ActivityGroupMember> children)
+	protected void setSubActivities (final List<SubActivity> subactivities)
 	{
-		assert children != null : "children is NULL";
+		assert subactivities != null : "subactivities is NULL";
 
-		this.children = children;
+		this.subactivities = subactivities;
 	}
 
 	/**
-	 * Add the specified <code>ActivityGroupMember</code> to the
-	 * <code>Activity</code>.
+	 * Add the specified <code>SubActivity</code> to the <code>Activity</code>.
 	 *
-	 * @param  child The <code>ActivityGroupMember</code> to add, not null
+	 * @param  subactivity The <code>SubActivity</code> to add, not null
 	 *
-	 * @return       <code>True</code> if the <code>ActivityGroupMember</code>
-	 *               was successfully added, <code>False</code> otherwise
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully added, <code>False</code> otherwise
 	 */
 
-	protected boolean addChild (final ActivityGroupMember child)
+	protected boolean addSubActivity (final SubActivity subactivity)
 	{
-		assert child != null : "child is NULL";
+		assert subactivity != null : "subactivity is NULL";
 
-		return this.children.add (child);
+		return this.subactivities.add (subactivity);
 	}
 
 	/**
-	 * Remove the specified <code>ActivityGroupMember</code> from the
+	 * Remove the specified <code>SubActivity</code> from the
 	 * <code>Activity</code>.
 	 *
-	 * @param  child The <code>ActivityGroupMember</code> to remove, not null
+	 * @param  subactivity The <code>SubActivity</code> to remove, not null
 	 *
-	 * @return       <code>True</code> if the <code>ActivityGroupMember</code>
-	 *               was successfully removed, <code>False</code> otherwise
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully removed, <code>False</code> otherwise
 	 */
 
-	protected boolean removeChild (final ActivityGroupMember child)
+	protected boolean removeSubActivity (final SubActivity subactivity)
 	{
-		assert child != null : "child is NULL";
+		assert subactivity != null : "subactivity is NULL";
 
-		return this.children.remove (child);
+		return this.subactivities.remove (subactivity);
 	}
 }

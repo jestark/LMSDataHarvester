@@ -26,7 +26,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
@@ -79,11 +79,11 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
-	/** The associated log entry */
+	/** The associated <code>LogEntry</code> */
 	private LogEntry entry;
 
-	/** The associated sub-activity */
-	private ActivityGroupMember activity;
+	/** The associated <code>SubActivity</code> */
+	private SubActivity subactivity;
 
 	/**
 	 * Register the <code>LogReference</code> with the factories.  This method
@@ -109,25 +109,25 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	public LogReference ()
 	{
 		this.entry = null;
-		this.activity = null;
+		this.subactivity = null;
 	}
 
 	/**
 	 * Create the <code>LogReference</code> specifying all of its values.  
 	 *
-	 * @param  entry    The parent <code>LogEntry</code> object
-	 * @param  activity The Sub-activity
+	 * @param  entry       The parent <code>LogEntry</code> instance
+	 * @param  subactivity The <code>SubActivity</code> instance
 	 */
 
-	public LogReference (final LogEntry entry, final ActivityGroupMember activity)
+	public LogReference (final LogEntry entry, final SubActivity subactivity)
 	{
 		this ();
 
 		assert entry != null : "entry is NULL";
-		assert activity != null : "activity is NULL";
+		assert subactivity != null : "activity is NULL";
 
 		this.entry = entry;
-		this.activity = activity;
+		this.subactivity = subactivity;
 	}
 
 	/**
@@ -161,7 +161,7 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 			ebuilder.append (this.entry.getEnrolment (), ((LogReference) obj).getEnrolment ());
 			ebuilder.append (this.entry.getIPAddress (), ((LogReference) obj).getIPAddress ());
 			ebuilder.append (this.entry.getTime (), ((LogReference) obj).getTime ());
-			ebuilder.append (this.activity, ((LogReference) obj).activity);
+			ebuilder.append (this.subactivity, ((LogReference) obj).subactivity);
 
 			result = ebuilder.isEquals ();
 		}
@@ -191,7 +191,7 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 		hbuilder.append (this.entry.getEnrolment ());
 		hbuilder.append (this.entry.getIPAddress ());
 		hbuilder.append (this.entry.getTime ());
-		hbuilder.append (this.activity);
+		hbuilder.append (this.subactivity);
 
 		return hbuilder.toHashCode ();
 	}
@@ -254,7 +254,8 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	}
 
 	/**
-	 * Get the Sub-Activity upon which the logged action was performed.
+	 * Get the <code>SubActivity</code> upon which the logged action was
+	 * performed.
 	 *
 	 * @return A reference to the associated <code>Activity</code> instance
 	 */
@@ -262,22 +263,22 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	@Override
 	public Activity getActivity ()
 	{
-		return this.activity;
+		return this.subactivity;
 	}
 
 	/**
-	 * Set the Sub-Activity upon which the logged action was performed.  This
-	 * method is intended to be used by a <code>DataStore</code> when the
-	 * <code>LogEntry</code> instance is loaded.
+	 * Set the <code>SubActivity</code> upon which the logged action was
+	 * performed.  This method is intended to be used by a <code>DataStore</code>
+	 * when the <code>LogEntry</code> instance is loaded.
 	 *
-	 * @param  activity The sub-activity, not null
+	 * @param  subactivity The <code>SubActivity</code>, not null
 	 */
 
-	protected void setActivity (final ActivityGroupMember activity)
+	protected void setActivity (final SubActivity subactivity)
 	{
-		assert activity != null : "activity is NULL";
+		assert subactivity != null : "subactivity is NULL";
 
-		this.activity = activity;
+		this.subactivity = subactivity;
 	}
 
 	/**

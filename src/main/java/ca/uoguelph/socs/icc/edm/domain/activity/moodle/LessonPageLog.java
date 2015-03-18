@@ -18,7 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.LogReferenceElementFactory;
@@ -28,10 +28,11 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
 
 /**
  * Implementation of the <code>LogEntry</code> interface for logs referencing
- * the sub-activity implemented by that <code>LessonPage</code> class.
- * It is expected that this class will be accessed though the
- * <code>LogEntry</code> interface, along with the relevant manager, and
- * builder.  See the <code>LogEntry</code> interface documentation for details.
+ * the <code>SubActivity</code> implemented by that
+ * <code>LessonPage</code> class.  It is expected that this class will be
+ * accessed though the <code>LogEntry</code> interface, along with the relevant
+ * manager, and builder.  See the <code>LogEntry</code> interface documentation
+ * for details.
  * <p>
  * This class was generated from the <code>Log</code> template, with
  * the following values:
@@ -49,26 +50,31 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
 
 class LessonPageLog extends LogReference
 {
+	/**
+	 * Implementation of the <code>LogReferenceElementFactory</code>.  Allows the
+	 * builders to create instances of <code>LessonPageLog</code>.
+	 */
+
 	private static final class Factory extends AbstractElement.Factory<LogEntry> implements LogReferenceElementFactory
 	{
 		/**
 		 * Create a new <code>LogReference</code> instance.
 		 *
-		 * @param  entry    The <code>LogEntry</code> which refers to the
-		 *                  sub-activity, not null
-		 * @param  activity The Sub-Activity (<code>ActivityGroupMember</code>) which
-		 *                  is being referenced, not null
+		 * @param  entry       The <code>LogEntry</code> which refers to the
+		 *                     <code>SubActivity</code>, not null
+		 * @param  subactivity The <code>SubActivity</code> which is being
+		 *                     referenced, not null
 		 *
-		 * @return          The new <code>LogReference</code> (as a
-		 *                  <code>LogEntry</code>)
+		 * @return              The new <code>LogReference</code> (as a
+		 *                      <code>LogEntry</code>)
 		 */
 
-		public LogEntry create (final LogEntry entry, final ActivityGroupMember activity)
+		public LogEntry create (final LogEntry entry, final SubActivity subactivity)
 		{
 			assert entry != null : "entry is NULL";
-			assert activity instanceof LessonPage : "activity is not an instance of LessonPage";
+			assert subactivity instanceof LessonPage : "subactivity is not an instance of LessonPage";
 
-			return new LessonPageLog (entry, activity);
+			return new LessonPageLog (entry, subactivity);
 		}
 	}
 
@@ -96,14 +102,14 @@ class LessonPageLog extends LogReference
 	/**
 	 * Create the <code>LessonPageLog</code>.
 	 *
-	 * @param  entry    The <code>LogEntry</code> which refers to the
-	 *                  sub-activity, not null
-	 * @param  activity The Sub-Activity (<code>ActivityGroupMember</code>) which
-	 *                  is being referenced, not null
+	 * @param  entry       The <code>LogEntry</code> which refers to the
+	 *                     <code>SubActivity</code>, not null
+	 * @param  subactivity The <code>SubActivity</code> which is being
+	 *                     referenced, not null
 	 */
 
-	public LessonPageLog (final LogEntry entry, final ActivityGroupMember activity)
+	public LessonPageLog (final LogEntry entry, final SubActivity subactivity)
 	{
-		super (entry, activity);
+		super (entry, subactivity);
 	}
 }
