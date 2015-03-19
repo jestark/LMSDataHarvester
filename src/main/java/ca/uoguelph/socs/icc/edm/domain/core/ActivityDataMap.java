@@ -34,7 +34,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
  * the data for the associated <code>Activity</code>.
  *
  * @author  James E. Stark
- * @version 1.0
+ * @version 1.1
  */
 
 final class ActivityDataMap
@@ -46,13 +46,10 @@ final class ActivityDataMap
 	private final Map<String, ActivitySource> sources;
 
 	/** <code>ActivityType</code> to implementation class map */
-	private final Map<ActivityType, Class<? extends Activity>> types;
+	private final Map<ActivityType, Class<? extends Activity>> activities;
 
-	/** <code>SubActivity</code> parent class mapping */
-	private final Map<Class<? extends SubActivity>, Class<? extends Activity>> parents;
-
-	/** <code>Activity</code> child class mapping */
-	private final Map<Class<? extends Activity>, Class<? extends SubActivity>> children;
+	/** <code>Activity</code> to <code>SubActivity</code> class mapping */
+	private final Map<Class<? extends Activity>, Class<? extends SubActivity>> subactivities;
 
 	/**
 	 * Create the <code>ActivityDataMap</code>.
@@ -63,15 +60,56 @@ final class ActivityDataMap
 		this.log = LoggerFactory.getLogger (ActivityDataMap.class);
 
 		this.sources = new HashMap<String, ActivitySource> ();
-		this.types = new HashMap<ActivityType, Class<? extends Activity>> ();
-		this.parents = new HashMap<Class<? extends SubActivity>, Class<? extends Activity>> ();
-		this.children = new HashMap<Class<? extends Activity>, Class<? extends SubActivity>> ();
+		this.activities = new HashMap<ActivityType, Class<? extends Activity>> ();
+		this.subactivities = new HashMap<Class<? extends Activity>, Class<? extends SubActivity>> ();
 	}
 
 	/**
-	 * Register a <code>ActivityType</code> to implementation class mapping.  This
-	 * method is intended to be called from the static initializer for the class
-	 * implementing the <code>Activity</code> interface for the corresponding
+	 * Get the corresponding <code>ActivitySource</code> instance for the
+	 * specified name.  If the <code>ActivitySource</code> instance does not
+	 * exist, it will be created.
+	 *
+	 * @param  name The name of the <code>ActivitySource</code> not null
+	 *
+	 * @return      The corresponding <code>ActivitySource</code> instance
+	 */
+
+	public ActivitySource getActivitySource (final String name)
+	{
+		assert name != null : "name is NULL";
+		assert name.length () > 0 : "name is an empty String";
+
+		if (! this.sources.containsKey (name))
+		{
+			this.sources.put (name, new ActivitySourceData (name));
+		}
+
+		return this.sources.get (name);
+	}
+
+	/**
+	 * Register an association between an <code>ActivityType</code> and the class
+	 * implementing the <code>Activity</code> interface for that
+	 * <code>ActivityType</code>.
+	 *
+	 * @param  type The <code>ActivityType</code>, not null
+	 * @param  impl The implementation class, not null
+	 */
+
+	public void registerActivityClass (final ActivityType type, final Class<? extends Activity> impl)
+	{
+		this.log.trace ("registerActivityImplClass type={}, impl={}", type, impl);
+
+		assert impl != null : "impl is NULL";
+		assert type != null : "type is NULL";
+		assert (! this.activities.containsKey (type)) : "type is already registered";
+		
+		this.activities.put (type, impl);
+	}
+
+	/**
+	 * Register an association between an <code>ActivityType</code> and the class
+	 * implementing the <code>Activity</code> interface for that
 	 * <code>ActivityType</code>.
 	 *
 	 * @param  source A <code>String</code> representation of the
@@ -81,97 +119,63 @@ final class ActivityDataMap
 	 * @param  impl   The implementation class, not null
 	 */
 
-	public void registerElement (final String source, final String type, final Class<? extends Activity> impl)
+	public void registerActivityClass (final String source, final String type, final Class<? extends Activity> impl)
 	{
-		this.log.trace ("registerElement {}, {}, {}", type, source, impl);
+		this.log.trace ("registerElement source={}, type={}, impl={}", type, source, impl);
 
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 
-		if (! this.sources.containsKey (source))
-		{
-			this.sources.put (source, new ActivitySourceData (source));
-		}
-
-		ActivityType atype = new ActivityTypeData (this.sources.get (source), type);
-
-		if (this.types.containsKey (atype))
-		{
-			this.log.error ("ActivityType ({}) already registered", atype);
-			throw new IllegalStateException ("ActivityType already registered");
-		}
-
-		this.types.put (atype, impl);
+		this.registerActivityClass (new ActivityTypeData (this.getActivitySource (source), type), impl);
 	}
 
 	/**
-	 * Register a parent child relationship between the classes implementing the
-	 * sub-activities.
+	 * Register an association between an <code>Activity</code> implementation
+	 * class and a <code>SubActivity</code> implementation class.
 	 *
-	 * @param  parent The parent class, not null
-	 * @param  child  The child class, not null
+	 * @param  activity    The <code>Activity</code> implementation, not null
+	 * @param  subactivity The <code>SubActivity</code> implementation, not null
 	 */
 
-	public void registerRelationship (final Class<? extends Activity> parent, final Class<? extends SubActivity> child)
+	public void registerSubActivityClass (final Class<? extends Activity> activity, final Class<? extends SubActivity> subactivity)
 	{
-		this.log.trace ("registerReplationship {}, {}", parent, child);
+		this.log.trace ("registerSubActivity activity={}, subactivity={}", activity, subactivity);
 
-		assert parent != null : "parent is NULL";
-		assert child != null : "child is NULL";
-		assert (! this.parents.containsKey (child)) : "child is already registered";
-		assert (! this.children.containsKey (parent)) : "parent is already registered";
+		assert activity != null : "activity is NULL";
+		assert subactivity != null : "subactivity is NULL";
+		assert (! this.subactivities.containsKey (activity)) : "activity is already registered";
 
-		this.parents.put (child, parent);
-		this.children.put (parent, child);
+		this.subactivities.put (activity, subactivity);
 	}
 
 	/**
-	 * Get the implementation class which contains the <code>Activity</code>
-	 * specific data for the specified <code>ActivityType</code>.
+	 * Get the <code>Activity</code> implementation class which is associated with
+	 * the specified <code>ActivityType</code>.
 	 *
-	 * @param  type The <code>ActivityType</code>, not null
+	 * @param  type The <code>ActivityType</code>
 	 *
 	 * @return      The <code>Activity </code> data class for the given
-	 *              <code>ActivityType</code>
+	 *              <code>ActivityType</code>, may be null
 	 */
 
-	public Class<? extends Activity> getElement (final ActivityType type)
+	public Class<? extends Activity> getActivityClass (final ActivityType type)
 	{
-		assert type != null : "type is null";
-
-		return this.types.get (type);
+		return this.activities.get (type);
 	}
 
 	/**
-	 * Get the parent <code>Class</code> for the specified child
-	 * <code>Class</code>.
+	 * Get the <code>SubActivity</code> implementation class which is associated
+	 * with the specified <code>Activity</code> implementation class.
 	 *
-	 * @param  child The child class
+	 * @param  activity The <code>Activity</code> implementation class
 	 *
-	 * @return       The parent class, or null if the child is not registered
+	 * @return          The <code>SubActivity</code> implementation class, may be
+	 *                  null
 	 */
 
-	public Class<? extends Activity> getParent (final Class<? extends SubActivity> child)
+	public Class<? extends SubActivity> getSubActivityClass (final Class<? extends Activity> activity)
 	{
-		assert child != null : "Child is NULL";
-
-		return this.parents.get (child);
-	}
-
-	/**
-	 * Get the child <code>Class</code> for the specified parent
-	 * <code>Class</code>.
-	 *
-	 * @param  parent The parent class
-	 *
-	 * @return        The child class, or null if the parent is not registered
-	 */
-
-	public Class<? extends SubActivity> getChild (final Class<? extends Activity> parent)
-	{
-		assert parent != null : "parent is NULL";
-
-		return this.children.get (parent);
+		return this.subactivities.get (activity);
 	}
 }

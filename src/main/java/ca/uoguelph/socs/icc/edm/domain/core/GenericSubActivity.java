@@ -54,30 +54,31 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 	private Activity parent;
 
 	/**
-	 * Register the activity with the <code>ActivityDataMap</code> and the
+	 * Register the <code>SubActivity</code> implementation with class with the
 	 * factories.  This method handles the registrations for the subclasses to
 	 * reduce code duplication.
 	 *
-	 * @param  elementImpl The implementation class, not null
-	 * @param  parent      The parent <code>Activity</code> class, not null
-	 * @param  builder     The <code>SubActivityBuilder</code>
-	 *                     implementation, not null
-	 * @param  factory     The <code>ElementFactory</code> interface, not null
-	 * @param  factoryImpl The <code>ElementFactory</code>, not null
+	 * @param  elementClass  The <code>Element</code> implementation class, not
+	 *                       null
+	 * @param  activityClass The parent <code>Activity</code> class, not null
+	 * @param  builderClass  The <code>SubActivityBuilder</code> implementation,
+	 *                       not null
+	 * @param  factory       The <code>ElementFactory</code> interface, not null
+	 * @param  factory       The <code>ElementFactory</code> instance, not null
 	 */
 
-	protected static final <S extends SubActivity, T extends SubActivityBuilder, U extends SubActivityElementFactory> void registerActivity (final Class<S> elementImpl, final Class<? extends Activity> parent, final Class<T> builder, final Class<U> factory, final U factoryImpl)
+	protected static final <S extends SubActivity, T extends SubActivityBuilder, U extends SubActivityElementFactory> void registerActivity (final Class<S> elementClass, final Class<? extends Activity> activityClass, final Class<T> builderClass, final Class<U> factoryClass, final U factory)
 	{
-		assert elementImpl != null : "elementImpl is NULL";
-		assert parent != null : "parent Class is NULL";
-		assert builder != null : "builder is NULL";
+		assert elementClass != null : "elementClass is NULL";
+		assert activityClass != null : "activityClass is NULL";
+		assert builderClass != null : "builderClass is NULL";
+		assert factoryClass != null : "factoryClass is NULL";
 		assert factory != null : "factory is NULL";
-		assert factoryImpl != null : "factoryImpl is NULL";
 
-		AbstractActivity.registerRelationship (parent, elementImpl);
+		AbstractActivity.registerSubActivityClass (activityClass, elementClass);
 
-		AbstractElement.registerBuilder (Activity.class, elementImpl, builder);
-		AbstractElement.registerFactory (Activity.class, elementImpl, factory, factoryImpl);
+		AbstractElement.registerBuilder (Activity.class, elementClass, builderClass);
+		AbstractElement.registerFactory (Activity.class, elementClass, factoryClass, factory);
 	}
 
 	/**

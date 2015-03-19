@@ -43,31 +43,11 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 {
 	/**
 	 * Implementation of the <code>ActivityElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>ActivityInstance</code>.
+	 * the builders to create instances of the <code>Activity</code>.
 	 */
 
 	protected static abstract class Factory extends AbstractElement.Factory<Activity> implements AbstractActivityElementFactory
 	{
-		/** The <code>Class</code> of the parent <code>Element</code> */
-		private final Class<?> parent;
-
-		/** The <code>Class</code> of the child <code>Element</code> */
-		private final Class<?> child;
-
-		/**
-		 * Create an instance of the <code>Factory</code>.  This method sets the
-		 * <code>Class</code> of the child element to be used to enforce the safety
-		 * of the types in the tree.
-		 *
-		 * @param  child The Class of the child <code>Element</code>, not null
-		 */
-
-		protected Factory ()
-		{
-			this.child = null;
-			this.parent = (this.getClass ()).getEnclosingClass ();
-		}
-
 		/**
 		 * Add the specified <code>LogEntry</code> to the specified
 		 * <code>Activity</code>.
@@ -131,8 +111,10 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		@Override
 		public final boolean addSubActivity (final Activity activity, final SubActivity subactivity)
 		{
-			assert this.parent.isInstance (activity) : "activity is not an instance of " + this.parent.getSimpleName ();
-			assert this.child.isInstance (subactivity) : "subactivity is not an instance of " + this.child.getSimpleName ();
+			assert activity instanceof AbstractActivity : "activity is not an instance of AbstractActivity";
+			assert subactivity instanceof AbstractActivity : "subactivity is not an instance of AbstractActivity";
+			assert AbstractActivity.getSubActivityClass (activity.getClass ()) == subactivity.getClass () : "subactivity is not a registered subactivity of activity";
+			assert (activity == subactivity.getParent ()) : "the parent of subactivity is not equal to activity";
 
 			return ((AbstractActivity) activity).addSubActivity (subactivity);
 		}
@@ -155,75 +137,66 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		@Override
 		public final boolean removeSubActivity (final Activity activity, final SubActivity subactivity)
 		{
-			assert this.parent.isInstance (activity) : "activity is not an instance of " + this.parent.getSimpleName ();
-			assert this.child.isInstance (subactivity) : "subactivity is not an instance of " + this.child.getSimpleName ();
+			assert activity instanceof AbstractActivity : "activity is not an instance of AbstractActivity";
+			assert subactivity instanceof AbstractActivity : "subactivity is not an instance of AbstractActivity";
+			assert AbstractActivity.getSubActivityClass (activity.getClass ()) == subactivity.getClass () : "subactivity is not a registered subactivity of activity";
+			assert (activity == subactivity.getParent ()) : "the parent of subactivity is not equal to activity";
 
 			return ((AbstractActivity) activity).removeSubActivity (subactivity);
 		}
 	}
 
-	/** Mapping of <code>ActivityType</code> instances ti implementation classes */
-	private static final ActivityDataMap implementations;
+	/** Mapping of <code>ActivityType</code> instances to implementation classes */
+	private static final ActivityDataMap ACTIVITYIMPL;
 
 	/** The primary key for the activity */
 	private Long id;
 
-	/** The set of sub-activities  */
+	/** The <code>List</code> of <code>SubActivity</code> instances */
 	private List<SubActivity> subactivities;
 
-	/** The log entries associated with the activity*/
+	/** The log entries associated with the activity */
 	private List<LogEntry> log;
 
 	static
 	{
-		implementations = new ActivityDataMap ();
+		ACTIVITYIMPL = new ActivityDataMap ();
 	}
 
 	/**
-	 * Get the implementation class which contains the <code>Activity</code>
-	 * specific data for the specified <code>ActivityType</code>.
+	 * Get the <code>Activity</code> implementation class which is associated with
+	 * the specified <code>ActivityType</code>.
 	 *
-	 * @param  type The <code>ActivityType</code>, not null
+	 * @param  type The <code>ActivityType</code>
 	 *
 	 * @return      The <code>Activity </code> data class for the given
-	 *              <code>ActivityType</code>
+	 *              <code>ActivityType</code>, may be null
 	 */
 
-	public static final Class<? extends Activity> getImplClass (final ActivityType type)
+	public static final Class<? extends Activity> getActivityClass (final ActivityType type)
 	{
-		return AbstractActivity.implementations.getElement (type);
+		return AbstractActivity.ACTIVITYIMPL.getActivityClass (type);
 	}
 
 	/**
-	 * Get the parent <code>Class</code> for the specified child
-	 * <code>Class</code>.
+	 * Get the <code>SubActivity</code> implementation class which is associated
+	 * with the specified <code>Activity</code> implementation class.
 	 *
-	 * @param  child The child class
+	 * @param  activity The <code>Activity</code> implementation class
 	 *
-	 * @return       The parent class, or null if the child is not registered
+	 * @return          The <code>SubActivity</code> implementation class, may be
+	 *                  null
 	 */
 
-	public static final Class<? extends Activity> getParent (final Class<? extends SubActivity> child)
+	public static final Class<? extends SubActivity> getSubActivityClass (final Class<? extends Activity> activity)
 	{
-		return AbstractActivity.implementations.getParent (child);
+		return AbstractActivity.ACTIVITYIMPL.getSubActivityClass (activity);
 	}
 
 	/**
-	 * Get the child <code>Class</code> for the specified parent
-	 * <code>Class</code>.
-	 *
-	 * @param  parent The parent class
-	 *
-	 * @return        The child class, or null if the parent is not registered
-	 */
-
-	public static final Class<? extends SubActivity> getChild (final Class<? extends Activity> parent)
-	{
-		return AbstractActivity.implementations.getChild (parent);
-	}
-
-	/**
-	 * Register a <code>ActivityType</code> to implementation class mapping.  
+	 * Register an association between an <code>ActivityType</code> and the class
+	 * implementing the <code>Activity</code> interface for that
+	 * <code>ActivityType</code>. 
 	 *
 	 * @param  source A <code>String</code> representation of the
 	 *                <code>ActivitySource</code>, not null
@@ -232,29 +205,29 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @param  impl   The implementation class, not null
 	 */
 
-	protected static final void registerImplClass (final String source, final String type, final Class<? extends Activity> impl)
+	protected static final void registerActivityClass (final String source, final String type, final Class<? extends Activity> impl)
 	{
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 		
-		AbstractActivity.implementations.registerElement (source, type, impl);
+		AbstractActivity.ACTIVITYIMPL.registerActivityClass (source, type, impl);
 	}
 
 	/**
-	 * Register a parent child relationship between the classes implementing the
-	 * sub-activities.
+	 * Register an association between an <code>Activity</code> implementation
+	 * class and a <code>SubActivity</code> implementation class.
 	 *
-	 * @param  parent The parent class, not null
-	 * @param  child  The child class, not null
+	 * @param  activity    The <code>Activity</code> implementation, not null
+	 * @param  subactivity The <code>SubActivity</code> implementation, not null
 	 */
 
-	protected static final void registerRelationship (final Class<? extends Activity> parent, final Class<? extends SubActivity> child)
+	protected static final void registerSubActivityClass (final Class<? extends Activity> activity, final Class<? extends SubActivity> subactivity)
 	{
-		assert parent != null : "parent is NULL";
-		assert child != null : "child is NULL";
+		assert activity != null : "activity is NULL";
+		assert subactivity != null : "subactivity is NULL";
 
-		AbstractActivity.implementations.registerRelationship (parent, child);
+		AbstractActivity.ACTIVITYIMPL.registerSubActivityClass (activity, subactivity);
 	}
 
 	/**

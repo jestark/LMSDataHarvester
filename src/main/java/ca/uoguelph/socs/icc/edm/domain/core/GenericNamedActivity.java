@@ -51,32 +51,34 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	private String name;
 
 	/**
-	 * Register the activity with the <code>ActivityDataMap</code> and the
-	 * factories.  This method handles the registrations for the subclasses to
-	 * reduce code duplication.
+	 * Register the <code>Activity</code> implementation class with the factories.
+	 * This method handles the registrations for the subclasses to reduce code
+	 * duplication.
 	 *
-	 * @param  elementImpl The <code>Element</code> implementation class, not null
-	 * @param  builder     The <code>ActivityBuilder</code> implementation, not
-	 *                     null
-	 * @param  factory     The <code>ElementFactory</code>, not null
-	 * @param  source      The name of the <code>ActivitySource</code> not null
-	 * @param  type        The name of the <code>ActivityType</code> not null
+	 * @param  elementClass The <code>Element</code> implementation class, not
+	 *                      null
+	 * @param  builderClass The <code>ActivityBuilder</code> implementation, not
+	 *                      null
+	 * @param  factoryClass The <code>ElementFactory</code> interface, not null
+	 * @param  factory      The <code>ElementFactory</code> instance, not null
+	 * @param  source       The name of the <code>ActivitySource</code> not null
+	 * @param  type         The name of the <code>ActivityType</code> not null
 	 */
 
-	protected static final <S extends Activity, T extends ActivityBuilder, U extends NamedActivityElementFactory> void registerActivity (final Class<S> elementImpl, final Class<T> builder, final Class<U> factory, final U factoryImpl, final String source, final String type)
+	protected static final <S extends Activity, T extends ActivityBuilder, U extends NamedActivityElementFactory> void registerActivity (final Class<S> elementClass, final Class<T> builderClass, final Class<U> factoryClass, final U factory, final String source, final String type)
 	{
-		assert elementImpl != null : "elementImpl Class is NULL";
-		assert builder != null : "builder is NULL";
+		assert elementClass != null : "elementImpl Class is NULL";
+		assert builderClass != null : "builder is NULL";
+		assert factoryClass != null : "factory is NULL";	
 		assert factory != null : "factory is NULL";	
-		assert factoryImpl != null : "factoryImpl is NULL";	
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
 		
-		AbstractActivity.registerImplClass (source, type, elementImpl);
+		AbstractActivity.registerActivityClass (source, type, elementClass);
 
-		AbstractElement.registerQuery (Activity.class, elementImpl);
-		AbstractElement.registerBuilder (Activity.class, elementImpl, builder);
-		AbstractElement.registerFactory (Activity.class, elementImpl, factory, factoryImpl);
+		AbstractElement.registerQuery (Activity.class, elementClass);
+		AbstractElement.registerBuilder (Activity.class, elementClass, builderClass);
+		AbstractElement.registerFactory (Activity.class, elementClass, factoryClass, factory);
 	}
 
 	/**
