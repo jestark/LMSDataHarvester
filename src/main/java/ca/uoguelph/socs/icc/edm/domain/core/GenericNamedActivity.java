@@ -67,18 +67,16 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 
 	protected static final <S extends Activity, T extends ActivityBuilder, U extends NamedActivityElementFactory> void registerActivity (final Class<S> elementClass, final Class<T> builderClass, final Class<U> factoryClass, final U factory, final String source, final String type)
 	{
-		assert elementClass != null : "elementImpl Class is NULL";
+		assert elementClass != null : "elementClass is NULL";
 		assert builderClass != null : "builder is NULL";
-		assert factoryClass != null : "factory is NULL";	
-		assert factory != null : "factory is NULL";	
+		assert factoryClass != null : "factory is NULL";
+		assert factory != null : "factory is NULL";
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
-		
+
 		AbstractActivity.registerActivityClass (source, type, elementClass);
 
-		AbstractElement.registerQuery (Activity.class, elementClass);
-		AbstractElement.registerBuilder (Activity.class, elementClass, builderClass);
-		AbstractElement.registerFactory (Activity.class, elementClass, factoryClass, factory);
+		AbstractElement.registerElement (Activity.class, elementClass, builderClass, factoryClass, factory);
 	}
 
 	/**
@@ -134,7 +132,7 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 		else if (obj instanceof GenericNamedActivity)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			
+
 			ebuilder.appendSuper (super.equals (obj));
 			ebuilder.append (this.name, ((GenericNamedActivity) obj).name);
 
@@ -165,7 +163,7 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	}
 
 	/**
-	 * Get the name of the <code>Activity</code>.  
+	 * Get the name of the <code>Activity</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the
 	 *         <code>Activity</code>

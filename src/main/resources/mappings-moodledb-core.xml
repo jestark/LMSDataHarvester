@@ -13,25 +13,37 @@
 	<!--  Mapped super classes used by activities                            -->
 	<!--*********************************************************************-->
 
-	<mapped-superclass class="AbstractActivity" metadata-complete="true">
+	<!--	<mapped-superclass class="AbstractActivity" metadata-complete="true">
 		<description></description>
 		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
+			<transient name="subActivities"/>
 			<transient name="log"/>
 		</attributes>
-	</mapped-superclass>
+	</mapped-superclass>-->
 
-	<mapped-superclass class="GenericGroupedActivityMember" metadata-complete="true">
+	<mapped-superclass class="GenericSubActivity" metadata-complete="true">
 		<description></description>
 		<attributes>
 			<basic name="name">
 				<column name="name"/>
 			</basic>
+			<transient name="parent"/>
 			<transient name="course"/>
 			<transient name="type"/>
 			<transient name="grades"/>
+			<transient name="subActivities"/>
+			<transient name="log"/>
+		</attributes>
+	</mapped-superclass>
+
+	<mapped-superclass class="GenericNamedActivity" metadata-complete="true">
+		<description>Mapping For the Generic Activity and the relationship the the instance</description>
+		<attributes>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<transient name="subActivities"/>
+			<transient name="log"/>
 		</attributes>
 	</mapped-superclass>
 
@@ -104,7 +116,7 @@
 				<column name="startdate" insertable="false" updatable="false"/>
 				<convert converter="ca.uoguelph.socs.icc.edm.domain.database.moodle.converter.DateYearConverter"/>
 			</basic>
-			<one-to-many name="activities" target-entity="ActivityInstance" mapped-by="course"/>
+			<one-to-many name="activities" target-entity="ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleActivity" mapped-by="course"/>
 			<!--			<one-to-many name="enrolments" mapped-by="course"/>
 			<one-to-many name="log" target-entity="MoodleDBLogEntry" mapped-by="course">
 			<order-by>id</order-by>
@@ -135,7 +147,7 @@
 		</attributes>
 	</entity>
 
-	<entity name="Activity" class="ActivityInstance" metadata-complete="true">
+	<!--	<entity name="Activity" class="ActivityInstance" metadata-complete="true">
 		<description>Mapping definition for the instances of the activities</description>
 		<inheritance strategy="TABLE_PER_CLASS"/>
 		<named-query name="Activity:all">
@@ -143,35 +155,36 @@
 		</named-query>
 		<attributes>
 			<many-to-one name="course" target-entity="CourseData" optional="false">
-				<join-column name="course"/>
+				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="type"/>
 			<transient name="grades"/>
+			<transient name="subActivities"/>
+			<transient name="log"/>
 		</attributes>
-	</entity>
+	</entity>-->
 
 	<entity name="MoodleActivity" class="ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleActivity" metadata-complete="true">
 		<description>Activity mapping with moodle instance data</description>
 		<table name="mdl_course_modules"/>
 		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
 			<basic name="instanceId">
 				<column name="instance"/>
 			</basic>
+			<many-to-one name="course" target-entity="CourseData" optional="false">
+				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
+			</many-to-one>
 			<many-to-one name="type" target-entity="ActivityTypeData" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
+			<transient name="subActivities"/>
+			<transient name="log"/>
 			<transient name="name"/>
+			<transient name="activity"/>
+			<transient name="grades"/>
 		</attributes>
 	</entity>
-
-	<entity name="GenericNamedActivity" class="GenericNamedActivity" metadata-complete="true">
-		<description>Mapping For the Generic Activity and the relationship the the instance</description>
-		<attributes>
-			<basic name="name">
-				<column name="name"/>
-			</basic>
-		</attributes>
-	</entity>
-
-
 </entity-mappings>

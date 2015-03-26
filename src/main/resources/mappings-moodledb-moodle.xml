@@ -16,28 +16,40 @@
 	<entity name="Book" class="Book" metadata-complete="true">
 		<table name="mdl_book"/>
 		<attributes>
-			<one-to-many name="children" target-entity="BookChapter" mapped-by="parent"/>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<one-to-many name="subActivities" target-entity="BookChapter" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
 	<entity name="Forum" class="Forum" metadata-complete="true">
 		<table name="mdl_forum"/>
 		<attributes>
-			<one-to-many name="children" target-entity="ForumDiscussion" mapped-by="parent"/>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<one-to-many name="subActivities" target-entity="ForumDiscussion" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
 	<entity name="Lesson" class="Lesson" metadata-complete="true">
 		<table name="mdl_lesson"/>
 		<attributes>
-			<one-to-many name="children" target-entity="LessonPage" mapped-by="parent"/>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<one-to-many name="subActivities" target-entity="LessonPage" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
 	<entity name="Workshop" class="Workshop" metadata-complete="true">
 		<table name="mdl_workshop"/>
 		<attributes>
-			<one-to-many name="children" target-entity="WorkshopSubmission" mapped-by="parent"/>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<one-to-many name="subActivities" target-entity="WorkshopSubmission" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
@@ -48,15 +60,18 @@
 	<entity name="ForumDiscussion" class="ForumDiscussion" metadata-complete="true">
 		<table name="mdl_forum_discussions"/>
 		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
 			<many-to-one name="parent" target-entity="Forum" optional="false">
 				<join-column name="forum"/>
 			</many-to-one>
-			<one-to-many name="children" target-entity="ForumPost" mapped-by="parent"/>
+			<one-to-many name="subActivities" target-entity="ForumPost" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
 	<!--*********************************************************************-->
-	<!-- Moodle data mapping:  Subclasses of GenericGroupedActivityMember    -->
+	<!-- Moodle data mapping:  Subclasses of GenericSubActivity              -->
 	<!--*********************************************************************-->
 
 	<entity name="BookChapter" class="BookChapter" metadata-complete="true">
@@ -65,6 +80,9 @@
 			<column name="title"/>
 		</attribute-override>
 		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
 			<many-to-one name="parent" target-entity="Book" optional="false">
 				<join-column name="bookid" referenced-column-name="id" nullable="false" updatable="false"/>
 			</many-to-one>
@@ -77,6 +95,9 @@
 			<column name="subject"/>
 		</attribute-override>
 		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
 			<many-to-one name="parent" target-entity="ForumDiscussion" optional="false">
 				<join-column name="discussion"/>
 			</many-to-one>
@@ -89,6 +110,9 @@
 			<column name="title"/>
 		</attribute-override>
 		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
 			<many-to-one name="parent" target-entity="Lesson" optional="false">
 				<join-column name="lessonid"/>
 			</many-to-one>
@@ -101,6 +125,9 @@
 			<column name="title"/>
 		</attribute-override>
 		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
 			<many-to-one name="parent" target-entity="Workshop" optional="false">
 				<join-column name="workshopid"/>
 			</many-to-one>
@@ -113,45 +140,100 @@
 
 	<entity name="Assign" class="Assign" metadata-complete="true">
 		<table name="mdl_assign"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+		</attributes>
 	</entity>
 
 	<entity name="Checklist" class="Checklist" metadata-complete="true">
 		<table name="mdl_checklist"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+		</attributes>
 	</entity>
 
 	<entity name="Choice" class="Choice" metadata-complete="true">
 		<table name="mdl_choice"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+		</attributes>
 	</entity>
 
 	<entity name="Feedback" class="Feedback" metadata-complete="true">
 		<table name="mdl_feedback"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+		</attributes>
 	</entity>
 
 	<entity name="Folder" class="Folder" metadata-complete="true">
 		<table name="mdl_folder"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+		</attributes>
 	</entity>
 
 	<entity name="Label" class="Label" metadata-complete="true">
 		<table name="mdl_label"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+		</attributes>
 	</entity>
 
 	<entity name="Page" class="Page" metadata-complete="true">
 		<table name="mdl_page"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+		</attributes>
 	</entity>
 
 	<entity name="Quiz" class="Quiz" metadata-complete="true">
 		<table name="mdl_quiz"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+		</attributes>
 	</entity>
 
 	<entity name="Resource" class="Resource" metadata-complete="true">
 		<table name="mdl_resource"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+		</attributes>
 	</entity>
 
 	<entity name="Scheduler" class="Scheduler" metadata-complete="true">
 		<table name="mdl_scheduler"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+		</attributes>
 	</entity>
 
 	<entity name="URL" class="URL" metadata-complete="true">
 		<table name="mdl_url"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+		</attributes>
 	</entity>
 </entity-mappings>

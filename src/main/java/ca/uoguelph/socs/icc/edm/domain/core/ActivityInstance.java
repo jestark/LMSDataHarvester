@@ -76,7 +76,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 		{
 			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
 			assert grade != null : "grade is NULL";
-			
+
 			return ((ActivityInstance) activity).addGrade (grade);
 		}
 
@@ -99,7 +99,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 		{
 			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
 			assert grade != null : "grade is NULL";
-			
+
 			return ((ActivityInstance) activity).removeGrade (grade);
 		}
 	}
@@ -123,7 +123,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	public ActivityInstance ()
 	{
 		super ();
-		
+
 		this.type = null;
 		this.course = null;
 
@@ -198,11 +198,48 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 		final int mult = 953;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-	
+
 		hbuilder.append (this.type);
 		hbuilder.append (this.course);
 
 		return hbuilder.hashCode ();
+	}
+
+	/**
+	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
+	 * instance.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
+	 *
+	 * @return a Long integer containing <code>DataStore</code> identifier
+	 */
+
+	@Override
+	public Long getId ()
+	{
+		return super.getId ();
+	}
+
+	/**
+	 * Set the <code>DataStore</code> identifier.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded, or by the <code>ActivityBuilder</code> implementation to set the
+	 * <code>DataStore</code> identifier, prior to storing a new
+	 * <code>Activity</code> instance.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
+	 *
+	 * @param  id The <code>DataStore</code> identifier, not null
+	 */
+
+	@Override
+	protected void setId (final Long id)
+	{
+		super.setId (id);
 	}
 
 	/**
@@ -229,7 +266,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	protected void setCourse (final Course course)
 	{
 		assert course != null : "course is NULL";
-		
+
 		this.course = course;
 	}
 
@@ -256,7 +293,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	protected void setType (final ActivityType type)
 	{
 		assert type != null : "type is NULL";
-		
+
 		this.type = type;
 	}
 
@@ -288,7 +325,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	protected void setGrades (final Set<Grade> grades)
 	{
 		assert grades != null : "grades is NULL";
-		
+
 		this.grades = grades;
 	}
 
@@ -305,7 +342,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	protected boolean addGrade (final Grade grade)
 	{
 		assert grade != null : "grade is NULL";
-		
+
 		return this.grades.add (grade);
 	}
 
@@ -322,7 +359,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	protected boolean removeGrade (final Grade grade)
 	{
 		assert grade != null : "grade is NULL";
-		
+
 		return this.grades.remove (grade);
 	}
 

@@ -13,13 +13,26 @@
 	<!--  Mapped super classes used by activities                            -->
 	<!--*********************************************************************-->
 
-	<mapped-superclass class="AbstractActivity" metadata-complete="true">
-		<description></description>
+	<mapped-superclass class="GenericNamedActivity" metadata-complete="true">
+		<description>Mapping for the common componets of named activities</description>
 		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
+			<basic name="name">
+				<column name="name" nullable="false"/>
+			</basic>
+		</attributes>
+	</mapped-superclass>
+
+	<mapped-superclass class="GenericSubActivity" metadata-complete="true">
+		<description>Mapping for the common components of sub-activities</description>
+		<attributes>
+			<basic name="name">
+				<column name="name" nullable="false"/>
+			</basic>
 			<transient name="log"/>
+			<transient name="course"/>
+			<transient name="type"/>
+			<transient name="grades"/>
+			<transient name="parent"/>
 		</attributes>
 	</mapped-superclass>
 
@@ -104,18 +117,18 @@
 				<column name="name" nullable="false"/>
 			</basic>
 			<basic name="semester">
-				<column name="senester" nullable="false"/>
-				<enumerated>STRING</enumerated>
+				<column name="semester" nullable="false"/>
+				<enumerated>ORDINAL</enumerated>
 			</basic>
 			<basic name="year">
 				<column name="year" nullable="false"/>
 			</basic>
-			<one-to-many name="activities" target-entity="ActivityInstance" orphan-removal="true">
+			<one-to-many name="activities" target-entity="ActivityInstance" mapped-by="course"><!-- orphan-removal="true"> -->
 				<cascade>
 					<cascade-all/>
 				</cascade>
 			</one-to-many>
-			<one-to-many name="enrolments" target-entity="EnrolmentData" mapped-by="course" orphan-removal="true">
+			<one-to-many name="enrolments" target-entity="EnrolmentData" mapped-by="course"><!-- orphan-removal="true"> -->
 				<cascade>
 					<cascade-all/>
 				</cascade>
@@ -270,7 +283,7 @@
 			<basic name="name">
 				<column name="name" nullable="false" unique="true"/>
 			</basic>
-			<one-to-many name="types" target-entity="ActivityTypeData" mapped-by="source" orphan-removal="true"/>
+			<one-to-many name="types" target-entity="ActivityTypeData" mapped-by="source"/><!-- orphan-removal="true"/> -->
 		</attributes>
 	</entity>
 
@@ -364,16 +377,11 @@
 				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<one-to-many name="grades" target-entity="GradedActivity" mapped-by="activity"/>
-			<one-to-many name="log" target-entity="LogData" mapped-by="activity">
+			<!--			<one-to-many name="log" target-entity="LogData" mapped-by="activity">
 				<cascade>
 					<cascade-all/>
 				</cascade>
-			</one-to-many>
-			<one-to-one name="activity" target-entity="GenericNamedActivity" optional="true" mapped-by="instance">
-				<cascade>
-					<cascade-all/>
-				</cascade>
-			</one-to-one>
+			</one-to-many>-->
 		</attributes>
 	</entity>
 
@@ -385,40 +393,6 @@
 			<transient name="name"/>
 		</attributes>
 	</entity>
-
-	<entity name="GenericNamedActivity" class="GenericNamedActivity" metadata-complete="true">
-		<description>Mapping For the Generic Activity and the relationship the the instance</description>
-		<attributes>
-			<id name="id">
-				<column name="instance_id" nullable="false" unique="true"/>
-			</id>
-			<basic name="name">
-				<column name="name" nullable="false"/>
-			</basic>
-		</attributes>
-	</entity>
-
-	<!-- GenericGroupedActivity -->
-
-	<entity name="GenericGroupedActivityMember" class="GenericGroupedActivityMember" metadata-complete="true">
-		<description></description>
-		<inheritance strategy="TABLE_PER_CLASS"/>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<basic name="name">
-				<column name="name" nullable="false"/>
-			</basic>
-			<transient name="log"/>
-			<transient name="course"/>
-			<transient name="type"/>
-			<transient name="grades"/>
-			<transient name="parent"/>
-		</attributes>
-	</entity>
-
-	<!-- GenericGroupedActivityGroup-->
 
 	<!--*********************************************************************-->
 	<!-- Core data mapping: Log entries                                      -->

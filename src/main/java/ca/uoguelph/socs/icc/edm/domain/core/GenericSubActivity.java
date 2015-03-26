@@ -77,8 +77,7 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 
 		AbstractActivity.registerSubActivityClass (activityClass, elementClass);
 
-		AbstractElement.registerBuilder (Activity.class, elementClass, builderClass);
-		AbstractElement.registerFactory (Activity.class, elementClass, factoryClass, factory);
+		AbstractElement.registerElement (Activity.class, elementClass, builderClass, factoryClass, factory);
 	}
 
 	/**

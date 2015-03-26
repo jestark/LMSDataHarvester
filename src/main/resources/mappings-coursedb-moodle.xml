@@ -15,29 +15,37 @@
 
 	<entity name="Book" class="Book" metadata-complete="true">
 		<table name="activity_moodle_book"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
 		<attributes>
-			<one-to-many name="children" mapped-by="parent"/>
+			<one-to-many name="subActivities" target-entity="BookChapter" mapped-by="parent"/>
+			<transient name="id"/>
 		</attributes>
 	</entity>
 
 	<entity name="Forum" class="Forum" metadata-complete="true">
 		<table name="activity_moodle_forum"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
 		<attributes>
-			<one-to-many name="children" mapped-by="parent"/>
+			<one-to-many name="subActivities" target-entity="ForumDiscussion" mapped-by="parent"/>
+			<transient name="id"/>
 		</attributes>
 	</entity>
 
 	<entity name="Lesson" class="Lesson" metadata-complete="true">
 		<table name="activity_moodle_lesson"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
 		<attributes>
-			<one-to-many name="children" mapped-by="parent"/>
+			<one-to-many name="subActivities" target-entity="LessonPage" mapped-by="parent"/>
+			<transient name="id"/>
 		</attributes>
 	</entity>
 
 	<entity name="Workshop" class="Workshop" metadata-complete="true">
 		<table name="activity_moodle_workshop"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
 		<attributes>
-			<one-to-many name="children" mapped-by="parent"/>
+			<one-to-many name="subActivities" target-entity="WorkshopSubmission" mapped-by="parent"/>
+			<transient name="id"/>
 		</attributes>
 	</entity>
 
@@ -59,10 +67,10 @@
 				<generated-value strategy="SEQUENCE" generator="activity_moodle_forum_discussion_id_seq"/>
 				<sequence-generator name="activity_moodle_forum_discussion_id_seq" sequence-name="activity_moodle_forum_discussion_id_seq" initial-value="1" allocation-size="1"/>
 			</id>
-			<many-to-one name="parent">
+			<many-to-one name="parent" target-entity="Forum" optional="false">
 				<join-column name="forum_id"/>
 			</many-to-one>
-			<one-to-many name="children" mapped-by="parent"/>
+			<one-to-many name="subActivities" target-entity="ForumPost" mapped-by="parent"/>
 		</attributes>
 	</entity>
 
@@ -84,10 +92,7 @@
 				<generated-value strategy="SEQUENCE" generator="activity_moodle_book_chapter_id_seq"/>
 				<sequence-generator name="activity_moodle_book_chapter_id_seq" sequence-name="activity_moodle_book_chapter_id_seq" initial-value="1" allocation-size="1"/>
 			</id>
-			<basic name="name">
-				<column name="title"/>
-			</basic>
-			<many-to-one name="parent">
+			<many-to-one name="parent" target-entity="Book" optional="false">
 				<join-column name="book_id"/>
 			</many-to-one>
 		</attributes>
@@ -101,16 +106,16 @@
 		<named-query name="ForumPost:allid">
 			<query>SELECT a.id FROM ForumPost a</query>
 		</named-query>
+		<attribute-override name="name">
+			<column name="subject"/>
+		</attribute-override>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 				<generated-value strategy="SEQUENCE" generator="activity_moodle_forum_post_id_seq"/>
 				<sequence-generator name="activity_moodle_forum_post_id_seq" sequence-name="activity_moodle_forum_post_id_seq" initial-value="1" allocation-size="1"/>
 			</id>
-			<basic name="name">
-				<column name="subject"/>
-			</basic>
-			<many-to-one name="parent">
+			<many-to-one name="parent" target-entity="ForumDiscussion" optional="false">
 				<join-column name="discussion_id"/>
 			</many-to-one>
 		</attributes>
@@ -130,10 +135,7 @@
 				<generated-value strategy="SEQUENCE" generator="activity_moodle_lesson_page_id_seq"/>
 				<sequence-generator name="activity_moodle_lesson_page_id_seq" sequence-name="activity_moodle_lesson_page_id_seq" initial-value="1" allocation-size="1"/>
 			</id>
-			<basic name="name">
-				<column name="title"/>
-			</basic>
-			<many-to-one name="parent">
+			<many-to-one name="parent" target-entity="Lesson" optional="false">
 				<join-column name="lesson_id"/>
 			</many-to-one>
 		</attributes>
@@ -151,12 +153,9 @@
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 				<generated-value strategy="SEQUENCE" generator="activity_moodle_workshop_submission_id_seq"/>
-				<sequence-generator name="activity_moodle_workshop_submissions_id_seq" sequence-name="activity_moodle_workshop_submission_id_seq" initial-value="1" allocation-size="1"/>
+				<sequence-generator name="activity_moodle_workshop_submission_id_seq" sequence-name="activity_moodle_workshop_submission_id_seq" initial-value="1" allocation-size="1"/>
 			</id>
-			<basic name="name">
-				<column name="title"/>
-			</basic>
-			<many-to-one name="parent">
+			<many-to-one name="parent" target-entity="Workshop" optional="false">
 				<join-column name="workshop_id"/>
 			</many-to-one>
 		</attributes>
@@ -168,46 +167,90 @@
 
 	<entity name="Assign" class="Assign" metadata-complete="true">
 		<table name="activity_moodle_assign"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
+		<attributes>
+			<transient name="id"/>
+		</attributes>
 	</entity>
 
 	<entity name="Checklist" class="Checklist" metadata-complete="true">
 		<table name="activity_moodle_checklist"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
+		<attributes>
+			<transient name="id"/>
+		</attributes>
 	</entity>
 
 	<entity name="Choice" class="Choice" metadata-complete="true">
 		<table name="activity_moodle_choice"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
+		<attributes>
+			<transient name="id"/>
+		</attributes>
 	</entity>
 
 	<entity name="Feedback" class="Feedback" metadata-complete="true">
 		<table name="activity_moodle_feedback"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
+		<attributes>
+			<transient name="id"/>
+		</attributes>
 	</entity>
 
 	<entity name="Folder" class="Folder" metadata-complete="true">
 		<table name="activity_moodle_folder"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
+		<attributes>
+			<transient name="id"/>
+		</attributes>
 	</entity>
 
 	<entity name="Label" class="Label" metadata-complete="true">
 		<table name="activity_moodle_label"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
+		<attributes>
+			<transient name="id"/>
+		</attributes>
 	</entity>
 
 	<entity name="Page" class="Page" metadata-complete="true">
 		<table name="activity_moodle_page"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
+		<attributes>
+			<transient name="id"/>
+		</attributes>
 	</entity>
 
 	<entity name="Quiz" class="Quiz" metadata-complete="true">
 		<table name="activity_moodle_quiz"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
+		<attributes>
+			<transient name="id"/>
+		</attributes>
 	</entity>
 
 	<entity name="Resource" class="Resource" metadata-complete="true">
 		<table name="activity_moodle_resource"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
+		<attributes>
+			<transient name="id"/>
+		</attributes>
 	</entity>
 
 	<entity name="Scheduler" class="Scheduler" metadata-complete="true">
 		<table name="activity_moodle_scheduler"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
+		<attributes>
+			<transient name="id"/>
+		</attributes>
 	</entity>
 
 	<entity name="URL" class="URL" metadata-complete="true">
 		<table name="activity_moodle_url"/>
+		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
+		<attributes>
+			<transient name="id"/>
+		</attributes>
 	</entity>
 
 	<!--*********************************************************************-->

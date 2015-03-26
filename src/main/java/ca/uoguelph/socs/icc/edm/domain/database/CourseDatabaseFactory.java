@@ -28,11 +28,11 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
 import ca.uoguelph.socs.icc.edm.domain.core.ActionData;
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
 import ca.uoguelph.socs.icc.edm.domain.core.ActivitySourceData;
 import ca.uoguelph.socs.icc.edm.domain.core.ActivityTypeData;
 import ca.uoguelph.socs.icc.edm.domain.core.CourseData;
 import ca.uoguelph.socs.icc.edm.domain.core.EnrolmentData;
+import ca.uoguelph.socs.icc.edm.domain.core.GenericActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GradedActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.LogData;
 import ca.uoguelph.socs.icc.edm.domain.core.RoleData;
@@ -73,7 +73,7 @@ public final class CourseDatabaseFactory extends DatabaseFactory
 	protected void buildProfile (DomainModelBuilder builder)
 	{
 		builder.setEntry (Action.class, true, ActionData.class, NullIdGenerator.class, DefaultActionManager.class);
-		builder.setEntry (Activity.class, true, ActivityInstance.class, NullIdGenerator.class, DefaultActivityManager.class);
+		builder.setEntry (Activity.class, true, GenericActivity.class, NullIdGenerator.class, DefaultActivityManager.class);
 		builder.setEntry (ActivitySource.class, true, ActivitySourceData.class, NullIdGenerator.class, DefaultActivitySourceManager.class);
 		builder.setEntry (ActivityType.class, true, ActivityTypeData.class, NullIdGenerator.class, DefaultActivityTypeManager.class);
 		builder.setEntry (Course.class, true, CourseData.class, NullIdGenerator.class, DefaultCourseManager.class);

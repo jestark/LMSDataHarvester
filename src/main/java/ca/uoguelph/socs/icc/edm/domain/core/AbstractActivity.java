@@ -67,7 +67,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		{
 			assert activity instanceof AbstractActivity : "activity is not an instance of AbstractActivity";
 			assert entry != null : "entry is NULL";
-			
+
 			return ((AbstractActivity) activity).addLog (entry);
 		}
 
@@ -196,7 +196,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	/**
 	 * Register an association between an <code>ActivityType</code> and the class
 	 * implementing the <code>Activity</code> interface for that
-	 * <code>ActivityType</code>. 
+	 * <code>ActivityType</code>.
 	 *
 	 * @param  source A <code>String</code> representation of the
 	 *                <code>ActivitySource</code>, not null
@@ -210,7 +210,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
-		
+
 		AbstractActivity.ACTIVITYIMPL.registerActivityClass (source, type, impl);
 	}
 
@@ -249,6 +249,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
+	@Override
 	public Long getId ()
 	{
 		return this.id;
@@ -296,7 +297,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	protected void setLog (final List<LogEntry> log)
 	{
 		assert log != null : "log is NULL";
-		
+
 		this.log = log;
 	}
 
@@ -313,7 +314,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	protected boolean addLog (final LogEntry entry)
 	{
 		assert entry != null : "entry is NULL";
-		
+
 		return this.log.add (entry);
 	}
 
@@ -330,7 +331,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	protected boolean removeLog (final LogEntry entry)
 	{
 		assert entry != null : "entry is NULL";
-		
+
 		return this.log.remove (entry);
 	}
 

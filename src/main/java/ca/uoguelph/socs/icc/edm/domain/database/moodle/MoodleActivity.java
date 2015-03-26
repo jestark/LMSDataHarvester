@@ -16,11 +16,14 @@
 
 package ca.uoguelph.socs.icc.edm.domain.database.moodle;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.GenericActivityElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
@@ -49,7 +52,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
  * @author  James E. Stark
  * @version 1.1
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance
  * @see     MoodleActivityManager
  */
 
@@ -57,7 +59,7 @@ public class MoodleActivity extends ActivityInstance
 {
 	/**
 	 * Implementation of the <code>ActivityElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>MoodleActivityInstance</code>.
+	 * the builders to create instances of <code>MoodleActivity</code>.
 	 */
 
 	private static final class Factory extends ActivityInstance.Factory implements GenericActivityElementFactory
@@ -81,17 +83,19 @@ public class MoodleActivity extends ActivityInstance
 
 			return new MoodleActivity (type, course);
 		}
-
 	}
 
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The <code>Activity</code> instance containing the data */
+	private Activity activity;
+
 	/** The instance data identifier */
 	private Long instanceid;
 
 	/**
-	 * Static initializer to register the <code>MoodleActivityInstance</code>
+	 * Static initializer to register the <code>MoodleActivity</code>
 	 * class with the factories.
 	 */
 
@@ -107,14 +111,13 @@ public class MoodleActivity extends ActivityInstance
 	public MoodleActivity ()
 	{
 		super ();
+
+		this.activity = null;
 		this.instanceid = null;
 	}
 
 	/**
-	 * Create a new <code>Activity</code> instance.  This constructor is provided
-	 * for compatibility with the <code>ActivityInstance</code> superclass.  It
-	 * should never actually be called, since the moodle database is read-only.
-	 * As such, there is no facility to initialize the <code>instanceid</code>.
+	 * Create a new <code>Activity</code> instance.
 	 *
 	 * @param  type    The <code>ActivityType</code> of the
 	 *                 <code>Activity</code>, not null
@@ -125,6 +128,8 @@ public class MoodleActivity extends ActivityInstance
 	public MoodleActivity (final ActivityType type, final Course course)
 	{
 		super (type, course);
+
+		this.activity = null;
 		this.instanceid = null;
 	}
 
@@ -154,7 +159,7 @@ public class MoodleActivity extends ActivityInstance
 
 			ebuilder.appendSuper (super.equals (obj));
 			ebuilder.append (this.instanceid, ((MoodleActivity) obj).instanceid);
-			
+
 			result = ebuilder.isEquals ();
 		}
 
@@ -162,27 +167,85 @@ public class MoodleActivity extends ActivityInstance
 	}
 
 	/**
-	 * Get the name of the <code>Activity</code>.  Not all <code>Activity</code>
-	 * instances have names.  For those <code>Activity</code> instances which do
-	 * not have names, the name of the associated <code>ActivityType</code> will
-	 * be returned.
+	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
+	 * instance.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
 	 *
-	 * @return A <code>String</code> containing the name of the
-	 *         <code>Activity</code>
+	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
 	@Override
-	public String getName ()
+	public Long getId ()
 	{
-		return (this.getType ()).getName ();
+		return super.getId ();
+	}
+
+	/**
+	 * Set the <code>DataStore</code> identifier.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded, or by the <code>ActivityBuilder</code> implementation to set the
+	 * <code>DataStore</code> identifier, prior to storing a new
+	 * <code>Activity</code> instance.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
+	 *
+	 * @param  id The <code>DataStore</code> identifier, not null
+	 */
+
+	@Override
+	protected void setId (final Long id)
+	{
+		super.setId (id);
+	}
+
+	/**
+	 * Get the <code>Course</code> with which the <code>Activity</code> is
+	 * associated.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
+	 *
+	 * @return The <code>Course</code> instance
+	 */
+
+	@Override
+	public Course getCourse ()
+	{
+		return super.getCourse ();
+	}
+
+	/**
+	 * Set the <code>Course</code> with which the <code>Activity</code> is
+	 * associated.  This method is intended to be used by a <code>DataStore</code>
+	 * when the <code>Activity</code> instance is loaded.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
+	 *
+	 * @param  course The <code>Course</code>, not null
+	 */
+
+	@Override
+	protected void setCourse (final Course course)
+	{
+		assert course != null : "course is NULL";
+
+		super.setCourse (course);
 	}
 
 	/**
 	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
 	 * <p>
-	 * This method overrides and wraps the method in the superclass, to work
-	 * around a limitation in JPA that requires the method to exist in this class
-	 * to properly map the ActivityType association in the Moodle database.
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
 	 *
 	 * @return The <code>ActivityType</code> instance
 	 */
@@ -198,17 +261,18 @@ public class MoodleActivity extends ActivityInstance
 	 * associated.  This method is intended to be used by a <code>DataStore</code>
 	 * when the <code>Activity</code> instance is loaded.
 	 * <p>
-	 * This method overrides and wraps the method in the superclass, to work
-	 * around a limitation in JPA that requires the method to exist in this class
-	 * to properly map the ActivityType association in the Moodle database.
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of the
+	 * child class.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null
 	 */
 
+	@Override
 	protected void setType (final ActivityType type)
 	{
 		assert type != null : "type is NULL";
-		
+
 		super.setType (type);
 	}
 
