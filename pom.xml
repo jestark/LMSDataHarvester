@@ -164,6 +164,7 @@
 				<configuration>
 					<executable>java</executable>
 					<arguments>
+						<arguement>-ea</arguement>
 						<argument>-classpath</argument>
 						<classpath/>
 						<argument>ca.uoguelph.socs.icc.edm.App</argument>
