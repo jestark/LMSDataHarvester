@@ -44,7 +44,7 @@ public interface BuilderFactory<T extends Element, U extends ElementBuilder<T>>
 	 * <code>ElementManager</code> to perform operations on the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  manager The <code>ManagerProxy</code> used to the 
+	 * @param  manager The <code>ManagerProxy</code> used to the
 	 *                 <code>ElementManager</code> instance, not null
 	 *
 	 * @return         The <code>ElementBuilder</code>

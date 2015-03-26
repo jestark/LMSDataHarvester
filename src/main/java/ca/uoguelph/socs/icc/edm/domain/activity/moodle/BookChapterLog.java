@@ -51,8 +51,8 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
 class BookChapterLog extends LogReference
 {
 	/**
-	 * Implementation of the <code>LogReferenceElementFactory</code>.  Allows the
-	 * builders to create instances of <code>BookChapterLog</code>.
+	 * Implementation of the <code>LogReferenceElementFactory</code>.  Allows
+	 * the builders to create instances of <code>BookChapterLog</code>.
 	 */
 
 	private static final class Factory extends AbstractElement.Factory<LogEntry> implements LogReferenceElementFactory
@@ -82,7 +82,8 @@ class BookChapterLog extends LogReference
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Register the <code>BookChapterLog</code> with the factories on initialization.
+	 * Register the <code>BookChapterLog</code> with the factories on
+	 * initialization.
 	 */
 
 	static

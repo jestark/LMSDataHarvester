@@ -31,8 +31,8 @@ import java.util.List;
 public interface CourseManager extends ElementManager<Course>
 {
 	/**
-	 * Get an instance of the <code>CourseBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>CourseBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>CourseBuilder</code> instance
 	 */

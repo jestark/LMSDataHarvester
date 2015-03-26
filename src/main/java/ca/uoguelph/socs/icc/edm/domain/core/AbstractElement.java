@@ -38,9 +38,10 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.QueryFactory;
 public abstract class AbstractElement implements Element
 {
 	/**
-	 * Common implementation of the <code>ElementFactory</code> interface.  This
-	 * class provides the implementation of the <code>setId</code> method which
-	 * should be common to all of the <code>ElementFactory</code> implementations.
+	 * Common implementation of the <code>ElementFactory</code> interface.
+	 * This class provides the implementation of the <code>setId</code> method
+	 * which should be common to all of the <code>ElementFactory</code>
+	 * implementations.
 	 *
 	 * @param  <T> The interface type for the <code>Element</code>
 	 */
@@ -69,10 +70,11 @@ public abstract class AbstractElement implements Element
 	 * Register an <code>Element</code> implementation class with the
 	 * <code>QueryFactory</code>.
 	 *
-	 * @param  <T>  The interface type of the <code>Element</code>
-	 * @param  <U>  The implementation type of the <code>Element</code>
-	 * @param  element The <code>Element</code> interface class, not null
-	 * @param  elementImpl The <code>Element</code> implementation class, not null
+	 * @param  <T>         The interface type of the <code>Element</code>
+	 * @param  <U>         The implementation type of the <code>Element</code>
+	 * @param  element     The <code>Element</code> interface class, not null
+	 * @param  elementImpl The <code>Element</code> implementation class, not
+	 *                     null
 	 */
 
 	protected static <T extends Element, U extends T> void registerQuery (final Class<T> element, final Class<U> elementImpl)
@@ -88,12 +90,13 @@ public abstract class AbstractElement implements Element
 	 * the appropriate <code>ElementBuilder</code> implementation with the
 	 * <code>ElementBuilder</code> factory.
 	 *
-	 * @param  <T>     The interface type of the <code>Element</code>
-	 * @param  <U>     The implementation type of the <code>Element</code>
-	 * @param  element The <code>Element</code> interface class, not null
-	 * @param  elementImpl The <code>Element</code> implementation class, not null
-	 * @param  builder The <code>ElementBuilder</code> implementation class, not
-	 *                 null
+	 * @param  <T>         The interface type of the <code>Element</code>
+	 * @param  <U>         The implementation type of the <code>Element</code>
+	 * @param  element     The <code>Element</code> interface class, not null
+	 * @param  elementImpl The <code>Element</code> implementation class, not
+	 *                     null
+	 * @param  builder     The <code>ElementBuilder</code> implementation
+	 *                     class, not null
 	 */
 
 	protected static <T extends ElementBuilder<U>, U extends Element> void registerBuilder (final Class<U> element, final Class<? extends U> elementImpl, final Class<T> builder)
@@ -113,7 +116,8 @@ public abstract class AbstractElement implements Element
 	 * @param  <T>         The interface type of the <code>Element</code>
 	 * @param  <U>         The implementation type of the <code>Element</code>
 	 * @param  element     The <code>Element</code> interface class, not null
-	 * @param  elementImpl The <code>Element</code> implementation class, not null
+	 * @param  elementImpl The <code>Element</code> implementation class, not
+	 *                     null
 	 * @param  factory     The <code>ElementFactory</code> to register, not null
 	 */
 
@@ -131,8 +135,10 @@ public abstract class AbstractElement implements Element
 	 * Register an <code>Element</code> implementation with the factories.
 	 *
 	 * @param  element     The <code>Element</code> interface class, not null
-	 * @param  elementImpl The <code>Element</code> implementation class, not null
-	 * @param  builder     The <code>ElementBuilder</code> implementation, not null
+	 * @param  elementImpl The <code>Element</code> implementation class, not
+	 *                     null
+	 * @param  builder     The <code>ElementBuilder</code> implementation, not
+	 *                     null
 	 * @param  factory     The <code>ElementFactory</code>, instance not null
 	 */
 
@@ -150,16 +156,16 @@ public abstract class AbstractElement implements Element
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Element</code> instance is
-	 * loaded, or by the <code>ElementBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new <code>Element</code>
-	 * instance.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Element</code>
+	 * instance is loaded, or by the <code>ElementBuilder</code> implementation
+	 * to set the <code>DataStore</code> identifier, prior to storing a new
+	 * <code>Element</code> instance.
 	 * <p>
 	 * <code>Element</code> implementations which are dependent on other
-	 * <code>Element</code> interfaces for their <code>DataStore</code> identifier
-	 * should throw an <code>UnsupportedOperationException</code> when this method
-	 * is called.
+	 * <code>Element</code> interfaces for their <code>DataStore</code>
+	 * identifier should throw an <code>UnsupportedOperationException</code>
+	 * when this method is called.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -167,15 +173,16 @@ public abstract class AbstractElement implements Element
 	protected abstract void setId (Long id);
 
 	/**
-	 * Determine if two <code>Element</code> instances are identical.  This method
-	 * is a default implementation which calls the equals method, and is suitable
-	 * for those <code>Element</code> implementations for which all of the fields
-	 * must be unique.
+	 * Determine if two <code>Element</code> instances are identical.  This
+	 * method is a default implementation which calls the equals method, and is
+	 * suitable for those <code>Element</code> implementations for which all of
+	 * the fields must be unique.
 	 *
-	 * @param  element The <code>Element</code> to compare to the current instance
+	 * @param  element The <code>Element</code> to compare to the current
+	 *                 instance
 	 *
-	 * @return         <code>True</code> if the <code>Element</code> instances are
-	 *                 logically identical, <code>False</code> otherwise
+	 * @return         <code>True</code> if the <code>Element</code> instances
+	 *                 are logically identical, <code>False</code> otherwise
 	 */
 
 	public boolean identicalTo (final Element element)

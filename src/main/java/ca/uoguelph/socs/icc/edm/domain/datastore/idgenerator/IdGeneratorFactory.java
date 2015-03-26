@@ -29,12 +29,12 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Factory for creating <code>IdGenerator</code> instances.  This class 
+ * Factory for creating <code>IdGenerator</code> instances.  This class
  * requires all of the <code>IdGenerator</code> implementations to register
  * a factory object (extending the <code>IdGeneratorImplFactory</code>
  * interface) capable of instantiating and initializing the
- * <code>IdGenerator</code>. 
- * 
+ * <code>IdGenerator</code>.
+ *
  * @author  James E. Stark
  * @version 1.0
  * @see     IdGeneratorImplFactory
@@ -88,8 +88,8 @@ public final class IdGeneratorFactory
 	 * <code>IdGenerator</code> when the classes initialize.
 	 *
 	 * @param  impl                     The <code>IdGenerator</code>
-	 *                                  implementation which is being registered,
-	 *                                  not null
+	 *                                  implementation which is being
+	 *                                  registered, not null
 	 * @param  factory                  The <code>IdGeneratorImplFactory</code>
 	 *                                  used to create the
 	 *                                  <code>IdGenerator</code>, not null
@@ -99,7 +99,7 @@ public final class IdGeneratorFactory
 
 	public void registerClass (Class<? extends IdGenerator> impl, IdGeneratorImplFactory factory)
 	{
-		this.log.trace ("Registering ID Generator: {} ({})", impl, factory);
+		this.log.trace ("registerClass: impl={}, factory={}", impl, factory);
 
 		if (impl == null)
 		{
@@ -154,20 +154,22 @@ public final class IdGeneratorFactory
 	 * Create a <code>IdGenerator</code> for the specified
 	 * <code>DataStoreQuery</code>.
 	 *
-	 * @param  <T>                   The type of <code>Element</code> returned by
-	 *                               the <code>DataStoreQuery</code>
-	 * @param  type                  The <code>Element</code> interface class, not
-	 *                               null
-	 * @param  query                 The <code>DataStoreQuery</code> for which the
-	 *                               <code>IdGenerator</code> is to be created,
+	 * @param  <T>                   The type of <code>Element</code> returned
+	 *                               by the <code>DataStoreQuery</code>
+	 * @param  type                  The <code>Element</code> interface class,
 	 *                               not null
+	 * @param  query                 The <code>DataStoreQuery</code> for which
+	 *                               the <code>IdGenerator</code> is to be
+	 *                               created, not null
 	 * @return                       The <code>IdGenerator</code> instance
-	 * @throws IllegalStateException if the <code>IdGenerator</code> implementation
-	 *                               class is not registered
+	 * @throws IllegalStateException if the <code>IdGenerator</code>
+	 *                               implementation class is not registered
 	 */
 
 	public <T extends Element> IdGenerator create (Class<T> type, DataStoreQuery<T> query)
 	{
+		this.log.trace ("create: type={}, query={}", type, query);
+
 		if (query == null)
 		{
 			this.log.error ("Query is NULL");

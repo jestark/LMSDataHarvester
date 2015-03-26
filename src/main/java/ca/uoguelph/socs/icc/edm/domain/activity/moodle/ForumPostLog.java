@@ -51,8 +51,8 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
 class ForumPostLog extends LogReference
 {
 	/**
-	 * Implementation of the <code>LogReferenceElementFactory</code>.  Allows the
-	 * builders to create instances of <code>ForumPostLog</code>.
+	 * Implementation of the <code>LogReferenceElementFactory</code>.  Allows
+	 * the builders to create instances of <code>ForumPostLog</code>.
 	 */
 
 	private static final class Factory extends AbstractElement.Factory<LogEntry> implements LogReferenceElementFactory
@@ -82,7 +82,8 @@ class ForumPostLog extends LogReference
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Register the <code>ForumPostLog</code> with the factories on initialization.
+	 * Register the <code>ForumPostLog</code> with the factories on
+	 * initialization.
 	 */
 
 	static

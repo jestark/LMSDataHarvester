@@ -45,8 +45,8 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActionElementFactory;
 public class ActionData extends AbstractElement implements Action, Serializable
 {
 	/**
-	 * Implementation of the <code>ActionElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>ActionData</code>.
+	 * Implementation of the <code>ActionElementFactory</code> interface.
+	 * Allows the builders to create instances of <code>ActionData</code>.
 	 */
 
 	private static final class Factory extends AbstractElement.Factory<Action> implements ActionElementFactory
@@ -76,8 +76,8 @@ public class ActionData extends AbstractElement implements Action, Serializable
 		 * @param  type   The <code>ActivityType</code> to add to the
 		 *                <code>Action</code>, not null
 		 *
-		 * @return        <code>True</code> if the <code>ActivityType</code> was
-		 *                successfully added to the <code>Action</code>,
+		 * @return        <code>True</code> if the <code>ActivityType</code>
+		 *                was successfully added to the <code>Action</code>,
 		 *                <code>False</code> otherwise
 		 */
 
@@ -91,23 +91,23 @@ public class ActionData extends AbstractElement implements Action, Serializable
 
 		/**
 		 * Remove the specified <code>ActivityType</code> from the specified
-		 * <code>Action</code>. 
+		 * <code>Action</code>.
 		 *
 		 * @param  action The <code>Action</code> from which the
 		 *                <code>ActivityType</code> is to be removed, not null
 		 * @param  type   The <code>ActivityType</code> to remove from the
 		 *                <code>Action</code>, not null
 		 *
-		 * @return        <code>True</code> if the <code>ActivityType</code> was
-		 *                successfully removed from the <code>Action</code>,
-		 *                <code>False</code> otherwise
+		 * @return        <code>True</code> if the <code>ActivityType</code>
+		 *                was successfully removed from the
+		 *                <code>Action</code>, <code>False</code> otherwise
 		 */
 
 		public boolean removeActivityType (final Action action, final ActivityType type)
 		{
 			assert action instanceof ActionData : "action is not an instance of ActionData";
 			assert type != null : "type is NULL";
-			
+
 			return ((ActionData) action).removeType (type);
 		}
 	}
@@ -125,8 +125,8 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	private Set<ActivityType> types;
 
 	/**
-	 * Static initializer to register the <code>ActionData</code> class with the
-	 * factories.
+	 * Static initializer to register the <code>ActionData</code> class with
+	 * the factories.
 	 */
 
 	static
@@ -226,11 +226,11 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Action</code> instance is
-	 * loaded, or by the <code>ActionBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new <code>Action</code>
-	 * instance.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Action</code>
+	 * instance is loaded, or by the <code>ActionBuilder</code> implementation
+	 * to set the <code>DataStore</code> identifier, prior to storing a new
+	 * <code>Action</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -241,8 +241,8 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>ActivityType</code> instances containing
-	 * the action.
+	 * Get the <code>Set</code> of <code>ActivityType</code> instances
+	 * containing the action.
 	 *
 	 * @return A <code>Set</code> of <code>ActivityType</code> instances
 	 */
@@ -255,11 +255,11 @@ public class ActionData extends AbstractElement implements Action, Serializable
 
 	/**
 	 * Initialize the <code>Set</code> of associated <code>ActivityType</code>
-	 * instances.  This method is intended to be used by a <code>DataStore</code>
-	 * when the <code>Action</code> instance is loaded.
+	 * instances.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Action</code> instance is loaded.
 	 *
-	 * @param  types The <code>Set</code> of <code>ActivityType</code> instances
-	 *               to be associated with the <code>Action</code>
+	 * @param  types The <code>Set</code> of <code>ActivityType</code>
+	 *               instances to be associated with the <code>Action</code>
 	 */
 
 	protected void setTypes (final Set<ActivityType> types)
@@ -284,8 +284,8 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	}
 
 	/**
-	 * Remove the association between the specified <code>ActivityType</code> and
-	 * the <code>Action</code>
+	 * Remove the association between the specified <code>ActivityType</code>
+	 * and the <code>Action</code>
 	 *
 	 * @param  type The <code>ActivityType</code> associate with the
 	 *              <code>Action</code>
@@ -312,8 +312,8 @@ public class ActionData extends AbstractElement implements Action, Serializable
 
 	/**
 	 * Set the name of the <code>Action</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Action</code> instance is
-	 * loaded.
+	 * used by a <code>DataStore</code> when the <code>Action</code> instance
+	 * is loaded.
 	 *
 	 * @param  name The name of the <code>Action</code>
 	 */

@@ -61,8 +61,8 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 	 * @param  elementClass  The <code>Element</code> implementation class, not
 	 *                       null
 	 * @param  activityClass The parent <code>Activity</code> class, not null
-	 * @param  builderClass  The <code>SubActivityBuilder</code> implementation,
-	 *                       not null
+	 * @param  builderClass  The <code>SubActivityBuilder</code>
+	 *                       implementation, not null
 	 * @param  factory       The <code>ElementFactory</code> interface, not null
 	 * @param  factory       The <code>ElementFactory</code> instance, not null
 	 */
@@ -145,8 +145,8 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 
 	/**
 	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed based upon the data contained in the superclass
-	 * and the parent <code>Activity</code>.
+	 * The hash code is computed based upon the data contained in the
+	 * superclass and the parent <code>Activity</code>.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
 	 */
@@ -190,7 +190,7 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 	}
 
 	/**
-	 * Get the name of the <code>Activity</code>.  
+	 * Get the name of the <code>Activity</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the
 	 *         <code>Activity</code>
@@ -203,9 +203,9 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 	}
 
 	/**
-	 * Set the name of the <code>Activity</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
+	 * Set the name of the <code>Activity</code>.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Activity</code>
+	 * instance is loaded.
 	 *
 	 * @param  name The name of the <code>Activity</code>, not null
 	 */
@@ -219,9 +219,10 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 
 	/**
 	 * Get the <code>Set</code> of <code>Grade</code> instances which are
-	 * associated with the <code>Activity</code>.  Not all <code>Activity</code>
-	 * instances are graded.  If the <code>Activity</code> does is not graded
-	 * then the <code>Set</code> will be empty.
+	 * associated with the <code>Activity</code>.  Not all
+	 * <code>Activity</code> instances are graded.  If the
+	 * <code>Activity</code> does is not graded then the <code>Set</code> will
+	 * be empty.
 	 *
 	 * @return A <code>Set</code> of <code>Grade</code> instances
 	 */
@@ -266,8 +267,8 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 	 * Get a <code>String</code> representation of the <code>Activity</code>
 	 * instance, including the identifying fields.
 	 *
-	 * @return A <code>String</code> representation of the <code>Activity</code>
-	 *         instance
+	 * @return A <code>String</code> representation of the
+	 *         <code>Activity</code> instance
 	 */
 
 	@Override

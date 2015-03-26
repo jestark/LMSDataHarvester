@@ -50,15 +50,15 @@ import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
 public class LogData extends AbstractElement implements LogEntry, Serializable
 {
 	/**
-	 * Implementation of the <code>LogEntryElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>LogData</code>.
+	 * Implementation of the <code>LogEntryElementFactory</code> interface.
+	 * Allows the builders to create instances of <code>LogData</code>.
 	 */
 
 	private static final class Factory extends AbstractElement.Factory<LogEntry> implements LogEntryElementFactory
 	{
 		/**
-		 * Create a new <code>LogEntry</code> instance.  Defaults to the current
-		 * system time, if the specified time is null.
+		 * Create a new <code>LogEntry</code> instance.  Defaults to the
+		 * current system time, if the specified time is null.
 		 *
 		 * @param  action    The <code>Action</code>, not null
 		 * @param  activity  The <code>Activity</code> upon which the
@@ -82,23 +82,23 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		}
 
 		/**
-		 * Add the reference to the Sub-Activity to the <code>LogEntry</code>.  Some
-		 * <code>LogEntry</code> instances will record an <code>Action</code> upon a
-		 * sub-activity, rather than the <code>Activity</code> itself.  This method
-		 * sets the reference to the sub-activity via a <code>LogReference</code>
-		 * instance.
+		 * Add the reference to the Sub-Activity to the <code>LogEntry</code>.
+		 * Some <code>LogEntry</code> instances will record an
+		 * <code>Action</code> upon a <code>SubActivity</code>, rather than the
+		 * <code>Activity</code> itself.  This method sets the reference to the
+		 * <code>SubActivity</code> via a <code>LogReference</code> instance.
 		 *
 		 * @param  entry     The <code>LogEntry</code> to which the
 		 *                   <code>LogReference</code> is to be added, not null
-		 * @param  reference The <code>LogReference</code> instance to be added to
-		 *                   the <code>LogEntry</code>, not null
+		 * @param  reference The <code>LogReference</code> instance to be added
+		 *                   to the <code>LogEntry</code>, not null
 		 */
 
 		public void setReference (final LogEntry entry, final LogReference reference)
 		{
 			assert entry instanceof LogData : "entry is not an instance of LogData";
 			assert reference != null : "reference is NULL";
-			
+
 			((LogData) entry).setReference (reference);
 		}
 	}
@@ -170,7 +170,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		assert action != null : "action is NULL";
 		assert activity != null : "activity is NULL";
 		assert enrolment != null : "enrolment is NULL";
-		
+
 		this.id = null;
 		this.reference = null;
 
@@ -183,7 +183,8 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	}
 
 	/**
-	 * Compare two <code>LogEntry</code> instances and determine if they are equal.
+	 * Compare two <code>LogEntry</code> instances and determine if they are
+	 * equal.
 	 * <p>
 	 * <ul>
 	 * <li>The <code>Action</code>
@@ -195,8 +196,9 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 *
 	 * @param  obj The <code>LogEntry</code> instance to compare with this one
 	 *
-	 * @return     <code>True</code> if the <code>LogEntry</code> instances should
-	 *             be considered to be equal, <code>False</code> otherwise
+	 * @return     <code>True</code> if the <code>LogEntry</code> instances
+	 *             should be considered to be equal, <code>False</code>
+	 *             otherwise
 	 */
 
 	@Override
@@ -232,8 +234,8 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	}
 
 	/**
-	 * Compute a <code>hashCode</code> of the <code>LogEntry</code> instance.  The
-	 * hash code is computed based upon the following fields:
+	 * Compute a <code>hashCode</code> of the <code>LogEntry</code> instance.
+	 * The hash code is computed based upon the following fields:
 	 * <p>
 	 * <ul>
 	 * <li>The <code>Action</code>
@@ -287,11 +289,11 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded, or by the <code>LogEntryBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new <code>LogEntry</code>
-	 * instance.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>LogEntry</code>
+	 * instance is loaded, or by the <code>LogEntryBuilder</code>
+	 * implementation to set the <code>DataStore</code> identifier, prior to
+	 * storing a new <code>LogEntry</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -317,7 +319,8 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	/**
 	 * Set the <code>Action</code> which was performed upon the logged
 	 * <code>Activity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is loaded.
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded.
 	 *
 	 * @param  action The <code>Action</code>, not null
 	 */
@@ -330,11 +333,12 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	}
 
 	/**
-	 * Get the <code>Activity</code> upon which the logged action was performed.
+	 * Get the <code>Activity</code> upon which the logged action was
+	 * performed.
 	 *
 	 * @return A reference to the associated <code>Activity</code> object.
 	 */
-	
+
 	@Override
 	public Activity getActivity ()
 	{
@@ -342,9 +346,10 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	}
 
 	/**
-	 * Set the <code>Activity</code>  upon which the logged action was performed.
-	 * This method is intended to be used by a <code>DataStore</code> when the
-	 * <code>LogEntry</code> instance is loaded.
+	 * Set the <code>Activity</code>  upon which the logged action was
+	 * performed.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded.
 	 *
 	 * @param  activity The <code>Activity</code>, not null
 	 */
@@ -384,7 +389,8 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	/**
 	 * Set the <code>Enrolment</code> instance for the <code>User</code> which
 	 * performed the logged action.   This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is loaded.
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded.
 	 *
 	 * @param  enrolment The <code>Enrolment</code>, not null
 	 */
@@ -424,10 +430,12 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	}
 
 	/**
-	 * Get the reference to the Sub-Activity for the <code>LogEntry</code>.  Some
-	 * <code>LogEntry</code> instances will record an <code>Action</code> upon a
-	 * sub-activity, rather than the <code>Activity</code> itself.  This method
-	 * gets the <code>LogReference</code> instance containing the Sub-Activity.
+	 * Get the reference to the <code>SubActivity</code> for the
+	 * <code>LogEntry</code>.  Some <code>LogEntry</code> instances will record
+	 * an <code>Action</code> upon a <code>SubActivity</code>, rather than the
+	 * <code>Activity</code> itself.  This method gets the
+	 * <code>LogReference</code> instance containing the
+	 * </code>SubActivity</code>.
 	 *
 	 * @return The <code>LogReference</code> instance
 	 */
@@ -438,10 +446,11 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	}
 
 	/**
-	 * Set the reference to the Sub-Activity to the <code>LogEntry</code>.  This
-	 * method is intended to be used by a <code>DataStore</code> when the
-	 * <code>LogEntry</code> instance is loaded, or by the
-	 * <code>LogEntryBuilder</code> when the <code>LogEntry</code> is created.
+	 * Set the reference to the <code>SubActivity</code> to the
+	 * <code>LogEntry</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded, or by the <code>LogEntryBuilder</code> when the
+	 * <code>LogEntry</code> is created.
 	 *
 	 * @param  reference The <code>LogReference</code> instance, not null
 	 */
@@ -484,8 +493,8 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * Get a <code>String</code> representation of the <code>LogEntry</code>
 	 * instance, including the identifying fields.
 	 *
-	 * @return A <code>String</code> representation of the <code>LogEntry</code>
-	 *         instance
+	 * @return A <code>String</code> representation of the
+	 *         <code>LogEntry</code> instance
 	 */
 
 	@Override

@@ -72,8 +72,8 @@ public interface ActivitySourceElementFactory extends ElementFactory<ActivitySou
 	 *                <code>ActivitySource</code>, not null
 	 *
 	 * @return        <code>True</code> if the <code>ActivityType</code> was
-	 *                successfully removed from the <code>ActivitySource</code>,
-	 *                <code>False</code> otherwise
+	 *                successfully removed from the
+	 *                <code>ActivitySource</code>, <code>False</code> otherwise
 	 */
 
 	public abstract boolean removeActivityType (ActivitySource source, ActivityType type);

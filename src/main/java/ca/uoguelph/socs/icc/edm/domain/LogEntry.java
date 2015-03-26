@@ -63,7 +63,8 @@ public interface LogEntry extends Element
 	public abstract Course getCourse();
 
 	/**
-	 * Get the <code>Activity</code> upon which the logged action was performed.
+	 * Get the <code>Activity</code> upon which the logged action was
+	 * performed.
 	 *
 	 * @return A reference to the associated <code>Activity</code> object.
 	 */
@@ -71,7 +72,8 @@ public interface LogEntry extends Element
 	public abstract Activity getActivity();
 
 	/**
-	 * Get the <code>Action</code> which was performed upon the logged activity.
+	 * Get the <code>Action</code> which was performed upon the logged
+	 * activity.
 	 *
 	 * @return A reference to the logged <code>Action</code>
 	 */

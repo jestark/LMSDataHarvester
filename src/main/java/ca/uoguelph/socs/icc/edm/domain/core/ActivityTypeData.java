@@ -48,7 +48,8 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 {
 	/**
 	 * Implementation of the <code>ActivityTypeElementFactory</code> interface.
-	 * Allows the builders to create instances of <code>ActivityTypeData</code>.
+	 * Allows the builders to create instances of
+	 * <code>ActivityTypeData</code>.
 	 */
 
 	private static final class Factory extends AbstractElement.Factory<ActivityType> implements ActivityTypeElementFactory
@@ -98,14 +99,15 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		 * Remove the specified <code>Action</code> from the specified
 		 * <code>ActivityType</code>.
 		 *
-		 * @param  type   The <code>ActivityType</code> from which the <code>Action</code>
-		 *                is to be removed, not null
+		 * @param  type   The <code>ActivityType</code> from which the
+		 *                <code>Action</code> is to be removed, not null
 		 * @param  action The <code>Action</code> to remove from the
 		 *                <code>ActivityType</code>, not null
 		 *
 		 * @return        <code>True</code> if the <code>Action</code> was
-		 *                successfully removed from the <code>ActivityType</code>,
-		 *                <code>False</code> otherwise
+		 *                successfully removed from the
+		 *                <code>ActivityType</code>, <code>False</code>
+		 *                otherwise
 		 */
 
 		@Override
@@ -134,8 +136,8 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	private Set<Action> actions;
 
 	/**
-	 * Static initializer to register the <code>ActivityTypeData</code> class with
-	 * the factories.
+	 * Static initializer to register the <code>ActivityTypeData</code> class
+	 * with the factories.
 	 */
 
 	static
@@ -178,14 +180,14 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 
 	/**
 	 * Compare two <code>ActivityType</code> instances to determine if they are
-	 * equal.  The <code>ActivityType</code> instances are compared based upon their
-	 * associated <code>ActivitySource</code> and their names.
+	 * equal.  The <code>ActivityType</code> instances are compared based upon
+	 * their associated <code>ActivitySource</code> and their names.
 	 *
 	 * @param  obj The <code>ActivityType</code> instance to compare to the one
 	 *             represented by the called instance
 	 *
-	 * @return     <code>True</code> if the two <code>ActivityType</code> instances
-	 *             are equal, <code>False</code> otherwise
+	 * @return     <code>True</code> if the two <code>ActivityType</code>
+	 *             instances are equal, <code>False</code> otherwise
 	 */
 
 	@Override
@@ -210,8 +212,8 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	}
 
 	/**
-	 * Compute a <code>hashCode</code> of the <code>ActivityType</code> instance.
-	 * The hash code is computed based upon the associated
+	 * Compute a <code>hashCode</code> of the <code>ActivityType</code>
+	 * instance.  The hash code is computed based upon the associated
 	 * <code>ActivitySource</code> and name of the instance.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
@@ -231,8 +233,8 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	}
 
 	/**
-	 * Get the <code>DataStore</code> identifier for the <code>ActivityType</code>
-	 * instance.
+	 * Get the <code>DataStore</code> identifier for the
+	 * <code>ActivityType</code> instance.
 	 *
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
@@ -243,8 +245,8 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>ActivityType</code>
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>ActivityType</code>
 	 * instance is loaded, or by the <code>ActivityTypeBuilder</code>
 	 * implementation to set the <code>DataStore</code> identifier, prior to
 	 * storing a new <code>ActivityType</code> instance.
@@ -271,9 +273,9 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	}
 
 	/**
-	 * Set the name of the <code>ActivityType</code>.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>ActivityType</code>
-	 * instance is loaded.
+	 * Set the name of the <code>ActivityType</code>.  This method is intended
+	 * to be used by a <code>DataStore</code> when the
+	 * <code>ActivityType</code> instance is loaded.
 	 *
 	 * @param  name The name of the <code>ActivityType</code>
 	 */
@@ -330,8 +332,9 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 
 	/**
 	 * Initialize the <code>Set</code> of associated <code>Action</code>
-	 * instances.  This method is intended to be used by a <code>DataStore</code>
-	 * when the <code>ActivityType</code> instance is loaded.
+	 * instances.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>ActivityType</code> instance is
+	 * loaded.
 	 *
 	 * @param  actions The <code>Set</code> of <code>Action</code> instances
 	 *                 to be associated with the <code>ActivityType</code>
@@ -379,11 +382,11 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	}
 
 	/**
-	 * Get a <code>String</code> representation of the <code>ActivityType</code>
-	 * instance, including the identifying fields.
+	 * Get a <code>String</code> representation of the
+	 * <code>ActivityType</code> instance, including the identifying fields.
 	 *
-	 * @return A <code>String</code> representation of the <code>ActivityType</code>
-	 *         instance
+	 * @return A <code>String</code> representation of the
+	 *         <code>ActivityType</code> instance
 	 */
 
 	@Override

@@ -20,7 +20,7 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 
 /**
  * A representation of a child element in a hierarchy of <code>Activity</code>
- * instances.  This interface must be implemented by all of the Sub-Activities.
+ * instances.
  *
  * @author  James E. Stark
  * @version 1.0

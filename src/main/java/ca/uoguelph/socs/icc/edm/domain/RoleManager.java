@@ -29,8 +29,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface RoleManager extends ElementManager<Role>
 {
 	/**
-	 * Get an instance of the <code>RoleBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>RoleBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>RoleBuilder</code> instance
 	 */
@@ -38,12 +38,12 @@ public interface RoleManager extends ElementManager<Role>
 	public abstract RoleBuilder getBuilder ();
 
 	/**
-	 * Retrieve a <code>Role</code> object from the underlying data-store based on
-	 * its name.
+	 * Retrieve a <code>Role</code> instance from the <code>DataStore</code>
+	 * based on  its name.
 	 *
 	 * @param  name The name of the <code>Role</code>, not null
 	 *
-	 * @return      A <code>Role</code> object
+	 * @return      A <code>Role</code> instance
 	 */
 
 	public abstract Role fetchByName (String name);

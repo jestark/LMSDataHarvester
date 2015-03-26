@@ -75,14 +75,15 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	 *
 	 * @param  datastore The DataStore instance to be queried, not null
 	 * @param  type      The type of objects to return from this query, not null
-	 * @param  impl      The type of objects to query from the database, not null
+	 * @param  impl      The type of objects to query from the database, not
+	 *                   null
 	 * @see    JPADataStore#createQuery
 	 */
 
-	protected JPADataStoreQuery (JPADataStore datastore, Class<T> type, Class<X> impl)
+	protected JPADataStoreQuery (final JPADataStore datastore, final Class<T> type, final Class<X> impl)
 	{
 		this.log = LoggerFactory.getLogger (JPADataStoreQuery.class);
-		
+
 		this.datastore = datastore;
 		this.type = type;
 		this.impl = impl;
@@ -115,25 +116,26 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	}
 
 	/**
-	 * Close the data store query. This method is intended to be used only by the
-	 * <code>JPADataStore</code>'s <code>close</code> method to instruct this
-	 * query to perform any necessary clean-up operations.
+	 * Close the data store query. This method is intended to be used only by
+	 * the <code>JPADataStore</code>'s <code>close</code> method to instruct
+	 * this query to perform any necessary clean-up operations.
 	 *
 	 * @see JPADataStore#close
 	 */
 
 	protected void close ()
 	{
-		this.log.trace ("Close the Query");
+		this.log.trace ("close:");
 
 		this.queries.clear ();
 		this.generator = null;
 	}
 
 	/**
-	 * Create a <code>TypedQuery</code> corresponding to the specified name.  This
-	 * method resolves the full name of the query and retrieves the corresponding
-	 * <code>TypedQuery</code> object from the <code>EntityManager</code>.
+	 * Create a <code>TypedQuery</code> corresponding to the specified name.
+	 * This method resolves the full name of the query and retrieves the
+	 * corresponding <code>TypedQuery</code> object from the
+	 * <code>EntityManager</code>.
 	 *
 	 * @param  <Q>                      The return type of the query
 	 * @param  cls                      The return type of the query, not null
@@ -144,8 +146,10 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	 * @throws IllegalArgumentException if the specified query does not exist
 	 */
 
-	private <Q> TypedQuery<Q> getQuery (Class<Q> cls, String name)
+	private <Q> TypedQuery<Q> getQuery (final Class<Q> cls, final String name)
 	{
+		this.log.trace ("getQuery cls={}, name={}", cls, name);
+
 		TypedQuery<Q> query = null;
 
 		if (name == null)
@@ -168,19 +172,20 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	}
 
 	/**
-	 * Create a <code>TypedQuery</code> corresponding to the specified name.  This
-	 * method will retrieve the specified query from the JPA
+	 * Create a <code>TypedQuery</code> corresponding to the specified name.
+	 * This method will retrieve the specified query from the JPA
 	 * <code>EntityManager</code> is the query is not already cached.
 	 *
-	 * @param  name                     The name of the query to fetch, not null.
+	 * @param  name                     The name of the query to fetch, not null
+	 *
 	 * @return                          The typed query corresponding to the
 	 *                                  specified name
-	 * @throws IllegalArgumentException if the specified query does not exist.
+	 * @throws IllegalArgumentException if the specified query does not exist
 	 */
 
-	private TypedQuery<X> getQuery (String name)
+	private TypedQuery<X> getQuery (final String name)
 	{
-		this.log.trace ("Fetch Query: {}", name);
+		this.log.trace ("getQuery: name={}", name);
 
 		if (! this.queries.containsKey (name))
 		{
@@ -191,41 +196,42 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	}
 
 	/**
-	 * Create a TypedQuery corresponding to the specified name, and initialize it
-	 * from the provided map of query parameters.  The query must exist in the
-	 * database mapping.
+	 * Create a TypedQuery corresponding to the specified name, and initialize
+	 * it from the provided map of query parameters.  The query must exist in
+	 * the database mapping.
 	 * <p>
-	 * The parameter map may be null, however all of the parameters to the query
-	 * (if any) must have a value.  All of the parameters included in the
+	 * The parameter map may be null, however all of the parameters to the
+	 * query (if any) must have a value.  All of the parameters included in the
 	 * parameter map must have non-null values.
 	 * <p>
-	 * All of the parameters for the query must have values.  If a query parameter
-	 * is not included in the parameter map then the value for the parameter from
-	 * the previous execution of the query will be used, if it is available.
-	 * Since reusing query parameters will probably lead to unexpected results, a
-	 * warning will be emitted if a parameter is missing from the parameter map.
-	 * This method will abort if a parameter is missing and there is no value
-	 * available from a previous query execution.
+	 * All of the parameters for the query must have values.  If a query
+	 * parameter is not included in the parameter map then the value for the
+	 * parameter from the previous execution of the query will be used, if it
+	 * is available. Since reusing query parameters will probably lead to
+	 * unexpected results, a warning will be emitted if a parameter is missing
+	 * from the parameter map. This method will abort if a parameter is missing
+	 * and there is no value available from a previous query execution.
 	 * <p>
 	 * The <code>getParameters</code> method will return a list of all of the
 	 * query parameters.
 	 *
-	 * @param  name                     The name of the query to fetch, not null
-	 * @param  parameters               A Map of parameter names and their
-	 *                                  corresponding values for this query.  The
-	 *                                  Map may be null, the values must not be
-	 *                                  null.
-	 * @return                          The initialized typed query corresponding
-	 *                                  to the specified name.
+	 * @param  name                     The name of the query to fetch, not
+	 *                                  null
+	 * @param  parameters               A <code>Map</code> of parameter names
+	 *                                  and their corresponding values for this
+	 *                                  query. The <code>Map</code> may be
+	 *                                  null, the values must not be null.
+	 * @return                          The initialized typed query
+	 *                                  corresponding to the specified name.
 	 * @throws IllegalArgumentException if a parameter is missing, or the query
 	 *                                  does not exist
 	 * @throws NullPointerException     if a value to a parameter is null
 	 * @see    #getParameters
 	 */
 
-	private TypedQuery<X> getQuery (String name, Map<String, Object> parameters)
+	private TypedQuery<X> getQuery (final String name, final Map<String, Object> parameters)
 	{
-		this.log.trace ("Fetch Query: {} ({})", name, parameters);
+		this.log.trace ("getQuery: name={}, parameters={}", name, parameters);
 
 		TypedQuery<X> query = this.getQuery (name);
 		Set<Parameter<?>> qparams = query.getParameters ();
@@ -248,9 +254,9 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 			}
 			else if (query.isBound (param))
 			{
-				// The caller didn't supply a value for this parameter, so the previous
-				// value will be used.  It's not an error, but may lead to bad results so
-				// issue a warning
+				// The caller didn't supply a value for this parameter, so the
+				// previous value will be used.  It's not an error, but may
+				// lead to bad results so issue a warning
 				this.log.warn ("Using previous value for parameter: {}", param.getName ());
 			}
 			else
@@ -280,10 +286,10 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	{
 		return this.datastore;
 	}
-	
+
 	/**
-	 * Get the next available DataStore ID number.  The number will be chosen by
-	 * the IdGenerator algorithm set in the <code>DataStoreProfile</code>
+	 * Get the next available DataStore ID number.  The number will be chosen
+	 * by the IdGenerator algorithm set in the <code>DataStoreProfile</code>
 	 *
 	 * @return A Long containing the ID number
 	 */
@@ -301,14 +307,13 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	/**
 	 * Get the set of parameter names for the specified query.
 	 *
-	 * @param  name                 The name of the query, not null
-	 * @return                      A set containing the names of all of the
-	 *                              parameters
+	 * @param  name The name of the query, not null
+	 * @return      A set containing the names of all of the parameters
 	 */
 
-	public Set<String> getParameters (String name)
+	public Set<String> getParameters (final String name)
 	{
-		this.log.trace ("Get all parameters for query: {}", name);
+		this.log.trace ("getParameters: name={}", name);
 
 		Set<String> params = new HashSet<String> ();
 
@@ -329,7 +334,7 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 
 	public List<Long> queryAllIds ()
 	{
-		this.log.trace ("Get all ID numbers for: {}", this.impl);
+		this.log.trace ("queryAllIds:");
 
 		return new ArrayList<Long> ((this.getQuery (Long.class, "allid")).getResultList ());
 	}
@@ -343,7 +348,7 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 
 	public Long queryMaxId ()
 	{
-		this.log.trace ("Get Maximum ID number for: {}", this.impl);
+		this.log.trace ("queryMaxId:");
 
 		Long result = new Long (0);
 
@@ -365,8 +370,8 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	}
 
 	/**
-	 * Retrieve an object from the database based on the value of its primary key.
-	 * Note that the value of the primary key must not be less than zero.
+	 * Retrieve an object from the database based on the value of its primary
+	 * key.  Note that the value of the primary key must not be less than zero.
 	 *
 	 * @param  id The id (primary key) of the object to retrieve, not null
 	 * @return    The object with an ID equal to the specified value or null if
@@ -374,50 +379,41 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	 */
 
 	@Override
-	public T query (Long id)
+	public T query (final Long id)
 	{
-		this.log.trace ("Retrieve Object with ID: {}", id);
+		this.log.trace ("query: id={}", id);
 
-		if (id == null)
-		{
-			this.log.error ("Attempting to query using a NULL id");
-			throw new NullPointerException ();
-		}
-
-		if (id < 0)
-		{
-			this.log.error ("query id: {} < 0, positive values are required", id);
-			throw new IllegalArgumentException ("Key ids must be greater then zero.");
-		}
+		assert id != null : "id is NULL";
 
 		return (this.datastore.getEntityManager ()).find (this.impl, id);
 	}
 
 	/**
-	 * Fetch the object from the database which matches the specified query, with
-	 * the specified parameters.  The specified query must be defined in the JPA
-	 * database mapping.
+	 * Fetch the object from the database which matches the specified query,
+	 * with the specified parameters.  The specified query must be defined in
+	 * the JPA database mapping.
 	 * <p>
-	 * The parameter map may be null, however all of the parameters to the query
-	 * (if any) must have a value.  All of the parameters included in the
+	 * The parameter map may be null, however all of the parameters to the
+	 * query (if any) must have a value.  All of the parameters included in the
 	 * parameter map must have non-null values.
 	 * <p>
-	 * All of the parameters for the query must have values.  If a query parameter
-	 * is not included in the parameter map then the value for the parameter from
-	 * the previous execution of the query will be used, if it is available.
-	 * Since reusing query parameters will probably lead to unexpected results, a
-	 * warning will be emitted if a parameter is missing from the parameter map.
-	 * This method will abort if a parameter is missing and there is no value
-	 * available from a previous query execution.
+	 * All of the parameters for the query must have values.  If a query
+	 * parameter is not included in the parameter map then the value for the
+	 * parameter from the previous execution of the query will be used, if it
+	 * is available.  Since reusing query parameters will probably lead to
+	 * unexpected results, a warning will be emitted if a parameter is missing
+	 * from the parameter map.  This method will abort if a parameter is
+	 * missing and there is no value available from a previous query execution.
 	 * <p>
 	 * The <code>getParameters</code> method will return a list of all of the
 	 * query parameters.
 	 *
-	 * @param name                      The name of the query to execute, not null
-	 * @param parameters                A Map of parameter names and their
-	 *                                  corresponding values for this query.  The
-	 *                                  Map may be null, the values must not be
-	 *                                  null.
+	 * @param name                      The name of the query to execute, not
+	 *                                  null
+	 * @param parameters                A <code>Map</code> of parameter names
+	 *                                  and their corresponding values for this
+	 *                                  query.  The <code>Map</code> may be
+	 *                                  null, the values must not be null.
 	 * @return                          The object which matches the specified
 	 *                                  query, null if that object does not exist
 	 *                                  in the database.
@@ -428,9 +424,9 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	 */
 
 	@Override
-	public T query (String name, Map<String, Object> parameters)
+	public T query (final String name, final Map<String, Object> parameters)
 	{
-		this.log.trace ("Retrieve Object: {} ({})", name, parameters);
+		this.log.trace ("query: name={}, parameters={}", name, parameters);
 
 		T result = null;
 
@@ -462,39 +458,41 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	@Override
 	public List<T> queryAll ()
 	{
-		this.log.trace ("Retrieve all objects");
+		this.log.trace ("queryAll:");
 
 		return new ArrayList<T> (this.getQuery ("all").getResultList ());
 	}
 
 	/**
-	 * Fetch a list of objects from the database which match the specified query,
-	 * with the specified parameters.  The specified query must be defined in the
-	 * JPA database mapping.
+	 * Fetch a list of objects from the database which match the specified
+	 * query, with the specified parameters.  The specified query must be
+	 * defined in the JPA database mapping.
 	 * <p>
-	 * The parameter map may be null, however all of the parameters to the query
-	 * (if any) must have a value.  All of the parameters included in the
+	 * The parameter map may be null, however all of the parameters to the
+	 * query (if any) must have a value.  All of the parameters included in the
 	 * parameter map must have non-null values.
 	 * <p>
-	 * All of the parameters for the query must have values.  If a query parameter
-	 * is not included in the parameter map then the value for the parameter from
-	 * the previous execution of the query will be used, if it is available.
-	 * Since reusing query parameters will probably lead to unexpected results, a
-	 * warning will be emitted if a parameter is missing from the parameter map.
-	 * This method will abort if a parameter is missing and there is no value
-	 * available from a previous query execution.
+	 * All of the parameters for the query must have values.  If a query
+	 * parameter is not included in the parameter map then the value for the
+	 * parameter from the previous execution of the query will be used, if it
+	 * is available.  Since reusing query parameters will probably lead to
+	 * unexpected results, a warning will be emitted if a parameter is missing
+	 * from the parameter map.  This method will abort if a parameter is
+	 * missing and there is no value available from a previous query execution.
 	 * <p>
 	 * The <code>getParameters</code> method will return a list of all of the
 	 * query parameters.
 	 *
-	 * @param  name                     The name of the query to execute, not null
-	 * @param  parameters               A Map of parameter names and their
-	 *                                  corresponding values for this query.  The
-	 *                                  Map may be null, the values must not be
-	 *                                  null.
-	 * @return                          The list of object which match the
-	 *                                  specified query.  If no objects match then
-	 *                                  the List will be empty.
+	 * @param  name                     The name of the query to execute, not
+	 *                                  null
+	 * @param  parameters               A <code>Map</code> of parameter names
+	 *                                  and their corresponding values for this
+	 *                                  query.  The <code>Map</code> may be
+	 *                                  null, the values must not be null.
+	 * @return                          The <code>List</code> of object which
+	 *                                  match the specified query.  If no
+	 *                                  objects match then the
+	 *                                  <code>List</code> will be empty.
 	 * @throws IllegalArgumentException if a parameter is missing, or the query
 	 *                                  does not exist
 	 * @throws NullPointerException     if a value to a parameter is null
@@ -502,37 +500,31 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	 */
 
 	@Override
-	public List<T> queryAll (String name, Map<String, Object> parameters)
+	public List<T> queryAll (final String name, final Map<String, Object> parameters)
 	{
-		this.log.trace ("Retrieve all objects: {} ({})", name, parameters);
+		this.log.trace ("queryAll: name={}, parameters={}", name, parameters);
 
 		return new ArrayList<T> (this.getQuery (name, parameters).getResultList ());
 	}
 
 	/**
-	 * Test to see if the specified entity is in the data store.  The entity to be
-	 * tested must be an instance of the implementation type associated with this
-	 * DataStoreQuery.
+	 * Test to see if the specified entity is in the data store.  The entity to
+	 * be tested must be an instance of the implementation type associated with
+	 * this <code>DataStoreQuery</code>.
 	 *
 	 * @param  entity                   The entity to check, not null.
-	 * @return                          <code>true</code> if the entity is in the
-	 *                                  database <code>false</code> otherwise.
+	 * @return                          <code>true</code> if the entity is in
+	 *                                  the database <code>false</code>
+	 *                                  otherwise.
 	 * @throws IllegalArgumentException if the entity is not an instance of the
-	 *                                  implementation type associated with this
-	 *                                  data store query instance.
+	 *                                  implementation type associated with
+	 *                                  this data store query instance.
 	 */
 
 	@Override
-	public Boolean contains (T entity)
+	public Boolean contains (final T entity)
 	{
-		this.log.trace ("Testing for the existence of: {}", entity);
-
-		// Abort if the entity if the entity is null
-		if (entity == null)
-		{
-			this.log.error ("Attempting to test a NULL");
-			throw new NullPointerException ();
-		}
+		this.log.trace ("contains: entity={}", entity);
 
 		// Abort if the entity is not an instance of the implementation type
 		if (! this.impl.isInstance (entity))
@@ -545,27 +537,20 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 	}
 
 	/**
-	 * Insert the specified entity into the data store.  The entity to be inserted
-	 * must be an instance of the implementation type associated with this
-	 * DataStoreQuery.
+	 * Insert the specified entity into the data store.  The entity to be
+	 * inserted must be an instance of the implementation type associated with
+	 * this <code>DataStoreQuery</code>.
 	 *
 	 * @param  entity                   The entity to insert, not null.
 	 * @throws IllegalArgumentException if the entity is not an instance of the
-	 *                                  implementation type associated with this
-	 *                                  data store query instance.
+	 *                                  implementation type associated with
+	 *                                  this data store query instance.
 	 */
 
 	@Override
-	public void insert (T entity)
+	public T insert (final T entity)
 	{
-		this.log.trace ("Inserting entity into the datastore: {}", entity);
-
-		// Abort if the entity if the entity is null
-		if (entity == null)
-		{
-			this.log.error ("Attempting to insert a NULL");
-			throw new NullPointerException ();
-		}
+		this.log.trace ("insert: entity={}", entity);
 
 		// Abort if the entity is not an instance of the implementation type
 		if (! this.impl.isInstance (entity))
@@ -575,30 +560,25 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 		}
 
 		(this.datastore.getEntityManager ()).persist (entity);
+
+		return entity;
 	}
 
 	/**
-	 * Remove the specified entity from the data store.  The entity to be removed
-	 * must be an instance of the implementation type associated with this
-	 * DataStoreQuery.
+	 * Remove the specified entity from the data store.  The entity to be
+	 * removed must be an instance of the implementation type associated with
+	 * this <code>DataStoreQuery</code>.
 	 *
 	 * @param  entity                   The entity to remove, not null.
 	 * @throws IllegalArgumentException if the entity is not an instance of the
-	 *                                  implementation type associated with this
-	 *                                  data store query instance.
+	 *                                  implementation type associated with
+	 *                                  this data store query instance.
 	 */
 
 	@Override
-	public void remove (T entity)
+	public void remove (final T entity)
 	{
-		this.log.trace ("Removing entity from the datastore: {}", entity);
-
-		// Abort if the entity if the entity is null
-		if (entity == null)
-		{
-			this.log.error ("Attempting to remove a NULL");
-			throw new NullPointerException ();
-		}
+		this.log.trace ("remove: entity={}", entity);
 
 		// Abort if the entity is not an instance of the implementation type
 		if (! this.impl.isInstance (entity))

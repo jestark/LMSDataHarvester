@@ -64,7 +64,8 @@ public class NullIdGenerator implements IdGenerator
 	}
 
 	/**
-	 * Return the next available ID number.  This method will always return null.
+	 * Return the next available ID number.  This method will always return
+	 * null.
 	 *
 	 * @return A <code>Long</code> containing the next id number
 	 */

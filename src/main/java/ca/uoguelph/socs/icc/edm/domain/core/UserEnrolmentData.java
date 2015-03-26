@@ -50,8 +50,9 @@ import ca.uoguelph.socs.icc.edm.domain.builder.EnrolmentElementFactory;
 public class UserEnrolmentData extends EnrolmentData implements Enrolment, Serializable
 {
 	/**
-	 * Implementation of the <code>EnrolmentElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>UserEnrolmentData</code>.
+	 * Implementation of the <code>EnrolmentElementFactory</code> interface.
+	 * Allows the builders to create instances of
+	 * <code>UserEnrolmentData</code>.
 	 */
 
 	private static final class Factory extends AbstractElement.Factory<Enrolment> implements EnrolmentElementFactory
@@ -59,16 +60,16 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		/**
 		 * Create a new <code>Enrolment</code> instance.
 		 *
-		 * @param  user   The <code>User</code> enrolled in the <code>Course</code>,
-		 *                not null
-		 * @param  course The <code>Course</code> in which the <code>User</code> is
-		 *                enrolled, not null
+		 * @param  user   The <code>User</code> enrolled in the
+		 *                <code>Course</code>, not null
+		 * @param  course The <code>Course</code> in which the
+		 *                <code>User</code> is enrolled, not null
 		 * @param  role   The <code>Role</code> of the <code>User</code> in the
 		 *                <code>Course</code>, not null
-		 * @param  grade  The final grade assigned to the <code>User</code> in the
-		 *                <code>Course</code>
-		 * @param  usable Indication if the <code>User</code> has consented to their
-		 *                data being used for research
+		 * @param  grade  The final grade assigned to the <code>User</code> in
+		 *                the <code>Course</code>
+		 * @param  usable Indication if the <code>User</code> has consented to
+		 *                their data being used for research
 		 *
 		 * @return        The new <code>Enrolment</code> instance
 		 */
@@ -117,8 +118,9 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		 *                   <code>Enrolment</code>, not null
 		 *
 		 * @return           <code>True</code> if the <code>Grade</code> was
-		 *                   successfully removed from the <code>Enrolment</code>,
-		 *                   <code>False</code> otherwise
+		 *                   successfully removed from the
+		 *                   <code>Enrolment</code>, <code>False</code>
+		 *                   otherwise
 		 */
 
 		public boolean removeGrade (final Enrolment enrolment, final Grade grade)
@@ -161,8 +163,9 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 		 *                   <code>Enrolment</code>, not null
 		 *
 		 * @return           <code>True</code> if the <code>LogEntry</code> was
-		 *                   successfully removed from the <code>Enrolment</code>,
-		 *                   <code>False</code> otherwise
+		 *                   successfully removed from the
+		 *                   <code>Enrolment</code>, <code>False</code>
+		 *                   otherwise
 		 */
 
 		public boolean removeLogEntry (final Enrolment enrolment, final LogEntry entry)
@@ -203,16 +206,16 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	/**
 	 * Create a new <code>Enrolment</code> instance.
 	 *
-	 * @param  user   The <code>User</code> enrolled in the <code>Course</code>,
-	 *                not null
+	 * @param  user   The <code>User</code> enrolled in the
+	 *                <code>Course</code>, not null
 	 * @param  course The <code>Course</code> in which the <code>User</code> is
 	 *                enrolled, not null
 	 * @param  role   The <code>Role</code> of the <code>User</code> in the
 	 *                <code>Course</code>, not null
 	 * @param  grade  The final grade assigned to the <code>User</code> in the
 	 *                <code>Course</code>
-	 * @param  usable Indication if the <code>User</code> has consented to their
-	 *                data being used for research
+	 * @param  usable Indication if the <code>User</code> has consented to
+	 *                their data being used for research
 	 */
 
 	public UserEnrolmentData (final User user, final Course course, final Role role, final Integer grade, final Boolean usable)
@@ -233,8 +236,8 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	 * @param  obj The <code>Enrolment</code> instance to compare to the one
 	 *             represented by the called instance
 	 *
-	 * @return     <code>True</code> if the two <code>Enrolment</code> instances
-	 *             are equal, <code>False</code> otherwise
+	 * @return     <code>True</code> if the two <code>Enrolment</code>
+	 *             instances are equal, <code>False</code> otherwise
 	 * @see        EnrolmentData#equals
 	 */
 
@@ -283,7 +286,7 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	}
 
 	/**
-	 * Get the <code>User</code> associated with the <code>Enrolment</code.
+	 * Get the <code>User</code> associated with the <code>Enrolment</code>.
 	 *
 	 * @return The <code>User</code> instance
 	 */
@@ -296,7 +299,8 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	/**
 	 * Set the <code>user</code> instance which is associated with the
 	 * <code>Enrolment</code>. This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Enrolment</code> instance is loaded.
+	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
+	 * loaded.
 	 *
 	 * @param  user The <code>User</code> instance which is associated with the
 	 *              <code>Enrolment</code>
@@ -305,18 +309,18 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 	protected void setUser (final User user)
 	{
 		assert user != null : "user is NULL";
-		
+
 		this.user = user;
 	}
 
 	/**
-	 * Get the name associated with the <code>Enrolment</code>.  The contents of
-	 * the <code>String</code> returned by this method are implementation
+	 * Get the name associated with the <code>Enrolment</code>.  The contents
+	 * of the <code>String</code> returned by this method are implementation
 	 * dependent.  If the implementation has access to the <code>User</code>
 	 * information this this method should return the result of the
-	 * <code>getName</code> method for the associated <code>User</code> instance,
-	 * otherwise it should return some other identifier, usually the identifier for
-	 * the <code>Enrolment</code> in the <code>DataStore</code>.
+	 * <code>getName</code> method for the associated <code>User</code>
+	 * instance, otherwise it should return some other identifier, usually the
+	 * identifier for the <code>Enrolment</code> in the <code>DataStore</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the
 	 *         <code>Enrolment</code>
@@ -331,7 +335,8 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 
 	/**
 	 * Get a <code>String</code> representation of the
-	 * <code>UserEnrolmentData</code> instance, including the identifying fields.
+	 * <code>UserEnrolmentData</code> instance, including the identifying
+	 * fields.
 	 *
 	 * @return A <code>String</code> representation of the
 	 *         <code>UserEnrolmentData</code> instance

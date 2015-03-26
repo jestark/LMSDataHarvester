@@ -59,11 +59,11 @@ public interface LogEntryElementFactory extends ElementFactory<LogEntry>
 	public abstract LogEntry create (Action action, Activity activity, Enrolment enrolment, String ip, Date time);
 
 	/**
-	 * Add the reference to the Sub-Activity to the <code>LogEntry</code>.  Some
-	 * <code>LogEntry</code> instances will record an <code>Action</code> upon a
-	 * sub-activity, rather than the <code>Activity</code> itself.  This method
-	 * sets the reference to the sub-activity via a <code>LogReference</code>
-	 * instance.
+	 * Add the reference to the Sub-Activity to the <code>LogEntry</code>.
+	 * Some <code>LogEntry</code> instances will record an <code>Action</code>
+	 * upon a <code>SubActivity</code>, rather than the <code>Activity</code>
+	 * itself.  This method sets the reference to the <code>SubActivity</code>
+	 * via a <code>LogReference</code> instance.
 	 *
 	 * @param  entry     The <code>LogEntry</code> to which the
 	 *                   <code>LogReference</code> is to be added, not null

@@ -51,8 +51,9 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
 public abstract class ActivityInstance extends AbstractActivity implements Serializable
 {
 	/**
-	 * Implementation of the <code>ActivityElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>ActivityInstance</code>.
+	 * Implementation of the <code>ActivityElementFactory</code> interface.
+	 * Allows the builders to create instances of
+	 * <code>ActivityInstance</code>.
 	 */
 
 	protected static abstract class Factory extends AbstractActivity.Factory implements ActivityElementFactory
@@ -90,8 +91,8 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 		 *                  <code>Activity</code>, not null
 		 *
 		 * @return          <code>True</code> if the <code>Grade</code> was
-		 *                  successfully removed from the <code>Activity</code>,
-		 *                  <code>False</code> otherwise
+		 *                  successfully removed from the
+		 *                  <code>Activity</code>, <code>False</code> otherwise
 		 */
 
 		@Override
@@ -151,8 +152,8 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	}
 
 	/**
-	 * Compare two <code>Activity</code> instances to determine if they are equal.
-	 * The <code>Activity</code> instances are compared based upon the
+	 * Compare two <code>Activity</code> instances to determine if they are
+	 * equal.  The <code>Activity</code> instances are compared based upon the
 	 * <code>ActivityType</code> and the associated <code>Course</code>.
 	 *
 	 * @param  obj The <code>Activity</code> instance to compare to the one
@@ -210,8 +211,8 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	 * instance.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * child class.
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the child class.
 	 *
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
@@ -223,15 +224,15 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded, or by the <code>ActivityBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new
-	 * <code>Activity</code> instance.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Activity</code>
+	 * instance is loaded, or by the <code>ActivityBuilder</code>
+	 * implementation to set the <code>DataStore</code> identifier, prior to
+	 * storing a new <code>Activity</code> instance.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * child class.
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the child class.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -257,8 +258,9 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 
 	/**
 	 * Set the <code>Course</code> with which the <code>Activity</code> is
-	 * associated.  This method is intended to be used by a <code>DataStore</code>
-	 * when the <code>Activity</code> instance is loaded.
+	 * associated.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
 	 *
 	 * @param  course The <code>Course</code>, not null
 	 */
@@ -284,8 +286,9 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 
 	/**
 	 * Set the <code>ActvityType</code> with which the <code>Activity</code> is
-	 * associated.  This method is intended to be used by a <code>DataStore</code>
-	 * when the <code>Activity</code> instance is loaded.
+	 * associated.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null
 	 */
@@ -299,9 +302,10 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 
 	/**
 	 * Get the <code>Set</code> of <code>Grade</code> instances which are
-	 * associated with the <code>Activity</code>.  Not all <code>Activity</code>
-	 * instances are graded.  If the <code>Activity</code> does is not graded
-	 * then the <code>Set</code> will be empty.
+	 * associated with the <code>Activity</code>.  Not all
+	 * <code>Activity</code> instances are graded.  If the
+	 * <code>Activity</code> does is not graded then the <code>Set</code> will
+	 * be empty.
 	 *
 	 * @return A <code>Set</code> of <code>Grade</code> instances
 	 */
@@ -314,9 +318,9 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 
 	/**
 	 * Initialize the <code>Set</code> of <code>Grade</code> instances
-	 * associated with the <code>Activity</code> instance.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
+	 * associated with the <code>Activity</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Activity</code> instance is loaded.
 	 *
 	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
 	 *                null
@@ -367,8 +371,8 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	 * Get a <code>String</code> representation of the <code>Activity</code>
 	 * instance, including the identifying fields.
 	 *
-	 * @return A <code>String</code> representation of the <code>Activity</code>
-	 *         instance
+	 * @return A <code>String</code> representation of the
+	 *         <code>Activity</code> instance
 	 */
 
 	@Override

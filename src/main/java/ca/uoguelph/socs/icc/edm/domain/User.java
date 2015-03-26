@@ -26,13 +26,13 @@ import java.util.Set;
  * model.  As such, instances of the <code>User</code> interface are treated
  * somewhat specially.
  * <p>
- * In the domain model, <code>User</code> is a root level element, as its existence
- * is not dependent on any other components of the domain model.  Only
- * <code>Enrolment</code> depends on <code>User</code>, and that dependency
- * is weak.  The domain model is designed such that <code>User</code> is 
- * optional.  However, it would be wise to make sure that any <code>DataStore</code>
- * instance that does not contain <code>User</code> instances is completely
- * immutable.
+ * In the domain model, <code>User</code> is a root level element, as its
+ * existence is not dependent on any other components of the domain model.
+ * Only <code>Enrolment</code> depends on <code>User</code>, and that
+ * dependency is weak.  The domain model is designed such that
+ * <code>User</code> is optional.  However, it would be wise to make sure that
+ * any <code>DataStore</code> instance that does not contain <code>User</code>
+ * instances is completely immutable.
  * <p>
  * With the exception of adding and removing <code>Enrolment<code> instances,
  * <code>User</code> instances, once created, are immutable.
@@ -47,9 +47,10 @@ public interface User extends Element
 {
 	/**
 	 * Get the (student) ID number of the <code>User</code>.  This will be the
-	 * student number, or a similar identifier used to track the <code>User</code>
-	 * by the institution from which the data was harvested.  While the ID number
-	 * is not used as the database identifier it is expected to be unique.
+	 * student number, or a similar identifier used to track the
+	 * <code>User</code> by the institution from which the data was harvested.
+	 * While the ID number is not used as the database identifier it is
+	 * expected to be unique.
 	 *
 	 * @return An <code>Integer</code> representation of the ID number.
 	 */
@@ -74,10 +75,10 @@ public interface User extends Element
 	public abstract String getLastname ();
 
 	/**
-	 * Get the username for the <code>User</code>.  This will be the username that
-	 * the <code>User</code> used to access the LMS from which the data associated
-	 * with the <code>User</code> was harvested.  The username is expected to be
-	 * unique.
+	 * Get the username for the <code>User</code>.  This will be the username
+	 * that the <code>User</code> used to access the LMS from which the data
+	 * associated with the <code>User</code> was harvested.  The username is
+	 * expected to be unique.
 	 *
 	 * @return A <code>String</code> containing the username for the
 	 *         <code>User</code>
@@ -99,11 +100,11 @@ public interface User extends Element
 	 * Get the <code>Enrolment</code> instance for the <code>User</code> in the
 	 * specified <code>Course</code>.
 	 *
-	 * @param  course The <code>Course</code> for which the <code>Enrolment</code>
-	 *                instance is to be retrieved
+	 * @param  course The <code>Course</code> for which the
+	 *                <code>Enrolment</code> instance is to be retrieved
 	 * @return        The <code>Enrolment</code> instance for the
-	 *                <code>User</code> in the specified <code>Course</code>, or
-	 *                null
+	 *                <code>User</code> in the specified <code>Course</code>,
+	 *                or null
 	 */
 
 	public abstract Enrolment getEnrolment (Course course);
@@ -111,7 +112,8 @@ public interface User extends Element
 	/**
 	 * Get the <code>Set</code> of <code>Enrolment<code> instances which are
 	 * associated with this <code>User</code>.  If there are no associated
-	 * <code>Enrolment</code> instances, then the <code>Set</code> will be empty.
+	 * <code>Enrolment</code> instances, then the <code>Set</code> will be
+	 * empty.
 	 *
 	 * @return A <code>Set</code> of <code>Enrolment</code> instances
 	 */

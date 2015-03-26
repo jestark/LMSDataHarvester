@@ -32,27 +32,27 @@ public enum Semester
 {
 	/** The Winter semester running from January to April */
 	WINTER (Calendar.JANUARY, Calendar.APRIL, "Winter"),
-	
+
 	/** The Spring semester running from May to August */
 	SPRING (Calendar.MAY, Calendar.AUGUST, "Spring"),
-	
+
 	/** The Fall semester running from September to December */
 	FALL   (Calendar.SEPTEMBER, Calendar.DECEMBER, "Fall");
 
 	/** The starting month of the semester */
 	private final int start;
-	
+
 	/** The ending month of the semester */
 	private final int end;
-	
+
 	/** The name of the semester */
 	private final String name;
 
 	/**
 	 * Find the <Code>Semester</code> that encapsulates the specified date.
 	 *
-	 * @param  date The <code>Date</code> for which the <code>Semester</code> is
-	 *              to be found, not null
+	 * @param  date The <code>Date</code> for which the <code>Semester</code>
+	 *              is to be found, not null
 	 * @return      The <code>Semester</code> containing the specified date
 	 */
 
@@ -89,7 +89,7 @@ public enum Semester
 
 	/**
 	 * Get the month in which the <code>Semester</code> starts.  The returned
-	 * value will be an integer corresponding the month constants defined in 
+	 * value will be an integer corresponding the month constants defined in
 	 * <code>Calendar</code>.
 	 *
 	 * @return The integer representation of the starting month
@@ -102,8 +102,8 @@ public enum Semester
 	}
 
 	/**
-	 * Get the month in which the <code>Semester</code> ends.  The returned value
-	 * will be an integer corresponding the month constants defined in
+	 * Get the month in which the <code>Semester</code> ends.  The returned
+	 * value will be an integer corresponding the month constants defined in
 	 * <code>Calendar</code>.
 	 *
 	 * @return The integer representation of the ending month
@@ -116,10 +116,11 @@ public enum Semester
 	}
 
 	/**
-	 * Get the name of the <code>Semester</code> as a <code>String</code> which is
-	 * suitable for display.
+	 * Get the name of the <code>Semester</code> as a <code>String</code> which
+	 * is suitable for display.
 	 *
-	 * @return A <code>String</code> containing the name of the <code>Semester</code>
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Semester</code>
 	 */
 
 	public String getName ()
@@ -131,7 +132,7 @@ public enum Semester
 	 * Override the <code>toString</code> method from <code>Object</code> to
 	 * display the name of the <code>Semester</code>.
 	 *
-	 * @return A <code>String</code> containing the name of the 
+	 * @return A <code>String</code> containing the name of the
 	 *         <code>Semester</code>
 	 */
 

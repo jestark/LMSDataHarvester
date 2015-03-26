@@ -173,11 +173,11 @@ public class RoleData extends AbstractElement implements Role, Serializable
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Role</code> instance is
-	 * loaded, or by the <code>RoleBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new <code>Role</code>
-	 * instance.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Role</code> instance
+	 * is loaded, or by the <code>RoleBuilder</code> implementation to set the
+	 * <code>DataStore</code> identifier, prior to storing a new
+	 * <code>Role</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -190,7 +190,8 @@ public class RoleData extends AbstractElement implements Role, Serializable
 	/**
 	 * Get the name of the <code>Role</code>.
 	 *
-	 * @return A <code>String</code> containing the name of the <code>Role</code>
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Role</code>
 	 */
 
 	@Override

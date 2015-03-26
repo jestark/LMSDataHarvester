@@ -46,8 +46,9 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivitySourceElementFactory;
 public class ActivitySourceData extends AbstractElement implements ActivitySource, Serializable
 {
 	/**
-	 * Implementation of the <code>ActicitySourceElementFactory</code> interface.
-	 * Allows the builders to create instances of <code>ActivitySourceData</code>.
+	 * Implementation of the <code>ActicitySourceElementFactory</code>
+	 * interface.  Allows the builders to create instances of
+	 * <code>ActivitySourceData</code>.
 	 */
 
 	private static final class Factory extends AbstractElement.Factory<ActivitySource> implements ActivitySourceElementFactory
@@ -77,9 +78,10 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 		 * @param  type   The <code>ActivityType</code> to add to the
 		 *                <code>ActivitySource</code>, not null
 		 *
-		 * @return        <code>True</code> if the <code>ActivityType</code> was
-		 *                successfully added to the <code>ActivitySource</code>,
-		 *                <code>False</code> otherwise
+		 * @return        <code>True</code> if the <code>ActivityType</code>
+		 *                was successfully added to the
+		 *                <code>ActivitySource</code>, <code>False</code>
+		 *                otherwise
 		 */
 
 		@Override
@@ -93,16 +95,17 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 
 		/**
 		 * Remove the specified <code>ActivityType</code> from the specified
-		 * <code>ActivitySource</code>. 
+		 * <code>ActivitySource</code>.
 		 *
 		 * @param  source The <code>ActivitySource</code> from which the
 		 *                <code>ActivityType</code> is to be removed, not null
 		 * @param  type   The <code>ActivityType</code> to remove from the
 		 *                <code>ActivitySource</code>, not null
 		 *
-		 * @return        <code>True</code> if the <code>ActivityType</code> was
-		 *                successfully removed from the <code>ActivitySource</code>,
-		 *                <code>False</code> otherwise
+		 * @return        <code>True</code> if the <code>ActivityType</code>
+		 *                was successfully removed from the
+		 *                <code>ActivitySource</code>, <code>False</code>
+		 *                otherwise
 		 */
 
 		@Override
@@ -145,7 +148,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	{
 		this.id = null;
 		this.name = null;
-		
+
 		this.types = new HashSet<ActivityType> ();
 	}
 
@@ -166,12 +169,12 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	}
 
 	/**
-	 * Compare two <code>ActivitySource</code> instances to determine if they are
-	 * equal.  The <code>ActivitySource</code> instances are compared based upon
-	 * their names.
+	 * Compare two <code>ActivitySource</code> instances to determine if they
+	 * are equal.  The <code>ActivitySource</code> instances are compared based
+	 * upon their names.
 	 *
-	 * @param  obj The <code>ActivitySource</code> instance to compare to the one
-	 *             represented by the called instance
+	 * @param  obj The <code>ActivitySource</code> instance to compare to the
+	 *             one represented by the called instance
 	 *
 	 * @return     <code>True</code> if the two <code>ActivitySource</code>
 	 *             instances are equal, <code>False</code> otherwise
@@ -199,7 +202,8 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 
 	/**
 	 * Compute a <code>hashCode</code> of the <code>ActivitySource</code>
-	 * instance.  The hash code is computed based upon the name of the instance.
+	 * instance.  The hash code is computed based upon the name of the
+	 * instance.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
 	 */
@@ -229,8 +233,8 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>ActivitySource</code>
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>ActivitySource</code>
 	 * instance is loaded, or by the <code>ActivitySourceBuilder</code>
 	 * implementation to set the <code>DataStore</code> identifier, prior to
 	 * storing a new <code>ActivitySource</code> instance.
@@ -257,9 +261,9 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	}
 
 	/**
-	 * Set the name of the <code>ActivitySource</code>.  This method is intended
-	 * to be used by a <code>DataStore</code> when the <code>ActivitySource</code>
-	 * instance is loaded.
+	 * Set the name of the <code>ActivitySource</code>.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>ActivitySource</code> instance is loaded.
 	 *
 	 * @param name The name of the <code>ActivitySource</code>
 	 */
@@ -267,7 +271,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	protected void setName (final String name)
 	{
 		assert name != null : "name is NULL";
-		
+
 		this.name = name;
 	}
 
@@ -288,11 +292,13 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 
 	/**
 	 * Initialize the <code>Set</code> of dependent <code>ActivityType</code>
-	 * instances.  This method is intended to be used by a <code>DataStore</code>
-	 * when the <code>ActivitySource</code> instance is loaded.
+	 * instances.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>ActivitySource</code> instance is
+	 * loaded.
 	 *
-	 * @param  types The <code>Set</code> of <code>ActivityType</code> instances
-	 *               to be associated with the <code>ActivitySource</code>
+	 * @param  types The <code>Set</code> of <code>ActivityType</code>
+	 *               instances to be associated with the
+	 *               <code>ActivitySource</code>
 	 */
 
 	protected void setTypes (final Set<ActivityType> types)
@@ -321,7 +327,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 
 	/**
 	 * Remove the specified <code>ActivityType</code> from the
-	 * <code>ActivitySource</code>. 
+	 * <code>ActivitySource</code>.
 	 *
 	 * @param  type   The <code>ActivityType</code> to remove, not null
 	 *
@@ -337,11 +343,11 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	}
 
 	/**
-	 * Get a <code>String</code> representation of the <code>ActivitySource</code>
-	 * instance, including the identifying fields.
+	 * Get a <code>String</code> representation of the
+	 * <code>ActivitySource</code> instance, including the identifying fields.
 	 *
-	 * @return A <code>String</code> representation of the <code>ActivitySource</code>
-	 *         instance
+	 * @return A <code>String</code> representation of the
+	 *         <code>ActivitySource</code> instance
 	 */
 
 	@Override

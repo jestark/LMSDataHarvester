@@ -71,7 +71,7 @@ public class UserData extends AbstractElement implements User, Serializable
 			assert firstname != null : "firstname is NULL";
 			assert lastname != null : "lastname is NULL";
 			assert username != null : "username is NULL";
-			
+
 			return new UserData (idnumber, firstname, lastname, username);
 		}
 
@@ -112,8 +112,8 @@ public class UserData extends AbstractElement implements User, Serializable
 		 * @param  enrolment The <code>Enrolment</code> to add to the
 		 *                   <code>User</code>, not null
 		 *
-		 * @return           <code>True</code> if the <code>Enrolment</code> was
-		 *                   successfully added to the <code>User</code>,
+		 * @return           <code>True</code> if the <code>Enrolment</code>
+		 *                   was successfully added to the <code>User</code>,
 		 *                   <code>False</code> otherwise
 		 */
 
@@ -128,16 +128,16 @@ public class UserData extends AbstractElement implements User, Serializable
 
 		/**
 		 * Remove the specified <code>Enrolment</code> from the specified
-		 * <code>User</code>. 
+		 * <code>User</code>.
 		 *
 		 * @param  user      The <code>User</code> from which the
 		 *                   <code>Enrolment</code> is to be removed, not null
 		 * @param  enrolment The <code>Enrolment</code> to remove from the
 		 *                   <code>User</code>, not null
 		 *
-		 * @return           <code>True</code> if the <code>Enrolment</code> was
-		 *                   successfully removed from the <code>User</code>,
-		 *                   <code>False</code> otherwise
+		 * @return           <code>True</code> if the <code>Enrolment</code>
+		 *                   was successfully removed from the
+		 *                   <code>User</code>, <code>False</code> otherwise
 		 */
 
 		@Override
@@ -145,7 +145,7 @@ public class UserData extends AbstractElement implements User, Serializable
 		{
 			assert user instanceof UserData : "user is not an instance of UserData";
 			assert enrolment != null : "enrolment is NULL";
-			
+
 			return ((UserData) user).removeEnrolment (enrolment);
 		}
 	}
@@ -192,7 +192,7 @@ public class UserData extends AbstractElement implements User, Serializable
 		this.username = null;
 		this.lastname = null;
 		this.firstname= null;
-		
+
 		this.enrolments = new HashSet<Enrolment> ();
 	}
 
@@ -256,8 +256,8 @@ public class UserData extends AbstractElement implements User, Serializable
 
 	/**
 	 * Compute a <code>hashCode</code> of the <code>User</code> instance.
-	 * The hash code is computed based upon the following fields ID number and the
-	 * username.
+	 * The hash code is computed based upon the following fields ID number and
+	 * the username.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
 	 */
@@ -278,14 +278,15 @@ public class UserData extends AbstractElement implements User, Serializable
 	/**
 	 * Determine if two <code>User</code> instances are identical.  This method
 	 * acts as a stricter form of the equals method.  The equals method only
-	 * compares properties that are required to be unique (and therefore immutable)
-	 * for the <code>User</code> instance, while this method compares all of the
-	 * properties.
+	 * compares properties that are required to be unique (and therefore
+	 * immutable) for the <code>User</code> instance, while this method
+	 * compares all of the properties.
 	 *
-	 * @param  element The <code>Element</code> to compare to the current instance
+	 * @param  element The <code>Element</code> to compare to the current
+	 *                 instance
 	 *
-	 * @return         <code>True</code> if the <code>Element</code> instances are
-	 *                 logically identical, <code>False</code> otherwise
+	 * @return         <code>True</code> if the <code>Element</code> instances
+	 *                 are logically identical, <code>False</code> otherwise
 	 */
 
 	@Override
@@ -324,11 +325,11 @@ public class UserData extends AbstractElement implements User, Serializable
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>User</code> instance is
-	 * loaded, or by the <code>UserBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new <code>User</code>
-	 * instance.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>User</code> instance
+	 * is loaded, or by the <code>UserBuilder</code> implementation to set the
+	 * <code>DataStore</code> identifier, prior to storing a new
+	 * <code>User</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -340,9 +341,10 @@ public class UserData extends AbstractElement implements User, Serializable
 
 	/**
 	 * Get the (student) ID number of the <code>User</code>.  This will be the
-	 * student number, or a similar identifier used to track the <code>User</code>
-	 * by the institution from which the data was harvested.  While the ID number
-	 * is not used as the database identifier it is expected to be unique.
+	 * student number, or a similar identifier used to track the
+	 * <code>User</code> by the institution from which the data was harvested.
+	 * While the ID number is not used as the database identifier it is
+	 * expected to be unique.
 	 *
 	 * @return An Integer representation of the ID number
 	 */
@@ -355,8 +357,8 @@ public class UserData extends AbstractElement implements User, Serializable
 
 	/**
 	 * Set the (student) ID number of the <code>User</code>.  This method is
-	 * intended to be used by a <code>DataStore</code> when the <code>User</code>
-	 * instance is loaded.
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>User</code> instance is loaded.
 	 *
 	 * @param  idnumber The ID Number, not null
 	 */
@@ -369,10 +371,10 @@ public class UserData extends AbstractElement implements User, Serializable
 	}
 
 	/**
-	 * Get the username for the <code>User</code>.  This will be the username that
-	 * the <code>User</code> used to access the LMS from which the data associated
-	 * with the <code>User</code> was harvested.  The username is expected to be
-	 * unique.
+	 * Get the username for the <code>User</code>.  This will be the username
+	 * that the <code>User</code> used to access the LMS from which the data
+	 * associated with the <code>User</code> was harvested.  The username is
+	 * expected to be unique.
 	 *
 	 * @return A <code>String</code> containing the username for the
 	 *         <code>User</code>
@@ -385,9 +387,9 @@ public class UserData extends AbstractElement implements User, Serializable
 	}
 
 	/**
-	 * Set the username of the <code>User</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>User</code> instance is
-	 * loaded.
+	 * Set the username of the <code>User</code>.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>User</code> instance
+	 * is loaded.
 	 *
 	 * @param  username The username, not null
 	 */
@@ -395,7 +397,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	protected void setUsername (final String username)
 	{
 		assert username != null : "username is NULL";
-		
+
 		this.username = username;
 	}
 
@@ -413,9 +415,9 @@ public class UserData extends AbstractElement implements User, Serializable
 	}
 
 	/**
-	 * Set the first name of the <code>User</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>User</code> instance is
-	 * loaded.
+	 * Set the first name of the <code>User</code>.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>User</code> instance
+	 * is loaded.
 	 *
 	 * @param  firstname The first name, not null
 	 */
@@ -423,7 +425,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	protected void setFirstname (final String firstname)
 	{
 		assert firstname != null : "firstname is NULL";
-		
+
 		this.firstname = firstname;
 	}
 
@@ -440,9 +442,9 @@ public class UserData extends AbstractElement implements User, Serializable
 	}
 
 	/**
-	 * Set the last name of the <code>User</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>User</code> instance is
-	 * loaded.
+	 * Set the last name of the <code>User</code>.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>User</code> instance
+	 * is loaded.
 	 *
 	 * @param  lastname The last name, not null
 	 */
@@ -450,7 +452,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	protected void setLastname (final String lastname)
 	{
 		assert lastname != null : "lastname is NULL";
-		
+
 		this.lastname = lastname;
 	}
 
@@ -472,11 +474,11 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * Get the <code>Enrolment</code> instance for the <code>User</code> in the
 	 * specified <code>Course</code>.
 	 *
-	 * @param  course The <code>Course</code> for which the <code>Enrolment</code>
-	 *                instance is to be retrieved
+	 * @param  course The <code>Course</code> for which the
+	 *                <code>Enrolment</code> instance is to be retrieved
 	 * @return        The <code>Enrolment</code> instance for the
-	 *                <code>User</code> in the specified <code>Course</code>, or
-	 *                null
+	 *                <code>User</code> in the specified <code>Course</code>,
+	 *                or null
 	 */
 
 	@Override
@@ -499,7 +501,8 @@ public class UserData extends AbstractElement implements User, Serializable
 	/**
 	 * Get the <code>Set</code> of <code>Enrolment<code> instances which are
 	 * associated with this <code>User</code>.  If there are no associated
-	 * <code>Enrolment</code> instances, then the <code>Set</code> will be empty.
+	 * <code>Enrolment</code> instances, then the <code>Set</code> will be
+	 * empty.
 	 *
 	 * @return A <code>Set</code> of <code>Enrolment</code> instances
 	 */
@@ -512,9 +515,9 @@ public class UserData extends AbstractElement implements User, Serializable
 
 	/**
 	 * Initialize the <code>Set</code> of <code>Enrolment</code> instances
-	 * associated with the <code>User</code> instance.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>User</code> instance is
-	 * loaded.
+	 * associated with the <code>User</code> instance.  This method is intended
+	 * to be used by a <code>DataStore</code> when the <code>User</code>
+	 * instance is loaded.
 	 *
 	 * @param  enrolments The <code>Set</code> of <code>Enrolment</code>
 	 *                    instances, not null
@@ -523,7 +526,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	protected void setEnrolments (final Set<Enrolment> enrolments)
 	{
 		assert enrolments != null : "enrolments is NULL";
-		
+
 		this.enrolments = enrolments;
 	}
 
@@ -532,13 +535,14 @@ public class UserData extends AbstractElement implements User, Serializable
 	 *
 	 * @param  enrolment The <code>Enrolment</code> to add
 	 * @return           <code>True</code> if the enrolment was added to the
-	 *                   <code>User</code> instance, <code>False</code> otherwise
+	 *                   <code>User</code> instance, <code>False</code>
+	 *                   otherwise
 	 */
 
 	protected boolean addEnrolment (final Enrolment enrolment)
 	{
 		assert enrolment != null : "enrolment is NULL";
-		
+
 		return this.enrolments.add (enrolment);
 	}
 
@@ -546,8 +550,9 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * Remove an <code>Enrolment</code> from the <code>User</code> instance.
 	 *
 	 * @param  enrolment The <code>Enrolment</code> to remove
-	 * @return           <code>True</code> if the enrolment was removed from the
-	 *                   <code>User</code> instance, <code>False</code> otherwise
+	 * @return           <code>True</code> if the enrolment was removed from
+	 *                   the <code>User</code> instance, <code>False</code>
+	 *                   otherwise
 	 */
 
 	protected boolean removeEnrolment (final Enrolment enrolment)

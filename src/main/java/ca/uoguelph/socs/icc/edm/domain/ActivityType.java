@@ -37,13 +37,13 @@ import java.util.Set;
  * instances of the <code>Activity</code> interface are dependent on the
  * associated instance of the <code>ActivityType</code> interface.  Removing an
  * instance of the <code>ActivityType</code> interface from the
- * <code>DataStore</code> will require the removal of the associated instances of
- * the <code>Activity</code> interface.
+ * <code>DataStore</code> will require the removal of the associated instances
+ * of the <code>Activity</code> interface.
  * <p>
  * While the <code>ActvityType</code> interface is associated with the
- * <code>Action</code> interface, there is no dependency between them.  Instances
- * of <code>ActivityType</code> and <code>Action</code> may exist without any
- * associations.
+ * <code>Action</code> interface, there is no dependency between them.
+ * Instances of <code>ActivityType</code> and <code>Action</code> may exist
+ * without any associations.
  * <p>
  * With the exception of adding and removing associations to instance of the
  * <code>Action</code> interface, instances of the <code>ActivityType</code>

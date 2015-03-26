@@ -67,8 +67,8 @@ public interface ActivityTypeElementFactory extends ElementFactory<ActivityType>
 	 * Remove the specified <code>Action</code> from the specified
 	 * <code>ActivityType</code>. 
 	 *
-	 * @param  type   The <code>ActivityType</code> from which the <code>Action</code>
-	 *                is to be removed, not null
+	 * @param  type   The <code>ActivityType</code> from which the
+	 *                <code>Action</code> is to be removed, not null
 	 * @param  action The <code>Action</code> to remove from the
 	 *                <code>ActivityType</code>, not null
 	 *

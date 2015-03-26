@@ -21,7 +21,7 @@ package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
  * ID numbers suitable for use with the underlying <code>DataStore</code>.
  * Each class implementing this interface is responsible for determining how
  * the  ID numbers are calculated, with different classes providing different
- * distributions of ID numbers.  
+ * distributions of ID numbers.
  *
  * @author  James E. Stark
  * @version 1.0

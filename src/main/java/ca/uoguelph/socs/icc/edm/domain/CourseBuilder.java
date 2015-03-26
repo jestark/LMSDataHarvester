@@ -35,29 +35,31 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	 */
 
 	public abstract String getName ();
-	
+
 	/**
 	 * Set the name of the <code>Course</code>.
 	 *
-	 * @param  name                     The name of the <code>Course</code>, not
-	 *                                  null
+	 * @param  name                     The name of the <code>Course</code>,
+	 *                                  not null
 	 *
 	 * @return                          This <code>CourseBuilder</code>
 	 * @throws IllegalArgumentException If the name is an empty
 	 */
 
 	public abstract CourseBuilder setName (String name);
-	
+
 	/**
-	 * Get the <code>Semester</code> in which the <code>Course</code> was offered.
+	 * Get the <code>Semester</code> in which the <code>Course</code> was
+	 * offered.
 	 *
 	 * @return The <code>Semester</code> of offering
 	 */
 
 	public abstract Semester getSemester ();
-	
+
 	/**
-	 * Set the <code>Semester</code> in which the <code>Course</code> was offered.
+	 * Set the <code>Semester</code> in which the <code>Course</code> was
+	 * offered.
 	 *
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 *
@@ -65,7 +67,7 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	 */
 
 	public abstract CourseBuilder setSemester (Semester semester);
-	
+
 	/**
 	 * Get the year in which the <code>Course</code> was offered.
 	 *
@@ -73,7 +75,7 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	 */
 
 	public abstract Integer getYear ();
-	
+
 	/**
 	 * Set the year in which the <code>Course</code> was offered.
 	 *

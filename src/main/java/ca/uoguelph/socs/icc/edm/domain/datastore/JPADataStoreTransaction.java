@@ -54,7 +54,7 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	{
 		return ((this.datastore.getEntityManager ()).getTransaction ()).isActive ();
 	}
-	
+
 	/**
 	 * Determine if the current transaction must be rolled back.
 	 */
@@ -64,7 +64,7 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	{
 		return ((this.datastore.getEntityManager ()).getTransaction ()).getRollbackOnly ();
 	}
-	
+
 	/**
 	 * Force the current transaction to be rolled back.
 	 */
@@ -72,11 +72,11 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	@Override
 	public void setRollbackOnly ()
 	{
-		this.log.trace ("Force the transaction to be rolled back");
+		this.log.trace ("setrollbackonly:");
 
 		((this.datastore.getEntityManager ()).getTransaction ()).setRollbackOnly ();
 	}
-	
+
 	/**
 	 * Begin a new transaction.
 	 */
@@ -84,11 +84,11 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	@Override
 	public void begin ()
 	{
-		this.log.trace ("Begin a new transaction");
+		this.log.trace ("begin:");
 
 		((this.datastore.getEntityManager ()).getTransaction ()).begin ();
 	}
-	
+
 	/**
 	 * Commit the transaction.
 	 */
@@ -96,11 +96,11 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	@Override
 	public void commit ()
 	{
-		this.log.trace ("Commit the transaction");
+		this.log.trace ("commit:");
 
 		((this.datastore.getEntityManager ()).getTransaction ()).commit ();
 	}
-	
+
 	/**
 	 * Rollback the transaction.
 	 */
@@ -108,7 +108,7 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	@Override
 	public void rollback ()
 	{
-		this.log.trace ("Rollback the transaction");
+		this.log.trace ("rollback:");
 
 		((this.datastore.getEntityManager ()).getTransaction ()).rollback ();
 	}

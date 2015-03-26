@@ -51,8 +51,8 @@ public interface UserElementFactory extends ElementFactory<User>
 	/**
 	 * Set the first name of the <code>User</code>.
 	 *
-	 * @param  user      The <code>User</code> upon which the first name is to be
-	 *                   set not null
+	 * @param  user      The <code>User</code> upon which the first name is to
+	 *                   be set not null
 	 * @param  firstname The first name, not null
 	 */
 
@@ -69,10 +69,11 @@ public interface UserElementFactory extends ElementFactory<User>
 	public abstract void setLastname (User user, String lastname);
 
 	/**
-	 * Add the specified <code>Enrolment</code> to the specified <code>User</code>.
+	 * Add the specified <code>Enrolment</code> to the specified
+	 * <code>User</code>.
 	 *
-	 * @param  user      The <code>User</code> to which the <code>Enrolment</code>
-	 *                   is to be added, not null
+	 * @param  user      The <code>User</code> to which the
+	 *                   <code>Enrolment</code> is to be added, not null
 	 * @param  enrolment The <code>Enrolment</code> to add to the
 	 *                   <code>User</code>, not null
 	 *
@@ -85,10 +86,10 @@ public interface UserElementFactory extends ElementFactory<User>
 
 	/**
 	 * Remove the specified <code>Enrolment</code> from the specified
-	 * <code>User</code>. 
+	 * <code>User</code>.
 	 *
-	 * @param  user      The <code>User</code> from which the <code>Enrolment</code>
-	 *                   is to be removed, not null
+	 * @param  user      The <code>User</code> from which the
+	 *                   <code>Enrolment</code> is to be removed, not null
 	 * @param  enrolment The <code>Enrolment</code> to remove from the
 	 *                   <code>User</code>, not null
 	 *

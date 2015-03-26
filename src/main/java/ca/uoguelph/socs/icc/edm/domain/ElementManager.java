@@ -35,23 +35,23 @@ import java.util.List;
 public interface ElementManager<T extends Element>
 {
 	/**
-	 * Test an instance of an <code>Element</code> to determine if a reference to
-	 * that <code>Element</code> instance exists in the <code>DataStore</code>.
-	 * The exact behaviour of this method is determined by the implementation of
-	 * the <code>DataStore</code>.
+	 * Test an instance of an <code>Element</code> to determine if a reference
+	 * to that <code>Element</code> instance exists in the
+	 * <code>DataStore</code>.  The exact behaviour of this method is
+	 * determined by the implementation of the <code>DataStore</code>.
 	 * <p>
-	 * If the <code>Element</code> instance was created by the current instance of
-	 * the <code>DataStore</code> then this method, should return
+	 * If the <code>Element</code> instance was created by the current instance
+	 * of the <code>DataStore</code> then this method, should return
 	 * <code>True</code>.  Otherwise, this method should return
 	 * <code>False</code>, even if an identical <code>Element</code> instance
-	 * exists in the <code>DataStore</code>.  Use the <code>fetch</code> method to
-	 * retrieve an instance from the <code>DataStore</code>, if one exists.
+	 * exists in the <code>DataStore</code>.  Use the <code>fetch</code> method
+	 * to retrieve an instance from the <code>DataStore</code>, if one exists.
 	 *
 	 * @param  element The <code>Element</code> instance to test, not null
 	 *
-	 * @return          <code>True</code> if the <code>DataStore</code> instance
-	 *                  contains a reference to the <code>Element</code>,
-	 *                  <code>False</code> otherwise
+	 * @return          <code>True</code> if the <code>DataStore</code>
+	 *                  instance contains a reference to the
+	 *                  <code>Element</code>, <code>False</code> otherwise
 	 */
 
 	public abstract boolean contains (T element);
@@ -60,19 +60,19 @@ public interface ElementManager<T extends Element>
 	 * Retrieve an <code>Element</code> from the <code>DataStore</code> which
 	 * identifies the same as the specified <code>Element</code>.  If the
 	 * specified <code>Element</code> came from the current instance of the
-	 * <code>DataStore</code> then the same <code>Element</code> will be returned.
-	 * Otherwise, if there exists an <code>Element</code> in the
+	 * <code>DataStore</code> then the same <code>Element</code> will be
+	 * returned.  Otherwise, if there exists an <code>Element</code> in the
 	 * <code>DataStore</code> which identifies to be the same as the specified
 	 * <code>Element</code>, that <code>Element</code> will be returned.  This
 	 * method will return <code>null</code> if there is no matching
 	 * <code>Element</code> in the <code>DataStore</code>.
 	 * <p>
-	 * It should be noted that an <code>Element</code> which identifies the same
-	 * as another <code>Element</code> may not be equal to that other
+	 * It should be noted that an <code>Element</code> which identifies the
+	 * same as another <code>Element</code> may not be equal to that other
 	 * <code>Element</code>.  Some <code>Element</code> instances (particularly
-	 * <code>Activity</code> and <code>Enrolment</code>) have fields which are not
-	 * to identify the <code>Element</code>.  Use the <code>equals</code> method
-	 * to determine if the <code>Element</code> instances are equal.
+	 * <code>Activity</code> and <code>Enrolment</code>) have fields which are
+	 * not to identify the <code>Element</code>.  Use the <code>equals</code>
+	 * method to determine if the <code>Element</code> instances are equal.
 	 *
 	 * @param  element The <code>Element</code> to retrieve, not null
 	 *
@@ -84,7 +84,7 @@ public interface ElementManager<T extends Element>
 
 	/**
 	 * Retrieve a <code>Element</code> instance from the <code>DataStore</code>
-	 * based upon is <code>DataStore</code> identifier.  
+	 * based upon is <code>DataStore</code> identifier.
 	 *
 	 * @param  id The <code>DataStore</code> identifier of the
 	 *            <code>Element</code> instance to retrieve, not null
@@ -95,9 +95,9 @@ public interface ElementManager<T extends Element>
 	public abstract T fetchById (Long id);
 
 	/**
-	 * Retrieve a <code>List</code> of all of the <code>Element</code> instances
-	 * represented by the <code>ElementManager</code> instance from the
-	 * <code>DataStore</code>.
+	 * Retrieve a <code>List</code> of all of the <code>Element</code>
+	 * instances represented by the <code>ElementManager</code> instance from
+	 * the <code>DataStore</code>.
 	 *
 	 * @return A <code>List</code> of <code>Element</code> instances
 	 */

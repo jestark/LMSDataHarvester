@@ -17,31 +17,29 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 /**
- * Factory interface to create new <code>ActivityGroupMember</code> instances.
+ * Factory interface to create new <code>SubActivity</code> instances.
  * Implementations of this interface provide the functionality required to
- * create new instances of a class implementing the
- * <code>ActivityGroupMember</code> interface (a sub-interface of
- * <code>Activity</code>).
+ * create new instances of a class implementing the <code>SubActivity</code>
+ * interface.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.ActivityGroupMemberBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder
  */
 
-public interface ActivityGroupMemberElementFactory extends AbstractActivityElementFactory
+public interface SubActivityElementFactory extends AbstractActivityElementFactory
 {
 	/**
-	 * Create a new sub-activity (<code>ActivityGroupMember</code>) instance.
+	 * Create a new <code>SubActivity</code> instance.
 	 *
-	 * @param  parent The parent <code>Activity</code>, not null
-	 * @param  name   The name of the <code>ActivityGroupMember</code>, not null
+	 * @param  activity The parent <code>Activity</code>, not null
+	 * @param  name     The name of the <code>SubActivity</code>, not null
 	 *
-	 * @return        The new sub-activity (<code>ActivityGroupMember</code>)
-	 *                instance
+	 * @return          The new <code>SubActivity</code> instance
 	 */
 
-	public abstract ActivityGroupMember create (Activity parent, String name);
+	public abstract SubActivity create (Activity parent, String name);
 }

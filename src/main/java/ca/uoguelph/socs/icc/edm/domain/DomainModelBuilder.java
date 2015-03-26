@@ -58,8 +58,8 @@ public final class DomainModelBuilder
 	}
 
 	/**
-	 * Create the <code>DomainModelBuilder</code>, initializing from a pre-built
-	 * profile.
+	 * Create the <code>DomainModelBuilder</code>, initializing from a
+	 * pre-built profile.
 	 *
 	 * @param  init The profile to use for initialization, not null
 	 */
@@ -128,8 +128,8 @@ public final class DomainModelBuilder
 	/**
 	 * Get the set of elements contained in this profile.
 	 *
-	 * @return A <code>Set</code> containing the domain model interface classes of
-	 *         all of the elements in the profile
+	 * @return A <code>Set</code> containing the domain model interface classes
+	 *         of all of the elements in the profile
 	 */
 
 	public Set<Class<? extends Element>> getElements ()
@@ -142,9 +142,9 @@ public final class DomainModelBuilder
 	 * given domain model interface.
 	 *
 	 * @param  element Domain model interface class, not null
-	 * @return         <code>true</code> if the <code>DataStore</code> contains a
-	 *                 representation of the specified domain model interface,
-	 *                 <code>false</code> otherwise
+	 * @return         <code>true</code> if the <code>DataStore</code> contains
+	 *                 a representation of the specified domain model
+	 *                 interface, <code>false</code> otherwise
 	 */
 
 	public Boolean isAvailable (Class<? extends Element> element)
@@ -174,8 +174,8 @@ public final class DomainModelBuilder
 	}
 
 	/**
-	 * Get the <code>DataStore</code> ID generation class for the specified domain
-	 * model interface.
+	 * Get the <code>DataStore</code> ID generation class for the specified
+	 * domain model interface.
 	 *
 	 * @param  element Domain model interface class, not null
 	 * @return         The associated ID generator class
@@ -247,8 +247,8 @@ public final class DomainModelBuilder
 	 * <code>DataStore</code> for the specified domain model interface.
 	 *
 	 * @param  element                  Domain model interface class, not null
-	 * @return                          The class used to represent the interface
-	 *                                  in the <code>DataStore</code>
+	 * @return                          The class used to represent the
+	 *                                  interface in the <code>DataStore</code>
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
@@ -283,24 +283,24 @@ public final class DomainModelBuilder
 	 * entry has the following components:
 	 * <ul>
 	 *   <li> The <code>DomainModelType</code> which represents a domain model
-	 *        interface.  A single entry must exist for each of the domain model
-	 *        interfaces.  Subsequent entries for a given element will replace
-	 *        previous entries.
-	 *   <li> An indication if the interface is represented by the database.  If
+	 *        interface.  A single entry must exist for each of the domain
+	 *        model interfaces.  Subsequent entries for a given element will
+	 *        replace previous entries.
+	 *   <li> An indication if the interface is represented by the database. If
 	 *        the interface is not represented, requests for the manager
 	 *        associated with the interface will throw an
 	 *        <code>IllegalStateException</code>.
-	 *   <li> The implementation of the interface to be used, which must implement
-	 *        the interface associated with the specified element.
+	 *   <li> The implementation of the interface to be used, which must
+	 *        implement the interface associated with the specified element.
 	 *   <li> The ID number generator to be used.
 	 * </ul>
 	 *
 	 * @param  element                  The <code>DomainModelType</code> of the
 	 *                                  element which is being added, not null
-	 * @param  available                Indication if the element is available in
-	 *                                  the <code>DataStore</code>, not null
-	 * @param  impl                     The implementation class to be used with
-	 *                                  the element, not null
+	 * @param  available                Indication if the element is available
+	 *                                  in the <code>DataStore</code>, not null
+	 * @param  impl                     The implementation class to be used
+	 *                                  with the element, not null
 	 * @param  generator                The <code>IdGenerator</code> to be used
 	 *                                  for the element, not null
 	 * @throws IllegalArgumentException if the implementation class does not
@@ -333,13 +333,13 @@ public final class DomainModelBuilder
 
 	/**
 	 * Validate and return the complete <code>DataStoreProfile</code>.  This
-	 * method ensures that all of the required entries are in the profile before
-	 * returning a copy of the profile.
+	 * method ensures that all of the required entries are in the profile
+	 * before returning a copy of the profile.
 	 *
 	 * @return                       The complete <code>DataStoreProfile</code>
 	 * @throws IllegalStateException if any of the domain model interfaces
-	 *                               (enumerated in <code>DomainModelType</code>)
-	 *                               are missing
+	 *                               (enumerated in
+	 *                               <code>DomainModelType</code>) are missing
 	 */
 
 	public DataStoreProfile createProfile ()

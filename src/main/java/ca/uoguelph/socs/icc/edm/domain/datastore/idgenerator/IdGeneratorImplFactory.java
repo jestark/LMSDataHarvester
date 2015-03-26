@@ -33,8 +33,8 @@ public interface IdGeneratorImplFactory
 {
 	/**
 	 * Create the <code>IdGenerator</code> using the specified
-	 * <code>DataStoreQuery</code>.  Implementations of this method will use the
-	 * provided <code>DataStoreQuery</code> to initialize the
+	 * <code>DataStoreQuery</code>.  Implementations of this method will use
+	 * the provided <code>DataStoreQuery</code> to initialize the
 	 * <code>IdGenerator</code>.
 	 *
 	 * @param  query The <code>DataStoreQuery</code>, not null

@@ -25,7 +25,7 @@ import java.util.Set;
  * particular offering of a course, including its name and semester (and year)
  * of offering.  The instances of the <code>Course</code> interface act as a
  * container for all of the data, via the associated instances of the
- * <code>Activity</code> and <code>Enrolment</code> interfaces, concerning a 
+ * <code>Activity</code> and <code>Enrolment</code> interfaces, concerning a
  * particular offering of a course.
  * <p>
  * Within the domain model the <code>Course</code> interface is a root level
@@ -34,7 +34,7 @@ import java.util.Set;
  * instance of the <code>Course</code> interface is required for an instance of
  * the <code>Enrolment</code>, or <code>Activity</code> interfaces to exist.
  * If a particular instance of the <code>Course</code> interface is deleted,
- * then all of the associated instances of the <code>Activity</code> and 
+ * then all of the associated instances of the <code>Activity</code> and
  * <code>Enrolment</code> interfaces must be deleted as well.
  * <p>
  * Once created, <code>Course</code> instances are immutable.
@@ -57,7 +57,8 @@ public interface Course extends Element
 	public abstract String getName ();
 
 	/**
-	 * Get the <code>Semester</code> in which the <code>Course</code> was offered.
+	 * Get the <code>Semester</code> in which the <code>Course</code> was
+	 * offered.
 	 *
 	 * @return The <code>Semester</code> of offering
 	 */
@@ -75,8 +76,8 @@ public interface Course extends Element
 	/**
 	 * Get the <code>List</code> of <code>Activity</code> instances which are
 	 * associated with the <code>Course</code>.  The <code>List</code> will be
-	 * empty if there are no <code>Activity</code> instances associated with the
-	 * <code>Course</code>.
+	 * empty if there are no <code>Activity</code> instances associated with
+	 * the <code>Course</code>.
 	 *
 	 * @return A <code>List</code> of <code>Activity</code> instances
 	 */

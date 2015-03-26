@@ -31,9 +31,10 @@ public interface UserBuilder extends ElementBuilder<User>
 {
 	/**
 	 * Get the (student) ID number of the <code>User</code>.  This will be the
-	 * student number, or a similar identifier used to track the <code>User</code>
-	 * by the institution from which the data was harvested.  While the ID number
-	 * is not used as the database identifier it is expected to be unique.
+	 * student number, or a similar identifier used to track the
+	 * <code>User</code> by the institution from which the data was harvested.
+	 * While the ID number is not used as the database identifier it is
+	 * expected to be unique.
 	 *
 	 * @return An <code>Integer</code> representation of the ID number.
 	 */
@@ -52,7 +53,7 @@ public interface UserBuilder extends ElementBuilder<User>
 	 */
 
 	public abstract UserBuilder setIdNumber (Integer idnumber);
-	
+
 	/**
 	 * Get the first name (given name) of the <code>User</code>.
 	 *
@@ -61,19 +62,19 @@ public interface UserBuilder extends ElementBuilder<User>
 	 */
 
 	public abstract String getFirstname ();
-	
+
 	/**
 	 * Set the first name of the <code>User</code>.
 	 *
-	 * @param  firstname                The firstname of the <code>User</code>,
-	 *                                  not null
+	 * @param  firstname                The first name of the
+	 *                                  <code>User</code>, not null
 	 *
 	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If the firstname is an empty
 	 */
 
 	public abstract UserBuilder setFirstname (String firstname);
-	
+
 	/**
 	 * Get the last name (surname) of the <code>User</code>.
 	 *
@@ -81,19 +82,19 @@ public interface UserBuilder extends ElementBuilder<User>
 	 */
 
 	public abstract String getLastname ();
-	
+
 	/**
 	 * Set the last name of the <code>User</code>.
 	 *
-	 * @param  lastname                 The lastname of the <code>User</code>, not
-	 *                                  null
+	 * @param  lastname                 The last name of the <code>User</code>,
+	 *                                  not null
 	 *
 	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If the lastname is an empty
 	 */
 
 	public abstract UserBuilder setLastname (String lastname);
-	
+
 	/**
 	 * Get the username for the <code>User</code>.
 	 *
@@ -106,12 +107,12 @@ public interface UserBuilder extends ElementBuilder<User>
 	/**
 	 * Set the username of the <code>User</code>.
 	 *
-	 * @param  username                 The username of the <code>User</code>, not
-	 *                                  null
+	 * @param  username                 The username of the <code>User</code>,
+	 *                                  not null
 	 *
 	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If the username is an empty
 	 */
-	
+
 	public abstract UserBuilder setUsername (String username);
 }

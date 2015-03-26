@@ -47,8 +47,9 @@ public final class DomainModel
 	/**
 	 * Create the <code>DomainModel</code>
 	 *
-	 * @param  datastore The <code>DataStore</code> which contains all of the data
-	 *                   represented by this <code>DomainModel</code>, not null
+	 * @param  datastore The <code>DataStore</code> which contains all of the
+	 *                   data represented by this <code>DomainModel</code>,
+	 *                   not null
 	 */
 
 	public DomainModel (final DataStore datastore)
@@ -73,8 +74,8 @@ public final class DomainModel
 	/**
 	 * Determine if the underlying <code>DataStore</code> is open.
 	 *
-	 * @return <code>True</code> if the underlying <code>DataStore</code> is open,
-	 *         <code>False</code> otherwise
+	 * @return <code>True</code> if the underlying <code>DataStore</code> is
+	 *         open, <code>False</code> otherwise
 	 * @see    ca.uoguelph.socs.icc.edm.domain.datastore.DataStore#isOpen
 	 */
 
@@ -111,14 +112,16 @@ public final class DomainModel
 	 * @param  manager               The <code>ElementManager</code> interface
 	 *                               class, not null
 	 *
-	 * @return                       A reference to the <code>ActionManager</code>
-	 * @throws IllegalStateException If the <code>Action</code> interface is not
-	 *                               available for the <code>DomainModel</code>
+	 * @return                       A reference to the
+	 *                               <code>ActionManager</code>
+	 * @throws IllegalStateException If the <code>Action</code> interface is
+	 *                               not available for the
+	 *                               <code>DomainModel</code>
 	 */
 
 	public <T extends ElementManager<U>, U extends Element> T getManager (final Class<U> element, final Class<T> manager)
 	{
-		this.log.trace ("get Manager instance {} for element {}", manager, element);
+		this.log.trace ("getManager element={} manager={}", element, manager);
 
 		if (element == null)
 		{
@@ -134,8 +137,8 @@ public final class DomainModel
 
 		if (! (this.datastore.getProfile ()).isAvailable (element))
 		{
-			this.log.error ("");
-			throw new IllegalStateException ("");
+			this.log.error ("No ElementManager instance available for {}", manager.getSimpleName ());
+			throw new IllegalStateException ("No available ElementManager instances");
 		}
 
 		return AbstractManager.getInstance (element, manager, this.datastore);
@@ -144,9 +147,11 @@ public final class DomainModel
 	/**
 	 * Get the <code>ActionManager</code> for the <code>DomainModel</code>.
 	 *
-	 * @return                       A reference to the <code>ActionManager</code>
-	 * @throws IllegalStateException If the <code>Action</code> interface is not
-	 *                               available for the <code>DomainModel</code>
+	 * @return                       A reference to the
+	 *                               <code>ActionManager</code>
+	 * @throws IllegalStateException If the <code>Action</code> interface is
+	 *                               not available for the
+	 *                               <code>DomainModel</code>
 	 */
 
 	public ActionManager getActionManager ()
@@ -159,8 +164,9 @@ public final class DomainModel
 	 *
 	 * @return                       A reference to the
 	 *                               <code>ActivityManager</code>
-	 * @throws IllegalStateException If the <code>Activity</code> interface is not
-	 *                               available for the <code>DomainModel</code>
+	 * @throws IllegalStateException If the <code>Activity</code> interface is
+	 *                               not available for the
+	 *                               <code>DomainModel</code>
 	 */
 
 	public ActivityManager getActivityManager ()
@@ -174,8 +180,8 @@ public final class DomainModel
 	 *
 	 * @return                       A reference to the
 	 *                               <code>ActivitySourceManager</code>
-	 * @throws IllegalStateException If the <code>ActivitySource</code> interface
-	 *                               is not available for the
+	 * @throws IllegalStateException If the <code>ActivitySource</code>
+	 *                               interface is not available for the
 	 *                               <code>DomainModel</code>
 	 */
 
@@ -202,9 +208,11 @@ public final class DomainModel
 	/**
 	 * Get the <code>CourseManager</code> for the <code>DomainModel</code>.
 	 *
-	 * @return                       A reference to the <code>CourseManager</code>
-	 * @throws IllegalStateException If the <code>Course</code> interface is not
-	 *                               available for the <code>DomainModel</code>
+	 * @return                       A reference to the
+	 *                               <code>CourseManager</code>
+	 * @throws IllegalStateException If the <code>Course</code> interface is
+	 *                               not available for the
+	 *                               <code>DomainModel</code>
 	 */
 
 	public CourseManager getCourseManager ()
@@ -232,8 +240,9 @@ public final class DomainModel
 	 *
 	 * @return                       A reference to the
 	 *                               <code>LogEntryManager</code>
-	 * @throws IllegalStateException If the <code>LogEntry</code> interface is not
-	 *                               available for the <code>DomainModel</code>
+	 * @throws IllegalStateException If the <code>LogEntry</code> interface is
+	 *                               not available for the
+	 *                               <code>DomainModel</code>
 	 */
 
 	public LogEntryManager getLogEntryManager ()

@@ -50,8 +50,8 @@ import ca.uoguelph.socs.icc.edm.domain.builder.CourseElementFactory;
 public class CourseData extends AbstractElement implements Course, Serializable
 {
 	/**
-	 * Implementation of the <code>CourseElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>CourseData</code>
+	 * Implementation of the <code>CourseElementFactory</code> interface.
+	 * Allows the builders to create instances of <code>CourseData</code>
 	 */
 
 	private static final class Factory extends AbstractElement.Factory<Course> implements CourseElementFactory
@@ -72,15 +72,16 @@ public class CourseData extends AbstractElement implements Course, Serializable
 			assert name != null : "name is NULL";
 			assert semester != null : "semester is NULL";
 			assert year != null : "year is NULL";
-			
+
 			return new CourseData (name, semester, year);
 		}
 
 		/**
-		 * Add the specified <code>Activity</code> to the specified <code>Course</code>.
+		 * Add the specified <code>Activity</code> to the specified
+		 * <code>Course</code>.
 		 *
-		 * @param  course    The <code>Course</code> to which the <code>Activity</code>
-		 *                   is to be added, not null
+		 * @param  course    The <code>Course</code> to which the
+		 *                   <code>Activity</code> is to be added, not null
 		 * @param  enrolment The <code>Enrolment</code> to add to the
 		 *                   <code>Course</code>, not null
 		 *
@@ -98,10 +99,11 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		}
 
 		/**
-		 * Remove the specified <code>Activity</code> from the specified <code>Course</code>.
+		 * Remove the specified <code>Activity</code> from the specified
+		 * <code>Course</code>.
 		 *
-		 * @param  course    The <code>Course</code> from which the <code>Activity</code>
-		 *                   is to be removed, not null
+		 * @param  course    The <code>Course</code> from which the
+		 *                   <code>Activity</code> is to be removed, not null
 		 * @param  enrolment The <code>Enrolment</code> to remove from the
 		 *                   <code>Course</code>, not null
 		 *
@@ -119,15 +121,16 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		}
 
 		/**
-		 * Add the specified <code>Enrolment</code> to the specified <code>Course</code>.
+		 * Add the specified <code>Enrolment</code> to the specified
+		 * <code>Course</code>.
 		 *
-		 * @param  course    The <code>Course</code> to which the <code>Enrolment</code>
-		 *                   is to be added, not null
+		 * @param  course    The <code>Course</code> to which the
+		 *                   <code>Enrolment</code> is to be added, not null
 		 * @param  enrolment The <code>Enrolment</code> to add to the
 		 *                   <code>User</code>, not null
 		 *
-		 * @return           <code>True</code> if the <code>Enrolment</code> was
-		 *                   successfully added to the <code>Course</code>,
+		 * @return           <code>True</code> if the <code>Enrolment</code>
+		 *                   was successfully added to the <code>Course</code>,
 		 *                   <code>False</code> otherwise
 		 */
 
@@ -148,9 +151,9 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		 * @param  enrolment The <code>Enrolment</code> to remove from the
 		 *                   <code>User</code>, not null
 		 *
-		 * @return           <code>True</code> if the <code>Enrolment</code> was
-		 *                   successfully removed from the <code>Course</code>,
-		 *                   <code>False</code> otherwise
+		 * @return           <code>True</code> if the <code>Enrolment</code>
+		 *                   was successfully removed from the
+		 *                   <code>Course</code>, <code>False</code> otherwise
 		 */
 
 		public boolean removeEnrolment (final Course course, final Enrolment enrolment)
@@ -183,8 +186,8 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	private Set<Enrolment> enrolments;
 
 	/**
-	 * Static initializer to register the <code>CourseData</code> class with the
-	 * factories.
+	 * Static initializer to register the <code>CourseData</code> class with
+	 * the factories.
 	 */
 
 	static
@@ -220,7 +223,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		assert name != null : "name is NULL";
 		assert semester != null : "semester is NULL";
 		assert year != null : "year is NULL";
-			
+
 		this.id = null;
 		this.name = name;
 		this.semester = semester;
@@ -228,12 +231,12 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 		this.activities = new LinkedList<Activity> ();
 		this.enrolments = new HashSet<Enrolment> ();
-	}	
+	}
 
 	/**
-	 * Compare two <code>Course</code> instances to determine if they are equal.
-	 * The <code>Course</code> instances are compared based upon their names, as
-	 * well as their year and <code>Semester</code> of offering.
+	 * Compare two <code>Course</code> instances to determine if they are
+	 * equal.  The <code>Course</code> instances are compared based upon their
+	 * names, as well as their year and <code>Semester</code> of offering.
 	 *
 	 * @param  obj The <code>Course</code> instance to compare to the one
 	 *             represented by the called instance
@@ -299,11 +302,11 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Course</code> instance is
-	 * loaded, or by the <code>CourseBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new <code>Course</code>
-	 * instance.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Course</code>
+	 * instance is loaded, or by the <code>CourseBuilder</code> implementation
+	 * to set the <code>DataStore</code> identifier, prior to storing a new
+	 * <code>Course</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -328,8 +331,8 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 	/**
 	 * Set the name of the <code>Course</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Course</code> instance is
-	 * loaded.
+	 * used by a <code>DataStore</code> when the <code>Course</code> instance
+	 * is loaded.
 	 *
 	 * @param  name The name of the <code>Course</code>
 	 */
@@ -337,12 +340,13 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	public void setName (final String name)
 	{
 		assert name != null : "name is NULL";
-		
+
 		this.name = name;
 	}
 
 	/**
-	 * Get the <code>Semester</code> in which the <code>Course</code> was offered.
+	 * Get the <code>Semester</code> in which the <code>Course</code> was
+	 * offered.
 	 *
 	 * @return The <code>Semester</code> of offering
 	 */
@@ -354,18 +358,18 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	}
 
 	/**
-	 * Set the <code>Semester</code> in which the <code>Course</code> was offered.
-	 * This method is intended to be used by a <code>DataStore</code> when the 
-	 * <code>Course</code> instance is loaded.
+	 * Set the <code>Semester</code> in which the <code>Course</code> was
+	 * offered.  This method is intended to be used by a <code>DataStore</code>
+	 * when the <code>Course</code> instance is loaded.
 	 *
-	 * @param  semester The <code>Semester</code> in which the <code>Course</code>
-	 *                  was offered
+	 * @param  semester The <code>Semester</code> in which the
+	 *                  <code>Course</code> was offered
 	 */
 
 	protected void setSemester (final Semester semester)
 	{
 		assert semester != null : "semester is NULL";
-		
+
 		this.semester = semester;
 	}
 
@@ -382,8 +386,8 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	}
 
 	/**
-	 * Set the year in which the <code>Course</code> was offered.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
+	 * Set the year in which the <code>Course</code> was offered.  This method
+	 * is intended to be used by a <code>DataStore</code> when the
 	 * <code>Course</code> instance is loaded.
 	 *
 	 * @param  year The year in which the <code>Course</code> was offered
@@ -392,15 +396,15 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	protected void setYear (final Integer year)
 	{
 		assert year != null : "year is NULL";
-		
+
 		this.year = year;
 	}
 
 	/**
 	 * Get the <code>List</code> of <code>Activity</code> instances which are
 	 * associated with the <code>Course</code>.  The <code>List</code> will be
-	 * empty if there are no <code>Activity</code> instances associated with the
-	 * <code>Course</code>.
+	 * empty if there are no <code>Activity</code> instances associated with
+	 * the <code>Course</code>.
 	 *
 	 * @return A <code>List</code> of <code>Activity</code> instances
 	 */
@@ -413,9 +417,9 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 	/**
 	 * Initialize the <code>List</code> of <code>Activity</code> instances
-	 * associated with the <code>Course</code> instance.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Course</code> instance is
-	 * loaded.
+	 * associated with the <code>Course</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Course</code> instance is loaded.
 	 *
 	 * @param  activities The <code>List</code> of <code>Activity</code>
 	 *                    instances, not null
@@ -424,7 +428,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	protected void setActivities (final List<Activity> activities)
 	{
 		assert activities != null : "activities is NULL";
-		
+
 		this.activities = activities;
 	}
 
@@ -440,7 +444,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	protected boolean addActivity (final Activity activity)
 	{
 		assert activity != null : "activity is NULL";
-		
+
 		return this.activities.add (activity);
 	}
 
@@ -456,7 +460,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	protected boolean removeActivity (final Activity activity)
 	{
 		assert activity != null : "activity is NULL";
-		
+
 		return this.activities.remove (activity);
 	}
 
@@ -476,9 +480,9 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 	/**
 	 * Initialize the <code>Set</code> of <code>Enrolment</code> instances
-	 * associated with the <code>Course</code> instance.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Course</code> instance is
-	 * loaded.
+	 * associated with the <code>Course</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Course</code> instance is loaded.
 	 *
 	 * @param  enrolments The <code>Set</code> of <code>Enrolment</code>
 	 *                    instances, not null
@@ -508,7 +512,8 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	}
 
 	/**
-	 * Remove the specified <code>Enrolment</code> from the <code>Course</code>.
+	 * Remove the specified <code>Enrolment</code> from the
+	 * <code>Course</code>.
 	 *
 	 * @param  enrolment The <code>Enrolment</code> to remove, not null
 	 *

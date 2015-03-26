@@ -80,7 +80,8 @@ public class ${ClassName} extends GenericSubActivity
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Register the <code>${ClassName}</code> with the factories on initialization.
+	 * Register the <code>${ClassName}</code> with the factories on
+	 * initialization.
 	 */
 
 	static
@@ -114,8 +115,8 @@ public class ${ClassName} extends GenericSubActivity
 	 * instance.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * child class.
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the child class.
 	 *
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
@@ -127,15 +128,15 @@ public class ${ClassName} extends GenericSubActivity
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded, or by the <code>ActivityBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new
-	 * <code>Activity</code> instance.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Activity</code>
+	 * instance is loaded, or by the <code>ActivityBuilder</code>
+	 * implementation to set the <code>DataStore</code> identifier, prior to
+	 * storing a new <code>Activity</code> instance.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * child class.
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the child class.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -151,8 +152,8 @@ public class ${ClassName} extends GenericSubActivity
 	 * <code>SubActivity</code>.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * parent class.
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the parent class.
 	 *
 	 * @return The parent <code>Activity</code>
 	 */
@@ -170,8 +171,8 @@ public class ${ClassName} extends GenericSubActivity
 	 * loaded.
 	 * <p>
 	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * parent class.
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the parent class.
 	 *
 	 * @param  activity The <code>Activity</code> containing this
 	 *                  <code>SubActivity</code> instance

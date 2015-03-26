@@ -31,8 +31,8 @@ import java.util.List;
 public interface EnrolmentManager extends ElementManager<Enrolment>
 {
 	/**
-	 * Get an instance of the <code>EnrolmentBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>EnrolmentBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>EnrolmentBuilder</code> instance
 	 */

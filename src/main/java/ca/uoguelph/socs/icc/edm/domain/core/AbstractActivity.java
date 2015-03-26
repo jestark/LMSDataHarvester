@@ -42,8 +42,8 @@ import ca.uoguelph.socs.icc.edm.domain.builder.AbstractActivityElementFactory;
 public abstract class AbstractActivity extends AbstractElement implements Activity
 {
 	/**
-	 * Implementation of the <code>ActivityElementFactory</code> interface.  Allows
-	 * the builders to create instances of the <code>Activity</code>.
+	 * Implementation of the <code>ActivityElementFactory</code> interface.
+	 * Allows the builders to create instances of the <code>Activity</code>.
 	 */
 
 	protected static abstract class Factory extends AbstractElement.Factory<Activity> implements AbstractActivityElementFactory
@@ -81,8 +81,8 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		 *                  <code>Activity</code>, not null
 		 *
 		 * @return          <code>True</code> if the <code>LogEntry</code> was
-		 *                  successfully removed from the <code>Activity</code>,
-		 *                  <code>False</code> otherwise
+		 *                  successfully removed from the
+		 *                  <code>Activity</code>, <code>False</code> otherwise
 		 */
 
 		@Override
@@ -103,9 +103,10 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		 * @param  subactivity The <code>SubActivity</code> to add to the
 		 *                     <code>Activity</code>, not null
 		 *
-		 * @return             <code>True</code> if the <code>SubActivity</code>
-		 *                     was successfully added to the <code>Actvity</code>,
-		 *                     <code>False</code> otherwise
+		 * @return             <code>True</code> if the
+		 *                     <code>SubActivity</code> was successfully added
+		 *                     to the <code>Actvity</code>, <code>False</code>
+		 *                     otherwise
 		 */
 
 		@Override
@@ -124,14 +125,15 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 		 * <code>Activity</code>.
 		 *
 		 * @param  activity    The <code>Activity</code> from which the
-		 *                     <code>SubActivity</code> is to be removed, not null
+		 *                     <code>SubActivity</code> is to be removed, not
+		 *                     null
 		 * @param  subactivity The <code>SubActivity</code> to remove from the
 		 *                     <code>Activity</code>, not null
 		 *
-		 * @return             <code>True</code> if the <code>SubActivity</code>
-		 *                     was successfully removed from the
-		 *                     <code>Actvity</code>, <code>False</code>
-		 *                     otherwise
+		 * @return             <code>True</code> if the
+		 *                     <code>SubActivity</code> was successfully
+		 *                     removed from the <code>Actvity</code>,
+		 *                     <code>False</code> otherwise
 		 */
 
 		@Override
@@ -164,8 +166,8 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	}
 
 	/**
-	 * Get the <code>Activity</code> implementation class which is associated with
-	 * the specified <code>ActivityType</code>.
+	 * Get the <code>Activity</code> implementation class which is associated
+	 * with the specified <code>ActivityType</code>.
 	 *
 	 * @param  type The <code>ActivityType</code>
 	 *
@@ -179,8 +181,9 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	}
 
 	/**
-	 * Get the <code>SubActivity</code> implementation class which is associated
-	 * with the specified <code>Activity</code> implementation class.
+	 * Get the <code>SubActivity</code> implementation class which is
+	 * associated with the specified <code>Activity</code> implementation
+	 * class.
 	 *
 	 * @param  activity The <code>Activity</code> implementation class
 	 *
@@ -194,8 +197,8 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	}
 
 	/**
-	 * Register an association between an <code>ActivityType</code> and the class
-	 * implementing the <code>Activity</code> interface for that
+	 * Register an association between an <code>ActivityType</code> and the
+	 * class implementing the <code>Activity</code> interface for that
 	 * <code>ActivityType</code>.
 	 *
 	 * @param  source A <code>String</code> representation of the
@@ -256,11 +259,11 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded, or by the <code>ActivityBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new
-	 * <code>Activity</code> instance.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Activity</code>
+	 * instance is loaded, or by the <code>ActivityBuilder</code>
+	 * implementation to set the <code>DataStore</code> identifier, prior to
+	 * storing a new <code>Activity</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -272,8 +275,8 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	}
 
 	/**
-	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances which
-	 * act upon the <code>Activity</code>.
+	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
+	 * which act upon the <code>Activity</code>.
 	 *
 	 * @return A <code>List</code> of <code>LogEntry</code> instances
 	 */
@@ -286,12 +289,12 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 
 	/**
 	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
-	 * associated with the <code>Activity</code> instance.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
+	 * associated with the <code>Activity</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Activity</code> instance is loaded.
 	 *
-	 * @param  log The <code>List</code> of <code>LogEntry</code> instances, not
-	 *             null
+	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
+	 *             not null
 	 */
 
 	protected void setLog (final List<LogEntry> log)
@@ -336,8 +339,8 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	}
 
 	/**
-	 * Determine if there are <code>SubActivity</code> instances associated with
-	 * the <code>Activity</code> instance.
+	 * Determine if there are <code>SubActivity</code> instances associated
+	 * with the <code>Activity</code> instance.
 	 *
 	 * @return <code>True</code> if the <code>Activity</code> instance has
 	 *         <code>SubActivity</code> instances associated with it.
@@ -351,8 +354,8 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	}
 
 	/**
-	 * Get the <code>List</code> of <code>SubActivity</code> instances associated
-	 * with the <code>Actvity</code>.
+	 * Get the <code>List</code> of <code>SubActivity</code> instances
+	 * associated with the <code>Actvity</code>.
 	 *
 	 * @return The <code>List</code> of <code>SubActivity</code> instances
 	 */
@@ -364,9 +367,10 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	}
 
 	/**
-	 * Initialize the <code>List</code> of <code>SubActivity</code> instances for
-	 * the <code>Activity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is loaded.
+	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
+	 * for the <code>Activity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
 	 *
 	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
 	 *                       instances, not null
@@ -380,7 +384,8 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	}
 
 	/**
-	 * Add the specified <code>SubActivity</code> to the <code>Activity</code>.
+	 * Add the specified <code>SubActivity</code> to the
+	 * <code>Activity</code>.
 	 *
 	 * @param  subactivity The <code>SubActivity</code> to add, not null
 	 *
@@ -402,7 +407,8 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @param  subactivity The <code>SubActivity</code> to remove, not null
 	 *
 	 * @return             <code>True</code> if the <code>SubActivity</code>
-	 *                     was successfully removed, <code>False</code> otherwise
+	 *                     was successfully removed, <code>False</code>
+	 *                     otherwise
 	 */
 
 	protected boolean removeSubActivity (final SubActivity subactivity)

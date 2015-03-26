@@ -24,10 +24,12 @@ public interface GradeBuilder extends ElementBuilder<Grade>
 	public abstract GradeBuilder setEnrolment (Enrolment enrolment);
 
 	/**
-	 * Get the grade that the student received for the <code>Activity</code>.  The
-	 * grade will be an <code>Integer</code> with a value on the range of [0, 100].
+	 * Get the grade that the student received for the <code>Activity</code>.
+	 * The grade will be an <code>Integer</code> with a value on the range of
+	 * [0, 100].
 	 *
-	 * @return An <code>Integer</code> containing the assigned grade, may be null
+	 * @return An <code>Integer</code> containing the assigned grade, may be
+	 *         null
 	 */
 
 	public abstract Integer getGrade ();
@@ -35,12 +37,12 @@ public interface GradeBuilder extends ElementBuilder<Grade>
 	/**
 	 * Set the value of the <code>Grade</code>.
 	 *
-	 * @param  grade                    The value of the <code>Grade</code>, not
-	 *                                  null
+	 * @param  grade                    The value of the <code>Grade</code>,
+	 *                                  not null
 	 *
 	 * @return                          This <code>GradeBuilder</code>
-	 * @throws IllegalArgumentException If the value is less than zero or greater
-	 *                                  than 100
+	 * @throws IllegalArgumentException If the value is less than zero or
+	 *                                  greater than 100
 	 */
 
 	public abstract GradeBuilder setGrade (Integer grade);

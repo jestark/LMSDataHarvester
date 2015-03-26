@@ -25,35 +25,35 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 public interface DataStoreTransaction
 {
 	/**
-	 * determine if the current transaction is active.
+	 * Determine if the current transaction is active.
 	 */
 
 	public abstract Boolean isActive ();
-	
+
 	/**
 	 * Determine if the current transaction must be rolled back.
 	 */
 
 	public abstract Boolean getRollbackOnly ();
-	
+
 	/**
 	 * Force the current transaction to be rolled back.
 	 */
 
 	public abstract void setRollbackOnly ();
-	
+
 	/**
 	 * Begin a new transaction.
 	 */
 
 	public abstract void begin ();
-	
+
 	/**
 	 * Commit the transaction.
 	 */
 
 	public abstract void commit ();
-	
+
 	/**
 	 * Rollback the transaction.
 	 */

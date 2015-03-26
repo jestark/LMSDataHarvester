@@ -51,7 +51,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.LogReferenceElementFactory;
  * <code>toString</code> method when it is needed.  With the co-dependency each
  * class calling the others <code>equals</code>, <code>hashCode</code> or
  * <code>toString</code> method would lead to an infinite mutual recursion.  To
- * avoid the infinite mutual recursion, this class re-implements the 
+ * avoid the infinite mutual recursion, this class re-implements the
  * <code>equals</code>, <code>hashCode</code> and <code>toString</code> methods
  * from <code>LogData</code> using the methods from the <code>LogEntry</code>
  * interface.  When this class is present, <code>LogData</code> calls the
@@ -89,9 +89,10 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * Register the <code>LogReference</code> with the factories.  This method
 	 * handles the registrations for the subclasses to reduce code duplication.
 	 *
-	 * @param  elementImpl The <code>Element</code> implementation class, not null
+	 * @param  elementImpl The <code>Element</code> implementation class, not
+	 *                     null
 	 * @param  factory     The <code>ElementFactory</code>, not null
-	 */	
+	 */
 
 	protected static final <T extends LogReference, U extends LogReferenceElementFactory> void registerLog (final Class<T> elementImpl, final Class<U> factory, final U factoryImpl)
 	{
@@ -113,7 +114,7 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	}
 
 	/**
-	 * Create the <code>LogReference</code> specifying all of its values.  
+	 * Create the <code>LogReference</code> specifying all of its values.
 	 *
 	 * @param  entry       The parent <code>LogEntry</code> instance
 	 * @param  subactivity The <code>SubActivity</code> instance
@@ -131,10 +132,10 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	}
 
 	/**
-	 * Compare two <code>LogEntry</code> instances to determine if they are equal.
-	 * The <code>LogEntry</code> instances are compared based upon the contents of
-	 * the parent <code>LogEntry</code> as determined by its <code>equals</code>
-	 * method and the referenced sub-activity.
+	 * Compare two <code>LogEntry</code> instances to determine if they are
+	 * equal.  The <code>LogEntry</code> instances are compared based upon the
+	 * contents of the parent <code>LogEntry</code> as determined by its
+	 * <code>equals</code> method and the referenced <code>SubActivity</code>.
 	 *
 	 * @param  obj The <code>LogEntry</code> instance to compare to the one
 	 *             represented by the called instance
@@ -172,8 +173,8 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	/**
 	 * Compute a <code>hashCode</code> of the <code>LogEntry</code> instance.
 	 * The hash code is computed based upon the contents of the parent
-	 * <code>LogEntry</code> as returned by its <code>hashCode</code> method and
-	 * the referenced sub-activity.
+	 * <code>LogEntry</code> as returned by its <code>hashCode</code> method
+	 * and the referenced <code>SubActivity</code>.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
 	 */
@@ -200,8 +201,8 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * Get the <code>DataStore</code> identifier for the <code>LogEntry</code>
 	 * instance.  Since <code>LogReference</code> is dependent on the
 	 * <code>LogEntryt</code> instance for its <code>DataStore</code>
-	 * identifier, the identifier from the associated <code>LogEntry</code> will
-	 * be returned.
+	 * identifier, the identifier from the associated <code>LogEntry</code>
+	 * will be returned.
 	 *
 	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
 	 */
@@ -214,8 +215,8 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	/**
 	 * Set the <code>DataStore</code> identifier.   Since
 	 * <code>LogReference</code> is dependent on the <code>LogEntry</code>
-	 * instance for its <code>DataStore</code> identifier, this method throws an
-	 * <code>UnsupportedOperationException</code>.
+	 * instance for its <code>DataStore</code> identifier, this method throws
+	 * an <code>UnsupportedOperationException</code>.
 	 *
 	 * @param  id                            The <code>DataStore</code>
 	 *                                       identifier, not null
@@ -268,8 +269,9 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 
 	/**
 	 * Set the <code>SubActivity</code> upon which the logged action was
-	 * performed.  This method is intended to be used by a <code>DataStore</code>
-	 * when the <code>LogEntry</code> instance is loaded.
+	 * performed.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded.
 	 *
 	 * @param  subactivity The <code>SubActivity</code>, not null
 	 */
@@ -297,7 +299,7 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	/**
 	 * Get the <code>Course</code> for which the activity was logged.
 	 *
-	 * @return A reference to the associated <code>Course</code> 
+	 * @return A reference to the associated <code>Course</code>
 	 */
 
 	@Override
@@ -307,7 +309,8 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	}
 
 	/**
-	 * Get the <code>Action</code> which was performed upon the logged activity.
+	 * Get the <code>Action</code> which was performed upon the logged
+	 * activity.
 	 *
 	 * @return A reference to the logged <code>Action</code>
 	 */
@@ -347,8 +350,8 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * Get a <code>String</code> representation of the <code>LogEntry</code>
 	 * instance, including the identifying fields.
 	 *
-	 * @return A <code>String</code> representation of the <code>LogEntry</code>
-	 *         instance
+	 * @return A <code>String</code> representation of the
+	 *         <code>LogEntry</code> instance
 	 */
 
 	@Override
@@ -360,7 +363,7 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 		builder.append ("action", this.entry.getAction ());
 		builder.append ("activity", this.entry.getActivity ());
 		builder.append ("time", this.entry.getTime ());
-		builder.append ("ipaddress", this.entry.getIPAddress ());	
+		builder.append ("ipaddress", this.entry.getIPAddress ());
 		builder.append ("subactivity", this.entry.getActivity ());
 
 		return builder.toString ();

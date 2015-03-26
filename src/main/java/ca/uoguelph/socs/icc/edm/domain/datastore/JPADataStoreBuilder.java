@@ -98,8 +98,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 		}
 
 		/**
-		 * Compute a unique <code>hashCode</code> for a <code>Key</code> based on
-		 * its attributes.
+		 * Compute a unique <code>hashCode</code> for a <code>Key</code> based
+		 * on its attributes.
 		 *
 		 * @return The hash code
 		 */
@@ -131,8 +131,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 		/**
 		 * Get the URL for the associated database connection.
 		 *
-		 * @return A <code>String</code> containing the URL, NULL if there is no
-		 *         associated URL
+		 * @return A <code>String</code> containing the URL, NULL if there is
+		 *         no associated URL
 		 */
 
 		public String getURL ()
@@ -143,7 +143,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 		/**
 		 * Override the toString method to print the unit name and the URL.
 		 *
-		 * @return A <code>String</code> containing the formatted unit name and URL
+		 * @return A <code>String</code> containing the formatted unit name and
+		 *         URL
 		 */
 
 		@Override
@@ -190,8 +191,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	}
 
 	/**
-	 * Get the JPA unit (entry on persistence.xml) to use when connecting to the
-	 * database.
+	 * Get the JPA unit (entry on persistence.xml) to use when connecting to
+	 * the database.
 	 *
 	 * @return A <code>String</code> containing the name of the JPA unit
 	 */
@@ -204,8 +205,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	/**
 	 * Set the name of the JPA unit to use when connecting to the database.
 	 *
-	 * @param  unitname   The name of the JPA unit to use when connecting to the
-	 *                    database, not null
+	 * @param  unitname   The name of the JPA unit to use when connecting to
+	 *                    the database, not null
 	 */
 
 	public void setUnitName (String unitname)
@@ -221,8 +222,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 
 	/**
 	 * Set, clear or replace the value of the specified parameter.  If the
-	 * specified parameter does not exist and the specified value is not null, it
-	 * will be added, or the value will be replaced if the parameter already
+	 * specified parameter does not exist and the specified value is not null,
+	 * it will be added, or the value will be replaced if the parameter already
 	 * exists.  If the value is null then the parameter will be cleared.
 	 *
 	 * @param  name  The name of the parameter to set
@@ -244,8 +245,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	/**
 	 * Get the URL to use to connect to the database.
 	 *
-	 * @return A <code>String</code> containing the URL, or null if the URL is not
-	 *         set.
+	 * @return A <code>String</code> containing the URL, or null if the URL is
+	 *         not set.
 	 */
 
 	public String getConnectionURL ()
@@ -255,9 +256,9 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 
 	/**
 	 * Set the URL to use when connecting to the database.  If the value of the
-	 * URL is not null then the URL will be added to the connection parameters, it
-	 * will replace a pre-existing value if one was already set.  The parameter
-	 * will be cleared if the specified value is null.
+	 * URL is not null then the URL will be added to the connection parameters,
+	 * it will replace a pre-existing value if one was already set.  The
+	 * parameter will be cleared if the specified value is null.
 	 *
 	 * @param  url The URL to use when connecting to the database.
 	 */
@@ -280,10 +281,11 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	}
 
 	/**
-	 * Set the username to user when connecting to the database.   If the value of
-	 * the username is not null then the username will be added to the connection
-	 * parameters, it will replace a pre-existing value if one was already set.
-	 * The parameter will be cleared if the specified value is null.
+	 * Set the username to user when connecting to the database.   If the value
+	 * of the username is not null then the username will be added to the
+	 * connection parameters, it will replace a pre-existing value if one was
+	 * already set.  The parameter will be cleared if the specified value is
+	 * null.
 	 *
 	 * @param  username The username to use when connecting to the database
 	 */
@@ -296,8 +298,8 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	/**
 	 * Get the database connection password.
 	 *
-	 * @return A <code>String</code> containing the connection password, or null
-	 *         if a password has not been set
+	 * @return A <code>String</code> containing the connection password, or
+	 *         null if a password has not been set
 	 */
 
 	public String getConnectionPassword ()
@@ -306,10 +308,10 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	}
 
 	/**
-	 * Set the database connection password.  If the value of the password is not
-	 * null then the password will be added to the connection parameters, it will
-	 * replace a pre-existing value if one was already set.  The parameter will be
-	 * cleared if the specified value is null.
+	 * Set the database connection password.  If the value of the password is
+	 * not null then the password will be added to the connection parameters,
+	 * it will replace a pre-existing value if one was already set.  The
+	 * parameter will be cleared if the specified value is null.
 	 *
 	 * @param  password The password to use when connecting to the database
 	 */
@@ -331,10 +333,11 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	}
 
 	/**
-	 * Set the database connection parameters.  The provided <code>Map</code> will
-	 * replace all of the currently set parameters.
+	 * Set the database connection parameters.  The provided <code>Map</code>
+	 * will replace all of the currently set parameters.
 	 *
-	 * @param  parameters <code>Map</code> containing the new parameters, not null
+	 * @param  parameters <code>Map</code> containing the new parameters, not
+	 *                    null
 	 */
 
 	public void setConnectionParameters (Map<String, String> parameters)

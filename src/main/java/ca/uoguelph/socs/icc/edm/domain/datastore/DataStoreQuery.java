@@ -43,12 +43,12 @@ public interface DataStoreQuery<T extends Element>
 	 */
 
 	public abstract DataStore getDataStore ();
-	
+
 	/**
-	 * Get the next available DataStore ID number.  The number will be chosen by
-	 * the IdGenerator algorithm set in the <code>DataStoreProfile</code>
+	 * Get the next available DataStore ID number.  The number will be chosen
+	 * by the IdGenerator algorithm set in the <code>DataStoreProfile</code>
 	 *
-	 * @return A Long containing the ID number
+	 * @return A <code>Long</code> containing the ID number
 	 */
 
 	public abstract Long nextId ();
@@ -82,8 +82,8 @@ public interface DataStoreQuery<T extends Element>
 
 	/**
 	 * Retrieve an object from the <code>DataStore</code> based on the value of
-	 * its primary key.  Note that the value of the primary key must not be less
-	 * than zero.
+	 * its primary key.  Note that the value of the primary key must not be
+	 * less than zero.
 	 *
 	 * @param  id The id (primary key) of the object to retrieve, not null
 	 * @return    The object with an ID equal to the specified value or null if
@@ -96,21 +96,22 @@ public interface DataStoreQuery<T extends Element>
 	 * Fetch the object from the <code>DataStore</code> which matches the
 	 * specified query, with the specified parameters.
 	 * <p>
-	 * The parameter map may be null, however all of the parameters to the query
-	 * (if any) must have a value.  All of the parameters included in the
+	 * The parameter map may be null, however all of the parameters to the
+	 * query (if any) must have a value.  All of the parameters included in the
 	 * parameter map must have non-null values.
 	 * <p>
 	 * The <code>getParameters</code> method will return a list of all of the
 	 * query parameters.
 	 *
-	 * @param name                      The name of the query to execute, not null
-	 * @param parameters                A Map of parameter names and their
-	 *                                  corresponding values for this query.  The
-	 *                                  Map may be null, the values must not be
-	 *                                  null.
+	 * @param name                      The name of the query to execute, not
+	 *                                  null
+	 * @param parameters                A <code>Map</code> of parameter names
+	 *                                  and their corresponding values for this
+	 *                                  query. The <code>Map</code> may be
+	 *                                  null, the values must not be null.
 	 * @return                          The object which matches the specified
-	 *                                  query, null if that object does not exist
-	 *                                  in the <code>DataStore</code>.
+	 *                                  query, null if that object does not
+	 *                                  exist in the <code>DataStore</code>.
 	 * @throws IllegalArgumentException if a parameter is missing, or the query
 	 *                                  does not exist
 	 * @see    #getParameters
@@ -119,12 +120,12 @@ public interface DataStoreQuery<T extends Element>
 	public abstract T query (String name, Map<String, Object> parameters);
 
 	/**
-	 * Retrieve a List of all of the objects in the <code>DataStore</code> of the
-	 * type which corresponds to this <code>DataStoreQuery</code> instance.  If
-	 * there are no object of the corresponding type in the <code>DataStore</code>
-	 * then the list will be empty.
+	 * Retrieve a List of all of the objects in the <code>DataStore</code> of
+	 * the type which corresponds to this <code>DataStoreQuery</code> instance.
+	 * If there are no object of the corresponding type in the
+	 * <code>DataStore</code> then the list will be empty.
 	 *
-	 * @return A (possibly empty) list of objects.
+	 * @return A (possibly empty) <code>List</code> of objects.
 
 	 */
 
@@ -134,21 +135,23 @@ public interface DataStoreQuery<T extends Element>
 	 * Fetch a list of objects from the <code>DataStore</code> which match the
 	 * specified query, with the specified parameters.
 	 * <p>
-	 * The parameter map may be null, however all of the parameters to the query
-	 * (if any) must have a value.  All of the parameters included in the
+	 * The parameter map may be null, however all of the parameters to the
+	 * query (if any) must have a value.  All of the parameters included in the
 	 * parameter map must have non-null values.
 	 * <p>
 	 * The <code>getParameters</code> method will return a list of all of the
 	 * query parameters.
 	 *
-	 * @param  name                     The name of the query to execute, not null
-	 * @param  parameters               A Map of parameter names and their
-	 *                                  corresponding values for this query.  The
-	 *                                  Map may be null, the values must not be
-	 *                                  null.
-	 * @return                          The list of object which match the
-	 *                                  specified query.  If no objects match then
-	 *                                  the List will be empty.
+	 * @param  name                     The name of the query to execute, not
+	 *                                  null
+	 * @param  parameters               A <code>Map</code> of parameter names
+	 *                                  and their corresponding values for this
+	 *                                  query.  The <code>Map</code> may be
+	 *                                  null, the values must not be null.
+	 * @return                          The <code>List</code> of objects which
+	 *                                  match the specified query.  If no
+	 *                                  objects match then the
+	 *                                  <code>List</code> will be empty.
 	 * @throws IllegalArgumentException if a parameter is missing, or the query
 	 *                                  does not exist
 	 * @throws NullPointerException     if a value to a parameter is null
@@ -172,9 +175,11 @@ public interface DataStoreQuery<T extends Element>
 	 * Insert the specified entity into the <code>DataStore</code>.
 	 *
 	 * @param  entity The entity to insert, not null
+	 *
+	 * @return        A reference to the entity in the <code>DataStore</code>
 	 */
 
-	public abstract void insert (T entity);
+	public abstract T insert (T entity);
 
 	/**
 	 * Remove the specified entity from the <code>DataStore</code>.

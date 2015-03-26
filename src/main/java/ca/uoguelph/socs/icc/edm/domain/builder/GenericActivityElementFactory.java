@@ -37,9 +37,9 @@ public interface GenericActivityElementFactory extends ActivityElementFactory
 {
 	/**
 	 * Create a new <code>Activity</code> instance.
-	 * 
-	 * @param  type   The <code>ActivityType</code> of the <code>Activity</code>,
-	 *                not null
+	 *
+	 * @param  type   The <code>ActivityType</code> of the
+	 *                <code>Activity</code> not null
 	 * @param  course The <code>Course</code> which is associated with the
 	 *                <code>Activity</code> instance, not null
 	 *
@@ -47,4 +47,4 @@ public interface GenericActivityElementFactory extends ActivityElementFactory
 	 */
 
 	public abstract Activity create (ActivityType type, Course course);
-} 
+}

@@ -88,8 +88,8 @@ final class ActivityDataMap
 	}
 
 	/**
-	 * Register an association between an <code>ActivityType</code> and the class
-	 * implementing the <code>Activity</code> interface for that
+	 * Register an association between an <code>ActivityType</code> and the
+	 * class implementing the <code>Activity</code> interface for that
 	 * <code>ActivityType</code>.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null
@@ -103,13 +103,13 @@ final class ActivityDataMap
 		assert impl != null : "impl is NULL";
 		assert type != null : "type is NULL";
 		assert (! this.activities.containsKey (type)) : "type is already registered";
-		
+
 		this.activities.put (type, impl);
 	}
 
 	/**
-	 * Register an association between an <code>ActivityType</code> and the class
-	 * implementing the <code>Activity</code> interface for that
+	 * Register an association between an <code>ActivityType</code> and the
+	 * class implementing the <code>Activity</code> interface for that
 	 * <code>ActivityType</code>.
 	 *
 	 * @param  source A <code>String</code> representation of the
@@ -150,8 +150,8 @@ final class ActivityDataMap
 	}
 
 	/**
-	 * Get the <code>Activity</code> implementation class which is associated with
-	 * the specified <code>ActivityType</code>.
+	 * Get the <code>Activity</code> implementation class which is associated
+	 * with the specified <code>ActivityType</code>.
 	 *
 	 * @param  type The <code>ActivityType</code>
 	 *
@@ -165,13 +165,14 @@ final class ActivityDataMap
 	}
 
 	/**
-	 * Get the <code>SubActivity</code> implementation class which is associated
-	 * with the specified <code>Activity</code> implementation class.
+	 * Get the <code>SubActivity</code> implementation class which is
+	 * associated with the specified <code>Activity</code> implementation
+	 * class.
 	 *
 	 * @param  activity The <code>Activity</code> implementation class
 	 *
-	 * @return          The <code>SubActivity</code> implementation class, may be
-	 *                  null
+	 * @return          The <code>SubActivity</code> implementation class, may
+	 *                  be null
 	 */
 
 	public Class<? extends SubActivity> getSubActivityClass (final Class<? extends Activity> activity)

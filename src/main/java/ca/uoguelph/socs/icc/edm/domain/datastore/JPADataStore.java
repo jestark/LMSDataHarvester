@@ -112,8 +112,8 @@ public final class JPADataStore implements DataStore
 	}
 
 	/**
-	 * Get a reference to the JPA entity manager.  This method is intended to only
-	 * be used by the <code>JPADataStoreQuery</code> and
+	 * Get a reference to the JPA entity manager.  This method is intended to
+	 * only be used by the <code>JPADataStoreQuery</code> and
 	 * <code>JPADataStoreTransaction</code> classes to perform their functions.
 	 *
 	 * @return A reference to the JPA <code>EntityManager</code>
@@ -142,13 +142,15 @@ public final class JPADataStore implements DataStore
 
 	/**
 	 * Close the JPA data store, including all connections to the underlying
-	 * database.  The behaviour of this data store, and its associated queries once
-	 * it has been closed is undefined.
+	 * database.  The behaviour of this data store, and its associated queries
+	 * once it has been closed is undefined.
 	 */
 
 	@Override
 	public void close ()
 	{
+		this.log.trace ("close:");
+
 		// clean up all of the queries.
 
 		// Close the entity manager and factory.
@@ -175,27 +177,15 @@ public final class JPADataStore implements DataStore
 	 * @param  impl               Implementation type class, not null
 	 * @return                    Query object for the specified interface and
 	 *                            implementation
-	 * @throws ClassCastException if the specified interface or implementation
-	 *                            types do not match those of a previously stored
-	 *                            query object.
 	 */
 
 	@Override
 	public <T extends Element, X extends T> DataStoreQuery<T> createQuery (Class<T> type, Class<X> impl)
 	{
-		this.log.trace ("Creating DataStoreQuery for: {} ({})", type, impl);
+		this.log.trace ("createQuery: type={} impl={}", type, impl);
 
-		if (type == null)
-		{
-			this.log.error ("Interface type is NULL");
-			throw new NullPointerException ("Interface type is NULL");
-		}
-
-		if (impl == null)
-		{
-			this.log.error ("Implementation type is NULL");
-			throw new NullPointerException ("Implementation type is NULL");
-		}
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
 
 		return new JPADataStoreQuery<T, X> (this, type, impl);
 	}

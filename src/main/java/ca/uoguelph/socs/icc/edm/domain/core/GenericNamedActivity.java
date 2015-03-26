@@ -51,14 +51,14 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	private String name;
 
 	/**
-	 * Register the <code>Activity</code> implementation class with the factories.
-	 * This method handles the registrations for the subclasses to reduce code
-	 * duplication.
+	 * Register the <code>Activity</code> implementation class with the
+	 * factories.  This method handles the registrations for the subclasses to
+	 * reduce code duplication.
 	 *
 	 * @param  elementClass The <code>Element</code> implementation class, not
 	 *                      null
-	 * @param  builderClass The <code>ActivityBuilder</code> implementation, not
-	 *                      null
+	 * @param  builderClass The <code>ActivityBuilder</code> implementation,
+	 *                      not null
 	 * @param  factoryClass The <code>ElementFactory</code> interface, not null
 	 * @param  factory      The <code>ElementFactory</code> instance, not null
 	 * @param  source       The name of the <code>ActivitySource</code> not null
@@ -110,8 +110,8 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 
 	/**
 	 * Compare two <code>Activity</code> instances to determine if they are
-	 * equal.  The <code>Activity</code> instances are compared based upon their
-	 * names.
+	 * equal.  The <code>Activity</code> instances are compared based upon
+	 * their names.
 	 *
 	 * @param  obj The <code>Activity</code> instance to compare to the one
 	 *             represented by the called instance
@@ -176,9 +176,9 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	}
 
 	/**
-	 * Set the name of the <code>Activity</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
+	 * Set the name of the <code>Activity</code>.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Activity</code>
+	 * instance is loaded.
 	 *
 	 * @param  name The name of the <code>Activity</code>, not null
 	 */
@@ -194,8 +194,8 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	 * Get a <code>String</code> representation of the <code>Activity</code>
 	 * instance, including the identifying fields.
 	 *
-	 * @return A <code>String</code> representation of the <code>Activity</code>
-	 *         instance
+	 * @return A <code>String</code> representation of the
+	 *         <code>Activity</code> instance
 	 */
 
 	@Override

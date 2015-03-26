@@ -44,8 +44,8 @@ import ca.uoguelph.socs.icc.edm.domain.builder.GradeElementFactory;
 public class GradedActivity extends AbstractElement implements Grade, Serializable
 {
 	/**
-	 * Implementation of the <code>GradeElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>GradedActivity</code>.
+	 * Implementation of the <code>GradeElementFactory</code> interface.
+	 * Allows the builders to create instances of <code>GradedActivity</code>.
 	 */
 
 	private static final class Factory extends AbstractElement.Factory<Grade> implements GradeElementFactory
@@ -57,7 +57,8 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 		 *                   assigned, not null
 		 * @param  activity  The <code>Activity</code> for which the grade is
 		 *                   assigned, not null
-		 * @param  grade     The assigned grade, on the interval [0, 100], not null
+		 * @param  grade     The assigned grade, on the interval [0, 100], not
+		 *                   null
 		 *
 		 * @return           The new <code>Grade</code> instance
 		 */
@@ -87,8 +88,8 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	private Activity activity;
 
 	/**
-	 * Static initializer to register the <code>GradedActivity</code> class with the
-	 * factories.
+	 * Static initializer to register the <code>GradedActivity</code> class
+	 * with the factories.
 	 */
 
 	static
@@ -165,8 +166,8 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 
 	/**
 	 * Compute a <code>hashCode</code> of the <code>Grade</code> instance.
-	 * The hash code is computed based upon associated <code>Activity</code> and
-	 * the associated <code>Enrolment</code>.
+	 * The hash code is computed based upon associated <code>Activity</code>
+	 * and the associated <code>Enrolment</code>.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
 	 */
@@ -185,16 +186,17 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	}
 
 	/**
-	 * Determine if two <code>Grade</code> instances are identical.  This method
-	 * acts as a stricter form of the equals method.  The equals method only
-	 * compares properties that are required to be unique (and therefore immutable)
-	 * for the <code>Grade</code> instance, while this method compares all of the
-	 * properties.
+	 * Determine if two <code>Grade</code> instances are identical.  This
+	 * method acts as a stricter form of the equals method.  The equals method
+	 * only compares properties that are required to be unique (and therefore
+	 * immutable) for the <code>Grade</code> instance, while this method
+	 * compares all of the properties.
 	 *
-	 * @param  element The <code>Element</code> to compare to the current instance
+	 * @param  element The <code>Element</code> to compare to the current
+	 *                 instance
 	 *
-	 * @return         <code>True</code> if the <code>Element</code> instances are
-	 *                 logically identical, <code>False</code> otherwise
+	 * @return         <code>True</code> if the <code>Element</code> instances
+	 *                 are logically identical, <code>False</code> otherwise
 	 */
 
 	@Override
@@ -223,8 +225,8 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 * Get the <code>DataStore</code> identifier for the <code>Grade</code>
 	 * instance.  Since <code>GradedActivity</code> is dependent on the
 	 * <code>Enrolment</code> instance for its <code>DataStore</code>
-	 * identifier, the identifier from the associated <code>Enrolment</code> will
-	 * be returned.
+	 * identifier, the identifier from the associated <code>Enrolment</code>
+	 * will be returned.
 	 *
 	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
 	 */
@@ -237,8 +239,8 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	/**
 	 * Set the <code>DataStore</code> identifier.   Since
 	 * <code>GradedActivity</code> is dependent on the <code>Enrolment</code>
-	 * instance for its <code>DataStore</code> identifier, this method throws an
-	 * <code>UnsupportedOperationException</code>.
+	 * instance for its <code>DataStore</code> identifier, this method throws
+	 * an <code>UnsupportedOperationException</code>.
 	 *
 	 * @param  id                            The <code>DataStore</code>
 	 *                                       identifier, not null
@@ -274,7 +276,7 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	protected void setActivity (final Activity activity)
 	{
 		assert activity != null : "grade is NULL";
-		
+
 		this.activity = activity;
 	}
 
@@ -307,8 +309,9 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	}
 
 	/**
-	 * Get the grade that the student received for the <code>Activity</code>.  The
-	 * grade will be an <code>Integer</code> with a value on the range of [0, 100].
+	 * Get the grade that the student received for the <code>Activity</code>.
+	 * The grade will be an <code>Integer</code> with a value on the range of
+	 * [0, 100].
 	 *
 	 * @return An <code>Integer</code> containing the assigned grade.
 	 */
@@ -331,15 +334,15 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	{
 		assert grade != null : "grade is NULL";
 		assert grade >= 0 : "grade can not be negative";
-		
+
 		this.grade = grade;
 	}
 
 	/**
-	 * Get the name of the <code>Enrolment</code> to which the <code>Grade</code>
-	 * is assigned.  This is a convenience method which return the result from the
-	 * <code>getName</code> method on the associated <code>Enrolment</code>
-	 * instance.
+	 * Get the name of the <code>Enrolment</code> to which the
+	 * <code>Grade</code> is assigned.  This is a convenience method which
+	 * return the result from the <code>getName</code> method on the associated
+	 * <code>Enrolment</code> instance.
 	 *
 	 * @return A <code>String</code> containing the name of the
 	 *         <code>Enrolment</code>

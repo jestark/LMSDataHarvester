@@ -29,7 +29,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface ActivitySourceManager extends ElementManager<ActivitySource>
 {
 	/**
-	 * Get an instance of the <code>ActivitySourceBuilder</code> interface, 
+	 * Get an instance of the <code>ActivitySourceBuilder</code> interface,
 	 * suitable for use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>ActivitySourceBuilder</code> instance
@@ -41,11 +41,11 @@ public interface ActivitySourceManager extends ElementManager<ActivitySource>
 	 * Retrieve the <code>ActivitySource</code> object associated with the
 	 * specified name from the <code>DataStore</code>.
 	 *
-	 * @param  name The name of the <code>ActivitySource</code> to retrieve, not
-	 *              null
+	 * @param  name The name of the <code>ActivitySource</code> to retrieve,
+	 *              not null
 	 *
-	 * @return      The <code>ActivitySource</code> instance associated with the
-	 *              specified name
+	 * @return      The <code>ActivitySource</code> instance associated with
+	 *              the specified name
 	 */
 
 	public abstract ActivitySource fetchByName (String name);

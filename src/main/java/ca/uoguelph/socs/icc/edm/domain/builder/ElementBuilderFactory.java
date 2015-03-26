@@ -33,8 +33,8 @@ import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
 /**
- * Factory for creating <code>ElementBuilder</code> objects.   
- * 
+ * Factory for creating <code>ElementBuilder</code> objects.
+ *
  * @author  James E.Stark
  * @version 1.0
  * @see     BuilderFactory
@@ -75,15 +75,15 @@ final class ElementBuilderFactory
 	 * @param  <T>
 	 * @param  <U>
 	 * @param  builder The <code>ElementBuilder</code> interface class, not null
-	 * @param  impl    The <code>ElementBuilder</code> implementation class, not
-	 *                 null
+	 * @param  impl    The <code>ElementBuilder</code> implementation class,
+	 *                 not null
 	 * @param  factory The <code>BuilderFactory</code> used to create the
 	 *                 <code>ElementBuilder</code>, not null
 	 */
 
 	public <T extends ElementBuilder<U>, U extends Element> void registerFactory (final Class<T> builder, final Class<? extends T> impl, final BuilderFactory<U, T> factory)
 	{
-		this.log.trace ("Registering Builder: {} ({})", impl, factory);
+		this.log.trace ("registerFactory: builder={}, impl={}, factory={}", builder, impl, factory);
 
 		assert builder != null : "builder is NULL";
 		assert impl != null : "impl is NULL";
@@ -110,7 +110,7 @@ final class ElementBuilderFactory
 
 	public <T extends ElementBuilder<U>, U extends Element> void registerElement (final Class<? extends U> element, final Class<T> builder)
 	{
-		this.log.trace ("Registering Element: {} ({})", element, builder);
+		this.log.trace ("registerElement: element={}, builder={}", element, builder);
 
 		assert element != null : "element is NULL";
 		assert builder != null : "builder is NULL";
@@ -134,12 +134,12 @@ final class ElementBuilderFactory
 	@SuppressWarnings("unchecked")
 	public <T extends ElementBuilder<U>, U extends Element> T create (final Class<T> builder, final Class<? extends Element> element, final ManagerProxy<U> manager)
 	{
-		this.log.debug ("Creating builder {} for element {} on manager {}", builder, element, manager);
+		this.log.trace ("create: builder={}, element={}, manager={}", builder, element, manager);
 
 		assert builder != null : "type is NULL";
 		assert element != null : "impl is NULL";
 		assert manager != null : "manager is NULL";
-		
+
 		assert this.elements.containsKey (element) : "Element class is not registered: " + element.getSimpleName ();
 
 		Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (builder, this.elements.get (element));

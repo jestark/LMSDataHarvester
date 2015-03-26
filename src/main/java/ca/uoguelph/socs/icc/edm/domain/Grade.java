@@ -35,7 +35,7 @@ package ca.uoguelph.socs.icc.edm.domain;
  * deleted, then all of the associated instances of the <code>Grade</code>
  * interface must be deleted as well.
  * <p>
- * Once created, <code>Grade</code> instances are immutable. 
+ * Once created, <code>Grade</code> instances are immutable.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -46,10 +46,10 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface Grade extends Element
 {
 	/**
-	 * Get the name of the <code>Enrolment</code> to which the <code>Grade</code>
-	 * is assigned.  This is a convenience method which return the result from the
-	 * <code>getName</code> method on the associated <code>Enrolment</code>
-	 * instance.
+	 * Get the name of the <code>Enrolment</code> to which the
+	 * <code>Grade</code> is assigned.  This is a convenience method which
+	 * return the result from the <code>getName</code> method on the associated
+	 * <code>Enrolment</code> instance.
 	 *
 	 * @return A <code>String</code> containing the name of the
 	 *         <code>Enrolment</code>
@@ -77,8 +77,9 @@ public interface Grade extends Element
 	public abstract Enrolment getEnrolment ();
 
 	/**
-	 * Get the grade that the student received for the <code>Activity</code>.  The
-	 * grade will be an <code>Integer</code> with a value on the range of [0, 100].
+	 * Get the grade that the student received for the <code>Activity</code>.
+	 * The grade will be an <code>Integer</code> with a value on the range of
+	 * [0, 100].
 	 *
 	 * @return An <code>Integer</code> containing the assigned grade.
 	 */

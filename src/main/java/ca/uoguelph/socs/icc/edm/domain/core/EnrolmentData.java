@@ -57,8 +57,8 @@ import ca.uoguelph.socs.icc.edm.domain.builder.EnrolmentElementFactory;
 public class EnrolmentData extends AbstractElement implements Enrolment, Serializable
 {
 	/**
-	 * Implementation of the <code>EnrolmentElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>EnrolmentData</code>.
+	 * Implementation of the <code>EnrolmentElementFactory</code> interface.
+	 * Allows the builders to create instances of <code>EnrolmentData</code>.
 	 */
 
 	private static final class Factory extends AbstractElement.Factory<Enrolment> implements EnrolmentElementFactory
@@ -66,16 +66,16 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		/**
 		 * Create a new <code>Enrolment</code> instance.
 		 *
-		 * @param  user   The <code>User</code> enrolled in the <code>Course</code>,
-		 *                not null
-		 * @param  course The <code>Course</code> in which the <code>User</code> is
-		 *                enrolled, not null
+		 * @param  user   The <code>User</code> enrolled in the
+		 *                <code>Course</code>, not null
+		 * @param  course The <code>Course</code> in which the
+		 *                <code>User</code> is enrolled, not null
 		 * @param  role   The <code>Role</code> of the <code>User</code> in the
 		 *                <code>Course</code>, not null
-		 * @param  grade  The final grade assigned to the <code>User</code> in the
-		 *                <code>Course</code>
-		 * @param  usable Indication if the <code>User</code> has consented to their
-		 *                data being used for research
+		 * @param  grade  The final grade assigned to the <code>User</code> in
+		 *                the <code>Course</code>
+		 * @param  usable Indication if the <code>User</code> has consented to
+		 *                their data being used for research
 		 *
 		 * @return        The new <code>Enrolment</code> instance
 		 */
@@ -125,8 +125,9 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		 *                   <code>Enrolment</code>, not null
 		 *
 		 * @return           <code>True</code> if the <code>Grade</code> was
-		 *                   successfully removed from the <code>Enrolment</code>,
-		 *                   <code>False</code> otherwise
+		 *                   successfully removed from the
+		 *                   <code>Enrolment</code>, <code>False</code>
+		 *                   otherwise
 		 */
 
 		@Override
@@ -171,8 +172,9 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		 *                   <code>Enrolment</code>, not null
 		 *
 		 * @return           <code>True</code> if the <code>LogEntry</code> was
-		 *                   successfully removed from the <code>Enrolment</code>,
-		 *                   <code>False</code> otherwise
+		 *                   successfully removed from the
+		 *                   <code>Enrolment</code>, <code>False</code>
+		 *                   otherwise
 		 */
 
 		@Override
@@ -210,8 +212,8 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	protected List<LogEntry> log;
 
 	/**
-	 * Static initializer to register the <code>EnrolmentData</code> class with the
-	 * factories.
+	 * Static initializer to register the <code>EnrolmentData</code> class with
+	 * the factories.
 	 */
 
 	static
@@ -231,7 +233,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		this.finalgrade = null;
 
 		this.usable = Boolean.valueOf (false);
-		
+
 		this.grades = new HashSet<Grade> ();
 		this.log = new ArrayList<LogEntry> ();
 	}
@@ -254,7 +256,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		assert course != null : "course is NULL";
 		assert role != null : "role is NULL";
 		assert usable != null : "usable is NULL";
-		
+
 		assert ((grade == null) || (grade >= 0)) : "Grade can not be negative";
 		assert ((grade == null) || (grade <= 100)) : "Grade can not be greater than 100%";
 
@@ -276,8 +278,8 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 * @param  obj The <code>Enrolment</code> instance to compare to the one
 	 *             represented by the called instance
 	 *
-	 * @return     <code>True</code> if the two <code>Enrolment</code> instances
-	 *             are equal, <code>False</code> otherwise
+	 * @return     <code>True</code> if the two <code>Enrolment</code>
+	 *             instances are equal, <code>False</code> otherwise
 	 */
 
 	@Override
@@ -303,8 +305,8 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 
 	/**
 	 * Compute a <code>hashCode</code> of the <code>Enrolment</code> instance.
-	 * The hash code is computed based upon the associated <code>Course</code> and
-	 * the associated <code>Role</code>.
+	 * The hash code is computed based upon the associated <code>Course</code>
+	 * and the associated <code>Role</code>.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
 	 */
@@ -335,11 +337,11 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Enrolment</code> instance
-	 * is loaded, or by the <code>EnrolmentBuilder</code> implementation to set
-	 * the <code>DataStore</code> identifier, prior to storing a new
-	 * <code>Enrolment</code> instance.
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Enrolment</code>
+	 * instance is loaded, or by the <code>EnrolmentBuilder</code>
+	 * implementation to set the <code>DataStore</code> identifier, prior to
+	 * storing a new <code>Enrolment</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -350,8 +352,8 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	}
 
 	/**
-	 * Get the <code>Course</code> in which the <code>User</code> represented by
-	 * the <code>Enrolment</code> instance is enrolled.
+	 * Get the <code>Course</code> in which the <code>User</code> represented
+	 * by the <code>Enrolment</code> instance is enrolled.
 	 *
 	 * @return The <code>Course</code> instance
 	 */
@@ -373,7 +375,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	protected void setCourse (final Course course)
 	{
 		assert course != null : "course is NULL";
-		
+
 		this.course = course;
 	}
 
@@ -393,7 +395,8 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	/**
 	 * Set the <code>Role</code> of the <code>User</code> in the
 	 * <code>Course</code>. This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Enrolment</code> instance is loaded.
+	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
+	 * loaded.
 	 *
 	 * @param  role The <code>Role</code>, not null
 	 */
@@ -401,14 +404,15 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	protected void setRole (final Role role)
 	{
 		assert role != null : "role is NULL";
-		
+
 		this.role = role;
 	}
 
 	/**
 	 * Get the name associated with the <code>Enrolment</code>.  This method
-	 * returns a <code>String</code> representation of the <code>DataStore</code>
-	 * identifier as the name of the <code>Enrolment</code>.
+	 * returns a <code>String</code> representation of the
+	 * <code>DataStore</code> identifier as the name of the
+	 * <code>Enrolment</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the
 	 *         <code>Enrolment</code>
@@ -462,9 +466,9 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 
 	/**
 	 * Initialize the <code>Set</code> of <code>Grade</code> instances
-	 * associated with the <code>Enrolment</code> instance.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Enrolment</code> instance is
-	 * loaded.
+	 * associated with the <code>Enrolment</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Enrolment</code> instance is loaded.
 	 *
 	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
 	 *                null
@@ -473,7 +477,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	protected void setGrades (final Set<Grade> grades)
 	{
 		assert grades != null : "grades is NULL";
-		
+
 		this.grades = grades;
 	}
 
@@ -511,9 +515,9 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 
 	/**
 	 * Get the final grade for the <code>User</code> represented by this
-	 * <code>Enrolment</code>, in the associated <code>Course</code>.  The final
-	 * grade will be null if no final grade was assigned for the <code>User</code>
-	 * associated with this <code>Enrolment</code>.
+	 * <code>Enrolment</code>, in the associated <code>Course</code>.  The
+	 * final grade will be null if no final grade was assigned for the
+	 * <code>User</code> associated with this <code>Enrolment</code>.
 	 *
 	 * @return An <code>Integer</code> containing the final grade, or null if
 	 *         there is no final grade
@@ -526,12 +530,13 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	}
 
 	/**
-	 * Set the final grade for the <code>User</code> in the <code>Course</code>.
-	 * This method is intended to be used by a <code>DataStore</code> when the
-	 * <code>Enrolment</code> instance is loaded.
+	 * Set the final grade for the <code>User</code> in the
+	 * <code>Course</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
+	 * loaded.
 	 *
-	 * @param  finalgrade The final grade for the <code>User</code> in the course,
-	 *                    on the interval [0, 100]
+	 * @param  finalgrade The final grade for the <code>User</code> in the
+	 *                    course, on the interval [0, 100]
 	 */
 
 	protected void setFinalGrade (final Integer finalgrade)
@@ -559,7 +564,8 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	/**
 	 * Set the usable flag for the data related to the <code>User</code> in the
 	 * <code>Course</code>. This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Enrolment</code> instance is loaded.
+	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
+	 * loaded.
 	 *
 	 * @param  usable Indication if the data may be used for research, not null
 	 */
@@ -587,12 +593,12 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 
 	/**
 	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
-	 * associated with the <code>Enrolment</code> instance.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Enrolment</code> instance is
-	 * loaded.
+	 * associated with the <code>Enrolment</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Enrolment</code> instance is loaded.
 	 *
-	 * @param  log The <code>List</code> of <code>LogEntry</code> instances, not
-	 *             null
+	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
+	 *             not null
 	 */
 
 	protected void setLog (final List<LogEntry> log)
@@ -619,7 +625,8 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	}
 
 	/**
-	 * Remove the specified <code>LogEntry</code> from the <code>Enrolment</code>.
+	 * Remove the specified <code>LogEntry</code> from the
+	 * <code>Enrolment</code>.
 	 *
 	 * @param  entry The <code>LogEntry</code> to remove, not null
 	 *

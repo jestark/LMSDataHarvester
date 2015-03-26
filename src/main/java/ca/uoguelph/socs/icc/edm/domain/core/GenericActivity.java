@@ -47,8 +47,9 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
 public class GenericActivity extends ActivityInstance implements Serializable
 {
 	/**
-	 * Implementation of the <code>GenericActivityElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>GenericActivity</code>.
+	 * Implementation of the <code>GenericActivityElementFactory</code>
+	 * interface.  Allows the builders to create instances of
+	 * <code>GenericActivity</code>.
 	 */
 
 	private static final class Factory extends ActivityInstance.Factory implements GenericActivityElementFactory
@@ -78,8 +79,8 @@ public class GenericActivity extends ActivityInstance implements Serializable
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Static initializer to register the <code>GenericActivity</code> class with
-	 * the factories.
+	 * Static initializer to register the <code>GenericActivity</code> class
+	 * with the factories.
 	 */
 
 	static
@@ -139,10 +140,10 @@ public class GenericActivity extends ActivityInstance implements Serializable
 	}
 
 	/**
-	 * Get the name of the <code>Activity</code>.  Not all <code>Activity</code>
-	 * instances have names.  For those <code>Activity</code> instances which do
-	 * not have names, the name of the associated <code>ActivityType</code> will
-	 * be returned.
+	 * Get the name of the <code>Activity</code>.  Not all
+	 * <code>Activity</code> instances have names.  For those
+	 * <code>Activity</code> instances which do not have names, the name of the
+	 * associated <code>ActivityType</code> will be returned.
 	 *
 	 * @return A <code>String</code> containing the name of the
 	 *         <code>Activity</code>

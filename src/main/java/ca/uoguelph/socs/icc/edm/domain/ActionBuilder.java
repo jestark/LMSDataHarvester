@@ -38,8 +38,8 @@ public interface ActionBuilder extends ElementBuilder<Action>
 	/**
 	 * Set the name of the <code>Action</code>.
 	 *
-	 * @param  name                     The name of the <code>Action</code>, not
-	 *                                  null
+	 * @param  name                     The name of the <code>Action</code>,
+	 *                                  not null
 	 *
 	 * @return                          This <code>ActionBuilder</code>
 	 * @throws IllegalArgumentException If the name is an empty

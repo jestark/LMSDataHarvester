@@ -30,7 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 public interface DataStore
 {
 	/**
-	 * Determine if the <code>DataStore</code> is open.  
+	 * Determine if the <code>DataStore</code> is open.
 	 *
 	 * @return <code>true</code> if the <code>DataStore</code> is open,
 	 *         <code>false</code> otherwise
@@ -45,18 +45,14 @@ public interface DataStore
 	public abstract void close ();
 
 	/**
-	 * Get the relevant DataStoreQuery for the provided interface and
-	 * implementation classes.
+	 * Get the relevant <code>DataStoreQuery</code> for the provided interface
+	 * and implementation classes.
 	 *
-	 * @param <T>                 The interface type of the query object
-	 * @param <X>                 The implementation type of the query object
-	 * @param type                Interface type class, not null
-	 * @param impl                Implementation type class, not null
-	 * @return                    Query object for the specified interface and
-	 *                            implementation
-	 * @throws ClassCastException if the specified interface or implementation
-	 *                            types do not match those of a previously stored
-	 *                            query object.
+	 * @param <T>  The interface type of the query object
+	 * @param <X>  The implementation type of the query object
+	 * @param type Interface type class, not null
+	 * @param impl Implementation type class, not null
+	 * @return     Query object for the specified interface and implementation
 	 */
 
 	public abstract <T extends Element, X extends T> DataStoreQuery<T> createQuery (Class<T> type, Class<X> impl);

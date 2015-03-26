@@ -33,8 +33,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface UserManager extends ElementManager<User>
 {
 	/**
-	 * Get an instance of the <code>UserBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>UserBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>UserBuilder</code> instance
 	 */
@@ -42,13 +42,14 @@ public interface UserManager extends ElementManager<User>
 	public abstract UserBuilder getBuilder ();
 
 	/**
-	 * Retrieve a single <code>User</code> object, with the specified id number,
-	 * from the <code>DataStore</code>.
+	 * Retrieve a single <code>User</code> object, with the specified id
+	 * number, from the <code>DataStore</code>.
 	 *
 	 * @param  idnumber The ID number of the <code>User</code> to retrieve, not
 	 *                  null
 	 *
-	 * @return          The <code>User</code> object associated with the ID number
+	 * @return          The <code>User</code> object associated with the ID
+	 *                  number
 	 */
 
 	public abstract User fetchByIdNumber (Integer idnumber);
@@ -59,7 +60,8 @@ public interface UserManager extends ElementManager<User>
 	 *
 	 * @param  username The username of the entry to retrieve, not null
 	 *
-	 * @return          The <code>User</code> object associated with the username
+	 * @return          The <code>User</code> object associated with the
+	 *                  username
 	 */
 
 	public abstract User fetchByUsername (String username);

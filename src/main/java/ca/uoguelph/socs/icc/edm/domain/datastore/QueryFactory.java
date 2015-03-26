@@ -46,8 +46,8 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 public final class QueryFactory
 {
 	/**
-	 * Interface to hide the implementation class for the query factory from the
-	 * Map.
+	 * Interface to hide the implementation class for the query factory from
+	 * the <code>Map</code>.
 	 */
 
 	private interface IntQueryFactory<T extends Element>
@@ -55,8 +55,8 @@ public final class QueryFactory
 		/**
 		 * Create a query.
 		 *
-		 * @param  datastore The <code>DataStore</code> for which the query is to be
-		 *                   created, not null
+		 * @param  datastore The <code>DataStore</code> for which the query is
+		 *                   to be created, not null
 		 * @return           The initialized query.
 		 */
 
@@ -81,10 +81,10 @@ public final class QueryFactory
 		/**
 		 * Create the <code>QueryFactory</code>.
 		 *
-		 * @param  type The class representing the interface for which the queries are
-		 *              to be created, not null
-		 * @param  impl The class implementing the interface that is to be queried,
-		 *              not null
+		 * @param  type The class representing the interface for which the
+		 *              queries are to be created, not null
+		 * @param  impl The class implementing the interface that is to be
+		 *              queried, not null
 		 */
 
 		public IntQueryFactoryImpl (final Class<T> type, final Class<U> impl)
@@ -99,8 +99,8 @@ public final class QueryFactory
 		/**
 		 * Create a query.
 		 *
-		 * @param  datastore The <code>DataStore</code> for which the query is to be
-		 *                   created, not null
+		 * @param  datastore The <code>DataStore</code> for which the query is
+		 *                   to be created, not null
 		 * @return           The initialized query.
 		 */
 
@@ -121,7 +121,7 @@ public final class QueryFactory
 
 	/** Query factories */
 	private final Map<Pair<Class<?>, Class<?>>, IntQueryFactory<? extends Element>> factories;
-		
+
 	/** <code>DataStoreQuery</code> instance cache */
 	private final Map<Triple<DataStore, Class<?>, Class<?>>, DataStoreQuery<? extends Element>> cache;
 
@@ -147,8 +147,8 @@ public final class QueryFactory
 	/**
 	 * Create the <code>QueryFactory</code>.
 	 *
-	 * @param  type The domain model interface class for which this factory is to
-	 *              create queries, not null
+	 * @param  type The domain model interface class for which this factory is
+	 *              to create queries, not null
 	 */
 
 	private QueryFactory ()
@@ -160,7 +160,7 @@ public final class QueryFactory
 	}
 
 	/**
-	 * Register an element class.  
+	 * Register an element class.
 	 *
 	 * @param  type The <code>Element</code> interface class, not null
 	 * @param  impl The implementation class to be used in the query, not null
@@ -168,7 +168,7 @@ public final class QueryFactory
 
 	public <T extends Element, U extends T> void registerClass (final Class<T> type, final Class<U> impl)
 	{
-		this.log.trace ("Registering Element class: Type: {} Implementation {}", type, impl);
+		this.log.trace ("registerClass: type={}, impl={}", type, impl);
 
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is null";
@@ -182,22 +182,22 @@ public final class QueryFactory
 
 	/**
 	 * Create a <code>DataStoreQuery</code> for the specified
-	 * <code>DataStore</code>, and <code>Element</code> implementation class.  If
-	 * the query already exists in the cache, then the cached copy will be
+	 * <code>DataStore</code>, and <code>Element</code> implementation class.
+	 * If the query already exists in the cache, then the cached copy will be
 	 * returned, otherwise a new <code>DataStoreQuery</code> will be created.
 	 *
 	 * @param  type      The <code>Element</code> interface class, not null
 	 * @param  impl      The implementation class for which the query is to be
 	 *                   created, not null
-	 * @param  datastore The <code>DataStore</code> for which the query is to be
-	 *                   created, not null
+	 * @param  datastore The <code>DataStore</code> for which the query is to
+	 *                   be created, not null
 	 * @return           The <code>DataStoreQuery</code>
 	 */
 
 	@SuppressWarnings("unchecked")
 	public <T extends Element> DataStoreQuery<T> create (final Class<T> type, final Class<? extends Element> impl, final DataStore datastore)
 	{
-		this.log.debug ("Creating query for interface {}, using implementation {}, on using DataStore {}", type, impl, datastore);
+		this.log.debug ("create: type={}, impl={}, datastore={}", type, impl, datastore);
 
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
@@ -205,21 +205,22 @@ public final class QueryFactory
 
 		Triple<DataStore, Class<?>, Class<?>> cacheKey = new ImmutableTriple<DataStore, Class<?>, Class<?>> (datastore, type, impl);
 
-		DataStoreQuery<T> query = (DataStoreQuery<T>) this.cache.get (cacheKey);
-
 		// If the Query is not in the cache then create it.
-		if (query == null)
+		if (! this.cache.containsKey (cacheKey))
 		{
+			this.log.debug ("Creating new DataStoreQuery for: element={}, impl={}", type.getSimpleName (), impl.getSimpleName ());
+
 			Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (type, impl);
+			assert this.factories.containsKey (factoryKey) : "Element implementation class is not registered: " + impl.getSimpleName ();
 
-			assert this.factories.containsKey (factoryKey) : "";
-
-			query = ((IntQueryFactory<T>) this.factories.get (factoryKey)).create (datastore);
-
-			this.cache.put (cacheKey, query);
+			this.cache.put (cacheKey, ((IntQueryFactory<T>) this.factories.get (factoryKey)).create (datastore));
+		}
+		else
+		{
+			this.log.debug ("Using cached DataStoreQuery for: element={}, impl={}", type.getSimpleName (), impl.getSimpleName ());
 		}
 
-		return query;
+		return (DataStoreQuery<T>) this.cache.get (cacheKey);
 	}
 
 	/**
@@ -229,14 +230,14 @@ public final class QueryFactory
 	 * <code>DataStoreQuery</code> will be created.
 	 *
 	 * @param  type      The <code>Element</code> interface class, not null
-	 * @param  datastore The <code>DataStore</code> for which the query is to be
-	 *                   created, not null
+	 * @param  datastore The <code>DataStore</code> for which the query is to
+	 *                   be created, not null
 	 * @return           The <code>DataStoreQuery</code>
 	 */
 
 	public <T extends Element> DataStoreQuery<T> create (final Class<T> type, final DataStore datastore)
 	{
-		this.log.debug ("Creating query for interface {}, on using DataStore {}", type, datastore);
+		this.log.debug ("create: type={}, datastore={}", type, datastore);
 
 		assert type != null : "type is NULL";
 		assert datastore != null : "datastore is NULL";
@@ -245,8 +246,8 @@ public final class QueryFactory
 	}
 
 	/**
-	 * Remove all of the <code>DataStoreQuery</code> instances for the specified
-	 * <code>DataStore</code> from the cache.
+	 * Remove all of the <code>DataStoreQuery</code> instances for the
+	 * specified <code>DataStore</code> from the cache.
 	 *
 	 * @param  datastore The <code>DataStore</code> for which all of the cached
 	 *                   queries are to be purged, not null
@@ -254,7 +255,7 @@ public final class QueryFactory
 
 	public void remove (final DataStore datastore)
 	{
-		this.log.trace ("Removing all cached query instances for DataStore: {}", datastore);
+		this.log.trace ("remove: datastore={}", datastore);
 
 		assert datastore != null : "datastore is NULL";
 
@@ -273,7 +274,7 @@ public final class QueryFactory
 
 	public void flush ()
 	{
-		this.log.trace ("Flushing cache");
+		this.log.trace ("flush:");
 
 		this.cache.clear ();
 	}

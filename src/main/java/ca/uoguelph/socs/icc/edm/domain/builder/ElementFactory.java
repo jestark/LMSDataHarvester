@@ -58,7 +58,8 @@ public interface ElementFactory<T extends Element>
 	 *
 	 * @param  element The <code>Element</code> to which the ID number is
 	 *                 assigned, not null
-	 * @param  id      The ID number assigned to the <code>Element</code>, not null
+	 * @param  id      The ID number assigned to the <code>Element</code>, not
+	 *                 null
 	 */
 
 	public abstract void setId (T element, Long id);

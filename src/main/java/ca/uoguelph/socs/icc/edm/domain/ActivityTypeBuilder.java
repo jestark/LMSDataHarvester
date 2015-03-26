@@ -38,8 +38,8 @@ public interface ActivityTypeBuilder extends ElementBuilder<ActivityType>
 	/**
 	 * Set the name of the <code>ActivityType</code>.
 	 *
-	 * @param  name                     The name of the <code>ActivityType</code>,
-	 *                                  not null
+	 * @param  name                     The name of the
+	 *                                  <code>ActivityType</code>, not null
 	 *
 	 * @return                          This <code>ActivityTypeBuilder</code>
 	 * @throws IllegalArgumentException If the name is an empty
@@ -62,8 +62,8 @@ public interface ActivityTypeBuilder extends ElementBuilder<ActivityType>
 	 *                                  <code>ActivityType</code>
 	 *
 	 * @return                          This <code>ActivityTypeBuilder</code>
-	 * @throws IllegalArgumentException If the <code>AcivitySourse</code> does not
-	 *                                  exist in the <code>DataStore</code>
+	 * @throws IllegalArgumentException If the <code>AcivitySourse</code> does
+	 *                                  not exist in the <code>DataStore</code>
 	 */
 
 	public abstract ActivityTypeBuilder setActivitySource (ActivitySource source);
@@ -83,9 +83,9 @@ public interface ActivityTypeBuilder extends ElementBuilder<ActivityType>
 	 * Create an association between the <code>ActivityType</code> and an
 	 * <code>Action</code>.
 	 *
-	 * @param  action                   The <code>Action</code> to be associated
-	 *                                  with the <code>ActivityType</code>, not
-	 *                                  null
+	 * @param  action                   The <code>Action</code> to be
+	 *                                  associated with the
+	 *                                  <code>ActivityType</code>, not null
 	 * @throws IllegalArgumentException If the <code>Action</code>
 	 */
 
@@ -94,16 +94,15 @@ public interface ActivityTypeBuilder extends ElementBuilder<ActivityType>
 	/**
 	 * Break an association between the <code>ActivityType</code> and an
 	 * <code>Action</code>.  To break an association between the
-	 * <code>ActivityType</code> and the specified <code>Action</code>, 
-	 *
-	 * both the
-	 * <code>ActivityType</code> and <code>Action</code> must be exist in the
-	 * domain model associated with the <code>ActivityTypeManager</code> that is
-	 * to break the association.  Furthermore, there must be an existing 
-	 * association between the <code>ActivityType</code> and the 
-	 * <code>Action</code>, and there must not exist any log entries containing
-	 * the specified <code>Action</code> and an <code>Activity</code> with the
-	 * specified <code>ActivityType</code>.
+	 * <code>ActivityType</code> and the specified <code>Action</code>, both
+	 * the <code>ActivityType</code> and <code>Action</code> must be exist in
+	 * the <code>DataStore</code> associated with the
+	 * <code>ActivityTypeManager</code> that is to break the association.
+	 * Furthermore, there must be an existing association between the
+	 * <code>ActivityType</code> and the <code>Action</code>, and there must
+	 * not exist any log entries containing the specified <code>Action</code>
+	 * and an <code>Activity</code> with the specified
+	 * <code>ActivityType</code>.
 	 *
 	 * @param  action The <code>Action</code> to remove from the
 	 *                <code>ActivityType</code>, not null

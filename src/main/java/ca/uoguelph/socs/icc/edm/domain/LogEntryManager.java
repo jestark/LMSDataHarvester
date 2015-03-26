@@ -32,8 +32,8 @@ import java.util.List;
 public interface LogEntryManager extends ElementManager<LogEntry>
 {
 	/**
-	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>LogEntryBuilder</code> instance
 	 */
@@ -41,11 +41,12 @@ public interface LogEntryManager extends ElementManager<LogEntry>
 	public abstract LogEntryBuilder getBuilder ();
 
 	/**
-	 * Retrieve a list of <code>LogEntry</code> objects, which are associated with
-	 * the specified course, from the underlying data-store.
+	 * Retrieve a list of <code>LogEntry</code> objects, which are associated
+	 * with the specified course, from the <code>DataStore</code>.
 	 *
 	 * @param  course The <code>Course</code> for which the list of
-	 *                <code>LogEntry</code> objects should be retrieved, not null
+	 *                <code>LogEntry</code> objects should be retrieved, not
+	 *                null
 	 *
 	 * @return        A list of <code>LogEntry</code> objects
 	 */

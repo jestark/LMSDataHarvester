@@ -51,8 +51,8 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
 class LessonPageLog extends LogReference
 {
 	/**
-	 * Implementation of the <code>LogReferenceElementFactory</code>.  Allows the
-	 * builders to create instances of <code>LessonPageLog</code>.
+	 * Implementation of the <code>LogReferenceElementFactory</code>.  Allows
+	 * the builders to create instances of <code>LessonPageLog</code>.
 	 */
 
 	private static final class Factory extends AbstractElement.Factory<LogEntry> implements LogReferenceElementFactory
@@ -82,7 +82,8 @@ class LessonPageLog extends LogReference
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Register the <code>LessonPageLog</code> with the factories on initialization.
+	 * Register the <code>LessonPageLog</code> with the factories on
+	 * initialization.
 	 */
 
 	static

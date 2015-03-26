@@ -31,7 +31,8 @@ public interface RoleBuilder extends ElementBuilder<Role>
 	/**
 	 * Get the name of the <code>Role</code>.
 	 *
-	 * @return A <code>String</code> containing the name of the <code>Role</code>
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Role</code>
 	 */
 
 	public abstract String getName ();

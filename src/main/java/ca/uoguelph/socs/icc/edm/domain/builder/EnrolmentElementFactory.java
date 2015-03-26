@@ -43,16 +43,16 @@ public interface EnrolmentElementFactory extends ElementFactory<Enrolment>
 	/**
 	 * Create a new <code>Enrolment</code> instance.
 	 *
-	 * @param  user   The <code>User</code> enrolled in the <code>Course</code>,
-	 *                not null
+	 * @param  user   The <code>User</code> enrolled in the
+	 *                <code>Course</code>, not null
 	 * @param  course The <code>Course</code> in which the <code>User</code> is
 	 *                enrolled, not null
 	 * @param  role   The <code>Role</code> of the <code>User</code> in the
 	 *                <code>Course</code>, not null
 	 * @param  grade  The final grade assigned to the <code>User</code> in the
 	 *                <code>Course</code>
-	 * @param  usable Indication if the <code>User</code> has consented to their
-	 *                data being used for research
+	 * @param  usable Indication if the <code>User</code> has consented to
+	 *                their data being used for research
 	 *
 	 * @return        The new <code>Enrolment</code> instance
 	 */

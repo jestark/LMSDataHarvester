@@ -22,7 +22,7 @@ import java.util.Set;
  * A representation of the <code>Action</code> that a <code>User</code>
  * performed upon an <code>Activity</code> as recored in a
  * <code>LogEntry</code>.  Some instances of the <code>Action</code> interface
- * are general (such as viewing the content associated with an instance of the 
+ * are general (such as viewing the content associated with an instance of the
  * <code>Activity</code> interface) and will be associated with may instances
  * of the <code>ActivityType</code> interface.  Other instances of the
  * <code>Action</code> may be specific to one particular instance of a
@@ -57,8 +57,8 @@ import java.util.Set;
 public interface Action extends Element
 {
 	/**
-	 * Get the <code>Set</code> of <code>ActivityType</code> instances containing
-	 * the action.
+	 * Get the <code>Set</code> of <code>ActivityType</code> instances
+	 * containing the <code>Action</code>.
 	 *
 	 * @return A <code>Set</code> of <code>ActivityType</code> instances
 	 */

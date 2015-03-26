@@ -51,10 +51,11 @@ public interface CourseElementFactory extends ElementFactory<Course>
 	public abstract Course create (String name, Semester semester, Integer year);
 
 	/**
-	 * Add the specified <code>Activity</code> to the specified <code>Course</code>.
+	 * Add the specified <code>Activity</code> to the specified
+	 * <code>Course</code>.
 	 *
-	 * @param  course   The <code>Course</code> to which the <code>Activity</code>
-	 *                  is to be added, not null
+	 * @param  course   The <code>Course</code> to which the
+	 *                  <code>Activity</code> is to be added, not null
 	 * @param  activity The <code>Activity</code> to add to the
 	 *                  <code>Course</code>, not null
 	 *
@@ -66,10 +67,11 @@ public interface CourseElementFactory extends ElementFactory<Course>
 	public abstract boolean addActivity (Course course, Activity activity);
 
 	/**
-	 * Remove the specified <code>Activity</code> from the specified <code>Course</code>.
+	 * Remove the specified <code>Activity</code> from the specified
+	 * <code>Course</code>.
 	 *
-	 * @param  course   The <code>Course</code> from which the <code>Activity</code>
-	 *                  is to be removed, not null
+	 * @param  course   The <code>Course</code> from which the
+	 *                  <code>Activity</code> is to be removed, not null
 	 * @param  activity The <code>Activity</code> to remove from the
 	 *                  <code>Course</code>, not null
 	 *
@@ -81,10 +83,11 @@ public interface CourseElementFactory extends ElementFactory<Course>
 	public abstract boolean removeActivity (Course course, Activity activity);
 
 	/**
-	 * Add the specified <code>Enrolment</code> to the specified <code>Course</code>.
+	 * Add the specified <code>Enrolment</code> to the specified
+	 * <code>Course</code>.
 	 *
-	 * @param  course    The <code>Course</code> to which the <code>Enrolment</code>
-	 *                   is to be added, not null
+	 * @param  course    The <code>Course</code> to which the
+	 *                   <code>Enrolment</code> is to be added, not null
 	 * @param  enrolment The <code>Enrolment</code> to add to the
 	 *                   <code>User</code>, not null
 	 *

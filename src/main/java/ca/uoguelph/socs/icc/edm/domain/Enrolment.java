@@ -69,13 +69,13 @@ import java.util.Set;
 public interface Enrolment extends Element
 {
 	/**
-	 * Get the name associated with the <code>Enrolment</code>.  The contents of
-	 * the <code>String</code> returned by this method are implementation
+	 * Get the name associated with the <code>Enrolment</code>.  The contents
+	 * of the <code>String</code> returned by this method are implementation
 	 * dependent.  If the implementation has access to the <code>User</code>
 	 * information this this method should return the result of the
-	 * <code>getName</code> method for the associated <code>User</code> instance,
-	 * otherwise it should return some other identifier, usually the identifier for
-	 * the <code>Enrolment</code> in the <code>DataStore</code>.
+	 * <code>getName</code> method for the associated <code>User</code>
+	 * instance, otherwise it should return some other identifier, usually the
+	 * identifier for the <code>Enrolment</code> in the <code>DataStore</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the
 	 *         <code>Enrolment</code>
@@ -85,8 +85,8 @@ public interface Enrolment extends Element
 	public abstract String getName ();
 
 	/**
-	 * Get the <code>Course</code> in which the <code>User</code> represented by
-	 * the <code>Enrolment</code> instance is enrolled.
+	 * Get the <code>Course</code> in which the <code>User</code> represented
+	 * by the <code>Enrolment</code> instance is enrolled.
 	 *
 	 * @return The <code>Course</code> instance
 	 */
@@ -114,9 +114,9 @@ public interface Enrolment extends Element
 
 	/**
 	 * Get the final grade for the <code>User</code> represented by this
-	 * <code>Enrolment</code>, in the associated <code>Course</code>.  The final
-	 * grade will be null if no final grade was assigned for the <code>User</code>
-	 * associated with this <code>Enrolment</code>.
+	 * <code>Enrolment</code>, in the associated <code>Course</code>.  The
+	 * final grade will be null if no final grade was assigned for the
+	 * <code>User</code> associated with this <code>Enrolment</code>.
 	 *
 	 * @return An <code>Integer</code> containing the final grade, or null if
 	 *         there is no final grade

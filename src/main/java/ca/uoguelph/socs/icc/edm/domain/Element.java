@@ -22,7 +22,7 @@ package ca.uoguelph.socs.icc.edm.domain;
  * of the <code>ElementBuilder</code> and <code>ElementManager</code>
  * interfaces along with their supporting infrastructure to refer to use
  * bounded generic types when referring to the domain model interfaces and
- * their implementations.  
+ * their implementations.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -45,16 +45,17 @@ public interface Element
 	public abstract Long getId ();
 
 	/**
-	 * Determine if two <code>Element</code> instances are identical.  This method
-	 * acts as a stricter form of the equals method.  The equals method only
-	 * compares properties that are required to be unique (and therefore immutable)
-	 * for the <code>Element</code> instance, while this method compares all of the
-	 * properties.
+	 * Determine if two <code>Element</code> instances are identical.  This
+	 * method acts as a stricter form of the equals method.  The equals method
+	 * only compares properties that are required to be unique (and therefore
+	 * immutable) for the <code>Element</code> instance, while this method
+	 * compares all of the properties.
 	 *
-	 * @param  element The <code>Element</code> to compare to the current instance
+	 * @param  element The <code>Element</code> to compare to the current
+	 *                 instance
 	 *
-	 * @return         <code>True</code> if the <code>Element</code> instances are
-	 *                 logically identical, <code>False</code> otherwise
+	 * @return         <code>True</code> if the <code>Element</code> instances
+	 *                 are logically identical, <code>False</code> otherwise
 	 */
 
 	public abstract boolean identicalTo (Element element);

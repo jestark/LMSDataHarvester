@@ -48,7 +48,7 @@ public class SequentialIdGenerator implements IdGenerator
 		public IdGenerator create (DataStoreQuery<?> query)
 		{
 			return new SequentialIdGenerator (query.queryMaxId ());
-		}	 
+		}
 	}
 
 	/** The next value to be returned by the generator. */
@@ -74,8 +74,8 @@ public class SequentialIdGenerator implements IdGenerator
 	}
 
 	/**
-	 * Create a new <code>SequentialIdGenerator</code>, with a specified starting
-	 * value for the sequence.  The first value returned by the
+	 * Create a new <code>SequentialIdGenerator</code>, with a specified
+	 * starting value for the sequence.  The first value returned by the
 	 * <code>IdGenerator</code> will be one greater than the specified starting
 	 * value.
 	 *
@@ -88,8 +88,8 @@ public class SequentialIdGenerator implements IdGenerator
 	}
 
 	/**
-	 * Return the next available id number.  This method increments the ID number
-	 * sequence and returns the newly calculated number.
+	 * Return the next available id number.  This method increments the ID
+	 * number sequence and returns the newly calculated number.
 	 *
 	 * @return A <code>Long</code> containing the next id number
 	 */

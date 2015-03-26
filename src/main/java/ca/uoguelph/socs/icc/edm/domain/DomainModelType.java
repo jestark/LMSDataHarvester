@@ -17,8 +17,8 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 /**
- * An enumeration of all of the components of the domain model.  The 
- * enumeration is used to construct the required mappings between the 
+ * An enumeration of all of the components of the domain model.  The
+ * enumeration is used to construct the required mappings between the
  * abstract components of the domain model (interfaces, managers, etc) and
  * their implementations.
  *
@@ -88,8 +88,8 @@ public enum DomainModelType
 	}
 
 	/**
-	 * Get the class for the interface which is associated with the value for the
-	 * type.
+	 * Get the class for the interface which is associated with the value for
+	 * the type.
 	 *
 	 * @return The class which defines the associated interface
 	 */

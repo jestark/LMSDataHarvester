@@ -35,7 +35,7 @@ public interface ActivitySourceBuilder extends ElementBuilder<ActivitySource>
 	 */
 
 	public abstract String getName ();
-	
+
 	/**
 	 * Set the name of the <code>ActivitySource</code>.
 	 *

@@ -37,10 +37,11 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
  * each of the domain model interfaces the profile includes the following
  * information:
  * <ul>
- * 	<li>An indication if the interface is represented in the <code>DataStore</code>
- * 	<li>The class that implements the interface for the <code>DataStore</code>
- * 	<li>The class used to generate ID numbers for the interface in the
- * 	    <code>DataStore</code>
+ * <li>An indication if the interface is represented in the
+ *     <code>DataStore</code>
+ * <li>The class that implements the interface for the <code>DataStore</code>
+ * <li>The class used to generate ID numbers for the interface in the
+ *     <code>DataStore</code>
  * </ul>
  * <p>
  * All of the per-interface fields are required, for all of the
@@ -58,9 +59,9 @@ public final class DataStoreProfile
 	/**
 	 * <code>DataStore</code> profile data for a single domain model interface.
 	 * This class is intended to be used internally in
-	 * <code>DataStoreProfile</code> to hold the profile data for a single domain
-	 * model interface.  All access to this class should come though the enclosing
-	 * class.
+	 * <code>DataStoreProfile</code> to hold the profile data for a single
+	 * domain model interface.  All access to this class should come though the
+	 * enclosing class.
 	 */
 
 	private final class Entry
@@ -81,14 +82,15 @@ public final class DataStoreProfile
 		 * Create the <code>Entry</code>.
 		 *
 		 * @param  available      An indication if the <code>DataStore</code>
-		 *                        represents the interface represented by this entry,
-		 *                        not null
-		 * @param  generator      The ID generator class used by with the interface
+		 *                        represents the interface represented by this
+		 *                        entry, not null
+		 * @param  generator      The ID generator class used by with the
+		 *                        interface represented by this entry, not null
+		 * @param  implementation The class implementing the interface
 		 *                        represented by this entry, not null
-		 * @param  implementation The class implementing the interface represented by
-		 *                        this entry, not null
-		 * @param  manager        The class which provides <code>DataStore</code>
-		 *                        access for the interface represented by this Entry
+		 * @param  manager        The class which provides
+		 *                        <code>DataStore</code> access for the
+		 *                        interface represented by this Entry
 		 */
 
 		protected Entry (Boolean available, Class<? extends IdGenerator> generator, Class<? extends Element> implementation, Class<? extends ElementManager<? extends Element>> manager)
@@ -100,8 +102,8 @@ public final class DataStoreProfile
 		}
 
 		/**
-		 * Override the equals method to determine if this <code>Entry</code> is
-		 * equal to another based on its attributes.
+		 * Override the equals method to determine if this <code>Entry</code>
+		 * is equal to another based on its attributes.
 		 *
 		 * @param  obj The object to compare to this <code>Entry</code>
 		 * @return     <code>true</code> if the two entries are the same,
@@ -132,8 +134,8 @@ public final class DataStoreProfile
 		}
 
 		/**
-		 * Compute a unique <code>hashCode</code> for an <code>Entry</code> based on
-		 * its attributes.
+		 * Compute a unique <code>hashCode</code> for an <code>Entry</code>
+		 * based on its attributes.
 		 *
 		 * @return The hash code
 		 */
@@ -154,8 +156,8 @@ public final class DataStoreProfile
 		}
 
 		/**
-		 * Determine if the interface represented by this entry is represented in the
-		 * <code>DataStore</code>.
+		 * Determine if the interface represented by this entry is represented
+		 * in the <code>DataStore</code>.
 		 *
 		 * @return <code>true</code> if the <code>DataStore</code> contains a
 		 *         representation of the specified domain model interface,
@@ -168,7 +170,8 @@ public final class DataStoreProfile
 		}
 
 		/**
-		 * Get the ID generator class to be used with the <code>DataStore</code>.
+		 * Get the ID generator class to be used with the
+		 * <code>DataStore</code>.
 		 *
 		 * @return The associated ID generator class
 		 */
@@ -189,10 +192,10 @@ public final class DataStoreProfile
 		{
 			return this.implementation;
 		}
-		
+
 		/**
-		 * Get the <code>ElementManager</code> implementation to be used to access
-		 * the <code>DataStore</code>.
+		 * Get the <code>ElementManager</code> implementation to be used to
+		 * access the <code>DataStore</code>.
 		 *
 		 * @return The accociated <code>ElementManager</code> class
 		 */
@@ -338,8 +341,8 @@ public final class DataStoreProfile
 	/**
 	 * Get the set of elements contained in this profile.
 	 *
-	 * @return A <code>Set</code> containing the domain model interface classes of
-	 *         all of the elements in the profile
+	 * @return A <code>Set</code> containing the domain model interface classes
+	 *         of all of the elements in the profile
 	 */
 
 	public Set<Class<? extends Element>> getElements ()
@@ -376,8 +379,8 @@ public final class DataStoreProfile
 	}
 
 	/**
-	 * Get the <code>DataStore</code> ID generation class for the specified domain
-	 * model interface.
+	 * Get the <code>DataStore</code> ID generation class for the specified
+	 * domain model interface.
 	 *
 	 * @param  element                  Domain model interface class, not null
 	 * @return                          The associated ID generator class
@@ -404,8 +407,8 @@ public final class DataStoreProfile
 	 * interface.
 	 *
 	 * @param  element                  Domain model interface class, not null
-	 * @return                          The class used to represent the interface
-	 *                                  in the <code>DataStore</code>
+	 * @return                          The class used to represent the
+	 *                                  interface in the <code>DataStore</code>
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
@@ -429,8 +432,8 @@ public final class DataStoreProfile
 	 * <code>DataStore</code> for the specified domain model interface.
 	 *
 	 * @param  element                  Domain model interface class, not null
-	 * @return                          The class used to represent the interface
-	 *                                  in the <code>DataStore</code>
+	 * @return                          The class used to represent the
+	 *                                  interface in the <code>DataStore</code>
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
@@ -450,15 +453,16 @@ public final class DataStoreProfile
 	}
 
 	/**
-	 * Add an entry to the profile from the specified element type.  This method
-	 * is intended to be used by the builder while is constructs the profile.
+	 * Add an entry to the profile from the specified element type.  This
+	 * method is intended to be used by the builder while is constructs the
+	 * profile.
 	 *
 	 * @param  element                  The domain model interface class of the
 	 *                                  element which is being added, not null
-	 * @param  available                Indication if the element is available in
-	 *                                  the <code>DataStore</code>, not null
-	 * @param  impl                     The implementation class to be used with
-	 *                                  the element, not null
+	 * @param  available                Indication if the element is available
+	 *                                  in the <code>DataStore</code>, not null
+	 * @param  impl                     The implementation class to be used
+	 *                                  with the element, not null
 	 * @param  generator                The <code>IdGenerator</code> to be used
 	 *                                  for the element, not null
 	 * @throws IllegalArgumentException if the implementation class does not

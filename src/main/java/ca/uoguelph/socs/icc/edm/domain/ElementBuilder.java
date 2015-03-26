@@ -25,11 +25,11 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface ElementBuilder<T extends Element>
 {
 	/**
-	 * Create an instance of the <code>Element</code>.  
+	 * Create an instance of the <code>Element</code>.
 	 */
 
 	public abstract T build ();
-	
+
 	/**
 	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
 	 * fields for the <code>Element</code> to be built to <code>null</code>.
@@ -38,17 +38,19 @@ public interface ElementBuilder<T extends Element>
 	public abstract void clear ();
 
 	/**
-	 * Load a <code>Element</code> instance into the <code>ElementBuilder</code>.
-	 * This method resets the <code>ElementBuilder</code> and initializes all of
-	 * its parameters from the specified <code>Element</code> instance.  The
-	 * parameters are validated as they are set.
+	 * Load a <code>Element</code> instance into the
+	 * <code>ElementBuilder</code>.  This method resets the
+	 * <code>ElementBuilder</code> and initializes all of its parameters from
+	 * the specified <code>Element</code> instance.  The parameters are
+	 * validated as they are set.
 	 *
-	 * @param  element                  The <code>Element</code> to load into the
-	 *                                  <code>ElementBuilder</code>, not null
+	 * @param  element                  The <code>Element</code> to load into
+	 *                                  the <code>ElementBuilder</code>, not
+	 *                                  null
 	 *
-	 * @throws IllegalArgumentException If any of the fields in the 
-	 *                                  <code>Element</code> instance to be loaded
-	 *                                  are not valid
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>Element</code> instance to be
+	 *                                  loaded are not valid
 	 */
 
 	public abstract void load (T element);
