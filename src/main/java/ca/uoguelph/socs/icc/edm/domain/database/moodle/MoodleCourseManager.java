@@ -21,6 +21,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityManager;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.CourseManager;
@@ -45,7 +47,6 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerFactory;
  * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager
  */
 
-
 public final class MoodleCourseManager extends AbstractManager<Course> implements CourseManager
 {
 	/**
@@ -53,13 +54,14 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	 * <code>MoodleCourseManager</code>.
 	 */
 
-	private static final class MoodleCourseManagerFactory implements ManagerFactory<CourseManager>
+	private static final class Factory implements ManagerFactory<CourseManager>
 	{
 		/**
 		 * Create an instance of the <code>MoodleCourseManager</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultCourseManager</code> will operate, not null
+		 *                   <code>DefaultCourseManager</code> will operate,
+		 *                   not null
 		 *
 		 * @return       The <code>MoodleCourseManager</code>
 		 */
@@ -84,14 +86,15 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 
 	static
 	{
-		AbstractManager.registerManager (CourseManager.class, MoodleCourseManager.class, new MoodleCourseManagerFactory ());
+		AbstractManager.registerManager (CourseManager.class, MoodleCourseManager.class, new Factory ());
 	}
 
 	/**
 	 * Create the <code>MoodleCourseManager</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code> upon which the
-	 *                   <code>DefaultCourseManager</code> will operate, not null
+	 *                   <code>DefaultCourseManager</code> will operate, not
+	 *                   null
 	 */
 
 	public MoodleCourseManager (final DataStore datastore)
@@ -103,8 +106,8 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	}
 
 	/**
-	 * Get an instance of the <code>CourseBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>CourseBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>CourseBuilder</code> instance
 	 */
@@ -132,91 +135,86 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	}
 
 	/**
-	 * Retrieve an object from the data store based on its primary key.
+	 * Retrieve a <code>Course</code> from the <code>DataStore</code> based on
+	 * its <code>DataStore</code> identifier.
 	 *
-	 * @param  id The value of the primary key of the object to retrieve, not null
+	 * @param  id The <code>DataStore</code> identifier of the
+	 *            <code>Course</code> to retrieve, not null
 	 *
-	 * @return    The requested object.
+	 * @return    The requested <code>Course</code>
 	 */
 
 	public Course fetchById (final Long id)
 	{
-		this.log.trace ("Fetch Course (with Activity Data) for ID: {}", id);
+		this.log.trace ("fetchById: id={}", id);
 
-		Course course = this.manager.fetchById (id);
-
-		return course;
+		return this.manager.fetchById (id);
 	}
 
 	/**
-	 * Retrieve a list of all of the entities from the underlying data store.
+	 * Retrieve a <code>List</code> of all of the <code>Course</code> instances
+	 * from the <code>DataStore</code>.
 	 *
-	 * @return A list of objects.
+	 * @return A <code>List</code> of <code>Course</code> instances
 	 */
 
 	public List<Course> fetchAll ()
 	{
-		this.log.trace ("Fetch all Courses (with Activity Data)");
+		this.log.trace ("fetchAll:");
 
-		List<Course> courses = this.manager.fetchAll ();
-
-		return courses;
+		return this.manager.fetchAll ();
 	}
 
 	/**
-	 * Retrieve a list of courses from the underlying data-store based on the
-	 * time of offering.
+	 * Retrieve a <code>List</code> of <code>Course</code> instances from the
+	 * <code>DataStore</code> based on the time of offering.
 	 *
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
-	 * @return          A list of <code>Course</code> objects
+	 *
+	 * @return          A <code>List</code> of <code>Course</code> instances
 	 */
 
 	public List<Course> fetchAllForOffering (final Semester semester, final Integer year)
 	{
-		this.log.trace ("Fetch all Courses (with Activity Data) offered in semester {} and year {}", semester, year);
+		this.log.trace ("fetchAllForOffering: semester={}, year={}", semester, year);
 
-		List<Course> courses = this.manager.fetchAllForOffering (semester, year);
-
-		return courses;
+		return this.manager.fetchAllForOffering (semester, year);
 	}
 
 	/**
-	 * Retrieve a list of courses from the underlying data-store based on the
-	 * time of offering, and a regular expression matching the courses name.
+	 * Retrieve a <code>List</code> of <code>Course</code> instances from the
+	 * <code>DataStore</code> based on the time of offering, and a regular
+	 * expression matching the courses name.
 	 *
-	 * @param  name     The regular expression to match against the courses name,
-	 *                  not null
+	 * @param  name     The regular expression to match against the name of the
+	 *                  <code>Course</code>, not null
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
-	 * @return          A list of <code>Course</code> objects
+	 * @return          A <code>List</code> of <code>Course</code> instances
 	 */
 
 	public List<Course> fetchAllForOffering (final String name, final Semester semester, final Integer year)
 	{
-		this.log.trace ("Fetch all Courses (with Activity Data) with name matching {} offered in semester {} and year {}", name, semester, year);
+		this.log.trace ("fetchAllForOffering: name={}, semester={}, year={}", name, semester, year);
 
-		List<Course> courses = this.manager.fetchAllForOffering (name, semester, year);
-
-		return courses;
+		return this.manager.fetchAllForOffering (name, semester, year);
 	}
 
 	/**
-	 * Retrieve a course from the underlying data-store based on its name and
-	 * time of offering.
+	 * Retrieve a <code>Course</code> from the <code>DataStore</code> based on
+	 * its name and time of offering.
 	 *
-	 * @param  name     The name of the course, not null
+	 * @param  name     The name of the <code>Course</code>, not null
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
-	 * @return          A single <code>Course</code> object
+	 * @return          The requested <code>Course</code>
 	 */
 
 	public Course fetchByOffering (final String name, final Semester semester, final Integer year)
 	{
-		this.log.trace ("Fetch Course (with Activity Data) with name {} offered in semester {} and year {}", name, semester, year);
+		this.log.trace ("FetchByOffering: name={}, semester={}, year={}", name, semester, year);
 
-		Course course = this.manager.fetchByOffering (name, semester, year);
-
-		return course;
+		return this.manager.fetchByOffering (name, semester, year);
 	}
 }

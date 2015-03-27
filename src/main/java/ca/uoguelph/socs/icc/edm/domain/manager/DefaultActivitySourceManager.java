@@ -50,8 +50,8 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 		 * Create an instance of the <code>DefaultActivitySourceManager</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultActivitySourceManager</code> will operate,
-		 *                   not null
+		 *                   <code>DefaultActivitySourceManager</code> will
+		 *                   operate, not null
 		 * @return           The <code>DefaultActivitySourceManager</code>
 		 */
 
@@ -80,8 +80,9 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 	/**
 	 * Create the <code>ActivitySourceManager</code>.
 	 *
-	 * @param  datastore The instance of the <code>DataStore</code> upon which the
-	 *                   <code>ActivitySourceManager</code> will operate, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which
+	 *                   the <code>ActivitySourceManager</code> will operate,
+	 *                   not null
 	 */
 
 	public DefaultActivitySourceManager (final DataStore datastore)
@@ -117,7 +118,7 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 	@Override
 	public ActivitySource fetch (final ActivitySource source)
 	{
-		this.log.trace ("Fetching ActivitySource with the same identity as: {}", source);
+		this.log.trace ("fetch: source={}", source);
 
 		if (source == null)
 		{
@@ -139,16 +140,16 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 	 * Retrieve the <code>ActivitySource</code> object associated with the
 	 * specified name from the <code>DataStore</code>.
 	 *
-	 * @param  name The name of the <code>ActivitySource</code> to retrieve, not
-	 *              null
+	 * @param  name The name of the <code>ActivitySource</code> to retrieve,
+	 *              not null
 	 *
-	 * @return      The <code>ActivitySource</code> instance associated with the
-	 *              specified name
+	 * @return      The <code>ActivitySource</code> instance associated with
+	 *              the specified name
 	 */
 
 	public ActivitySource fetchByName (final String name)
 	{
-		this.log.trace ("Fetching ActvitySource {}", name);
+		this.log.trace ("fetchByName: name={}", name);
 
 		if (name == null)
 		{

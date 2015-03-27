@@ -31,17 +31,64 @@ import java.util.List;
 public interface ActivityManager extends ElementManager<Activity>
 {
 	/**
-	 * Get an instance of the <code>ActivityBuilder</code> interface, suitable for
-	 * use with the <code>DataStore</code>.
+	 * Get an instance of the <code>ActivityBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
 	 *
-	 * @return An <code>ActivityBuilder</code> instance
+	 * @param  <T>     The type of <code>ActivityBuilder</code>
+	 * @param  builder The <code>ActivityBuilder</code> interface of the
+	 *                 builder to be returned, not null
+	 * @param  type    The <code>ActivityType</code> of the
+	 *                 <code>Activity</code> to be created by the
+	 *                 <code>ActivityBuilder</code>
+	 *
+	 * @return         An <code>ActivityBuilder</code> instance
 	 */
 
-	public abstract ActivityBuilder getBuilder ();
+	public abstract <T extends ActivityBuilder> T getBuilder (Class<T> builder, ActivityType type);
 
 	/**
-	 * Get a <code>List</code> of all of the <code>Activity</code> instances which
-	 * are associated with a particular <code>ActivityType</code>.
+	 * Get an instance of the <code>ActivityBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
+	 *
+	 * @param  type The <code>ActivityType</code> of the <code>Activity</code>
+	 *              to be created by the <code>ActivityBuilder</code>
+	 *
+	 * @return      An <code>ActivityBuilder</code> instance
+	 */
+
+	public abstract ActivityBuilder getBuilder (ActivityType type);
+
+	/**
+	 * Get an instance of the <code>SubActivityBuilder</code> suitable for use
+	 * with the specified <code>Activity</code>.
+	 *
+	 * @param  <T>      The type of <code>SubActivityBuilder</code> to be
+	 *                  returned
+	 * @param  builder  The <code>SubActivityBuilder</code> interface of
+	 *                  the builder to be returned, not null
+	 * @param  activity The <code>Activity</code> instance to which the new
+	 *                  <code>SubActivity</code> instance is to be assigned
+	 *
+	 * @return          A <code>SubActivityBuilder</code> instance
+	 */
+
+	public abstract <T extends SubActivityBuilder> T getBuilder (Class<T> builder, Activity activity);
+
+	/**
+	 * Get an instance of the <code>SubActivityBuilder</code> suitable for use
+	 * with the specified <code>Activity</code>.
+	 *
+	 * @param  activity The <code>Activity</code> instance to which the new
+	 *                  <code>SubActivity</code> instance is to be assigned
+	 *
+	 * @return          A <code>SubActivityBuilder</code> instance
+	 */
+
+	public abstract SubActivityBuilder getBuilder (Activity activity);
+
+	/**
+	 * Get a <code>List</code> of all of the <code>Activity</code> instances
+	 * which are associated with a particular <code>ActivityType</code>.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null
 	 */

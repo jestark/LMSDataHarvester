@@ -20,9 +20,6 @@ import java.util.Map;
 
 import java.util.HashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
 import ca.uoguelph.socs.icc.edm.domain.RoleManager;
@@ -63,9 +60,6 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 		}
 	}
 
-	/** The logger */
-	private final Logger log;
-
 	/**
 	 * Static initializer to register the manager with its
 	 * <code>AbstractManagerFactory</code> implementation.
@@ -79,20 +73,19 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 	/**
 	 * Create the <code>DefaultRoleManager</code>.
 	 *
-	 * @param  datastore The instance of the <code>DataStore</code> upon which the
-	 *                   <code>DefaultRoleManager</code> will operate, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which
+	 *                   the <code>DefaultRoleManager</code> will operate, not
+	 *                   null
 	 */
 
 	public DefaultRoleManager (final DataStore datastore)
 	{
 		super (Role.class, datastore);
-
-		this.log = LoggerFactory.getLogger (RoleManager.class);
 	}
 
 	/**
-	 * Get an instance of the <code>RoleBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>RoleBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>RoleBuilder</code> instance
 	 */
@@ -116,7 +109,7 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 	@Override
 	public Role fetch (final Role role)
 	{
-		this.log.trace ("Fetching Role with the same identity as: {}", role);
+		this.log.trace ("fetch: role={}", role);
 
 		if (role == null)
 		{
@@ -144,7 +137,7 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 
 	public Role fetchByName (final String name)
 	{
-		this.log.trace ("Fetching Role with name: {}", name);
+		this.log.trace ("fetchByName: name={}", name);
 
 		if (name == null)
 		{

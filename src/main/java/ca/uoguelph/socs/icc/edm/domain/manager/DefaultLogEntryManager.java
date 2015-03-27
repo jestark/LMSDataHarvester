@@ -22,9 +22,6 @@ import java.util.Map;
 
 import java.util.HashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
@@ -53,8 +50,9 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 		 * Create an instance of the <code>DefaultLogEntryManager</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *               <code>DefaultLogEntryManager</code> will operate, not null
-		 * @return       The <code>DefaultLogEntryManager</code>
+		 *                   <code>DefaultLogEntryManager</code> will operate,
+		 *                   not null
+		 * @return           The <code>DefaultLogEntryManager</code>
 		 */
 
 		@Override
@@ -65,9 +63,6 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 			return new DefaultLogEntryManager (datastore);
 		}
 	}
-
-	/** The logger */
-	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -89,13 +84,11 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	public DefaultLogEntryManager (final DataStore datastore)
 	{
 		super (LogEntry.class, datastore);
-
-		this.log = LoggerFactory.getLogger (LogEntryManager.class);
 	}
 
 	/**
-	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable for
-	 * use with the <code>DataStore</code>.
+	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>LogEntryBuilder</code> instance
 	 */
@@ -107,7 +100,7 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	}
 
 	/**
-	 * Retrieve an <code>LogEntry</code> from the <code>DataStore</code> which
+	 * Retrieve a <code>LogEntry</code> from the <code>DataStore</code> which
 	 * identifies the same as the specified <code>LogEntry</code>.
 	 *
 	 * @param  entry The <code>LogEntry</code> to retrieve, not null
@@ -119,7 +112,7 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	@Override
 	public LogEntry fetch (final LogEntry entry)
 	{
-		this.log.trace ("Fetching LogEntry with the same identity as: {}", entry);
+		this.log.trace ("fetch: entry={}", entry);
 
 		if (entry == null)
 		{
@@ -138,17 +131,19 @@ public final class DefaultLogEntryManager extends AbstractManager<LogEntry> impl
 	}
 
 	/**
-	 * Retrieve a list of <code>LogEntry</code> objects, which are associated with
-	 * the specified <code>Course</code>, from the <code>DataStore</code>.
+	 * Retrieve a list of <code>LogEntry</code> instances, which are associated
+	 * with the specified <code>Course</code>, from the <code>DataStore</code>.
 	 *
-	 * @param  course The <code>Course</code> for which the <code>List</code> of
-	 *                <code>LogEntry</code> objects should be retrieved, not null
-	 * @return        A list of <code>LogEntry</code> objects
+	 * @param  course The <code>Course</code> for which the <code>List</code>
+	 *                of <code>LogEntry</code> instances should be retrieved,
+	 *                not null
+	 *
+	 * @return        A <code>List</code> of <code>LogEntry</code> instances
 	 */
 
 	public List<LogEntry> fetchAllforCourse (final Course course)
 	{
-		this.log.trace ("Fetching all Log Entries for course: {}", course);
+		this.log.trace ("fetchAllForCourse: course={}", course);
 
 		if (course == null)
 		{

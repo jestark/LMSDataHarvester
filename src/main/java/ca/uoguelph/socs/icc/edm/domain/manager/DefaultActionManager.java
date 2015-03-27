@@ -50,7 +50,9 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 		 * Create an instance of the <code>DefaultActionManager</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultActionManager</code> will operate, not null
+		 *                   <code>DefaultActionManager</code> will operate,
+		 *                   not null
+		 *
 		 * @return           The <code>DefaultActionManager</code>
 		 */
 
@@ -79,8 +81,8 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	/**
 	 * Create the <code>ActionManager</code>
 	 *
-	 * @param  datastore The instance of the <code>DataStore</code> upon which the
-	 *                   <code>ActionManager</code> will operate, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which
+	 *                   the <code>ActionManager</code> will operate, not null
 	 */
 
 	public DefaultActionManager (final DataStore datastore)
@@ -91,8 +93,8 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	}
 
 	/**
-	 * Get an instance of the <code>ActionBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>ActionBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>ActionBuilder</code> instance
 	 */
@@ -116,7 +118,7 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	@Override
 	public Action fetch (final Action action)
 	{
-		this.log.trace ("Fetching Action with the same identity as: {}", action);
+		this.log.trace ("fetch: action={}", action);
 
 		if (action == null)
 		{
@@ -145,7 +147,7 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 
 	public Action fetchByName (final String name)
 	{
-		this.log.trace ("Fetching Action with name: {}", name);
+		this.log.trace ("fetchByName: name={}", name);
 
 		if (name == null)
 		{

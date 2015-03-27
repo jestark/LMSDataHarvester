@@ -19,9 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain.manager;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 import ca.uoguelph.socs.icc.edm.domain.UserManager;
@@ -49,7 +46,8 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 		 * Create an instance of the <code>DefaultUserManager</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultUserManager</code> will be acting, not null
+		 *                   <code>DefaultUserManager</code> will be acting,
+		 *                   not null
 		 * @return           The <code>DefaultUserManager</code>
 		 */
 
@@ -61,9 +59,6 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 			return new DefaultUserManager (datastore);
 		}
 	}
-
-	/** The logger */
-	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -79,20 +74,18 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	 * Create the <code>DefaultUserManager</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code> instance which the
-	 *                   <code>DefaultUserManager</code> will be manipulating, not
-	 *                   null
+	 *                   <code>DefaultUserManager</code> will be manipulating,
+	 *                   not null
 	 */
 
 	public DefaultUserManager (final DataStore datastore)
 	{
 		super (User.class, datastore);
-
-		this.log = LoggerFactory.getLogger (UserManager.class);
 	}
 
 	/**
-	 * Get an instance of the <code>UserBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>UserBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>UserBuilder</code> instance
 	 */
@@ -116,7 +109,7 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	@Override
 	public User fetch (final User user)
 	{
-		this.log.trace ("Fetching User with the same identity as: {}", user);
+		this.log.trace ("fetch: user={}", user);
 
 		if (user == null)
 		{
@@ -135,17 +128,19 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	}
 
 	/**
-	 * Retrieve a single <code>User</code> object, with the specified ID number,
-	 * from the <code>DataStore</code>.
+	 * Retrieve a single <code>User</code> object, with the specified ID
+	 * number, from the <code>DataStore</code>.
 	 *
-	 * @param  idnumber The ID number of the <code>User</code> to retrieve, not null
+	 * @param  idnumber The ID number of the <code>User</code> to retrieve, not
+	 *                  null
 	 *
-	 * @return          The <code>User</code> object associated with the ID number
+	 * @return          The <code>User</code> object associated with the ID
+	 *                  number
 	 */
 
 	public User fetchByIdNumber (final Integer idnumber)
 	{
-		this.log.trace ("Fetching user with ID number: {}", idnumber);
+		this.log.trace ("fetchByIdNumber: idnumber={}", idnumber);
 
 		if (idnumber == null)
 		{
@@ -165,12 +160,13 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	 *
 	 * @param  username The username of the entry to retrieve, not null
 	 *
-	 * @return          The <code>User</code> object associated with the username
+	 * @return          The <code>User</code> object associated with the
+	 *                  username
 	 */
 
 	public User fetchByUsername (final String username)
 	{
-		this.log.trace ("Fetching user with username: {}", username);
+		this.log.trace ("fetchByUsername: username={}", username);
 
 		if (username == null)
 		{

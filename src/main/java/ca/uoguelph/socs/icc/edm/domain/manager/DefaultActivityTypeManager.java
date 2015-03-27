@@ -20,9 +20,6 @@ import java.util.Map;
 
 import java.util.HashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
@@ -52,8 +49,8 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 		 * Create an instance of the <code>DefaultActivityTypeManager</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultActivityTypeManager</code> will operate,
-		 *                   not null
+		 *                   <code>DefaultActivityTypeManager</code> will
+		 *                   operate, not null
 		 * @return           The <code>DefaultActivityTypeManager</code>
 		 */
 
@@ -65,9 +62,6 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 			return new DefaultActivityTypeManager (datastore);
 		}
 	}
-
-	/** The logger */
-	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -82,20 +76,19 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 	/**
 	 * Create the <code>ActivityType</code> manager.
 	 *
-	 * @param  datastore The instance of the <code>DataStore</code> upon which the
-	 *                   <code>ActivityTypeManager</code> will operate, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which
+	 *                   the <code>ActivityTypeManager</code> will operate, not
+	 *                   null
 	 */
 
 	public DefaultActivityTypeManager (final DataStore datastore)
 	{
 		super (ActivityType.class, datastore);
-
-		this.log = LoggerFactory.getLogger (ActivityTypeManager.class);
 	}
 
 	/**
-	 * Get an instance of the <code>ActivityTypeBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>ActivityTypeBuilder</code> interface,
+	 * suitable for use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>ActivityTypeBuilder</code> instance
 	 */
@@ -107,8 +100,8 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 	}
 
 	/**
-	 * Retrieve an <code>ActivityType</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>ActivityType</code>.
+	 * Retrieve an <code>ActivityType</code> from the <code>DataStore</code>
+	 * which identifies the same as the specified <code>ActivityType</code>.
 	 *
 	 * @param  type The <code>ActivityType</code> to retrieve, not null
 	 *
@@ -119,7 +112,7 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 	@Override
 	public ActivityType fetch (final ActivityType type)
 	{
-		this.log.trace ("Fetching ActivityType with the same identity as: {}", type);
+		this.log.trace ("fetch: type={}", type);
 
 		if (type == null)
 		{
@@ -139,20 +132,20 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 
 	/**
 	 * Retrieve the <code>ActivityType</code> object from the
-	 * <code>DataStore</code> which has the specified <code>ActivitySource</code>
-	 * and name.
+	 * <code>DataStore</code> which has the specified
+	 * <code>ActivitySource</code> and name.
 	 *
 	 * @param  source The <code>ActivitySource</code> containing the
 	 *                <code>ActivityType</code>, not null
 	 * @param  name   The name of the <code>ActivityType</code>, not null
 	 *
-	 * @return        The <code>ActivityType</code> instance which is associated
-	 *                with the specified source and name
+	 * @return        The <code>ActivityType</code> instance which is
+	 *                associated with the specified source and name
 	 */
 
 	public ActivityType fetchByName (final ActivitySource source, final String name)
 	{
-		this.log.trace ("Fetching ActivityType {}, with ActivitySource {}", name, source);
+		this.log.trace ("fetchByName source={}, name={}", source, name);
 
 		if (source == null)
 		{

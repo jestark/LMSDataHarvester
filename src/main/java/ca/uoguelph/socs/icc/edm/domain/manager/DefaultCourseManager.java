@@ -21,9 +21,6 @@ import java.util.Map;
 
 import java.util.HashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.CourseManager;
@@ -52,7 +49,9 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 		 * Create an instance of the <code>DefaultCourseManager</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultCourseManager</code> will operate, not null
+		 *                   <code>DefaultCourseManager</code> will operate,
+		 *                   not null
+		 *
 		 * @return           The <code>DefaultCourseManager</code>
 		 */
 
@@ -64,9 +63,6 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 			return new DefaultCourseManager (datastore);
 		}
 	}
-
-	/** The logger */
-	private final Logger log;
 
 	/**
 	 * Static initializer to register the manager with its
@@ -81,20 +77,18 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	/**
 	 * Create the <code>CourseManager</code>.
 	 *
-	 * @param  datastore The instance of the <code>DataStore</code> upon which the
-	 *                   <code>CourseManager</code> will operate, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which
+	 *                   the <code>CourseManager</code> will operate, not null
 	 */
 
 	public DefaultCourseManager (final DataStore datastore)
 	{
 		super (Course.class, datastore);
-
-		this.log = LoggerFactory.getLogger (CourseManager.class);
 	}
 
 	/**
-	 * Get an instance of the <code>CourseBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>CourseBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>CourseBuilder</code> instance
 	 */
@@ -118,7 +112,7 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	@Override
 	public Course fetch (final Course course)
 	{
-		this.log.trace ("Fetching Course with the same identity as: {}", course);
+		this.log.trace ("fetch: course={}", course);
 
 		if (course == null)
 		{
@@ -142,12 +136,13 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	 *
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
+	 *
 	 * @return          A <code>List</code> of <code>Course</code> instances
 	 */
 
 	public List<Course> fetchAllForOffering (final Semester semester, final Integer year)
 	{
-		this.log.trace ("Fetching all courses offered in year {} and semester {}", year, semester);
+		this.log.trace ("fetchAllForOffering: semester={}, year={}", semester, year);
 
 		if (semester == null)
 		{
@@ -177,12 +172,13 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	 *                  <code>Course</code>, not null
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
+	 *
 	 * @return          A <code>List</code> of <code>Course</code> instances
 	 */
 
 	public List<Course> fetchAllForOffering (final String name, final Semester semester, final Integer year)
 	{
-		this.log.trace ("Fetching all courses offered in year {} and semester {}, with name {}", year, semester, name);
+		this.log.trace ("fetchAllForOffering: name={}, semester={}, year={}", name, semester, year);
 
 		if (semester == null)
 		{
@@ -211,18 +207,19 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	}
 
 	/**
-	 * Retrieve a <code>Course</code> from the <code>DataStore</code> based on its
-	 * name and time of offering.
+	 * Retrieve a <code>Course</code> from the <code>DataStore</code> based on
+	 * its name and time of offering.
 	 *
 	 * @param  name     The name of the <code>Course</code>, not null
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 * @param  year     The year of offering, not null
+	 *
 	 * @return          A single <code>Course</code> object
 	 */
 
 	public Course fetchByOffering (final String name, final Semester semester, final Integer year)
 	{
-		this.log.trace ("Fetching course: {} (offered in year {} and semester {})", name, year, semester);
+		this.log.trace ("fetchAllForOffering: name={}, semester={}, year={}", name, semester, year);
 
 		if (semester == null)
 		{

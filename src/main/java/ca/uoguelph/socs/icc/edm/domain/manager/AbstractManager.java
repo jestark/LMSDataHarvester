@@ -49,7 +49,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	private static final ElementManagerFactory FACTORY;
 
 	/** The logger */
-	private final Logger log;
+	protected final Logger log;
 
 	/** The type of <code>Element</code> which is being managed */
 	private final Class<T> type;
@@ -66,12 +66,51 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 		FACTORY = new ElementManagerFactory ();
 	}
 
+	/**
+	 * Get an instance of an <code>ElementManager</code> interface for the
+	 * specified <code>DataStore</code>.  This method is intended to be used by
+	 * the <code>DomainModel</code> and <code>ElementManager</code> instances
+	 * to get an instance of the requeested <code>ElementManager</code> as
+	 * required.
+	 *
+	 * @param  <T>       The type of <code>ElementManager</code> to return
+	 * @param  <U>       The type of <code>Element</code> operated on by the
+	 *                   <code>ElementManager</code>
+	 * @param  element   The <code>Element</code> interface class, not null
+	 * @param  manager   The <code>ElementManager</code> interface class, not
+	 *                   null
+	 * @param  datastore The <code>DataStore</code> upon which the
+	 *                   <code>ElementManager</code> instance is to operate,
+	 *                   not null
+	 *
+	 * @return           An instance of the requested
+	 *                   <code>ElementManager</code> interface on the specified
+	 *                   <code>DataStore</code>
+	 */
+
 	public static final <T extends ElementManager<U>, U extends Element> T getInstance (final Class<U> element, final Class<T> manager, final DataStore datastore)
 	{
+		assert element != null : "element is NULL";
+		assert manager != null : "manager is NULL";
+		assert datastore != null : "datastore is NULL";
+
 		return FACTORY.create (element, manager, datastore);
 	}
 
-	protected static final <T extends ElementManager<? extends Element>> void registerManager (final Class<T> manager, Class<? extends T> impl, ManagerFactory<T> factory)
+	/**
+	 * Register an <code>ElementManager</code> implementation with the factory.
+	 * This method is intended to be used by the <code>ElementManager</code>
+	 * implementations to register themselves with the factory so that they may
+	 * be instantiated on demand.
+	 *
+	 * @param  <T>     The type of <code>ElementManager</code> to register
+	 * @param  manager The <code>ElementManager</code> interface class, not null
+	 * @param  impl    The <code>ElementManager</code> implementation class,
+	 *                 not null
+	 * @param  factory The <code>ManagerFactory</code> instance, not null
+	 */
+
+	protected static final <T extends ElementManager<? extends Element>> void registerManager (final Class<T> manager, Class<? extends T> impl, final ManagerFactory<T> factory)
 	{
 		FACTORY.registerFactory (manager, impl, factory);
 	}
@@ -79,55 +118,171 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	/**
 	 * Create the <code>AbstractManager</code>.
 	 *
-	 * @param  type      The type of <code>Element</code> which is being managed,
-	 *                   not null
+	 * @param  type      The type of <code>Element</code> which is being
+	 *                   managed, not null
 	 * @param  datastore The <code>DataStore</code> upon which this
 	 *                   <code>ElementManager</code> will operate, not null
 	 */
 
 	public AbstractManager (final Class<T> type, final DataStore datastore)
 	{
-		this.log = LoggerFactory.getLogger (AbstractManager.class);
-		
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
 		this.type = type;
 		this.datastore = datastore;
 	}
 
+	/**
+	 * Get an instance of the <code>DataStoreQuery</code>.  This method will
+	 * get a <code>DataStoreQuery</code> for the <code>Element</code> type of
+	 * the manager using the implementation class specified in the
+	 * <code>DataStoreProfile</code>.
+	 *
+	 * @return The <code>DataStoreQuery</code> instance
+	 */
+
 	protected final DataStoreQuery<T> fetchQuery ()
 	{
-		this.log.trace ("Getting query object from factory");
+		this.log.trace ("fetchQuery:");
 
 		return (QueryFactory.getInstance ()).create (this.type, this.datastore);
 	}
 
-	protected final DataStoreQuery<T> fetchQuery (final Class<? extends T> impl)
+	/**
+	 * Get an instance of the <code>DataStoreQuery</code>.  This method will
+	 * get a <code>DataStoreQuery</code> for the <code>Element</code> type of
+	 * the manager using the specified implementation class.
+	 *
+	 * @return The <code>DataStoreQuery</code> instance
+	 */
+
+	protected final DataStoreQuery<T> fetchQuery (final Class<? extends Element> impl)
 	{
-		this.log.trace ("Get query object for class: {}", impl);
+		this.log.trace ("fetchQuery: impl={}", impl);
+
+		assert impl != null : "impl is NULL";
+		assert this.type.isAssignableFrom (impl) : "impl does not extend " + this.type.getSimpleName ();
 
 		return (QueryFactory.getInstance ()).create (this.type, impl, this.datastore);
 	}
 
+	/**
+	 * Get an <code>ElementBuilder</code> instance of the specified type for
+	 * the specified <code>Element</code> implementation class.
+	 *
+	 * @param  <B>      The type of <code>ElementBuilder</code> to be returned
+	 * @param  builder  The <code>ElementBuilder</code> interface class, not
+	 *                  null
+	 * @param  element  The <code>Element</code> implementation class, not null
+	 * @param  argument The
+	 *
+	 * @return          The <code>ElementBuilder</code> instance
+	 */
+
+	protected final <B extends ElementBuilder<T>> B getBuilder (final Class<B> builder, final Class<? extends Element> element, final Element argument)
+	{
+		this.log.trace ("getBuilder: builder={}, element={}, argument={}", builder, element, argument);
+
+		assert builder != null : "builder is NULL";
+		assert element != null : "element is NULL";
+		assert argument != null : "argument is NULL";
+
+		return AbstractBuilder.getInstance (builder, element, new ManagerProxy<T> (this, element, argument));
+	}
+
+	/**
+	 * Get an <code>ElementBuilder</code> instance of the specified type for
+	 * the specified <code>Element</code> implementation class.
+	 *
+	 * @param  <B>     The type of <code>ElementBuilder</code> to be returned
+	 * @param  builder The <code>ElementBuilder</code> interface class, not null
+	 * @param  element The <code>Element</code> implementation class, not null
+	 *
+	 * @return         The <code>ElementBuilder</code> instance
+	 */
+
+	protected final <B extends ElementBuilder<T>> B getBuilder (final Class<B> builder, final Class<? extends Element> element)
+	{
+		this.log.trace ("getBuilder: builder={}, element={}", builder, element);
+
+		assert builder != null : "builder is NULL";
+		assert element != null : "element is NULL";
+
+		return AbstractBuilder.getInstance (builder, element, new ManagerProxy<T> (this, element));
+	}
+
+	/**
+	 * Get an <code>ElementBuilder</code> instance of the specified type.
+	 *
+	 * @param  <B>     The type of <code>ElementBuilder</code> to be returned
+	 * @param  builder The <code>ElementBuilder</code> interface class, not null
+	 *
+	 * @return         The <code>ElementBuilder</code> instance
+	 */
+
 	protected final <B extends ElementBuilder<T>> B getBuilder (final Class<B> builder)
 	{
-		return AbstractBuilder.getInstance (builder, (this.datastore.getProfile ()).getImplClass (this.type), new ManagerProxy<T> (this));
+		this.log.trace ("getBuilder: builder={}", builder);
+
+		assert builder != null : "builder is NULL";
+
+		Class<? extends Element> element = (this.datastore.getProfile ()).getImplClass (this.type);
+
+		return AbstractBuilder.getInstance (builder, element, new ManagerProxy<T> (this, element));
 	}
+
+	/**
+	 * Get an instance of the specified <code>ElementManager</code>.
+	 *
+	 * @param  <E>     The type of <code>Element</code> operated on by the
+	 *                   <code>ElementManager</code>
+	 * @param  <M>     The type of <code>ElementManager</code> to be returned
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  manager The <code>ElementManager</code> interface class, not null
+	 *
+	 * @return         An instance of the requested <code>ElementManager</code>
+	 */
 
 	protected final <M extends ElementManager<E>, E extends Element> M getManager (final Class<E> element, final Class<M> manager)
 	{
+		this.log.trace ("getManager: element={}, manager={}", element, manager);
+
+		assert element != null : "element is NULL";
+		assert manager != null : "manager is NULL";
+
 		return AbstractManager.getInstance (element, manager, this.datastore);
 	}
 
-	protected final Long nextId ()
+	/**
+	 * Get the next available DataStore ID number.  The number will be chosen
+	 * by the IdGenerator algorithm set in the <code>DataStoreProfile</code>
+	 *
+	 * @return A <code>Long</code> containing the ID number
+	 */
+
+	protected final Long nextId (Class<? extends Element> implClass)
 	{
-		return (this.fetchQuery ()).nextId ();
+		return (this.fetchQuery (implClass)).nextId ();
 	}
+
+	/**
+	 * Insert the specified <code>Element</code> into the
+	 * <code>DataStore</code>.  This method is intended to be used by the
+	 * <code>ElementBuilder</code> instances to add new <code>Element</code>
+	 * instances to the <code>DataStore</code>
+	 *
+	 * @param  element The <code>Element</code> to insert
+	 *
+	 * @return         A reference to the <code>Element</code>
+	 */
 
 	protected T insertElement (final T element)
 	{
+		this.log.trace ("insertElement: element={}", element);
+
 		try
 		{
-			(this.fetchQuery ()).insert (element);
-			return this.fetch (element);
+			return (this.fetchQuery (element.getClass ())).insert (element);
 		}
 		catch (Exception ex)
 		{
@@ -151,8 +306,8 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	/**
 	 * Determine if the underlying <code>DataStore</code> is open.
 	 *
-	 * @return <code>True</code> if the underlying <code>DataStore</code> is open,
-	 *         <code>False</code> otherwise
+	 * @return <code>True</code> if the underlying <code>DataStore</code> is
+	 *         open, <code>False</code> otherwise
 	 * @see    ca.uoguelph.socs.icc.edm.domain.datastore.DataStore#isOpen
 	 */
 
@@ -173,62 +328,71 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	}
 
 	/**
-	 * Test an instance of an <code>Element</code> to determine if a reference to
-	 * that <code>Element</code> instance exists in the <code>DataStore</code>.
+	 * Test an instance of an <code>Element</code> to determine if a reference
+	 * to that <code>Element</code> instance exists in the
+	 * <code>DataStore</code>.
 	 *
 	 * @param  element The <code>Element</code> instance to test, not null
 	 *
-	 * @return          <code>True</code> if the <code>DataStore</code> instance
-	 *                  contains a reference to the <code>Element</code>,
-	 *                  <code>False</code> otherwise
+	 * @return          <code>True</code> if the <code>DataStore</code>
+	 *                  instance contains a reference to the
+	 *                  <code>Element</code>, <code>False</code> otherwise
 	 */
 
+	@Override
 	public final boolean contains (final T element)
 	{
-		this.log.trace ("Determine if the element is owned by me {}", element);
+		this.log.trace ("contains: element={}", element);
 
-		return (this.fetchQuery ()).contains (element);
+		return (this.fetchQuery (element.getClass ())).contains (element);
 	}
 
 	/**
-	 * Retrieve an object from the data store based on its primary key.
+	 * Retrieve an <code>Element</code> instance from the
+	 * <code>DataStore</code> based on its <code>DataStore</code> identifier.
 	 *
-	 * @param  id The value of the primary key of the object to retrieve, not null
-	 * @return    The requested object.
+	 * @param  id The <code>DataStore</code> identifier of the
+	 *            <code>Element</code> to retrieve, not null
+	 *
+	 * @return    The requested <code>Element</code>
 	 */
 
+	@Override
 	public T fetchById (final Long id)
 	{
-		this.log.trace ("Fetching entity from DataStore with ID: {}", id);
+		this.log.trace ("fetchById: id={}", id);
 
 		return (this.fetchQuery ()).query (id);
 	}
 
 	/**
-	 * Retrieve a list of all of the entities from the underlying data store.
+	 * Retrieve a <code>List</code> of all of the <code>Element</code>
+	 * instances from the <code>DataStore</code>.
 	 *
-	 * @return A list of objects.
+	 * @return A <code>List</code> of <code>Element</code> instances
 	 */
 
+	@Override
 	public List<T> fetchAll ()
 	{
-		this.log.trace ("Fetching all entities from DataStore");
+		this.log.trace ("fetchAll:");
 
 		return (this.fetchQuery ()).queryAll ();
 	}
 
 	/**
-	 * Insert an entity into the domain model and the underlying data store. This
-	 * method is a convenience method which performs a non-recursive insert of the
-	 * given entity into the domain model and underlying data store.
+	 * Insert an <code>Element</code> into the <code>DataStore</code>.
 	 *
-	 * @param  element The entity to insert into the domain model, not null
-	 * @return         A reference to the inserted entity
+	 * @param  element The <code>Element</code> instance to insert into the
+	 *                 <code>DataStore</code>, not null
+	 *
+	 * @return         A reference to the <code>Element</code>
 	 */
 
+	@Override
 	public final T insert (final T element)
 	{
-		this.log.trace ("Inserting element into the DataStore: {}", element);
+		this.log.trace ("insert: element={}", element);
 
 		if (element == null)
 		{
@@ -246,14 +410,15 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	}
 
 	/**
-	 * Remove an entity from the domain model and the underlying data store. This
-	 * is a convenience method that performs a non-recursive removal of the
-	 * given entity from the domain model and underlying data store.
+	 * Remove an <code>Element</code> from the <code>DataStore</code>.
 	 *
-	 * @param  entity The entity to remove from the domain model, not null
+	 * @param  element The <code>Element</code> instance to remove from the
+	 *                 <code>DataStore</code>, not null
 	 */
 
-	public final void remove (final T entity)
+	@Override
+	public final void remove (final T element)
 	{
+		this.log.trace ("remove: element={}", element);
 	}
 }

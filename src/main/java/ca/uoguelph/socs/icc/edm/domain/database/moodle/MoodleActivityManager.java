@@ -18,15 +18,20 @@ package ca.uoguelph.socs.icc.edm.domain.database.moodle;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityManager;
+import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
+import ca.uoguelph.socs.icc.edm.domain.core.ActivitySourceData;
+import ca.uoguelph.socs.icc.edm.domain.core.ActivityTypeData;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.AbstractManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager;
@@ -51,7 +56,7 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 	 * <code>MoodleActivityManager</code>.
 	 */
 
-	private static final class MoodleActivityManagerFactory implements ManagerFactory<ActivityManager>
+	private static final class Factory implements ManagerFactory<ActivityManager>
 	{
 		/**
 		 * Create an instance of the <code>MoodleActivityManager</code>.
@@ -69,8 +74,8 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 		}
 	}
 
-	/** The log */
-	private final Logger log;
+	/** <code>ActivitySource</code> instance for all moodle activities*/
+	private static final ActivitySource SOURCE;
 
 	/** Reference to the <code>DefaultActivityManager</code> */
 	private final ActivityManager manager;
@@ -82,7 +87,8 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 
 	static
 	{
-		AbstractManager.registerManager (ActivityManager.class, MoodleActivityManager.class, new MoodleActivityManagerFactory ());
+		SOURCE = new ActivitySourceData ("moodle");
+		AbstractManager.registerManager (ActivityManager.class, MoodleActivityManager.class, new Factory ());
 	}
 
 	/**
@@ -96,7 +102,6 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 	{
 		super (Activity.class, datastore);
 
-		this.log = LoggerFactory.getLogger (MoodleActivityManager.class);
 		this.manager = new DefaultActivityManager (datastore);
 	}
 
@@ -104,13 +109,71 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 	 * Get an instance of the <code>ActivityBuilder</code> interface, suitable for
 	 * use with the <code>DataStore</code>.
 	 *
-	 * @return An <code>ActivityBuilder</code> instance
+	 * @param  <T>     The type of <code>ActivityBuilder</code>
+	 * @param  builder The <code>ActivityBuilder</code> interface of the builder
+	 *                 to be returned, not null
+	 * @param  type    The <code>ActivityType</code> of the <code>Activity</code>
+	 *                 to be created by the <code>ActivityBuilder</code>
+	 *
+	 * @return         An <code>ActivityBuilder</code> instance
 	 */
 
 	@Override
-	public ActivityBuilder getBuilder ()
+	public <T extends ActivityBuilder> T getBuilder (final Class<T> builder, final ActivityType type)
 	{
-		return this.getBuilder (ActivityBuilder.class);
+		return this.manager.getBuilder (builder, type);
+	}
+
+	/**
+	 * Get an instance of the <code>ActivityBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
+	 *
+	 * @param  type The <code>ActivityType</code> of the <code>Activity</code> to
+	 *              be created by the <code>ActivityBuilder</code>
+	 *
+	 * @return      An <code>ActivityBuilder</code> instance
+	 */
+
+	@Override
+	public ActivityBuilder getBuilder (final ActivityType type)
+	{
+		return this.manager.getBuilder (type);
+	}
+
+	/**
+	 * Get an instance of the <code>SubActivityBuilder</code> suitable for use
+	 * with the specified <code>Activity</code>.
+	 *
+	 * @param  <T>      The type of <code>SubActivityBuilder</code> to be
+	 *                  returned
+	 * @param  builder  The <code>SubActivityBuilder</code> interface of
+	 *                  the builder to be returned, not null
+	 * @param  activity The <code>Activity</code> instance to which the new
+	 *                  <code>SubActivity</code> instance is to be assigned
+	 *
+	 * @return
+	 */
+
+	@Override
+	public <T extends SubActivityBuilder> T getBuilder (final Class<T> builder, final Activity activity)
+	{
+		return this.manager.getBuilder (builder, activity);
+	}
+
+	/**
+	 * Get an instance of the <code>SubActivityBuilder</code> suitable for use
+	 * with the specified <code>Activity</code>.
+	 *
+	 * @param  activity The <code>Activity</code> instance to which the new
+	 *                  <code>SubActivity</code> instance is to be assigned
+	 *
+	 * @return          A <code>SubActivityBuilder</code> instance
+	 */
+
+	@Override
+	public SubActivityBuilder getBuilder (final Activity activity)
+	{
+		return this.manager.getBuilder (activity);
 	}
 
 	/**
@@ -126,58 +189,58 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 	@Override
 	public Activity fetch (final Activity activity)
 	{
-		this.log.trace ("Fetching Activity with the same identity as: {}", activity);
+		this.log.trace ("fetch: activity={}", activity);
 
 		return this.manager.fetch (activity);
 	}
 
 	/**
-	 * Retrieve an object from the data store based on its primary key.
+	 * Retrieve an <code>Activity</code> from the <code>DataStore</code> based
+	 * on its <code>DataStore</code> identifier.
 	 *
-	 * @param  id The value of the primary key of the object to retrieve, not null
-	 * @return    The requested object.
+	 * @param  id The <code>DataStore</code> identifier of the
+	 *            <code>Activity</code> to retrieve, not null
+	 *
+	 * @return    The requested <code>Activity</code>
 	 */
 
 	@Override
 	public Activity fetchById (final Long id)
 	{
-		this.log.trace ("Fetch Activity (with Activity Data) for ID: {}", id);
+		this.log.trace ("fetchById: id={}", id);
 
-		Activity activity = this.manager.fetchById (id);
-
-		return activity;
+		return this.manager.fetchById (id);
 	}
 
 	/**
-	 * Retrieve a list of all of the entities from the underlying data store.
+	 * Retrieve a <code>List</code> of all of the <code>Activity</code>
+	 * instances in the <code>DataStore</code>.
 	 *
-	 * @return A list of objects.
+	 * @return A <code>List</code> of <code>Activity</code> instances
 	 */
 
 	@Override
 	public List<Activity> fetchAll ()
 	{
-		this.log.trace ("Fetch all activities (with activity data)");
+		this.log.trace ("fetchAll:");
 
-		List<Activity> activities = this.manager.fetchAll ();
-
-		return activities;
+		return this.manager.fetchAll ();
 	}
 
 	/**
-	 * Get a list of all of the activities which are associated with a particular
-	 * <code>ActivityType</code>.
+	 * Get a <code>List</code> of all of the <code>Activity</code> instances
+	 * which are associated with the specified <code>ActivityType</code>.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null
+	 *
+	 * @return      A <code>List</code> of <code>Activity</code> instances
 	 */
 
 	@Override
 	public List<Activity> fetchAllForType (final ActivityType type)
 	{
-		this.log.trace ("Fetch all Activities (with activity data) for ActivityType: {}", type);
+		this.log.trace ("fetchallForType: type={}", type);
 
-		List<Activity> activities = this.manager.fetchAllForType (type);
-
-		return activities;
+		return this.manager.fetchAllForType (type);
 	}
 }

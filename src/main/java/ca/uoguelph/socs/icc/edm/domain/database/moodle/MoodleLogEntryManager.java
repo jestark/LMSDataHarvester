@@ -19,9 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain.database.moodle;
 import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
@@ -59,7 +56,8 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 		 * Create an instance of the <code>MoodleLogEntryManager</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *               <code>DefaultLogEntryManager</code> will operate, not null
+		 *               <code>DefaultLogEntryManager</code> will operate, not
+		 *               null
 		 *
 		 * @return       The <code>MoodleLogEntryManager</code>
 		 */
@@ -70,9 +68,6 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 			return new MoodleLogEntryManager (datastore);
 		}
 	}
-
-	/** The log */
-	private final Logger log;
 
 	/** Reference to the <code>DefaultLogEntryManager</code> */
 	private final LogEntryManager manager;
@@ -90,21 +85,21 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 	/**
 	 * Create the <code>MoodleLogEntryManager</code>.
 	 *
-	 * @param  datastore The instance of the <code>DataStore</code> upon which the
-	 *                   <code>LogEntryManager</code> will operate, not null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which
+	 *                   the <code>LogEntryManager</code> will operate, not
+	 *                   null
 	 */
 
 	public MoodleLogEntryManager (final DataStore datastore)
 	{
 		super (LogEntry.class, datastore);
 
-		this.log = LoggerFactory.getLogger (MoodleLogEntryManager.class);
 		this.manager = new DefaultLogEntryManager (datastore);
 	}
 
 	/**
-	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable for
-	 * use with the <code>DataStore</code>.
+	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>LogEntryBuilder</code> instance
 	 */
@@ -116,7 +111,7 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 	}
 
 	/**
-	 * Retrieve an <code>LogEntry</code> from the <code>DataStore</code> which
+	 * Retrieve a <code>LogEntry</code> from the <code>DataStore</code> which
 	 * identifies the same as the specified <code>LogEntry</code>.
 	 *
 	 * @param  entry The <code>LogEntry</code> to retrieve, not null
@@ -134,10 +129,13 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 	}
 
 	/**
-	 * Retrieve an object from the data store based on its primary key.
+	 * Retrieve an <code>LogEntry</code> from the <code>DataStore</code> based
+	 * on its <code>DataStore</code> identifier.
 	 *
-	 * @param  id The value of the primary key of the object to retrieve, not null
-	 * @return    The requested object.
+	 * @param  id The <code>DataStore</code> idenifier of the
+	 *            <code>LogEntry</code> to retrieve, not null
+	 *
+	 * @return    The requested <code>LogEntry</code>
 	 */
 
 	public LogEntry fetchById (final Long id)
@@ -150,9 +148,10 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 	}
 
 	/**
-	 * Retrieve a list of all of the entities from the underlying data store.
+	 * Retrieve a <code>List</code> of all of the <code>LogEntry</code>
+	 * instances from the <code>DataStore</code>.
 	 *
-	 * @return A list of objects.
+	 * @return A <code>List</code> of <code>LogEntry</code> instances
 	 */
 
 	public List<LogEntry> fetchAll ()
@@ -165,17 +164,19 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 	}
 
 	/**
-	 * Retrieve a list of <code>LogEntry</code> objects, which are associated with
-	 * the specified course, from the underlying data-store.
+	 * Retrieve a list of <code>LogEntry</code> instances, which are associated
+	 * with the specified <code>Course</code>, from the <code>DataStore</code>.
 	 *
-	 * @param  course The <code>Course</code> for which the list of
-	 *                <code>LogEntry</code> objects should be retrieved, not null
-	 * @return        A list of <code>LogEntry</code> objects
+	 * @param  course The <code>Course</code> for which the <code>List</code>
+	 *                of <code>LogEntry</code> instances should be retrieved,
+	 *                not null
+	 *
+	 * @return        A <code>List</code> of <code>LogEntry</code> instances
 	 */
 
 	public List<LogEntry> fetchAllforCourse (final Course course)
 	{
-		this.log.trace ("Fetch all Log Entries (with activity data) for course: {}", course);
+		this.log.trace ("FetchAllForCourse: course={}", course);
 
 		List<LogEntry> entries = this.manager.fetchAllforCourse (course);
 

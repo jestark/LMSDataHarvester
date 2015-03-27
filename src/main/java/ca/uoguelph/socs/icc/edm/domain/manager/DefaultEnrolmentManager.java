@@ -21,9 +21,6 @@ import java.util.Map;
 
 import java.util.HashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
@@ -54,8 +51,8 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 		 * Create an instance of the <code>DefaultEnrolmentManager</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultEnrolmentManager</code> will operate, not
-		 *                   null
+		 *                   <code>DefaultEnrolmentManager</code> will operate,
+		 *                   not null
 		 * @return           The <code>DefaultEnrolmentManager</code>
 		 */
 
@@ -78,27 +75,22 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 		AbstractManager.registerManager (EnrolmentManager.class, DefaultEnrolmentManager.class, new Factory ());
 	}
 
-	/** The logger */
-	private final Logger log;
-
 	/**
 	 * Create the <code>DefaultEnrolmentManager</code>.
 	 *
-	 * @param  datastore The instance of the <code>DataStore</code> upon which the
-	 *                   <code>DefaultEnrolmentManager</code> will operate, not
-	 *                   null
+	 * @param  datastore The instance of the <code>DataStore</code> upon which
+	 *                   the <code>DefaultEnrolmentManager</code> will operate,
+	 *                   not null
 	 */
 
 	public DefaultEnrolmentManager (final DataStore datastore)
 	{
 		super (Enrolment.class, datastore);
-
-		this.log = LoggerFactory.getLogger (EnrolmentManager.class);
 	}
 
 	/**
-	 * Get an instance of the <code>EnrolmentBuilder</code> interface, suitable for use
-	 * with the <code>DataStore</code>.
+	 * Get an instance of the <code>EnrolmentBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
 	 *
 	 * @return An <code>EnrolmentBuilder</code> instance
 	 */
@@ -122,7 +114,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	@Override
 	public Enrolment fetch (final Enrolment enrolment)
 	{
-		this.log.trace ("Fetching Enrolment with the same identity as: {}", enrolment);
+		this.log.trace ("fetch: enrolment={}", enrolment);
 
 		if (enrolment == null)
 		{
@@ -152,7 +144,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 
 	public List<Enrolment> fetchAllForRole (final Role role)
 	{
-		this.log.trace ("Fetching all Enrolments with Role: {}", role);
+		this.log.trace ("fetchingAllForRole: role={}", role);
 
 		if (role == null)
 		{
@@ -177,6 +169,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 
 	public void addGrade (final Enrolment enrolment, final Activity activity, final Integer grade)
 	{
+		this.log.trace ("addGrade: enrolment={}, activity={}, grade={}", enrolment, activity, grade);
 	}
 
 	/**
@@ -188,6 +181,7 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 
 	public void addGrade (final Enrolment enrolment, final Grade grade)
 	{
+		this.log.trace ("addGrade: enrolment={}, grade={}", enrolment, grade);
 	}
 
 	/**
@@ -199,5 +193,6 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 
 	public void removeGrade (final Enrolment enrolment, final Grade grade)
 	{
+		this.log.trace ("removeGrade: enrolment={}, grade={}", enrolment, grade);
 	}
 }

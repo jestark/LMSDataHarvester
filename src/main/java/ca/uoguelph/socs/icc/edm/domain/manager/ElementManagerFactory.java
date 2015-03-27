@@ -39,13 +39,13 @@ import ca.uoguelph.socs.icc.edm.domain.ElementManager;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
- * Factory for creating <code>ElementManager</code> objects.  This class 
+ * Factory for creating <code>ElementManager</code> objects.  This class
  * requires all of the <code>ElementManager</code> implementations to register
  * a factory object (extending the <code>ManagerFactory</code> interface)
- * capable of instantiating and initializing the <code>ElementManager</code>.  
+ * capable of instantiating and initializing the <code>ElementManager</code>.
  * <p>
  * As a caching factory, this factory will ensure that the
- * is no more than one instance of a given <code>ElementManager</code> 
+ * is no more than one instance of a given <code>ElementManager</code>
  * implementation for a given <code>DataStorel</code> at any time.  If the
  * requested <code>Elementmanager</code> already exists then the cached copy
  * will returned, otherwise a new instance will be created.
@@ -85,15 +85,16 @@ final class ElementManagerFactory
 	 *
 	 * @param  <T>     The <code>ElementManager</code> type being registered
 	 * @param  manager The <code>ElementManager</code> interface class, not null
-	 * @param  impl    The <code>ElementManager</code> implementation class, not
-	 *                 null
+	 * @param  impl    The <code>ElementManager</code> implementation class,
+	 *                 not null
 	 * @param  factory The <code>ManagerFactory</code> used to create the
-	 *                 <code>ElementManager</code> implementation class, not null
+	 *                 <code>ElementManager</code> implementation class, not
+	 *                 null
 	 */
 
 	public <T extends ElementManager<? extends Element>> void registerFactory (final Class<T> manager, final Class<? extends T> impl, final ManagerFactory<T> factory)
 	{
-		this.log.trace ("Registering Class: {} ({})", impl, factory);
+		this.log.trace ("registerFactory: manager={}, impl={}, factory={}", manager, impl, factory);
 
 		assert manager != null : "manager is NULL";
 		assert impl != null : "impl is NULL";
@@ -109,14 +110,15 @@ final class ElementManagerFactory
 	/**
 	 * Create a <code>ElementManager</code> to act upon the specified
 	 * <code>DataStore</code>.  If the <code>ElementManager</code> already
-	 * exists in the cache, then the cached copy will be returned, otherwise a new
-	 * <code>ElementManager</code> will be created.
+	 * exists in the cache, then the cached copy will be returned, otherwise a
+	 * new <code>ElementManager</code> will be created.
 	 *
 	 * @param  <T>       The <code>ElementManager</code> type to return
 	 * @param  <U>       The <code>Element</code> represented by the
 	 *                   <code>ElementManager</code>
 	 * @param  element   The <code>Element</code> interface class, not null
-	 * @param  manager   The <code>ElementManager</code> interface class, not null
+	 * @param  manager   The <code>ElementManager</code> interface class, not
+	 *                   null
 	 * @param  datastore The <code>DataStore</code> upon which the
 	 *                   <code>ElementManager</code> will be acting, not null
 	 * @return           The <code>ElementManager</code>
@@ -125,22 +127,25 @@ final class ElementManagerFactory
 	@SuppressWarnings("unchecked")
 	public <T extends ElementManager<U>, U extends Element> T create (final Class<U> element, final Class<T> manager, final DataStore datastore)
 	{
-		this.log.debug ("Creating manager for element {}, using manager {}, on DataStore {}", element, manager, datastore);
+		this.log.trace ("create: element={}, manager={}, datastore={}", element, manager, datastore);
 
 		assert element != null : "element is NULL";
 		assert manager != null : "manager is NULL";
 		assert datastore != null : "datastore is NULL";
 
 		Class<?> impl = (datastore.getProfile ()).getManagerClass (element);
+		this.log.debug ("Creating ElementManager using implementation class: {}", impl);
 
 		Triple<DataStore, Class<?>, Class<?>> cacheKey = new ImmutableTriple<DataStore, Class<?>, Class<?>> (datastore, manager, impl);
 
 		if ((! this.cache.containsKey (cacheKey)) || ((this.cache.get (cacheKey)).get () == null))
 		{
+			this.log.debug ("Creating new ElementManager instance");
+
 			Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (manager, impl);
 
 			assert this.factories.containsKey (factoryKey) : "Manager implementation Class not registered: " + impl.getSimpleName ();
-			
+
 			this.cache.put (cacheKey, new WeakReference<ElementManager<? extends Element>> (((ManagerFactory<T>) this.factories.get (factoryKey)).create (datastore)));
 		}
 
@@ -148,17 +153,17 @@ final class ElementManagerFactory
 	}
 
 	/**
-	 * Remove all of the <code>ElementManager</code> instances for the specified
-	 * <code>DataStore</code> from the cache.
+	 * Remove all of the <code>ElementManager</code> instances for the
+	 * specified <code>DataStore</code> from the cache.
 	 *
 	 * @param  datastore The <code>DataStore</code> for which all of the cached
-	 *                   <code>ElementManager</code> instances are to be purged,
-	 *                   not null
+	 *                   <code>ElementManager</code> instances are to be
+	 *                   purged, not null
 	 */
 
 	public void remove (final DataStore datastore)
 	{
-		this.log.trace ("Removing all ElementManager instances for {}", datastore);
+		this.log.trace ("remove: datastore={}", datastore);
 
 		assert datastore != null : "datastore is NULL";
 
@@ -177,7 +182,7 @@ final class ElementManagerFactory
 
 	public void flush ()
 	{
-		this.log.trace ("Flushing cache");
+		this.log.trace ("flush:");
 
 		this.cache.clear ();
 	}
