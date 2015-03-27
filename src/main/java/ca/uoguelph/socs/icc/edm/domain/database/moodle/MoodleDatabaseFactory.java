@@ -39,10 +39,8 @@ import ca.uoguelph.socs.icc.edm.domain.core.RoleData;
 import ca.uoguelph.socs.icc.edm.domain.core.UserData;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActionManager;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivitySourceManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager;
 import ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager;
@@ -74,10 +72,10 @@ public final class MoodleDatabaseFactory extends DatabaseFactory
 	protected void buildProfile (DomainModelBuilder builder)
 	{
 		builder.setEntry (Action.class, false, ActionData.class, NullIdGenerator.class, DefaultActionManager.class);
-		builder.setEntry (Activity.class, true, ActivityInstance.class, NullIdGenerator.class, DefaultActivityManager.class);
+		builder.setEntry (Activity.class, true, ActivityInstance.class, NullIdGenerator.class, MoodleActivityManager.class);
 		builder.setEntry (ActivitySource.class, false, ActivitySourceData.class, NullIdGenerator.class, DefaultActivitySourceManager.class);
 		builder.setEntry (ActivityType.class, true, ActivityTypeData.class, NullIdGenerator.class, DefaultActivityTypeManager.class);
-		builder.setEntry (Course.class, true, CourseData.class, NullIdGenerator.class, DefaultCourseManager.class);
+		builder.setEntry (Course.class, true, CourseData.class, NullIdGenerator.class, MoodleCourseManager.class);
 		builder.setEntry (Enrolment.class, true, UserEnrolmentData.class, NullIdGenerator.class, DefaultEnrolmentManager.class);
 		builder.setEntry (Grade.class, true, GradedActivity.class, NullIdGenerator.class, null);
 		builder.setEntry (LogEntry.class, true, LogData.class, NullIdGenerator.class, DefaultLogEntryManager.class);

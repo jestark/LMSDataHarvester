@@ -277,6 +277,83 @@ public class MoodleActivity extends ActivityInstance
 	}
 
 	/**
+	 * Determine if there are <code>SubActivity</code> instances associated with
+	 * the <code>Activity</code> instance.
+	 *
+	 * @return <code>True</code> if the <code>Activity</code> instance has
+	 *         <code>SubActivity</code> instances associated with it.
+	 *         <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean hasSubActivities ()
+	{
+		return ((this.activity != null) && (this.activity.hasSubActivities ()));
+	}
+
+	/**
+	 * Get the <code>List</code> of <code>SubActivity</code> instances associated
+	 * with the <code>Actvity</code>.
+	 *
+	 * @return The <code>List</code> of <code>SubActivity</code> instances
+	 */
+
+	@Override
+	public List<SubActivity> getSubActivities ()
+	{
+		return (this.activity != null) ? this.activity.getSubActivities () : super.getSubActivities ();
+	}
+
+	/**
+	 * Get a reference to the <code>Activity</code>.
+	 *
+	 * @return The <code>Activity</code>, may be null
+	 */
+
+	public Activity getActivity ()
+	{
+		return this.activity;
+	}
+
+	/**
+	 * Set the internal <code>Activity</code> instance.  This method is intended
+	 * to be used by the <code>MoodleActivityManager</code> to set the
+	 * <code>Activity</code>.
+	 *
+	 * @param  activity The internal <code>Activity</code> instance, not null
+	 */
+
+	protected void setActivity (final Activity activity)
+	{
+		assert activity != null : "activity is NULL";
+
+		this.activity = activity;
+	}
+
+	/**
+	 * Get the name of the <code>Activity</code>.  Not all <code>Activity</code>
+	 * instances have names.  For those <code>Activity</code> instances which do
+	 * not have names, the name of the associated <code>ActivityType</code> will
+	 * be returned.
+	 *
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Activity</code>
+	 */
+
+	@Override
+	public String getName ()
+	{
+		String name = (this.getType ()).getName ();
+
+		if (this.activity != null)
+		{
+			name = this.activity.getName ();
+		}
+
+		return name;
+	}
+
+	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
 	 * containing the instance specific data for the <code>Activity</code>.
 	 *

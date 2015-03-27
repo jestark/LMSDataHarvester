@@ -105,6 +105,35 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 		this.manager = new DefaultCourseManager (datastore);
 	}
 
+	protected Course processCourse (final Course course)
+	{
+		this.log.trace ("processCourse: course={}", course);
+
+		assert course != null : "course is NULL";
+
+		ActivityManager manager = this.getManager (Activity.class, ActivityManager.class);
+
+		assert manager instanceof MoodleActivityManager : "MoodleCourseManager MUST be used with MoodleActivityManager";
+
+		((MoodleActivityManager) manager).processActivities (course.getActivities ());
+
+		return course;
+	}
+
+	protected List<Course> processCourses (final List<Course> courses)
+	{
+		this.log.trace ("processCourses: courses={}", courses);
+
+		assert courses != null : "courses is NULL";
+
+		for (Course course : courses)
+		{
+			this.processCourse (course);
+		}
+
+		return courses;
+	}
+
 	/**
 	 * Get an instance of the <code>CourseBuilder</code> interface, suitable
 	 * for use with the <code>DataStore</code>.
@@ -148,7 +177,7 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	{
 		this.log.trace ("fetchById: id={}", id);
 
-		return this.manager.fetchById (id);
+		return this.processCourse (this.manager.fetchById (id));
 	}
 
 	/**
@@ -162,7 +191,7 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	{
 		this.log.trace ("fetchAll:");
 
-		return this.manager.fetchAll ();
+		return this.processCourses (this.manager.fetchAll ());
 	}
 
 	/**
@@ -179,7 +208,7 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	{
 		this.log.trace ("fetchAllForOffering: semester={}, year={}", semester, year);
 
-		return this.manager.fetchAllForOffering (semester, year);
+		return this.processCourses (this.manager.fetchAllForOffering (semester, year));
 	}
 
 	/**
@@ -198,7 +227,7 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	{
 		this.log.trace ("fetchAllForOffering: name={}, semester={}, year={}", name, semester, year);
 
-		return this.manager.fetchAllForOffering (name, semester, year);
+		return this.processCourses (this.manager.fetchAllForOffering (name, semester, year));
 	}
 
 	/**
@@ -215,6 +244,6 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	{
 		this.log.trace ("FetchByOffering: name={}, semester={}, year={}", name, semester, year);
 
-		return this.manager.fetchByOffering (name, semester, year);
+		return this.processCourse (this.manager.fetchByOffering (name, semester, year));
 	}
 }

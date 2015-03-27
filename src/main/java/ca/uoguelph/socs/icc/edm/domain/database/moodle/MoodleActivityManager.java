@@ -105,6 +105,49 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 		this.manager = new DefaultActivityManager (datastore);
 	}
 
+	protected Activity processActivity (final Activity activity)
+	{
+		this.log.trace ("processActivity: activity={}", activity);
+
+		assert activity != null : "activity is NULL";
+
+		if ((activity instanceof MoodleActivity) && (((MoodleActivity) activity).getActivity () == null))
+		{
+			Class<? extends Element> impl = AbstractActivity.getActivityClass (new ActivityTypeData (SOURCE, (activity.getType ()).getName ()));
+
+			this.log.debug ("Loading Activity data: ActivityType: {} implementation class: {}", (activity.getType ()).getName (), impl);
+
+			Activity adata = this.fetchQuery (impl).query (((MoodleActivity) activity).getInstanceId ());
+
+			this.log.debug ("Loaded Activity data: {}", adata);
+
+			if (adata != null)
+			{
+				((MoodleActivity) activity).setActivity (adata);
+			}
+			else
+			{
+				this.log.warn ("Loaded NULL Activity: ActivityType={}, implementation class={}, instance ID={}", (activity.getType ()).getName (), impl, ((MoodleActivity) activity).getInstanceId ());
+			}
+		}
+
+		return activity;
+	}
+
+	protected List<Activity> processActivities (final List<Activity> activities)
+	{
+		this.log.trace ("processActivities: activities={}", activities);
+
+		assert activities != null : "activities is NULL";
+
+		for (Activity activity : activities)
+		{
+			this.processActivity (activity);
+		}
+
+		return activities;
+	}
+
 	/**
 	 * Get an instance of the <code>ActivityBuilder</code> interface, suitable for
 	 * use with the <code>DataStore</code>.
@@ -191,7 +234,7 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 	{
 		this.log.trace ("fetch: activity={}", activity);
 
-		return this.manager.fetch (activity);
+		return this.processActivity (this.manager.fetch (activity));
 	}
 
 	/**
@@ -209,7 +252,7 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 	{
 		this.log.trace ("fetchById: id={}", id);
 
-		return this.manager.fetchById (id);
+		return this.processActivity (this.manager.fetchById (id));
 	}
 
 	/**
@@ -224,7 +267,7 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 	{
 		this.log.trace ("fetchAll:");
 
-		return this.manager.fetchAll ();
+		return this.processActivities (this.manager.fetchAll ());
 	}
 
 	/**
@@ -241,6 +284,6 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 	{
 		this.log.trace ("fetchallForType: type={}", type);
 
-		return this.manager.fetchAllForType (type);
+		return this.processActivities (this.manager.fetchAllForType (type));
 	}
 }
