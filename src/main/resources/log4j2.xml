@@ -7,9 +7,9 @@
 		<File name="App" filename="logs/app.log" append="false">
 			<PatternLayout pattern="%d{ABSOLUTE} %-5level %logger{36} - %msg%n"/>
 		</File>
-		<File name="hibernate" filename="logs/hibernate.log" append="false">
+		<!--		<File name="hibernate" filename="logs/hibernate.log" append="false">
 			<PatternLayout pattern="%d{ABSOLUTE} %-5level %logger{36} - %msg%n"/>
-		</File>
+		</File>-->
 	</Appenders>
 	<Loggers>
 		<Logger name="ca.uoguelph.socs.icc.edm" level="ALL" additivity="false">
@@ -17,15 +17,15 @@
 			<AppenderRef ref="Console" level="WARN"/>
 		</Logger>
 		<Logger name="org.hibernate.loader" level="DEBUG" additivity="false">
-			<AppenderRef ref="hibernate" level="DEBUG"/>
+			<AppenderRef ref="App" level="DEBUG"/>
 			<AppenderRef ref="Console" level="WARN"/>
 		</Logger>
 		<Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
-			<AppenderRef ref="hibernate" level="DEBUG"/>
+			<AppenderRef ref="App" level="DEBUG"/>
 			<AppenderRef ref="Console" level="WARN"/>
 		</Logger>
-		<Logger name="org.hibernate" level="INFO" additivity="false">
-			<AppenderRef ref="hibernate" level="INFO"/>
+		<Logger name="org.hibernate" level="DEBUG" additivity="false">
+			<AppenderRef ref="App" level="DEBUG"/>
 			<AppenderRef ref="Console" level="WARN"/>
 		</Logger>
 		<Root level="error">
