@@ -24,14 +24,11 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * <code>ElementFactory</code> map.
- * 
+ *
  * @author  James E.Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory
@@ -42,8 +39,11 @@ public final class MappedElementFactory
 	/** The logger */
 	private final Logger log;
 
+	/** Implementation to interface mapping */
+	private final Map<Class<? extends Element>, Class<? extends ElementFactory<? extends Element>>> interfaces;
+
 	/** <code>ElementFactory</code> instances */
-	private final Map<Pair<Class<?>, Class<?>>, ElementFactory<? extends Element>> factories;
+	private final Map<Class<? extends Element>, ElementFactory<? extends Element>> factories;
 
 	/**
 	 * Create the <code>MappedElementFactory</code>.
@@ -53,51 +53,61 @@ public final class MappedElementFactory
 	{
 		this.log = LoggerFactory.getLogger (MappedElementFactory.class);
 
-		this.factories = new HashMap<Pair<Class<?>, Class<?>>, ElementFactory<? extends Element>> ();
+		this.interfaces = new HashMap<Class<? extends Element>, Class<? extends ElementFactory<? extends Element>>> ();
+		this.factories = new HashMap<Class<? extends Element>, ElementFactory<? extends Element>> ();
 	}
 
 	/**
 	 * Register an <code>ElementFactory</code> instance.
 	 *
-	 * @param  factory The <code>ElementFactory</code> interface class, not null
-	 * @param  element The <code>Element</code> implementation class, not null
-	 * @param  impl    The <code>ElementFactory</code> instance, not null
+	 * @param  factoryClass The <code>ElementFactory</code> interface class,
+	 *                      not null
+	 * @param  elementClass The <code>Element</code> implementation class, not
+	 *                      null
+	 * @param  factory      The <code>ElementFactory</code> instance, not null
 	 */
 
-	public <T extends ElementFactory<U>, U extends Element> void registerFactory (final Class<T> factory, final Class<? extends U> element, final T impl)
+	public <T extends ElementFactory<U>, U extends Element> void registerFactory (final Class<T> factoryClass, final Class<? extends U> elementClass, final T factory)
 	{
-		this.log.trace ("Registering ElementFactory: {} ({}) for element {}", factory, impl, element);
+		this.log.trace ("registerFactory: factoryClass={}, elementClass={}, impl={}", factoryClass, elementClass, factory);
 
+		assert factoryClass != null : "factoryClass is NULL";
+		assert elementClass != null : "elementClass is NULL";
 		assert factory != null : "factory is NULL";
-		assert element != null : "element is NULL";
-		assert impl != null : "impl is NULL";
+		assert (! this.factories.containsKey (elementClass)) : "Class already registered: " + elementClass.getSimpleName ();
 
-		Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (factory, element);
-
-		assert (! this.factories.containsKey (factoryKey)) : "Class already registered: " + element.getSimpleName ();
-
-		this.factories.put (factoryKey, impl);
+		this.interfaces.put (elementClass, factoryClass);
+		this.factories.put (elementClass, factory);
 	}
 
 	/**
 	 * Get the <code>ElementFactory</code> instance for the specified
 	 * <code>Element</code> implementation class.
 	 *
-	 * @param  factory The <code>ElementFactory</code> interface class, not null
-	 * @param  element The <code>Element</code> implmentation class, not null
+	 * @param  factoryClass The <code>ElementFactory</code> interface class,
+	 *                      not null
+	 * @param  elementClass The <code>Element</code> implmentation class, not
+	 *                      null
 	 *
 	 * @return The <code>ElementFactory</code> instance
 	 */
 
-	public <T extends ElementFactory<U>, U extends Element> T getFactory (final Class<T> factory, final Class<? extends Element> element)
+	public <T extends ElementFactory<U>, U extends Element> T getFactory (final Class<T> factoryClass, final Class<? extends Element> elementClass)
 	{
-		assert factory != null : "factory is NULL";
-		assert element != null : "element is NULL";
+		this.log.trace ("getFactory: factoryClass={}, elementClass={}", factoryClass, elementClass);
 
-		Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (factory, element);
+		assert factoryClass != null : "factoryClass is NULL";
+		assert elementClass != null : "elementClass is NULL";
+		assert factoryClass.isAssignableFrom (this.interfaces.get (elementClass)) : "Element not registered for factory:" + factoryClass.getSimpleName () + " (" + elementClass.getSimpleName () + ")";
+		assert this.factories.containsKey (elementClass) : "Class not registered: " + elementClass.getSimpleName ();
 
-		assert this.factories.containsKey (factoryKey) : "Class not registered: " + element.getSimpleName ();
+		T factory = null;
 
-		return factory.cast (this.factories.get (factoryKey));
+		if ((this.interfaces.containsKey (elementClass)) && (factoryClass.isAssignableFrom (this.interfaces.get (elementClass))))
+		{
+			factory = factoryClass.cast (this.factories.get (elementClass));
+		}
+
+		return factory;
 	}
 }
