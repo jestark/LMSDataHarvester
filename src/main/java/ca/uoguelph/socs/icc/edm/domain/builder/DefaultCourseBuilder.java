@@ -16,9 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
@@ -60,9 +57,6 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseEl
 		}
 	}
 
-	/** The logger */
-	private final Logger log;
-
 	/** The name of the course */
 	private String name;
 
@@ -73,8 +67,8 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseEl
 	private Integer year;
 
 	/**
-	 * static initializer to register the <code>DefaultCourseBuilder</code> with the
-	 * factory
+	 * static initializer to register the <code>DefaultCourseBuilder</code>
+	 * with the factory
 	 */
 
 	static
@@ -93,8 +87,6 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseEl
 	protected DefaultCourseBuilder (final ManagerProxy<Course> manager)
 	{
 		super (Course.class, CourseElementFactory.class, manager);
-
-		this.log = LoggerFactory.getLogger (DefaultCourseBuilder.class);
 	}
 
 	@Override
@@ -122,7 +114,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseEl
 
 		if ((this.element == null) || (! this.name.equals (this.element.getName ())) || (! this.semester.equals (this.element.getSemester ())) || (! this.year.equals (this.element.getYear ())))
 		{
-			result = (getFactory (CourseElementFactory.class, this.manager.getElementImplClass (Course.class))).create (this.name, this.semester, this.year);
+			result = this.factory.create (this.name, this.semester, this.year);
 		}
 
 		return result;
@@ -162,12 +154,13 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseEl
 	 * its parameters from the specified <code>Course</code> instance.  The
 	 * parameters are validated as they are set.
 	 *
-	 * @param  course                   The <code>Course</code> to load into the
-	 *                                  <code>CourseBuilder</code>, not null
+	 * @param  course                   The <code>Course</code> to load into
+	 *                                  the <code>CourseBuilder</code>, not
+	 *                                  null
 	 *
 	 * @throws IllegalArgumentException If any of the fields in the
-	 *                                  <code>Course</code> instance to be loaded
-	 *                                  are not valid
+	 *                                  <code>Course</code> instance to be
+	 *                                  loaded are not valid
 	 */
 
 	@Override
@@ -197,8 +190,8 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseEl
 	/**
 	 * Set the name of the <code>Course</code>.
 	 *
-	 * @param  name                     The name of the <code>Course</code>, not
-	 *                                  null
+	 * @param  name                     The name of the <code>Course</code>,
+	 *                                  not null
 	 *
 	 * @return                          This <code>CourseBuilder</code>
 	 * @throws IllegalArgumentException If the name is an empty
@@ -225,7 +218,8 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseEl
 	}
 
 	/**
-	 * Get the <code>Semester</code> in which the <code>Course</code> was offered.
+	 * Get the <code>Semester</code> in which the <code>Course</code> was
+	 * offered.
 	 *
 	 * @return The <code>Semester</code> of offering
 	 */
@@ -237,7 +231,8 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseEl
 	}
 
 	/**
-	 * Set the <code>Semester</code> in which the <code>Course</code> was offered.
+	 * Set the <code>Semester</code> in which the <code>Course</code> was
+	 * offered.
 	 *
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 *

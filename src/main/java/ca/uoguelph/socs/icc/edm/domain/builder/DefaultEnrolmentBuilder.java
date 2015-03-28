@@ -16,9 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
@@ -42,7 +39,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		 * <code>EnrolmentManager</code> to perform operations on the
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 * @param  manager The <code>ManagerProxy</code> used to the
 		 *                 <code>EnrolmentManager</code> instance, not null
 		 *
 		 * @return         The <code>EnrolmentBuilder</code>
@@ -54,9 +51,6 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			return new DefaultEnrolmentBuilder (manager);
 		}
 	}
-
-	/** The logger */
-	private final Logger log;
 
 	/** The course in which the user is enrolled */
 	private Course course;
@@ -74,8 +68,8 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	private Boolean usable;
 
 	/**
-	 * static initializer to register the <code>DefaultEnrolmentBuilder</code> with the
-	 * factory
+	 * static initializer to register the <code>DefaultEnrolmentBuilder</code>
+	 * with the factory
 	 */
 
 	static
@@ -86,7 +80,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	/**
 	 * Create the <code>DefaultEnrolmentBuilder</code>.
 	 *
-	 * @param  manager The <code>EnrolmentManager</code> which the 
+	 * @param  manager The <code>EnrolmentManager</code> which the
 	 *                 <code>EnrolmentBuilder</code> will use to operate on the
 	 *                 <code>DataStore</code>
 	 */
@@ -94,8 +88,6 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	protected DefaultEnrolmentBuilder (final ManagerProxy<Enrolment> manager)
 	{
 		super (Enrolment.class, EnrolmentElementFactory.class, manager);
-
-		this.log = LoggerFactory.getLogger (DefaultEnrolmentBuilder.class);
 	}
 
 	@Override
@@ -160,7 +152,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	 *                                  the <code>EnrolmentBuilder</code>, not
 	 *                                  null
 	 *
-	 * @throws IllegalArgumentException If any of the fields in the 
+	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>Enrolment</code> instance to be
 	 *                                  loaded are not valid
 	 */
@@ -168,7 +160,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	@Override
 	public void load (final Enrolment enrolment)
 	{
-		this.log.trace ("Load Enrolment: {}", enrolment);
+		this.log.trace ("load: {}", enrolment);
 
 		super.load (enrolment);
 		this.setCourse (enrolment.getCourse ());
@@ -254,26 +246,6 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		}
 
 		this.grade = grade;
-
-		return this;
-	}
-	
-	@Override
-	public Boolean isUsable ()
-	{
-		return this.usable;
-	}
-
-	@Override
-	public EnrolmentBuilder setUsable (final Boolean usable)
-	{
-		if (usable == null)
-		{
-			this.log.error ("Usable is NULL");
-			throw new NullPointerException ("Usable is NULL");
-		}
-
-		this.usable = usable;
 
 		return this;
 	}

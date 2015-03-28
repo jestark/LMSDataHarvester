@@ -24,7 +24,14 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
-public final class DefaultGenericActivityBuilder extends DefaultActivityBuilder
+/**
+ * Default implementation of the <code>ActivityBuilder</code>.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
+
+public final class DefaultGenericActivityBuilder extends DefaultActivityBuilder<GenericActivityElementFactory>
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
@@ -39,7 +46,7 @@ public final class DefaultGenericActivityBuilder extends DefaultActivityBuilder
 		 * <code>ActivityManager</code> to perform operations on the
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 * @param  manager The <code>ManagerProxy</code> used to the
 		 *                 <code>ActivityManager</code> instance, not null
 		 *
 		 * @return         The <code>ActivityBuilder</code>
@@ -52,62 +59,41 @@ public final class DefaultGenericActivityBuilder extends DefaultActivityBuilder
 		}
 	}
 
-	/** The logger */
-	private final Logger log;
+	/**
+	 * static initializer to register the
+	 * <code>DefaultGenericActivityBuilder</code> with the factory
+	 */
+
+	static
+	{
+		AbstractBuilder.registerBuilder (ActivityBuilder.class, DefaultGenericActivityBuilder.class, new Factory ());
+	}
 
 	/**
 	 * Create the <code>DefaultGenericActivityBuilder</code>.
 	 *
-	 * @param  manager The <code>GenericActivityManager</code> which the 
-	 *                 <code>GenericActivityBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 * @param  manager The <code>GenericActivityManager</code> which the
+	 *                 <code>GenericActivityBuilder</code> will use to operate
+	 *                 on the <code>DataStore</code>
 	 */
 
 	public DefaultGenericActivityBuilder (final ManagerProxy<Activity> manager)
 	{
-		super (manager);
-
-		this.log = LoggerFactory.getLogger (DefaultGenericActivityBuilder.class);
+		super (GenericActivityElementFactory.class, manager);
 	}
 
 	@Override
 	protected Activity buildElement ()
 	{
-		this.log.trace ("Building Generic Activity");
+		this.log.trace ("buildElement:");
 
-		return super.build (); 
-	}
+		Activity result = this.element;
 
-	/**
-	 * Load a <code>Activity</code> instance into the
-	 * <code>ActivityBuilder</code>.  This method resets the
-	 * <code>ActivityBuilder</code> and initializes all of its parameters from the
-	 * specified <code>Activity</code> instance.  The parameters are validated as
-	 * they are set.
-	 *
-	 * @param  activity                 The <code>Activity</code> to load into the
-	 *                                  <code>ActivityBuilder</code>, not null
-	 *
-	 * @throws IllegalArgumentException If any of the fields in the 
-	 *                                  <code>Activity</code> instance to be
-	 *                                  loaded are not valid
-	 */
+		if ((this.element == null) || (! this.course.equals (this.element.getCourse ())))
+		{
+			result = this.factory.create (this.type, this.course);
+		}
 
-	@Override
-	public void load (final Activity activity)
-	{
-		this.log.trace ("Load Activity: {}", activity);
-
-		super.load (activity);
-	}
-	
-	@Override
-	protected void postInsert ()
-	{
-	}
-
-	@Override
-	protected void postRemove ()
-	{
+		return result;
 	}
 }

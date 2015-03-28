@@ -16,24 +16,28 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroup;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMember;
-import ca.uoguelph.socs.icc.edm.domain.ActivityGroupMemberBuilder;
+import ca.uoguelph.socs.icc.edm.domain.ActivityManager;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
-public final class DefaultActivityGroupMemberBuilder extends AbstractBuilder<Activity, ActivityGroupMemberElementFactory> implements ActivityGroupMemberBuilder
+/**
+ * Default implementation of the <code>SubActivityBuilder</code>.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
+
+public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity, SubActivityElementFactory> implements SubActivityBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultActivityGroupMemberBuilder</code>.
+	 * <code>DefaultSubActivityBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<Activity, ActivityGroupMemberBuilder>
+	private static class Factory implements BuilderFactory<Activity, SubActivityBuilder>
 	{
 		/**
 		 * Create the <code>ElementBuilder</code>.  The supplied
@@ -48,60 +52,94 @@ public final class DefaultActivityGroupMemberBuilder extends AbstractBuilder<Act
 		 */
 
 		@Override
-		public ActivityGroupMemberBuilder create (final ManagerProxy<Activity> manager)
+		public SubActivityBuilder create (final ManagerProxy<Activity> manager)
 		{
-			return new DefaultActivityGroupMemberBuilder (manager);
+			return new DefaultSubActivityBuilder (manager);
 		}
 	}
 
-	/** The logger */
-	private final Logger log;
-
 	/** The parent <code>Activity</code> */
-	private ActivityGroup parent;
+	private final Activity parent;
 
 	/** The name of the <code>Activity</code> */
 	private String name;
 
 	/**
-	 * Create the <code>DefaultActivityGroupMemberBuilder</code>.
+	 * static initializer to register the
+	 * <code>DefaultSubActivityBuilder</code> with the factory
+	 */
+
+	static
+	{
+		AbstractBuilder.registerBuilder (SubActivityBuilder.class, DefaultSubActivityBuilder.class, new Factory ());
+	}
+
+	/**
+	 * Create the <code>DefaultSubActivityBuilder</code>.
 	 *
-	 * @param  manager The <code>ActivityGroupMemberManager</code> which the
+	 * @param  manager The <code>SubActivityManager</code> which the
 	 *                 <code>ActivityGroupBuilderBuilder</code> will use to
 	 *                 operate on the <code>DataStore</code>
 	 */
 
-	public DefaultActivityGroupMemberBuilder (final ManagerProxy<Activity> manager)
+	public DefaultSubActivityBuilder (final ManagerProxy<Activity> manager)
 	{
-		super (Activity.class, ActivityGroupMemberElementFactory.class, manager);
-		this.log = LoggerFactory.getLogger (DefaultActivityGroupMemberBuilder.class);
+		super (Activity.class, SubActivityElementFactory.class, manager);
+
+		this.parent = this.validateParent ((Activity) this.manager.getArgument ());
 	}
 
 	@Override
 	protected Activity buildElement ()
 	{
-		return null;
+		this.log.trace ("buildElement:");
+
+		if (this.name == null)
+		{
+			this.log.error ("Can not build:  The name of the Activity Group Member is not set");
+			throw new IllegalStateException ("name not set");
+		}
+
+		Activity result = this.element;
+
+		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
+		{
+			result = this.factory.create (this.parent, this.name);
+		}
+
+		return result;
 	}
 
 	@Override
 	protected void postInsert ()
 	{
+		this.log.trace ("postInsert:");
+
+		AbstractActivityElementFactory factory = AbstractBuilder.getFactory (AbstractActivityElementFactory.class, this.parent.getClass ());
+
+		factory.addSubActivity (this.parent, ((SubActivity) this.element));
 	}
 
 	@Override
 	protected void postRemove ()
 	{
+		this.log.trace ("postremove:");
+
+		AbstractActivityElementFactory factory = AbstractBuilder.getFactory (AbstractActivityElementFactory.class, this.parent.getClass ());
+
+		factory.removeSubActivity (this.parent, ((SubActivity) this.element));
 	}
 
 	/**
 	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
+	 * fields, with the exception of the parent <code>ActivityGroup</code> for
+	 * the <code>Element</code> to be built to <code>null</code>.
 	 */
 
 	@Override
 	public void clear ()
 	{
-		this.log.trace ("Reseting the builder");
+		this.log.trace ("clear:");
 
 		super.clear ();
 		this.name = null;
@@ -110,12 +148,13 @@ public final class DefaultActivityGroupMemberBuilder extends AbstractBuilder<Act
 	/**
 	 * Load a <code>Activity</code> instance into the
 	 * <code>ActivityBuilder</code>.  This method resets the
-	 * <code>ActivityBuilder</code> and initializes all of its parameters from the
-	 * specified <code>Activity</code> instance.  The parameters are validated as
-	 * they are set.
+	 * <code>ActivityBuilder</code> and initializes all of its parameters from
+	 * the specified <code>Activity</code> instance.  The parameters are
+	 * validated as they are set.
 	 *
-	 * @param  activity                 The <code>Activity</code> to load into the
-	 *                                  <code>ActivityBuilder</code>, not null
+	 * @param  activity                 The <code>Activity</code> to load into
+	 *                                  the <code>ActivityBuilder</code>, not
+	 *                                  null
 	 *
 	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>Activity</code> instance to be
@@ -125,32 +164,97 @@ public final class DefaultActivityGroupMemberBuilder extends AbstractBuilder<Act
 	@Override
 	public void load (final Activity activity)
 	{
-		this.log.trace ("Load ActivityGroupMember: {}", activity);
+		this.log.trace ("load: activity={}", activity);
+
+		if (! this.parent.equals (((SubActivity) activity).getParent ()))
+		{
+			this.log.error ("Can not load:  Parent activity instances are not equal");
+			throw new IllegalArgumentException ("Parent activity instances are different");
+		}
 
 		super.load (activity);
 		this.setName (activity.getName ());
-
-		// parent??
 	}
 
+	/**
+	 * Get the name of the <code>Activity</code>.
+	 *
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>SubActivity</code>
+	 */
+
+	@Override
 	public String getName ()
 	{
 		return this.name;
 	}
 
-	public void setName (final String name)
+	/**
+	 * Set the name of the <code>SubActivity</code>.
+	 *
+	 * @param  name                     The name of the
+	 *                                  <code>SubActivity</code>, not null
+	 *
+	 * @return                          This <code>SubActivityBuilder</code>
+	 * @throws IllegalArgumentException If the name is an empty
+	 */
+
+	@Override
+	public SubActivityBuilder setName (final String name)
 	{
+		this.log.trace ("setName: name={}", name);
+
 		if (name == null)
 		{
 			this.log.error ("Attempting to set a NULL name");
 			throw new NullPointerException ();
 		}
 
+		if (name.length () == 0)
+		{
+			this.log.error ("name is an empty string");
+			throw new IllegalArgumentException ("name is empty");
+		}
+
 		this.name = name;
+
+		return this;
 	}
 
-	public ActivityGroup getParent ()
+	/**
+	 * Get the parent <code>Activity</code> instance for the
+	 * <code>SubActivity</code> instance.
+	 *
+	 * @return The parent <code>Activity</code>
+	 */
+
+	@Override
+	public Activity getParent ()
 	{
 		return this.parent;
+	}
+
+	/**
+	 * Validate the parent <code>Activity</code>.
+	 *
+	 * @param  parent The parent <code>Activity</code>, not null
+	 *
+	 * @return        A reference to the parent activity in the
+	 *                <code>DataStore</code>
+	 */
+
+	private Activity validateParent (final Activity parent)
+	{
+		assert parent != null : "parent is NULL";
+
+		Activity nparent = (this.manager.getManager (Activity.class, ActivityManager.class)).fetch (parent);
+
+		if (nparent == null)
+		{
+			this.log.error ("The parent Activity does not exist in the DataStore: {}", parent);
+			throw new IllegalArgumentException ("Activity is not in the DataStore");
+		}
+
+		return nparent;
 	}
 }

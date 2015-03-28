@@ -16,9 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 
@@ -46,7 +43,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementF
 		 * <code>UserManager</code> to perform operations on the
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 * @param  manager The <code>ManagerProxy</code> used to the
 		 *                 <code>UserManager</code> instance, not null
 		 *
 		 * @return         The <code>UserBuilder</code>
@@ -58,9 +55,6 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementF
 			return new DefaultUserBuilder (manager);
 		}
 	}
-
-	/** The logger */
-	private final Logger log;
 
 	/** The user's (student) ID number */
 	private Integer idnumber;
@@ -75,8 +69,8 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementF
 	private String username;
 
 	/**
-	 * static initializer to register the <code>DefaultUserBuilder</code> with the
-	 * factory
+	 * static initializer to register the <code>DefaultUserBuilder</code> with
+	 * the factory
 	 */
 
 	static
@@ -94,7 +88,6 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementF
 	{
 		super (User.class, UserElementFactory.class, manager);
 
-		this.log = LoggerFactory.getLogger (DefaultUserBuilder.class);
 		this.clear ();
 	}
 
@@ -181,15 +174,15 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementF
 	}
 
 	/**
-	 * Load a <code>User</code> instance into the <code>UserBuilder</code>.  This
-	 * method resets the <code>UserBuilder</code> and initializes all of its
-	 * parameters from the specified <code>User</code> instance.  The parameters
-	 * are validated as they are set.
+	 * Load a <code>User</code> instance into the <code>UserBuilder</code>.
+	 * This method resets the <code>UserBuilder</code> and initializes all of
+	 * its parameters from the specified <code>User</code> instance.  The
+	 * parameters are validated as they are set.
 	 *
 	 * @param  user                     The <code>User</code> to load into the
 	 *                                  <code>UserBuilder</code>, not null
 	 *
-	 * @throws IllegalArgumentException If any of the fields in the 
+	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>User</code> instance to be loaded
 	 *                                  are not valid
 	 */
@@ -214,9 +207,10 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementF
 
 	/**
 	 * Get the (student) ID number of the <code>User</code>.  This will be the
-	 * student number, or a similar identifier used to track the <code>User</code>
-	 * by the institution from which the data was harvested.  While the ID number
-	 * is not used as the database identifier it is expected to be unique.
+	 * student number, or a similar identifier used to track the
+	 * <code>User</code> by the institution from which the data was harvested.
+	 * While the ID number is not used as the database identifier it is
+	 * expected to be unique.
 	 *
 	 * @return An Integer representation of the ID number
 	 */
@@ -316,8 +310,8 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementF
 	/**
 	 * Set the last name of the <code>User</code>.
 	 *
-	 * @param  lastname                 The lastname of the <code>User</code>, not
-	 *                                  null
+	 * @param  lastname                 The lastname of the <code>User</code>,
+	 *                                  not null
 	 *
 	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If the lastname is an empty
@@ -344,10 +338,10 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementF
 	}
 
 	/**
-	 * Get the username for the <code>User</code>.  This will be the username that
-	 * the <code>User</code> used to access the LMS from which the data associated
-	 * with the <code>User</code> was harvested.  The username is expected to be
-	 * unique.
+	 * Get the username for the <code>User</code>.  This will be the username
+	 * that the <code>User</code> used to access the LMS from which the data
+	 * associated with the <code>User</code> was harvested.  The username is
+	 * expected to be unique.
 	 *
 	 * @return A <code>String</code> containing the username for the
 	 *         <code>User</code>
@@ -362,8 +356,8 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementF
 	/**
 	 * Set the username of the <code>User</code>.
 	 *
-	 * @param  username                 The username of the <code>User</code>, not
-	 *                                  null
+	 * @param  username                 The username of the <code>User</code>,
+	 *                                  not null
 	 *
 	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If the username is an empty

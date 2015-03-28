@@ -20,9 +20,6 @@ import java.util.Set;
 
 import java.util.HashSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySourceManager;
@@ -46,7 +43,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 		 * <code>ActivityTypeManager</code> to perform operations on the
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 * @param  manager The <code>ManagerProxy</code> used to the
 		 *                 <code>ActivityTypeManager</code> instance, not null
 		 *
 		 * @return         The <code>ActivityTypeBuilder</code>
@@ -59,9 +56,6 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 		}
 	}
 
-	/** The logger */
-	private final Logger log;
-
 	/** The source of the <code>ActivityType</code> */
 	private ActivitySource source;
 
@@ -72,8 +66,8 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	private Set<Action> actions;
 
 	/**
-	 * static initializer to register the <code>DefaultActivityTypeBuilder</code> with the
-	 * factory
+	 * static initializer to register the
+	 * <code>DefaultActivityTypeBuilder</code> with the factory
 	 */
 
 	static
@@ -85,15 +79,13 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	 * Create the <code>DefaultActivityTypeBuilder</code>.
 	 *
 	 * @param  manager The <code>ActivityTypeManager</code> which the
-	 *                 <code>ActivityTypeBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 *                 <code>ActivityTypeBuilder</code> will use to operate on
+	 *                 the <code>DataStore</code>
 	 */
 
 	protected DefaultActivityTypeBuilder (final ManagerProxy<ActivityType> manager)
 	{
 		super (ActivityType.class, ActivityTypeElementFactory.class, manager);
-
-		this.log = LoggerFactory.getLogger (DefaultActivityTypeBuilder.class);
 	}
 
 	@Override
@@ -115,7 +107,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 
 		if ((this.element == null) || (! this.source.equals (this.element.getSource ())) || (! this.name.equals (this.element.getName ())))
 		{
-			result = (getFactory (ActivityTypeElementFactory.class, this.manager.getElementImplClass (ActivityType.class))).create (this.source, this.name);
+			result = this.factory.create (this.source, this.name);
 		}
 
 		return null;
@@ -149,23 +141,24 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	/**
 	 * Load a <code>ActivityType</code> instance into the
 	 * <code>ActivityTypeBuilder</code>.  This method resets the
-	 * <code>ActivityTypeBuilder</code> and initializes all of its parameters from
-	 * the specified <code>ActivityType</code> instance.  The parameters are
-	 * validated as they are set.
+	 * <code>ActivityTypeBuilder</code> and initializes all of its parameters
+	 * from the specified <code>ActivityType</code> instance.  The parameters
+	 * are validated as they are set.
 	 *
-	 * @param  type                     The <code>ActivityType</code> to load into
-	 *                                  the <code>ActivityTypeBuilder</code>, not
+	 * @param  type                     The <code>ActivityType</code> to load
+	 *                                  into the
+	 *                                  <code>ActivityTypeBuilder</code>, not
 	 *                                  null
 	 *
-	 * @throws IllegalArgumentException If any of the fields in the 
-	 *                                  <code>ActivityType</code> instance to be
-	 *                                  loaded are not valid
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>ActivityType</code> instance to
+	 *                                  be loaded are not valid
 	 */
 
 	@Override
 	public void load (final ActivityType type)
 	{
-		this.log.trace ("Load ActivityType: {}", type);
+		this.log.trace ("load: type={}", type);
 
 		super.load (type);
 		this.setName (type.getName ());
@@ -188,8 +181,8 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	/**
 	 * Set the name of the <code>ActivityType</code>.
 	 *
-	 * @param  name                     The name of the <code>ActivityType</code>,
-	 *                                  not null
+	 * @param  name                     The name of the
+	 *                                  <code>ActivityType</code>, not null
 	 *
 	 * @return                          This <code>ActivityTypeBuilder</code>
 	 * @throws IllegalArgumentException If the name is an empty
@@ -234,8 +227,8 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	 *                                  <code>ActivityType</code>
 	 *
 	 * @return                          This <code>ActivityTypeBuilder</code>
-	 * @throws IllegalArgumentException If the <code>AcivitySourse</code> does not
-	 *                                  exist in the <code>DataStore</code>
+	 * @throws IllegalArgumentException If the <code>AcivitySourse</code> does
+	 *                                  not exist in the <code>DataStore</code>
 	 */
 
 	@Override
@@ -276,12 +269,13 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	 * Create an association between the <code>ActivityType</code> and an
 	 * <code>Action</code>.
 	 *
-	 * @param  action                   The <code>Action</code> to be associated
-	 *                                  with the <code>ActivityType</code>, not
-	 *                                  null
+	 * @param  action                   The <code>Action</code> to be
+	 *                                  associated with the
+	 *                                  <code>ActivityType</code>, not null
+	 *
 	 * @return                          This <code>ActivityTypeBuilder</code>
-	 * @throws IllegalArgumentException If the <code>Action</code> does not exist
-	 *                                  in the <code>DataStore</code>
+	 * @throws IllegalArgumentException If the <code>Action</code> does not
+	 *                                  exist in the <code>DataStore</code>
 	 */
 
 	public ActivityTypeBuilder addAction (final Action action)
@@ -297,8 +291,8 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	 *                               <code>ActivityType</code>, not null
 	 *
 	 * @return                       This <code>ActivityTypeBuilder</code>
-	 * @throws IllegalStateException If there are any log entries containing the
-	 *                               <code>ActivityType</code> and the
+	 * @throws IllegalStateException If there are any log entries containing
+	 *                               the <code>ActivityType</code> and the
 	 *                               <code>Action</code>
 	 */
 

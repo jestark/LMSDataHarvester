@@ -16,22 +16,26 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.NamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
-public final class DefaultNamedActivityBuilder extends DefaultActivityBuilder
+/**
+ * Default implementation of the <code>NamedActivityBuilder</code>
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
+
+public final class DefaultNamedActivityBuilder extends DefaultActivityBuilder<NamedActivityElementFactory> implements NamedActivityBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultNamedActivityBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<Activity, ActivityBuilder>
+	private static class Factory implements BuilderFactory<Activity, NamedActivityBuilder>
 	{
 		/**
 		 * Create the <code>ActivityBuilder</code>.  The supplied
@@ -39,53 +43,70 @@ public final class DefaultNamedActivityBuilder extends DefaultActivityBuilder
 		 * <code>ActivityManager</code> to perform operations on the
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 * @param  manager The <code>ManagerProxy</code> used to the
 		 *                 <code>ActivityManager</code> instance, not null
 		 *
 		 * @return         The <code>ActivityBuilder</code>
 		 */
 
 		@Override
-		public ActivityBuilder create (final ManagerProxy<Activity> manager)
+		public NamedActivityBuilder create (final ManagerProxy<Activity> manager)
 		{
 			return new DefaultNamedActivityBuilder (manager);
 		}
 	}
 
-	/** The logger */
-	private final Logger log;
-
 	/** The name of the <code>Activity</code> */
 	private String name;
 
 	/**
+	 * static initializer to register the
+	 * <code>DefaultNamedActivityBuilder</code> with the factory
+	 */
+
+	static
+	{
+		AbstractBuilder.registerBuilder (NamedActivityBuilder.class, DefaultNamedActivityBuilder.class, new Factory ());
+	}
+
+	/**
 	 * Create the <code>DefaultNamedActivityBuilder</code>.
 	 *
-	 * @param  manager The <code>NamedActivityManager</code> which the 
-	 *                 <code>NamedActivityBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 * @param  manager The <code>NamedActivityManager</code> which the
+	 *                 <code>NamedActivityBuilder</code> will use to operate on
+	 *                 the <code>DataStore</code>
 	 */
 
 	public DefaultNamedActivityBuilder (final ManagerProxy<Activity> manager)
 	{
-		super (manager);
-		this.log = LoggerFactory.getLogger (DefaultNamedActivityBuilder.class);
+		super (NamedActivityElementFactory.class, manager);
 	}
 
 	@Override
 	protected Activity buildElement ()
 	{
-		return null;
-	}
+		this.log.trace ("buildElement");
 
-	@Override
-	protected void postInsert ()
-	{
-	}
+		if (this.course == null)
+		{
+			this.log.error ("Can not build:  Course has not been set");
+			throw new IllegalStateException ("course not set");
+		}
 
-	@Override
-	protected void postRemove ()
-	{
+		if (this.name == null)
+		{
+			this.log.error ("Can not build:  Name has not been set");
+			throw new IllegalStateException ("name not set");
+		}
+
+		Activity result = this.element;
+
+		if ((this.element == null) || (! this.course.equals (this.element.getCourse ())) || (! this.name.equals (this.element.getName ())))
+		{
+			result = this.factory.create (this.type, this.course, this.name);
+		}
+
+		return result;
 	}
 
 	/**
@@ -105,14 +126,15 @@ public final class DefaultNamedActivityBuilder extends DefaultActivityBuilder
 	/**
 	 * Load a <code>Activity</code> instance into the
 	 * <code>ActivityBuilder</code>.  This method resets the
-	 * <code>ActivityBuilder</code> and initializes all of its parameters from the
-	 * specified <code>Activity</code> instance.  The parameters are validated as
-	 * they are set.
+	 * <code>ActivityBuilder</code> and initializes all of its parameters from
+	 * the specified <code>Activity</code> instance.  The parameters are
+	 * validated as they are set.
 	 *
-	 * @param  activity                 The <code>Activity</code> to load into the
-	 *                                  <code>ActivityBuilder</code>, not null
+	 * @param  activity                 The <code>Activity</code> to load into
+	 *                                  the <code>ActivityBuilder</code>, not
+	 *                                  null
 	 *
-	 * @throws IllegalArgumentException If any of the fields in the 
+	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>Activity</code> instance to be
 	 *                                  loaded are not valid
 	 */
@@ -120,25 +142,51 @@ public final class DefaultNamedActivityBuilder extends DefaultActivityBuilder
 	@Override
 	public void load (final Activity activity)
 	{
-		this.log.trace ("Load Activity: {}", activity);
+		this.log.trace ("load: activity={}", activity);
 
 		super.load (activity);
 		this.setName (activity.getName ());
 	}
+
+	/**
+	 * Get the name of the <code>Activity</code>.
+	 *
+	 * @return The name of the <code>Activity</code>
+	 */
 
 	public String getName ()
 	{
 		return this.name;
 	}
 
-	public void setName (final String name)
+	/**
+	 * Set the name of the <code>Activity</code>.
+	 *
+	 * @param  name                     The name of the <code>Activity</code>,
+	 *                                  not null
+	 *
+	 * @return                          This <code>NamedActivityBuilder</code>
+	 * @throws IllegalArgumentException if the name is empty
+	 */
+
+	public NamedActivityBuilder setName (final String name)
 	{
+		this.log.trace ("setName: name={}", name);
+
 		if (name == null)
 		{
 			this.log.error ("Attempting to set a NULL name");
 			throw new NullPointerException ();
 		}
 
+		if (name.length () == 0)
+		{
+			this.log.error ("name is an empty string");
+			throw new IllegalArgumentException ("name is empty");
+		}
+
 		this.name = name;
+
+		return this;
 	}
 }

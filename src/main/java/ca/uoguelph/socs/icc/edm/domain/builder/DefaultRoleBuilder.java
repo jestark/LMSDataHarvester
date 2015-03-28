@@ -16,9 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
 
@@ -46,7 +43,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementF
 		 * <code>RoleManager</code> to perform operations on the
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 * @param  manager The <code>ManagerProxy</code> used to the
 		 *                 <code>RoleManager</code> instance, not null
 		 *
 		 * @return         The <code>RoleBuilder</code>
@@ -59,15 +56,12 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementF
 		}
 	}
 
-	/** The logger */
-	private final Logger log;
-
 	/** The name of the Role */
 	private String name;
 
 	/**
-	 * static initializer to register the <code>DefaultRoleBuilder</code> with the
-	 * factory
+	 * static initializer to register the <code>DefaultRoleBuilder</code> with
+	 * the factory
 	 */
 
 	static
@@ -78,7 +72,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementF
 	/**
 	 * Create the <code>DefaultRoleBuilder</code>.
 	 *
-	 * @param  manager The <code>RoleManager</code> which the 
+	 * @param  manager The <code>RoleManager</code> which the
 	 *                 <code>RoleBuilder</code> will use to operate on the
 	 *                 <code>DataStore</code>
 	 */
@@ -86,8 +80,6 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementF
 	protected DefaultRoleBuilder (final ManagerProxy<Role> manager)
 	{
 		super (Role.class, RoleElementFactory.class, manager);
-
-		this.log = LoggerFactory.getLogger (DefaultRoleBuilder.class);
 	}
 
 	@Override
@@ -96,7 +88,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementF
 		if (this.name == null)
 		{
 			this.log.error ("Can not build: The role's name is not set");
-			throw new IllegalStateException ("name not set");		
+			throw new IllegalStateException ("name not set");
 		}
 
 		Role result = this.element;
@@ -136,15 +128,15 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementF
 	}
 
 	/**
-	 * Load a <code>Role</code> instance into the <code>RoleBuilder</code>.  This
-	 * method resets the <code>RoleBuilder</code> and initializes all of its
-	 * parameters from the specified <code>Role</code> instance.  The parameters
-	 * are validated as they are set.
+	 * Load a <code>Role</code> instance into the <code>RoleBuilder</code>.
+	 * This method resets the <code>RoleBuilder</code> and initializes all of
+	 * its parameters from the specified <code>Role</code> instance.  The
+	 * parameters are validated as they are set.
 	 *
 	 * @param  role                     The <code>Role</code> to load into the
 	 *                                  <code>RoleBuilder</code>, not null
 	 *
-	 * @throws IllegalArgumentException If any of the fields in the 
+	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>Role</code> instance to be loaded
 	 *                                  are not valid
 	 */
@@ -161,7 +153,8 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementF
 	/**
 	 * Get the name of the <code>Role</code>.
 	 *
-	 * @return A <code>String</code> containing the name of the <code>Role</code>
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Role</code>
 	 */
 
 	@Override
@@ -196,7 +189,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementF
 		}
 
 		this.name = name;
-		
+
 		return this;
 	}
 }

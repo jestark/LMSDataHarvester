@@ -18,9 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
@@ -44,7 +41,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		 * <code>LogEntryManager</code> to perform operations on the
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the 
+		 * @param  manager The <code>ManagerProxy</code> used to the
 		 *                 <code>LogEntryManager</code> instance, not null
 		 *
 		 * @return         The <code>LogEntryBuilder</code>
@@ -56,9 +53,6 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 			return new DefaultLogEntryBuilder (manager);
 		}
 	}
-
-	/** The logger */
-	private final Logger log;
 
 	/** The <code>Action</code> performed by the user */
 	private Action action;
@@ -76,8 +70,8 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	private String ipaddress;
 
 	/**
-	 * static initializer to register the <code>DefaultLogEntryBuilder</code> with the
-	 * factory
+	 * static initializer to register the <code>DefaultLogEntryBuilder</code>
+	 * with the factory
 	 */
 
 	static
@@ -88,7 +82,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	/**
 	 * Create the <code>DefaultLogEntryBuilder</code>.
 	 *
-	 * @param  manager The <code>LogEntryManager</code> which the 
+	 * @param  manager The <code>LogEntryManager</code> which the
 	 *                 <code>LogEntryBuilder</code> will use to operate on the
 	 *                 <code>DataStore</code>
 	 */
@@ -96,8 +90,6 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	protected DefaultLogEntryBuilder (final ManagerProxy<LogEntry> manager)
 	{
 		super (LogEntry.class, LogEntryElementFactory.class, manager);
-
-		this.log = LoggerFactory.getLogger (DefaultLogEntryBuilder.class);
 	}
 
 	@Override
@@ -155,16 +147,17 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	/**
 	 * Load a <code>LogEntry</code> instance into the
 	 * <code>LogEntryBuilder</code>.  This method resets the
-	 * <code>LogEntryBuilder</code> and initializes all of its parameters from the
-	 * specified <code>LogEntry</code> instance.  The parameters are validated as
-	 * they are set.
+	 * <code>LogEntryBuilder</code> and initializes all of its parameters from
+	 * the specified <code>LogEntry</code> instance.  The parameters are
+	 * validated as they are set.
 	 *
-	 * @param  entry                    The <code>LogEntry</code> to load into the
-	 *                                  <code>LogEntryBuilder</code>, not null
+	 * @param  entry                    The <code>LogEntry</code> to load into
+	 *                                  the <code>LogEntryBuilder</code>, not
+	 *                                  null
 	 *
-	 * @throws IllegalArgumentException If any of the fields in the 
-	 *                                  <code>LogEntry</code> instance to be loaded
-	 *                                  are not valid
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>LogEntry</code> instance to be
+	 *                                  loaded are not valid
 	 */
 
 	@Override
@@ -181,6 +174,13 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 
 		// reference ??
 	}
+
+	/**
+	 * Get the <code>Action</code> which was performed upon the logged
+	 * activity.
+	 *
+	 * @return A reference to the logged <code>Action</code>
+	 */
 
 	@Override
 	public Action getAction ()
@@ -202,6 +202,13 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		return this;
 	}
 
+	/**
+	 * Get the <code>Activity</code> upon which the logged action was
+	 * performed.
+	 *
+	 * @return A reference to the associated <code>Activity</code> object.
+	 */
+
 	@Override
 	public Activity getActivity ()
 	{
@@ -222,6 +229,13 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		return this;
 	}
 
+	/**
+	 * Get the <code>Enrolment</code> instance for the user which performed the
+	 * logged action.
+	 *
+	 * @return A reference to the associated <code>Enrolment</code>
+	 */
+
 	@Override
 	public Enrolment getEnrolment ()
 	{
@@ -241,6 +255,12 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 
 		return this;
 	}
+
+	/**
+	 * Get the time of the logged action.
+	 *
+	 * @return A <code>Date</code> object containing the logged time
+	 */
 
 	@Override
 	public Date getTime ()
@@ -263,6 +283,13 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		return this;
 	}
 
+	/**
+	 * Get the Internet Protocol address which is associated with the logged
+	 * action.
+	 *
+	 * @return A <code>String</code> containing the IP address, may be null
+	 */
+
 	@Override
 	public String getIPAddress ()
 	{
@@ -272,11 +299,6 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	@Override
 	public LogEntryBuilder setIPAddress (final String ipaddress)
 	{
-		if (ipaddress != null)
-		{
-			// Validate the ip address (both v4 and v6)
-		}
-
 		this.ipaddress = ipaddress;
 
 		return this;

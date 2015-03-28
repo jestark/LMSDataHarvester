@@ -16,9 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
@@ -54,9 +51,6 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, GradeEleme
 		}
 	}
 
-	/** The logger */
-	private final Logger log;
-
 	/** The activity associated with the grade */
 	private Activity activity;
 
@@ -67,8 +61,8 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, GradeEleme
 	private Integer grade;
 
 	/**
-	 * static initializer to register the <code>DefaultGradeBuilder</code> with the
-	 * factory
+	 * static initializer to register the <code>DefaultGradeBuilder</code> with
+	 * the factory
 	 */
 
 	static
@@ -87,8 +81,6 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, GradeEleme
 	protected DefaultGradeBuilder (final ManagerProxy<Grade> manager)
 	{
 		super (Grade.class, GradeElementFactory.class, manager);
-
-		this.log = LoggerFactory.getLogger (DefaultGradeBuilder.class);
 
 		this.clear ();
 	}
@@ -144,17 +136,17 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, GradeEleme
 	}
 
 	/**
-	 * Load a <code>Grade</code> instance into the <code>GradeBuilder</code>.  This
-	 * method resets the <code>GradeBuilder</code> and initializes all of its
-	 * parameters from the specified <code>Grade</code> instance.  The parameters
-	 * are validated as they are set.
+	 * Load a <code>Grade</code> instance into the <code>GradeBuilder</code>.
+	 * This method resets the <code>GradeBuilder</code> and initializes all of
+	 * its parameters from the specified <code>Grade</code> instance.  The
+	 * parameters are validated as they are set.
 	 *
 	 * @param  grade                    The <code>Grade</code> to load into the
 	 *                                  <code>GradeBuilder</code>, not null
 	 *
 	 * @throws IllegalArgumentException If any of the fields in the
-	 *                                  <code>Grade</code> instance to be loaded
-	 *                                  are not valid
+	 *                                  <code>Grade</code> instance to be
+	 *                                  loaded are not valid
 	 */
 
 	@Override
@@ -223,10 +215,12 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, GradeEleme
 	}
 
 	/**
-	 * Get the grade that the student received for the <code>Activity</code>.  The
-	 * grade will be an <code>Integer</code> with a value on the range of [0, 100].
+	 * Get the grade that the student received for the <code>Activity</code>.
+	 * The grade will be an <code>Integer</code> with a value on the range of
+	 * [0, 100].
 	 *
-	 * @return An <code>Integer</code> containing the assigned grade, may be null
+	 * @return An <code>Integer</code> containing the assigned grade, may be
+	 *         null
 	 */
 
 	@Override
@@ -238,12 +232,12 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, GradeEleme
 	/**
 	 * Set the value of the <code>Grade</code>.
 	 *
-	 * @param  grade                    The value of the <code>Grade</code>, not
-	 *                                  null
+	 * @param  grade                    The value of the <code>Grade</code>,
+	 *                                  not null
 	 *
 	 * @return                          This <code>GradeBuilder</code>
-	 * @throws IllegalArgumentException If the value is less than zero or greater
-	 *                                  than 100
+	 * @throws IllegalArgumentException If the value is less than zero or
+	 *                                  greater than 100
 	 */
 
 	@Override

@@ -16,9 +16,46 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-public interface ActivityGroupMemberBuilder extends ElementBuilder<Activity>
+/**
+ * Create <code>SubActivity</code> instances.  This interface extends the
+ * <code>ElementBuilder</code> interface with the functionality required to
+ * handle <code>SubActivity</code> instances.  It is indented that this
+ * interface will act as a base for all of the <code>ElementBuilder</code>
+ * implementations which handle <code>SubActivity</code> instances.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
+
+public interface SubActivityBuilder extends ElementBuilder<Activity>
 {
+	/**
+	 * Get the name of the <code>Activity</code>.
+	 *
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>SubActivity</code>
+	 */
+
 	public abstract String getName ();
-	public abstract void setName (String name);
-	public abstract ActivityGroup getParent ();
+
+	/**
+	 * Set the name of the <code>SubActivity</code>.
+	 *
+	 * @param  name                     The name of the
+	 *                                  <code>SubActivity</code>, not null
+	 *
+	 * @return                          This <code>SubActivityBuilder</code>
+	 * @throws IllegalArgumentException If the name is an empty
+	 */
+
+	public abstract SubActivityBuilder setName (String name);
+
+	/**
+	 * Get the parent <code>Activity</code> instance for the
+	 * <code>SubActivity</code>.
+	 *
+	 * @return The parent <code>Activity</code>
+	 */
+
+	public abstract Activity getParent ();
 }

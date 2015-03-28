@@ -66,8 +66,8 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, ActionEl
 	private String name;
 
 	/**
-	 * static initializer to register the <code>DefaultActionBuilder</code> with the
-	 * factory
+	 * static initializer to register the <code>DefaultActionBuilder</code>
+	 * with the factory
 	 */
 
 	static
@@ -103,7 +103,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, ActionEl
 
 		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
 		{
-			result = (getFactory (ActionElementFactory.class, this.manager.getElementImplClass (Action.class))).create (this.name);
+			result = this.factory.create (this.name);
 		}
 
 		return result;
@@ -139,18 +139,19 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, ActionEl
 	 * its parameters from the specified <code>Action</code> instance.  The
 	 * parameters are validated as they are set.
 	 *
-	 * @param  action                   The <code>Action</code> to load into the
-	 *                                  <code>ActionBuilder</code>, not null
+	 * @param  action                   The <code>Action</code> to load into
+	 *                                  the <code>ActionBuilder</code>, not
+	 *                                  null
 	 *
 	 * @throws IllegalArgumentException If any of the fields in the
-	 *                                  <code>Action</code> instance to be loaded
-	 *                                  are not valid
+	 *                                  <code>Action</code> instance to be
+	 *                                  loaded are not valid
 	 */
 
 	@Override
 	public void load (final Action action)
 	{
-		this.log.trace ("Load Action: {}", action);
+		this.log.trace ("load: action={}", action);
 
 		super.load (action);
 		this.setName (action.getName ());
@@ -171,8 +172,8 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, ActionEl
 	/**
 	 * Set the name of the <code>Action</code>.
 	 *
-	 * @param  name                     The name of the <code>Action</code>, not
-	 *                                  null
+	 * @param  name                     The name of the <code>Action</code>,
+	 *                                  not null
 	 *
 	 * @return                          This <code>ActionBuilder</code>
 	 * @throws IllegalArgumentException If the name is an empty

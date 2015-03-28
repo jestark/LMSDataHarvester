@@ -46,8 +46,9 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 		 * <code>ActivitySourceManager</code> to perform operations on the
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the 
-		 *                 <code>ActivitySourceManager</code> instance, not null
+		 * @param  manager The <code>ManagerProxy</code> used to the
+		 *                 <code>ActivitySourceManager</code> instance, not
+		 *                 null
 		 *
 		 * @return         The <code>ActivitySourceBuilder</code>
 		 */
@@ -66,8 +67,8 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	private String name;
 
 	/**
-	 * static initializer to register the <code>DefaultActivitySourceBuilder</code> with the
-	 * factory
+	 * static initializer to register the
+	 * <code>DefaultActivitySourceBuilder</code> with the factory
 	 */
 
 	static
@@ -78,9 +79,9 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	/**
 	 * Create the <code>DefaultActivitySourceBuilder</code>.
 	 *
-	 * @param  manager The <code>ActivitySourceManager</code> which the 
-	 *                 <code>ActivitySourceBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 * @param  manager The <code>ActivitySourceManager</code> which the
+	 *                 <code>ActivitySourceBuilder</code> will use to operate
+	 *                 on the <code>DataStore</code>
 	 */
 
 	protected DefaultActivitySourceBuilder (final ManagerProxy<ActivitySource> manager)
@@ -96,14 +97,14 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 		if (this.name == null)
 		{
 			this.log.error ("Can not build: The activity source's name is not set");
-			throw new IllegalStateException ("name not set");		
+			throw new IllegalStateException ("name not set");
 		}
 
 		ActivitySource result = this.element;
 
 		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
 		{
-			result = (getFactory (ActivitySourceElementFactory.class, this.manager.getElementImplClass (ActivitySource.class))).create (this.name);
+			result = this.factory.create (this.name);
 		}
 
 		return result;
@@ -147,9 +148,9 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	 *                                  <code>ActivitySourceBuilder</code>, not
 	 *                                  null
 	 *
-	 * @throws IllegalArgumentException If any of the fields in the 
-	 *                                  <code>ActivitySource</code> instance to be
-	 *                                  loaded are not valid
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>ActivitySource</code> instance to
+	 *                                  be loaded are not valid
 	 */
 
 	@Override
