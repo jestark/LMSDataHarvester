@@ -35,7 +35,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @param   <T> The type of <code>Activity</code>
  */
 
-public abstract class DefaultActivityBuilder<T extends ActivityElementFactory> extends AbstractBuilder<Activity, T> implements ActivityBuilder
+public abstract class AbstractActivityBuilder<T extends ActivityElementFactory> extends AbstractBuilder<Activity, T> implements ActivityBuilder
 {
 	/** The type of the Activity */
 	protected final ActivityType type;
@@ -51,7 +51,7 @@ public abstract class DefaultActivityBuilder<T extends ActivityElementFactory> e
 	 *                 <code>DataStore</code>
 	 */
 
-	public DefaultActivityBuilder (final Class<T> factory, final ManagerProxy<Activity> manager)
+	public AbstractActivityBuilder (final Class<T> factory, final ManagerProxy<Activity> manager)
 	{
 		super (Activity.class, factory, manager);
 

@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @version 1.0
  */
 
-public final class DefaultGenericActivityBuilder extends DefaultActivityBuilder<GenericActivityElementFactory>
+public final class DefaultGenericActivityBuilder extends AbstractActivityBuilder<GenericActivityElementFactory>
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a

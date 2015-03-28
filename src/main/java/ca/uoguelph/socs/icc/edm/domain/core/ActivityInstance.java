@@ -30,7 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
 
 /**
@@ -44,7 +43,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder
+ * @see     ca.uoguelph.socs.icc.edm.domain.builder.AbstractActivityBuilder
  * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager
  */
 

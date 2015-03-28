@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @version 1.0
  */
 
-public final class DefaultNamedActivityBuilder extends DefaultActivityBuilder<NamedActivityElementFactory> implements NamedActivityBuilder
+public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder<NamedActivityElementFactory> implements NamedActivityBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
