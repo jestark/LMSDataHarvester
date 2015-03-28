@@ -5,12 +5,15 @@
 -- Course table
 --****************************************************************************--
 
-create type e_semester as enum ('WINTER', 'SPRING', 'FALL');
+create table if not exists course_semester (
+	id integer primary key,
+	name text unique not null
+);
 
 create table if not exists course (
 	id bigserial primary key,
+	semester integer not null references course_semester (id) on delete restrict on update cascade,
 	year integer not null,
-	semester e_semester not null,
 	name text not null,
 	unique (year, semester, name)
 );
@@ -54,7 +57,7 @@ create table if not exists activity_action_map (
 create table if not exists activity_instance (
 	id bigserial primary key,
 	course_id bigint not null references course (id) on delete restrict on update cascade,
-	activity_id bigint not null references activity (id) on delete restrict on update cascade,
+	activity_id bigint not null references activity (id) on delete restrict on update cascade
 );
 
 create table if not exists activity_instance_stealth (
@@ -124,7 +127,7 @@ create table if not exists log (
 -- IP address associated with the log event
 create table if not exists log_ip (
 	log_id bigint unique not null references log (id) on delete cascade on update cascade,
-	ipaddress cidr not null
+	ipaddress inet not null
 );
 
 comment on table log is 'Log of actions taken by participants in a given course';
@@ -317,6 +320,10 @@ comment on table log_moodle_workshop_submission is 'Relationship table for mappi
 --****************************************************************************--
 --  List of Known Modules (Activities)
 --****************************************************************************--
+
+insert into course_semester values (1, 'WINTER');
+insert into course_semester values (2, 'SPRING');
+insert into course_semester values (3, 'FALL');
 
 insert into activity_source (name) values ('moodle');
 
