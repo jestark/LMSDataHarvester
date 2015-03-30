@@ -78,7 +78,7 @@ public final class UserDatabaseFactory extends DatabaseFactory
 		builder.setEntry (ActivitySource.class, true, ActivitySourceData.class, NullIdGenerator.class, DefaultActivitySourceManager.class);
 		builder.setEntry (ActivityType.class, true, ActivityTypeData.class, NullIdGenerator.class, DefaultActivityTypeManager.class);
 		builder.setEntry (Course.class, true, CourseData.class, NullIdGenerator.class, DefaultCourseManager.class);
-		builder.setEntry (Enrolment.class, true, UserEnrolmentData.class, NullIdGenerator.class, DefaultEnrolmentManager.class);
+		builder.setEntry (Enrolment.class, true, UserEnrolmentData.class, RandomIdGenerator.class, DefaultEnrolmentManager.class);
 		builder.setEntry (Grade.class, true, GradedActivity.class, NullIdGenerator.class, null);
 		builder.setEntry (LogEntry.class, true, LogData.class, NullIdGenerator.class, DefaultLogEntryManager.class);
 		builder.setEntry (Role.class, true, RoleData.class, NullIdGenerator.class, DefaultRoleManager.class);

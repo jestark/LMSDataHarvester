@@ -17,10 +17,15 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.CourseManager;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Role;
+import ca.uoguelph.socs.icc.edm.domain.RoleManager;
 import ca.uoguelph.socs.icc.edm.domain.User;
+import ca.uoguelph.socs.icc.edm.domain.UserManager;
+
+import ca.uoguelph.socs.icc.edm.domain.core.UserEnrolmentData;
 
 import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
 
@@ -88,6 +93,8 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	protected DefaultEnrolmentBuilder (final ManagerProxy<Enrolment> manager)
 	{
 		super (Enrolment.class, EnrolmentElementFactory.class, manager);
+
+		this.clear ();
 	}
 
 	@Override
@@ -111,17 +118,39 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new IllegalStateException ("course not set");
 		}
 
-		return null; //this.factory.create (this.user, this.course, this.role, this.grade, this.usable);
+		Enrolment result = this.element;
+
+		if ((this.element == null) || ((this.user.equals (((UserEnrolmentData) this.element).getUser ())) && (this.role.equals (this.element.getRole ())) && (this.course.equals (this.element.getCourse ()))))
+		{
+			result = this.factory.create (this.user, this.course, this.role, this.grade, this.usable);
+		}
+		else
+		{
+			this.factory.setUsable (this.element, this.usable);
+			this.factory.setFinalGrade (this.element, this.grade);
+		}
+
+		return result;
 	}
 
 	@Override
 	protected void postInsert ()
 	{
+		CourseElementFactory cfactory = AbstractBuilder.getFactory (CourseElementFactory.class, this.course.getClass ());
+		UserElementFactory ufactory = AbstractBuilder.getFactory (UserElementFactory.class, this.user.getClass ());
+
+		cfactory.addEnrolment (this.course, this.element);
+		ufactory.addEnrolment (this.user, this.element);
 	}
 
 	@Override
 	protected void postRemove ()
 	{
+		CourseElementFactory cfactory = AbstractBuilder.getFactory (CourseElementFactory.class, this.course.getClass ());
+		UserElementFactory ufactory = AbstractBuilder.getFactory (UserElementFactory.class, this.user.getClass ());
+
+		cfactory.removeEnrolment (this.course, this.element);
+		ufactory.removeEnrolment (this.user, this.element);
 	}
 
 	/**
@@ -139,6 +168,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		this.grade = null;
 		this.role = null;
 		this.user = null;
+		this.usable = Boolean.valueOf (false);
 	}
 
 	/**
@@ -167,7 +197,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		this.setFinalGrade (enrolment.getFinalGrade ());
 		this.setRole (enrolment.getRole ());
 
-		// user ??
+		this.setUser (((UserEnrolmentData) enrolment).getUser ());
 	}
 
 	@Override
@@ -185,7 +215,13 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new NullPointerException ("Course is NULL");
 		}
 
-		this.course = course;
+		this.course = (this.manager.getManager (Course.class, CourseManager.class)).fetch (course);
+
+		if (this.course == null)
+		{
+			this.log.error ("This specified Course does not exist in the DataStore");
+			throw new IllegalArgumentException ("Course is not in the DataStore");
+		}
 
 		return this;
 	}
@@ -205,7 +241,13 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new NullPointerException ("Role is NULL");
 		}
 
-		this.role = role;
+		this.role = (this.manager.getManager (Role.class, RoleManager.class)).fetch (role);
+
+		if (this.role == null)
+		{
+			this.log.error ("This specified Role does not exist in the DataStore");
+			throw new IllegalArgumentException ("Role is not in the DataStore");
+		}
 
 		return this;
 	}
@@ -225,7 +267,13 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new NullPointerException ("User is NULL");
 		}
 
-		this.user = user;
+		this.user = (this.manager.getManager (User.class, UserManager.class)).fetch (user);
+
+		if (this.user == null)
+		{
+			this.log.error ("This specified User does not exist in the DataStore");
+			throw new IllegalArgumentException ("User is not in the DataStore");
+		}
 
 		return this;
 	}
@@ -246,6 +294,26 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		}
 
 		this.grade = grade;
+
+		return this;
+	}
+
+	@Override
+	public Boolean isUsable ()
+	{
+		return this.usable;
+	}
+
+	@Override
+	public EnrolmentBuilder setUsable (final Boolean usable)
+	{
+		if (usable == null)
+		{
+			this.log.error ("usable is NULL");
+			throw new NullPointerException ("usable is NULL");
+		}
+
+		this.usable = usable;
 
 		return this;
 	}

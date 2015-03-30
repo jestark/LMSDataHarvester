@@ -60,6 +60,27 @@ public interface EnrolmentElementFactory extends ElementFactory<Enrolment>
 	public abstract Enrolment create (User user, Course course, Role role, Integer grade, Boolean usable);
 
 	/**
+	 * Set the usable flag for the specified <code>Enrolment</code>.
+	 *
+	 * @param  enrolment The <code>Enrolment</code> for which the usable flag
+	 *                   is to be set
+	 * @param  usable    Indication if the <code>User</code> has given consent
+	 *                   for their data to be used for research, not null
+	 */
+
+	public abstract void setUsable (Enrolment enrolment, Boolean usable);
+
+	/**
+	 * Set the final grade for the specified <code>Enrolment</code>.
+	 *
+	 * @param  enrolment The <code>Enrolment</code> for which the final grade
+	 *                   is to be set
+	 * @param  grade The final grade assigned to the <code>User</code>
+	 */
+
+	public abstract void setFinalGrade (Enrolment enrolment, Integer grade);
+
+	/**
 	 * Add the specified <code>Grade</code> to the specified
 	 * <code>Enrolment</code>.
 	 *

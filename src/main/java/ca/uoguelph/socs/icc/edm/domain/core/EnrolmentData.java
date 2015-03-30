@@ -86,10 +86,44 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 			assert user != null : "user is NULL";
 			assert course != null : "course is NULL";
 			assert role != null : "role is NULL";
-			assert grade != null : "grade is NULL";
 			assert usable != null : "usable is NULL";
+			assert ((grade == null) || ((grade >= 0) && (grade <= 100))) : "grade out of range, must be between 0 and 100";
 
 			return new EnrolmentData (course, role, grade, usable);
+		}
+
+		/**
+		 * Set the usable flag for the specified <code>Enrolment</code>.
+		 *
+		 * @param  enrolment The <code>Enrolment</code> for which the usable
+		 *                   flag is to be set, not null
+		 * @param  usable    Indication if the <code>User</code> has given
+		 *                   consent for their data to be used for research,
+		 *                   not null
+		 */
+
+		public void setUsable (final Enrolment enrolment, final Boolean usable)
+		{
+			assert enrolment instanceof EnrolmentData : "enrolment is not an instance of EnrolmentData";
+			assert usable != null : "usable is NULL";
+
+			((EnrolmentData) enrolment).setUsable (usable);
+		}
+
+		/**
+		 * Set the final grade for the specified <code>Enrolment</code>.
+		 *
+		 * @param  enrolment The <code>Enrolment</code> for which the final
+		 *                   grade is to be set
+		 * @param  grade The final grade assigned to the <code>User</code>
+		 */
+
+		public void setFinalGrade (final Enrolment enrolment, final Integer grade)
+		{
+			assert enrolment instanceof EnrolmentData : "enrolment is not an instance of EnrolmentData";
+			assert ((grade == null) || ((grade >= 0) && (grade <= 100))) : "grade out of range, must be between 0 and 100";
+
+			((EnrolmentData) enrolment).setFinalGrade (grade);
 		}
 
 		/**
