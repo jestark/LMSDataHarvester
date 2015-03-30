@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,13 +36,13 @@ public class IdNumberConverter implements AttributeConverter<Integer, String>
 	 * Convert the integer representation of the ID number to the
 	 * <code>String</code> representation.
 	 *
-	 * @param  integer The <code>Integer</code> representation of the id number,
-	 *                 not null
+	 * @param  integer The <code>Integer</code> representation of the id
+	 *                 number, not null
 	 * @return         The <code>String</code> representation of the id number
 	 */
 
 	@Override
-	public String convertToDatabaseColumn(Integer integer)
+	public String convertToDatabaseColumn (final Integer integer)
 	{
 		return integer.toString ();
 	}
@@ -51,25 +51,14 @@ public class IdNumberConverter implements AttributeConverter<Integer, String>
 	 * Convert the string representation of the ID number to the
 	 * <code>Integer</code> representation.
 	 *
-	 * @param  string The <code>String</code> representation of the ID number, not
-	 *                null
+	 * @param  string The <code>String</code> representation of the ID number,
+	 *                not null
 	 * @return        The <code>Integer</code> representation of the ID number
 	 */
 
 	@Override
-	public Integer convertToEntityAttribute(String string)
+	public Integer convertToEntityAttribute (final String string)
 	{
-		Integer result = null;
-
-		try
-		{
-			result = new Integer (string);
-		}
-		catch (NumberFormatException ex)
-		{
-			result = new Integer (-1);
-		}
-
-		return result;
+		return ((string != null) && (string.length () > 0)) ? Integer.valueOf (string) : 0;
 	}
 }

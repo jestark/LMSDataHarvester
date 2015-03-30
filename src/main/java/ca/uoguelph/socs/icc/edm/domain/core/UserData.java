@@ -214,9 +214,9 @@ public class UserData extends AbstractElement implements User, Serializable
 
 		this.id = null;
 		this.idnumber = idnumber;
-		this.username = firstname;
+		this.username = username;
 		this.lastname = lastname;
-		this.firstname= username;
+		this.firstname = firstname;
 
 		this.enrolments = new HashSet<Enrolment> ();
 	}

@@ -7,7 +7,7 @@ create schema if not exists userdb;
 create table if not exists userdb.user (
 	id bigserial primary key,
 	id_number integer not null,
-	username varchar[8] not null unique,
+	username text not null unique,
 	first_name text not null,
 	last_name text not null
 );

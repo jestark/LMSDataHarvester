@@ -37,52 +37,6 @@
 	</mapped-superclass>
 
 	<!--*********************************************************************-->
-	<!--  Core data mapping: Users                                           -->
-	<!--*********************************************************************-->
-
-	<entity name="User" class="UserData" metadata-complete="true">
-		<description>Data identifying the user</description>
-		<table schema="userdb" name="user"/>
-		<named-query name="UserData:maxid">
-			<query>SELECT MAX(u.id) FROM User u</query>
-		</named-query>
-		<named-query name="UserData:allid">
-			<query>SELECT u.id FROM User u</query>
-		</named-query>
-		<named-query name="UserData:all">
-			<query>SELECT u FROM User u</query>
-		</named-query>
-		<named-query name="UserData:idnumber">
-			<query>SELECT u FROM User u WHERE u.idNumber = :idnumber</query>
-		</named-query>
-		<named-query name="UserData:username">
-			<query>SELECT u FROM User u WHERE u.username = :username</query>
-		</named-query>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-				<generated-value strategy="SEQUENCE" generator="user_id_seq"/>
-				<sequence-generator name="user_id_seq" sequence-name="user_id_seq" initial-value="1" allocation-size="1"/>
-			</id>
-			<basic name="idNumber">
-				<column name="id_number" />
-			</basic>
-			<basic name="username">
-				<column name="username" nullable="false" unique="true"/>
-			</basic>
-			<basic name="firstname">
-				<column name="first_name" nullable="false"/>
-			</basic>
-			<basic name="lastname">
-				<column name="last_name" nullable="false"/>
-			</basic>
-			<one-to-many name="enrolments" target-entity="UserEnrolmentData" mapped-by="user"/>
-			<!--			<transient name="enrolment"/>-->
-			<transient name="name"/>
-		</attributes>
-	</entity>
-
-	<!--*********************************************************************-->
 	<!-- Core data mapping: Courses                                          -->
 	<!--*********************************************************************-->
 
@@ -123,16 +77,9 @@
 			<basic name="year">
 				<column name="year" nullable="false"/>
 			</basic>
-			<one-to-many name="activities" target-entity="ActivityInstance" mapped-by="course"><!-- orphan-removal="true"> -->
-				<cascade>
-					<cascade-all/>
-				</cascade>
-			</one-to-many>
-			<one-to-many name="enrolments" target-entity="EnrolmentData" mapped-by="course"><!-- orphan-removal="true"> -->
-				<cascade>
-					<cascade-all/>
-				</cascade>
-			</one-to-many>
+			<one-to-many name="activities" target-entity="ActivityInstance" mapped-by="course"/>
+			<!--<one-to-many name="enrolments" target-entity="EnrolmentData" mapped-by="course"/>-->
+			<transient name="enrolments"/>
 		</attributes>
 	</entity>
 
@@ -201,18 +148,19 @@
 			<many-to-one name="course" target-entity="CourseData" optional="false">
 				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
-			<one-to-many name="grades" target-entity="GradedActivity" mapped-by="enrolment" orphan-removal="true">
-				<cascade>
-					<cascade-all/>
-				</cascade>
-			</one-to-many>
-			<one-to-many name="log" target-entity="LogData" mapped-by="enrolment" orphan-removal="true"/>
+			<!--			<one-to-many name="grades" target-entity="GradedActivity" mapped-by="enrolment"/> -->
+			<!--<one-to-many name="log" target-entity="LogData" mapped-by="enrolment" orphan-removal="true"/>-->
+			<transient name="grades"/>
+			<transient name="log"/>
 			<transient name="name"/>
 		</attributes>
 	</entity>
 
 	<entity name="UserEnrolment" class="UserEnrolmentData" metadata-complete="true">
 		<table name="enrolment"/>
+		<secondary-table name="enrolment_final_grade">
+			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
+		</secondary-table>
 		<named-query name="UserEnrolmentData:maxid">
 			<query>SELECT MAX(e.id) FROM UserEnrolment e</query>
 		</named-query>
@@ -227,7 +175,7 @@
 		</named-query>
 		<attributes>
 			<many-to-one name="user" target-entity="UserData" optional="false">
-				<join-table schema="userdb" name="user_enrolments">
+				<join-table schema="userdb" name="user_enrolment">
 					<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
 					<inverse-join-column name="user_id" nullable="false" referenced-column-name="id"/>
 				</join-table>
@@ -236,7 +184,7 @@
 		</attributes>
 	</entity>
 
-	<entity name="Grade" class="GradedActivity" metadata-complete="true">
+	<!--	<entity name="Grade" class="GradedActivity" metadata-complete="true">
 		<description>Grades assigned to individual activities for a student</description>
 		<table name="enrolment_activity_grade"/>
 		<attributes>
@@ -253,7 +201,7 @@
 			</many-to-one>
 			<transient name="name"/>
 		</attributes>
-	</entity>
+	</entity>-->
 
 	<!--*********************************************************************-->
 	<!--  Core data mapping: Activities                                      -->
@@ -376,12 +324,10 @@
 			<many-to-one name="course" target-entity="CourseData" optional="false">
 				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
-			<one-to-many name="grades" target-entity="GradedActivity" mapped-by="activity"/>
-			<!--			<one-to-many name="log" target-entity="LogData" mapped-by="activity">
-				<cascade>
-					<cascade-all/>
-				</cascade>
-			</one-to-many>-->
+			<!--<one-to-many name="grades" target-entity="GradedActivity" mapped-by="activity"/>
+			<one-to-many name="log" target-entity="LogData" mapped-by="activity">-->
+			<transient name="grades"/>
+			<transient name="log"/>
 		</attributes>
 	</entity>
 
