@@ -112,8 +112,8 @@ public class RandomIdGenerator implements IdGenerator
 
 		do
 		{
-			result = new Long (this.generator.nextLong ());
-		} while (! this.usedids.add (result));
+			result = Long.valueOf (this.generator.nextLong ());
+		} while ((result < 0) && (! this.usedids.add (result)));
 
 		return result;
 	}
