@@ -119,23 +119,6 @@ public final class ManagerProxy<T extends Element>
 	}
 
 	/**
-	 * Retrieve an <code>Element</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>Element</code>.
-	 *
-	 * @param  element The <code>Element</code> to retrieve, not null
-	 *
-	 * @return         A reference to the <code>Element</code> in the
-	 *                 <code>DataStore</code>, may be null
-	 */
-
-	public T fetch (final T element)
-	{
-		assert element != null : "element is NULL";
-
-		return this.manager.fetch (element);
-	}
-
-	/**
 	 * Get an instance of the specified <code>ElementManager</code>.
 	 *
 	 * @param  <E>     The type of <code>Element</code> operated on by the
