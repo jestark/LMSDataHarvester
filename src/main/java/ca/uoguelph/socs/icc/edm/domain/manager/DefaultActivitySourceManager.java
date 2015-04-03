@@ -106,37 +106,6 @@ public final class DefaultActivitySourceManager extends AbstractManager<Activity
 	}
 
 	/**
-	 * Retrieve an <code>ActivitySource</code> from the <code>DataStore</code>
-	 * which identifies the same as the specified <code>ActivitySource</code>.
-	 *
-	 * @param  source The <code>ActivitySource</code> to retrieve, not null
-	 *
-	 * @return        A reference to the <code>ActivitySource</code> in the
-	 *                <code>DataStore</code>, may be null
-	 */
-
-	@Override
-	public ActivitySource fetch (final ActivitySource source)
-	{
-		this.log.trace ("fetch: source={}", source);
-
-		if (source == null)
-		{
-			this.log.error ("The specified ActivitySource is NULL");
-			throw new NullPointerException ();
-		}
-
-		ActivitySource result = source;
-
-		if (! (this.fetchQuery ()).contains (source))
-		{
-			result = this.fetchByName (source.getName ());
-		}
-
-		return result;
-	}
-
-	/**
 	 * Retrieve the <code>ActivitySource</code> object associated with the
 	 * specified name from the <code>DataStore</code>.
 	 *

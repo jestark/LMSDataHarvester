@@ -50,7 +50,7 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 	 * <code>MoodleLogEntryManager</code>.
 	 */
 
-	private static final class MoodleLogEntryManagerFactory implements ManagerFactory<LogEntryManager>
+	private static final class Factory implements ManagerFactory<LogEntryManager>
 	{
 		/**
 		 * Create an instance of the <code>MoodleLogEntryManager</code>.
@@ -79,7 +79,7 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 
 	static
 	{
-		AbstractManager.registerManager (LogEntryManager.class, MoodleLogEntryManager.class, new MoodleLogEntryManagerFactory ());
+		AbstractManager.registerManager (LogEntryManager.class, MoodleLogEntryManager.class, new Factory ());
 	}
 
 	/**
@@ -108,24 +108,6 @@ public final class MoodleLogEntryManager extends AbstractManager<LogEntry> imple
 	public LogEntryBuilder getBuilder ()
 	{
 		return this.getBuilder (LogEntryBuilder.class);
-	}
-
-	/**
-	 * Retrieve a <code>LogEntry</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>LogEntry</code>.
-	 *
-	 * @param  entry The <code>LogEntry</code> to retrieve, not null
-	 *
-	 * @return        A reference to the <code>LogEntry</code> in the
-	 *                <code>DataStore</code>, may be null
-	 */
-
-	@Override
-	public LogEntry fetch (final LogEntry entry)
-	{
-		this.log.trace ("Fetching LogEntry with the same identity as: {}", entry);
-
-		return this.manager.fetch (entry);
 	}
 
 	/**

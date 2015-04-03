@@ -57,32 +57,6 @@ public interface ElementManager<T extends Element>
 	public abstract boolean contains (T element);
 
 	/**
-	 * Retrieve an <code>Element</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>Element</code>.  If the
-	 * specified <code>Element</code> came from the current instance of the
-	 * <code>DataStore</code> then the same <code>Element</code> will be
-	 * returned.  Otherwise, if there exists an <code>Element</code> in the
-	 * <code>DataStore</code> which identifies to be the same as the specified
-	 * <code>Element</code>, that <code>Element</code> will be returned.  This
-	 * method will return <code>null</code> if there is no matching
-	 * <code>Element</code> in the <code>DataStore</code>.
-	 * <p>
-	 * It should be noted that an <code>Element</code> which identifies the
-	 * same as another <code>Element</code> may not be equal to that other
-	 * <code>Element</code>.  Some <code>Element</code> instances (particularly
-	 * <code>Activity</code> and <code>Enrolment</code>) have fields which are
-	 * not to identify the <code>Element</code>.  Use the <code>equals</code>
-	 * method to determine if the <code>Element</code> instances are equal.
-	 *
-	 * @param  element The <code>Element</code> to retrieve, not null
-	 *
-	 * @return         A reference to the <code>Element</code> in the
-	 *                 <code>DataStore</code>, may be null
-	 */
-
-	public abstract T fetch (T element);
-
-	/**
 	 * Retrieve a <code>Element</code> instance from the <code>DataStore</code>
 	 * based upon is <code>DataStore</code> identifier.
 	 *

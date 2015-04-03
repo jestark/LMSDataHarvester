@@ -55,7 +55,15 @@ public abstract class AbstractActivityBuilder<T extends ActivityElementFactory> 
 	{
 		super (Activity.class, factory, manager);
 
-		this.type = this.validateActivityType ((ActivityType) this.manager.getArgument ());
+		assert this.manager.getArgument () != null : "ActivityType is NULL";
+
+		if (! (this.manager.getManager (ActivityType.class, ActivityTypeManager.class)).contains ((ActivityType) this.manager.getArgument ()))
+		{
+			this.log.error ("The specified ActivityType does not exist in the DataStore: {}", this.manager.getArgument ());
+			throw new IllegalArgumentException ("ActivityType is not in the DataStore");
+		}
+
+		this.type = (ActivityType) this.manager.getArgument ();
 	}
 
 	@Override
@@ -114,33 +122,6 @@ public abstract class AbstractActivityBuilder<T extends ActivityElementFactory> 
 	}
 
 	/**
-	 * Validate the specified <code>ActivityType</code>.
-	 *
-	 * @param  type                     The <code>ActivityType</code>, not null
-	 *
-	 * @return                          A reference to the
-	 *                                  <code>ActivityType</code> in the
-	 *                                  <code>DataStore</code>
-	 * @throws IllegalArgumentException If the <code>ActivityType</code> does
-	 *                                  not exist in the <code>DataStore</code>
-	 */
-
-	private final ActivityType validateActivityType (final ActivityType type)
-	{
-		assert type != null : "type is NULL";
-
-		ActivityType ntype = (this.manager.getManager (ActivityType.class, ActivityTypeManager.class)).fetch (type);
-
-		if (ntype == null)
-		{
-			this.log.error ("The specified ActivityType does not exist in the DataStore: {}", type);
-			throw new IllegalArgumentException ("ActivityType is not in the DataStore");
-		}
-
-		return ntype;
-	}
-
-	/**
 	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
 	 *
 	 * @return The <code>ActivityType</code> instance
@@ -185,13 +166,13 @@ public abstract class AbstractActivityBuilder<T extends ActivityElementFactory> 
 			throw new NullPointerException ("Course is NULL");
 		}
 
-		this.course = (this.manager.getManager (Course.class, CourseManager.class)).fetch (course);
-
-		if (this.course == null)
+		if (! (this.manager.getManager (Course.class, CourseManager.class)).contains (course))
 		{
 			this.log.error ("This specified Course does not exist in the DataStore");
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
+
+		this.course = course;
 
 		return this;
 	}

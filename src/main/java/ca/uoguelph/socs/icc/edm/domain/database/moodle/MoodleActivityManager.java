@@ -220,24 +220,6 @@ public final class MoodleActivityManager extends AbstractManager<Activity> imple
 	}
 
 	/**
-	 * Retrieve an <code>Activity</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>Activity</code>.
-	 *
-	 * @param  activity The <code>Activity</code> to retrieve, not null
-	 *
-	 * @return          A reference to the <code>Activity</code> in the
-	 *                  <code>DataStore</code>, may be null
-	 */
-
-	@Override
-	public Activity fetch (final Activity activity)
-	{
-		this.log.trace ("fetch: activity={}", activity);
-
-		return this.processActivity (this.manager.fetch (activity));
-	}
-
-	/**
 	 * Retrieve an <code>Activity</code> from the <code>DataStore</code> based
 	 * on its <code>DataStore</code> identifier.
 	 *

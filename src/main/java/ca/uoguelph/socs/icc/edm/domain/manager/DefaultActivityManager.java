@@ -207,37 +207,6 @@ public final class DefaultActivityManager extends AbstractManager<Activity> impl
 	}
 
 	/**
-	 * Retrieve an <code>Activity</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>Activity</code>.
-	 *
-	 * @param  activity The <code>Activity</code> to retrieve, not null
-	 *
-	 * @return          A reference to the <code>Activity</code> in the
-	 *                  <code>DataStore</code>, may be null
-	 */
-
-	@Override
-	public Activity fetch (final Activity activity)
-	{
-		this.log.trace ("fetch: activity={}", activity);
-
-		if (activity == null)
-		{
-			this.log.error ("The specified Activity is NULL");
-			throw new NullPointerException ();
-		}
-
-		Activity result = activity;
-
-		if (! (this.fetchQuery (activity.getClass ())).contains (activity))
-		{
-			result = null; // this.fetchByName (activity.getName ());
-		}
-
-		return result;
-	}
-
-	/**
 	 * Get a <code>List</code> of all of the <code>Activity</code> instances
 	 * which are associated with a particular <code>ActivityType</code>.
 	 *

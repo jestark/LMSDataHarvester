@@ -100,37 +100,6 @@ public final class DefaultActivityTypeManager extends AbstractManager<ActivityTy
 	}
 
 	/**
-	 * Retrieve an <code>ActivityType</code> from the <code>DataStore</code>
-	 * which identifies the same as the specified <code>ActivityType</code>.
-	 *
-	 * @param  type The <code>ActivityType</code> to retrieve, not null
-	 *
-	 * @return      A reference to the <code>ActivityType</code> in the
-	 *              <code>DataStore</code>, may be null
-	 */
-
-	@Override
-	public ActivityType fetch (final ActivityType type)
-	{
-		this.log.trace ("fetch: type={}", type);
-
-		if (type == null)
-		{
-			this.log.error ("The specified ActivityType is NULL");
-			throw new NullPointerException ();
-		}
-
-		ActivityType result = type;
-
-		if (! (this.fetchQuery ()).contains (type))
-		{
-			result = this.fetchByName (type.getSource (), type.getName ());
-		}
-
-		return result;
-	}
-
-	/**
 	 * Retrieve the <code>ActivityType</code> object from the
 	 * <code>DataStore</code> which has the specified
 	 * <code>ActivitySource</code> and name.

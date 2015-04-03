@@ -148,22 +148,6 @@ public final class MoodleCourseManager extends AbstractManager<Course> implement
 	}
 
 	/**
-	 * Retrieve a <code>Course</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>Course</code>.
-	 *
-	 * @param  course The <code>Course</code> to retrieve, not null
-	 *
-	 * @return        A reference to the <code>Course</code> in the
-	 *                <code>DataStore</code>, may be null
-	 */
-
-	@Override
-	public Course fetch (final Course course)
-	{
-		return this.manager.fetch (course);
-	}
-
-	/**
 	 * Retrieve a <code>Course</code> from the <code>DataStore</code> based on
 	 * its <code>DataStore</code> identifier.
 	 *

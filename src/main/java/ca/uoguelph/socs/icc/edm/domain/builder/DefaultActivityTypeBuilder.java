@@ -240,13 +240,13 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 			throw new NullPointerException ("source is NULL");
 		}
 
-		this.source = (this.manager.getManager (ActivitySource.class, ActivitySourceManager.class)).fetch (source);
-
-		if (this.source == null)
+		if (! (this.manager.getManager (ActivitySource.class, ActivitySourceManager.class)).contains (source))
 		{
 			this.log.error ("The specified ActivitySource does not exist in the DataStore: {}", source);
 			throw new IllegalArgumentException ("ActivitySource is not in the DataStore");
 		}
+
+		this.source = source;
 
 		return this;
 	}

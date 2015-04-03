@@ -86,7 +86,15 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity, S
 	{
 		super (Activity.class, SubActivityElementFactory.class, manager);
 
-		this.parent = this.validateParent ((Activity) this.manager.getArgument ());
+		assert (Activity) this.manager.getArgument () != null : "parent is NULL";
+
+		if (! (this.manager.getManager (Activity.class, ActivityManager.class)).contains ((Activity) this.manager.getArgument ()))
+		{
+			this.log.error ("The parent Activity does not exist in the DataStore: {}", (Activity) this.manager.getArgument ());
+			throw new IllegalArgumentException ("Activity is not in the DataStore");
+		}
+
+		this.parent = (Activity) this.manager.getArgument ();
 	}
 
 	@Override
@@ -232,29 +240,5 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity, S
 	public Activity getParent ()
 	{
 		return this.parent;
-	}
-
-	/**
-	 * Validate the parent <code>Activity</code>.
-	 *
-	 * @param  parent The parent <code>Activity</code>, not null
-	 *
-	 * @return        A reference to the parent activity in the
-	 *                <code>DataStore</code>
-	 */
-
-	private Activity validateParent (final Activity parent)
-	{
-		assert parent != null : "parent is NULL";
-
-		Activity nparent = (this.manager.getManager (Activity.class, ActivityManager.class)).fetch (parent);
-
-		if (nparent == null)
-		{
-			this.log.error ("The parent Activity does not exist in the DataStore: {}", parent);
-			throw new IllegalArgumentException ("Activity is not in the DataStore");
-		}
-
-		return nparent;
 	}
 }

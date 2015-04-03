@@ -106,37 +106,6 @@ public final class DefaultActionManager extends AbstractManager<Action> implemen
 	}
 
 	/**
-	 * Retrieve an <code>Action</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>Action</code>.
-	 *
-	 * @param  action The <code>Action</code> to retrieve, not null
-	 *
-	 * @return        A reference to the <code>Action</code> in the
-	 *                <code>DataStore</code>, may be null
-	 */
-
-	@Override
-	public Action fetch (final Action action)
-	{
-		this.log.trace ("fetch: action={}", action);
-
-		if (action == null)
-		{
-			this.log.error ("The specified Action is NULL");
-			throw new NullPointerException ();
-		}
-
-		Action result = action;
-
-		if (! (this.fetchQuery ()).contains (action))
-		{
-			result = this.fetchByName (action.getName ());
-		}
-
-		return result;
-	}
-
-	/**
 	 * Retrieve the <code>Action</code> with the specified name from the
 	 * <code>DataStore</code>.
 	 *

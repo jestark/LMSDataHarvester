@@ -102,37 +102,6 @@ public final class DefaultEnrolmentManager extends AbstractManager<Enrolment> im
 	}
 
 	/**
-	 * Retrieve an <code>Enrolment</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>Enrolment</code>.
-	 *
-	 * @param  enrolment The <code>Enrolment</code> to retrieve, not null
-	 *
-	 * @return           A reference to the <code>Enrolment</code> in the
-	 *                   <code>DataStore</code>, may be null
-	 */
-
-	@Override
-	public Enrolment fetch (final Enrolment enrolment)
-	{
-		this.log.trace ("fetch: enrolment={}", enrolment);
-
-		if (enrolment == null)
-		{
-			this.log.error ("The specified Enrolment is NULL");
-			throw new NullPointerException ();
-		}
-
-		Enrolment result = enrolment;
-
-		if (! (this.fetchQuery ()).contains (enrolment))
-		{
-			result = null; // this.fetchByName (enrolment.getName ());
-		}
-
-		return result;
-	}
-
-	/**
 	 * Retrieve a list of <code>Enrolment</code> objects from the
 	 * <code>DataStore</code> for the specified <code>Role</code>.
 	 *

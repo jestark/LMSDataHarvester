@@ -97,37 +97,6 @@ public final class DefaultRoleManager extends AbstractManager<Role> implements R
 	}
 
 	/**
-	 * Retrieve an <code>Role</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>Role</code>.
-	 *
-	 * @param  role The <code>Role</code> to retrieve, not null
-	 *
-	 * @return        A reference to the <code>Role</code> in the
-	 *                <code>DataStore</code>, may be null
-	 */
-
-	@Override
-	public Role fetch (final Role role)
-	{
-		this.log.trace ("fetch: role={}", role);
-
-		if (role == null)
-		{
-			this.log.error ("The specified Role is NULL");
-			throw new NullPointerException ();
-		}
-
-		Role result = role;
-
-		if (! (this.fetchQuery ()).contains (role))
-		{
-			result = this.fetchByName (role.getName ());
-		}
-
-		return result;
-	}
-
-	/**
 	 * Retrieve a <code>Role</code> object from the underlying
 	 * <code>DataStore</code> based on its name.
 	 *

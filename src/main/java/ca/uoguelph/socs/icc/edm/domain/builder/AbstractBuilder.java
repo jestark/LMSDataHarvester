@@ -241,27 +241,11 @@ public abstract class AbstractBuilder<T extends Element, U extends ElementFactor
 
 		if (element != this.element)
 		{
-			this.log.debug ("Checking if the Element is already in the DataStore: {}", element);
+			this.log.debug ("Inserting Element into the DataStore: {}", element);
 
-			this.element = this.manager.fetch (element);
-
-			if (this.element == null)
-			{
-				this.log.debug ("Inserting Element into the DataStore: {}", element);
-
-				this.factory.setId (element, this.manager.nextId ());
-				this.element = this.manager.insertElement (element);
-				this.postInsert ();
-			}
-			else if (this.element.identicalTo (element))
-			{
-				this.log.warn ("Identical Element already exists in the DataStore: {}", element);
-			}
-			else
-			{
-				this.log.error ("Element already exists in the DataStore (and it is not identical): {}", element);
-				throw new IllegalStateException ("Element already exists in DataStore");
-			}
+			this.factory.setId (element, this.manager.nextId ());
+			this.element = this.manager.insertElement (element);
+			this.postInsert ();
 		}
 
 		return this.element;

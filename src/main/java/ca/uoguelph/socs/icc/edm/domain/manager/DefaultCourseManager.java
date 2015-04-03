@@ -100,37 +100,6 @@ public final class DefaultCourseManager extends AbstractManager<Course> implemen
 	}
 
 	/**
-	 * Retrieve a <code>Course</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>Course</code>.
-	 *
-	 * @param  course The <code>Course</code> to retrieve, not null
-	 *
-	 * @return        A reference to the <code>Course</code> in the
-	 *                <code>DataStore</code>, may be null
-	 */
-
-	@Override
-	public Course fetch (final Course course)
-	{
-		this.log.trace ("fetch: course={}", course);
-
-		if (course == null)
-		{
-			this.log.error ("The specified Course is NULL");
-			throw new NullPointerException ();
-		}
-
-		Course result = course;
-
-		if (! (this.fetchQuery ()).contains (course))
-		{
-			result = this.fetchByOffering (course.getName (), course.getSemester (), course.getYear ());
-		}
-
-		return result;
-	}
-
-	/**
 	 *  Retrieve a <code>List</code> of <code>Course</code> instances from the
 	 * <code>DataStore</code> based on the time of offering.
 	 *

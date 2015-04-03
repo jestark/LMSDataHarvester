@@ -120,7 +120,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 
 		Enrolment result = this.element;
 
-		if ((this.element == null) || ((this.user.equals (((UserEnrolmentData) this.element).getUser ())) && (this.role.equals (this.element.getRole ())) && (this.course.equals (this.element.getCourse ()))))
+		if ((this.element == null) || (! this.user.equals (((UserEnrolmentData) this.element).getUser ())) || (! this.role.equals (this.element.getRole ())) || (! this.course.equals (this.element.getCourse ())))
 		{
 			result = this.factory.create (this.user, this.course, this.role, this.grade, this.usable);
 		}
@@ -215,13 +215,13 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new NullPointerException ("Course is NULL");
 		}
 
-		this.course = (this.manager.getManager (Course.class, CourseManager.class)).fetch (course);
-
-		if (this.course == null)
+		if (! (this.manager.getManager (Course.class, CourseManager.class)).contains (course))
 		{
 			this.log.error ("This specified Course does not exist in the DataStore");
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
+
+		this.course = course;
 
 		return this;
 	}
@@ -241,9 +241,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new NullPointerException ("Role is NULL");
 		}
 
-		this.role = (this.manager.getManager (Role.class, RoleManager.class)).fetch (role);
-
-		if (this.role == null)
+		if (! (this.manager.getManager (Role.class, RoleManager.class)).contains (role))
 		{
 			this.log.error ("This specified Role does not exist in the DataStore");
 			throw new IllegalArgumentException ("Role is not in the DataStore");
@@ -267,13 +265,13 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new NullPointerException ("User is NULL");
 		}
 
-		this.user = (this.manager.getManager (User.class, UserManager.class)).fetch (user);
-
-		if (this.user == null)
+		if (! (this.manager.getManager (User.class, UserManager.class)).contains (user))
 		{
 			this.log.error ("This specified User does not exist in the DataStore");
 			throw new IllegalArgumentException ("User is not in the DataStore");
 		}
+
+		this.user = user;
 
 		return this;
 	}

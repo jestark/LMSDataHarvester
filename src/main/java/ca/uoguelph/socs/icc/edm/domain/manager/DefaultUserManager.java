@@ -97,37 +97,6 @@ public final class DefaultUserManager extends AbstractManager<User> implements U
 	}
 
 	/**
-	 * Retrieve an <code>User</code> from the <code>DataStore</code> which
-	 * identifies the same as the specified <code>User</code>.
-	 *
-	 * @param  user The <code>User</code> to retrieve, not null
-	 *
-	 * @return        A reference to the <code>User</code> in the
-	 *                <code>DataStore</code>, may be null
-	 */
-
-	@Override
-	public User fetch (final User user)
-	{
-		this.log.trace ("fetch: user={}", user);
-
-		if (user == null)
-		{
-			this.log.error ("The specified User is NULL");
-			throw new NullPointerException ();
-		}
-
-		User result = user;
-
-		if (! (this.fetchQuery ()).contains (user))
-		{
-			result = this.fetchByIdNumber (user.getIdNumber ());
-		}
-
-		return result;
-	}
-
-	/**
 	 * Retrieve a single <code>User</code> object, with the specified ID
 	 * number, from the <code>DataStore</code>.
 	 *
