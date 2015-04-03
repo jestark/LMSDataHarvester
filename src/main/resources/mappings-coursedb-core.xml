@@ -120,6 +120,7 @@
 		<secondary-table name="enrolment_final_grade">
 			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
 		</secondary-table>
+		<inheritance strategy="JOINED"/>
 		<named-query name="EnrolmentData:maxid">
 			<query>SELECT MAX(e.id) FROM Enrolment e</query>
 		</named-query>
@@ -140,7 +141,7 @@
 				<column name="usable" nullable="false"/>
 			</basic>
 			<basic name="finalGrade">
-				<column name="grade"/>
+				<column table="enrolment_final_grade" name="grade"/>
 			</basic>
 			<many-to-one name="role" target-entity="RoleData" optional="false">
 				<join-column name="role_id" nullable="false" referenced-column-name="id"/>
@@ -157,10 +158,8 @@
 	</entity>
 
 	<entity name="UserEnrolment" class="UserEnrolmentData" metadata-complete="true">
-		<table name="enrolment"/>
-		<secondary-table name="enrolment_final_grade">
-			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
-		</secondary-table>
+		<table schema="userdb" name="user_enrolment"/>
+		<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
 		<named-query name="UserEnrolmentData:maxid">
 			<query>SELECT MAX(e.id) FROM UserEnrolment e</query>
 		</named-query>
@@ -175,10 +174,7 @@
 		</named-query>
 		<attributes>
 			<many-to-one name="user" target-entity="UserData" optional="false">
-				<join-table schema="userdb" name="user_enrolment">
-					<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
-					<inverse-join-column name="user_id" nullable="false" referenced-column-name="id"/>
-				</join-table>
+				<join-column name="user_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<transient name="name"/>
 		</attributes>
@@ -386,6 +382,7 @@
 			</many-to-one>
 			<one-to-one name="reference" target-entity="LogReference" mapped-by="entry"/>
 			<transient name="course"/>
+			<transient name="subActivity"/>
 		</attributes>
 	</entity>
 
@@ -403,6 +400,7 @@
 			<transient name="enrolment"/>
 			<transient name="IPAddress"/>
 			<transient name="time"/>
+			<transient name="subActivity"/>
 		</attributes>
 	</entity>
 </entity-mappings>
