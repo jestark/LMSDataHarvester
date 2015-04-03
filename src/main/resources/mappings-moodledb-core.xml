@@ -187,4 +187,60 @@
 			<transient name="grades"/>
 		</attributes>
 	</entity>
+
+		<!--*********************************************************************-->
+	<!-- Core data mapping: Log entries                                      -->
+	<!--*********************************************************************-->
+
+	<entity name="LogEntry" class="ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleLogData" metadata-complete="true">
+		<description>The course activity log</description>
+		<table name="mdl_log"/>
+		<named-query name="MoodleLogData:maxid">
+			<query>SELECT MAX(e.id) FROM LogEntry e</query>
+		</named-query>
+		<named-query name="MoodleLogData:allid">
+			<query>SELECT e.id FROM LogEntry e</query>
+		</named-query>
+		<named-query name="MoodleLogData:all">
+			<query>SELECT e FROM LogEntry e</query>
+		</named-query>
+		<named-query name="MoodleLogData:course">
+			<query>SELECT e FROM LogEntry e WHERE e.course = :course ORDER BY e.id</query>
+		</named-query>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="time" optional="false">
+				<column name="time" nullable="false"/>
+				<convert converter="ca.uoguelph.socs.icc.edm.domain.database.moodle.converter.IntDateConverter"/>
+			</basic>
+			<basic name="actionName" optional="false">
+				<column name="action" nullable="false"/>
+			</basic>
+			<basic name="activityId" optional="false">
+				<column name="cmid" nullable="false"/>
+			</basic>
+			<basic name="module" optional="false">
+				<column name="module" nullable="false"/>
+			</basic>
+			<basic name="info" optional="false">
+				<column name="info" nullable="false"/>
+			</basic>
+			<basic name="IPAddress" optional="false">
+				<column name="ip" nullable="false"/>
+			</basic>
+			<basic name="user" optional="false">
+				<column name="userid" nullable="false"/>
+			</basic>
+			<many-to-one name="course" target-entity="CourseData" optional="false">
+				<join-column name="course" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<transient name="action"/>
+			<transient name="activity"/>
+			<transient name="enrolment"/>
+			<transient name="subActivity"/>
+		</attributes>
+	</entity>
+
 </entity-mappings>

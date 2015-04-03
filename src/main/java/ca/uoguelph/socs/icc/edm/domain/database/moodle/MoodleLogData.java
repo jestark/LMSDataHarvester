@@ -16,26 +16,124 @@
 
 package ca.uoguelph.socs.icc.edm.domain.database.moodle;
 
+import java.io.Serializable;
 import java.util.Date;
 
-import ca.uoguelph.socs.icc.edm.domain.Course;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class MoodleLogData
+import ca.uoguelph.socs.icc.edm.domain.Action;
+import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Enrolment;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.core.AbstractElement;
+import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
+
+public class MoodleLogData extends AbstractElement implements LogEntry
 {
-	private long id;
-	private Date timestamp;
-	private Integer user;
+	/**
+	 * Implementation of the <code>LogEntryElementFactory</code> interface.
+	 * Allows the builders to create instances of <code>LogData</code>.
+	 */
+
+	private static final class Factory extends AbstractElement.Factory<LogEntry> implements LogEntryElementFactory
+	{
+		/**
+		 * Create a new <code>LogEntry</code> instance.  Defaults to the
+		 * current system time, if the specified time is null.
+		 *
+		 * @param  action    The <code>Action</code>, not null
+		 * @param  activity  The <code>Activity</code> upon which the
+		 *                   <code>Action</code> was performed, not null
+		 * @param  enrolment The <code>Enrolment</code> which performed the
+		 *                   <code>Action</code>, not null
+		 * @param  ip        The remote IP Address
+		 * @param  time      The time that the <code>Action</code> was performed
+		 *
+		 * @return           The new <code>LogEntry</code> instance
+		 */
+
+		@Override
+		public LogEntry create (final Action action, final Activity activity, final Enrolment enrolment, final String ip, final Date time)
+		{
+			assert action != null : "action is NULL";
+			assert activity != null : "activity is NULL";
+			assert enrolment != null : "enrolment is NULL";
+
+			throw new UnsupportedOperationException ();
+		}
+
+		/**
+		 * Add the reference to the Sub-Activity to the <code>LogEntry</code>.
+		 * Some <code>LogEntry</code> instances will record an
+		 * <code>Action</code> upon a <code>SubActivity</code>, rather than the
+		 * <code>Activity</code> itself.  This method sets the reference to the
+		 * <code>SubActivity</code> via a <code>LogReference</code> instance.
+		 *
+		 * @param  entry     The <code>LogEntry</code> to which the
+		 *                   <code>LogReference</code> is to be added, not null
+		 * @param  reference The <code>LogReference</code> instance to be added
+		 *                   to the <code>LogEntry</code>, not null
+		 */
+
+		public void setReference (final LogEntry entry, final LogReference reference)
+		{
+			assert entry instanceof MoodleLogData : "entry is not an instance of LogData";
+			assert reference != null : "reference is NULL";
+
+			throw new UnsupportedOperationException ();
+		}
+	}
+
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
+	/** The primary key for the log entry */
+	private Long id;
+
+	/** The enrolment which generated the log entry */
+	private Enrolment enrolment;
+
+	/** The activity which is associated with the log entry */
+	private Activity activity;
+
+	/** The logged action, which was performed on the associated activity */
+	private Action action;
+
+	/** The time at which the action was performed */
+	private Date time;
+
+	/** The originating IP Address for the logged action */
 	private String ip;
+
+	private Long user;
 	private Course course;
 	private String module;
-	private Integer activity;
-	private String action;
+	private Long activityId;
+	private String actionName;
 	private String info;
+
+	/**
+	 * Static initializer to register the <code>LogData</code> class with the
+	 * factories.
+	 */
+
+	static
+	{
+		AbstractElement.registerElement (LogEntry.class, MoodleLogData.class, DefaultLogEntryBuilder.class, LogEntryElementFactory.class, new Factory ());
+	}
 
 	protected MoodleLogData ()
 	{
-		this.id = -1;
-		this.timestamp = null;
+		this.id = null;
+		this.time = null;
 		this.user = null;
 		this.ip = null;
 		this.course = null;
@@ -45,54 +143,100 @@ public class MoodleLogData
 		this.info = null;
 	}
 
-	public long getId ()
+	/**
+	 * Get the <code>DataStore</code> identifier for the <code>LogEntry</code>
+	 * instance.
+	 *
+	 * @return a Long integer containing <code>DataStore</code> identifier
+	 */
+
+	@Override
+	public Long getId ()
 	{
 		return this.id;
 	}
 
-	protected void setId (long id)
+	/**
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>LogEntry</code>
+	 * instance is loaded, or by the <code>LogEntryBuilder</code>
+	 * implementation to set the <code>DataStore</code> identifier, prior to
+	 * storing a new <code>LogEntry</code> instance.
+	 *
+	 * @param  id The <code>DataStore</code> identifier, not null
+	 */
+
+	@Override
+	protected void setId (final Long id)
 	{
 		this.id = id;
 	}
 
-	public Date getTime ()
+	/**
+	 * Get the <code>Enrolment</code> instance for the user which performed the
+	 * logged action.
+	 *
+	 * @return A reference to the associated <code>Enrolment</code>
+	 */
+
+	@Override
+	public Enrolment getEnrolment ()
 	{
-		return this.timestamp;
+		return null;
 	}
 
-	protected void setTime (Date time)
-	{
-		this.timestamp = time;
-	}
-
-	public Integer getUser ()
+	public Long getUser ()
 	{
 		return this.user;
 	}
 
-	protected void setUser (Integer user)
+	protected void setUser (final Long user)
 	{
 		this.user = user;
 	}
 
-	public String getIp ()
-	{
-		return this.ip;
-	}
+	/**
+	 * Get the <code>Course</code> for which the action was logged.
+	 *
+	 * @return A reference to the associated <code>Course</code>
+	 */
 
-	protected void setIp (String ip)
-	{
-		this.ip = ip;
-	}
-
+	@Override
 	public Course getCourse ()
 	{
 		return this.course;
 	}
 
-	protected void setCourse (Course course)
+	protected void setCourse (final Course course)
 	{
 		this.course = course;
+	}
+
+	/**
+	 * Get the <code>Activity</code> upon which the logged action was
+	 * performed.
+	 *
+	 * @return A reference to the associated <code>Activity</code> object.
+	 */
+
+	@Override
+	public Activity getActivity ()
+	{
+		return null;
+	}
+
+	/**
+	 * Get the <code>SubActivity</code> upon which the logged
+	 * <code>Action</code> was performed.
+	 *
+	 * @return A reference to the associated <code>SubActivity</code> instance,
+	 *         may be null
+	 */
+
+	@Override
+	public SubActivity getSubActivity ()
+	{
+		return null;
 	}
 
 	public String getModule ()
@@ -100,43 +244,115 @@ public class MoodleLogData
 		return this.module;
 	}
 
-	protected void setModule (String module)
+	protected void setModule (final String module)
 	{
 		this.module = module;
 	}
 
-	public Integer getActivity ()
+	public Long getActivityId ()
 	{
-		return this.activity;
+		return this.activityId;
 	}
 
-	protected void setActivity (Integer activity)
+	protected void setActivityId (final Long activityId)
 	{
-		this.activity = activity;
+		this.activityId = activityId;
 	}
 
-	public String getAction ()
+	/**
+	 * Get the <code>Action</code> which was performed upon the logged
+	 * activity.
+	 *
+	 * @return A reference to the logged <code>Action</code>
+	 */
+
+	@Override
+	public Action getAction ()
 	{
-		return this.action;
+		return null;
 	}
 
-	protected void setAction (String action)
+	public String getActionName ()
 	{
-		this.action = action;
+		return this.actionName;
 	}
+
+	protected void setActionName (final String actionName)
+	{
+		this.actionName = actionName;
+	}
+
+	/**
+	 * Get the time of the logged action.
+	 *
+	 * @return A <code>Date</code> object containing the logged time
+	 */
+
+	@Override
+	public Date getTime ()
+	{
+		return this.time;
+	}
+
+	protected void setTime (final Date time)
+	{
+		this.time = time;
+	}
+
+	/**
+	 * Get the Internet Protocol address which is associated with the logged
+	 * action.
+	 *
+	 * @return A <code>String</code> containing the IP address, may be null
+	 */
+
+	@Override
+	public String getIPAddress ()
+	{
+		return this.ip;
+	}
+
+	protected void setIPAddress (final String ip)
+	{
+		this.ip = ip;
+	}
+
 
 	public String getInfo ()
 	{
 		return this.info;
 	}
 
-	protected void setInfo (String info)
+	protected void setInfo (final String info)
 	{
 		this.info = info;
 	}
 
+	/**
+	 * Get a <code>String</code> representation of the <code>LogEntry</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>LogEntry</code> instance
+	 */
+
+	@Override
 	public String toString ()
 	{
-		return new String (id + ", " + timestamp + ", " + user + ", " + course + " (" + module + ", " + activity + ", " + action + ": " + info + "), " + ip);
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("enrolment", this.enrolment);
+		builder.append ("action", this.action);
+		builder.append ("activity", this.activity);
+		builder.append ("time", this.time);
+		builder.append ("ipaddress", this.ip);
+		builder.append ("user", this.user);
+		builder.append ("course", this.course);
+		builder.append ("module", this.module);
+		builder.append ("activityId", this.activityId);
+		builder.append ("actionName", this.actionName);
+		builder.append ("info", this.info);
+
+		return builder.toString ();
 	}
 }
