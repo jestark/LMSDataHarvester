@@ -255,28 +255,42 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	}
 
 	/**
-	 * Get the <code>SubActivity</code> upon which the logged action was
+	 * Get the <code>Activity</code> upon which the logged action was
 	 * performed.
 	 *
-	 * @return A reference to the associated <code>Activity</code> instance
+	 * @return A reference to the associated <code>Activity</code> object.
 	 */
 
 	@Override
 	public Activity getActivity ()
 	{
+		return this.entry.getActivity ();
+	}
+
+	/**
+	 * Get the <code>SubActivity</code> upon which the logged
+	 * <code>Action</code> was performed.
+	 *
+	 * @return A reference to the associated <code>SubActivity</code> instance,
+	 *         may be null
+	 */
+
+	@Override
+	public SubActivity getSubActivity ()
+	{
 		return this.subactivity;
 	}
 
 	/**
-	 * Set the <code>SubActivity</code> upon which the logged action was
-	 * performed.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * Set the <code>SubActivity</code> upon which the logged
+	 * <code>Action</code> was performed.  This method is intended to be used
+	 * by a <code>DataStore</code> when the <code>LogEntry</code> instance is
 	 * loaded.
 	 *
 	 * @param  subactivity The <code>SubActivity</code>, not null
 	 */
 
-	protected void setActivity (final SubActivity subactivity)
+	protected void setSubActivity (final SubActivity subactivity)
 	{
 		assert subactivity != null : "subactivity is NULL";
 

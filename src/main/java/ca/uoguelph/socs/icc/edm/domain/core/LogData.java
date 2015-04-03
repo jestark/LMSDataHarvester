@@ -28,6 +28,8 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
 
@@ -359,6 +361,20 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		assert activity != null : "activity is NULL";
 
 		this.activity = activity;
+	}
+
+	/**
+	 * Get the <code>SubActivity</code> upon which the logged
+	 * <code>Action</code> was performed.
+	 *
+	 * @return A reference to the associated <code>SubActivity</code> instance,
+	 *         may be null
+	 */
+
+	@Override
+	public SubActivity getSubActivity ()
+	{
+		return (this.reference != null) ? this.reference.getSubActivity () : null;
 	}
 
 	/**

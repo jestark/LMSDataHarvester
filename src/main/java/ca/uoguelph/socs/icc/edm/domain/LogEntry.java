@@ -38,7 +38,7 @@ import java.util.Date;
  * Once created, <code>LogEntry</code> instances are immutable.
  *
  * @author  James E. Stark
- * @version 1.0
+ * @version 1.1
  * @see     LogEntryBuilder
  * @see     LogEntryManager
  */
@@ -47,7 +47,7 @@ public interface LogEntry extends Element
 {
 	/**
 	 * Get the <code>Enrolment</code> instance for the user which performed the
-	 * logged action.
+	 * logged <code>Action</code>.
 	 *
 	 * @return A reference to the associated <code>Enrolment</code>
 	 */
@@ -55,7 +55,8 @@ public interface LogEntry extends Element
 	public abstract Enrolment getEnrolment();
 
 	/**
-	 * Get the <code>Course</code> for which the action was logged.
+	 * Get the <code>Course</code> for which the <code>Action</code> was
+	 * logged.
 	 *
 	 * @return A reference to the associated <code>Course</code>
 	 */
@@ -63,17 +64,27 @@ public interface LogEntry extends Element
 	public abstract Course getCourse();
 
 	/**
-	 * Get the <code>Activity</code> upon which the logged action was
-	 * performed.
+	 * Get the <code>Activity</code> upon which the logged <code>Action</code>
+	 * was performed.
 	 *
-	 * @return A reference to the associated <code>Activity</code> object.
+	 * @return A reference to the associated <code>Activity</code>
 	 */
 
 	public abstract Activity getActivity();
 
 	/**
+	 * Get the <code>SubActivity</code> upon which the logged
+	 * <code>Action</code> was performed.
+	 *
+	 * @return A reference to the associated <code>SubActivity</code> instance,
+	 *         may be null
+	 */
+
+	public abstract SubActivity getSubActivity ();
+
+	/**
 	 * Get the <code>Action</code> which was performed upon the logged
-	 * activity.
+	 * <code>Activity</code>.
 	 *
 	 * @return A reference to the logged <code>Action</code>
 	 */
@@ -81,16 +92,16 @@ public interface LogEntry extends Element
 	public abstract Action getAction();
 
 	/**
-	 * Get the time of the logged action.
+	 * Get the time of the logged <code>Action</code>.
 	 *
-	 * @return A <code>Date</code> object containing the logged time
+	 * @return A <code>Date</code> containing the logged time
 	 */
 
 	public abstract Date getTime();
 
 	/**
 	 * Get the Internet Protocol address which is associated with the logged
-	 * action.
+	 * <code>Action</code>.
 	 *
 	 * @return A <code>String</code> containing the IP address, may be null
 	 */
