@@ -689,6 +689,8 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		ToStringBuilder builder = new ToStringBuilder (this);
 
 		builder.append ("id", this.id);
+		builder.append ("usable", this.usable);
+		builder.append ("finalgrade", this.finalgrade);
 		builder.append ("course", this.course);
 		builder.append ("role", this.role);
 
