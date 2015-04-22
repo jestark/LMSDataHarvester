@@ -40,10 +40,10 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * that element when they are requested.
  *
  * @author  James E. Stark
- * @version 1.3
+ * @version 1.4
  */
 
-public final class QueryFactory
+final class QueryFactory
 {
 	/**
 	 * Interface to hide the implementation class for the query factory from
@@ -113,9 +113,6 @@ public final class QueryFactory
 		}
 	}
 
-	/** Singleton instance */
-	private static final QueryFactory INSTANCE;
-
 	/** The Log */
 	private final Logger log;
 
@@ -126,32 +123,13 @@ public final class QueryFactory
 	private final Map<Triple<DataStore, Class<?>, Class<?>>, DataStoreQuery<? extends Element>> cache;
 
 	/**
-	 *  static initializer to create the singleton
-	 */
-	static
-	{
-		INSTANCE = new QueryFactory ();
-	}
-
-	/**
-	 * Get an instance of the <code>QueryFactory</code>.
-	 *
-	 * @return      The <code>QueryFactory</code> instance
-	 */
-
-	public static QueryFactory getInstance ()
-	{
-		return INSTANCE;
-	}
-
-	/**
 	 * Create the <code>QueryFactory</code>.
 	 *
 	 * @param  type The domain model interface class for which this factory is
 	 *              to create queries, not null
 	 */
 
-	private QueryFactory ()
+	public QueryFactory ()
 	{
 		this.log = LoggerFactory.getLogger (QueryFactory.class);
 
@@ -224,28 +202,6 @@ public final class QueryFactory
 	}
 
 	/**
-	 * Create a <code>DataStoreQuery</code> for the specified
-	 * <code>DataStore</code>.  If the query already exists in the cache,
-	 * then the cached copy will be returned, otherwise a new
-	 * <code>DataStoreQuery</code> will be created.
-	 *
-	 * @param  type      The <code>Element</code> interface class, not null
-	 * @param  datastore The <code>DataStore</code> for which the query is to
-	 *                   be created, not null
-	 * @return           The <code>DataStoreQuery</code>
-	 */
-
-	public <T extends Element> DataStoreQuery<T> create (final Class<T> type, final DataStore datastore)
-	{
-		this.log.debug ("create: type={}, datastore={}", type, datastore);
-
-		assert type != null : "type is NULL";
-		assert datastore != null : "datastore is NULL";
-
-		return this.create (type, (datastore.getProfile ()).getImplClass (type), datastore);
-	}
-
-	/**
 	 * Remove all of the <code>DataStoreQuery</code> instances for the
 	 * specified <code>DataStore</code> from the cache.
 	 *
@@ -266,16 +222,5 @@ public final class QueryFactory
 				this.cache.remove (key);
 			}
 		}
-	}
-
-	/**
-	 * Remove all queries from the cache.
-	 */
-
-	public void flush ()
-	{
-		this.log.trace ("flush:");
-
-		this.cache.clear ();
 	}
 }

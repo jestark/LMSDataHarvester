@@ -30,7 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
-import ca.uoguelph.socs.icc.edm.domain.datastore.QueryFactory;
+import ca.uoguelph.socs.icc.edm.domain.datastore.AbstractDataStoreQuery;
 
 /**
  * Top level interface for all operations involving the domain model and the
@@ -145,7 +145,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 	{
 		this.log.trace ("fetchQuery:");
 
-		return (QueryFactory.getInstance ()).create (this.type, this.datastore);
+		return AbstractDataStoreQuery.getInstance (this.datastore, this.type, (this.datastore.getProfile ()).getImplClass (this.type));
 	}
 
 	/**
@@ -163,7 +163,7 @@ public abstract class AbstractManager<T extends Element> implements ElementManag
 		assert impl != null : "impl is NULL";
 		assert this.type.isAssignableFrom (impl) : "impl does not extend " + this.type.getSimpleName ();
 
-		return (QueryFactory.getInstance ()).create (this.type, impl, this.datastore);
+		return AbstractDataStoreQuery.getInstance (this.datastore, this.type, impl);
 	}
 
 	/**

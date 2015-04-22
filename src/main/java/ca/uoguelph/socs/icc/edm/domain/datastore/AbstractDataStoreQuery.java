@@ -26,6 +26,9 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGeneratorFactory;
 
 public abstract class AbstractDataStoreQuery<T extends Element, U extends T> implements DataStoreQuery<T>
 {
+	/** The Query factory */
+	private static final QueryFactory FACTORY;
+
 	/** The logger for this DataStoreQuery instance */
 	protected final Logger log;
 
@@ -42,11 +45,76 @@ public abstract class AbstractDataStoreQuery<T extends Element, U extends T> imp
 	private IdGenerator generator;
 
 	/**
-	 * Create the <code>JPADataStoreQuery</code>.
+	 * static initializer to create the Query Factory.
+	 */
+
+	static
+	{
+		FACTORY = new QueryFactory ();
+	}
+
+	/**
+	 * Get an instance of the <code>DataStoreQuery</code> for the specified
+	 * <code>DataStore</code> and <code>Element</code>.
+	 *
+	 * @param <T>       The <code>Element</code> type of the
+	 *                  <code>DataStoreQuery</code>
+	 * @param datastore The <code>DataStore</code> upon which the query is to
+	 *                  be created, not null
+	 * @param type      The <code>Element</code> interface class, not null
+	 * @param impl      The implementation class for which the query is to be
+	 *                  created, not null
+	 *
+	 * @return          The <code>DataStoreQuery</code>
+	 */
+
+	public static final <T extends Element> DataStoreQuery<T> getInstance (final DataStore datastore, final Class<T> type, final Class<? extends Element> impl)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+
+		return FACTORY.create (type, impl, datastore);
+	}
+
+	/**
+	 * Register an <code>Element</code> implementation with the factory.
+	 *
+	 * @param <T>  The type of the element <code>Element</code>.
+	 * @param <U>  The type of the implementation class
+	 * @param type The <code>Element</code> interface class, not null
+	 * @param impl The implementation class to be used in the query, not null
+	 */
+
+	public static final <T extends Element, U extends T> void registerElement (final Class<T> type, final Class<U> impl)
+	{
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+
+		FACTORY.registerClass (type, impl);
+	}
+
+	/**
+	 * Close all of the <code>DataStoreQuery</code> instances for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param datastore The <code>DataStore</code> which is being close, not
+	 *                  null
+	 */
+
+	protected static final void closeAll (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		FACTORY.remove (datastore);
+	}
+
+	/**
+	 * Create the <code>AbstractDataStoreQuery</code>.
 	 *
 	 * @param  datastore The DataStore instance to be queried, not null
 	 * @param  type      The type of objects to return from this query, not null
-	 * @param  impl      The type of objects to query from the database, not
+	 * @param  impl      The type of objects to query from the datastore, not
 	 *                   null
 	 * @see    JPADataStore#createQuery
 	 */
@@ -84,7 +152,15 @@ public abstract class AbstractDataStoreQuery<T extends Element, U extends T> imp
 		return this.impl;
 	}
 
-	protected abstract void close ();
+	/**
+	 * Close the <code>DataStoreQuery</code>, releasing any resources which are
+	 * currently in use.
+	 */
+
+	protected void close ()
+	{
+		this.generator = null;
+	}
 
 	/**
 	 * Get a reference to the <code>DataStore</code> upon which the
@@ -93,7 +169,7 @@ public abstract class AbstractDataStoreQuery<T extends Element, U extends T> imp
 	 * @return A reference to the <code>DataStore</code>
 	 */
 
-	public DataStore getDataStore ()
+	public final DataStore getDataStore ()
 	{
 		return this.datastore;
 	}
@@ -105,7 +181,7 @@ public abstract class AbstractDataStoreQuery<T extends Element, U extends T> imp
 	 * @return A Long containing the ID number
 	 */
 
-	public Long nextId ()
+	public final Long nextId ()
 	{
 		if (this.generator == null)
 		{

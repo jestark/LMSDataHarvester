@@ -22,7 +22,7 @@ import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.QueryFactory;
+import ca.uoguelph.socs.icc.edm.domain.datastore.AbstractDataStoreQuery;
 
 /**
  * Abstract base class for all of the domain model <code>Element</code>
@@ -82,7 +82,7 @@ public abstract class AbstractElement implements Element
 		assert element != null : "element is NULL";
 		assert elementImpl != null : "elementImpl is NULL";
 
-		(QueryFactory.getInstance ()).registerClass (element, elementImpl);
+		AbstractDataStoreQuery.registerElement (element, elementImpl);
 	}
 
 	/**
