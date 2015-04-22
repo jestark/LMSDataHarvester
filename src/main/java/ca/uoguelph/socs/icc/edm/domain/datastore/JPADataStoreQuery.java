@@ -30,13 +30,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Parameter;
 import javax.persistence.TypedQuery;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGeneratorFactory;
 
 /**
  * Add, remove and retrieve data from a database using the Java Persistence
@@ -50,22 +44,10 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGeneratorFactory;
  * @see     JPADataStore
  */
 
-public final class JPADataStoreQuery<T extends Element, X extends T> implements DataStoreQuery<T>
+public final class JPADataStoreQuery<T extends Element, X extends T> extends AbstractDataStoreQuery<T, X>
 {
-	/** The logger for this DataStoreQuery instance */
-	private final Logger log;
-
 	/** The data store instance which is being queried */
-	private final JPADataStore datastore;
-
-	/** The class of objects to be returned by this query */
-	private final Class<T> type;
-
-	/** The class of objects to be queried from the database */
-	private final Class<X> impl;
-
-	/** <code>DataStore</code> ID number generator */
-	private IdGenerator generator;
+	protected final JPADataStore datastore;
 
 	/** Cache of database queries  */
 	private final Map<String, TypedQuery<X>> queries;
@@ -82,37 +64,11 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 
 	protected JPADataStoreQuery (final JPADataStore datastore, final Class<T> type, final Class<X> impl)
 	{
-		this.log = LoggerFactory.getLogger (JPADataStoreQuery.class);
+		super (datastore, type, impl);
 
 		this.datastore = datastore;
-		this.type = type;
-		this.impl = impl;
-
-		this.generator = null;
 
 		this.queries = new HashMap<String, TypedQuery<X>> ();
-	}
-
-	/**
-	 * Get the class representation of the interface type for this query.
-	 *
-	 * @return The class object representing the interface type;
-	 */
-
-	protected Class<T> getInterfaceType ()
-	{
-		return this.type;
-	}
-
-	/**
-	 * Get the class representation of the implementation type for this query.
-	 *
-	 * @return The class object representing the implementation type
-	 */
-
-	protected Class<X> getImplementationType ()
-	{
-		return this.impl;
 	}
 
 	/**
@@ -128,7 +84,7 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 		this.log.trace ("close:");
 
 		this.queries.clear ();
-		this.generator = null;
+//		this.generator = null;
 	}
 
 	/**
@@ -273,35 +229,6 @@ public final class JPADataStoreQuery<T extends Element, X extends T> implements 
 		}
 
 		return query;
-	}
-
-	/**
-	 * Get a reference to the <code>DataStore</code> upon which the
-	 * <code>DataStoreQuery</code> operates.
-	 *
-	 * @return A reference to the <code>DataStore</code>
-	 */
-
-	public DataStore getDataStore ()
-	{
-		return this.datastore;
-	}
-
-	/**
-	 * Get the next available DataStore ID number.  The number will be chosen
-	 * by the IdGenerator algorithm set in the <code>DataStoreProfile</code>
-	 *
-	 * @return A Long containing the ID number
-	 */
-
-	public Long nextId ()
-	{
-		if (this.generator == null)
-		{
-			this.generator = (IdGeneratorFactory.getInstance ()).create (this.type, this);
-		}
-
-		return this.generator.nextId ();
 	}
 
 	/**
