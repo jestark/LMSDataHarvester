@@ -25,9 +25,6 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
@@ -38,11 +35,8 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @see     JPADataStoreTransaction
  */
 
-public final class JPADataStore implements DataStore
+public final class JPADataStore extends AbstractDataStore
 {
-	/** The logger */
-	private final Logger log;
-
 	/** The JPA Entity manager factory for this database */
 	private final EntityManagerFactory emf;
 
@@ -51,9 +45,6 @@ public final class JPADataStore implements DataStore
 
 	/** The transaction object */
 	private final JPADataStoreTransaction transaction;
-
-	/** The profile */
-	private final DataStoreProfile profile;
 
 	/**
 	 * Create the JPA data store.  This method will setup a connection to the
@@ -66,10 +57,9 @@ public final class JPADataStore implements DataStore
 	 *                    database connection.
 	 */
 
-	public JPADataStore (DataStoreProfile profile, String unitname, Map<String, String> properties)
+	public JPADataStore (final DataStoreProfile profile, final String unitname, final Map<String, String> properties)
 	{
-		this.log = LoggerFactory.getLogger (JPADataStore.class);
-		this.profile = profile;
+		super (profile);
 
 		try
 		{
@@ -180,26 +170,14 @@ public final class JPADataStore implements DataStore
 	 */
 
 	@Override
-	public <T extends Element, X extends T> DataStoreQuery<T> createQuery (Class<T> type, Class<X> impl)
+	protected <T extends Element, U extends T> AbstractDataStoreQuery<T, U> createQuery (final Class<T> type, final Class<U> impl)
 	{
 		this.log.trace ("createQuery: type={} impl={}", type, impl);
 
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 
-		return new JPADataStoreQuery<T, X> (this, type, impl);
-	}
-
-	/**
-	 * Get the profile data for the <code>DataStore</code>.
-	 *
-	 * @return A copy of the profile data
-	 */
-
-	@Override
-	public DataStoreProfile getProfile ()
-	{
-		return this.profile;
+		return new JPADataStoreQuery<T, U> (this, type, impl);
 	}
 
 	/**
