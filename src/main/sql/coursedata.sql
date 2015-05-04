@@ -18,8 +18,9 @@ create table if not exists course (
 	unique (year, semester, name)
 );
 
+comment on table course_semester is 'The Semester of offering of the course.  Acts as an Enum with the Values: WINTER, SPRING, and FALL';
 comment on table course is 'All of the course offerings';
-comment on column course.semester  is 'Enumeration specifying the semester in which the course was offered.  Will be one of WINTER, SPRING or FALL';
+comment on column course.semester  is 'Reference to the Semester in which the course was offered';
 comment on column course.year is 'Year in which the course was offered, four digits (ie. 2014)';
 
 --****************************************************************************--
@@ -29,7 +30,7 @@ comment on column course.year is 'Year in which the course was offered, four dig
 -- The sources of the activity data.
 create table if not exists activity_source (
 	id bigserial primary key,
-	name text not null
+	name text unique not null
 );
 
 -- All of the components of the courses, from moodle and otherwise
@@ -115,23 +116,24 @@ comment on column enrolment.usable is 'True if the participant consented to thei
 -- Core log tables
 --****************************************************************************--
 
+-- IP network associated with the log event
+create table if not exists log_network (
+	id bigserial primary key,
+	name text unique not null
+);
+
 -- The log.
 create table if not exists log (
 	id bigserial primary key,
 	enrolment_id bigint not null references enrolment (id) on delete cascade on update cascade,
 	instance_id bigint not null references activity_instance (id) on delete restrict on update cascade,
 	action_id bigint not null references activity_action (id) on delete restrict on update cascade,
+	network_id bigint not null references log_network (id) on delete restrict on update cascade,
 	time timestamp with time zone not null
 );
 
--- IP address associated with the log event
-create table if not exists log_ip (
-	log_id bigint unique not null references log (id) on delete cascade on update cascade,
-	ipaddress inet not null
-);
-
 comment on table log is 'Log of actions taken by participants in a given course';
-comment on table log_ip is 'IP Addresses logged by moodle';
+comment on table log_network is 'Th IP network from which the logged action originated';
 
 --****************************************************************************--
 -- Activity data tables for Moodle modules
@@ -321,11 +323,13 @@ comment on table log_moodle_workshop_submission is 'Relationship table for mappi
 --  List of Known Modules (Activities)
 --****************************************************************************--
 
-insert into course_semester values (1, 'WINTER');
-insert into course_semester values (2, 'SPRING');
-insert into course_semester values (3, 'FALL');
+insert into course_semester values (0, 'WINTER');
+insert into course_semester values (1, 'SPRING');
+insert into course_semester values (2, 'FALL');
 
 insert into activity_source (name) values ('moodle');
+
+insert into log_network values (0, "NONE");
 
 insert into activity (source_id, name) select id, 'blog' from activity_source where name='moodle';
 insert into activity (source_id, name) select id, 'calendar' from activity_source where name='moodle';
