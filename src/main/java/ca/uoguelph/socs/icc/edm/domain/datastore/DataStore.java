@@ -19,12 +19,14 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- *
+ * Representation of a <code>DataStore</code>.  This is an internal interface
+ * used by The <code>DomainModel</code> and <code>ElementBuilder</code>
+ * implementations to manipulate the stored data.
  *
  * @author  James E. Stark
- * @version 1.0
- * @see     DataStoreQuery
- * @see     DataStoreTransaction
+ * @version 2.0
+ * @see     Query
+ * @see     Transaction
  */
 
 public interface DataStore
@@ -36,7 +38,7 @@ public interface DataStore
 	 *         <code>false</code> otherwise
 	 */
 
-	public abstract Boolean isOpen ();
+	public abstract boolean isOpen ();
 
 	/**
 	 * Close the <code>DataStore</code>.
@@ -45,18 +47,42 @@ public interface DataStore
 	public abstract void close ();
 
 	/**
-	 * Get the profile data for the <code>DataStore</code>.
-	 *
-	 * @return A copy of the profile data
-	 */
-
-	public abstract DataStoreProfile getProfile ();
-
-	/**
-	 * Get the transaction manager for the <code>DataStore</code>.
+	 * Get an instance of the transaction manager for the
+	 * <code>DataStore</code>.
 	 *
 	 * @return An instance of the transaction manager
 	 */
 
-	public abstract DataStoreTransaction getTransaction ();
+	public abstract Transaction getTransaction ();
+
+	/**
+	 * Determine if the specifed <code>Element</code> instance exists in the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  entity  The <code>Element</code> instance to check, not null
+	 *
+	 * @return         <code>true</code> if the <code>Element</code> instance
+	 *                 exists in the <code>DataStore</code>, <code>false</code>
+	 *                 otherwise
+	 */
+
+	public abstract boolean contains (Element element);
+
+	/**
+	 * Insert the specified <code>Element</code> instance into the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code> instance to insert, not null
+	 */
+
+	public abstract void insert (Element element);
+
+	/**
+	 * Remove the specified <code>Element</code> instance from the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code> instance to remove, not null
+	 */
+
+	public abstract void remove (Element element);
 }

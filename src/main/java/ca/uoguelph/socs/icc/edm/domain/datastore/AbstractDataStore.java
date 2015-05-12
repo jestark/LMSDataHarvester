@@ -47,7 +47,6 @@ public abstract class AbstractDataStore implements DataStore
 	 * @return A copy of the profile data
 	 */
 
-	@Override
 	public DataStoreProfile getProfile ()
 	{
 		return this.profile;

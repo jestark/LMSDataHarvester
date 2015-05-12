@@ -24,7 +24,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGeneratorFactory;
 
-public abstract class AbstractDataStoreQuery<T extends Element, U extends T> implements DataStoreQuery<T>
+public abstract class AbstractQuery<T extends Element, U extends T> implements Query<T>
 {
 	/** The Query factory */
 	private static final QueryFactory FACTORY;
@@ -32,17 +32,14 @@ public abstract class AbstractDataStoreQuery<T extends Element, U extends T> imp
 	/** The logger for this DataStoreQuery instance */
 	protected final Logger log;
 
-	/** The data store instance which is being queried */
-	protected final DataStore datastore;
-
 	/** The class of objects to be returned by this query */
 	protected final Class<T> type;
 
 	/** The class of objects to be queried from the database */
 	protected final Class<U> impl;
 
-	/** <code>DataStore</code> ID number generator */
-	private IdGenerator generator;
+	/** The name of the <code>Query</code> */
+	private final String name;
 
 	/**
 	 * static initializer to create the Query Factory.
@@ -112,82 +109,61 @@ public abstract class AbstractDataStoreQuery<T extends Element, U extends T> imp
 	/**
 	 * Create the <code>AbstractDataStoreQuery</code>.
 	 *
-	 * @param  datastore The DataStore instance to be queried, not null
-	 * @param  type      The type of objects to return from this query, not null
-	 * @param  impl      The type of objects to query from the datastore, not
-	 *                   null
-	 * @see    JPADataStore#createQuery
+	 * @param  name The name of the query, not null
+	 * @param  type The type of objects to return from this query, not null
+	 * @param  impl The type of objects to query from the
+	 *              <code>DataStore</code>, not null
 	 */
 
-	protected AbstractDataStoreQuery (final DataStore datastore, final Class<T> type, final Class<U> impl)
+	protected AbstractQuery (final String name, final Class<T> type, final Class<U> impl)
 	{
+		assert name != null : "name is NULL";
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+		assert name.length () > 0 : "name is empty";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.datastore = datastore;
+		this.name = name;
 		this.type = type;
 		this.impl = impl;
-
-		this.generator = null;
 	}
 
 	/**
-	 * Get the class representation of the interface type for this query.
+	 * Get the interface <code>Class</code> of the <code>Element</code>
+	 * returned by this <code>Query</code>.
 	 *
-	 * @return The class object representing the interface type;
+	 * @return The <code>Class</code> object representing the type of
+	 *         <code>Element</code> returned by this <code>Query</code>.
 	 */
 
-	protected final Class<T> getInterfaceType ()
+	public final Class<T> getInterfaceClass ()
 	{
 		return this.type;
 	}
 
 	/**
-	 * Get the class representation of the implementation type for this query.
+	 * Get the iplementation <code>Class</code> of the <code>Element</code>
+	 * returned by this <code>Query</code>.
 	 *
-	 * @return The class object representing the implementation type
+	 * @return The <code>Class</code> object representing the implementation
+	 *         type of <code>Element</code> returned by this
+	 *         <code>Query</code>.
 	 */
 
-	protected final Class<U> getImplementationType ()
+	public final Class<?> getImplementationClass ()
 	{
 		return this.impl;
 	}
 
 	/**
-	 * Close the <code>DataStoreQuery</code>, releasing any resources which are
-	 * currently in use.
-	 */
-
-	protected void close ()
-	{
-		this.generator = null;
-	}
-
-	/**
-	 * Get a reference to the <code>DataStore</code> upon which the
-	 * <code>DataStoreQuery</code> operates.
+	 * Get the name of the <code>Query</code>.
 	 *
-	 * @return A reference to the <code>DataStore</code>
+	 * @return A <code>String</code> which identifies the <code>Query</code>.
 	 */
 
-	public final DataStore getDataStore ()
+	public final String getName ()
 	{
-		return this.datastore;
-	}
-
-	/**
-	 * Get the next available DataStore ID number.  The number will be chosen
-	 * by the IdGenerator algorithm set in the <code>DataStoreProfile</code>
-	 *
-	 * @return A Long containing the ID number
-	 */
-
-	public final Long nextId ()
-	{
-		if (this.generator == null)
-		{
-			this.generator = (IdGeneratorFactory.getInstance ()).create (this.type, this);
-		}
-
-		return this.generator.nextId ();
+		return this.name;
 	}
 }
