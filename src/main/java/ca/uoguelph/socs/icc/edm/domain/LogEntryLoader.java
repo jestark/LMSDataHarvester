@@ -20,8 +20,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Manage <code>LogEntry</code> instances in the <code>DataStore</code>.  This
- * interface extends <code>ElementManager</code> with the extra functionality
+ * Load <code>LogEntry</code> instances from the <code>DataStore</code>.  This
+ * interface extends <code>ElementLoader</code> with the extra functionality
  * required to handle <code>LogEntry</code> instances.
  *
  * @author  James E. Stark
@@ -29,17 +29,8 @@ import java.util.List;
  * @see     LogEntryBuilder
  */
 
-public interface LogEntryManager extends ElementManager<LogEntry>
+public interface LogEntryLoader extends ElementLoader<LogEntry>
 {
-	/**
-	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable
-	 * for use with the <code>DataStore</code>.
-	 *
-	 * @return An <code>LogEntryBuilder</code> instance
-	 */
-
-	public abstract LogEntryBuilder getBuilder ();
-
 	/**
 	 * Retrieve a list of <code>LogEntry</code> objects, which are associated
 	 * with the specified course, from the <code>DataStore</code>.

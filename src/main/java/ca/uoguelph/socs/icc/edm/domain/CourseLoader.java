@@ -19,8 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 
 /**
- * Manage <code>Course</code> instances in the <code>DataStore</code>.  This
- * interface extends <code>ElementManager</code> with the extra functionality
+ * Load <code>Course</code> instances from the <code>DataStore</code>.  This
+ * interface extends <code>ElementLoader</code> with the extra functionality
  * required to handle <code>Course</code> instances.
  *
  * @author  James E. Stark
@@ -28,17 +28,8 @@ import java.util.List;
  * @see     CourseBuilder
  */
 
-public interface CourseManager extends ElementManager<Course>
+public interface CourseLoader extends ElementLoader<Course>
 {
-	/**
-	 * Get an instance of the <code>CourseBuilder</code> interface, suitable
-	 * for use with the <code>DataStore</code>.
-	 *
-	 * @return An <code>CourseBuilder</code> instance
-	 */
-
-	public abstract CourseBuilder getBuilder ();
-
 	/**
 	 *  Retrieve a <code>List</code> of <code>Course</code> instances from the
 	 * <code>DataStore</code> based on the time of offering.

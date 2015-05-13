@@ -52,7 +52,7 @@ import java.util.Set;
  * @author  James E. Stark
  * @version 1.0
  * @see     ActivityTypeBuilder
- * @see     ActivityTypeManager
+ * @see     ActivityTypeLoader
  */
 
 public interface ActivityType extends Element

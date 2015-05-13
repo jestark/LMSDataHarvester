@@ -40,7 +40,7 @@ import java.util.Set;
  * @author  James E. Stark
  * @version 1.0
  * @see     UserBuilder
- * @see     UserManager
+ * @see     UserLoader
  */
 
 public interface User extends Element

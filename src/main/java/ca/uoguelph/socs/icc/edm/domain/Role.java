@@ -35,7 +35,7 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @author  James E. Stark
  * @version 1.0
  * @see     RoleBuilder
- * @see     RoleManager
+ * @see     RoleLoader
  */
 
 public interface Role extends Element

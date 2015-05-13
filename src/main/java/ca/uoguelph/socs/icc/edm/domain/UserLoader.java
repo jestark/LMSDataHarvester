@@ -17,8 +17,8 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 /**
- * Manage <code>User</code> instances in the <code>DataStore</code>.  This
- * interface extends <code>ElementManager</code> with the extra functionality
+ * Load <code>User</code> instances from the <code>DataStore</code>.  This
+ * interface extends <code>ElementLoader</code> with the extra functionality
  * required to handle <code>User</code> instances.
  * <p>
  * Since the binding between <code>User</code> instances and
@@ -30,17 +30,8 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @see     UserBuilder
  */
 
-public interface UserManager extends ElementManager<User>
+public interface UserLoader extends ElementLoader<User>
 {
-	/**
-	 * Get an instance of the <code>UserBuilder</code> interface, suitable for
-	 * use with the <code>DataStore</code>.
-	 *
-	 * @return An <code>UserBuilder</code> instance
-	 */
-
-	public abstract UserBuilder getBuilder ();
-
 	/**
 	 * Retrieve a single <code>User</code> object, with the specified id
 	 * number, from the <code>DataStore</code>.

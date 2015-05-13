@@ -17,8 +17,8 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 /**
- * Manage <code>ActivityType</code> instances in the <code>DataStore</code>.
- * This interface extends <code>ElementManager</code> with the extra
+ * Load <code>ActivityType</code> instances from the <code>DataStore</code>.
+ * This interface extends <code>ElementLoader</code> with the extra
  * functionality required to handle <code>ActivityType</code> instances.
  *
  * @author  James E. Stark
@@ -26,17 +26,8 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @see     ActivityTypeBuilder
  */
 
-public interface ActivityTypeManager extends ElementManager<ActivityType>
+public interface ActivityTypeLoader extends ElementLoader<ActivityType>
 {
-	/**
-	 * Get an instance of the <code>ActivityTypeBuilder</code> interface,
-	 * suitable for use with the <code>DataStore</code>.
-	 *
-	 * @return An <code>ActivityTypeBuilder</code> instance
-	 */
-
-	public abstract ActivityTypeBuilder getBuilder ();
-
 	/**
 	 * Retrieve the <code>ActivityType</code> object from the underlying
 	 * data-store which has the specified <code>ActivitySource</code> and name.

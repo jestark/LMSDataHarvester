@@ -42,7 +42,7 @@ import java.util.Set;
  * @author  James E. Stark
  * @version 1.0
  * @see     ActivitySourceBuilder
- * @see     ActivitySourceManager
+ * @see     ActivitySourceLoader
  */
 
 public interface ActivitySource extends Element

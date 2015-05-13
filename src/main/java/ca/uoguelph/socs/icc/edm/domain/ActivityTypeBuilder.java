@@ -97,7 +97,7 @@ public interface ActivityTypeBuilder extends ElementBuilder<ActivityType>
 	 * <code>ActivityType</code> and the specified <code>Action</code>, both
 	 * the <code>ActivityType</code> and <code>Action</code> must be exist in
 	 * the <code>DataStore</code> associated with the
-	 * <code>ActivityTypeManager</code> that is to break the association.
+	 * <code>ActivityTypeBuilder</code> that is to break the association.
 	 * Furthermore, there must be an existing association between the
 	 * <code>ActivityType</code> and the <code>Action</code>, and there must
 	 * not exist any log entries containing the specified <code>Action</code>

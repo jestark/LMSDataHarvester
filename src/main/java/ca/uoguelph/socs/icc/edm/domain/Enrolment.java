@@ -63,7 +63,7 @@ import java.util.Set;
  * @author  James E. Stark
  * @version 1.0
  * @see     EnrolmentBuilder
- * @see     EnrolmentManager
+ * @see     EnrolmentLoader
  */
 
 public interface Enrolment extends Element

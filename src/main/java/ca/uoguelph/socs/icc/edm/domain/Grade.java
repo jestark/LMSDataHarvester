@@ -21,10 +21,9 @@ package ca.uoguelph.socs.icc.edm.domain;
  * particular <code>Activity</code>.  Instances of the <code>Grade</code>
  * interface are identified by the associated instances of the
  * <code>Activity</code> and <code>Enrolment</code> interfaces.  As such, an
- * <code>ElementManager</code> does not exist for the <code>Grade</code>
- * interface.  The functionalit for adding and removing instances of the
- * <code>Grade</code> interface from the <code>DataStore</code> is provided by
- * instances of the <code>EnrolmentManager</code> interface.
+ * <code>ElementLoader</code> does not exist for the <code>Grade</code>
+ * interface, as the <code>Grade</code> instance may be retrieved from the
+ * associated <code>Enrolment</code> or <code>Activity</code>.
  * <p>
  * Within the domain model, <code>Grade</code> is a leaf level interface.  No
  * instances of any other domain model interface depend upon the existence of
@@ -39,7 +38,6 @@ package ca.uoguelph.socs.icc.edm.domain;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     EnrolmentManager
  * @see     GradeBuilder
  */
 

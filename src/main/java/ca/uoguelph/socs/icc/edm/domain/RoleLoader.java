@@ -17,34 +17,25 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 /**
- * Manage <code>Action</code> instances in the <code>DataStore</code>.  This
- * interface extends <code>ElementManager</code> with the extra functionality
- * required to handle <code>Action</code> instances.
+ * Load <code>Role</code> instances from the <code>DataStore</code>.  This
+ * interface extends <code>ElementLoader</code> with the extra functionality
+ * required to handle <code>Role</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ActionBuilder
+ * @see     RoleBuilder
  */
 
-public interface ActionManager extends ElementManager<Action>
+public interface RoleLoader extends ElementLoader<Role>
 {
 	/**
-	 * Get an instance of the <code>ActionBuilder</code> interface, suitable
-	 * for use with the <code>DataStore</code>.
+	 * Retrieve a <code>Role</code> instance from the <code>DataStore</code>
+	 * based on  its name.
 	 *
-	 * @return An <code>ActionBuilder</code> instance
+	 * @param  name The name of the <code>Role</code>, not null
+	 *
+	 * @return      A <code>Role</code> instance
 	 */
 
-	public abstract ActionBuilder getBuilder ();
-
-	/**
-	 * Retrieve the Action with the specified name from the
-	 * <code>DataStore</code>.
-	 *
-	 * @param  name The name of the <code>Action</code> to retrieve, not null
-	 *
-	 * @return      The <code>Action</code> associated with the specified name
-	 */
-
-	public abstract Action fetchByName (String name);
+	public abstract Role fetchByName (String name);
 }

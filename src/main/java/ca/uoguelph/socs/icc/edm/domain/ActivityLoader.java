@@ -16,35 +16,26 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.List;
+
 /**
- * Manage <code>Role</code> instances in the <code>DataStore</code>.  This
- * interface extends <code>ElementManager</code> with the extra functionality
- * required to handle <code>Role</code> instances.
+ * Load <code>Activity</code> instances from the <code>DataStore</code>.  This
+ * interface extends <code>ElementLoader</code> with the extra functionality
+ * required to handle <code>Activity</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     RoleBuilder
+ * @see     ActivityBuilder
  */
 
-public interface RoleManager extends ElementManager<Role>
+public interface ActivityLoader extends ElementLoader<Activity>
 {
 	/**
-	 * Get an instance of the <code>RoleBuilder</code> interface, suitable for
-	 * use with the <code>DataStore</code>.
+	 * Get a <code>List</code> of all of the <code>Activity</code> instances
+	 * which are associated with a particular <code>ActivityType</code>.
 	 *
-	 * @return An <code>RoleBuilder</code> instance
+	 * @param  type The <code>ActivityType</code>, not null
 	 */
 
-	public abstract RoleBuilder getBuilder ();
-
-	/**
-	 * Retrieve a <code>Role</code> instance from the <code>DataStore</code>
-	 * based on  its name.
-	 *
-	 * @param  name The name of the <code>Role</code>, not null
-	 *
-	 * @return      A <code>Role</code> instance
-	 */
-
-	public abstract Role fetchByName (String name);
+	public abstract List<Activity> fetchAllForType (ActivityType type);
 }

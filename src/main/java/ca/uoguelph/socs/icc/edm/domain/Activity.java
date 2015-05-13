@@ -55,7 +55,7 @@ import java.util.Set;
  * @author  James E. Stark
  * @version 1.0
  * @see     ActivityBuilder
- * @see     ActivityManager
+ * @see     ActivityLoader
  */
 
 public interface Activity extends Element

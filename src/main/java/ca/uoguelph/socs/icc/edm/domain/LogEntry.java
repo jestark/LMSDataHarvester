@@ -40,7 +40,7 @@ import java.util.Date;
  * @author  James E. Stark
  * @version 1.1
  * @see     LogEntryBuilder
- * @see     LogEntryManager
+ * @see     LogEntryLoader
  */
 
 public interface LogEntry extends Element

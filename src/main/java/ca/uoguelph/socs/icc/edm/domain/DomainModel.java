@@ -104,6 +104,49 @@ public final class DomainModel
 	}
 
 	/**
+	 * Test an instance of an <code>Element</code> to determine if a reference
+	 * to that <code>Element</code> instance exists in the
+	 * <code>DataStore</code>.  The exact behaviour of this method is
+	 * determined by the implementation of the <code>DataStore</code>.
+	 * <p>
+	 * If the <code>Element</code> instance was created by the current instance
+	 * of the <code>DataStore</code> then this method, should return
+	 * <code>True</code>.  Otherwise, this method should return
+	 * <code>False</code>, even if an identical <code>Element</code> instance
+	 * exists in the <code>DataStore</code>.  Use the <code>fetch</code> method
+	 * to retrieve an instance from the <code>DataStore</code>, if one exists.
+	 *
+	 * @param  element The <code>Element</code> instance to test, not null
+	 *
+	 * @return          <code>True</code> if the <code>DataStore</code>
+	 *                  instance contains a reference to the
+	 *                  <code>Element</code>, <code>False</code> otherwise
+	 */
+
+//	public abstract boolean contains (T element);
+
+	/**
+	 * Insert the specified <code>Element</code> instance into the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code> to insert, not null
+	 *
+	 * @return         A reference to the <code>Element</code> instance in the
+	 *                 <code>DataStore</code>
+	 */
+
+//	public abstract T insert (T element);
+
+	/**
+	 * Remove the specified <code>Element</code> instance from the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code> to remove, not null
+	 */
+
+//	public abstract void remove (T element);
+
+	/**
 	 * Get an instance of the specified <code>ElementManager</code> for the
 	 * <code>DomainModel</code>.
 	 *
@@ -145,6 +188,15 @@ public final class DomainModel
 	}
 
 	/**
+	 * Get an instance of the <code>ActionBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>ActionBuilder</code> instance
+	 */
+
+//	public abstract ActionBuilder getBuilder ();
+
+	/**
 	 * Get the <code>ActionManager</code> for the <code>DomainModel</code>.
 	 *
 	 * @return                       A reference to the
@@ -158,6 +210,62 @@ public final class DomainModel
 	{
 		return this.getManager (Action.class, ActionManager.class);
 	}
+
+		/**
+	 * Get an instance of the <code>ActivityBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
+	 *
+	 * @param  <T>     The type of <code>ActivityBuilder</code>
+	 * @param  builder The <code>ActivityBuilder</code> interface of the
+	 *                 builder to be returned, not null
+	 * @param  type    The <code>ActivityType</code> of the
+	 *                 <code>Activity</code> to be created by the
+	 *                 <code>ActivityBuilder</code>
+	 *
+	 * @return         An <code>ActivityBuilder</code> instance
+	 */
+
+//	public abstract <T extends ActivityBuilder> T getBuilder (Class<T> builder, ActivityType type);
+
+	/**
+	 * Get an instance of the <code>ActivityBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
+	 *
+	 * @param  type The <code>ActivityType</code> of the <code>Activity</code>
+	 *              to be created by the <code>ActivityBuilder</code>
+	 *
+	 * @return      An <code>ActivityBuilder</code> instance
+	 */
+
+//	public abstract ActivityBuilder getBuilder (ActivityType type);
+
+	/**
+	 * Get an instance of the <code>SubActivityBuilder</code> suitable for use
+	 * with the specified <code>Activity</code>.
+	 *
+	 * @param  <T>      The type of <code>SubActivityBuilder</code> to be
+	 *                  returned
+	 * @param  builder  The <code>SubActivityBuilder</code> interface of
+	 *                  the builder to be returned, not null
+	 * @param  activity The <code>Activity</code> instance to which the new
+	 *                  <code>SubActivity</code> instance is to be assigned
+	 *
+	 * @return          A <code>SubActivityBuilder</code> instance
+	 */
+
+//	public abstract <T extends SubActivityBuilder> T getBuilder (Class<T> builder, Activity activity);
+
+	/**
+	 * Get an instance of the <code>SubActivityBuilder</code> suitable for use
+	 * with the specified <code>Activity</code>.
+	 *
+	 * @param  activity The <code>Activity</code> instance to which the new
+	 *                  <code>SubActivity</code> instance is to be assigned
+	 *
+	 * @return          A <code>SubActivityBuilder</code> instance
+	 */
+
+//	public abstract SubActivityBuilder getBuilder (Activity activity);
 
 	/**
 	 * Get the <code>ActivityManager</code> for the <code>DomainModel</code>.
@@ -173,6 +281,15 @@ public final class DomainModel
 	{
 		return this.getManager (Activity.class, ActivityManager.class);
 	}
+
+	/**
+	 * Get an instance of the <code>ActivitySourceBuilder</code> interface,
+	 * suitable for use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>ActivitySourceBuilder</code> instance
+	 */
+
+//	public abstract ActivitySourceBuilder getBuilder ();
 
 	/**
 	 * Get the <code>ActivitySourceManager</code> for the
@@ -191,6 +308,15 @@ public final class DomainModel
 	}
 
 	/**
+	 * Get an instance of the <code>ActivityTypeBuilder</code> interface,
+	 * suitable for use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>ActivityTypeBuilder</code> instance
+	 */
+
+//	public abstract ActivityTypeBuilder getBuilder ();
+
+	/**
 	 * Get the <code>ActivityTypeManager</code> for the <code>DomainModel</code>.
 	 *
 	 * @return                       A reference to the
@@ -204,6 +330,15 @@ public final class DomainModel
 	{
 		return this.getManager (ActivityType.class, ActivityTypeManager.class);
 	}
+
+	/**
+	 * Get an instance of the <code>CourseBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>CourseBuilder</code> instance
+	 */
+
+//	public abstract CourseBuilder getBuilder ();
 
 	/**
 	 * Get the <code>CourseManager</code> for the <code>DomainModel</code>.
@@ -221,6 +356,15 @@ public final class DomainModel
 	}
 
 	/**
+	 * Get an instance of the <code>EnrolmentBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>EnrolmentBuilder</code> instance
+	 */
+
+//	public abstract EnrolmentBuilder getBuilder ();
+
+	/**
 	 * Get the <code>EnrolmentManager</code> for the <code>DomainModel</code>.
 	 *
 	 * @return                       A reference to the
@@ -234,6 +378,15 @@ public final class DomainModel
 	{
 		return this.getManager (Enrolment.class, EnrolmentManager.class);
 	}
+
+	/**
+	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable
+	 * for use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>LogEntryBuilder</code> instance
+	 */
+
+//	public abstract LogEntryBuilder getBuilder ();
 
 	/**
 	 * Get the <code>LogEntryManager</code> for the <code>DomainModel</code>.
@@ -251,6 +404,15 @@ public final class DomainModel
 	}
 
 	/**
+	 * Get an instance of the <code>RoleBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>RoleBuilder</code> instance
+	 */
+
+//	public abstract RoleBuilder getBuilder ();
+
+	/**
 	 * Get the <code>RoleManager</code> for the <code>DomainModel</code>.
 	 *
 	 * @return                       A reference to the <code>RoleManager</code>
@@ -262,6 +424,15 @@ public final class DomainModel
 	{
 		return this.getManager (Role.class, RoleManager.class);
 	}
+
+	/**
+	 * Get an instance of the <code>UserBuilder</code> interface, suitable for
+	 * use with the <code>DataStore</code>.
+	 *
+	 * @return An <code>UserBuilder</code> instance
+	 */
+
+	public abstract UserBuilder getBuilder ();
 
 	/**
 	 * Get the <code>UserManager</code> for the <code>DomainModel</code>.

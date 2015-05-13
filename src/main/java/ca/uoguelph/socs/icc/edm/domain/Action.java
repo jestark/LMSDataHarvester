@@ -50,7 +50,7 @@ import java.util.Set;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ActionManager
+ * @see     ActionLoader
  * @see     ActionBuilder
  */
 
