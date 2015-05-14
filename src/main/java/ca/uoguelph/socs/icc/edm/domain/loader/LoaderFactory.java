@@ -14,33 +14,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.manager;
+package ca.uoguelph.socs.icc.edm.domain.loader;
 
-import ca.uoguelph.socs.icc.edm.domain.ElementManager;
+import ca.uoguelph.socs.icc.edm.domain.ElementLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
- * Create an <code>ElementManager</code> to operate upon the specified
+ * Create an <code>ElementLoader</code> to operate upon the specified
  * <code>DataStore</code>.  Implementations of this interface are intended to
  * be used with the <code>registerFactory</code> and <code>getInstance</code>
- * methods in the <code>AbstractManager</code> to create a specific
- * <code>ElementManager</code>.
+ * methods in the <code>AbstractLoader</code> to create a specific
+ * <code>ElementLoader</code>.
  *
  * @author  James E. Stark
  * @version 1.2
- * @param   <T> The type of <code>ElementManager</code> returned by the factory
- * @see     AbstractManager
+ * @param   <T> The type of <code>ElementLoader</code> returned by the factory
+ * @see     AbstractLoader
  */
 
-public interface ManagerFactory<T>
+public interface LoaderFactory<T>
 {
 	/**
-	 * Create the <code>ElementManager</code>.
+	 * Create the <code>ElementLoader</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code> upon which the
-	 *                   <code>ElementManager</code> will operate, not null
-	 * @return           The <code>ElementManager</code>
+	 *                   <code>ElementLoader</code> will operate, not null
+	 * @return           The <code>ElementLoader</code>
 	 */
 
 	public abstract T create (DataStore datastore);

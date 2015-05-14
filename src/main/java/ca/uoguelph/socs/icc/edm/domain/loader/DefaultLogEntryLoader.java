@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.manager;
+package ca.uoguelph.socs.icc.edm.domain.loader;
 
 import java.util.Date;
 import java.util.List;
@@ -25,78 +25,65 @@ import java.util.HashMap;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
-import ca.uoguelph.socs.icc.edm.domain.LogEntryManager;
+import ca.uoguelph.socs.icc.edm.domain.LogEntryLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Default implementation of the <code>LogEntryManager</code> interface.
+ * Default implementation of the <code>LogEntryLoader</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class DefaultLogEntryManager extends AbstractManager<LogEntry> implements LogEntryManager
+public final class DefaultLogEntryLoader extends AbstractLoader<LogEntry> implements LogEntryLoader
 {
 	/**
-	 * Implementation of the <code>ManagerFactory</code> to create a
-	 * <code>DefaultLogEntryManager</code>.
+	 * Implementation of the <code>LoaderFactory</code> to create a
+	 * <code>DefaultLogEntryLoader</code>.
 	 */
 
-	private static final class Factory implements ManagerFactory<LogEntryManager>
+	private static final class Factory implements LoaderFactory<LogEntryLoader>
 	{
 		/**
-		 * Create an instance of the <code>DefaultLogEntryManager</code>.
+		 * Create an instance of the <code>DefaultLogEntryLoader</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultLogEntryManager</code> will operate,
+		 *                   <code>DefaultLogEntryLoader</code> will operate,
 		 *                   not null
-		 * @return           The <code>DefaultLogEntryManager</code>
+		 * @return           The <code>DefaultLogEntryLoader</code>
 		 */
 
 		@Override
-		public LogEntryManager create (DataStore datastore)
+		public LogEntryLoader create (DataStore datastore)
 		{
 			assert datastore != null : "datastore is NULL";
 
-			return new DefaultLogEntryManager (datastore);
+			return new DefaultLogEntryLoader (datastore);
 		}
 	}
 
 	/**
-	 * Static initializer to register the manager with its
-	 * <code>AbstractManagerFactory</code> implementation.
+	 * Static initializer to register the Loader with its
+	 * <code>AbstractLoaderFactory</code> implementation.
 	 */
 
 	static
 	{
-		AbstractManager.registerManager (LogEntryManager.class, DefaultLogEntryManager.class, new Factory ());
+		AbstractLoader.registerLoader (LogEntryLoader.class, DefaultLogEntryLoader.class, new Factory ());
 	}
 
 	/**
-	 * Create the <code>LogEntryManager</code>.
+	 * Create the <code>LogEntryLoader</code>.
 	 *
 	 * @param  datastore The instance of the <code>DataStore</code> upon which the
-	 *                   <code>LogEntryManager</code> will operate, not null
+	 *                   <code>LogEntryLoader</code> will operate, not null
 	 */
 
-	public DefaultLogEntryManager (final DataStore datastore)
+	public DefaultLogEntryLoader (final DataStore datastore)
 	{
 		super (LogEntry.class, datastore);
-	}
-
-	/**
-	 * Get an instance of the <code>LogEntryBuilder</code> interface, suitable
-	 * for use with the <code>DataStore</code>.
-	 *
-	 * @return An <code>LogEntryBuilder</code> instance
-	 */
-
-	@Override
-	public LogEntryBuilder getBuilder ()
-	{
-		return this.getBuilder (LogEntryBuilder.class);
 	}
 
 	/**

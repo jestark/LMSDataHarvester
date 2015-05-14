@@ -14,86 +14,73 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.manager;
+package ca.uoguelph.socs.icc.edm.domain.loader;
 
 import java.util.Map;
 import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
-import ca.uoguelph.socs.icc.edm.domain.UserManager;
+import ca.uoguelph.socs.icc.edm.domain.UserLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Default implementation of the <code>UserManager</code> interface.
+ * Default implementation of the <code>UserLoader</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class DefaultUserManager extends AbstractManager<User> implements UserManager
+public final class DefaultUserLoader extends AbstractLoader<User> implements UserLoader
 {
 	/**
-	 * Implementation of the <code>ManagerFactory</code> to create a
-	 * <code>DefaultUserManager</code>.
+	 * Implementation of the <code>LoaderFactory</code> to create a
+	 * <code>DefaultUserLoader</code>.
 	 */
 
-	private static final class Factory implements ManagerFactory<UserManager>
+	private static final class Factory implements LoaderFactory<UserLoader>
 	{
 		/**
-		 * Create an instance of the <code>DefaultUserManager</code>.
+		 * Create an instance of the <code>DefaultUserLoader</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultUserManager</code> will be acting,
+		 *                   <code>DefaultUserLoader</code> will be acting,
 		 *                   not null
-		 * @return           The <code>DefaultUserManager</code>
+		 * @return           The <code>DefaultUserLoader</code>
 		 */
 
 		@Override
-		public UserManager create (final DataStore datastore)
+		public UserLoader create (final DataStore datastore)
 		{
 			assert datastore != null : "datastore is NULL";
 
-			return new DefaultUserManager (datastore);
+			return new DefaultUserLoader (datastore);
 		}
 	}
 
 	/**
-	 * Static initializer to register the manager with its
-	 * <code>AbstractManagerFactory</code> implementation.
+	 * Static initializer to register the Loader with its
+	 * <code>AbstractLoaderFactory</code> implementation.
 	 */
 
 	static
 	{
-		AbstractManager.registerManager (UserManager.class, DefaultUserManager.class, new Factory ());
+		AbstractLoader.registerLoader (UserLoader.class, DefaultUserLoader.class, new Factory ());
 	}
 
 	/**
-	 * Create the <code>DefaultUserManager</code>.
+	 * Create the <code>DefaultUserLoader</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code> instance which the
-	 *                   <code>DefaultUserManager</code> will be manipulating,
+	 *                   <code>DefaultUserLoader</code> will be manipulating,
 	 *                   not null
 	 */
 
-	public DefaultUserManager (final DataStore datastore)
+	public DefaultUserLoader (final DataStore datastore)
 	{
 		super (User.class, datastore);
-	}
-
-	/**
-	 * Get an instance of the <code>UserBuilder</code> interface, suitable for
-	 * use with the <code>DataStore</code>.
-	 *
-	 * @return An <code>UserBuilder</code> instance
-	 */
-
-	@Override
-	public UserBuilder getBuilder ()
-	{
-		return this.getBuilder (UserBuilder.class);
 	}
 
 	/**

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.manager;
+package ca.uoguelph.socs.icc.edm.domain.loader;
 
 import java.util.Map;
 
@@ -25,84 +25,66 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
-import ca.uoguelph.socs.icc.edm.domain.ActionManager;
+import ca.uoguelph.socs.icc.edm.domain.ActionLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Default implementation of the <code>ActionManager</code> interface.
+ * Default implementation of the <code>ActionLoader</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class DefaultActionManager extends AbstractManager<Action> implements ActionManager
+public final class DefaultActionLoader extends AbstractLoader<Action> implements ActionLoader
 {
 	/**
-	 * Implementation of the <code>ManagerFactory</code> to create a
-	 * <code>DefaultActionManager</code>.
+	 * Implementation of the <code>LoaderFactory</code> to create a
+	 * <code>DefaultActionLoader</code>.
 	 */
 
-	private static final class Factory implements ManagerFactory<ActionManager>
+	private static final class Factory implements LoaderFactory<ActionLoader>
 	{
 		/**
-		 * Create an instance of the <code>DefaultActionManager</code>.
+		 * Create an instance of the <code>DefaultActionLoader</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultActionManager</code> will operate,
+		 *                   <code>DefaultActionLoader</code> will operate,
 		 *                   not null
 		 *
-		 * @return           The <code>DefaultActionManager</code>
+		 * @return           The <code>DefaultActionLoader</code>
 		 */
 
 		@Override
-		public ActionManager create (final DataStore datastore)
+		public ActionLoader create (final DataStore datastore)
 		{
 			assert datastore != null : "datastore is NULL";
 
-			return new DefaultActionManager (datastore);
+			return new DefaultActionLoader (datastore);
 		}
 	}
 
-	/** The logger */
-	private final Logger log;
-
 	/**
-	 * Static initializer to register the manager with its
-	 * <code>AbstractManagerFactory</code> implementation.
+	 * Static initializer to register the Loader with its
+	 * <code>AbstractLoaderFactory</code> implementation.
 	 */
 
 	static
 	{
-		AbstractManager.registerManager (ActionManager.class, DefaultActionManager.class, new Factory ());
+		AbstractLoader.registerLoader (ActionLoader.class, DefaultActionLoader.class, new Factory ());
 	}
 
 	/**
-	 * Create the <code>ActionManager</code>
+	 * Create the <code>ActionLoader</code>
 	 *
 	 * @param  datastore The instance of the <code>DataStore</code> upon which
-	 *                   the <code>ActionManager</code> will operate, not null
+	 *                   the <code>ActionLoader</code> will operate, not null
 	 */
 
-	public DefaultActionManager (final DataStore datastore)
+	public DefaultActionLoader (final DataStore datastore)
 	{
 		super (Action.class, datastore);
-
-		this.log = LoggerFactory.getLogger (ActionManager.class);
-	}
-
-	/**
-	 * Get an instance of the <code>ActionBuilder</code> interface, suitable
-	 * for use with the <code>DataStore</code>.
-	 *
-	 * @return An <code>ActionBuilder</code> instance
-	 */
-
-	@Override
-	public ActionBuilder getBuilder ()
-	{
-		return this.getBuilder (ActionBuilder.class);
 	}
 
 	/**

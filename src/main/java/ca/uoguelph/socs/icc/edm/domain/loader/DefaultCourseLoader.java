@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.manager;
+package ca.uoguelph.socs.icc.edm.domain.loader;
 
 import java.util.List;
 import java.util.Map;
@@ -23,80 +23,67 @@ import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
-import ca.uoguelph.socs.icc.edm.domain.CourseManager;
+import ca.uoguelph.socs.icc.edm.domain.CourseLoader;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Default implementation of the <code>CourseManager</code> interface.
+ * Default implementation of the <code>CourseLoader</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class DefaultCourseManager extends AbstractManager<Course> implements CourseManager
+public final class DefaultCourseLoader extends AbstractLoader<Course> implements CourseLoader
 {
 	/**
-	 * Implementation of the <code>ManagerFactory</code> to create a
-	 * <code>DefaultCourseManager</code>.
+	 * Implementation of the <code>LoaderFactory</code> to create a
+	 * <code>DefaultCourseLoader</code>.
 	 */
 
-	private static final class Factory implements ManagerFactory<CourseManager>
+	private static final class Factory implements LoaderFactory<CourseLoader>
 	{
 		/**
-		 * Create an instance of the <code>DefaultCourseManager</code>.
+		 * Create an instance of the <code>DefaultCourseLoader</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultCourseManager</code> will operate,
+		 *                   <code>DefaultCourseLoader</code> will operate,
 		 *                   not null
 		 *
-		 * @return           The <code>DefaultCourseManager</code>
+		 * @return           The <code>DefaultCourseLoader</code>
 		 */
 
 		@Override
-		public CourseManager create (DataStore datastore)
+		public CourseLoader create (DataStore datastore)
 		{
 			assert datastore != null : "datastore is NULL";
 
-			return new DefaultCourseManager (datastore);
+			return new DefaultCourseLoader (datastore);
 		}
 	}
 
 	/**
-	 * Static initializer to register the manager with its
-	 * <code>AbstractManagerFactory</code> implementation.
+	 * Static initializer to register the Loader with its
+	 * <code>AbstractLoaderFactory</code> implementation.
 	 */
 
 	static
 	{
-		AbstractManager.registerManager (CourseManager.class, DefaultCourseManager.class, new Factory ());
+		AbstractLoader.registerLoader (CourseLoader.class, DefaultCourseLoader.class, new Factory ());
 	}
 
 	/**
-	 * Create the <code>CourseManager</code>.
+	 * Create the <code>CourseLoader</code>.
 	 *
 	 * @param  datastore The instance of the <code>DataStore</code> upon which
-	 *                   the <code>CourseManager</code> will operate, not null
+	 *                   the <code>CourseLoader</code> will operate, not null
 	 */
 
-	public DefaultCourseManager (final DataStore datastore)
+	public DefaultCourseLoader (final DataStore datastore)
 	{
 		super (Course.class, datastore);
-	}
-
-	/**
-	 * Get an instance of the <code>CourseBuilder</code> interface, suitable
-	 * for use with the <code>DataStore</code>.
-	 *
-	 * @return An <code>CourseBuilder</code> instance
-	 */
-
-	@Override
-	public CourseBuilder getBuilder ()
-	{
-		return this.getBuilder (CourseBuilder.class);
 	}
 
 	/**

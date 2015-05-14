@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.manager;
+package ca.uoguelph.socs.icc.edm.domain.loader;
 
 import java.util.Map;
 
@@ -22,78 +22,65 @@ import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
-import ca.uoguelph.socs.icc.edm.domain.RoleManager;
+import ca.uoguelph.socs.icc.edm.domain.RoleLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Default implementation of the <code>RoleManager</code> interface.
+ * Default implementation of the <code>RoleLoader</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class DefaultRoleManager extends AbstractManager<Role> implements RoleManager
+public final class DefaultRoleLoader extends AbstractLoader<Role> implements RoleLoader
 {
 	/**
-	 * Implementation of the <code>ManagerFactory</code> to create a
-	 * <code>DefaultRoleManager</code>.
+	 * Implementation of the <code>LoaderFactory</code> to create a
+	 * <code>DefaultRoleLoader</code>.
 	 */
 
-	private static final class Factory implements ManagerFactory<RoleManager>
+	private static final class Factory implements LoaderFactory<RoleLoader>
 	{
 		/**
-		 * Create an instance of the <code>DefaultRoleManager</code>.
+		 * Create an instance of the <code>DefaultRoleLoader</code>.
 		 *
 		 * @param  model The <code>DataStore</code> upon which the
-		 *               <code>DefaultRoleManager</code> will operate, not null
-		 * @return       The <code>DefaultRoleManager</code>
+		 *               <code>DefaultRoleLoader</code> will operate, not null
+		 * @return       The <code>DefaultRoleLoader</code>
 		 */
 
 		@Override
-		public RoleManager create (DataStore datastore)
+		public RoleLoader create (DataStore datastore)
 		{
 			assert datastore != null : "datastore is NULL";
 
-			return new DefaultRoleManager (datastore);
+			return new DefaultRoleLoader (datastore);
 		}
 	}
 
 	/**
-	 * Static initializer to register the manager with its
-	 * <code>AbstractManagerFactory</code> implementation.
+	 * Static initializer to register the Loader with its
+	 * <code>AbstractLoaderFactory</code> implementation.
 	 */
 
 	static
 	{
-		AbstractManager.registerManager (RoleManager.class, DefaultRoleManager.class, new Factory ());
+		AbstractLoader.registerLoader (RoleLoader.class, DefaultRoleLoader.class, new Factory ());
 	}
 
 	/**
-	 * Create the <code>DefaultRoleManager</code>.
+	 * Create the <code>DefaultRoleLoader</code>.
 	 *
 	 * @param  datastore The instance of the <code>DataStore</code> upon which
-	 *                   the <code>DefaultRoleManager</code> will operate, not
+	 *                   the <code>DefaultRoleLoader</code> will operate, not
 	 *                   null
 	 */
 
-	public DefaultRoleManager (final DataStore datastore)
+	public DefaultRoleLoader (final DataStore datastore)
 	{
 		super (Role.class, datastore);
-	}
-
-	/**
-	 * Get an instance of the <code>RoleBuilder</code> interface, suitable for
-	 * use with the <code>DataStore</code>.
-	 *
-	 * @return An <code>RoleBuilder</code> instance
-	 */
-
-	@Override
-	public RoleBuilder getBuilder ()
-	{
-		return this.getBuilder (RoleBuilder.class);
 	}
 
 	/**

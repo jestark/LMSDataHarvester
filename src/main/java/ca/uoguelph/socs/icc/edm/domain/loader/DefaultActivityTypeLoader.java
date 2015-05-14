@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.manager;
+package ca.uoguelph.socs.icc.edm.domain.loader;
 
 import java.util.Map;
 
@@ -24,79 +24,66 @@ import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
-import ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager;
+import ca.uoguelph.socs.icc.edm.domain.ActivityTypeLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Default implementation of the <code>ActivityTypeManager</code> interface.
+ * Default implementation of the <code>ActivityTypeLoader</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class DefaultActivityTypeManager extends AbstractManager<ActivityType> implements ActivityTypeManager
+public final class DefaultActivityTypeLoader extends AbstractLoader<ActivityType> implements ActivityTypeLoader
 {
 	/**
-	 * Implementation of the <code>ManagerFactory</code> to create a
-	 * <code>DefaultActivityTypeManager</code>.
+	 * Implementation of the <code>LoaderFactory</code> to create a
+	 * <code>DefaultActivityTypeLoader</code>.
 	 */
 
-	private static final class Factory implements ManagerFactory<ActivityTypeManager>
+	private static final class Factory implements LoaderFactory<ActivityTypeLoader>
 	{
 		/**
-		 * Create an instance of the <code>DefaultActivityTypeManager</code>.
+		 * Create an instance of the <code>DefaultActivityTypeLoader</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultActivityTypeManager</code> will
+		 *                   <code>DefaultActivityTypeLoader</code> will
 		 *                   operate, not null
-		 * @return           The <code>DefaultActivityTypeManager</code>
+		 * @return           The <code>DefaultActivityTypeLoader</code>
 		 */
 
 		@Override
-		public ActivityTypeManager create (final DataStore datastore)
+		public ActivityTypeLoader create (final DataStore datastore)
 		{
 			assert datastore != null : "datastore is NULL";
 
-			return new DefaultActivityTypeManager (datastore);
+			return new DefaultActivityTypeLoader (datastore);
 		}
 	}
 
 	/**
-	 * Static initializer to register the manager with its
-	 * <code>AbstractManagerFactory</code> implementation.
+	 * Static initializer to register the Loader with its
+	 * <code>AbstractLoaderFactory</code> implementation.
 	 */
 
 	static
 	{
-		AbstractManager.registerManager (ActivityTypeManager.class, DefaultActivityTypeManager.class, new Factory ());
+		AbstractLoader.registerLoader (ActivityTypeLoader.class, DefaultActivityTypeLoader.class, new Factory ());
 	}
 
 	/**
-	 * Create the <code>ActivityType</code> manager.
+	 * Create the <code>ActivityType</code> Loader.
 	 *
 	 * @param  datastore The instance of the <code>DataStore</code> upon which
-	 *                   the <code>ActivityTypeManager</code> will operate, not
+	 *                   the <code>ActivityTypeLoader</code> will operate, not
 	 *                   null
 	 */
 
-	public DefaultActivityTypeManager (final DataStore datastore)
+	public DefaultActivityTypeLoader (final DataStore datastore)
 	{
 		super (ActivityType.class, datastore);
-	}
-
-	/**
-	 * Get an instance of the <code>ActivityTypeBuilder</code> interface,
-	 * suitable for use with the <code>DataStore</code>.
-	 *
-	 * @return An <code>ActivityTypeBuilder</code> instance
-	 */
-
-	@Override
-	public ActivityTypeBuilder getBuilder ()
-	{
-		return this.getBuilder (ActivityTypeBuilder.class);
 	}
 
 	/**

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.manager;
+package ca.uoguelph.socs.icc.edm.domain.loader;
 
 import java.util.Map;
 
@@ -25,84 +25,66 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
-import ca.uoguelph.socs.icc.edm.domain.ActivitySourceManager;
+import ca.uoguelph.socs.icc.edm.domain.ActivitySourceLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
- * Default implementation of the <code>ActivitySourceManager</code> interface.
+ * Default implementation of the <code>ActivitySourceLoader</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class DefaultActivitySourceManager extends AbstractManager<ActivitySource> implements ActivitySourceManager
+public final class DefaultActivitySourceLoader extends AbstractLoader<ActivitySource> implements ActivitySourceLoader
 {
 	/**
-	 * Implementation of the <code>ManagerFactory</code> to create a
-	 * <code>DefaultActivitySourceManager</code>.
+	 * Implementation of the <code>LoaderFactory</code> to create a
+	 * <code>DefaultActivitySourceLoader</code>.
 	 */
 
-	private static final class Factory implements ManagerFactory<ActivitySourceManager>
+	private static final class Factory implements LoaderFactory<ActivitySourceLoader>
 	{
 		/**
-		 * Create an instance of the <code>DefaultActivitySourceManager</code>.
+		 * Create an instance of the <code>DefaultActivitySourceLoader</code>.
 		 *
 		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultActivitySourceManager</code> will
+		 *                   <code>DefaultActivitySourceLoader</code> will
 		 *                   operate, not null
-		 * @return           The <code>DefaultActivitySourceManager</code>
+		 * @return           The <code>DefaultActivitySourceLoader</code>
 		 */
 
 		@Override
-		public ActivitySourceManager create (DataStore datastore)
+		public ActivitySourceLoader create (DataStore datastore)
 		{
 			assert datastore != null : "datastore is NULL";
 
-			return new DefaultActivitySourceManager (datastore);
+			return new DefaultActivitySourceLoader (datastore);
 		}
 	}
 
-	/** The logger */
-	private final Logger log;
-
 	/**
-	 * Static initializer to register the manager with its
-	 * <code>AbstractManagerFactory</code> implementation.
+	 * Static initializer to register the Loader with its
+	 * <code>AbstractLoaderFactory</code> implementation.
 	 */
 
 	static
 	{
-		AbstractManager.registerManager (ActivitySourceManager.class, DefaultActivitySourceManager.class, new Factory ());
+		AbstractLoader.registerLoader (ActivitySourceLoader.class, DefaultActivitySourceLoader.class, new Factory ());
 	}
 
 	/**
-	 * Create the <code>ActivitySourceManager</code>.
+	 * Create the <code>ActivitySourceLoader</code>.
 	 *
 	 * @param  datastore The instance of the <code>DataStore</code> upon which
-	 *                   the <code>ActivitySourceManager</code> will operate,
+	 *                   the <code>ActivitySourceLoader</code> will operate,
 	 *                   not null
 	 */
 
-	public DefaultActivitySourceManager (final DataStore datastore)
+	public DefaultActivitySourceLoader (final DataStore datastore)
 	{
 		super (ActivitySource.class, datastore);
-
-		this.log = LoggerFactory.getLogger (ActivitySourceManager.class);
-	}
-
-	/**
-	 * Get an instance of the <code>ActivitySourceBuilder</code> interface,
-	 * suitable for use with the <code>DataStore</code>.
-	 *
-	 * @return An <code>ActivitySourceBuilder</code> instance
-	 */
-
-	@Override
-	public ActivitySourceBuilder getBuilder ()
-	{
-		return this.getBuilder (ActivitySourceBuilder.class);
 	}
 
 	/**
