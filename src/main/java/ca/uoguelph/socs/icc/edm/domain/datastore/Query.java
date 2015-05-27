@@ -16,7 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -65,16 +66,53 @@ public interface Query<T extends Element>
 	public abstract String getName ();
 
 	/**
-	 * Get a <code>Map</code> initialized with the names of the parameters for
-	 * the <code>Query</code>.  This method will create a <code>Map</code>
-	 * suitable for use with the <code>query</code> method.  The keys of the
-	 * <code>Map</code> will be initialized to the names of the
-	 * <code>Query</code> parameters, and the values will be initialized to
-	 * <code>null</code>.
+	 * Get the <code>Set</code> of the parameter names for the
+	 * <code>Query</code>.
 	 *
-	 * @return A <code>Map</code> with the keys initialized to the names of the
-	 *         parameters for the <code>Query</code>.
+	 * @return A <code>Set</code> containing the names of the parameters
 	 */
 
-	public abstract Map<String, Object> getParameterMap ();
+	public abstract Set<String> getParameters ();
+
+	/**
+	 * Set a value for a specific parameter.
+	 *
+	 * @param  name                     The name of the parameter
+	 * @param  value                    The value to be queried for the
+	 *                                  parameter
+	 *
+	 * @return                          This <code>Query</code>
+	 * @throws IllegalArgumentException if the specified parameter does not
+	 *                                  exist
+	 * @see    #getParameters
+	 */
+
+	public abstract Query<T> setParameter (String name, Object value);
+
+	/**
+	 * Fetch the <code>Element</code> instance from the <code>DataStore</code>
+	 * which matches the parameters set on the <code>Query</code>.  Values must
+	 * be specified for all of the parameters for the <code>Query</code>.
+	 *
+	 * @return The <code>Element</code> instance which matches the parameters
+	 *         specified for the query, null if no <code>Element</code>
+	 *         instances exist in the <code>DataStore</code> that match the
+	 *         <code>Query</code>
+	 */
+
+	public abstract T query ();
+
+	/**
+	 * Fetch a <code>List</code> of <code>Element</code> instances from the
+	 * <code>DataStore</code> which match the specified query parameters.
+	 * Values must be specified for all of the parameters for the
+	 * <code>Query</code>.
+	 *
+	 * @return The <code>List</code> of <code>Element</code> instances which
+	 *         match the parameters specified for the query.  The
+	 *         <code>List</code> will be empty if no <code>Element</code>
+	 *         instances match the <code>Query</code>.
+	 */
+
+	public abstract List<T> queryAll ();
 }
