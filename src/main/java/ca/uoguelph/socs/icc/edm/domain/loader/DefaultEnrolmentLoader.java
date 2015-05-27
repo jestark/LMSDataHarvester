@@ -21,15 +21,11 @@ import java.util.Map;
 
 import java.util.HashMap;
 
-import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
-import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentLoader;
-import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  * Default implementation of the <code>EnrolmentLoader</code> interface.
@@ -41,38 +37,13 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 public final class DefaultEnrolmentLoader extends AbstractLoader<Enrolment> implements EnrolmentLoader
 {
 	/**
-	 * Implementation of the <code>LoaderFactory</code> to create a
-	 * <code>DefaultEnrolmentLoader</code>.
-	 */
-
-	private static final class Factory implements LoaderFactory<EnrolmentLoader>
-	{
-		/**
-		 * Create an instance of the <code>DefaultEnrolmentLoader</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultEnrolmentLoader</code> will operate,
-		 *                   not null
-		 * @return           The <code>DefaultEnrolmentLoader</code>
-		 */
-
-		@Override
-		public EnrolmentLoader create (DataStore datastore)
-		{
-			assert datastore != null : "datastore is NULL";
-
-			return new DefaultEnrolmentLoader (datastore);
-		}
-	}
-
-	/**
-	 * Static initializer to register the Loader with its
-	 * <code>AbstractLoaderFactory</code> implementation.
+	 * Static initializer to register the <code>EnrolmentLoader</code> with the
+	 * <code>LoaderFactory</code>.
 	 */
 
 	static
 	{
-		AbstractLoader.registerLoader (EnrolmentLoader.class, DefaultEnrolmentLoader.class, new Factory ());
+		AbstractLoader.registerLoader (Enrolment.class, DefaultEnrolmentLoader::new);
 	}
 
 	/**
@@ -98,6 +69,7 @@ public final class DefaultEnrolmentLoader extends AbstractLoader<Enrolment> impl
 	 * @return      A <code>List</code> of <code>Enrolment</code> instances
 	 */
 
+	@Override
 	public List<Enrolment> fetchAllForRole (final Role role)
 	{
 		this.log.trace ("fetchingAllForRole: role={}", role);
@@ -108,9 +80,6 @@ public final class DefaultEnrolmentLoader extends AbstractLoader<Enrolment> impl
 			throw new NullPointerException ();
 		}
 
-		Map<String, Object> params = new HashMap<String, Object> ();
-		params.put ("role", role);
-
-		return (this.fetchQuery ()).queryAll ("role", params);
+		return ((this.fetchQuery ("role")).setParameter ("role", role)).queryAll ();
 	}
 }

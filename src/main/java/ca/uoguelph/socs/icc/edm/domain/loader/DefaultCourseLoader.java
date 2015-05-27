@@ -22,12 +22,11 @@ import java.util.Map;
 import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.CourseLoader;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Default implementation of the <code>CourseLoader</code> interface.
@@ -39,39 +38,13 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 public final class DefaultCourseLoader extends AbstractLoader<Course> implements CourseLoader
 {
 	/**
-	 * Implementation of the <code>LoaderFactory</code> to create a
-	 * <code>DefaultCourseLoader</code>.
-	 */
-
-	private static final class Factory implements LoaderFactory<CourseLoader>
-	{
-		/**
-		 * Create an instance of the <code>DefaultCourseLoader</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultCourseLoader</code> will operate,
-		 *                   not null
-		 *
-		 * @return           The <code>DefaultCourseLoader</code>
-		 */
-
-		@Override
-		public CourseLoader create (DataStore datastore)
-		{
-			assert datastore != null : "datastore is NULL";
-
-			return new DefaultCourseLoader (datastore);
-		}
-	}
-
-	/**
-	 * Static initializer to register the Loader with its
-	 * <code>AbstractLoaderFactory</code> implementation.
+	 * Static initializer to register the <code>CourseLoader</code> with the
+	 * <code>LoaderFactory</code>.
 	 */
 
 	static
 	{
-		AbstractLoader.registerLoader (CourseLoader.class, DefaultCourseLoader.class, new Factory ());
+		AbstractLoader.registerLoader (Course.class, DefaultCourseLoader::new);
 	}
 
 	/**
@@ -96,6 +69,7 @@ public final class DefaultCourseLoader extends AbstractLoader<Course> implements
 	 * @return          A <code>List</code> of <code>Course</code> instances
 	 */
 
+	@Override
 	public List<Course> fetchAllForOffering (final Semester semester, final Integer year)
 	{
 		this.log.trace ("fetchAllForOffering: semester={}, year={}", semester, year);
@@ -112,11 +86,11 @@ public final class DefaultCourseLoader extends AbstractLoader<Course> implements
 			throw new NullPointerException ();
 		}
 
-		Map<String, Object> params = new HashMap<String, Object> ();
-		params.put ("semester", semester);
-		params.put ("year", year);
+		Query<Course> query = this.fetchQuery ("allsemester");
+		query.setParameter ("semester", semester);
+		query.setParameter ("year", year);
 
-		return (this.fetchQuery ()).queryAll ("allsemester", params);
+		return query.queryAll ();
 	}
 
 	/**
@@ -132,6 +106,7 @@ public final class DefaultCourseLoader extends AbstractLoader<Course> implements
 	 * @return          A <code>List</code> of <code>Course</code> instances
 	 */
 
+	@Override
 	public List<Course> fetchAllForOffering (final String name, final Semester semester, final Integer year)
 	{
 		this.log.trace ("fetchAllForOffering: name={}, semester={}, year={}", name, semester, year);
@@ -154,12 +129,12 @@ public final class DefaultCourseLoader extends AbstractLoader<Course> implements
 			throw new NullPointerException ();
 		}
 
-		Map<String, Object> params = new HashMap<String, Object> ();
-		params.put ("semester", semester);
-		params.put ("year", year);
-		params.put ("name", name);
+		Query<Course> query = this.fetchQuery ("alloffering");
+		query.setParameter ("semester", semester);
+		query.setParameter ("year", year);
+		query.setParameter ("name", name);
 
-		return (this.fetchQuery ()).queryAll ("alloffering", params);
+		return query.queryAll ();
 	}
 
 	/**
@@ -173,6 +148,7 @@ public final class DefaultCourseLoader extends AbstractLoader<Course> implements
 	 * @return          A single <code>Course</code> object
 	 */
 
+	@Override
 	public Course fetchByOffering (final String name, final Semester semester, final Integer year)
 	{
 		this.log.trace ("fetchAllForOffering: name={}, semester={}, year={}", name, semester, year);
@@ -195,11 +171,11 @@ public final class DefaultCourseLoader extends AbstractLoader<Course> implements
 			throw new NullPointerException ();
 		}
 
-		Map<String, Object> params = new HashMap<String, Object> ();
-		params.put ("semester", semester);
-		params.put ("year", year);
-		params.put ("name", name);
+		Query<Course> query = this.fetchQuery ("offering");
+		query.setParameter ("semester", semester);
+		query.setParameter ("year", year);
+		query.setParameter ("name", name);
 
-		return (this.fetchQuery ()).query ("offering", params);
+		return query.query ();
 	}
 }

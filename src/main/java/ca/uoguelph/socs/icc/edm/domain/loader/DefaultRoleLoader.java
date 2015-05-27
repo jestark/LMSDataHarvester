@@ -25,7 +25,6 @@ import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
 import ca.uoguelph.socs.icc.edm.domain.RoleLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  * Default implementation of the <code>RoleLoader</code> interface.
@@ -37,37 +36,13 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 public final class DefaultRoleLoader extends AbstractLoader<Role> implements RoleLoader
 {
 	/**
-	 * Implementation of the <code>LoaderFactory</code> to create a
-	 * <code>DefaultRoleLoader</code>.
-	 */
-
-	private static final class Factory implements LoaderFactory<RoleLoader>
-	{
-		/**
-		 * Create an instance of the <code>DefaultRoleLoader</code>.
-		 *
-		 * @param  model The <code>DataStore</code> upon which the
-		 *               <code>DefaultRoleLoader</code> will operate, not null
-		 * @return       The <code>DefaultRoleLoader</code>
-		 */
-
-		@Override
-		public RoleLoader create (DataStore datastore)
-		{
-			assert datastore != null : "datastore is NULL";
-
-			return new DefaultRoleLoader (datastore);
-		}
-	}
-
-	/**
-	 * Static initializer to register the Loader with its
-	 * <code>AbstractLoaderFactory</code> implementation.
+	 * Static initializer to register the <code>RoleLoader</code> with the
+	 * <code>LoaderFactory</code>.
 	 */
 
 	static
 	{
-		AbstractLoader.registerLoader (RoleLoader.class, DefaultRoleLoader.class, new Factory ());
+		AbstractLoader.registerLoader (Role.class, DefaultRoleLoader::new);
 	}
 
 	/**
@@ -91,6 +66,7 @@ public final class DefaultRoleLoader extends AbstractLoader<Role> implements Rol
 	 * @return      A <code>Role</code> object
 	 */
 
+	@Override
 	public Role fetchByName (final String name)
 	{
 		this.log.trace ("fetchByName: name={}", name);
@@ -101,9 +77,6 @@ public final class DefaultRoleLoader extends AbstractLoader<Role> implements Rol
 			throw new NullPointerException ();
 		}
 
-		Map<String, Object> params = new HashMap<String, Object> ();
-		params.put ("name", name);
-
-		return (this.fetchQuery ()).query ("name", params);
+		return ((this.fetchQuery ("name")).setParameter ("name", name)).query ();
 	}
 }

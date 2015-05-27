@@ -28,7 +28,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActionLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  * Default implementation of the <code>ActionLoader</code> interface.
@@ -40,39 +39,13 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 public final class DefaultActionLoader extends AbstractLoader<Action> implements ActionLoader
 {
 	/**
-	 * Implementation of the <code>LoaderFactory</code> to create a
-	 * <code>DefaultActionLoader</code>.
-	 */
-
-	private static final class Factory implements LoaderFactory<ActionLoader>
-	{
-		/**
-		 * Create an instance of the <code>DefaultActionLoader</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultActionLoader</code> will operate,
-		 *                   not null
-		 *
-		 * @return           The <code>DefaultActionLoader</code>
-		 */
-
-		@Override
-		public ActionLoader create (final DataStore datastore)
-		{
-			assert datastore != null : "datastore is NULL";
-
-			return new DefaultActionLoader (datastore);
-		}
-	}
-
-	/**
-	 * Static initializer to register the Loader with its
-	 * <code>AbstractLoaderFactory</code> implementation.
+	 * Static initializer to register the <code>ActionLoader</code> with the
+	 * <code>LoaderFactory</code>.
 	 */
 
 	static
 	{
-		AbstractLoader.registerLoader (ActionLoader.class, DefaultActionLoader.class, new Factory ());
+		AbstractLoader.registerLoader (Action.class, DefaultActionLoader::new);
 	}
 
 	/**
@@ -96,6 +69,7 @@ public final class DefaultActionLoader extends AbstractLoader<Action> implements
 	 * @return      The <code>Action</code> associated with the specified name
 	 */
 
+	@Override
 	public Action fetchByName (final String name)
 	{
 		this.log.trace ("fetchByName: name={}", name);
@@ -106,9 +80,6 @@ public final class DefaultActionLoader extends AbstractLoader<Action> implements
 			throw new NullPointerException ();
 		}
 
-		Map<String, Object> parameters = new HashMap<String, Object> ();
-		parameters.put ("name", name);
-
-		return (this.fetchQuery ()).query ("name", parameters);
+		return ((this.fetchQuery ("name")).setParameter ("name", name)).query ();
 	}
 }

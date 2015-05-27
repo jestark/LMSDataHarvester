@@ -30,7 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  * Default implementation of the <code>ActivityLoader</code> interface.
@@ -42,39 +41,13 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 public final class DefaultActivityLoader extends AbstractLoader<Activity> implements ActivityLoader
 {
 	/**
-	 * Implementation of the <code>LoaderFactory</code> to create a
-	 * <code>DefaultActivityLoader</code>.
-	 */
-
-	private static final class Factory implements LoaderFactory<ActivityLoader>
-	{
-		/**
-		 * Create an instance of the <code>DefaultActivityLoader</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultActivityLoader</code> will operate,
-		 *                   not null
-		 *
-		 * @return           The <code>DefaultActivityLoader</code>
-		 */
-
-		@Override
-		public ActivityLoader create (final DataStore datastore)
-		{
-			assert datastore != null : "datastore is NULL";
-
-			return new DefaultActivityLoader (datastore);
-		}
-	}
-
-	/**
-	 * Static initializer to register the Loader with its
-	 * <code>AbstractLoaderFactory</code> implementation.
+	 * Static initializer to register the <code>ActivityLoader</code> with the
+	 * <code>LoaderFactory</code>.
 	 */
 
 	static
 	{
-		AbstractLoader.registerLoader (ActivityLoader.class, DefaultActivityLoader.class, new Factory ());
+		AbstractLoader.registerLoader (Activity.class, DefaultActivityLoader::new);
 	}
 
 	/**
@@ -101,9 +74,6 @@ public final class DefaultActivityLoader extends AbstractLoader<Activity> implem
 			throw new NullPointerException ();
 		}
 
-		Map<String, Object> params = new HashMap<String, Object> ();
-		params.put ("type", type);
-
-		return (this.fetchQuery ()).queryAll ("type", params);
+		return ((this.fetchQuery ("type")).setParameter ("type", type)).queryAll ();
 	}
 }

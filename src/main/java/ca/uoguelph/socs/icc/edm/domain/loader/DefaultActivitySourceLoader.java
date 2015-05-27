@@ -28,7 +28,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySourceLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  * Default implementation of the <code>ActivitySourceLoader</code> interface.
@@ -40,38 +39,13 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 public final class DefaultActivitySourceLoader extends AbstractLoader<ActivitySource> implements ActivitySourceLoader
 {
 	/**
-	 * Implementation of the <code>LoaderFactory</code> to create a
-	 * <code>DefaultActivitySourceLoader</code>.
-	 */
-
-	private static final class Factory implements LoaderFactory<ActivitySourceLoader>
-	{
-		/**
-		 * Create an instance of the <code>DefaultActivitySourceLoader</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultActivitySourceLoader</code> will
-		 *                   operate, not null
-		 * @return           The <code>DefaultActivitySourceLoader</code>
-		 */
-
-		@Override
-		public ActivitySourceLoader create (DataStore datastore)
-		{
-			assert datastore != null : "datastore is NULL";
-
-			return new DefaultActivitySourceLoader (datastore);
-		}
-	}
-
-	/**
-	 * Static initializer to register the Loader with its
-	 * <code>AbstractLoaderFactory</code> implementation.
+	 * Static initializer to register the <code>ActivitySourceLoader</code>
+	 * with the <code>LoaderFactory</code>.
 	 */
 
 	static
 	{
-		AbstractLoader.registerLoader (ActivitySourceLoader.class, DefaultActivitySourceLoader.class, new Factory ());
+		AbstractLoader.registerLoader (ActivitySource.class, DefaultActivitySourceLoader::new);
 	}
 
 	/**
@@ -98,6 +72,7 @@ public final class DefaultActivitySourceLoader extends AbstractLoader<ActivitySo
 	 *              the specified name
 	 */
 
+	@Override
 	public ActivitySource fetchByName (final String name)
 	{
 		this.log.trace ("fetchByName: name={}", name);
@@ -108,9 +83,6 @@ public final class DefaultActivitySourceLoader extends AbstractLoader<ActivitySo
 			throw new NullPointerException ();
 		}
 
-		Map<String, Object> params = new HashMap<String, Object> ();
-		params.put ("name", name);
-
-		return (this.fetchQuery ()).query ("name", params);
+		return ((this.fetchQuery ("name")).setParameter ("name", name)).query ();
 	}
 }

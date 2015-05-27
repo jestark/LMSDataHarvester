@@ -24,7 +24,6 @@ import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 import ca.uoguelph.socs.icc.edm.domain.UserLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  * Default implementation of the <code>UserLoader</code> interface.
@@ -36,38 +35,13 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 public final class DefaultUserLoader extends AbstractLoader<User> implements UserLoader
 {
 	/**
-	 * Implementation of the <code>LoaderFactory</code> to create a
-	 * <code>DefaultUserLoader</code>.
-	 */
-
-	private static final class Factory implements LoaderFactory<UserLoader>
-	{
-		/**
-		 * Create an instance of the <code>DefaultUserLoader</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultUserLoader</code> will be acting,
-		 *                   not null
-		 * @return           The <code>DefaultUserLoader</code>
-		 */
-
-		@Override
-		public UserLoader create (final DataStore datastore)
-		{
-			assert datastore != null : "datastore is NULL";
-
-			return new DefaultUserLoader (datastore);
-		}
-	}
-
-	/**
-	 * Static initializer to register the Loader with its
-	 * <code>AbstractLoaderFactory</code> implementation.
+	 * Static initializer to register the <code>UserLoader</code> with the
+	 * <code>LoaderFactory</code>.
 	 */
 
 	static
 	{
-		AbstractLoader.registerLoader (UserLoader.class, DefaultUserLoader.class, new Factory ());
+		AbstractLoader.registerLoader (User.class, DefaultUserLoader::new);
 	}
 
 	/**
@@ -94,6 +68,7 @@ public final class DefaultUserLoader extends AbstractLoader<User> implements Use
 	 *                  number
 	 */
 
+	@Override
 	public User fetchByIdNumber (final Integer idnumber)
 	{
 		this.log.trace ("fetchByIdNumber: idnumber={}", idnumber);
@@ -104,10 +79,7 @@ public final class DefaultUserLoader extends AbstractLoader<User> implements Use
 			throw new NullPointerException ();
 		}
 
-		Map<String, Object> params = new HashMap<String, Object> ();
-		params.put ("idnumber", idnumber);
-
-		return (this.fetchQuery ()).query ("idnumber", params);
+		return ((this.fetchQuery ("idnumber")).setParameter ("idnumber", idnumber)).query ();
 	}
 
 	/**
@@ -120,6 +92,7 @@ public final class DefaultUserLoader extends AbstractLoader<User> implements Use
 	 *                  username
 	 */
 
+	@Override
 	public User fetchByUsername (final String username)
 	{
 		this.log.trace ("fetchByUsername: username={}", username);
@@ -130,9 +103,6 @@ public final class DefaultUserLoader extends AbstractLoader<User> implements Use
 			throw new NullPointerException ();
 		}
 
-		Map<String, Object> params = new HashMap<String, Object> ();
-		params.put ("username", username);
-
-		return (this.fetchQuery ()).query ("username", params);
+		return ((this.fetchQuery ("username")).setParameter ("username", username)).query ();
 	}
 }

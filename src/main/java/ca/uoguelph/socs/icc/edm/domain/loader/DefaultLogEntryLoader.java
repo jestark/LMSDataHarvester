@@ -28,7 +28,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 
 /**
  * Default implementation of the <code>LogEntryLoader</code> interface.
@@ -40,38 +39,13 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
 public final class DefaultLogEntryLoader extends AbstractLoader<LogEntry> implements LogEntryLoader
 {
 	/**
-	 * Implementation of the <code>LoaderFactory</code> to create a
-	 * <code>DefaultLogEntryLoader</code>.
-	 */
-
-	private static final class Factory implements LoaderFactory<LogEntryLoader>
-	{
-		/**
-		 * Create an instance of the <code>DefaultLogEntryLoader</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> upon which the
-		 *                   <code>DefaultLogEntryLoader</code> will operate,
-		 *                   not null
-		 * @return           The <code>DefaultLogEntryLoader</code>
-		 */
-
-		@Override
-		public LogEntryLoader create (DataStore datastore)
-		{
-			assert datastore != null : "datastore is NULL";
-
-			return new DefaultLogEntryLoader (datastore);
-		}
-	}
-
-	/**
-	 * Static initializer to register the Loader with its
-	 * <code>AbstractLoaderFactory</code> implementation.
+	 * Static initializer to register the <code>LogEntryLoader</code> with the
+	 * <code>LoaderFactory</code>.
 	 */
 
 	static
 	{
-		AbstractLoader.registerLoader (LogEntryLoader.class, DefaultLogEntryLoader.class, new Factory ());
+		AbstractLoader.registerLoader (LogEntry.class, DefaultLogEntryLoader::new);
 	}
 
 	/**
@@ -97,6 +71,7 @@ public final class DefaultLogEntryLoader extends AbstractLoader<LogEntry> implem
 	 * @return        A <code>List</code> of <code>LogEntry</code> instances
 	 */
 
+	@Override
 	public List<LogEntry> fetchAllforCourse (final Course course)
 	{
 		this.log.trace ("fetchAllForCourse: course={}", course);
@@ -107,9 +82,6 @@ public final class DefaultLogEntryLoader extends AbstractLoader<LogEntry> implem
 			throw new NullPointerException ();
 		}
 
-		Map<String, Object> params = new HashMap<String, Object> ();
-		params.put ("course", course);
-
-		return (this.fetchQuery ()).queryAll ("course", params);
+		return ((this.fetchQuery ("course")).setParameter ("course", course)).queryAll ();
 	}
 }
