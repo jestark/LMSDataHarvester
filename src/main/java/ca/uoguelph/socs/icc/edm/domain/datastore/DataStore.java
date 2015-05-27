@@ -25,12 +25,20 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  *
  * @author  James E. Stark
  * @version 2.0
- * @see     Query
  * @see     Transaction
  */
 
 public interface DataStore
 {
+	/**
+	 * Determine if the <code>DataStore</code> is mutable.
+	 *
+	 * @return <code>true</code> if the <code>DataStore</code> is mutable,
+	 *         <code>false</code> otherwise
+	 */
+
+	public abstract boolean isMutable ();
+
 	/**
 	 * Determine if the <code>DataStore</code> is open.
 	 *
@@ -45,6 +53,32 @@ public interface DataStore
 	 */
 
 	public abstract void close ();
+
+	/**
+	 * Get the default implementation class used by the <code>DataStore</code>
+	 * for the specified <code>Element</code> interface class.
+	 *
+	 * @param  element The <code>Element</code> interface class
+	 *
+	 * @return         The <code>Element</code> implementation class
+	 */
+
+	public abstract Class<? extends Element> getElementClass (Class<? extends Element> element);
+
+	/**
+	 * Get the <code>Query</code> with the specified name, returning
+	 * <code>Element</code> instances of the specified type.
+	 *
+	 * @param  <T>     The <code>Element</code> interface type of the
+	 *                 <code>Query</code>
+	 * @param  name    The name of the <code>Query</code> to return
+	 * @param  element The <code>Element</code> implementation class to be
+	 *                 returned by the </code>Query</code>
+	 *
+	 * @return         The <code>Query</code>
+	 */
+
+	public abstract <T extends Element> Query<T> getQuery (String name, Class<?> element);
 
 	/**
 	 * Get an instance of the transaction manager for the
