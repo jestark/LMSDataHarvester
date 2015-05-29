@@ -27,7 +27,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.GenericActivityElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
 
 /**
@@ -46,35 +45,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
 
 public class GenericActivity extends ActivityInstance implements Serializable
 {
-	/**
-	 * Implementation of the <code>GenericActivityElementFactory</code>
-	 * interface.  Allows the builders to create instances of
-	 * <code>GenericActivity</code>.
-	 */
-
-	private static final class Factory extends ActivityInstance.Factory implements GenericActivityElementFactory
-	{
-		/**
-		 * Create a new <code>Activity</code> instance.
-		 *
-		 * @param  type    The <code>ActivityType</code> of the
-		 *                 <code>Activity</code>, not null
-		 * @param  course  The <code>Course</code> which is associated with the
-		 *                 <code>Activity</code> instance, not null
-		 *
-		 * @return         The new <code>Activity</code> instance
-		 */
-
-		@Override
-		public Activity create (final ActivityType type, final Course course)
-		{
-			assert type != null : "type is NULL";
-			assert course != null : "course is NULL";
-
-			return new GenericActivity (type, course);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 

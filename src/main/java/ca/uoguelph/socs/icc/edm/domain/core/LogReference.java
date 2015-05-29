@@ -31,8 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.LogReferenceElementFactory;
-
 /**
  * An abstract representation of the relationship between a
  * <code>LogEntry</code> and a sub-activity.  This class acts as the abstract

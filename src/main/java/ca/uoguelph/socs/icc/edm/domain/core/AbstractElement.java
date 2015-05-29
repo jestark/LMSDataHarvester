@@ -22,7 +22,7 @@ import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.AbstractBuilder;
 import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.AbstractDataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.datastore.AbstractQuery;
 
 /**
  * Abstract base class for all of the domain model <code>Element</code>
@@ -37,35 +37,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.AbstractDataStoreQuery;
 
 public abstract class AbstractElement implements Element
 {
-	/**
-	 * Common implementation of the <code>ElementFactory</code> interface.
-	 * This class provides the implementation of the <code>setId</code> method
-	 * which should be common to all of the <code>ElementFactory</code>
-	 * implementations.
-	 *
-	 * @param  <T> The interface type for the <code>Element</code>
-	 */
-
-	protected static abstract class Factory<T extends Element> implements ElementFactory<T>
-	{
-		/**
-		 * Write the specified <code>DataStore</code> ID number into the
-		 * <code>Element</code>.
-		 *
-		 * @param  element The <code>Element</code> to which the ID number is
-		 *                 assigned, not null
-		 * @param  id      The ID number assigned to the <code>Element</code>
-		 */
-
-		@Override
-		public final void setId (final T element, final Long id)
-		{
-			assert element instanceof AbstractElement : "element is not an instance of AbstractElement";
-
-			((AbstractElement) element).setId (id);
-		}
-	}
-
 	/**
 	 * Register an <code>Element</code> implementation class with the
 	 * <code>QueryFactory</code>.
@@ -82,7 +53,7 @@ public abstract class AbstractElement implements Element
 		assert element != null : "element is NULL";
 		assert elementImpl != null : "elementImpl is NULL";
 
-		AbstractDataStoreQuery.registerElement (element, elementImpl);
+		AbstractQuery.registerElement (element, elementImpl);
 	}
 
 	/**

@@ -30,7 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
 
 /**
  * Abstract implementation of the <code>Activity</code> interface.  This class
@@ -49,61 +48,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivityElementFactory;
 
 public abstract class ActivityInstance extends AbstractActivity implements Serializable
 {
-	/**
-	 * Implementation of the <code>ActivityElementFactory</code> interface.
-	 * Allows the builders to create instances of
-	 * <code>ActivityInstance</code>.
-	 */
-
-	protected static abstract class Factory extends AbstractActivity.Factory implements ActivityElementFactory
-	{
-		/**
-		 * Add the specified <code>Grade</code> to the specified
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity The <code>Activity</code> to which the
-		 *                  <code>Grade</code> is to be added, not null
-		 * @param  grade    The <code>Grade</code> to add to the
-		 *                  <code>Activity</code>, not null
-		 *
-		 * @return          <code>True</code> if the <code>Grade</code> was
-		 *                  successfully added to the <code>Activity</code>,
-		 *                  <code>False</code> otherwise
-		 */
-
-		@Override
-		public boolean addGrade (final Activity activity, final Grade grade)
-		{
-			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
-			assert grade != null : "grade is NULL";
-
-			return ((ActivityInstance) activity).addGrade (grade);
-		}
-
-		/**
-		 * Remove the specified <code>Grade</code> from the specified
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity The <code>Activity</code> from which the
-		 *                  <code>Grade</code> is to be removed, not null
-		 * @param  grade    The <code>Grade</code> to remove from the
-		 *                  <code>Activity</code>, not null
-		 *
-		 * @return          <code>True</code> if the <code>Grade</code> was
-		 *                  successfully removed from the
-		 *                  <code>Activity</code>, <code>False</code> otherwise
-		 */
-
-		@Override
-		public boolean removeGrade (final Activity activity, final Grade grade)
-		{
-			assert activity instanceof ActivityInstance : "activity is not an instance of ActivityInstance";
-			assert grade != null : "grade is NULL";
-
-			return ((ActivityInstance) activity).removeGrade (grade);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 

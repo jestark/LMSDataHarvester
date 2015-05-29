@@ -24,7 +24,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.RoleElementFactory;
 
 /**
  * Implementation of the <code>Role</code> interface.  It is expected that
@@ -41,33 +40,9 @@ import ca.uoguelph.socs.icc.edm.domain.builder.RoleElementFactory;
 
 public class RoleData extends AbstractElement implements Role, Serializable
 {
-	/**
-	 * Implementation of the <code>RoleElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>RoleData</code>.
-	 */
-
-	private static final class Factory extends AbstractElement.Factory<Role> implements RoleElementFactory
-	{
-		/**
-		 * Create a new <code>Role</code> instance.
-		 *
-		 * @param  name The name of the <code>Role</code>, not null
-		 *
-		 * @return      The new <code>Role</code> instance
-		 */
-
-		@Override
-		public Role create (final String name)
-		{
-			assert name != null : "name is NULL";
-
-			return new RoleData (name);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
-	
+
 	/** The primary key for the role */
 	private Long id;
 
@@ -105,7 +80,7 @@ public class RoleData extends AbstractElement implements Role, Serializable
 		this ();
 
 		assert name != null : "name is NULL";
-		
+
 		this.name = name;
 	}
 

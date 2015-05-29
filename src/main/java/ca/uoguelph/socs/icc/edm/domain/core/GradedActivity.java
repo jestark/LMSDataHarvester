@@ -28,7 +28,6 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.GradeElementFactory;
 
 /**
  * Implementation of the <code>Grade</code> interface.  It is expected that
@@ -43,38 +42,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.GradeElementFactory;
 
 public class GradedActivity extends AbstractElement implements Grade, Serializable
 {
-	/**
-	 * Implementation of the <code>GradeElementFactory</code> interface.
-	 * Allows the builders to create instances of <code>GradedActivity</code>.
-	 */
-
-	private static final class Factory extends AbstractElement.Factory<Grade> implements GradeElementFactory
-	{
-		/**
-		 * Create a new <code>Grade</code> instance.
-		 *
-		 * @param  enrolment The <code>Enrolment</code> to which the grade is
-		 *                   assigned, not null
-		 * @param  activity  The <code>Activity</code> for which the grade is
-		 *                   assigned, not null
-		 * @param  grade     The assigned grade, on the interval [0, 100], not
-		 *                   null
-		 *
-		 * @return           The new <code>Grade</code> instance
-		 */
-
-		@Override
-		public Grade create (final Enrolment enrolment, final Activity activity, final Integer grade)
-		{
-			assert enrolment != null : "enrolment is NULL";
-			assert activity != null : "grade is NULL";
-			assert grade != null : "grade is NULL";
-			assert grade >= 0 : "grade can not be negative";
-
-			return new GradedActivity (enrolment, activity, grade);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 

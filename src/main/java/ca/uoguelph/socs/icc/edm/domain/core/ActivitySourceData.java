@@ -28,7 +28,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivitySourceBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivitySourceElementFactory;
 
 /**
  * Implementation of the <code>ActivitySource</code> interface.  It is expected
@@ -45,79 +44,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivitySourceElementFactory;
 
 public class ActivitySourceData extends AbstractElement implements ActivitySource, Serializable
 {
-	/**
-	 * Implementation of the <code>ActicitySourceElementFactory</code>
-	 * interface.  Allows the builders to create instances of
-	 * <code>ActivitySourceData</code>.
-	 */
-
-	private static final class Factory extends AbstractElement.Factory<ActivitySource> implements ActivitySourceElementFactory
-	{
-		/**
-		 * Create a new <code>ActivitySource</code> instance.
-		 *
-		 * @param  name The name of the <code>ActivitySource</code>, not null
-		 *
-		 * @return      The new <code>ActivitySource</code> instance
-		 */
-
-		@Override
-		public ActivitySource create (final String name)
-		{
-			assert name != null : "name is NULL";
-
-			return new ActivitySourceData (name);
-		}
-
-		/**
-		 * Add the specified <code>ActivityType</code> to the specified
-		 * <code>ActivitySource</code>.
-		 *
-		 * @param  source The <code>ActivitySource</code> to which the
-		 *                <code>ActivityType</code> is to be added, not null
-		 * @param  type   The <code>ActivityType</code> to add to the
-		 *                <code>ActivitySource</code>, not null
-		 *
-		 * @return        <code>True</code> if the <code>ActivityType</code>
-		 *                was successfully added to the
-		 *                <code>ActivitySource</code>, <code>False</code>
-		 *                otherwise
-		 */
-
-		@Override
-		public boolean addActivityType (final ActivitySource source, final ActivityType type)
-		{
-			assert source instanceof ActivitySourceData : "source is not an instance of ActivitySourceData";
-			assert type != null : "type is NULL";
-
-			return ((ActivitySourceData) source).addType (type);
-		}
-
-		/**
-		 * Remove the specified <code>ActivityType</code> from the specified
-		 * <code>ActivitySource</code>.
-		 *
-		 * @param  source The <code>ActivitySource</code> from which the
-		 *                <code>ActivityType</code> is to be removed, not null
-		 * @param  type   The <code>ActivityType</code> to remove from the
-		 *                <code>ActivitySource</code>, not null
-		 *
-		 * @return        <code>True</code> if the <code>ActivityType</code>
-		 *                was successfully removed from the
-		 *                <code>ActivitySource</code>, <code>False</code>
-		 *                otherwise
-		 */
-
-		@Override
-		public boolean removeActivityType (final ActivitySource source, final ActivityType type)
-		{
-			assert source instanceof ActivitySourceData : "source is not an instance of ActivitySourceData";
-			assert type != null : "type is NULL";
-
-			return ((ActivitySourceData) source).removeType (type);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 

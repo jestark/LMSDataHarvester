@@ -30,7 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.UserElementFactory;
 
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
@@ -46,110 +45,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.UserElementFactory;
 
 public class UserData extends AbstractElement implements User, Serializable
 {
-	/**
-	 * Implementation of the <code>UserElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>UserData</code>.
-	 */
-
-	private static final class Factory extends AbstractElement.Factory<User> implements UserElementFactory
-	{
-		/**
-		 * Create a new <code>User</code> instance.
-		 *
-		 * @param  idnumber  The user's ID number, not null
-		 * @param  firstname The user's first name, not null
-		 * @param  lastname  The user's last name, not null
-		 * @param  username  The user's username, not null
-		 *
-		 * @return           The new <code>User</code> instance
-		 */
-
-		@Override
-		public User create (final Integer idnumber, final String firstname, final String lastname, final String username)
-		{
-			assert idnumber != null : "idnumber is NULL";
-			assert firstname != null : "firstname is NULL";
-			assert lastname != null : "lastname is NULL";
-			assert username != null : "username is NULL";
-
-			return new UserData (idnumber, firstname, lastname, username);
-		}
-
-		/**
-		 * Set the first name of the <code>User</code>.
-		 *
-		 * @param  firstname The first name, not null
-		 */
-
-		public void setFirstname (final User user, final String firstname)
-		{
-			assert user instanceof UserData : "user is not an instance of UserData";
-			assert firstname != null : "firstname is NULL";
-
-			((UserData) user).setFirstname (firstname);
-		}
-
-		/**
-		 * Set the last name of the <code>User</code>.
-		 *
-		 * @param  lastname The last name, not null
-		 */
-
-		public void setLastname (final User user, final String lastname)
-		{
-			assert user instanceof UserData : "user is not an instance of UserData";
-			assert lastname != null : "lastname is NULL";
-
-			((UserData) user).setLastname (lastname);
-		}
-
-		/**
-		 * Add the specified <code>Enrolment</code> to the specified
-		 * <code>User</code>.
-		 *
-		 * @param  user      The <code>User</code> to which the
-		 *                   <code>Enrolment</code> is to be added, not null
-		 * @param  enrolment The <code>Enrolment</code> to add to the
-		 *                   <code>User</code>, not null
-		 *
-		 * @return           <code>True</code> if the <code>Enrolment</code>
-		 *                   was successfully added to the <code>User</code>,
-		 *                   <code>False</code> otherwise
-		 */
-
-		@Override
-		public boolean addEnrolment (final User user, final Enrolment enrolment)
-		{
-			assert user instanceof UserData : "user is not an instance of UserData";
-			assert enrolment != null : "enrolment is NULL";
-
-			return ((UserData) user).addEnrolment (enrolment);
-		}
-
-		/**
-		 * Remove the specified <code>Enrolment</code> from the specified
-		 * <code>User</code>.
-		 *
-		 * @param  user      The <code>User</code> from which the
-		 *                   <code>Enrolment</code> is to be removed, not null
-		 * @param  enrolment The <code>Enrolment</code> to remove from the
-		 *                   <code>User</code>, not null
-		 *
-		 * @return           <code>True</code> if the <code>Enrolment</code>
-		 *                   was successfully removed from the
-		 *                   <code>User</code>, <code>False</code> otherwise
-		 */
-
-		@Override
-		public boolean removeEnrolment (final User user, final Enrolment enrolment)
-		{
-			assert user instanceof UserData : "user is not an instance of UserData";
-			assert enrolment != null : "enrolment is NULL";
-
-			return ((UserData) user).removeEnrolment (enrolment);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 

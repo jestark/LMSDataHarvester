@@ -33,7 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.CourseElementFactory;
 
 /**
  * Implementation of the <code>Course</code> interface.  It is expected that
@@ -49,122 +48,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.CourseElementFactory;
 
 public class CourseData extends AbstractElement implements Course, Serializable
 {
-	/**
-	 * Implementation of the <code>CourseElementFactory</code> interface.
-	 * Allows the builders to create instances of <code>CourseData</code>
-	 */
-
-	private static final class Factory extends AbstractElement.Factory<Course> implements CourseElementFactory
-	{
-		/**
-		 * Create a new <code>Course</code> instance.
-		 *
-		 * @param  name     The name of the <code>Course</code>, not null
-		 * @param  semester The <code>Semester</code> of offering, not null
-		 * @param  year     The year of offering, not null
-		 *
-		 * @return          The new <code>Course</code> instance
-		 */
-
-		@Override
-		public Course create (final String name, final Semester semester, final Integer year)
-		{
-			assert name != null : "name is NULL";
-			assert semester != null : "semester is NULL";
-			assert year != null : "year is NULL";
-
-			return new CourseData (name, semester, year);
-		}
-
-		/**
-		 * Add the specified <code>Activity</code> to the specified
-		 * <code>Course</code>.
-		 *
-		 * @param  course    The <code>Course</code> to which the
-		 *                   <code>Activity</code> is to be added, not null
-		 * @param  enrolment The <code>Enrolment</code> to add to the
-		 *                   <code>Course</code>, not null
-		 *
-		 * @return           <code>True</code> if the <code>Activity</code> was
-		 *                   successfully added to the <code>Course</code>,
-		 *                   <code>False</code> otherwise
-		 */
-
-		public boolean addActivity (final Course course, final Activity activity)
-		{
-			assert course instanceof CourseData : "course is not and instance of CourseData";
-			assert activity != null : "activity is NULL";
-
-			return ((CourseData) course).addActivity (activity);
-		}
-
-		/**
-		 * Remove the specified <code>Activity</code> from the specified
-		 * <code>Course</code>.
-		 *
-		 * @param  course    The <code>Course</code> from which the
-		 *                   <code>Activity</code> is to be removed, not null
-		 * @param  enrolment The <code>Enrolment</code> to remove from the
-		 *                   <code>Course</code>, not null
-		 *
-		 * @return           <code>True</code> if the <code>Activity</code> was
-		 *                   successfully removed from the <code>Course</code>,
-		 *                   <code>False</code> otherwise
-		 */
-
-		public boolean removeActivity (final Course course, final Activity activity)
-		{
-			assert course instanceof CourseData : "course is not and instance of CourseData";
-			assert activity != null : "activity is NULL";
-
-			return ((CourseData) course).removeActivity (activity);
-		}
-
-		/**
-		 * Add the specified <code>Enrolment</code> to the specified
-		 * <code>Course</code>.
-		 *
-		 * @param  course    The <code>Course</code> to which the
-		 *                   <code>Enrolment</code> is to be added, not null
-		 * @param  enrolment The <code>Enrolment</code> to add to the
-		 *                   <code>User</code>, not null
-		 *
-		 * @return           <code>True</code> if the <code>Enrolment</code>
-		 *                   was successfully added to the <code>Course</code>,
-		 *                   <code>False</code> otherwise
-		 */
-
-		public boolean addEnrolment (final Course course, final Enrolment enrolment)
-		{
-			assert course instanceof CourseData : "course is not and instance of CourseData";
-			assert enrolment != null : "enrolment is NULL";
-
-			return ((CourseData) course).addEnrolment (enrolment);
-		}
-
-		/**
-		 * Remove the specified <code>Enrolment</code> from the specified
-		 * <code>Course</code>.
-		 *
-		 * @param  course    The <code>Course</code> from which the
-		 *                   <code>Enrolment</code> is to be removed, not null
-		 * @param  enrolment The <code>Enrolment</code> to remove from the
-		 *                   <code>User</code>, not null
-		 *
-		 * @return           <code>True</code> if the <code>Enrolment</code>
-		 *                   was successfully removed from the
-		 *                   <code>Course</code>, <code>False</code> otherwise
-		 */
-
-		public boolean removeEnrolment (final Course course, final Enrolment enrolment)
-		{
-			assert course instanceof CourseData : "course is not and instance of CourseData";
-			assert enrolment != null : "enrolment is NULL";
-
-			return ((CourseData) course).removeEnrolment (enrolment);
-		}
-	}
-
+	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key of the course. */

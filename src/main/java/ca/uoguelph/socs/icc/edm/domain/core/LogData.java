@@ -31,7 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
 
 /**
  * Implementation of the <code>LogEntry</code> interface.  It is expected that
@@ -51,60 +50,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.LogEntryElementFactory;
 
 public class LogData extends AbstractElement implements LogEntry, Serializable
 {
-	/**
-	 * Implementation of the <code>LogEntryElementFactory</code> interface.
-	 * Allows the builders to create instances of <code>LogData</code>.
-	 */
-
-	private static final class Factory extends AbstractElement.Factory<LogEntry> implements LogEntryElementFactory
-	{
-		/**
-		 * Create a new <code>LogEntry</code> instance.  Defaults to the
-		 * current system time, if the specified time is null.
-		 *
-		 * @param  action    The <code>Action</code>, not null
-		 * @param  activity  The <code>Activity</code> upon which the
-		 *                   <code>Action</code> was performed, not null
-		 * @param  enrolment The <code>Enrolment</code> which performed the
-		 *                   <code>Action</code>, not null
-		 * @param  ip        The remote IP Address
-		 * @param  time      The time that the <code>Action</code> was performed
-		 *
-		 * @return           The new <code>LogEntry</code> instance
-		 */
-
-		@Override
-		public LogEntry create (final Action action, final Activity activity, final Enrolment enrolment, final String ip, final Date time)
-		{
-			assert action != null : "action is NULL";
-			assert activity != null : "activity is NULL";
-			assert enrolment != null : "enrolment is NULL";
-
-			return new LogData (action, activity, enrolment, ip, time);
-		}
-
-		/**
-		 * Add the reference to the Sub-Activity to the <code>LogEntry</code>.
-		 * Some <code>LogEntry</code> instances will record an
-		 * <code>Action</code> upon a <code>SubActivity</code>, rather than the
-		 * <code>Activity</code> itself.  This method sets the reference to the
-		 * <code>SubActivity</code> via a <code>LogReference</code> instance.
-		 *
-		 * @param  entry     The <code>LogEntry</code> to which the
-		 *                   <code>LogReference</code> is to be added, not null
-		 * @param  reference The <code>LogReference</code> instance to be added
-		 *                   to the <code>LogEntry</code>, not null
-		 */
-
-		public void setReference (final LogEntry entry, final LogReference reference)
-		{
-			assert entry instanceof LogData : "entry is not an instance of LogData";
-			assert reference != null : "reference is NULL";
-
-			((LogData) entry).setReference (reference);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 

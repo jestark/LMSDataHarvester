@@ -29,7 +29,6 @@ import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.ActivityTypeElementFactory;
 
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
@@ -46,80 +45,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.ActivityTypeElementFactory;
 
 public class ActivityTypeData extends AbstractElement implements ActivityType, Serializable
 {
-	/**
-	 * Implementation of the <code>ActivityTypeElementFactory</code> interface.
-	 * Allows the builders to create instances of
-	 * <code>ActivityTypeData</code>.
-	 */
-
-	private static final class Factory extends AbstractElement.Factory<ActivityType> implements ActivityTypeElementFactory
-	{
-		/**
-		 * Create a new <code>ActivityType</code> instance.
-		 *
-		 * @param  source The <code>ActivitySource</code> for the
-		 *                <code>ActivityType</code>, not null
-		 * @param  name   The name of the <code>ActivityType</code>, not null
-		 * @return        The new <code>ActivityType</code> instance
-		 */
-
-		@Override
-		public ActivityType create (final ActivitySource source, final String name)
-		{
-			assert source != null : "source is NULL";
-			assert name != null : "name is NULL";
-
-			return new ActivityTypeData (source, name);
-		}
-
-		/**
-		 * Add the specified <code>Action</code> to the specified
-		 * <code>ActivityType</code>.
-		 *
-		 * @param  type   The <code>ActivityType</code> to which the
-		 *                <code>Action</code> is to be added, not null
-		 * @param  action The <code>Action</code> to add to the
-		 *                <code>ActivityType</code>, not null
-		 *
-		 * @return        <code>True</code> if the <code>Action</code> was
-		 *                successfully added to the <code>ActivityType</code>,
-		 *                <code>False</code> otherwise
-		 */
-
-		@Override
-		public boolean addAction (final ActivityType type, final Action action)
-		{
-			assert type instanceof ActivityTypeData : "type is not an instance of ActivityTypeData";
-			assert action != null : "action is NULL";
-
-			return ((ActivityTypeData) type).addAction (action);
-		}
-
-		/**
-		 * Remove the specified <code>Action</code> from the specified
-		 * <code>ActivityType</code>.
-		 *
-		 * @param  type   The <code>ActivityType</code> from which the
-		 *                <code>Action</code> is to be removed, not null
-		 * @param  action The <code>Action</code> to remove from the
-		 *                <code>ActivityType</code>, not null
-		 *
-		 * @return        <code>True</code> if the <code>Action</code> was
-		 *                successfully removed from the
-		 *                <code>ActivityType</code>, <code>False</code>
-		 *                otherwise
-		 */
-
-		@Override
-		public boolean removeAction (final ActivityType type, final Action action)
-		{
-			assert type instanceof ActivityTypeData : "type is not an instance of ActivityTypeData";
-			assert action != null : "action is NULL";
-
-			return ((ActivityTypeData) type).removeAction (action);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 

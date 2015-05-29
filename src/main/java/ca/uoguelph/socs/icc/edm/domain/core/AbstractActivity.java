@@ -41,113 +41,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.AbstractActivityElementFactory;
 
 public abstract class AbstractActivity extends AbstractElement implements Activity
 {
-	/**
-	 * Implementation of the <code>ActivityElementFactory</code> interface.
-	 * Allows the builders to create instances of the <code>Activity</code>.
-	 */
-
-	protected static abstract class Factory extends AbstractElement.Factory<Activity> implements AbstractActivityElementFactory
-	{
-		/**
-		 * Add the specified <code>LogEntry</code> to the specified
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity The <code>Activity</code> to which the
-		 *                  <code>LogEntry</code> is to be added, not null
-		 * @param  entry    The <code>LogEntry</code> to add to the
-		 *                  <code>Activity</code>, not null
-		 *
-		 * @return          <code>True</code> if the <code>LogEntry</code> was
-		 *                  successfully added to the <code>Activity</code>,
-		 *                  <code>False</code> otherwise
-		 */
-
-		@Override
-		public boolean addLogEntry (final Activity activity, final LogEntry entry)
-		{
-			assert activity instanceof AbstractActivity : "activity is not an instance of AbstractActivity";
-			assert entry != null : "entry is NULL";
-
-			return ((AbstractActivity) activity).addLog (entry);
-		}
-
-		/**
-		 * Remove the specified <code>LogEntry</code> from the specified
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity The <code>Activity</code> from which the
-		 *                  <code>LogEntry</code> is to be removed, not null
-		 * @param  entry    The <code>LogEntry</code> to remove from the
-		 *                  <code>Activity</code>, not null
-		 *
-		 * @return          <code>True</code> if the <code>LogEntry</code> was
-		 *                  successfully removed from the
-		 *                  <code>Activity</code>, <code>False</code> otherwise
-		 */
-
-		@Override
-		public boolean removeLogEntry (final Activity activity, final LogEntry entry)
-		{
-			assert activity instanceof AbstractActivity : "activity is not an instance of AbstractActivity";
-			assert entry != null : "entry is NULL";
-
-			return ((AbstractActivity) activity).removeLog (entry);
-		}
-
-		/**
-		 * Add the specified <code>SubActivity</code> to the specified
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity    The <code>Activity</code> to which the
-		 *                     <code>SubActivity</code> is to be added, not null
-		 * @param  subactivity The <code>SubActivity</code> to add to the
-		 *                     <code>Activity</code>, not null
-		 *
-		 * @return             <code>True</code> if the
-		 *                     <code>SubActivity</code> was successfully added
-		 *                     to the <code>Actvity</code>, <code>False</code>
-		 *                     otherwise
-		 */
-
-		@Override
-		public final boolean addSubActivity (final Activity activity, final SubActivity subactivity)
-		{
-			assert activity instanceof AbstractActivity : "activity is not an instance of AbstractActivity";
-			assert subactivity instanceof AbstractActivity : "subactivity is not an instance of AbstractActivity";
-			assert AbstractActivity.getSubActivityClass (activity.getClass ()) == subactivity.getClass () : "subactivity is not a registered subactivity of activity";
-			assert (activity == subactivity.getParent ()) : "the parent of subactivity is not equal to activity";
-
-			return ((AbstractActivity) activity).addSubActivity (subactivity);
-		}
-
-		/**
-		 * Remove the specified <code>SubActivity</code> from the specified
-		 * <code>Activity</code>.
-		 *
-		 * @param  activity    The <code>Activity</code> from which the
-		 *                     <code>SubActivity</code> is to be removed, not
-		 *                     null
-		 * @param  subactivity The <code>SubActivity</code> to remove from the
-		 *                     <code>Activity</code>, not null
-		 *
-		 * @return             <code>True</code> if the
-		 *                     <code>SubActivity</code> was successfully
-		 *                     removed from the <code>Actvity</code>,
-		 *                     <code>False</code> otherwise
-		 */
-
-		@Override
-		public final boolean removeSubActivity (final Activity activity, final SubActivity subactivity)
-		{
-			assert activity instanceof AbstractActivity : "activity is not an instance of AbstractActivity";
-			assert subactivity instanceof AbstractActivity : "subactivity is not an instance of AbstractActivity";
-			assert AbstractActivity.getSubActivityClass (activity.getClass ()) == subactivity.getClass () : "subactivity is not a registered subactivity of activity";
-			assert (activity == subactivity.getParent ()) : "the parent of subactivity is not equal to activity";
-
-			return ((AbstractActivity) activity).removeSubActivity (subactivity);
-		}
-	}
-
 	/** Mapping of <code>ActivityType</code> instances to implementation classes */
 	private static final ActivityDataMap ACTIVITYIMPL;
 
@@ -191,7 +84,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 *                  null
 	 */
 
-	public static final Class<? extends SubActivity> getSubActivityClass (final Class<? extends Activity> activity)
+	public static final Class<? extends Activity> getSubActivityClass (final Class<? extends Activity> activity)
 	{
 		return AbstractActivity.ACTIVITYIMPL.getSubActivityClass (activity);
 	}
