@@ -31,6 +31,8 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
+import ca.uoguelph.socs.icc.edm.domain.core.definition.ElementDefinition;
+
 /**
  * An abstract representation of the relationship between a
  * <code>LogEntry</code> and a sub-activity.  This class acts as the abstract
@@ -82,24 +84,6 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 
 	/** The associated <code>SubActivity</code> */
 	private SubActivity subactivity;
-
-	/**
-	 * Register the <code>LogReference</code> with the factories.  This method
-	 * handles the registrations for the subclasses to reduce code duplication.
-	 *
-	 * @param  elementImpl The <code>Element</code> implementation class, not
-	 *                     null
-	 * @param  factory     The <code>ElementFactory</code>, not null
-	 */
-
-	protected static final <T extends LogReference, U extends LogReferenceElementFactory> void registerLog (final Class<T> elementImpl, final Class<U> factory, final U factoryImpl)
-	{
-		assert elementImpl != null : "elementImpl is NULL";
-		assert factory != null : "factory is NULL";
-		assert factoryImpl != null : "factoryImpl is NULL";
-
-		AbstractElement.registerFactory (LogEntry.class, elementImpl, factory, factoryImpl);
-	}
 
 	/**
 	 * Create the <code>LogEntry</code> with null values.

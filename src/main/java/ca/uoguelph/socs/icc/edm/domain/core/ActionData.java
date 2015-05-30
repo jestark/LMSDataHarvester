@@ -27,7 +27,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActionBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Action</code> interface.  It is expected that
@@ -62,7 +65,15 @@ public class ActionData extends AbstractElement implements Action, Serializable
 
 	static
 	{
-		AbstractElement.registerElement (Action.class, ActionData.class, DefaultActionBuilder.class, ActionElementFactory.class, new Factory ());
+		DefinitionBuilder<Action, ActionData> builder = DefinitionBuilder.newInstance (Action.class, ActionData.class);
+		builder.setCreateMethod (ActionData::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, ActionData::getId, ActionData::setId);
+		builder.addUniqueAttribute ("name", String.class, true, false, ActionData::getName, ActionData::setName);
+
+		builder.addRelationship ("types", ActivityType.class, ActionData::addType, ActionData::removeType);
+
+		AbstractElement.registerElement (builder.build (), DefaultActionBuilder.class);
 	}
 
 	/**

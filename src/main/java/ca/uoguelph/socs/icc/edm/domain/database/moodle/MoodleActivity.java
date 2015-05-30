@@ -23,13 +23,16 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.GenericActivityElementFactory;
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.core.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Moodle specific implementation of the core <code>Activity</code> data.
@@ -57,34 +60,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
 
 public class MoodleActivity extends ActivityInstance
 {
-	/**
-	 * Implementation of the <code>ActivityElementFactory</code> interface.  Allows
-	 * the builders to create instances of <code>MoodleActivity</code>.
-	 */
-
-	private static final class Factory extends ActivityInstance.Factory implements GenericActivityElementFactory
-	{
-		/**
-		 * Create a new <code>Activity</code> instance.
-		 *
-		 * @param  type    The <code>ActivityType</code> of the
-		 *                 <code>Activity</code>, not null
-		 * @param  course  The <code>Course</code> which is associated with the
-		 *                 <code>Activity</code> instance, not null
-		 *
-		 * @return         The new <code>Activity</code> instance
-		 */
-
-		@Override
-		public Activity create (final ActivityType type, final Course course)
-		{
-			assert type != null : "type is NULL";
-			assert course != null : "course is NULL";
-
-			return new MoodleActivity (type, course);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -101,7 +76,18 @@ public class MoodleActivity extends ActivityInstance
 
 	static
 	{
-		AbstractElement.registerElement (Activity.class, MoodleActivity.class, DefaultGenericActivityBuilder.class, GenericActivityElementFactory.class, new Factory ());
+		DefinitionBuilder<Activity, MoodleActivity> builder = DefinitionBuilder.newInstance (Activity.class, MoodleActivity.class);
+		builder.setCreateMethod (MoodleActivity::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, MoodleActivity::getId, MoodleActivity::setId);
+
+		builder.addAttribute ("course", Course.class, true, false, MoodleActivity::getCourse, MoodleActivity::setCourse);
+		builder.addAttribute ("type", ActivityType.class, true, false, MoodleActivity::getType, MoodleActivity::setType);
+
+		builder.addRelationship ("grades", Grade.class, MoodleActivity::addGrade, MoodleActivity::removeGrade);
+		builder.addRelationship ("log", LogEntry.class, MoodleActivity::addLog, MoodleActivity::removeLog);
+
+		AbstractElement.registerElement (builder.build (), DefaultGenericActivityBuilder.class);
 	}
 
 	/**

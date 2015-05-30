@@ -27,8 +27,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.AbstractActivityElementFactory;
-
 /**
  * Abstract base class for all of the <code>Activity</code> implementations.
  * Every class that implements the <code>Activity</code> interface must extend

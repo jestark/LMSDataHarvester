@@ -33,7 +33,10 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Enrolment</code> interface.  It is expected that
@@ -48,7 +51,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager
  * @see     UserEnrolmentData
  */
 
@@ -85,7 +87,20 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 
 	static
 	{
-		AbstractElement.registerElement (Enrolment.class, EnrolmentData.class, DefaultEnrolmentBuilder.class, EnrolmentElementFactory.class, new Factory ());
+		DefinitionBuilder<Enrolment, EnrolmentData> builder = DefinitionBuilder.newInstance (Enrolment.class, EnrolmentData.class);
+		builder.setCreateMethod (EnrolmentData::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, EnrolmentData::getId, EnrolmentData::setId);
+
+		builder.addAttribute ("course", Course.class, true, false, EnrolmentData::getCourse, EnrolmentData::setCourse);
+		builder.addAttribute ("role", Role.class, true, false, EnrolmentData::getRole, EnrolmentData::setRole);
+		builder.addAttribute ("finalgrade", Integer.class, false, true, EnrolmentData::getFinalGrade, EnrolmentData::setFinalGrade);
+		builder.addAttribute ("usable", Boolean.class, false, true, EnrolmentData::isUsable, EnrolmentData::setUsable);
+
+		builder.addRelationship ("grades", Grade.class, EnrolmentData::addGrade, EnrolmentData::removeGrade);
+		builder.addRelationship ("log", LogEntry.class, EnrolmentData::addLog, EnrolmentData::removeLog);
+
+		AbstractElement.registerElement (builder.build (), DefaultEnrolmentBuilder.class);
 	}
 
 	/**

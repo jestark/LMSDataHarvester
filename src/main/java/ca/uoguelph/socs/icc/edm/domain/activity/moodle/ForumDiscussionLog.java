@@ -21,10 +21,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.LogReferenceElementFactory;
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.core.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>LogEntry</code> interface for logs referencing
@@ -50,34 +52,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.LogReference;
 
 class ForumDiscussionLog extends LogReference
 {
-	/**
-	 * Implementation of the <code>LogReferenceElementFactory</code>.  Allows
-	 * the builders to create instances of <code>ForumDiscussionLog</code>.
-	 */
-
-	private static final class Factory extends AbstractElement.Factory<LogEntry> implements LogReferenceElementFactory
-	{
-		/**
-		 * Create a new <code>LogReference</code> instance.
-		 *
-		 * @param  entry       The <code>LogEntry</code> which refers to the
-		 *                     <code>SubActivity</code>, not null
-		 * @param  subactivity The <code>SubActivity</code> which is being
-		 *                     referenced, not null
-		 *
-		 * @return              The new <code>LogReference</code> (as a
-		 *                      <code>LogEntry</code>)
-		 */
-
-		public LogEntry create (final LogEntry entry, final SubActivity subactivity)
-		{
-			assert entry != null : "entry is NULL";
-			assert subactivity instanceof ForumDiscussion : "subactivity is not an instance of ForumDiscussion";
-
-			return new ForumDiscussionLog (entry, subactivity);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -88,7 +62,13 @@ class ForumDiscussionLog extends LogReference
 
 	static
 	{
-		LogReference.registerLog (ForumDiscussionLog.class, LogReferenceElementFactory.class, new Factory ());
+		DefinitionBuilder<LogEntry, ForumDiscussionLog> builder = DefinitionBuilder.newInstance (LogEntry.class, ForumDiscussionLog.class);
+		builder.setCreateMethod (ForumDiscussionLog::new);
+
+		builder.addAttribute ("entry", LogEntry.class, true, false, ForumDiscussionLog::getEntry, ForumDiscussionLog::setEntry);
+		builder.addAttribute ("subactivity", SubActivity.class, true, false, ForumDiscussionLog::getSubActivity, ForumDiscussionLog::setSubActivity);
+
+		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
 	}
 
 	/**

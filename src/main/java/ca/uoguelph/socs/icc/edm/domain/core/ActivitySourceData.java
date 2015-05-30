@@ -27,7 +27,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivitySourceBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>ActivitySource</code> interface.  It is expected
@@ -39,7 +42,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivitySourceBuilder;
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivitySourceBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivitySourceManager
  */
 
 public class ActivitySourceData extends AbstractElement implements ActivitySource, Serializable
@@ -63,7 +65,15 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 
 	static
 	{
-		AbstractElement.registerElement (ActivitySource.class, ActivitySourceData.class, DefaultActivitySourceBuilder.class, ActivitySourceElementFactory.class, new Factory ());
+		DefinitionBuilder<ActivitySource, ActivitySourceData> builder = DefinitionBuilder.newInstance (ActivitySource.class, ActivitySourceData.class);
+		builder.setCreateMethod (ActivitySourceData::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, ActivitySourceData::getId, ActivitySourceData::setId);
+		builder.addUniqueAttribute ("name", String.class, true, false, ActivitySourceData::getName, ActivitySourceData::setName);
+
+		builder.addRelationship ("types", ActivityType.class, ActivitySourceData::addType, ActivitySourceData::removeType);
+
+		AbstractElement.registerElement (builder.build (), DefaultActivitySourceBuilder.class);
 	}
 
 	/**

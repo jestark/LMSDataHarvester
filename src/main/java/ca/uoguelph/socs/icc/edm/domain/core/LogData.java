@@ -32,6 +32,8 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
 
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
+
 /**
  * Implementation of the <code>LogEntry</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>LogEntry</code>
@@ -45,7 +47,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultLogEntryManager
  */
 
 public class LogData extends AbstractElement implements LogEntry, Serializable
@@ -71,7 +72,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	/** The originating IP Address for the logged action */
 	private String ip;
 
-	/** The Sub-activity which is associated with the log entry */
+	/** The <code>SubActivity</code> which is associated with the log entry */
 	private LogReference reference;
 
 	/**
@@ -81,7 +82,19 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 
 	static
 	{
-		AbstractElement.registerElement (LogEntry.class, LogData.class, DefaultLogEntryBuilder.class, LogEntryElementFactory.class, new Factory ());
+		DefinitionBuilder<LogEntry, LogData> builder = DefinitionBuilder.newInstance (LogEntry.class, LogData.class);
+		builder.setCreateMethod (LogData::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, LogData::getId, LogData::setId);
+
+		builder.addAttribute ("action", Action.class, true, false, LogData::getAction, LogData::setAction);
+		builder.addAttribute ("activity", Activity.class, true, false, LogData::getActivity, LogData::setActivity);
+		builder.addAttribute ("enrolment", Enrolment.class, true, false, LogData::getEnrolment, LogData::setEnrolment);
+		builder.addAttribute ("reference", LogReference.class, false, false, LogData::getReference, LogData::setReference);
+		builder.addAttribute ("ip", String.class, true, false, LogData::getIPAddress, LogData::setIPAddress);
+		builder.addAttribute ("time", Date.class, true, true, LogData::getTime, LogData::setTime);
+
+		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
 	}
 
 	/**

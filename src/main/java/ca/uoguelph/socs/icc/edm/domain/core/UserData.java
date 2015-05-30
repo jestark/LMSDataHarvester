@@ -29,7 +29,10 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
@@ -40,7 +43,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder;
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager
  */
 
 public class UserData extends AbstractElement implements User, Serializable
@@ -73,7 +75,19 @@ public class UserData extends AbstractElement implements User, Serializable
 
 	static
 	{
-		AbstractElement.registerElement (User.class, UserData.class, DefaultUserBuilder.class, UserElementFactory.class, new Factory ());
+		DefinitionBuilder<User, UserData> builder = DefinitionBuilder.newInstance (User.class, UserData.class);
+		builder.setCreateMethod (UserData::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, UserData::getId, UserData::setId);
+		builder.addUniqueAttribute ("idnumber", Integer.class, true, false, UserData::getIdNumber, UserData::setIdNumber);
+		builder.addUniqueAttribute ("username", String.class, true, false, UserData::getUsername, UserData::setUsername);
+
+		builder.addAttribute ("firstname", String.class, true, true, UserData::getFirstname, UserData::setFirstname);
+		builder.addAttribute ("lastname", String.class, true, true, UserData::getLastname, UserData::setLastname);
+
+		builder.addRelationship ("enrolments", Enrolment.class, UserData::addEnrolment, UserData::removeEnrolment);
+
+		AbstractElement.registerElement (builder.build (), DefaultUserBuilder.class);
 	}
 
 	/**

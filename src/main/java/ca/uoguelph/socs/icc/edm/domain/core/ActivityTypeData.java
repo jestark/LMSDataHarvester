@@ -28,7 +28,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
@@ -40,7 +43,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder;
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager
  */
 
 public class ActivityTypeData extends AbstractElement implements ActivityType, Serializable
@@ -67,7 +69,19 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 
 	static
 	{
-		AbstractElement.registerElement (ActivityType.class, ActivityTypeData.class, DefaultActivityTypeBuilder.class, ActivityTypeElementFactory.class, new Factory ());
+		DefinitionBuilder<ActivityType, ActivityTypeData> builder = DefinitionBuilder.newInstance (ActivityType.class, ActivityTypeData.class);
+		builder.setCreateMethod (ActivityTypeData::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, ActivityTypeData::getId, ActivityTypeData::setId);
+
+		builder.addAttribute ("name", String.class, true, false, ActivityTypeData::getName, ActivityTypeData::setName);
+		builder.addAttribute ("source", ActivitySource.class, true, false, ActivityTypeData::getSource, ActivityTypeData::setSource);
+
+		builder.addIndex ("source", "name");
+
+		builder.addRelationship ("actions", Action.class, ActivityTypeData::addAction, ActivityTypeData::removeAction);
+
+		AbstractElement.registerElement (builder.build (), DefaultActivityTypeBuilder.class);
 	}
 
 	/**

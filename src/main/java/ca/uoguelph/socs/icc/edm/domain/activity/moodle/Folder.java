@@ -21,12 +21,14 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/folder
@@ -51,35 +53,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 public class Folder extends GenericNamedActivity
 {
-	/**
-	 * Implementation of the <code>NamedActivityElementFactory</code>.  Allows
-	 * the builders to create instances of <code>Folder</code>.
-	 */
-
-	private static final class Factory extends ActivityInstance.Factory implements NamedActivityElementFactory
-	{
-		/**
-		 * Create a new <code>Activity</code> instance.
-		 *
-		 * @param  type    The <code>ActivityType</code> of the
-		 *                 <code>Activity</code>, not null
-		 * @param  course  The <code>Course</code> which is associated with the
-		 *                 <code>Activity</code> instance, not null
-		 * @param  name    The name of the <code>Activity</code>, not null
-		 *
-		 * @return         The new <code>Activity</code> instance
-		 */
-
-		public Activity create (final ActivityType type, final Course course, final String name)
-		{
-			assert type != null : "type is NULL";
-			assert course != null : "course is NULL";
-			assert name != null : "name is NULL";
-
-			return new Folder (type, course, name);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -90,7 +63,19 @@ public class Folder extends GenericNamedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Folder.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "folder");
+		DefinitionBuilder<Activity, Folder> builder = DefinitionBuilder.newInstance (Activity.class, Folder.class);
+		builder.setCreateMethod (Folder::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, Folder::getId, Folder::setId);
+
+		builder.addAttribute ("course", Course.class, true, false, Folder::getCourse, Folder::setCourse);
+		builder.addAttribute ("type", ActivityType.class, true, false, Folder::getType, Folder::setType);
+		builder.addAttribute ("name", String.class, true, false, Folder::getName, Folder::setName);
+
+		builder.addRelationship ("grades", Grade.class, Folder::addGrade, Folder::removeGrade);
+		builder.addRelationship ("log", LogEntry.class, Folder::addLog, Folder::removeLog);
+
+		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "folder");
 	}
 
 	/**

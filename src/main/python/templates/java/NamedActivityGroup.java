@@ -19,15 +19,17 @@ package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
-import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
@@ -52,36 +54,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 public class ${ClassName} extends GenericNamedActivity
 {
-	/**
-	 * Implementation of the <code>NamedActivityElementFactory</code>.  Allows
-	 * the builders to create instances of <code>${ClassName}</code>.
-	 */
-
-	private static final class Factory extends ActivityInstance.Factory implements NamedActivityElementFactory
-	{
-		/**
-		 * Create a new <code>Activity</code> instance.
-		 *
-		 * @param  type    The <code>ActivityType</code> of the
-		 *                 <code>Activity</code>, not null
-		 * @param  course  The <code>Course</code> which is associated with the
-		 *                 <code>Activity</code> instance, not null
-		 * @param  name    The name of the <code>Activity</code>, not null
-		 *
-		 * @return         The new <code>Activity</code> instance
-		 */
-
-		public Activity create (final ActivityType type, final Course course, final String name)
-		{
-			assert type != null : "type is NULL";
-			assert course != null : "course is NULL";
-			assert name != null : "name is NULL";
-
-			return new ${ClassName} (type, course, name);
-		}
-
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -92,7 +64,20 @@ public class ${ClassName} extends GenericNamedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (${ClassName}.class, ${Builder}.class, NamedActivityElementFactory.class, new Factory (), "${ActivitySource}", "${ActivityType}");
+		DefinitionBuilder<Activity, ${ClassName}> builder = DefinitionBuilder.newInstance (Activity.class, ${ClassName}.class);
+		builder.setCreateMethod (${ClassName}::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);
+
+		builder.addAttribute ("course", Course.class, true, false, ${ClassName}::getCourse, ${ClassName}::setCourse);
+		builder.addAttribute ("type", ActivityType.class, true, false, ${ClassName}::getType, ${ClassName}::setType);
+		builder.addAttribute ("name", String.class, true, false, ${ClassName}::getName, ${ClassName}::setName);
+
+		builder.addRelationship ("grades", Grade.class, ${ClassName}::addGrade, ${ClassName}::removeGrade);
+		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);
+		builder.addRelationship ("subactivities", SubActivity.class, ${ClassName}::addSubActivity, ${ClassName}::removeSubActivity);
+
+		GenericNamedActivity.registerActivity (builder.build (), ${Builder}.class, "${ActivitySource}", "${ActivityType}");
 	}
 
 	/**

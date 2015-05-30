@@ -19,13 +19,14 @@ package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.SubActivityElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericSubActivity;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
@@ -52,38 +53,24 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericSubActivity;
 public class ForumDiscussion extends GenericSubActivity
 {
 	/**
-	 * Implementation of the <code>SubActivityElementFactory</code>.
-	 * Allows the builders to create instances of <code>ForumDiscussion</code>.
-	 */
-
-	private static final class Factory extends AbstractActivity.Factory implements SubActivityElementFactory
-	{
-		/**
-		 * Create a new sub-activity (<code>SubActivity</code>) instance.
-		 *
-		 * @param  activity The parent <code>Activity</code>, not null
-		 * @param  name     The name of the <code>SubActivity</code>, not null
-		 *
-		 * @return          The new <code>SubActivity</code> instance
-		 */
-
-		public SubActivity create (final Activity activity, final String name)
-		{
-			assert activity instanceof Forum : "activity is not an instance of Forum";
-			assert name != null : "name is NULL";
-
-			return new ForumDiscussion (activity, name);
-		}
-	}
-
-	/**
 	 * Register the <code>ForumDiscussion</code> with the factories on
 	 * initialization.
 	 */
 
 	static
 	{
-		GenericSubActivity.registerActivity (ForumDiscussion.class, Forum.class, DefaultSubActivityBuilder.class, SubActivityElementFactory.class, new Factory ());
+		DefinitionBuilder<Activity, ForumDiscussion> builder = DefinitionBuilder.newInstance (Activity.class, ForumDiscussion.class);
+		builder.setCreateMethod (ForumDiscussion::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, ForumDiscussion::getId, ForumDiscussion::setId);
+
+		builder.addAttribute ("parent", Activity.class, true, false, ForumDiscussion::getParent, ForumDiscussion::setParent);
+		builder.addAttribute ("name", String.class, true, false, ForumDiscussion::getName, ForumDiscussion::setName);
+
+		builder.addRelationship ("log", LogEntry.class, ForumDiscussion::addLog, ForumDiscussion::removeLog);
+		builder.addRelationship ("subactivities", SubActivity.class, ForumDiscussion::addSubActivity, ForumDiscussion::removeSubActivity);
+
+		GenericSubActivity.registerActivity (builder.build (), Forum.class, DefaultSubActivityBuilder.class);
 	}
 
 	/** Serial version id, required by the Serializable interface */

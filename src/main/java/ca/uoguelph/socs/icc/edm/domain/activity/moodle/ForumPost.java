@@ -19,13 +19,14 @@ package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.SubActivityElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericSubActivity;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
@@ -51,31 +52,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericSubActivity;
 
 public class ForumPost extends GenericSubActivity
 {
-	/**
-	 * Implementation of the <code>SubActivityElementFactory</code>.
-	 * Allows the builders to create instances of <code>ForumPost</code>.
-	 */
-
-	private static final class Factory extends AbstractActivity.Factory implements SubActivityElementFactory
-	{
-		/**
-		 * Create a new <code>SubActivity</code> instance.
-		 *
-		 * @param  activity The parent <code>Activity</code>, not null
-		 * @param  name     The name of the <code>SubActivity</code>, not null
-		 *
-		 * @return          The new <code>SubActivity</code> instance
-		 */
-
-		public SubActivity create (final Activity activity, final String name)
-		{
-			assert activity instanceof ForumDiscussion : "activity is not an instance of ForumDiscussion";
-			assert name != null : "name is NULL";
-
-			return new ForumPost (activity, name);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -86,7 +62,17 @@ public class ForumPost extends GenericSubActivity
 
 	static
 	{
-		GenericSubActivity.registerActivity (ForumPost.class, ForumDiscussion.class, DefaultSubActivityBuilder.class, SubActivityElementFactory.class, new Factory ());
+		DefinitionBuilder<Activity, ForumPost> builder = DefinitionBuilder.newInstance (Activity.class, ForumPost.class);
+		builder.setCreateMethod (ForumPost::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, ForumPost::getId, ForumPost::setId);
+
+		builder.addAttribute ("parent", Activity.class, true, false, ForumPost::getParent, ForumPost::setParent);
+		builder.addAttribute ("name", String.class, true, false, ForumPost::getName, ForumPost::setName);
+
+		builder.addRelationship ("log", LogEntry.class, ForumPost::addLog, ForumPost::removeLog);
+
+		GenericSubActivity.registerActivity (builder.build (), ForumDiscussion.class, DefaultSubActivityBuilder.class);
 	}
 
 	/**

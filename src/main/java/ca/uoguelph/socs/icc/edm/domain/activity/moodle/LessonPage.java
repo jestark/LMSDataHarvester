@@ -19,13 +19,14 @@ package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.SubActivityElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericSubActivity;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/lesson
@@ -51,31 +52,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericSubActivity;
 
 public class LessonPage extends GenericSubActivity
 {
-	/**
-	 * Implementation of the <code>SubActivityElementFactory</code>.
-	 * Allows the builders to create instances of <code>LessonPage</code>.
-	 */
-
-	private static final class Factory extends AbstractActivity.Factory implements SubActivityElementFactory
-	{
-		/**
-		 * Create a new <code>SubActivity</code> instance.
-		 *
-		 * @param  activity The parent <code>Activity</code>, not null
-		 * @param  name     The name of the <code>SubActivity</code>, not null
-		 *
-		 * @return          The new <code>SubActivity</code> instance
-		 */
-
-		public SubActivity create (final Activity activity, final String name)
-		{
-			assert activity instanceof Lesson : "activity is not an instance of Lesson";
-			assert name != null : "name is NULL";
-
-			return new LessonPage (activity, name);
-		}
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -86,7 +62,17 @@ public class LessonPage extends GenericSubActivity
 
 	static
 	{
-		GenericSubActivity.registerActivity (LessonPage.class, Lesson.class, DefaultSubActivityBuilder.class, SubActivityElementFactory.class, new Factory ());
+		DefinitionBuilder<Activity, LessonPage> builder = DefinitionBuilder.newInstance (Activity.class, LessonPage.class);
+		builder.setCreateMethod (LessonPage::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, LessonPage::getId, LessonPage::setId);
+
+		builder.addAttribute ("parent", Activity.class, true, false, LessonPage::getParent, LessonPage::setParent);
+		builder.addAttribute ("name", String.class, true, false, LessonPage::getName, LessonPage::setName);
+
+		builder.addRelationship ("log", LogEntry.class, LessonPage::addLog, LessonPage::removeLog);
+
+		GenericSubActivity.registerActivity (builder.build (), Lesson.class, DefaultSubActivityBuilder.class);
 	}
 
 	/**

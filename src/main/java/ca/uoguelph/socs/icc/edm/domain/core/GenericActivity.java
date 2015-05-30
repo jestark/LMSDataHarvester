@@ -26,8 +26,12 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface, for
@@ -39,7 +43,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityManager
  */
 
 
@@ -55,7 +58,18 @@ public class GenericActivity extends ActivityInstance implements Serializable
 
 	static
 	{
-		AbstractElement.registerElement (Activity.class, GenericActivity.class, DefaultGenericActivityBuilder.class, GenericActivityElementFactory.class, new Factory ());
+		DefinitionBuilder<Activity, GenericActivity> builder = DefinitionBuilder.newInstance (Activity.class, GenericActivity.class);
+		builder.setCreateMethod (GenericActivity::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, AbstractElement::getId, AbstractElement::setId);
+
+		builder.addAttribute ("course", Course.class, true, false, ActivityInstance::getCourse, ActivityInstance::setCourse);
+		builder.addAttribute ("type", ActivityType.class, true, false, ActivityInstance::getType, ActivityInstance::setType);
+
+		builder.addRelationship ("grades", Grade.class, ActivityInstance::addGrade, ActivityInstance::removeGrade);
+		builder.addRelationship ("log", LogEntry.class, AbstractActivity::addLog, AbstractActivity::removeLog);
+
+		AbstractElement.registerElement (builder.build (), DefaultGenericActivityBuilder.class);
 	}
 
 	/**

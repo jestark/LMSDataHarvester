@@ -19,15 +19,17 @@ package ca.uoguelph.socs.icc.edm.domain.activity.moodle;
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.NamedActivityElementFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
 import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/lesson
@@ -52,36 +54,6 @@ import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
 
 public class Lesson extends GenericNamedActivity
 {
-	/**
-	 * Implementation of the <code>NamedActivityElementFactory</code>.  Allows
-	 * the builders to create instances of <code>Lesson</code>.
-	 */
-
-	private static final class Factory extends ActivityInstance.Factory implements NamedActivityElementFactory
-	{
-		/**
-		 * Create a new <code>Activity</code> instance.
-		 *
-		 * @param  type    The <code>ActivityType</code> of the
-		 *                 <code>Activity</code>, not null
-		 * @param  course  The <code>Course</code> which is associated with the
-		 *                 <code>Activity</code> instance, not null
-		 * @param  name    The name of the <code>Activity</code>, not null
-		 *
-		 * @return         The new <code>Activity</code> instance
-		 */
-
-		public Activity create (final ActivityType type, final Course course, final String name)
-		{
-			assert type != null : "type is NULL";
-			assert course != null : "course is NULL";
-			assert name != null : "name is NULL";
-
-			return new Lesson (type, course, name);
-		}
-
-	}
-
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -92,7 +64,20 @@ public class Lesson extends GenericNamedActivity
 
 	static
 	{
-		GenericNamedActivity.registerActivity (Lesson.class, DefaultNamedActivityBuilder.class, NamedActivityElementFactory.class, new Factory (), "moodle", "lesson");
+		DefinitionBuilder<Activity, Lesson> builder = DefinitionBuilder.newInstance (Activity.class, Lesson.class);
+		builder.setCreateMethod (Lesson::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, Lesson::getId, Lesson::setId);
+
+		builder.addAttribute ("course", Course.class, true, false, Lesson::getCourse, Lesson::setCourse);
+		builder.addAttribute ("type", ActivityType.class, true, false, Lesson::getType, Lesson::setType);
+		builder.addAttribute ("name", String.class, true, false, Lesson::getName, Lesson::setName);
+
+		builder.addRelationship ("grades", Grade.class, Lesson::addGrade, Lesson::removeGrade);
+		builder.addRelationship ("log", LogEntry.class, Lesson::addLog, Lesson::removeLog);
+		builder.addRelationship ("subactivities", SubActivity.class, Lesson::addSubActivity, Lesson::removeSubActivity);
+
+		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "lesson");
 	}
 
 	/**

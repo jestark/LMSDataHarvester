@@ -23,7 +23,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Role</code> interface.  It is expected that
@@ -34,7 +37,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder;
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager
  */
 
 
@@ -56,7 +58,13 @@ public class RoleData extends AbstractElement implements Role, Serializable
 
 	static
 	{
-		AbstractElement.registerElement (Role.class, RoleData.class, DefaultRoleBuilder.class, RoleElementFactory.class, new Factory ());
+		DefinitionBuilder<Role, RoleData> builder = DefinitionBuilder.newInstance (Role.class, RoleData.class);
+		builder.setCreateMethod (RoleData::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, RoleData::getId, RoleData::setId);
+		builder.addUniqueAttribute ("name", String.class, true, false, RoleData::getName, RoleData::setName);
+
+		AbstractElement.registerElement (builder.build (), DefaultRoleBuilder.class);
 	}
 
 	/**

@@ -31,6 +31,8 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
 
+import ca.uoguelph.socs.icc.edm.domain.core.definition.ElementDefinition;
+
 /**
  * An generic representation of a <code>SubActivity</code> in the domain model.
  * This class acts as an abstract base class for all of the
@@ -56,26 +58,21 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 	 * factories.  This method handles the registrations for the subclasses to
 	 * reduce code duplication.
 	 *
-	 * @param  elementClass  The <code>Element</code> implementation class, not
-	 *                       null
-	 * @param  activityClass The parent <code>Activity</code> class, not null
-	 * @param  builderClass  The <code>SubActivityBuilder</code>
-	 *                       implementation, not null
-	 * @param  factory       The <code>ElementFactory</code> interface, not null
-	 * @param  factory       The <code>ElementFactory</code> instance, not null
+	 * @param  definition The <code>ElementDefinition</code>, not null
+	 * @param  activity   The parent <code>Activity</code> class, not null
+	 * @param  builder    The <code>SubActivityBuilder</code> implementation,
+	 *                    not null
 	 */
 
-	protected static final <S extends SubActivity, T extends SubActivityBuilder, U extends SubActivityElementFactory> void registerActivity (final Class<S> elementClass, final Class<? extends Activity> activityClass, final Class<T> builderClass, final Class<U> factoryClass, final U factory)
+	protected static final <S extends SubActivity, T extends SubActivityBuilder> void registerActivity (final ElementDefinition<Activity, S> definition, final Class<? extends Activity> activity, final Class<T> builder)
 	{
-		assert elementClass != null : "elementClass is NULL";
-		assert activityClass != null : "activityClass is NULL";
-		assert builderClass != null : "builderClass is NULL";
-		assert factoryClass != null : "factoryClass is NULL";
-		assert factory != null : "factory is NULL";
+		assert definition != null : "definition is NULL";
+		assert activity != null : "activity is NULL";
+		assert builder != null : "builder is NULL";
 
-		AbstractActivity.registerSubActivityClass (activityClass, elementClass);
+		AbstractActivity.registerSubActivityClass (activity, definition.getImplementationClass ());
 
-		AbstractElement.registerElement (Activity.class, elementClass, builderClass, factoryClass, factory);
+		AbstractElement.registerElement (definition, builder);
 	}
 
 	/**

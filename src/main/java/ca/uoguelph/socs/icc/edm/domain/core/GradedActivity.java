@@ -29,6 +29,8 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder;
 
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
+
 /**
  * Implementation of the <code>Grade</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Grade</code>
@@ -61,8 +63,14 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 
 	static
 	{
+		DefinitionBuilder<Grade, GradedActivity> builder = DefinitionBuilder.newInstance (Grade.class, GradedActivity.class);
+		builder.setCreateMethod (GradedActivity::new);
+
+		builder.addAttribute ("activity", Activity.class, true, false, GradedActivity::getActivity, GradedActivity::setActivity);
+		builder.addAttribute ("enrolment", Enrolment.class, true, false, GradedActivity::getEnrolment, GradedActivity::setEnrolment);
+		builder.addAttribute ("grade", Integer.class, true, true, GradedActivity::getGrade, GradedActivity::setGrade);
+
 		AbstractElement.registerBuilder (Grade.class, GradedActivity.class, DefaultGradeBuilder.class);
-		AbstractElement.registerFactory (Grade.class, GradedActivity.class, GradeElementFactory.class, new Factory ());
 	}
 
 	/**

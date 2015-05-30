@@ -20,9 +20,10 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.AbstractBuilder;
-import ca.uoguelph.socs.icc.edm.domain.builder.ElementFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.AbstractQuery;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.ElementDefinition;
 
 /**
  * Abstract base class for all of the domain model <code>Element</code>
@@ -80,50 +81,23 @@ public abstract class AbstractElement implements Element
 	}
 
 	/**
-	 * Register an <code>ElementFactory</code> for an <code>Element</code>
-	 * implementation so that it can be used by the <code>ElementBuilder</code>
-	 * instances.
-	 *
-	 * @param  <T>         The interface type of the <code>Element</code>
-	 * @param  <U>         The implementation type of the <code>Element</code>
-	 * @param  element     The <code>Element</code> interface class, not null
-	 * @param  elementImpl The <code>Element</code> implementation class, not
-	 *                     null
-	 * @param  factory     The <code>ElementFactory</code> to register, not null
-	 */
-
-	protected static <T extends ElementFactory<U>, U extends Element> void registerFactory (final Class<U> element, final Class<? extends U> elementImpl, final Class<T> factory, final T factoryImpl)
-	{
-		assert element != null : "element is NULL";
-		assert elementImpl != null : "elementImpl is NULL";
-		assert factory != null : "factory is NULL";
-		assert factoryImpl != null : "factoryImpl is NULL";
-
-		AbstractBuilder.registerFactory (elementImpl, factory, factoryImpl);
-	}
-
-	/**
 	 * Register an <code>Element</code> implementation with the factories.
 	 *
-	 * @param  element     The <code>Element</code> interface class, not null
-	 * @param  elementImpl The <code>Element</code> implementation class, not
-	 *                     null
-	 * @param  builder     The <code>ElementBuilder</code> implementation, not
-	 *                     null
-	 * @param  factory     The <code>ElementFactory</code>, instance not null
+	 * @param  <T>        The <code>Element</code> interface type
+	 * @param  <U>        The <code>Element</code> implementation type
+	 * @param  <B>        The <code>ElementBuilder</code> implementation type
+	 * @param  definition The <code>Element</code> meta-data definition
+	 * @param  builder    The <code>ElementBuilder</code> implementation, not
+	 *                    null
 	 */
 
-	protected static <R extends Element, S extends R, T extends ElementBuilder<R>, U extends ElementFactory<R>> void registerElement (final Class<R> element, final Class<S> elementImpl, final Class<T> builder, final Class<U> factory, final U factoryImpl)
+	protected static <T extends Element, U extends T, B extends ElementBuilder<T>> void registerElement (final ElementDefinition<T, U> definition, final Class<B> builder)
 	{
-		assert element != null : "element is NULL";
-		assert elementImpl != null : "elementImpl is NULL";
 		assert builder != null : "builder is NULL";
-		assert factory != null : "factory is NULL";
-		assert factoryImpl != null : "factoryImpl is NULL";
+		assert definition != null : "definition is NULL";
 
-		registerQuery (element, elementImpl);
-		registerBuilder (element, elementImpl, builder);
-		registerFactory (element, elementImpl, factory, factoryImpl);
+//		registerQuery (element, elementImpl);
+		registerBuilder (definition.getInterfaceClass (), definition.getImplementationClass (), builder);
 	}
 
 	/**

@@ -32,7 +32,10 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Course</code> interface.  It is expected that
@@ -43,7 +46,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder;
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultCourseManager
  */
 
 public class CourseData extends AbstractElement implements Course, Serializable
@@ -76,7 +78,21 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 	static
 	{
-		AbstractElement.registerElement (Course.class, CourseData.class, DefaultCourseBuilder.class, CourseElementFactory.class, new Factory ());
+		DefinitionBuilder<Course, CourseData> builder = DefinitionBuilder.newInstance (Course.class, CourseData.class);
+		builder.setCreateMethod (CourseData::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, CourseData::getId, CourseData::setId);
+
+		builder.addAttribute ("name", String.class, true, false, CourseData::getName, CourseData::setName);
+		builder.addAttribute ("semester", Semester.class, true, false, CourseData::getSemester, CourseData::setSemester);
+		builder.addAttribute ("year", Integer.class, true, false, CourseData::getYear, CourseData::setYear);
+
+		builder.addIndex ("name", "semester", "year");
+
+		builder.addRelationship ("activities", Activity.class, CourseData::addActivity, CourseData::removeActivity);
+		builder.addRelationship ("enrolments", Enrolment.class, CourseData::addEnrolment, CourseData::removeEnrolment);
+
+		AbstractElement.registerElement (builder.build (), DefaultCourseBuilder.class);
 	}
 
 	/**

@@ -28,7 +28,10 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
+
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Enrolment</code> interface with user data.  It
@@ -43,7 +46,6 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
  * @author  James E. Stark
  * @version 1.0
  * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager
  */
 
 public class UserEnrolmentData extends EnrolmentData implements Enrolment, Serializable
@@ -61,7 +63,20 @@ public class UserEnrolmentData extends EnrolmentData implements Enrolment, Seria
 
 	static
 	{
-		AbstractElement.registerElement (Enrolment.class, UserEnrolmentData.class, DefaultEnrolmentBuilder.class, EnrolmentElementFactory.class, new Factory ());
+		DefinitionBuilder<Enrolment, UserEnrolmentData> builder = DefinitionBuilder.newInstance (Enrolment.class, UserEnrolmentData.class);
+		builder.setCreateMethod (UserEnrolmentData::new);
+
+		builder.addUniqueAttribute ("id", Long.class, false, false, UserEnrolmentData::getId, UserEnrolmentData::setId);
+
+		builder.addAttribute ("course", Course.class, true, false, UserEnrolmentData::getCourse, UserEnrolmentData::setCourse);
+		builder.addAttribute ("role", Role.class, true, false, UserEnrolmentData::getRole, UserEnrolmentData::setRole);
+		builder.addAttribute ("finalgrade", Integer.class, false, true, UserEnrolmentData::getFinalGrade, UserEnrolmentData::setFinalGrade);
+		builder.addAttribute ("usable", Boolean.class, false, true, UserEnrolmentData::isUsable, UserEnrolmentData::setUsable);
+
+		builder.addRelationship ("grades", Grade.class, UserEnrolmentData::addGrade, UserEnrolmentData::removeGrade);
+		builder.addRelationship ("log", LogEntry.class, UserEnrolmentData::addLog, UserEnrolmentData::removeLog);
+
+		AbstractElement.registerElement (builder.build (), DefaultEnrolmentBuilder.class);
 	}
 
 	/**
