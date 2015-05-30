@@ -20,7 +20,7 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Default implementation of the <code>CourseBuilder</code> interface.
@@ -29,31 +29,29 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @version 1.0
  */
 
-public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseElementFactory> implements CourseBuilder
+public final class DefaultCourseBuilder extends AbstractBuilder<Course> implements CourseBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultCourseBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<Course, CourseBuilder>
+	private static class Factory implements BuilderFactory<CourseBuilder, Course>
 	{
 		/**
-		 * Create the <code>CourseBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>CourseManager</code> to perform operations on the
+		 * Create the <code>CourseBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>CourseManager</code> instance, not null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>Course</code> will be inserted
 		 *
-		 * @return         The <code>CourseBuilder</code>
+		 * @return           The <code>CourseBuilder</code>
 		 */
 
 		@Override
-		public CourseBuilder create (final ManagerProxy<Course> manager)
+		public CourseBuilder create (final DataStore datastore)
 		{
-			return new DefaultCourseBuilder (manager);
+			return new DefaultCourseBuilder (datastore);
 		}
 	}
 
@@ -79,14 +77,13 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseEl
 	/**
 	 * Create the <code>DefaultCourseBuilder</code>.
 	 *
-	 * @param  manager The <code>CourseManager</code> which the
-	 *                 <code>CourseBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>Course</code> instance will be inserted
 	 */
 
-	protected DefaultCourseBuilder (final ManagerProxy<Course> manager)
+	protected DefaultCourseBuilder (final DataStore datastore)
 	{
-		super (Course.class, CourseElementFactory.class, manager);
+		super (Course.class, datastore);
 	}
 
 	@Override
@@ -114,22 +111,10 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, CourseEl
 
 		if ((this.element == null) || (! this.name.equals (this.element.getName ())) || (! this.semester.equals (this.element.getSemester ())) || (! this.year.equals (this.element.getYear ())))
 		{
-			result = this.factory.create (this.name, this.semester, this.year);
+//			result = this.factory.create (this.name, this.semester, this.year);
 		}
 
 		return result;
-	}
-
-	@Override
-	protected void postInsert ()
-	{
-		// Course is a root element, so do nothing
-	}
-
-	@Override
-	protected void postRemove ()
-	{
-		// Course is a root element, so do nothing
 	}
 
 	/**

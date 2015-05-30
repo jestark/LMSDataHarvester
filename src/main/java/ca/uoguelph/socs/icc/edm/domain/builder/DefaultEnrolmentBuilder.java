@@ -17,43 +17,38 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.CourseManager;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Role;
-import ca.uoguelph.socs.icc.edm.domain.RoleManager;
 import ca.uoguelph.socs.icc.edm.domain.User;
-import ca.uoguelph.socs.icc.edm.domain.UserManager;
 
 import ca.uoguelph.socs.icc.edm.domain.core.UserEnrolmentData;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, EnrolmentElementFactory> implements EnrolmentBuilder
+public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> implements EnrolmentBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultEnrolmentBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<Enrolment, EnrolmentBuilder>
+	private static class Factory implements BuilderFactory<EnrolmentBuilder, Enrolment>
 	{
 		/**
-		 * Create the <code>EnrolmentBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>EnrolmentManager</code> to perform operations on the
+		 * Create the <code>EnrolmentBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>EnrolmentManager</code> instance, not null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>Enrolment</code> will be inserted
 		 *
-		 * @return         The <code>EnrolmentBuilder</code>
+		 * @return           The <code>EnrolmentBuilder</code>
 		 */
 
 		@Override
-		public EnrolmentBuilder create (final ManagerProxy<Enrolment> manager)
+		public EnrolmentBuilder create (final DataStore datastore)
 		{
-			return new DefaultEnrolmentBuilder (manager);
+			return new DefaultEnrolmentBuilder (datastore);
 		}
 	}
 
@@ -85,14 +80,14 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	/**
 	 * Create the <code>DefaultEnrolmentBuilder</code>.
 	 *
-	 * @param  manager The <code>EnrolmentManager</code> which the
-	 *                 <code>EnrolmentBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>Enrolment</code> instance will be
+	 *                   inserted
 	 */
 
-	protected DefaultEnrolmentBuilder (final ManagerProxy<Enrolment> manager)
+	protected DefaultEnrolmentBuilder (final DataStore datastore)
 	{
-		super (Enrolment.class, EnrolmentElementFactory.class, manager);
+		super (Enrolment.class, datastore);
 
 		this.clear ();
 	}
@@ -122,35 +117,15 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 
 		if ((this.element == null) || (! this.user.equals (((UserEnrolmentData) this.element).getUser ())) || (! this.role.equals (this.element.getRole ())) || (! this.course.equals (this.element.getCourse ())))
 		{
-			result = this.factory.create (this.user, this.course, this.role, this.grade, this.usable);
+//			result = this.factory.create (this.user, this.course, this.role, this.grade, this.usable);
 		}
 		else
 		{
-			this.factory.setUsable (this.element, this.usable);
-			this.factory.setFinalGrade (this.element, this.grade);
+//			this.factory.setUsable (this.element, this.usable);
+//			this.factory.setFinalGrade (this.element, this.grade);
 		}
 
 		return result;
-	}
-
-	@Override
-	protected void postInsert ()
-	{
-		CourseElementFactory cfactory = AbstractBuilder.getFactory (CourseElementFactory.class, this.course.getClass ());
-		UserElementFactory ufactory = AbstractBuilder.getFactory (UserElementFactory.class, this.user.getClass ());
-
-		cfactory.addEnrolment (this.course, this.element);
-		ufactory.addEnrolment (this.user, this.element);
-	}
-
-	@Override
-	protected void postRemove ()
-	{
-		CourseElementFactory cfactory = AbstractBuilder.getFactory (CourseElementFactory.class, this.course.getClass ());
-		UserElementFactory ufactory = AbstractBuilder.getFactory (UserElementFactory.class, this.user.getClass ());
-
-		cfactory.removeEnrolment (this.course, this.element);
-		ufactory.removeEnrolment (this.user, this.element);
 	}
 
 	/**
@@ -215,7 +190,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new NullPointerException ("Course is NULL");
 		}
 
-		if (! (this.manager.getManager (Course.class, CourseManager.class)).contains (course))
+		if (! this.datastore.contains (course))
 		{
 			this.log.error ("This specified Course does not exist in the DataStore");
 			throw new IllegalArgumentException ("Course is not in the DataStore");
@@ -241,7 +216,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new NullPointerException ("Role is NULL");
 		}
 
-		if (! (this.manager.getManager (Role.class, RoleManager.class)).contains (role))
+		if (! this.datastore.contains (role))
 		{
 			this.log.error ("This specified Role does not exist in the DataStore");
 			throw new IllegalArgumentException ("Role is not in the DataStore");
@@ -265,7 +240,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new NullPointerException ("User is NULL");
 		}
 
-		if (! (this.manager.getManager (User.class, UserManager.class)).contains (user))
+		if (! this.datastore.contains (user))
 		{
 			this.log.error ("This specified User does not exist in the DataStore");
 			throw new IllegalArgumentException ("User is not in the DataStore");

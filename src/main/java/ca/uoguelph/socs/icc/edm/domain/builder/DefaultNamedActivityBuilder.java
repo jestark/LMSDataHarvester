@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.NamedActivityBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Default implementation of the <code>NamedActivityBuilder</code>
@@ -28,31 +28,29 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @version 1.0
  */
 
-public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder<NamedActivityElementFactory> implements NamedActivityBuilder
+public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder implements NamedActivityBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultNamedActivityBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<Activity, NamedActivityBuilder>
+	private static class Factory implements BuilderFactory<NamedActivityBuilder, Activity>
 	{
 		/**
-		 * Create the <code>ActivityBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>ActivityManager</code> to perform operations on the
+		 * Create the <code>NamedActivityBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>ActivityManager</code> instance, not null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>NamedActivityBuilder</code> will be inserted
 		 *
-		 * @return         The <code>ActivityBuilder</code>
+		 * @return           The <code>NamedActivityBuilder</code>
 		 */
 
 		@Override
-		public NamedActivityBuilder create (final ManagerProxy<Activity> manager)
+		public NamedActivityBuilder create (final DataStore datastore)
 		{
-			return new DefaultNamedActivityBuilder (manager);
+			return new DefaultNamedActivityBuilder (datastore);
 		}
 	}
 
@@ -72,14 +70,14 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder<N
 	/**
 	 * Create the <code>DefaultNamedActivityBuilder</code>.
 	 *
-	 * @param  manager The <code>NamedActivityManager</code> which the
-	 *                 <code>NamedActivityBuilder</code> will use to operate on
-	 *                 the <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>NamedActivity</code> instance will be
+	 *                   inserted
 	 */
 
-	public DefaultNamedActivityBuilder (final ManagerProxy<Activity> manager)
+	public DefaultNamedActivityBuilder (final DataStore datastore)
 	{
-		super (NamedActivityElementFactory.class, manager);
+		super (datastore);
 	}
 
 	@Override
@@ -103,7 +101,7 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder<N
 
 		if ((this.element == null) || (! this.course.equals (this.element.getCourse ())) || (! this.name.equals (this.element.getName ())))
 		{
-			result = this.factory.create (this.type, this.course, this.name);
+			// result = this.factory.create (this.type, this.course, this.name);
 		}
 
 		return result;

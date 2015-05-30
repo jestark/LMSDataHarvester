@@ -22,37 +22,34 @@ import java.util.HashSet;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
-import ca.uoguelph.socs.icc.edm.domain.ActivitySourceManager;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType, ActivityTypeElementFactory> implements ActivityTypeBuilder
+public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType> implements ActivityTypeBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultActivityTypeBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<ActivityType, ActivityTypeBuilder>
+	private static class Factory implements BuilderFactory<ActivityTypeBuilder, ActivityType>
 	{
 		/**
-		 * Create the <code>ActivityTypeBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>ActivityTypeManager</code> to perform operations on the
+		 * Create the <code>UserBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>ActivityTypeManager</code> instance, not null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>ActivityType</code> will be inserted
 		 *
 		 * @return         The <code>ActivityTypeBuilder</code>
 		 */
 
 		@Override
-		public ActivityTypeBuilder create (final ManagerProxy<ActivityType> manager)
+		public ActivityTypeBuilder create (final DataStore datastore)
 		{
-			return new DefaultActivityTypeBuilder (manager);
+			return new DefaultActivityTypeBuilder (datastore);
 		}
 	}
 
@@ -78,14 +75,14 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	/**
 	 * Create the <code>DefaultActivityTypeBuilder</code>.
 	 *
-	 * @param  manager The <code>ActivityTypeManager</code> which the
-	 *                 <code>ActivityTypeBuilder</code> will use to operate on
-	 *                 the <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>ActivityType</code> instance will be
+	 *                   inserted
 	 */
 
-	protected DefaultActivityTypeBuilder (final ManagerProxy<ActivityType> manager)
+	protected DefaultActivityTypeBuilder (final DataStore datastore)
 	{
-		super (ActivityType.class, ActivityTypeElementFactory.class, manager);
+		super (ActivityType.class, datastore);
 	}
 
 	@Override
@@ -107,20 +104,10 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 
 		if ((this.element == null) || (! this.source.equals (this.element.getSource ())) || (! this.name.equals (this.element.getName ())))
 		{
-			result = this.factory.create (this.source, this.name);
+//			result = this.factory.create (this.source, this.name);
 		}
 
 		return null;
-	}
-
-	@Override
-	protected void postInsert ()
-	{
-	}
-
-	@Override
-	protected void postRemove ()
-	{
 	}
 
 	/**
@@ -240,7 +227,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 			throw new NullPointerException ("source is NULL");
 		}
 
-		if (! (this.manager.getManager (ActivitySource.class, ActivitySourceManager.class)).contains (source))
+		if (! this.datastore.contains (source))
 		{
 			this.log.error ("The specified ActivitySource does not exist in the DataStore: {}", source);
 			throw new IllegalArgumentException ("ActivitySource is not in the DataStore");

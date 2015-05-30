@@ -21,33 +21,31 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.GradeBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-public final class DefaultGradeBuilder extends AbstractBuilder<Grade, GradeElementFactory> implements GradeBuilder
+public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements GradeBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultGradeBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<Grade, GradeBuilder>
+	private static class Factory implements BuilderFactory<GradeBuilder, Grade>
 	{
 		/**
-		 * Create the <code>GradeBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>GradeManager</code> to perform operations on the
+		 * Create the <code>GradeBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>GradeManager</code> instance, not null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>Grade</code> will be inserted
 		 *
-		 * @return         The <code>GradeBuilder</code>
+		 * @return           The <code>GradeBuilder</code>
 		 */
 
 		@Override
-		public GradeBuilder create (final ManagerProxy<Grade> manager)
+		public GradeBuilder create (final DataStore datastore)
 		{
-			return new DefaultGradeBuilder (manager);
+			return new DefaultGradeBuilder (datastore);
 		}
 	}
 
@@ -73,14 +71,13 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, GradeEleme
 	/**
 	 * Create the <code>DefaultGradeBuilder</code>.
 	 *
-	 * @param  manager The <code>EnrolmentManager</code> which the
-	 *                 <code>GradeBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>Grade</code> instance will be inserted
 	 */
 
-	protected DefaultGradeBuilder (final ManagerProxy<Grade> manager)
+	protected DefaultGradeBuilder (final DataStore datastore)
 	{
-		super (Grade.class, GradeElementFactory.class, manager);
+		super (Grade.class, datastore);
 
 		this.clear ();
 	}
@@ -107,16 +104,6 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, GradeEleme
 		}
 
 		return null; //this.factory.create (this.enrolment, this.activity, this.grade);
-	}
-
-	@Override
-	protected void postInsert ()
-	{
-	}
-
-	@Override
-	protected void postRemove ()
-	{
 	}
 
 	/**

@@ -22,23 +22,19 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Abstract implementation of the <code>ElementBuilder</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.ElementManager
  */
 
-public abstract class AbstractBuilder<T extends Element, U extends ElementFactory<T>> implements ElementBuilder<T>
+public abstract class AbstractBuilder<T extends Element> implements ElementBuilder<T>
 {
 	/** The builder factory */
 	private static final ElementBuilderFactory FACTORY;
-
-	/** The <code>ElementFactory</code> implementations */
-	private static final MappedElementFactory ELEMENTS;
 
 	/** The Logger */
 	protected final Logger log;
@@ -46,11 +42,8 @@ public abstract class AbstractBuilder<T extends Element, U extends ElementFactor
 	/** The <code>Element</code> being produced */
 	private final Class<T> type;
 
-	/** The manager (used to add new instances to the model) */
-	protected final ManagerProxy<T> manager;
-
-	/** The factory used to create and edit the <code>Element</code> */
-	protected final U factory;
+	/** The <code>DataStore</code> */
+	protected final DataStore datastore;
 
 	/** The <code>Element</code> produced by the <code>ElementBuilder</code> */
 	protected T element;
@@ -62,7 +55,6 @@ public abstract class AbstractBuilder<T extends Element, U extends ElementFactor
 	static
 	{
 		FACTORY = new ElementBuilderFactory ();
-		ELEMENTS = new MappedElementFactory ();
 	}
 
 	/**
@@ -81,7 +73,7 @@ public abstract class AbstractBuilder<T extends Element, U extends ElementFactor
 	 *                     implementation class, not null
 	 */
 
-	protected static final <T extends ElementBuilder<U>, U extends Element> void registerBuilder (final Class<T> builder, final Class<? extends T> builderImpl, final BuilderFactory<U, T> factory)
+	protected static final <T extends ElementBuilder<U>, U extends Element> void registerBuilder (final Class<T> builder, final Class<? extends T> builderImpl, final BuilderFactory<T, U> factory)
 	{
 		assert builder != null : "builder is NULL";
 		assert builderImpl != null : "impl is NULL";
@@ -91,50 +83,27 @@ public abstract class AbstractBuilder<T extends Element, U extends ElementFactor
 	}
 
 	/**
-	 * Get an instance of the <code>ElementFactory</code> which corresponds to
-	 * the specified <code>Element</code> implementation class.  This method is
-	 * intended to be used by the <code>ElementBuilder</code> implementations
-	 * to get the relevant <code>ElementFactory</code>, which is required to
-	 * create and operate on the <code>Element</code> implementations.
-	 *
-	 * @param  <T>     The type of <code>ElementFactory</code> to be returned
-	 * @param  <U>     The <code>Element</code> type returned by the
-	 *                 <code>ElementFactory</code>
-	 * @param  factory The <code>ElementFactory</code> interface class, not null
-	 * @param  element The <code>Element</code> implementation class, not null
-	 *
-	 * @return The <code>ElementFactory</code>
-	 */
-
-	protected static final <T extends ElementFactory<U>, U extends Element> T getFactory (final Class<T> factory, final Class<? extends Element> element)
-	{
-		assert factory != null : "factory is NULL";
-		assert element != null : "element is NULL";
-
-		return ELEMENTS.getFactory (factory, element);
-	}
-
-	/**
 	 * Get an instance of the <code>ElementBuilder</code> which corresponds to
 	 * the specified <code>Element</code> implementation class.  This method is
 	 * intended to be used by the <code>ElementManager</code> implementations
 	 * to get the relevant builder for the <code>ElementManager</code> instance
 	 * and the <code>Element</code> upon which it is operating.
 	 *
-	 * @param  <T>     The <code>ElementBuilder</code> type to be returned
-	 * @param  <U>     The <code>Element</code> type produced by the builder
-	 * @param  builder The <code>ElementBuilder</code> interface class, not null
-	 * @param  element The <code>Element</code> implementation class, not null
-	 * @param  manager The <code>ElementManager</code> instance, not null
+	 * @param  <T>       The <code>ElementBuilder</code> type to be returned
+	 * @param  <U>       The <code>Element</code> type produced by the builder
+	 * @param  builder   The <code>ElementBuilder</code> interface class, not
+	 *                   null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
+	 * @param  datastore The <code>ElementManager</code> instance, not null
 	 */
 
-	public static final <T extends ElementBuilder<U>, U extends Element> T getInstance (final Class<T> builder, final Class<? extends Element> element, final ManagerProxy<U> manager)
+	public static final <T extends ElementBuilder<U>, U extends Element> T getInstance (final Class<? extends Element> element, final DataStore datastore)
 	{
-		assert builder != null : "builder is NULL";
-		assert element != null : "element is NULL";
-		assert manager != null : "manager is NULL";
+		assert element   != null : "element is NULL";
+		assert datastore != null : "manager is NULL";
 
-		return FACTORY.create (builder, element, manager);
+		return FACTORY.create (element, datastore);
 	}
 
 	/**
@@ -161,51 +130,23 @@ public abstract class AbstractBuilder<T extends Element, U extends ElementFactor
 	}
 
 	/**
-	 * Register an <code>ElementFactory</code> for an <code>Element</code>
-	 * implementation so that it can be used by the <code>ElementBuilder</code>
-	 * instances.  This method is intended to be used by the
-	 * <code>Element</code> implementations to register their
-	 * <code>ElementFactory</code> implementation with the factory contained in
-	 * the <code>AbstractBuilder</code>.
-	 *
-	 * @param  <T>         The implementation type of the <code>Element</code>
-	 * @param  <U>         The interface type of the <code>Element</code>
-	 * @param  factory     The <code>ElementFactory</code> interface class, not
-	 *                     null
-	 * @param  element     The <code>Element</code> implementation class, not
-	 *                     null
-	 * @param  factoryImpl The <code>ElementFactory</code> to register, not null
-	 */
-
-	public static final <T extends ElementFactory<U>, U extends Element> void registerFactory (final Class<? extends U> element, final Class<T> factory, final T factoryImpl)
-	{
-		assert element != null : "element is NULL";
-		assert factory != null : "factory is NULL";
-		assert factoryImpl != null : "factoryImpl is NULL";
-
-		ELEMENTS.registerFactory (factory, element, factoryImpl);
-	}
-
-	/**
 	 * Create the <code>AbstractBuilder</code>.
 	 *
-	 * @param  type    The <code>Element</code> type produced by the
-	 *                 <code>ElementBuilder</code>
-	 * @param  manager The <code>ElementManager</code> which the
-	 *                 <code>ElementBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 * @param  type      The <code>Element</code> type produced by the
+	 *                   <code>ElementBuilder</code>
+	 * @param  datastore The <code>DataStore</code> into which new
+	 *                   <code>Element</code> instances will be inserted
 	 */
 
-	protected AbstractBuilder (final Class<T> type, final Class<U> factory, final ManagerProxy<T> manager)
+	protected AbstractBuilder (final Class<T> type, final DataStore datastore)
 	{
 		assert type != null : "type is NULL";
-		assert manager != null : "manager is NULL";
+		assert datastore != null : "datastore is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.type = type;
-		this.manager = manager;
-		this.factory = AbstractBuilder.getFactory (factory, this.manager.getImplClass ());
+		this.datastore = datastore;
 	}
 
 	/**
@@ -213,18 +154,6 @@ public abstract class AbstractBuilder<T extends Element, U extends ElementFactor
 	 */
 
 	protected abstract T buildElement ();
-
-	/**
-	 *
-	 */
-
-	protected abstract void postInsert ();
-
-	/**
-	 *
-	 */
-
-	protected abstract void postRemove ();
 
 	/**
 	 *
@@ -243,9 +172,7 @@ public abstract class AbstractBuilder<T extends Element, U extends ElementFactor
 		{
 			this.log.debug ("Inserting Element into the DataStore: {}", element);
 
-			this.factory.setId (element, this.manager.nextId ());
-			this.element = this.manager.insertElement (element);
-			this.postInsert ();
+			this.datastore.insert (element);
 		}
 
 		return this.element;
@@ -287,7 +214,7 @@ public abstract class AbstractBuilder<T extends Element, U extends ElementFactor
 
 		this.clear ();
 
-		if (this.manager.contains (element))
+		if (this.datastore.contains (element))
 		{
 			this.element = element;
 		}

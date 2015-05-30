@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Default implementation of the <code>RoleBuilder</code> interface.
@@ -28,31 +28,29 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @version 1.0
  */
 
-public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementFactory> implements RoleBuilder
+public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements RoleBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultRoleBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<Role, RoleBuilder>
+	private static class Factory implements BuilderFactory<RoleBuilder, Role>
 	{
 		/**
-		 * Create the <code>RoleBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>RoleManager</code> to perform operations on the
+		 * Create the <code>RoleBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>RoleManager</code> instance, not null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>Role</code> will be inserted
 		 *
-		 * @return         The <code>RoleBuilder</code>
+		 * @return           The <code>RoleBuilder</code>
 		 */
 
 		@Override
-		public RoleBuilder create (final ManagerProxy<Role> manager)
+		public RoleBuilder create (final DataStore datastore)
 		{
-			return new DefaultRoleBuilder (manager);
+			return new DefaultRoleBuilder (datastore);
 		}
 	}
 
@@ -72,14 +70,13 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementF
 	/**
 	 * Create the <code>DefaultRoleBuilder</code>.
 	 *
-	 * @param  manager The <code>RoleManager</code> which the
-	 *                 <code>RoleBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>Role</code> instance will be inserted
 	 */
 
-	protected DefaultRoleBuilder (final ManagerProxy<Role> manager)
+	protected DefaultRoleBuilder (final DataStore datastore)
 	{
-		super (Role.class, RoleElementFactory.class, manager);
+		super (Role.class, datastore);
 	}
 
 	@Override
@@ -95,7 +92,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementF
 
 		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
 		{
-			result = this.factory.create (this.name);
+//			result = this.factory.create (this.name);
 		}
 
 		return result;
@@ -105,18 +102,6 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, RoleElementF
 	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
 	 * fields for the <code>Element</code> to be built to <code>null</code>.
 	 */
-
-	@Override
-	protected void postInsert ()
-	{
-		// Role is a root element, so do nothing
-	}
-
-	@Override
-	protected void postRemove ()
-	{
-		// Role is a root element, so do nothing
-	}
 
 	@Override
 	public void clear ()

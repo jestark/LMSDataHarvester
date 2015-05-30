@@ -19,11 +19,9 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-import ca.uoguelph.socs.icc.edm.domain.ActivityTypeManager;
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.CourseManager;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Abstract implementation of the <code>ActivityBuilder</code> interface.  This
@@ -35,7 +33,7 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @param   <T> The type of <code>Activity</code>
  */
 
-public abstract class AbstractActivityBuilder<T extends ActivityElementFactory> extends AbstractBuilder<Activity, T> implements ActivityBuilder
+public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity> implements ActivityBuilder
 {
 	/** The type of the Activity */
 	protected final ActivityType type;
@@ -46,40 +44,16 @@ public abstract class AbstractActivityBuilder<T extends ActivityElementFactory> 
 	/**
 	 * Create the <code>DefaultActivityBuilder</code>.
 	 *
-	 * @param  manager The <code>ActivityManager</code> which the
-	 *                 <code>ActivityBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>Activity</code> instance will be
+	 *                   inserted
 	 */
 
-	public AbstractActivityBuilder (final Class<T> factory, final ManagerProxy<Activity> manager)
+	public AbstractActivityBuilder (final DataStore datastore)
 	{
-		super (Activity.class, factory, manager);
+		super (Activity.class, datastore);
 
-		assert this.manager.getArgument () != null : "ActivityType is NULL";
-
-		if (! (this.manager.getManager (ActivityType.class, ActivityTypeManager.class)).contains ((ActivityType) this.manager.getArgument ()))
-		{
-			this.log.error ("The specified ActivityType does not exist in the DataStore: {}", this.manager.getArgument ());
-			throw new IllegalArgumentException ("ActivityType is not in the DataStore");
-		}
-
-		this.type = (ActivityType) this.manager.getArgument ();
-	}
-
-	@Override
-	protected void postInsert ()
-	{
-		CourseElementFactory factory = AbstractBuilder.getFactory (CourseElementFactory.class, this.course.getClass ());
-
-		factory.addActivity (this.course, this.element);
-	}
-
-	@Override
-	protected void postRemove ()
-	{
-		CourseElementFactory factory = AbstractBuilder.getFactory (CourseElementFactory.class, this.course.getClass ());
-
-		factory.removeActivity (this.course, this.element);
+		this.type = null; //FIXME
 	}
 
 	/**
@@ -166,7 +140,7 @@ public abstract class AbstractActivityBuilder<T extends ActivityElementFactory> 
 			throw new NullPointerException ("Course is NULL");
 		}
 
-		if (! (this.manager.getManager (Course.class, CourseManager.class)).contains (course))
+		if (! this.datastore.contains (course))
 		{
 			this.log.error ("This specified Course does not exist in the DataStore");
 			throw new IllegalArgumentException ("Course is not in the DataStore");

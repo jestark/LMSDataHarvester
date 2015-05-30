@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Default implementation of the <code>UserBuilder</code> interface.
@@ -28,31 +28,29 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @version 1.0
  */
 
-public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementFactory> implements UserBuilder
+public final class DefaultUserBuilder extends AbstractBuilder<User> implements UserBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultUserBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<User, UserBuilder>
+	private static class Factory implements BuilderFactory<UserBuilder, User>
 	{
 		/**
-		 * Create the <code>UserBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>UserManager</code> to perform operations on the
+		 * Create the <code>UserBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>UserManager</code> instance, not null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>User</code> will be inserted
 		 *
 		 * @return         The <code>UserBuilder</code>
 		 */
 
 		@Override
-		public UserBuilder create (final ManagerProxy<User> manager)
+		public UserBuilder create (final DataStore datastore)
 		{
-			return new DefaultUserBuilder (manager);
+			return new DefaultUserBuilder (datastore);
 		}
 	}
 
@@ -81,12 +79,13 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementF
 	/**
 	 * Create an instance of the <code>DefaultUserBuilder</code>.
 	 *
-	 * @param  manager The instance of the <code>UserManager</code>, not null
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>User</code> instance will be inserted
 	 */
 
-	protected DefaultUserBuilder (final ManagerProxy<User> manager)
+	protected DefaultUserBuilder (final DataStore datastore)
 	{
-		super (User.class, UserElementFactory.class, manager);
+		super (User.class, datastore);
 
 		this.clear ();
 	}
@@ -126,34 +125,22 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, UserElementF
 		{
 			this.log.debug ("Creating a new User Instance");
 
-			result = this.factory.create (this.idnumber, this.firstname, this.lastname, this.username);
+//			result = this.factory.create (this.idnumber, this.firstname, this.lastname, this.username);
 		}
 		else
 		{
 			if (! this.firstname.equals (this.element.getFirstname ()))
 			{
-				this.factory.setFirstname (this.element, this.firstname);
+//				this.factory.setFirstname (this.element, this.firstname);
 			}
 
 			if (! this.firstname.equals (this.element.getFirstname ()))
 			{
-				this.factory.setLastname (this.element, this.lastname);
+//				this.factory.setLastname (this.element, this.lastname);
 			}
 		}
 
 		return result;
-	}
-
-	@Override
-	protected void postInsert ()
-	{
-		// User is a root element, so do nothing
-	}
-
-	@Override
-	protected void postRemove ()
-	{
-		// User is a root element, so do nothing
 	}
 
 	/**

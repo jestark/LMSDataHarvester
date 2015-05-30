@@ -17,11 +17,10 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityManager;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Default implementation of the <code>SubActivityBuilder</code>.
@@ -30,31 +29,29 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @version 1.0
  */
 
-public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity, SubActivityElementFactory> implements SubActivityBuilder
+public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity> implements SubActivityBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultSubActivityBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<Activity, SubActivityBuilder>
+	private static class Factory implements BuilderFactory<SubActivityBuilder, Activity>
 	{
 		/**
-		 * Create the <code>ElementBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>ActivityManager</code> to perform operations on the
+		 * Create the <code>SubActivityBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>ActivityManager</code> instance, not null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>SubActivity</code> will be inserted
 		 *
-		 * @return         The <code>ActivitGroupMemberyBuilder</code>
+		 * @return           The <code>SubActivityBuilder</code>
 		 */
 
 		@Override
-		public SubActivityBuilder create (final ManagerProxy<Activity> manager)
+		public SubActivityBuilder create (final DataStore datastore)
 		{
-			return new DefaultSubActivityBuilder (manager);
+			return new DefaultSubActivityBuilder (datastore);
 		}
 	}
 
@@ -77,24 +74,24 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity, S
 	/**
 	 * Create the <code>DefaultSubActivityBuilder</code>.
 	 *
-	 * @param  manager The <code>SubActivityManager</code> which the
-	 *                 <code>ActivityGroupBuilderBuilder</code> will use to
-	 *                 operate on the <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>SubActivity</code> instance will be
+	 *                   inserted
 	 */
 
-	public DefaultSubActivityBuilder (final ManagerProxy<Activity> manager)
+	public DefaultSubActivityBuilder (final DataStore datastore)
 	{
-		super (Activity.class, SubActivityElementFactory.class, manager);
+		super (Activity.class, datastore);
 
-		assert (Activity) this.manager.getArgument () != null : "parent is NULL";
+/*		assert (Activity) this.manager.getArgument () != null : "parent is NULL";
 
 		if (! (this.manager.getManager (Activity.class, ActivityManager.class)).contains ((Activity) this.manager.getArgument ()))
 		{
 			this.log.error ("The parent Activity does not exist in the DataStore: {}", (Activity) this.manager.getArgument ());
 			throw new IllegalArgumentException ("Activity is not in the DataStore");
 		}
-
-		this.parent = (Activity) this.manager.getArgument ();
+*/
+		this.parent = null; //(Activity) this.manager.getArgument ();
 	}
 
 	@Override
@@ -112,30 +109,10 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity, S
 
 		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
 		{
-			result = this.factory.create (this.parent, this.name);
+//			result = this.factory.create (this.parent, this.name);
 		}
 
 		return result;
-	}
-
-	@Override
-	protected void postInsert ()
-	{
-		this.log.trace ("postInsert:");
-
-		AbstractActivityElementFactory factory = AbstractBuilder.getFactory (AbstractActivityElementFactory.class, this.parent.getClass ());
-
-		factory.addSubActivity (this.parent, ((SubActivity) this.element));
-	}
-
-	@Override
-	protected void postRemove ()
-	{
-		this.log.trace ("postremove:");
-
-		AbstractActivityElementFactory factory = AbstractBuilder.getFactory (AbstractActivityElementFactory.class, this.parent.getClass ());
-
-		factory.removeSubActivity (this.parent, ((SubActivity) this.element));
 	}
 
 	/**

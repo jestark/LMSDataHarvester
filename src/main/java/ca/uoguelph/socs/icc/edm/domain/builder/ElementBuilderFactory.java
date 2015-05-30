@@ -17,20 +17,16 @@
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import java.util.Map;
-import java.util.Set;
 
 import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Factory for creating <code>ElementBuilder</code> objects.
@@ -47,7 +43,7 @@ final class ElementBuilderFactory
 	private final Logger log;
 
 	/** Factory for the <code>ElementBuilder</code> implementations */
-	private final Map<Pair<Class<?>, Class<?>>, BuilderFactory<?, ?>> factories;
+	private final Map<Class<?>, BuilderFactory<?, ?>> factories;
 
 	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
 	private final Map<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> elements;
@@ -63,7 +59,7 @@ final class ElementBuilderFactory
 	{
 		this.log = LoggerFactory.getLogger (ElementBuilderFactory.class);
 
-		this.factories = new HashMap<Pair<Class<?>, Class<?>>, BuilderFactory<?, ?>> ();
+		this.factories = new HashMap<Class<?>, BuilderFactory<?, ?>> ();
 		this.elements = new HashMap<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ();
 	}
 
@@ -81,7 +77,7 @@ final class ElementBuilderFactory
 	 *                 <code>ElementBuilder</code>, not null
 	 */
 
-	public <T extends ElementBuilder<U>, U extends Element> void registerFactory (final Class<T> builder, final Class<? extends T> impl, final BuilderFactory<U, T> factory)
+	public <T extends ElementBuilder<U>, U extends Element> void registerFactory (final Class<T> builder, final Class<? extends T> impl, final BuilderFactory<T, U> factory)
 	{
 		this.log.trace ("registerFactory: builder={}, impl={}, factory={}", builder, impl, factory);
 
@@ -89,11 +85,9 @@ final class ElementBuilderFactory
 		assert impl != null : "impl is NULL";
 		assert factory != null : "factory is NULL";
 
-		Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (builder, impl);
+		assert (! this.factories.containsKey (impl)) : "Class already registered: " + impl.getSimpleName ();
 
-		assert (! this.factories.containsKey (factoryKey)) : "Class already registered: " + impl.getSimpleName ();
-
-		this.factories.put (factoryKey, factory);
+		this.factories.put (impl, factory);
 	}
 
 	/**
@@ -120,32 +114,30 @@ final class ElementBuilderFactory
 	}
 
 	/**
-	 * Create a <code>ElementBuilder</code> for the specified
-	 * <code>ElementManager</code>.
+	 * Create an <code>ElementBuilder</code> for the specified
+	 * <code>DataStore</code>.
 	 *
 	 * @param  <T>
 	 * @param  <U>
-	 * @param  builder The <code>ElementBuilder</code> interface class, not null
-	 * @param  element The <code>Element</code> implementation class, not null
-	 * @param  manager The <code>ElementManager</code>, not null
-	 * @return         The <code>ElementBuilder</code>
+	 * @param  builder   The <code>ElementBuilder</code> interface class, not
+	 *                   null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @return           The <code>ElementBuilder</code>
 	 */
 
 	@SuppressWarnings("unchecked")
-	public <T extends ElementBuilder<U>, U extends Element> T create (final Class<T> builder, final Class<? extends Element> element, final ManagerProxy<U> manager)
+	public <T extends ElementBuilder<U>, U extends Element> T create (final Class<? extends Element> element, final DataStore datastore)
 	{
-		this.log.trace ("create: builder={}, element={}, manager={}", builder, element, manager);
+		this.log.trace ("create: element={}, datastore={}", element, datastore);
 
-		assert builder != null : "type is NULL";
 		assert element != null : "impl is NULL";
-		assert manager != null : "manager is NULL";
+		assert datastore != null : "datastore is NULL";
 
 		assert this.elements.containsKey (element) : "Element class is not registered: " + element.getSimpleName ();
+		assert this.factories.containsKey (this.elements.get (element)) : "Class not registered: " + (this.elements.get (element)).getSimpleName ();
 
-		Pair<Class<?>, Class<?>> factoryKey = new ImmutablePair<Class<?>, Class<?>> (builder, this.elements.get (element));
-
-		assert this.factories.containsKey (factoryKey) : "Class not registered: " + (this.elements.get (element)).getSimpleName ();
-
-		return ((BuilderFactory<U, T>) this.factories.get (factoryKey)).create (manager);
+		return ((BuilderFactory<T, U>) this.factories.get (this.elements.get (element))).create (datastore);
 	}
 }

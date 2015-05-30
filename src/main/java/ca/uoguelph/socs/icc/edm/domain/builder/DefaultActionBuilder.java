@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Default implementation of the <code>ActionBuilder</code> interface.
@@ -31,36 +31,31 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @version 1.0
  */
 
-public final class DefaultActionBuilder extends AbstractBuilder<Action, ActionElementFactory> implements ActionBuilder
+public final class DefaultActionBuilder extends AbstractBuilder<Action> implements ActionBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultActionBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<Action, ActionBuilder>
+	private static class Factory implements BuilderFactory<ActionBuilder, Action>
 	{
 		/**
-		 * Create the <code>ActionBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>ActionManager</code> to perform operations on the
+		 * Create the <code>ActionBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>ActionManager</code> instance, not null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>Action</code> will be inserted
 		 *
-		 * @return         The <code>ActionBuilder</code>
+		 * @return           The <code>ActionBuilder</code>
 		 */
 
 		@Override
-		public ActionBuilder create (final ManagerProxy<Action> manager)
+		public ActionBuilder create (final DataStore datastore)
 		{
-			return new DefaultActionBuilder (manager);
+			return new DefaultActionBuilder (datastore);
 		}
 	}
-
-	/** The logger */
-	private final Logger log;
 
 	/** The name of the Action */
 	private String name;
@@ -78,16 +73,13 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, ActionEl
 	/**
 	 * Create the <code>DefaultActionBuilder</code>.
 	 *
-	 * @param  manager The <code>ActionManager</code> which the
-	 *                 <code>ActionBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>Action</code> instance will be inserted
 	 */
 
-	protected DefaultActionBuilder (final ManagerProxy<Action> manager)
+	protected DefaultActionBuilder (final DataStore datastore)
 	{
-		super (Action.class, ActionElementFactory.class, manager);
-
-		this.log = LoggerFactory.getLogger (DefaultActionBuilder.class);
+		super (Action.class, datastore);
 	}
 
 	@Override
@@ -103,20 +95,10 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, ActionEl
 
 		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
 		{
-			result = this.factory.create (this.name);
+			// result = this.factory.create (this.name);
 		}
 
 		return result;
-	}
-
-	@Override
-	protected void postInsert ()
-	{
-	}
-
-	@Override
-	protected void postRemove ()
-	{
 	}
 
 	/**

@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Create an <code>ElementBuilder</code> which will create new
@@ -30,25 +30,23 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * <code>ElementBuilder</code>.
  *
  * @author  James E. Stark
- * @version 1.1
- * @param   <T> The <code>Element</code> type of the factory
- * @param   <U> The type of <code>ElementBuilder</code> returned by the factory
+ * @version 1.2
+ * @param   <T> The type of <code>ElementBuilder</code> returned by the factory
+ * @param   <U> The <code>Element</code> type of the factory
  * @see     AbstractBuilder
  */
 
-public interface BuilderFactory<T extends Element, U extends ElementBuilder<T>>
+public interface BuilderFactory<T extends ElementBuilder<U>, U extends Element>
 {
 	/**
-	 * Create the <code>ElementBuilder</code>.  The supplied
-	 * <code>ManagerProxy</code> will be used by the builder to access the
-	 * <code>ElementManager</code> to perform operations on the
+	 * Create the <code>ElementBuilder</code> for the specified
 	 * <code>DataStore</code>.
 	 *
-	 * @param  manager The <code>ManagerProxy</code> used to the
-	 *                 <code>ElementManager</code> instance, not null
+	 * @param  datastore The <code>DataStore</code> into which new
+	 *                   <code>Element</code> will be inserted
 	 *
 	 * @return         The <code>ElementBuilder</code>
 	 */
 
-	public abstract U create (ManagerProxy<T> manager);
+	public abstract T create (DataStore datastore);
 }

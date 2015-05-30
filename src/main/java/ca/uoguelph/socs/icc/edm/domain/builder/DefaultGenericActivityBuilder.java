@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Default implementation of the <code>ActivityBuilder</code>.
@@ -31,31 +31,29 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @version 1.0
  */
 
-public final class DefaultGenericActivityBuilder extends AbstractActivityBuilder<GenericActivityElementFactory>
+public final class DefaultGenericActivityBuilder extends AbstractActivityBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultActivityBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<Activity, ActivityBuilder>
+	private static class Factory implements BuilderFactory<ActivityBuilder, Activity>
 	{
 		/**
-		 * Create the <code>ActivityBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>ActivityManager</code> to perform operations on the
+		 * Create the <code>GenericActivityBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>ActivityManager</code> instance, not null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>GenericActivity</code> will be inserted
 		 *
-		 * @return         The <code>ActivityBuilder</code>
+		 * @return           The <code>GenericActivityBuilder</code>
 		 */
 
 		@Override
-		public ActivityBuilder create (final ManagerProxy<Activity> manager)
+		public ActivityBuilder create (final DataStore datastore)
 		{
-			return new DefaultGenericActivityBuilder (manager);
+			return new DefaultGenericActivityBuilder (datastore);
 		}
 	}
 
@@ -72,14 +70,14 @@ public final class DefaultGenericActivityBuilder extends AbstractActivityBuilder
 	/**
 	 * Create the <code>DefaultGenericActivityBuilder</code>.
 	 *
-	 * @param  manager The <code>GenericActivityManager</code> which the
-	 *                 <code>GenericActivityBuilder</code> will use to operate
-	 *                 on the <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>GenericActivity</code> instance will be
+	 *                   inserted
 	 */
 
-	public DefaultGenericActivityBuilder (final ManagerProxy<Activity> manager)
+	public DefaultGenericActivityBuilder (final DataStore datastore)
 	{
-		super (GenericActivityElementFactory.class, manager);
+		super (datastore);
 	}
 
 	@Override
@@ -91,7 +89,7 @@ public final class DefaultGenericActivityBuilder extends AbstractActivityBuilder
 
 		if ((this.element == null) || (! this.course.equals (this.element.getCourse ())))
 		{
-			result = this.factory.create (this.type, this.course);
+//			result = this.factory.create (this.type, this.course);
 		}
 
 		return result;

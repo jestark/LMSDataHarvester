@@ -24,33 +24,31 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogEntryElementFactory> implements LogEntryBuilder
+public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> implements LogEntryBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultLogEntryBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<LogEntry, LogEntryBuilder>
+	private static class Factory implements BuilderFactory<LogEntryBuilder, LogEntry>
 	{
 		/**
-		 * Create the <code>LogEntryBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>LogEntryManager</code> to perform operations on the
+		 * Create the <code>LogEntryBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>LogEntryManager</code> instance, not null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>LogEntry</code> will be inserted
 		 *
-		 * @return         The <code>LogEntryBuilder</code>
+		 * @return           The <code>LogEntryBuilder</code>
 		 */
 
 		@Override
-		public LogEntryBuilder create (final ManagerProxy<LogEntry> manager)
+		public LogEntryBuilder create (final DataStore datastore)
 		{
-			return new DefaultLogEntryBuilder (manager);
+			return new DefaultLogEntryBuilder (datastore);
 		}
 	}
 
@@ -82,14 +80,13 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	/**
 	 * Create the <code>DefaultLogEntryBuilder</code>.
 	 *
-	 * @param  manager The <code>LogEntryManager</code> which the
-	 *                 <code>LogEntryBuilder</code> will use to operate on the
-	 *                 <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>LogEntry</code> instance will be inserted
 	 */
 
-	protected DefaultLogEntryBuilder (final ManagerProxy<LogEntry> manager)
+	protected DefaultLogEntryBuilder (final DataStore datastore)
 	{
-		super (LogEntry.class, LogEntryElementFactory.class, manager);
+		super (LogEntry.class, datastore);
 	}
 
 	@Override
@@ -114,16 +111,6 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		}
 
 		return null; //this.factory.create (this.action, this.activity, this.enrolment, this.ipaddress, this.time);
-	}
-
-	@Override
-	protected void postInsert ()
-	{
-	}
-
-	@Override
-	protected void postRemove ()
-	{
 	}
 
 	/**

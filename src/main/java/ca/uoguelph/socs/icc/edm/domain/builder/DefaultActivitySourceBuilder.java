@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Default implementation of the <code>ActivitySourceBuilder</code>.
@@ -31,37 +31,31 @@ import ca.uoguelph.socs.icc.edm.domain.manager.ManagerProxy;
  * @version 1.0
  */
 
-public final class DefaultActivitySourceBuilder extends AbstractBuilder<ActivitySource, ActivitySourceElementFactory> implements ActivitySourceBuilder
+public final class DefaultActivitySourceBuilder extends AbstractBuilder<ActivitySource> implements ActivitySourceBuilder
 {
 	/**
 	 * Implementation of the <code>BuilderFactory</code> to create a
 	 * <code>DefaultActivitySourceBuilder</code>.
 	 */
 
-	private static class Factory implements BuilderFactory<ActivitySource, ActivitySourceBuilder>
+	private static class Factory implements BuilderFactory<ActivitySourceBuilder, ActivitySource>
 	{
 		/**
-		 * Create the <code>ActivitySourceBuilder</code>.  The supplied
-		 * <code>ManagerProxy</code> will be used by the builder to access the
-		 * <code>ActivitySourceManager</code> to perform operations on the
+		 * Create the <code>ActivitySourceBuilder</code> for the specified
 		 * <code>DataStore</code>.
 		 *
-		 * @param  manager The <code>ManagerProxy</code> used to the
-		 *                 <code>ActivitySourceManager</code> instance, not
-		 *                 null
+		 * @param  datastore The <code>DataStore</code> into which new
+		 *                   <code>ActivitySource</code> will be inserted
 		 *
-		 * @return         The <code>ActivitySourceBuilder</code>
+		 * @return           The <code>ActivitySourceBuilder</code>
 		 */
 
 		@Override
-		public ActivitySourceBuilder create (final ManagerProxy<ActivitySource> manager)
+		public ActivitySourceBuilder create (final DataStore datastore)
 		{
-			return new DefaultActivitySourceBuilder (manager);
+			return new DefaultActivitySourceBuilder (datastore);
 		}
 	}
-
-	/** The logger */
-	private final Logger log;
 
 	/** The name of the Activity Source */
 	private String name;
@@ -79,16 +73,14 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	/**
 	 * Create the <code>DefaultActivitySourceBuilder</code>.
 	 *
-	 * @param  manager The <code>ActivitySourceManager</code> which the
-	 *                 <code>ActivitySourceBuilder</code> will use to operate
-	 *                 on the <code>DataStore</code>
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>ActivitySource</code> instance will be
+	 *                   inserted
 	 */
 
-	protected DefaultActivitySourceBuilder (final ManagerProxy<ActivitySource> manager)
+	protected DefaultActivitySourceBuilder (final DataStore datastore)
 	{
-		super (ActivitySource.class, ActivitySourceElementFactory.class, manager);
-
-		this.log = LoggerFactory.getLogger (DefaultActivitySourceBuilder.class);
+		super (ActivitySource.class, datastore);
 	}
 
 	@Override
@@ -104,22 +96,10 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 
 		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
 		{
-			result = this.factory.create (this.name);
+//			result = this.factory.create (this.name);
 		}
 
 		return result;
-	}
-
-	@Override
-	protected void postInsert ()
-	{
-		// ActivitySource is a root element, so do nothing
-	}
-
-	@Override
-	protected void postRemove ()
-	{
-		// ActivitySource is a root element, so do nothing
 	}
 
 	/**
