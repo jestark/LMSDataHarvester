@@ -30,30 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements RoleBuilder
 {
-	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultRoleBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<RoleBuilder, Role>
-	{
-		/**
-		 * Create the <code>RoleBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>Role</code> will be inserted
-		 *
-		 * @return           The <code>RoleBuilder</code>
-		 */
-
-		@Override
-		public RoleBuilder create (final DataStore datastore)
-		{
-			return new DefaultRoleBuilder (datastore);
-		}
-	}
-
 	/** The name of the Role */
 	private String name;
 
@@ -64,7 +40,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 
 	static
 	{
-		AbstractBuilder.registerBuilder (RoleBuilder.class, DefaultRoleBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultRoleBuilder.class, DefaultRoleBuilder::new);
 	}
 
 	/**

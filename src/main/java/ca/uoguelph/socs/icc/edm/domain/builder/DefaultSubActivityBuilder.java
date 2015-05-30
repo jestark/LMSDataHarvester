@@ -31,30 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity> implements SubActivityBuilder
 {
-	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultSubActivityBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<SubActivityBuilder, Activity>
-	{
-		/**
-		 * Create the <code>SubActivityBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>SubActivity</code> will be inserted
-		 *
-		 * @return           The <code>SubActivityBuilder</code>
-		 */
-
-		@Override
-		public SubActivityBuilder create (final DataStore datastore)
-		{
-			return new DefaultSubActivityBuilder (datastore);
-		}
-	}
-
 	/** The parent <code>Activity</code> */
 	private final Activity parent;
 
@@ -68,7 +44,7 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity> i
 
 	static
 	{
-		AbstractBuilder.registerBuilder (SubActivityBuilder.class, DefaultSubActivityBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultSubActivityBuilder.class, DefaultSubActivityBuilder::new);
 	}
 
 	/**

@@ -25,30 +25,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements GradeBuilder
 {
-	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultGradeBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<GradeBuilder, Grade>
-	{
-		/**
-		 * Create the <code>GradeBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>Grade</code> will be inserted
-		 *
-		 * @return           The <code>GradeBuilder</code>
-		 */
-
-		@Override
-		public GradeBuilder create (final DataStore datastore)
-		{
-			return new DefaultGradeBuilder (datastore);
-		}
-	}
-
 	/** The activity associated with the grade */
 	private Activity activity;
 
@@ -65,7 +41,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 
 	static
 	{
-		AbstractBuilder.registerBuilder (GradeBuilder.class, DefaultGradeBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultGradeBuilder.class, DefaultGradeBuilder::new);
 	}
 
 	/**

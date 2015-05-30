@@ -16,6 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
+import java.util.Map;
+
+import java.util.HashMap;
+
+import java.util.function.Function;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +39,11 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public abstract class AbstractBuilder<T extends Element> implements ElementBuilder<T>
 {
-	/** The builder factory */
-	private static final ElementBuilderFactory FACTORY;
+	/** Factory for the <code>ElementBuilder</code> implementations */
+	private static final Map<Class<? extends ElementBuilder<? extends Element>>, Function<DataStore, ? extends ElementBuilder<? extends Element>>> FACTORIES;
+
+	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
+	private static final Map<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ELEMENTS;
 
 	/** The Logger */
 	protected final Logger log;
@@ -54,7 +63,8 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 
 	static
 	{
-		FACTORY = new ElementBuilderFactory ();
+		FACTORIES = new HashMap<Class<? extends ElementBuilder<? extends Element>>, Function<DataStore, ? extends ElementBuilder<? extends Element>>> ();
+		ELEMENTS = new HashMap<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ();
 	}
 
 	/**
@@ -63,23 +73,21 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 * implementations to register themselves with the factory so that they may
 	 * be instantiated on demand.
 	 *
-	 * @param  <T>         The <code>ElementBuilder</code> type to be registered
-	 * @param  <U>         The <code>Element</code> type produced by the builder
-	 * @param  builder     The <code>ElementBuilder</code> interface class, not
-	 *                     null
-	 * @param  builderImpl The <code>ElementBuilder</code> implementation
-	 *                     class, not null
-	 * @param  factory     The factory to create instances of the
-	 *                     implementation class, not null
+	 * @param  <T>     The <code>ElementBuilder</code> type to be registered
+	 * @param  <U>     The <code>Element</code> type produced by the builder
+	 * @param  builder The <code>ElementBuilder</code> implementation class,
+	 *                 not null
+	 * @param  factory The factory to create instances of the implementation
+	 *                 class, not null
 	 */
 
-	protected static final <T extends ElementBuilder<U>, U extends Element> void registerBuilder (final Class<T> builder, final Class<? extends T> builderImpl, final BuilderFactory<T, U> factory)
+	protected static final <T extends ElementBuilder<U>, U extends Element> void registerBuilder (final Class<? extends T> builder, final Function<DataStore, T> factory)
 	{
 		assert builder != null : "builder is NULL";
-		assert builderImpl != null : "impl is NULL";
 		assert factory != null : "factory is NULL";
+		assert (! AbstractBuilder.FACTORIES.containsKey (builder)) : "Class already registered: " + builder.getSimpleName ();
 
-		FACTORY.registerFactory (builder, builderImpl, factory);
+		AbstractBuilder.FACTORIES.put (builder, factory);
 	}
 
 	/**
@@ -98,12 +106,16 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 * @param  datastore The <code>ElementManager</code> instance, not null
 	 */
 
+	@SuppressWarnings("unchecked")
 	public static final <T extends ElementBuilder<U>, U extends Element> T getInstance (final Class<? extends Element> element, final DataStore datastore)
 	{
 		assert element   != null : "element is NULL";
 		assert datastore != null : "manager is NULL";
 
-		return FACTORY.create (element, datastore);
+		assert AbstractBuilder.ELEMENTS.containsKey (element) : "Element class is not registered: " + element.getSimpleName ();
+		assert AbstractBuilder.FACTORIES.containsKey (AbstractBuilder.ELEMENTS.get (element)) : "Class not registered: " + (AbstractBuilder.ELEMENTS.get (element)).getSimpleName ();
+
+		return ((Function<DataStore, T>) AbstractBuilder.FACTORIES.get (AbstractBuilder.ELEMENTS.get (element))).apply (datastore);
 	}
 
 	/**
@@ -125,8 +137,9 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	{
 		assert element != null : "element is NULL";
 		assert builder != null : "builder is NULL";
+		assert (! AbstractBuilder.ELEMENTS.containsKey (element)) : "Class already registered: " + element.getSimpleName ();
 
-		FACTORY.registerElement (element, builder);
+		AbstractBuilder.ELEMENTS.put (element, builder);
 	}
 
 	/**

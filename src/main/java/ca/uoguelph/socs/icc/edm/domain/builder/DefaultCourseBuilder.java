@@ -31,30 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultCourseBuilder extends AbstractBuilder<Course> implements CourseBuilder
 {
-	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultCourseBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<CourseBuilder, Course>
-	{
-		/**
-		 * Create the <code>CourseBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>Course</code> will be inserted
-		 *
-		 * @return           The <code>CourseBuilder</code>
-		 */
-
-		@Override
-		public CourseBuilder create (final DataStore datastore)
-		{
-			return new DefaultCourseBuilder (datastore);
-		}
-	}
-
 	/** The name of the course */
 	private String name;
 
@@ -71,7 +47,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 
 	static
 	{
-		AbstractBuilder.registerBuilder (CourseBuilder.class, DefaultCourseBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultCourseBuilder.class, DefaultCourseBuilder::new);
 	}
 
 	/**

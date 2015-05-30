@@ -34,37 +34,13 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 public final class DefaultGenericActivityBuilder extends AbstractActivityBuilder
 {
 	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultActivityBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<ActivityBuilder, Activity>
-	{
-		/**
-		 * Create the <code>GenericActivityBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>GenericActivity</code> will be inserted
-		 *
-		 * @return           The <code>GenericActivityBuilder</code>
-		 */
-
-		@Override
-		public ActivityBuilder create (final DataStore datastore)
-		{
-			return new DefaultGenericActivityBuilder (datastore);
-		}
-	}
-
-	/**
 	 * static initializer to register the
 	 * <code>DefaultGenericActivityBuilder</code> with the factory
 	 */
 
 	static
 	{
-		AbstractBuilder.registerBuilder (ActivityBuilder.class, DefaultGenericActivityBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultGenericActivityBuilder.class, DefaultGenericActivityBuilder::new);
 	}
 
 	/**

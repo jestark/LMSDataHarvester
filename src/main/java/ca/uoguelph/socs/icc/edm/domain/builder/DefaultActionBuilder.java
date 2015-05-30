@@ -33,30 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultActionBuilder extends AbstractBuilder<Action> implements ActionBuilder
 {
-	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultActionBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<ActionBuilder, Action>
-	{
-		/**
-		 * Create the <code>ActionBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>Action</code> will be inserted
-		 *
-		 * @return           The <code>ActionBuilder</code>
-		 */
-
-		@Override
-		public ActionBuilder create (final DataStore datastore)
-		{
-			return new DefaultActionBuilder (datastore);
-		}
-	}
-
 	/** The name of the Action */
 	private String name;
 
@@ -67,7 +43,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 
 	static
 	{
-		AbstractBuilder.registerBuilder (ActionBuilder.class, DefaultActionBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultActionBuilder.class, DefaultActionBuilder::new);
 	}
 
 	/**

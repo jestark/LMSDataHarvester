@@ -33,30 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultActivitySourceBuilder extends AbstractBuilder<ActivitySource> implements ActivitySourceBuilder
 {
-	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultActivitySourceBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<ActivitySourceBuilder, ActivitySource>
-	{
-		/**
-		 * Create the <code>ActivitySourceBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>ActivitySource</code> will be inserted
-		 *
-		 * @return           The <code>ActivitySourceBuilder</code>
-		 */
-
-		@Override
-		public ActivitySourceBuilder create (final DataStore datastore)
-		{
-			return new DefaultActivitySourceBuilder (datastore);
-		}
-	}
-
 	/** The name of the Activity Source */
 	private String name;
 
@@ -67,7 +43,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 
 	static
 	{
-		AbstractBuilder.registerBuilder (ActivitySourceBuilder.class, DefaultActivitySourceBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultActivitySourceBuilder.class, DefaultActivitySourceBuilder::new);
 	}
 
 	/**

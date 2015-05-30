@@ -30,30 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultUserBuilder extends AbstractBuilder<User> implements UserBuilder
 {
-	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultUserBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<UserBuilder, User>
-	{
-		/**
-		 * Create the <code>UserBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>User</code> will be inserted
-		 *
-		 * @return         The <code>UserBuilder</code>
-		 */
-
-		@Override
-		public UserBuilder create (final DataStore datastore)
-		{
-			return new DefaultUserBuilder (datastore);
-		}
-	}
-
 	/** The user's (student) ID number */
 	private Integer idnumber;
 
@@ -73,7 +49,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 
 	static
 	{
-		AbstractBuilder.registerBuilder (UserBuilder.class, DefaultUserBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultUserBuilder.class, DefaultUserBuilder::new);
 	}
 
 	/**

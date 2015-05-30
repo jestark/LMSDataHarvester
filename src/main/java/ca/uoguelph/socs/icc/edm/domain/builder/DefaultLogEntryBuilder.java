@@ -28,30 +28,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> implements LogEntryBuilder
 {
-	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultLogEntryBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<LogEntryBuilder, LogEntry>
-	{
-		/**
-		 * Create the <code>LogEntryBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>LogEntry</code> will be inserted
-		 *
-		 * @return           The <code>LogEntryBuilder</code>
-		 */
-
-		@Override
-		public LogEntryBuilder create (final DataStore datastore)
-		{
-			return new DefaultLogEntryBuilder (datastore);
-		}
-	}
-
 	/** The <code>Action</code> performed by the user */
 	private Action action;
 
@@ -74,7 +50,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 
 	static
 	{
-		AbstractBuilder.registerBuilder (LogEntryBuilder.class, DefaultLogEntryBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultLogEntryBuilder.class, DefaultLogEntryBuilder::new);
 	}
 
 	/**

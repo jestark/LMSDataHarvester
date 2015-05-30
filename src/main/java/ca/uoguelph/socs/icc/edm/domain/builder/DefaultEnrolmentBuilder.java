@@ -28,30 +28,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> implements EnrolmentBuilder
 {
-	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultEnrolmentBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<EnrolmentBuilder, Enrolment>
-	{
-		/**
-		 * Create the <code>EnrolmentBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>Enrolment</code> will be inserted
-		 *
-		 * @return           The <code>EnrolmentBuilder</code>
-		 */
-
-		@Override
-		public EnrolmentBuilder create (final DataStore datastore)
-		{
-			return new DefaultEnrolmentBuilder (datastore);
-		}
-	}
-
 	/** The course in which the user is enrolled */
 	private Course course;
 
@@ -74,7 +50,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 
 	static
 	{
-		AbstractBuilder.registerBuilder (EnrolmentBuilder.class, DefaultEnrolmentBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultEnrolmentBuilder.class, DefaultEnrolmentBuilder::new);
 	}
 
 	/**

@@ -29,30 +29,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType> implements ActivityTypeBuilder
 {
-	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultActivityTypeBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<ActivityTypeBuilder, ActivityType>
-	{
-		/**
-		 * Create the <code>UserBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>ActivityType</code> will be inserted
-		 *
-		 * @return         The <code>ActivityTypeBuilder</code>
-		 */
-
-		@Override
-		public ActivityTypeBuilder create (final DataStore datastore)
-		{
-			return new DefaultActivityTypeBuilder (datastore);
-		}
-	}
-
 	/** The source of the <code>ActivityType</code> */
 	private ActivitySource source;
 
@@ -69,7 +45,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 
 	static
 	{
-		AbstractBuilder.registerBuilder (ActivityTypeBuilder.class, DefaultActivityTypeBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultActivityTypeBuilder.class, DefaultActivityTypeBuilder::new);
 	}
 
 	/**

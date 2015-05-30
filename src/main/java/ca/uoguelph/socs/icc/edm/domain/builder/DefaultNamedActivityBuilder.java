@@ -30,30 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder implements NamedActivityBuilder
 {
-	/**
-	 * Implementation of the <code>BuilderFactory</code> to create a
-	 * <code>DefaultNamedActivityBuilder</code>.
-	 */
-
-	private static class Factory implements BuilderFactory<NamedActivityBuilder, Activity>
-	{
-		/**
-		 * Create the <code>NamedActivityBuilder</code> for the specified
-		 * <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code> into which new
-		 *                   <code>NamedActivityBuilder</code> will be inserted
-		 *
-		 * @return           The <code>NamedActivityBuilder</code>
-		 */
-
-		@Override
-		public NamedActivityBuilder create (final DataStore datastore)
-		{
-			return new DefaultNamedActivityBuilder (datastore);
-		}
-	}
-
 	/** The name of the <code>Activity</code> */
 	private String name;
 
@@ -64,7 +40,7 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder i
 
 	static
 	{
-		AbstractBuilder.registerBuilder (NamedActivityBuilder.class, DefaultNamedActivityBuilder.class, new Factory ());
+		AbstractBuilder.registerBuilder (DefaultNamedActivityBuilder.class, DefaultNamedActivityBuilder::new);
 	}
 
 	/**
