@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.element.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
 import java.util.List;
 
@@ -22,77 +22,76 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
 
 /**
- * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
+ * Implementation of the <code>Activity</code> interface for the moodle/workshop
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
- * this class will be accessed though the <code>Activity</code> interface,
- * along with the relevant manager, and builder.  See the <code>Activity</code>
- * interface documentation for details.
+ * this class will be accessed though the <code>SubActivity</code>
+ * interface, along with the relevant manager, and builder.  See the
+ * <code>SubActivity</code> interface documentation for details.
  * <p>
- * This class was generated from the <code>SubActivityGroup</code> template,
- * with the following values:
+ * This class was generated from the <code>SubActivity</code> template, with
+ * the following values:
  * <p>
  * <ul>
- * <li>ActivitySource = ${ActivitySource}
- * <li>ActivityType   = ${ActivityType}
- * <li>ClassName      = ${ClassName}
- * <li>ParentClass    = ${ParentClass}
- * <li>Builder        = ${Builder}
+ * <li>ActivitySource = moodle
+ * <li>ActivityType   = workshop
+ * <li>ClassName      = WorkshopSubmission
+ * <li>ParentClass    = Workshop
+ * <li>Builder        = DefaultSubActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
  * @version 1.2
  */
 
-public class ${ClassName} extends GenericSubActivity
+public class WorkshopSubmission extends GenericSubActivity
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	/**
-	 * Register the <code>${ClassName}</code> with the factories on
+	 * Register the <code>WorkshopSubmission</code> with the factories on
 	 * initialization.
 	 */
 
 	static
 	{
-		DefinitionBuilder<SubActivity, ${ClassName}> builder = DefinitionBuilder.newInstance (SubActivity.class, ${ClassName}.class);
-		builder.setCreateMethod (${ClassName}::new);
+		DefinitionBuilder<Activity, WorkshopSubmission> builder = DefinitionBuilder.newInstance (Activity.class, WorkshopSubmission.class);
+		builder.setCreateMethod (WorkshopSubmission::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);
+		builder.addUniqueAttribute ("id", Long.class, false, false, WorkshopSubmission::getId, WorkshopSubmission::setId);
 
-		builder.addAttribute ("parent", Activity.class, true, false, ${ClassName}::getParent, ${ClassName}::setParent);
-		builder.addAttribute ("name", String.class, true, false, ${ClassName}::getName, ${ClassName}::setName);
+		builder.addAttribute ("parent", Activity.class, true, false, WorkshopSubmission::getParent, WorkshopSubmission::setParent);
+		builder.addAttribute ("name", String.class, true, false, WorkshopSubmission::getName, WorkshopSubmission::setName);
 
-		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);
-		builder.addRelationship ("subactivities", SubActivity.class, ${ClassName}::addSubActivity, ${ClassName}::removeSubActivity);
+		builder.addRelationship ("log", LogEntry.class, WorkshopSubmission::addLog, WorkshopSubmission::removeLog);
 
-		GenericSubActivity.registerActivity (builder.build (), ${ParentClass}.class, ${Builder}.class);
+		GenericSubActivity.registerActivity (builder.build (), Workshop.class, DefaultSubActivityBuilder.class);
 	}
-
-	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	public WorkshopSubmission ()
 	{
 		super ();
 	}
 
 	/**
-	 * Create a <code>SubActivity</code> instance.
+	 * Create a new <code>SubActivity</code> instance.
 	 *
 	 * @param  activity The parent <code>Activity</code>, not null
-	 * @param  name   The name of the <code>SubActivity</code>, not null
+	 * @param  name     The name of the <code>SubActivity</code>, not null
 	 */
 
-	public ${ClassName} (final Activity activity, final String name)
+	public WorkshopSubmission (final Activity activity, final String name)
 	{
 		super (activity, name);
 	}
@@ -132,43 +131,6 @@ public class ${ClassName} extends GenericSubActivity
 	protected void setId (final Long id)
 	{
 		super.setId (id);
-	}
-
-	/**
-	 * Get the <code>List</code> of <code>SubActivity</code> instances
-	 * associated with the <code>Activity</code>.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
-	 *
-	 * @return The <code>List</code> of <code>SubActivity</code> instances
-	 */
-
-	public List<SubActivity> getSubActivities ()
-	{
-		return super.getSubActivities ();
-	}
-
-	/**
-	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
-	 * for the <code>Activity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
-	 *
-	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
-	 *                       instances, not null
-	 */
-
-	protected void setSubActivities (final List<SubActivity> subactivities)
-	{
-		assert subactivities != null : "subactivities is NULL";
-
-		super.setSubActivities (subactivities);
 	}
 
 	/**

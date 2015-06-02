@@ -29,10 +29,10 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.core.AbstractElement;
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
+import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
+import ca.uoguelph.socs.icc.edm.domain.element.ActivityInstance;
 
-import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
 
 /**
  * Moodle specific implementation of the core <code>Activity</code> data.

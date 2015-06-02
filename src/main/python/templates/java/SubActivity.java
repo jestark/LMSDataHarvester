@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.element.activity.${ActivitySource};
 
 import java.util.List;
 
@@ -24,9 +24,9 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
 
-import ca.uoguelph.socs.icc.edm.domain.core.GenericSubActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
@@ -62,7 +62,7 @@ public class ${ClassName} extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, ${ClassName}> builder = DefinitionBuilder.newInstance (Activity.class, ${ClassName}.class);
+		DefinitionBuilder<SubActivity, ${ClassName}> builder = DefinitionBuilder.newInstance (SubActivity.class, ${ClassName}.class);
 		builder.setCreateMethod (${ClassName}::new);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);

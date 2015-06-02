@@ -22,12 +22,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
-import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityLoader;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-
-import ca.uoguelph.socs.icc.edm.domain.core.AbstractActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 

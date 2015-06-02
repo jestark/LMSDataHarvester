@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.element.activity.${ActivitySource};
 
 import java.util.List;
 
@@ -27,9 +27,9 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
 
-import ca.uoguelph.socs.icc.edm.domain.core.GenericNamedActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}

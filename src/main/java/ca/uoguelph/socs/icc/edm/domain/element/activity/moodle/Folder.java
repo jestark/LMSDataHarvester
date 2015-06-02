@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.element.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -24,14 +24,14 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
 
 /**
- * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
+ * Implementation of the <code>Activity</code> interface for the moodle/folder
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>Activity</code> interface,
  * along with the relevant manager, and builder.  See the <code>Activity</code>
@@ -41,48 +41,48 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
  * the following values:
  * <p>
  * <ul>
- * <li>ActivitySource = ${ActivitySource}
- * <li>ActivityType   = ${ActivityType}
- * <li>ClassName      = ${ClassName}
- * <li>Builder        = ${Builder}
+ * <li>ActivitySource = moodle
+ * <li>ActivityType   = folder
+ * <li>ClassName      = Folder
+ * <li>Builder        = DefaultNamedActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
  * @version 1.1
  */
 
-public class ${ClassName} extends GenericNamedActivity
+public class Folder extends GenericNamedActivity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Register the <code>${ClassName}</code> with the factories on
+	 * Register the <code>Folder</code> with the factories on
 	 * initialization.
 	 */
 
 	static
 	{
-		DefinitionBuilder<Activity, ${ClassName}> builder = DefinitionBuilder.newInstance (Activity.class, ${ClassName}.class);
-		builder.setCreateMethod (${ClassName}::new);
+		DefinitionBuilder<Activity, Folder> builder = DefinitionBuilder.newInstance (Activity.class, Folder.class);
+		builder.setCreateMethod (Folder::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);
+		builder.addUniqueAttribute ("id", Long.class, false, false, Folder::getId, Folder::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, ${ClassName}::getCourse, ${ClassName}::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, ${ClassName}::getType, ${ClassName}::setType);
-		builder.addAttribute ("name", String.class, true, false, ${ClassName}::getName, ${ClassName}::setName);
+		builder.addAttribute ("course", Course.class, true, false, Folder::getCourse, Folder::setCourse);
+		builder.addAttribute ("type", ActivityType.class, true, false, Folder::getType, Folder::setType);
+		builder.addAttribute ("name", String.class, true, false, Folder::getName, Folder::setName);
 
-		builder.addRelationship ("grades", Grade.class, ${ClassName}::addGrade, ${ClassName}::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);
+		builder.addRelationship ("grades", Grade.class, Folder::addGrade, Folder::removeGrade);
+		builder.addRelationship ("log", LogEntry.class, Folder::addLog, Folder::removeLog);
 
-		GenericNamedActivity.registerActivity (builder.build (), ${Builder}.class, "${ActivitySource}", "${ActivityType}");
+		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "folder");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	public Folder ()
 	{
 		super ();
 	}
@@ -134,7 +134,7 @@ public class ${ClassName} extends GenericNamedActivity
 	 * @param  name    The name of the <code>Activity</code>, not null
 	 */
 
-	public ${ClassName} (final ActivityType type, final Course course, final String name)
+	public Folder (final ActivityType type, final Course course, final String name)
 	{
 		super (type, course, name);
 	}

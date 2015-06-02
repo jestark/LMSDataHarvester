@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.element.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
 /**
  * Implementation of the <code>LogEntry</code> interface for logs referencing
  * the <code>SubActivity</code> implemented by that
- * <code>${ActivityClass}</code> class.  It is expected that this class will be
+ * <code>ForumDiscussion</code> class.  It is expected that this class will be
  * accessed though the <code>LogEntry</code> interface, along with the relevant
  * manager, and builder.  See the <code>LogEntry</code> interface documentation
  * for details.
@@ -40,33 +40,33 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
  * the following values:
  * <p>
  * <ul>
- * <li>ActivitySource = ${ActivitySource}
- * <li>ActivityType   = ${ActivityType}
- * <li>ClassName      = ${ClassName}
- * <li>ActivityClass  = ${ActivityClass}
+ * <li>ActivitySource = moodle
+ * <li>ActivityType   = forum
+ * <li>ClassName      = ForumDiscussionLog
+ * <li>ActivityClass  = ForumDiscussion
  * </ul>
  *
  * @author  James E. Stark
  * @version 1.1
  */
 
-class ${ClassName} extends LogReference
+class ForumDiscussionLog extends LogReference
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Register the <code>${ClassName}</code> with the factories on
+	 * Register the <code>ForumDiscussionLog</code> with the factories on
 	 * initialization.
 	 */
 
 	static
 	{
-		DefinitionBuilder<LogEntry, ${ClassName}> builder = DefinitionBuilder.newInstance (LogEntry.class, ${ClassName}.class);
-		builder.setCreateMethod (${ClassName}::new);
+		DefinitionBuilder<LogEntry, ForumDiscussionLog> builder = DefinitionBuilder.newInstance (LogEntry.class, ForumDiscussionLog.class);
+		builder.setCreateMethod (ForumDiscussionLog::new);
 
-		builder.addAttribute ("entry", LogEntry.class, true, false, ${ClassName}::getEntry, ${ClassName}::setEntry);
-		builder.addAttribute ("subactivity", SubActivity.class, true, false, ${ClassName}::getSubActivity, ${ClassName}::setSubActivity);
+		builder.addAttribute ("entry", LogEntry.class, true, false, ForumDiscussionLog::getEntry, ForumDiscussionLog::setEntry);
+		builder.addAttribute ("subactivity", SubActivity.class, true, false, ForumDiscussionLog::getSubActivity, ForumDiscussionLog::setSubActivity);
 
 		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
 	}
@@ -75,13 +75,13 @@ class ${ClassName} extends LogReference
 	 * Create the <code>LogEntry</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	public ForumDiscussionLog ()
 	{
 		super ();
 	}
 
 	/**
-	 * Create the <code>${ClassName}</code>.
+	 * Create the <code>ForumDiscussionLog</code>.
 	 *
 	 * @param  entry       The <code>LogEntry</code> which refers to the
 	 *                     <code>SubActivity</code>, not null
@@ -89,7 +89,7 @@ class ${ClassName} extends LogReference
 	 *                     referenced, not null
 	 */
 
-	public ${ClassName} (final LogEntry entry, final SubActivity subactivity)
+	public ForumDiscussionLog (final LogEntry entry, final SubActivity subactivity)
 	{
 		super (entry, subactivity);
 	}

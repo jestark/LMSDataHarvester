@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.element.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
 import java.util.List;
 
@@ -22,14 +22,14 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
 
 /**
- * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
+ * Implementation of the <code>Activity</code> interface for the moodle/forum
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>Activity</code> interface,
  * along with the relevant manager, and builder.  See the <code>Activity</code>
@@ -39,38 +39,38 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
  * with the following values:
  * <p>
  * <ul>
- * <li>ActivitySource = ${ActivitySource}
- * <li>ActivityType   = ${ActivityType}
- * <li>ClassName      = ${ClassName}
- * <li>ParentClass    = ${ParentClass}
- * <li>Builder        = ${Builder}
+ * <li>ActivitySource = moodle
+ * <li>ActivityType   = forum
+ * <li>ClassName      = ForumDiscussion
+ * <li>ParentClass    = Forum
+ * <li>Builder        = DefaultSubActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
  * @version 1.2
  */
 
-public class ${ClassName} extends GenericSubActivity
+public class ForumDiscussion extends GenericSubActivity
 {
 	/**
-	 * Register the <code>${ClassName}</code> with the factories on
+	 * Register the <code>ForumDiscussion</code> with the factories on
 	 * initialization.
 	 */
 
 	static
 	{
-		DefinitionBuilder<SubActivity, ${ClassName}> builder = DefinitionBuilder.newInstance (SubActivity.class, ${ClassName}.class);
-		builder.setCreateMethod (${ClassName}::new);
+		DefinitionBuilder<Activity, ForumDiscussion> builder = DefinitionBuilder.newInstance (Activity.class, ForumDiscussion.class);
+		builder.setCreateMethod (ForumDiscussion::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);
+		builder.addUniqueAttribute ("id", Long.class, false, false, ForumDiscussion::getId, ForumDiscussion::setId);
 
-		builder.addAttribute ("parent", Activity.class, true, false, ${ClassName}::getParent, ${ClassName}::setParent);
-		builder.addAttribute ("name", String.class, true, false, ${ClassName}::getName, ${ClassName}::setName);
+		builder.addAttribute ("parent", Activity.class, true, false, ForumDiscussion::getParent, ForumDiscussion::setParent);
+		builder.addAttribute ("name", String.class, true, false, ForumDiscussion::getName, ForumDiscussion::setName);
 
-		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);
-		builder.addRelationship ("subactivities", SubActivity.class, ${ClassName}::addSubActivity, ${ClassName}::removeSubActivity);
+		builder.addRelationship ("log", LogEntry.class, ForumDiscussion::addLog, ForumDiscussion::removeLog);
+		builder.addRelationship ("subactivities", SubActivity.class, ForumDiscussion::addSubActivity, ForumDiscussion::removeSubActivity);
 
-		GenericSubActivity.registerActivity (builder.build (), ${ParentClass}.class, ${Builder}.class);
+		GenericSubActivity.registerActivity (builder.build (), Forum.class, DefaultSubActivityBuilder.class);
 	}
 
 	/** Serial version id, required by the Serializable interface */
@@ -80,7 +80,7 @@ public class ${ClassName} extends GenericSubActivity
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	public ForumDiscussion ()
 	{
 		super ();
 	}
@@ -92,7 +92,7 @@ public class ${ClassName} extends GenericSubActivity
 	 * @param  name   The name of the <code>SubActivity</code>, not null
 	 */
 
-	public ${ClassName} (final Activity activity, final String name)
+	public ForumDiscussion (final Activity activity, final String name)
 	{
 		super (activity, name);
 	}

@@ -32,9 +32,9 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.core.AbstractElement;
+import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
 
-import ca.uoguelph.socs.icc.edm.domain.core.definition.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
 
 public class MoodleLogData extends AbstractElement implements LogEntry
 {

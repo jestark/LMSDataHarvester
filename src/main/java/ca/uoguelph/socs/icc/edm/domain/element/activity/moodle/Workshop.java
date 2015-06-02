@@ -14,87 +14,94 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.element.activity.${ActivitySource};
+package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
+import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
 
 /**
- * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
+ * Implementation of the <code>Activity</code> interface for the moodle/workshop
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
  * this class will be accessed though the <code>Activity</code> interface,
  * along with the relevant manager, and builder.  See the <code>Activity</code>
  * interface documentation for details.
  * <p>
- * This class was generated from the <code>SubActivityGroup</code> template,
+ * This class was generated from the <code>NamedActivityGroup</code> template,
  * with the following values:
  * <p>
  * <ul>
- * <li>ActivitySource = ${ActivitySource}
- * <li>ActivityType   = ${ActivityType}
- * <li>ClassName      = ${ClassName}
- * <li>ParentClass    = ${ParentClass}
- * <li>Builder        = ${Builder}
+ * <li>ActivitySource = moodle
+ * <li>ActivityType   = workshop
+ * <li>ClassName      = Workshop
+ * <li>Builder        = DefaultNamedActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
- * @version 1.2
+ * @version 1.3
  */
 
-public class ${ClassName} extends GenericSubActivity
+public class Workshop extends GenericNamedActivity
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	/**
-	 * Register the <code>${ClassName}</code> with the factories on
+	 * Register the <code>Workshop</code> with the factories on
 	 * initialization.
 	 */
 
 	static
 	{
-		DefinitionBuilder<SubActivity, ${ClassName}> builder = DefinitionBuilder.newInstance (SubActivity.class, ${ClassName}.class);
-		builder.setCreateMethod (${ClassName}::new);
+		DefinitionBuilder<Activity, Workshop> builder = DefinitionBuilder.newInstance (Activity.class, Workshop.class);
+		builder.setCreateMethod (Workshop::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);
+		builder.addUniqueAttribute ("id", Long.class, false, false, Workshop::getId, Workshop::setId);
 
-		builder.addAttribute ("parent", Activity.class, true, false, ${ClassName}::getParent, ${ClassName}::setParent);
-		builder.addAttribute ("name", String.class, true, false, ${ClassName}::getName, ${ClassName}::setName);
+		builder.addAttribute ("course", Course.class, true, false, Workshop::getCourse, Workshop::setCourse);
+		builder.addAttribute ("type", ActivityType.class, true, false, Workshop::getType, Workshop::setType);
+		builder.addAttribute ("name", String.class, true, false, Workshop::getName, Workshop::setName);
 
-		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);
-		builder.addRelationship ("subactivities", SubActivity.class, ${ClassName}::addSubActivity, ${ClassName}::removeSubActivity);
+		builder.addRelationship ("grades", Grade.class, Workshop::addGrade, Workshop::removeGrade);
+		builder.addRelationship ("log", LogEntry.class, Workshop::addLog, Workshop::removeLog);
+		builder.addRelationship ("subactivities", SubActivity.class, Workshop::addSubActivity, Workshop::removeSubActivity);
 
-		GenericSubActivity.registerActivity (builder.build (), ${ParentClass}.class, ${Builder}.class);
+		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "workshop");
 	}
-
-	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	public Workshop ()
 	{
 		super ();
 	}
 
 	/**
-	 * Create a <code>SubActivity</code> instance.
+	 * Create a new <code>Activity</code> instance.
 	 *
-	 * @param  activity The parent <code>Activity</code>, not null
-	 * @param  name   The name of the <code>SubActivity</code>, not null
+	 * @param  type    The <code>ActivityType</code> of the
+	 *                 <code>Activity</code>, not null
+	 * @param  course  The <code>Course</code> which is associated with the
+	 *                 <code>Activity</code> instance, not null
+	 * @param  name    The name of the <code>Activity</code>, not null
 	 */
 
-	public ${ClassName} (final Activity activity, final String name)
+	public Workshop (final ActivityType type, final Course course, final String name)
 	{
-		super (activity, name);
+		super (type, course, name);
 	}
 
 	/**
@@ -145,6 +152,7 @@ public class ${ClassName} extends GenericSubActivity
 	 * @return The <code>List</code> of <code>SubActivity</code> instances
 	 */
 
+	@Override
 	public List<SubActivity> getSubActivities ()
 	{
 		return super.getSubActivities ();
@@ -164,48 +172,11 @@ public class ${ClassName} extends GenericSubActivity
 	 *                       instances, not null
 	 */
 
+	@Override
 	protected void setSubActivities (final List<SubActivity> subactivities)
 	{
 		assert subactivities != null : "subactivities is NULL";
 
 		super.setSubActivities (subactivities);
-	}
-
-	/**
-	 * Get the parent <code>Activity</code> instance for the
-	 * <code>SubActivity</code>.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the parent class.
-	 *
-	 * @return The parent <code>Activity</code>
-	 */
-
-	@Override
-	public Activity getParent ()
-	{
-		return super.getParent ();
-	}
-
-	/**
-	 * Set the <code>Activity</code> instance which contains the
-	 * <code>SubActivity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the parent class.
-	 *
-	 * @param  activity The <code>Activity</code> containing this
-	 *                  <code>SubActivity</code> instance
-	 */
-
-	protected void setParent (final Activity activity)
-	{
-		assert activity != null : "activity is NULL";
-
-		super.setParent (activity);
 	}
 }
