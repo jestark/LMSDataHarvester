@@ -76,13 +76,13 @@ public class MoodleActivity extends ActivityInstance
 
 	static
 	{
-		DefinitionBuilder<Activity, MoodleActivity> builder = DefinitionBuilder.newInstance (Activity.class, MoodleActivity.class);
+		DefinitionBuilder<MoodleActivity, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, MoodleActivity.class, Activity.Properties.class);
 		builder.setCreateMethod (MoodleActivity::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, MoodleActivity::getId, MoodleActivity::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, MoodleActivity::getId, MoodleActivity::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, MoodleActivity::getCourse, MoodleActivity::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, MoodleActivity::getType, MoodleActivity::setType);
+		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, MoodleActivity::getCourse, MoodleActivity::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, MoodleActivity::getType, MoodleActivity::setType);
 
 		builder.addRelationship ("grades", Grade.class, MoodleActivity::addGrade, MoodleActivity::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, MoodleActivity::addLog, MoodleActivity::removeLog);
