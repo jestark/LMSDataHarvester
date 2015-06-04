@@ -28,6 +28,14 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface Network extends Element
 {
 	/**
+	 * Enumeration of all of the properties of an <code>Network</code>.
+	 * Properties represent the data contained within the <code>Network</code>
+	 * instance.
+	 */
+
+	public static enum Properties { ID, NAME };
+
+	/**
 	 * Get the name of the <code>Network</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the

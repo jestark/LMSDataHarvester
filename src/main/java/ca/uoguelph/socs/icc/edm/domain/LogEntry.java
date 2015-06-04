@@ -46,6 +46,14 @@ import java.util.Date;
 public interface LogEntry extends Element
 {
 	/**
+	 * Enumeration of all of the properties of an <code>LogEntry</code>.
+	 * Properties represent the data contained within the <code>LogEntry</code>
+	 * instance.
+	 */
+
+	public static enum Properties { ID, ACTION, ACTIVITY, ENROLMENT, IPADDRESS, SUBACTIVITY, TIME };
+
+	/**
 	 * Get the <code>Enrolment</code> instance for the user which performed the
 	 * logged <code>Action</code>.
 	 *

@@ -58,6 +58,14 @@ import java.util.Set;
 public interface ActivityType extends Element
 {
 	/**
+	 * Enumeration of all of the properties of an <code>ActivityType</code>.
+	 * Properties represent the data contained within the
+	 * <code>ActivityType</code> instance.
+	 */
+
+	public static enum Properties { ID, NAME, SOURCE };
+
+	/**
 	 * Get the name of the <code>ActivityType</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the

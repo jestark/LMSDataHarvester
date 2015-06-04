@@ -48,6 +48,14 @@ import java.util.Set;
 public interface Course extends Element
 {
 	/**
+	 * Enumeration of all of the properties of an <code>Course</code>.
+	 * Properties represent the data contained within the <code>Course</code>
+	 * instance.
+	 */
+
+	public static enum Properties { ID, NAME, SEMESTER, YEAR };
+
+	/**
 	 * Get the name of the <code>Course</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the

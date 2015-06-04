@@ -33,6 +33,14 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface Element
 {
 	/**
+	 * Enumeration of all of the properties of an <code>Element</code>.
+	 * Properties represent the data contained within the <code>Element</code>
+	 * instance.
+	 */
+
+	public static enum Properties { ID };
+
+	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
 	 * instance.  Some <code>Element</code> interfaces are dependent on other
 	 * <code>Element</code> interfaces for their identification.  The dependent
