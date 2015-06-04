@@ -31,11 +31,8 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultActionBuilder extends AbstractBuilder<Action> implements ActionBuilder
+public final class DefaultActionBuilder extends AbstractBuilder<Action, Action.Properties> implements ActionBuilder
 {
-	/** The name of the Action */
-	private String name;
-
 	/**
 	 * static initializer to register the <code>DefaultActionBuilder</code>
 	 * with the factory
@@ -55,40 +52,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 
 	protected DefaultActionBuilder (final DataStore datastore)
 	{
-		super (Action.class, datastore);
-	}
-
-	@Override
-	protected Action buildElement ()
-	{
-		if (this.name == null)
-		{
-			this.log.error ("Can not build: The action's name is not set");
-			throw new IllegalStateException ("name not set");
-		}
-
-		Action result = this.element;
-
-		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
-		{
-			// result = this.factory.create (this.name);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
-	 */
-
-	@Override
-	public void clear ()
-	{
-		this.log.trace ("Reseting the builder");
-
-		super.clear ();
-		this.name = null;
+		super (Action.Properties.class, datastore);
 	}
 
 	/**
@@ -124,7 +88,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 	@Override
 	public String getName ()
 	{
-		return this.name;
+		return this.getPropertyValue (Action.Properties.NAME);
 	}
 
 	/**
@@ -140,6 +104,8 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 	@Override
 	public ActionBuilder setName (final String name)
 	{
+		this.log.trace ("setName: name={}", name);
+
 		if (name == null)
 		{
 			this.log.error ("name is NULL");
@@ -152,7 +118,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.name = name;
+		this.setPropertyValue (Action.Properties.NAME, name);
 
 		return this;
 	}

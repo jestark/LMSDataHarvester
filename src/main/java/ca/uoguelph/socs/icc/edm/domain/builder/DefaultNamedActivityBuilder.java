@@ -30,9 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder implements NamedActivityBuilder
 {
-	/** The name of the <code>Activity</code> */
-	private String name;
-
 	/**
 	 * static initializer to register the
 	 * <code>DefaultNamedActivityBuilder</code> with the factory
@@ -51,50 +48,9 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder i
 	 *                   inserted
 	 */
 
-	public DefaultNamedActivityBuilder (final DataStore datastore)
+	protected DefaultNamedActivityBuilder (final DataStore datastore)
 	{
 		super (datastore);
-	}
-
-	@Override
-	protected Activity buildElement ()
-	{
-		this.log.trace ("buildElement");
-
-		if (this.course == null)
-		{
-			this.log.error ("Can not build:  Course has not been set");
-			throw new IllegalStateException ("course not set");
-		}
-
-		if (this.name == null)
-		{
-			this.log.error ("Can not build:  Name has not been set");
-			throw new IllegalStateException ("name not set");
-		}
-
-		Activity result = this.element;
-
-		if ((this.element == null) || (! this.course.equals (this.element.getCourse ())) || (! this.name.equals (this.element.getName ())))
-		{
-			// result = this.factory.create (this.type, this.course, this.name);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
-	 */
-
-	@Override
-	public void clear ()
-	{
-		this.log.trace ("Reseting the builder");
-
-		super.clear ();
-		this.name = null;
 	}
 
 	/**
@@ -130,7 +86,7 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder i
 
 	public String getName ()
 	{
-		return this.name;
+		return this.getPropertyValue (Activity.Properties.NAME);
 	}
 
 	/**
@@ -159,7 +115,7 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder i
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.name = name;
+		this.setPropertyValue (Activity.Properties.NAME, name);
 
 		return this;
 	}

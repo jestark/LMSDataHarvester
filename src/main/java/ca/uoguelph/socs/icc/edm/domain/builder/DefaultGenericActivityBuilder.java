@@ -51,23 +51,8 @@ public final class DefaultGenericActivityBuilder extends AbstractActivityBuilder
 	 *                   inserted
 	 */
 
-	public DefaultGenericActivityBuilder (final DataStore datastore)
+	protected DefaultGenericActivityBuilder (final DataStore datastore)
 	{
 		super (datastore);
-	}
-
-	@Override
-	protected Activity buildElement ()
-	{
-		this.log.trace ("buildElement:");
-
-		Activity result = this.element;
-
-		if ((this.element == null) || (! this.course.equals (this.element.getCourse ())))
-		{
-//			result = this.factory.create (this.type, this.course);
-		}
-
-		return result;
 	}
 }

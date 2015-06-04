@@ -18,6 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import java.util.Map;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 
 import java.util.function.Function;
@@ -37,7 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public abstract class AbstractBuilder<T extends Element> implements ElementBuilder<T>
+public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> implements ElementBuilder<T>
 {
 	/** Factory for the <code>ElementBuilder</code> implementations */
 	private static final Map<Class<? extends ElementBuilder<? extends Element>>, Function<DataStore, ? extends ElementBuilder<? extends Element>>> FACTORIES;
@@ -48,11 +49,10 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	/** The Logger */
 	protected final Logger log;
 
-	/** The <code>Element</code> being produced */
-	private final Class<T> type;
-
 	/** The <code>DataStore</code> */
 	protected final DataStore datastore;
+
+	private final Map<E, Object> elementData;
 
 	/** The <code>Element</code> produced by the <code>ElementBuilder</code> */
 	protected T element;
@@ -151,22 +151,27 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 *                   <code>Element</code> instances will be inserted
 	 */
 
-	protected AbstractBuilder (final Class<T> type, final DataStore datastore)
+	protected AbstractBuilder (final Class<E> properties, final DataStore datastore)
 	{
-		assert type != null : "type is NULL";
+		assert properties != null : "properties is NULL";
 		assert datastore != null : "datastore is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.type = type;
 		this.datastore = datastore;
+
+		this.elementData = new EnumMap<E, Object> (properties);
 	}
 
-	/**
-	 *
-	 */
+	protected final <V> V getPropertyValue (final E property)
+	{
+		return null;
+	}
 
-	protected abstract T buildElement ();
+	protected final <V> void setPropertyValue (final E property, final V value)
+	{
+
+	}
 
 	/**
 	 *
@@ -179,16 +184,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	{
 		this.log.trace ("build:");
 
-		T element = this.buildElement ();
-
-		if (element != this.element)
-		{
-			this.log.debug ("Inserting Element into the DataStore: {}", element);
-
-			this.datastore.insert (element);
-		}
-
-		return this.element;
+		return null;
 	}
 
 	/**
@@ -197,7 +193,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 */
 
 	@Override
-	public void clear ()
+	public final void clear ()
 	{
 		this.log.trace ("clear:");
 
@@ -224,8 +220,6 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	public void load (final T element)
 	{
 		this.log.trace ("load: element={}", element);
-
-		this.clear ();
 
 		if (this.datastore.contains (element))
 		{

@@ -29,14 +29,8 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity> implements SubActivityBuilder
+public final class DefaultSubActivityBuilder extends AbstractBuilder<SubActivity, SubActivity.Properties> implements SubActivityBuilder
 {
-	/** The parent <code>Activity</code> */
-	private final Activity parent;
-
-	/** The name of the <code>Activity</code> */
-	private String name;
-
 	/**
 	 * static initializer to register the
 	 * <code>DefaultSubActivityBuilder</code> with the factory
@@ -55,9 +49,9 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity> i
 	 *                   inserted
 	 */
 
-	public DefaultSubActivityBuilder (final DataStore datastore)
+	protected DefaultSubActivityBuilder (final DataStore datastore)
 	{
-		super (Activity.class, datastore);
+		super (SubActivity.Properties.class, datastore);
 
 /*		assert (Activity) this.manager.getArgument () != null : "parent is NULL";
 
@@ -67,43 +61,7 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity> i
 			throw new IllegalArgumentException ("Activity is not in the DataStore");
 		}
 */
-		this.parent = null; //(Activity) this.manager.getArgument ();
-	}
-
-	@Override
-	protected Activity buildElement ()
-	{
-		this.log.trace ("buildElement:");
-
-		if (this.name == null)
-		{
-			this.log.error ("Can not build:  The name of the Activity Group Member is not set");
-			throw new IllegalStateException ("name not set");
-		}
-
-		Activity result = this.element;
-
-		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
-		{
-//			result = this.factory.create (this.parent, this.name);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields, with the exception of the parent <code>ActivityGroup</code> for
-	 * the <code>Element</code> to be built to <code>null</code>.
-	 */
-
-	@Override
-	public void clear ()
-	{
-		this.log.trace ("clear:");
-
-		super.clear ();
-		this.name = null;
+//		this.parent = null; //(Activity) this.manager.getArgument ();
 	}
 
 	/**
@@ -123,18 +81,18 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity> i
 	 */
 
 	@Override
-	public void load (final Activity activity)
+	public void load (final SubActivity subactivity)
 	{
-		this.log.trace ("load: activity={}", activity);
+		this.log.trace ("load: activity={}", subactivity);
 
-		if (! this.parent.equals (((SubActivity) activity).getParent ()))
+/*		if (! this.parent.equals (((SubActivity) activity).getParent ()))
 		{
 			this.log.error ("Can not load:  Parent activity instances are not equal");
 			throw new IllegalArgumentException ("Parent activity instances are different");
-		}
+		}*/
 
-		super.load (activity);
-		this.setName (activity.getName ());
+		super.load (subactivity);
+		this.setName (subactivity.getName ());
 	}
 
 	/**
@@ -147,7 +105,7 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity> i
 	@Override
 	public String getName ()
 	{
-		return this.name;
+		return this.getPropertyValue (SubActivity.Properties.NAME);
 	}
 
 	/**
@@ -177,7 +135,7 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity> i
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.name = name;
+		this.setPropertyValue (SubActivity.Properties.NAME, name);
 
 		return this;
 	}
@@ -192,6 +150,6 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<Activity> i
 	@Override
 	public Activity getParent ()
 	{
-		return this.parent;
+		return this.getPropertyValue (SubActivity.Properties.PARENT);
 	}
 }

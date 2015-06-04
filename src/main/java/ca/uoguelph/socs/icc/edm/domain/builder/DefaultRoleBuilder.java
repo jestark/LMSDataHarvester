@@ -28,11 +28,8 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements RoleBuilder
+public final class DefaultRoleBuilder extends AbstractBuilder<Role, Role.Properties> implements RoleBuilder
 {
-	/** The name of the Role */
-	private String name;
-
 	/**
 	 * static initializer to register the <code>DefaultRoleBuilder</code> with
 	 * the factory
@@ -52,40 +49,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 
 	protected DefaultRoleBuilder (final DataStore datastore)
 	{
-		super (Role.class, datastore);
-	}
-
-	@Override
-	protected Role buildElement ()
-	{
-		if (this.name == null)
-		{
-			this.log.error ("Can not build: The role's name is not set");
-			throw new IllegalStateException ("name not set");
-		}
-
-		Role result = this.element;
-
-		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
-		{
-//			result = this.factory.create (this.name);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
-	 */
-
-	@Override
-	public void clear ()
-	{
-		this.log.trace ("Reseting the builder");
-
-		super.clear ();
-		this.name = null;
+		super (Role.Properties.class, datastore);
 	}
 
 	/**
@@ -105,7 +69,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 	@Override
 	public void load (final Role role)
 	{
-		this.log.trace ("Load Role: {}", role);
+		this.log.trace ("load: role={}", role);
 
 		super.load (role);
 		this.setName (role.getName ());
@@ -121,7 +85,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 	@Override
 	public String getName ()
 	{
-		return this.name;
+		return this.getPropertyValue (Role.Properties.NAME);
 	}
 
 	/**
@@ -137,6 +101,8 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 	@Override
 	public RoleBuilder setName (final String name)
 	{
+		this.log.trace ("setName: name={}", name);
+
 		if (name == null)
 		{
 			this.log.error ("name is NULL");
@@ -149,7 +115,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.name = name;
+		this.setPropertyValue (Role.Properties.NAME, name);
 
 		return this;
 	}

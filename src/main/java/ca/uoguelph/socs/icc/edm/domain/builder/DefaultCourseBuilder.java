@@ -29,17 +29,8 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultCourseBuilder extends AbstractBuilder<Course> implements CourseBuilder
+public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.Properties> implements CourseBuilder
 {
-	/** The name of the course */
-	private String name;
-
-	/** The <code>Semester</code> of offering */
-	private Semester semester;
-
-	/** The year of offering */
-	private Integer year;
-
 	/**
 	 * static initializer to register the <code>DefaultCourseBuilder</code>
 	 * with the factory
@@ -59,54 +50,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 
 	protected DefaultCourseBuilder (final DataStore datastore)
 	{
-		super (Course.class, datastore);
-	}
-
-	@Override
-	protected Course buildElement ()
-	{
-		if (this.name == null)
-		{
-			this.log.error ("Can not build: The course's name is not set");
-			throw new IllegalStateException ("name not set");
-		}
-
-		if (this.semester == null)
-		{
-			this.log.error ("Can not build: The course's semester of offering is not set");
-			throw new IllegalStateException ("semester not set");
-		}
-
-		if (this.year == null)
-		{
-			this.log.error ("Can not build: The course's year of offering is not set");
-			throw new IllegalStateException ("year not set");
-		}
-
-		Course result = this.element;
-
-		if ((this.element == null) || (! this.name.equals (this.element.getName ())) || (! this.semester.equals (this.element.getSemester ())) || (! this.year.equals (this.element.getYear ())))
-		{
-//			result = this.factory.create (this.name, this.semester, this.year);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
-	 */
-
-	@Override
-	public void clear ()
-	{
-		this.log.trace ("Reseting the builder");
-
-		super.clear ();
-		this.name = null;
-		this.semester = null;
-		this.year = null;
+		super (Course.Properties.class, datastore);
 	}
 
 	/**
@@ -127,7 +71,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	@Override
 	public void load (final Course course)
 	{
-		this.log.trace ("Load Course: {}", course);
+		this.log.trace ("load course={}", course);
 
 		super.load (course);
 		this.setName (course.getName ());
@@ -145,7 +89,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	@Override
 	public String getName ()
 	{
-		return this.name;
+		return this.getPropertyValue (Course.Properties.NAME);
 	}
 
 	/**
@@ -161,6 +105,8 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	@Override
 	public CourseBuilder setName (final String name)
 	{
+		this.log.trace ("setName: name={}", name);
+
 		if (name == null)
 		{
 			this.log.error ("name is NULL");
@@ -173,7 +119,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.name = name;
+		this.setPropertyValue (Course.Properties.NAME, name);
 
 		return this;
 	}
@@ -188,7 +134,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	@Override
 	public Semester getSemester ()
 	{
-		return this.semester;
+		return this.getPropertyValue (Course.Properties.SEMESTER);
 	}
 
 	/**
@@ -203,13 +149,15 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	@Override
 	public CourseBuilder setSemester (final Semester semester)
 	{
+		this.log.trace ("setSemester: semester={}", semester);
+
 		if (semester == null)
 		{
 			this.log.error ("semester is NULL");
 			throw new NullPointerException ("semester is NULL");
 		}
 
-		this.semester = semester;
+		this.setPropertyValue (Course.Properties.SEMESTER, semester);
 
 		return this;
 	}
@@ -223,7 +171,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	@Override
 	public Integer getYear ()
 	{
-		return this.year;
+		return this.getPropertyValue (Course.Properties.YEAR);
 	}
 
 	/**
@@ -238,6 +186,8 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	@Override
 	public CourseBuilder setYear (final Integer year)
 	{
+		this.log.trace ("setYear: year={}", year);
+
 		if (year == null)
 		{
 			this.log.error ("year is NULL");
@@ -250,7 +200,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 			throw new IllegalArgumentException ("Year is negative");
 		}
 
-		this.year = year;
+		this.setPropertyValue (Course.Properties.YEAR, year);
 
 		return this;
 	}

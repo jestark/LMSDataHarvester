@@ -27,17 +27,8 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType> implements ActivityTypeBuilder
+public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType, ActivityType.Properties> implements ActivityTypeBuilder
 {
-	/** The source of the <code>ActivityType</code> */
-	private ActivitySource source;
-
-	/** The name of the <code>ActivityType</code> */
-	private String name;
-
-	/** The <code>Set</code> of associated <code>Action</code> instances */
-	private Set<Action> actions;
-
 	/**
 	 * static initializer to register the
 	 * <code>DefaultActivityTypeBuilder</code> with the factory
@@ -58,47 +49,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 
 	protected DefaultActivityTypeBuilder (final DataStore datastore)
 	{
-		super (ActivityType.class, datastore);
-	}
-
-	@Override
-	protected ActivityType buildElement ()
-	{
-		if (this.source == null)
-		{
-			this.log.error ("Can not build: The activity type's activity source is not set");
-			throw new IllegalStateException ("activity source not set");
-		}
-
-		if (this.name == null)
-		{
-			this.log.error ("Can not build: The activity type's name is not set");
-			throw new IllegalStateException ("name not set");
-		}
-
-		ActivityType result = this.element;
-
-		if ((this.element == null) || (! this.source.equals (this.element.getSource ())) || (! this.name.equals (this.element.getName ())))
-		{
-//			result = this.factory.create (this.source, this.name);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
-	 */
-
-	@Override
-	public void clear ()
-	{
-		this.log.trace ("Reseting the builder");
-
-		super.clear ();
-		this.name = null;
-		this.source = null;
+		super (ActivityType.Properties.class, datastore);
 	}
 
 	/**
@@ -138,7 +89,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	@Override
 	public String getName ()
 	{
-		return this.name;
+		return this.getPropertyValue (ActivityType.Properties.NAME);
 	}
 
 	/**
@@ -154,6 +105,8 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	@Override
 	public ActivityTypeBuilder setName (final String name)
 	{
+		this.log.trace ("setName: name={}", name);
+
 		if (name == null)
 		{
 			this.log.error ("name is NULL");
@@ -166,7 +119,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.name = name;
+		this.setPropertyValue (ActivityType.Properties.NAME, name);
 
 		return this;
 	}
@@ -180,7 +133,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	@Override
 	public ActivitySource getActivitySource ()
 	{
-		return this.source;
+		return this.getPropertyValue (ActivityType.Properties.SOURCE);
 	}
 
 	/**
@@ -197,6 +150,8 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	@Override
 	public ActivityTypeBuilder setActivitySource (final ActivitySource source)
 	{
+		this.log.trace ("setSource: source={}", source);
+
 		if (source == null)
 		{
 			this.log.error ("source is NULL");
@@ -209,7 +164,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 			throw new IllegalArgumentException ("ActivitySource is not in the DataStore");
 		}
 
-		this.source = source;
+		this.setPropertyValue (ActivityType.Properties.SOURCE, source);
 
 		return this;
 	}
@@ -225,7 +180,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 
 	public Set<Action> getActions ()
 	{
-		return new HashSet<Action> (this.actions);
+		return null;
 	}
 
 	/**

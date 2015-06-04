@@ -33,14 +33,8 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @param   <T> The type of <code>Activity</code>
  */
 
-public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity> implements ActivityBuilder
+public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, Activity.Properties> implements ActivityBuilder
 {
-	/** The type of the Activity */
-	protected final ActivityType type;
-
-	/** The course which uses the Activity */
-	protected Course course;
-
 	/**
 	 * Create the <code>DefaultActivityBuilder</code>.
 	 *
@@ -51,23 +45,9 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity> 
 
 	public AbstractActivityBuilder (final DataStore datastore)
 	{
-		super (Activity.class, datastore);
+		super (Activity.Properties.class, datastore);
 
-		this.type = null; //FIXME
-	}
-
-	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
-	 */
-
-	@Override
-	public void clear ()
-	{
-		this.log.trace ("clear:");
-
-		super.clear ();
-		this.course = null;
+		this.setActivityType (null); // FIXME
 	}
 
 	/**
@@ -104,7 +84,20 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity> 
 	@Override
 	public final ActivityType getActivityType ()
 	{
-		return this.type;
+		return this.getPropertyValue (Activity.Properties.TYPE);
+	}
+
+	/**
+	 *
+	 */
+
+	private ActivityBuilder setActivityType (ActivityType type)
+	{
+		this.log.trace ("setActivityType: type={}", type);
+
+		this.setPropertyValue (Activity.Properties.TYPE, type);
+
+		return this;
 	}
 
 	/**
@@ -117,7 +110,7 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity> 
 	@Override
 	public final Course getCourse ()
 	{
-		return this.course;
+		return this.getPropertyValue (Activity.Properties.COURSE);
 	}
 
 	/**
@@ -134,6 +127,8 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity> 
 	@Override
 	public final ActivityBuilder setCourse (final Course course)
 	{
+		this.log.trace ("setCourse: course={}", course);
+
 		if (course == null)
 		{
 			this.log.error ("Course is NULL");
@@ -146,7 +141,7 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity> 
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
 
-		this.course = course;
+		this.setPropertyValue (Activity.Properties.COURSE, course);
 
 		return this;
 	}

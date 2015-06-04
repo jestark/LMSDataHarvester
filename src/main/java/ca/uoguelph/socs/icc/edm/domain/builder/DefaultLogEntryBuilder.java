@@ -26,23 +26,8 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> implements LogEntryBuilder
+public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogEntry.Properties> implements LogEntryBuilder
 {
-	/** The <code>Action</code> performed by the user */
-	private Action action;
-
-	/** The <code>Activity</code> upon which the user operated */
-	private Activity activity;
-
-	/** The <code>Enrolment</code> representing the user */
-	private Enrolment enrolment;
-
-	/** The time at which the user accessed the <code>Activity</code> */
-	private Date time;
-
-	/** The ip-address from with the user accessed the <code>Activity</code> */
-	private String ipaddress;
-
 	/**
 	 * static initializer to register the <code>DefaultLogEntryBuilder</code>
 	 * with the factory
@@ -62,49 +47,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 
 	protected DefaultLogEntryBuilder (final DataStore datastore)
 	{
-		super (LogEntry.class, datastore);
-	}
-
-	@Override
-	protected LogEntry buildElement ()
-	{
-		if (this.action == null)
-		{
-			this.log.error ("Can not build: The log entry's action is not set");
-			throw new IllegalStateException ("action not set");
-		}
-
-		if (this.activity == null)
-		{
-			this.log.error ("Can not build: The log entry's activity is not set");
-			throw new IllegalStateException ("activity not set");
-		}
-
-		if (this.enrolment == null)
-		{
-			this.log.error ("Can not build: The log entry's enrolment is not set");
-			throw new IllegalStateException ("enrolment not set");
-		}
-
-		return null; //this.factory.create (this.action, this.activity, this.enrolment, this.ipaddress, this.time);
-	}
-
-	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
-	 */
-
-	@Override
-	public void clear ()
-	{
-		this.log.trace ("Reseting the builder");
-
-		super.clear ();
-		this.action = null;
-		this.activity = null;
-		this.enrolment = null;
-		this.ipaddress = null;
-		this.time = new Date ();
+		super (LogEntry.Properties.class, datastore);
 	}
 
 	/**
@@ -126,7 +69,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	@Override
 	public void load (final LogEntry entry)
 	{
-		this.log.trace ("Load LogEntry: {}", entry);
+		this.log.trace ("load: entry={}", entry);
 
 		super.load (entry);
 		this.setAction (entry.getAction ());
@@ -148,19 +91,21 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	@Override
 	public Action getAction ()
 	{
-		return this.action;
+		return this.getPropertyValue (LogEntry.Properties.ACTION);
 	}
 
 	@Override
 	public LogEntryBuilder setAction (final Action action)
 	{
+		this.log.trace ("setAction: action={}", action);
+
 		if (action == null)
 		{
 			this.log.error ("Action is NULL");
 			throw new NullPointerException ("Action is NULL");
 		}
 
-		this.action = action;
+		this.setPropertyValue (LogEntry.Properties.ACTION, action);
 
 		return this;
 	}
@@ -175,19 +120,21 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	@Override
 	public Activity getActivity ()
 	{
-		return this.activity;
+		return this.getPropertyValue (LogEntry.Properties.ACTIVITY);
 	}
 
 	@Override
 	public LogEntryBuilder setActivity (final Activity activity)
 	{
+		this.log.trace ("setActivity: activity={}", activity);
+
 		if (activity == null)
 		{
 			this.log.error ("Activity is NULL");
 			throw new NullPointerException ("Activity is NULL");
 		}
 
-		this.activity = activity;
+		this.setPropertyValue (LogEntry.Properties.ACTIVITY, activity);
 
 		return this;
 	}
@@ -202,19 +149,21 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	@Override
 	public Enrolment getEnrolment ()
 	{
-		return this.enrolment;
+		return this.getPropertyValue (LogEntry.Properties.ENROLMENT);
 	}
 
 	@Override
 	public LogEntryBuilder setEnrolment (final Enrolment enrolment)
 	{
+		this.log.trace ("setEnrolment: enrolment={}", enrolment);
+
 		if (enrolment == null)
 		{
 			this.log.error ("Enrolment is NULL");
 			throw new NullPointerException ("Enrolment is NULL");
 		}
 
-		this.enrolment = enrolment;
+		this.setPropertyValue (LogEntry.Properties.ENROLMENT, enrolment);
 
 		return this;
 	}
@@ -228,19 +177,21 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	@Override
 	public Date getTime ()
 	{
-		return this.time;
+		return this.getPropertyValue (LogEntry.Properties.TIME);
 	}
 
 	@Override
 	public LogEntryBuilder setTime (final Date time)
 	{
+		this.log.trace ("setTime: time={}", time);
+
 		if (time == null)
 		{
-			this.time = new Date ();
+			this.setPropertyValue (LogEntry.Properties.TIME, new Date ());
 		}
 		else
 		{
-			this.time = time;
+			this.setPropertyValue (LogEntry.Properties.IPADDRESS, time);
 		}
 
 		return this;
@@ -256,13 +207,15 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	@Override
 	public String getIPAddress ()
 	{
-		return this.ipaddress;
+		return this.getPropertyValue (LogEntry.Properties.IPADDRESS);
 	}
 
 	@Override
 	public LogEntryBuilder setIPAddress (final String ipaddress)
 	{
-		this.ipaddress = ipaddress;
+		this.log.trace ("setIPAddress: ipaddress={}", ipaddress);
+
+		this.setPropertyValue (LogEntry.Properties.IPADDRESS, ipaddress);
 
 		return this;
 	}

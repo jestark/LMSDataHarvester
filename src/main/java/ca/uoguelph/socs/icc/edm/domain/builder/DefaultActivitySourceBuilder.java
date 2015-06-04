@@ -31,11 +31,8 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultActivitySourceBuilder extends AbstractBuilder<ActivitySource> implements ActivitySourceBuilder
+public final class DefaultActivitySourceBuilder extends AbstractBuilder<ActivitySource, ActivitySource.Properties> implements ActivitySourceBuilder
 {
-	/** The name of the Activity Source */
-	private String name;
-
 	/**
 	 * static initializer to register the
 	 * <code>DefaultActivitySourceBuilder</code> with the factory
@@ -56,40 +53,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 
 	protected DefaultActivitySourceBuilder (final DataStore datastore)
 	{
-		super (ActivitySource.class, datastore);
-	}
-
-	@Override
-	protected ActivitySource buildElement ()
-	{
-		if (this.name == null)
-		{
-			this.log.error ("Can not build: The activity source's name is not set");
-			throw new IllegalStateException ("name not set");
-		}
-
-		ActivitySource result = this.element;
-
-		if ((this.element == null) || (! this.name.equals (this.element.getName ())))
-		{
-//			result = this.factory.create (this.name);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
-	 */
-
-	@Override
-	public void clear ()
-	{
-		this.log.trace ("Reseting the builder");
-
-		super.clear ();
-		this.name = null;
+		super (ActivitySource.Properties.class, datastore);
 	}
 
 	/**
@@ -112,7 +76,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	@Override
 	public void load (final ActivitySource source)
 	{
-		this.log.trace ("Load ActivitySource: {}", source);
+		this.log.trace ("load: source={}", source);
 
 		super.load (source);
 		this.setName (source.getName ());
@@ -128,7 +92,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	@Override
 	public String getName ()
 	{
-		return this.name;
+		return this.getPropertyValue (ActivitySource.Properties.NAME);
 	}
 
 	/**
@@ -144,6 +108,8 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	@Override
 	public ActivitySourceBuilder setName (final String name)
 	{
+		this.log.trace ("setName: name={}", name);
+
 		if (name == null)
 		{
 			this.log.error ("name is NULL");
@@ -156,7 +122,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.name = name;
+		this.setPropertyValue (ActivitySource.Properties.NAME, name);
 
 		return this;
 	}

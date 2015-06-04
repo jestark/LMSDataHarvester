@@ -23,17 +23,8 @@ import ca.uoguelph.socs.icc.edm.domain.GradeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements GradeBuilder
+public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Properties> implements GradeBuilder
 {
-	/** The activity associated with the grade */
-	private Activity activity;
-
-	/** The enrolment associated with the grade */
-	private Enrolment enrolment;
-
-	/** The grade */
-	private Integer grade;
-
 	/**
 	 * static initializer to register the <code>DefaultGradeBuilder</code> with
 	 * the factory
@@ -53,49 +44,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 
 	protected DefaultGradeBuilder (final DataStore datastore)
 	{
-		super (Grade.class, datastore);
-
-		this.clear ();
-	}
-
-	@Override
-	protected Grade buildElement ()
-	{
-		if (this.activity == null)
-		{
-			this.log.error ("Can not build: The activity is not set");
-			throw new IllegalStateException ("activity not set");
-		}
-
-		if (this.enrolment == null)
-		{
-			this.log.error ("Can not build: The enrolment is not set");
-			throw new IllegalStateException ("enrolment not set");
-		}
-
-		if (this.grade == null)
-		{
-			this.log.error ("Can not build: The grade is not set");
-			throw new IllegalStateException ("grade not set");
-		}
-
-		return null; //this.factory.create (this.enrolment, this.activity, this.grade);
-	}
-
-	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
-	 */
-
-	@Override
-	public void clear ()
-	{
-		this.log.trace ("Reseting the builder");
-
-		super.clear ();
-		this.activity = null;
-		this.enrolment = null;
-		this.grade = null;
+		super (Grade.Properties.class, datastore);
 	}
 
 	/**
@@ -115,7 +64,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	@Override
 	public void load (final Grade grade)
 	{
-		this.log.trace ("Load Grade: {}", grade);
+		this.log.trace ("load: grade={}", grade);
 
 		super.load (grade);
 		this.setActivity (grade.getActivity ());
@@ -133,19 +82,21 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	@Override
 	public Activity getActivity ()
 	{
-		return this.activity;
+		return this.getPropertyValue (Grade.Properties.ACTIVITY);
 	}
 
 	@Override
 	public GradeBuilder setActivity (final Activity activity)
 	{
-		if (grade == null)
+		this.log.trace ("setActivity: activity={}", activity);
+
+		if (activity == null)
 		{
 			this.log.error ("The specified activity is NULL");
 			throw new NullPointerException ("The specified activity is NULL");
 		}
 
-		this.activity = activity;
+		this.setPropertyValue (Grade.Properties.ACTIVITY, activity);
 
 		return this;
 	}
@@ -160,19 +111,21 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	@Override
 	public Enrolment getEnrolment ()
 	{
-		return this.enrolment;
+		return this.getPropertyValue (Grade.Properties.ENROLMENT);
 	}
 
 	@Override
 	public GradeBuilder setEnrolment (final Enrolment enrolment)
 	{
-		if (grade == null)
+		this.log.trace ("setEnrolment: enrolment={}", enrolment);
+
+		if (enrolment == null)
 		{
 			this.log.error ("The specified Enrolment is NULL");
 			throw new NullPointerException ("The specified Enrolment is NULL");
 		}
 
-		this.enrolment = enrolment;
+		this.setPropertyValue (Grade.Properties.ENROLMENT, enrolment);
 
 		return this;
 	}
@@ -189,7 +142,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	@Override
 	public Integer getGrade ()
 	{
-		return this.grade;
+		return this.getPropertyValue (Grade.Properties.GRADE);
 	}
 
 	/**
@@ -206,6 +159,8 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	@Override
 	public GradeBuilder setGrade (final Integer grade)
 	{
+		this.log.trace ("setGrade: grade={}", grade);
+
 		if (grade == null)
 		{
 			this.log.error ("The specified grade is NULL");
@@ -224,7 +179,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 			throw new IllegalArgumentException ("Grade is greater than 100%");
 		}
 
-		this.grade = grade;
+		this.setPropertyValue (Grade.Properties.GRADE, grade);
 
 		return this;
 	}

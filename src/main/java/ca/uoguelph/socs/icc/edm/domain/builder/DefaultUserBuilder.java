@@ -28,20 +28,8 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultUserBuilder extends AbstractBuilder<User> implements UserBuilder
+public final class DefaultUserBuilder extends AbstractBuilder<User, User.Properties> implements UserBuilder
 {
-	/** The user's (student) ID number */
-	private Integer idnumber;
-
-	/** The user's first name */
-	private String firstname;
-
-	/** The user's last name */
-	private String lastname;
-
-	/** This user's username (login id) */
-	private String username;
-
 	/**
 	 * static initializer to register the <code>DefaultUserBuilder</code> with
 	 * the factory
@@ -61,79 +49,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 
 	protected DefaultUserBuilder (final DataStore datastore)
 	{
-		super (User.class, datastore);
-
-		this.clear ();
-	}
-
-	@Override
-	protected User buildElement ()
-	{
-		this.log.trace ("build the User");
-
-		if (this.idnumber == null)
-		{
-			this.log.error ("Can not build: The user's idnumber is not set");
-			throw new IllegalStateException ("id number not set");
-		}
-
-		if (this.firstname == null)
-		{
-			this.log.error ("Can not build: The user's first name is not set");
-			throw new IllegalStateException ("first name not set");
-		}
-
-		if (this.lastname == null)
-		{
-			this.log.error ("Can not build: The user's last name is not set");
-			throw new IllegalStateException ("last name not set");
-		}
-
-		if (this.username == null)
-		{
-			this.log.error ("Can not build: The user's user name is not set");
-			throw new IllegalStateException ("user name not set");
-		}
-
-		User result = this.element;
-
-		if ((this.element == null) || (! this.username.equals (this.element.getUsername ()) || (! this.idnumber.equals (this.element.getIdNumber ()))))
-		{
-			this.log.debug ("Creating a new User Instance");
-
-//			result = this.factory.create (this.idnumber, this.firstname, this.lastname, this.username);
-		}
-		else
-		{
-			if (! this.firstname.equals (this.element.getFirstname ()))
-			{
-//				this.factory.setFirstname (this.element, this.firstname);
-			}
-
-			if (! this.firstname.equals (this.element.getFirstname ()))
-			{
-//				this.factory.setLastname (this.element, this.lastname);
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
-	 */
-
-	@Override
-	public void clear ()
-	{
-		this.log.trace ("Reseting the builder");
-
-		super.clear ();
-		this.idnumber = null;
-		this.firstname = null;
-		this.lastname = null;
-		this.username = null;
+		super (User.Properties.class, datastore);
 	}
 
 	/**
@@ -153,7 +69,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public void load (final User user)
 	{
-		this.log.trace ("Load User: {}", user);
+		this.log.trace ("load: user={}", user);
 
 		if (user == null)
 		{
@@ -181,7 +97,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public Integer getIdNumber()
 	{
-		return this.idnumber;
+		return this.getPropertyValue (User.Properties.IDNUMBER);
 	}
 
 	/**
@@ -198,6 +114,8 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public UserBuilder setIdNumber (final Integer idnumber)
 	{
+		this.log.trace ("setIdNumber: idnumber={}", idnumber);
+
 		if (idnumber == null)
 		{
 			this.log.error ("The specified ID number is NULL");
@@ -210,7 +128,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new IllegalArgumentException ("idnumber is negative");
 		}
 
-		this.idnumber = idnumber;
+		this.setPropertyValue (User.Properties.IDNUMBER, idnumber);
 
 		return this;
 	}
@@ -225,7 +143,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public String getFirstname ()
 	{
-		return this.firstname;
+		return this.getPropertyValue (User.Properties.FIRSTNAME);
 	}
 
 	/**
@@ -241,6 +159,8 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public UserBuilder setFirstname (final String firstname)
 	{
+		this.log.trace ("setFirstname: firstname={}", firstname);
+
 		if (firstname == null)
 		{
 			this.log.error ("The specified first name is NULL");
@@ -253,7 +173,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new IllegalArgumentException ("firstname is empty");
 		}
 
-		this.firstname = firstname;
+		this.setPropertyValue (User.Properties.FIRSTNAME, firstname);
 
 		return this;
 	}
@@ -267,7 +187,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public String getLastname ()
 	{
-		return this.lastname;
+		return this.getPropertyValue (User.Properties.LASTNAME);
 	}
 
 	/**
@@ -283,6 +203,8 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public UserBuilder setLastname (final String lastname)
 	{
+		this.log.trace ("setLastname: lastname={}", lastname);
+
 		if (lastname == null)
 		{
 			this.log.error ("The specified last name is NULL");
@@ -295,7 +217,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new IllegalArgumentException ("lastname is empty");
 		}
 
-		this.lastname = lastname;
+		this.setPropertyValue (User.Properties.LASTNAME, lastname);
 
 		return this;
 	}
@@ -313,7 +235,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public String getUsername ()
 	{
-		return this.username;
+		return this.getPropertyValue (User.Properties.USERNAME);
 	}
 
 	/**
@@ -329,6 +251,8 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public UserBuilder setUsername (final String username)
 	{
+		this.log.trace ("setUsername: username={}", username);
+
 		if (username == null)
 		{
 			this.log.error ("Specified username is NULL");
@@ -341,7 +265,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new IllegalArgumentException ("Username is empty");
 		}
 
-		this.username = username;
+		this.setPropertyValue (User.Properties.USERNAME, username);
 
 		return this;
 	}
