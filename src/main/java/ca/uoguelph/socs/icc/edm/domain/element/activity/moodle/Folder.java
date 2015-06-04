@@ -63,14 +63,14 @@ public class Folder extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Folder> builder = DefinitionBuilder.newInstance (Activity.class, Folder.class);
+		DefinitionBuilder<Folder, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Folder.class, Activity.Properties.class);
 		builder.setCreateMethod (Folder::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Folder::getId, Folder::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Folder::getId, Folder::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Folder::getCourse, Folder::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Folder::getType, Folder::setType);
-		builder.addAttribute ("name", String.class, true, false, Folder::getName, Folder::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, Folder::getCourse, Folder::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, Folder::getType, Folder::setType);
+		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, Folder::getName, Folder::setName);
 
 		builder.addRelationship ("grades", Grade.class, Folder::addGrade, Folder::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Folder::addLog, Folder::removeLog);

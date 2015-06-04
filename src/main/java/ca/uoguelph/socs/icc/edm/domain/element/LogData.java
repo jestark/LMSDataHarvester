@@ -82,17 +82,17 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 
 	static
 	{
-		DefinitionBuilder<LogEntry, LogData> builder = DefinitionBuilder.newInstance (LogEntry.class, LogData.class);
+		DefinitionBuilder<LogData, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, LogData.class, LogEntry.Properties.class);
 		builder.setCreateMethod (LogData::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, LogData::getId, LogData::setId);
+		builder.addUniqueAttribute (LogEntry.Properties.ID, Long.class, false, false, LogData::getId, LogData::setId);
 
-		builder.addAttribute ("action", Action.class, true, false, LogData::getAction, LogData::setAction);
-		builder.addAttribute ("activity", Activity.class, true, false, LogData::getActivity, LogData::setActivity);
-		builder.addAttribute ("enrolment", Enrolment.class, true, false, LogData::getEnrolment, LogData::setEnrolment);
-		builder.addAttribute ("reference", LogReference.class, false, false, LogData::getReference, LogData::setReference);
-		builder.addAttribute ("ip", String.class, true, false, LogData::getIPAddress, LogData::setIPAddress);
-		builder.addAttribute ("time", Date.class, true, true, LogData::getTime, LogData::setTime);
+		builder.addAttribute (LogEntry.Properties.ACTION, Action.class, true, false, LogData::getAction, LogData::setAction);
+		builder.addAttribute (LogEntry.Properties.ACTIVITY, Activity.class, true, false, LogData::getActivity, LogData::setActivity);
+		builder.addAttribute (LogEntry.Properties.ENROLMENT, Enrolment.class, true, false, LogData::getEnrolment, LogData::setEnrolment);
+//		builder.addAttribute (LogEntry.Properties.REFERENCE, LogReference.class, false, false, LogData::getReference, LogData::setReference);
+		builder.addAttribute (LogEntry.Properties.IPADDRESS, String.class, true, false, LogData::getIPAddress, LogData::setIPAddress);
+		builder.addAttribute (LogEntry.Properties.TIME, Date.class, true, true, LogData::getTime, LogData::setTime);
 
 		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
 	}

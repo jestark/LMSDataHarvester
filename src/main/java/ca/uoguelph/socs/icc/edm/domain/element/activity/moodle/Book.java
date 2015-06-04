@@ -64,14 +64,14 @@ public class Book extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Book> builder = DefinitionBuilder.newInstance (Activity.class, Book.class);
+		DefinitionBuilder<Book, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Book.class, Activity.Properties.class);
 		builder.setCreateMethod (Book::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Book::getId, Book::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Book::getId, Book::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Book::getCourse, Book::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Book::getType, Book::setType);
-		builder.addAttribute ("name", String.class, true, false, Book::getName, Book::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, Book::getCourse, Book::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, Book::getType, Book::setType);
+		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, Book::getName, Book::setName);
 
 		builder.addRelationship ("grades", Grade.class, Book::addGrade, Book::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Book::addLog, Book::removeLog);

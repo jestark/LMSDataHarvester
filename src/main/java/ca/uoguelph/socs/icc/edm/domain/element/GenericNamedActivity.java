@@ -62,7 +62,7 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	 * @param  type       The name of the <code>ActivityType</code> not null
 	 */
 
-	protected static final <T extends Activity, U extends ActivityBuilder> void registerActivity (final Definition<Activity, T> definition, final Class<U> builder, final String source, final String type)
+	protected static final <T extends Activity, U extends ActivityBuilder> void registerActivity (final Definition<T, Activity.Properties> definition, final Class<U> builder, final String source, final String type)
 	{
 		assert definition != null : "definition is NULL";
 		assert builder != null : "builder is NULL";

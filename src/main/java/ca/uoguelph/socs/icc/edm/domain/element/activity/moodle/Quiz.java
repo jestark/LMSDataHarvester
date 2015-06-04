@@ -63,14 +63,14 @@ public class Quiz extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Quiz> builder = DefinitionBuilder.newInstance (Activity.class, Quiz.class);
+		DefinitionBuilder<Quiz, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Quiz.class, Activity.Properties.class);
 		builder.setCreateMethod (Quiz::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Quiz::getId, Quiz::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Quiz::getId, Quiz::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Quiz::getCourse, Quiz::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Quiz::getType, Quiz::setType);
-		builder.addAttribute ("name", String.class, true, false, Quiz::getName, Quiz::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, Quiz::getCourse, Quiz::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, Quiz::getType, Quiz::setType);
+		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, Quiz::getName, Quiz::setName);
 
 		builder.addRelationship ("grades", Grade.class, Quiz::addGrade, Quiz::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Quiz::addLog, Quiz::removeLog);

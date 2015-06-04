@@ -78,14 +78,14 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 	static
 	{
-		DefinitionBuilder<Course, CourseData> builder = DefinitionBuilder.newInstance (Course.class, CourseData.class);
+		DefinitionBuilder<CourseData, Course.Properties> builder = DefinitionBuilder.newInstance (Course.class, CourseData.class, Course.Properties.class);
 		builder.setCreateMethod (CourseData::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, CourseData::getId, CourseData::setId);
+		builder.addUniqueAttribute (Course.Properties.ID, Long.class, false, false, CourseData::getId, CourseData::setId);
 
-		builder.addAttribute ("name", String.class, true, false, CourseData::getName, CourseData::setName);
-		builder.addAttribute ("semester", Semester.class, true, false, CourseData::getSemester, CourseData::setSemester);
-		builder.addAttribute ("year", Integer.class, true, false, CourseData::getYear, CourseData::setYear);
+		builder.addAttribute (Course.Properties.NAME, String.class, true, false, CourseData::getName, CourseData::setName);
+		builder.addAttribute (Course.Properties.SEMESTER, Semester.class, true, false, CourseData::getSemester, CourseData::setSemester);
+		builder.addAttribute (Course.Properties.YEAR, Integer.class, true, false, CourseData::getYear, CourseData::setYear);
 
 		builder.addIndex ("name", "semester", "year");
 

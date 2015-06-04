@@ -63,14 +63,14 @@ public class Assign extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Assign> builder = DefinitionBuilder.newInstance (Activity.class, Assign.class);
+		DefinitionBuilder<Assign, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Assign.class, Activity.Properties.class);
 		builder.setCreateMethod (Assign::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Assign::getId, Assign::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Assign::getId, Assign::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Assign::getCourse, Assign::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Assign::getType, Assign::setType);
-		builder.addAttribute ("name", String.class, true, false, Assign::getName, Assign::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, Assign::getCourse, Assign::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, Assign::getType, Assign::setType);
+		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, Assign::getName, Assign::setName);
 
 		builder.addRelationship ("grades", Grade.class, Assign::addGrade, Assign::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Assign::addLog, Assign::removeLog);

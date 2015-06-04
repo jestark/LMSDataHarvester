@@ -63,14 +63,14 @@ public class URL extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, URL> builder = DefinitionBuilder.newInstance (Activity.class, URL.class);
+		DefinitionBuilder<URL, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, URL.class, Activity.Properties.class);
 		builder.setCreateMethod (URL::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, URL::getId, URL::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, URL::getId, URL::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, URL::getCourse, URL::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, URL::getType, URL::setType);
-		builder.addAttribute ("name", String.class, true, false, URL::getName, URL::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, URL::getCourse, URL::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, URL::getType, URL::setType);
+		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, URL::getName, URL::setName);
 
 		builder.addRelationship ("grades", Grade.class, URL::addGrade, URL::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, URL::addLog, URL::removeLog);

@@ -62,13 +62,13 @@ public class ForumPost extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, ForumPost> builder = DefinitionBuilder.newInstance (Activity.class, ForumPost.class);
+		DefinitionBuilder<ForumPost, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, ForumPost.class, SubActivity.Properties.class);
 		builder.setCreateMethod (ForumPost::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, ForumPost::getId, ForumPost::setId);
+		builder.addUniqueAttribute (SubActivity.Properties.ID, Long.class, false, false, ForumPost::getId, ForumPost::setId);
 
-		builder.addAttribute ("parent", Activity.class, true, false, ForumPost::getParent, ForumPost::setParent);
-		builder.addAttribute ("name", String.class, true, false, ForumPost::getName, ForumPost::setName);
+		builder.addAttribute (SubActivity.Properties.PARENT, Activity.class, true, false, ForumPost::getParent, ForumPost::setParent);
+		builder.addAttribute (SubActivity.Properties.NAME, String.class, true, false, ForumPost::getName, ForumPost::setName);
 
 		builder.addRelationship ("log", LogEntry.class, ForumPost::addLog, ForumPost::removeLog);
 

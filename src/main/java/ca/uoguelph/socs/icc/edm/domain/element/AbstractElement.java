@@ -54,30 +54,7 @@ public abstract class AbstractElement implements Element
 		assert element != null : "element is NULL";
 		assert elementImpl != null : "elementImpl is NULL";
 
-		AbstractQuery.registerElement (element, elementImpl);
-	}
-
-	/**
-	 * Register the association between an <code>Element</code> implementation and
-	 * the appropriate <code>ElementBuilder</code> implementation with the
-	 * <code>ElementBuilder</code> factory.
-	 *
-	 * @param  <T>         The interface type of the <code>Element</code>
-	 * @param  <U>         The implementation type of the <code>Element</code>
-	 * @param  element     The <code>Element</code> interface class, not null
-	 * @param  elementImpl The <code>Element</code> implementation class, not
-	 *                     null
-	 * @param  builder     The <code>ElementBuilder</code> implementation
-	 *                     class, not null
-	 */
-
-	protected static <T extends ElementBuilder<U>, U extends Element> void registerBuilder (final Class<U> element, final Class<? extends U> elementImpl, final Class<T> builder)
-	{
-		assert element != null : "element is NULL";
-		assert elementImpl != null : "elementImpl is NULL";
-		assert builder != null : "builder is NULL";
-
-		AbstractBuilder.registerElement (elementImpl, builder);
+//		AbstractQuery.registerElement (element, elementImpl);
 	}
 
 	/**
@@ -91,13 +68,13 @@ public abstract class AbstractElement implements Element
 	 *                    null
 	 */
 
-	protected static <T extends Element, U extends T, B extends ElementBuilder<T>> void registerElement (final Definition<T, U> definition, final Class<B> builder)
+	protected static <T extends Element, U extends T, E extends Enum<E>, B extends ElementBuilder<T>> void registerElement (final Definition<U, E> definition, final Class<B> builder)
 	{
 		assert builder != null : "builder is NULL";
 		assert definition != null : "definition is NULL";
 
 //		registerQuery (element, elementImpl);
-		registerBuilder (definition.getInterfaceClass (), definition.getImplementationClass (), builder);
+		AbstractBuilder.registerElement (definition.getImplementationClass (), builder);
 	}
 
 	/**

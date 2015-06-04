@@ -62,11 +62,11 @@ class ${ClassName} extends LogReference
 
 	static
 	{
-		DefinitionBuilder<LogEntry, ${ClassName}> builder = DefinitionBuilder.newInstance (LogEntry.class, ${ClassName}.class);
+		DefinitionBuilder<${ClassName}, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, ${ClassName}.class, LogEntry.Properties.class);
 		builder.setCreateMethod (${ClassName}::new);
 
-		builder.addAttribute ("entry", LogEntry.class, true, false, ${ClassName}::getEntry, ${ClassName}::setEntry);
-		builder.addAttribute ("subactivity", SubActivity.class, true, false, ${ClassName}::getSubActivity, ${ClassName}::setSubActivity);
+//		builder.addAttribute (LogEntry.Properties.ENTRY, LogEntry.class, true, false, ${ClassName}::getEntry, ${ClassName}::setEntry);
+		builder.addAttribute (LogEntry.Properties.SUBACTIVITY, SubActivity.class, true, false, ${ClassName}::getSubActivity, ${ClassName}::setSubActivity);
 
 		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
 	}

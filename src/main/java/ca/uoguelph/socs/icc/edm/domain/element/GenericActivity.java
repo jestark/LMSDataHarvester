@@ -58,13 +58,13 @@ public class GenericActivity extends ActivityInstance implements Serializable
 
 	static
 	{
-		DefinitionBuilder<Activity, GenericActivity> builder = DefinitionBuilder.newInstance (Activity.class, GenericActivity.class);
+		DefinitionBuilder<GenericActivity, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, GenericActivity.class, Activity.Properties.class);
 		builder.setCreateMethod (GenericActivity::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, AbstractElement::getId, AbstractElement::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, AbstractElement::getId, AbstractElement::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, ActivityInstance::getCourse, ActivityInstance::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, ActivityInstance::getType, ActivityInstance::setType);
+		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, ActivityInstance::getCourse, ActivityInstance::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, ActivityInstance::getType, ActivityInstance::setType);
 
 		builder.addRelationship ("grades", Grade.class, ActivityInstance::addGrade, ActivityInstance::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, AbstractActivity::addLog, AbstractActivity::removeLog);

@@ -62,13 +62,13 @@ public class BookChapter extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, BookChapter> builder = DefinitionBuilder.newInstance (Activity.class, BookChapter.class);
+		DefinitionBuilder<BookChapter, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, BookChapter.class, SubActivity.Properties.class);
 		builder.setCreateMethod (BookChapter::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, BookChapter::getId, BookChapter::setId);
+		builder.addUniqueAttribute (SubActivity.Properties.ID, Long.class, false, false, BookChapter::getId, BookChapter::setId);
 
-		builder.addAttribute ("parent", Activity.class, true, false, BookChapter::getParent, BookChapter::setParent);
-		builder.addAttribute ("name", String.class, true, false, BookChapter::getName, BookChapter::setName);
+		builder.addAttribute (SubActivity.Properties.PARENT, Activity.class, true, false, BookChapter::getParent, BookChapter::setParent);
+		builder.addAttribute (SubActivity.Properties.NAME, String.class, true, false, BookChapter::getName, BookChapter::setName);
 
 		builder.addRelationship ("log", LogEntry.class, BookChapter::addLog, BookChapter::removeLog);
 

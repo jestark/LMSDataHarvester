@@ -63,14 +63,14 @@ public class Checklist extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Checklist> builder = DefinitionBuilder.newInstance (Activity.class, Checklist.class);
+		DefinitionBuilder<Checklist, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Checklist.class, Activity.Properties.class);
 		builder.setCreateMethod (Checklist::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Checklist::getId, Checklist::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Checklist::getId, Checklist::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Checklist::getCourse, Checklist::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Checklist::getType, Checklist::setType);
-		builder.addAttribute ("name", String.class, true, false, Checklist::getName, Checklist::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, Checklist::getCourse, Checklist::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, Checklist::getType, Checklist::setType);
+		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, Checklist::getName, Checklist::setName);
 
 		builder.addRelationship ("grades", Grade.class, Checklist::addGrade, Checklist::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Checklist::addLog, Checklist::removeLog);

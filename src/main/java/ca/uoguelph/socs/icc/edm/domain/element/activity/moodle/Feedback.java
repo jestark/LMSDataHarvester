@@ -63,14 +63,14 @@ public class Feedback extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Feedback> builder = DefinitionBuilder.newInstance (Activity.class, Feedback.class);
+		DefinitionBuilder<Feedback, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Feedback.class, Activity.Properties.class);
 		builder.setCreateMethod (Feedback::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Feedback::getId, Feedback::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Feedback::getId, Feedback::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Feedback::getCourse, Feedback::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Feedback::getType, Feedback::setType);
-		builder.addAttribute ("name", String.class, true, false, Feedback::getName, Feedback::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, Feedback::getCourse, Feedback::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, Feedback::getType, Feedback::setType);
+		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, Feedback::getName, Feedback::setName);
 
 		builder.addRelationship ("grades", Grade.class, Feedback::addGrade, Feedback::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Feedback::addLog, Feedback::removeLog);

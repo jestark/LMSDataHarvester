@@ -63,14 +63,14 @@ public class Scheduler extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Scheduler> builder = DefinitionBuilder.newInstance (Activity.class, Scheduler.class);
+		DefinitionBuilder<Scheduler, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Scheduler.class, Activity.Properties.class);
 		builder.setCreateMethod (Scheduler::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Scheduler::getId, Scheduler::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Scheduler::getId, Scheduler::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Scheduler::getCourse, Scheduler::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Scheduler::getType, Scheduler::setType);
-		builder.addAttribute ("name", String.class, true, false, Scheduler::getName, Scheduler::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, Scheduler::getCourse, Scheduler::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, Scheduler::getType, Scheduler::setType);
+		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, Scheduler::getName, Scheduler::setName);
 
 		builder.addRelationship ("grades", Grade.class, Scheduler::addGrade, Scheduler::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Scheduler::addLog, Scheduler::removeLog);

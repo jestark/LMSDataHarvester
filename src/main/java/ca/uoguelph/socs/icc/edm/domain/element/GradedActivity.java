@@ -63,14 +63,14 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 
 	static
 	{
-		DefinitionBuilder<Grade, GradedActivity> builder = DefinitionBuilder.newInstance (Grade.class, GradedActivity.class);
+		DefinitionBuilder<GradedActivity, Grade.Properties> builder = DefinitionBuilder.newInstance (Grade.class, GradedActivity.class, Grade.Properties.class);
 		builder.setCreateMethod (GradedActivity::new);
 
-		builder.addAttribute ("activity", Activity.class, true, false, GradedActivity::getActivity, GradedActivity::setActivity);
-		builder.addAttribute ("enrolment", Enrolment.class, true, false, GradedActivity::getEnrolment, GradedActivity::setEnrolment);
-		builder.addAttribute ("grade", Integer.class, true, true, GradedActivity::getGrade, GradedActivity::setGrade);
+		builder.addAttribute (Grade.Properties.ACTIVITY, Activity.class, true, false, GradedActivity::getActivity, GradedActivity::setActivity);
+		builder.addAttribute (Grade.Properties.ENROLMENT, Enrolment.class, true, false, GradedActivity::getEnrolment, GradedActivity::setEnrolment);
+		builder.addAttribute (Grade.Properties.GRADE, Integer.class, true, true, GradedActivity::getGrade, GradedActivity::setGrade);
 
-		AbstractElement.registerBuilder (Grade.class, GradedActivity.class, DefaultGradeBuilder.class);
+		AbstractElement.registerElement (builder.build (), DefaultGradeBuilder.class);
 	}
 
 	/**

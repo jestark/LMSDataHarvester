@@ -62,11 +62,11 @@ class WorkshopSubmissionLog extends LogReference
 
 	static
 	{
-		DefinitionBuilder<LogEntry, WorkshopSubmissionLog> builder = DefinitionBuilder.newInstance (LogEntry.class, WorkshopSubmissionLog.class);
+		DefinitionBuilder<WorkshopSubmissionLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, WorkshopSubmissionLog.class, LogEntry.Properties.class);
 		builder.setCreateMethod (WorkshopSubmissionLog::new);
 
-		builder.addAttribute ("entry", LogEntry.class, true, false, WorkshopSubmissionLog::getEntry, WorkshopSubmissionLog::setEntry);
-		builder.addAttribute ("subactivity", SubActivity.class, true, false, WorkshopSubmissionLog::getSubActivity, WorkshopSubmissionLog::setSubActivity);
+//		builder.addAttribute (LogEntry.Properties.ENTRY, LogEntry.class, true, false, WorkshopSubmissionLog::getEntry, WorkshopSubmissionLog::setEntry);
+		builder.addAttribute (LogEntry.Properties.SUBACTIVITY, SubActivity.class, true, false, WorkshopSubmissionLog::getSubActivity, WorkshopSubmissionLog::setSubActivity);
 
 		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
 	}

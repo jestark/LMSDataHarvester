@@ -62,11 +62,11 @@ class BookChapterLog extends LogReference
 
 	static
 	{
-		DefinitionBuilder<LogEntry, BookChapterLog> builder = DefinitionBuilder.newInstance (LogEntry.class, BookChapterLog.class);
+		DefinitionBuilder<BookChapterLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, BookChapterLog.class, LogEntry.Properties.class);
 		builder.setCreateMethod (BookChapterLog::new);
 
-		builder.addAttribute ("entry", LogEntry.class, true, false, BookChapterLog::getEntry, BookChapterLog::setEntry);
-		builder.addAttribute ("subactivity", SubActivity.class, true, false, BookChapterLog::getSubActivity, BookChapterLog::setSubActivity);
+//		builder.addAttribute (LogEntry.Properties.ENTRY, LogEntry.class, true, false, BookChapterLog::getEntry, BookChapterLog::setEntry);
+		builder.addAttribute (LogEntry.Properties.SUBACTIVITY, SubActivity.class, true, false, BookChapterLog::getSubActivity, BookChapterLog::setSubActivity);
 
 		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
 	}

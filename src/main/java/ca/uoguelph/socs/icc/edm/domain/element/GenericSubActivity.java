@@ -64,7 +64,7 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 	 *                    not null
 	 */
 
-	protected static final <S extends SubActivity, T extends SubActivityBuilder> void registerActivity (final Definition<SubActivity, S> definition, final Class<? extends Activity> activity, final Class<T> builder)
+	protected static final <S extends SubActivity, T extends SubActivityBuilder> void registerActivity (final Definition<S, SubActivity.Properties> definition, final Class<? extends Activity> activity, final Class<T> builder)
 	{
 		assert definition != null : "definition is NULL";
 		assert activity != null : "activity is NULL";

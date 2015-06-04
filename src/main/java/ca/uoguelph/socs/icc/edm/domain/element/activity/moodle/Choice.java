@@ -63,14 +63,14 @@ public class Choice extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Choice> builder = DefinitionBuilder.newInstance (Activity.class, Choice.class);
+		DefinitionBuilder<Choice, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Choice.class, Activity.Properties.class);
 		builder.setCreateMethod (Choice::new);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Choice::getId, Choice::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Choice::getId, Choice::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Choice::getCourse, Choice::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Choice::getType, Choice::setType);
-		builder.addAttribute ("name", String.class, true, false, Choice::getName, Choice::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, Choice::getCourse, Choice::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, Choice::getType, Choice::setType);
+		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, Choice::getName, Choice::setName);
 
 		builder.addRelationship ("grades", Grade.class, Choice::addGrade, Choice::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Choice::addLog, Choice::removeLog);
