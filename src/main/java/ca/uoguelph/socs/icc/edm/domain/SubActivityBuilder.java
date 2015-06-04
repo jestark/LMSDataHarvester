@@ -27,7 +27,7 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public interface SubActivityBuilder extends ElementBuilder<Activity>
+public interface SubActivityBuilder extends ElementBuilder<SubActivity>
 {
 	/**
 	 * Get the name of the <code>Activity</code>.
