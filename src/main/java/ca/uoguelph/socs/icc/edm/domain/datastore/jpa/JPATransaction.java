@@ -14,10 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore;
+package ca.uoguelph.socs.icc.edm.domain.datastore.jpa;
+
+import javax.persistence.EntityTransaction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 
 /**
  *
@@ -25,13 +29,13 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  */
 
-public final class JPADataStoreTransaction implements DataStoreTransaction
+public final class JPATransaction implements Transaction
 {
 	/** The log */
 	private final Logger log;
 
 	/** The data store */
-	private final JPADataStore datastore;
+	private final EntityTransaction transaction;
 
 	/**
 	 * Create the <code>JPADataStoreTransaction</code>.
@@ -39,10 +43,10 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	 * @param datastore
 	 */
 
-	protected JPADataStoreTransaction (JPADataStore datastore)
+	protected JPATransaction (final EntityTransaction transaction)
 	{
-		this.log = LoggerFactory.getLogger (JPADataStoreTransaction.class);
-		this.datastore = datastore;
+		this.log = LoggerFactory.getLogger (JPATransaction.class);
+		this.transaction = transaction;
 	}
 
 	/**
@@ -50,9 +54,9 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	 */
 
 	@Override
-	public Boolean isActive ()
+	public boolean isActive ()
 	{
-		return ((this.datastore.getEntityManager ()).getTransaction ()).isActive ();
+		return this.transaction.isActive ();
 	}
 
 	/**
@@ -60,9 +64,9 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	 */
 
 	@Override
-	public Boolean getRollbackOnly ()
+	public boolean getRollbackOnly ()
 	{
-		return ((this.datastore.getEntityManager ()).getTransaction ()).getRollbackOnly ();
+		return this.transaction.getRollbackOnly ();
 	}
 
 	/**
@@ -74,7 +78,7 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	{
 		this.log.trace ("setrollbackonly:");
 
-		((this.datastore.getEntityManager ()).getTransaction ()).setRollbackOnly ();
+		this.transaction.setRollbackOnly ();
 	}
 
 	/**
@@ -86,7 +90,7 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	{
 		this.log.trace ("begin:");
 
-		((this.datastore.getEntityManager ()).getTransaction ()).begin ();
+		this.transaction.begin ();
 	}
 
 	/**
@@ -98,7 +102,7 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	{
 		this.log.trace ("commit:");
 
-		((this.datastore.getEntityManager ()).getTransaction ()).commit ();
+		this.transaction.commit ();
 	}
 
 	/**
@@ -110,6 +114,6 @@ public final class JPADataStoreTransaction implements DataStoreTransaction
 	{
 		this.log.trace ("rollback:");
 
-		((this.datastore.getEntityManager ()).getTransaction ()).rollback ();
+		this.transaction.rollback ();
 	}
 }
