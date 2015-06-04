@@ -21,7 +21,7 @@ import java.util.Map;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
-import ca.uoguelph.socs.icc.edm.domain.datastore.JPADataStoreBuilder;
+import ca.uoguelph.socs.icc.edm.domain.datastore.jpa.JPADataStoreBuilder;
 
 /**
  * Create <code>DataStoreProfile</code>'s
@@ -137,11 +137,11 @@ public abstract class DatabaseFactory
 		{
 			this.builder.setConnectionPassword (password);
 		}
-		
+
 		DomainModelBuilder modelbuilder = new DomainModelBuilder ();
 
 		this.buildProfile (modelbuilder);
-		
+
 		return modelbuilder.createProfile ();
 	}
 

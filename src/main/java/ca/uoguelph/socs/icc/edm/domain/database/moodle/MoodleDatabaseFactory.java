@@ -27,22 +27,25 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-import ca.uoguelph.socs.icc.edm.domain.core.ActionData;
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityInstance;
-import ca.uoguelph.socs.icc.edm.domain.core.ActivitySourceData;
-import ca.uoguelph.socs.icc.edm.domain.core.ActivityTypeData;
-import ca.uoguelph.socs.icc.edm.domain.core.CourseData;
-import ca.uoguelph.socs.icc.edm.domain.core.UserEnrolmentData;
-import ca.uoguelph.socs.icc.edm.domain.core.GradedActivity;
-import ca.uoguelph.socs.icc.edm.domain.core.RoleData;
-import ca.uoguelph.socs.icc.edm.domain.core.UserData;
+import ca.uoguelph.socs.icc.edm.domain.element.ActionData;
+import ca.uoguelph.socs.icc.edm.domain.element.ActivityInstance;
+import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
+import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
+import ca.uoguelph.socs.icc.edm.domain.element.CourseData;
+import ca.uoguelph.socs.icc.edm.domain.element.UserEnrolmentData;
+import ca.uoguelph.socs.icc.edm.domain.element.GradedActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.RoleData;
+import ca.uoguelph.socs.icc.edm.domain.element.UserData;
 
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActionManager;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivitySourceManager;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultActivityTypeManager;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultEnrolmentManager;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultRoleManager;
-import ca.uoguelph.socs.icc.edm.domain.manager.DefaultUserManager;
+import ca.uoguelph.socs.icc.edm.domain.loader.DefaultActionLoader;
+import ca.uoguelph.socs.icc.edm.domain.loader.DefaultActivitySourceLoader;
+import ca.uoguelph.socs.icc.edm.domain.loader.DefaultActivityTypeLoader;
+import ca.uoguelph.socs.icc.edm.domain.loader.DefaultActivityLoader;
+import ca.uoguelph.socs.icc.edm.domain.loader.DefaultCourseLoader;
+import ca.uoguelph.socs.icc.edm.domain.loader.DefaultEnrolmentLoader;
+import ca.uoguelph.socs.icc.edm.domain.loader.DefaultLogEntryLoader;
+import ca.uoguelph.socs.icc.edm.domain.loader.DefaultRoleLoader;
+import ca.uoguelph.socs.icc.edm.domain.loader.DefaultUserLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder;
 import ca.uoguelph.socs.icc.edm.domain.database.DatabaseFactory;
@@ -69,15 +72,15 @@ public final class MoodleDatabaseFactory extends DatabaseFactory
 
 	protected void buildProfile (DomainModelBuilder builder)
 	{
-		builder.setEntry (Action.class, false, ActionData.class, NullIdGenerator.class, DefaultActionManager.class);
-		builder.setEntry (Activity.class, true, ActivityInstance.class, NullIdGenerator.class, MoodleActivityManager.class);
-		builder.setEntry (ActivitySource.class, false, ActivitySourceData.class, NullIdGenerator.class, DefaultActivitySourceManager.class);
-		builder.setEntry (ActivityType.class, true, ActivityTypeData.class, NullIdGenerator.class, DefaultActivityTypeManager.class);
-		builder.setEntry (Course.class, true, CourseData.class, NullIdGenerator.class, MoodleCourseManager.class);
-		builder.setEntry (Enrolment.class, true, UserEnrolmentData.class, NullIdGenerator.class, DefaultEnrolmentManager.class);
+		builder.setEntry (Action.class, false, ActionData.class, NullIdGenerator.class, DefaultActionLoader.class);
+		builder.setEntry (Activity.class, true, ActivityInstance.class, NullIdGenerator.class, DefaultActivityLoader.class);				// FIXME
+		builder.setEntry (ActivitySource.class, false, ActivitySourceData.class, NullIdGenerator.class, DefaultActivitySourceLoader.class);
+		builder.setEntry (ActivityType.class, true, ActivityTypeData.class, NullIdGenerator.class, DefaultActivityTypeLoader.class);
+		builder.setEntry (Course.class, true, CourseData.class, NullIdGenerator.class, DefaultCourseLoader.class);							// FIXME
+		builder.setEntry (Enrolment.class, true, UserEnrolmentData.class, NullIdGenerator.class, DefaultEnrolmentLoader.class);
 		builder.setEntry (Grade.class, true, GradedActivity.class, NullIdGenerator.class, null);
-		builder.setEntry (LogEntry.class, true, MoodleLogData.class, NullIdGenerator.class, MoodleLogEntryManager.class);
-		builder.setEntry (Role.class, true, RoleData.class, NullIdGenerator.class, DefaultRoleManager.class);
-		builder.setEntry (User.class, true, UserData.class, NullIdGenerator.class, DefaultUserManager.class);
+		builder.setEntry (LogEntry.class, true, MoodleLogData.class, NullIdGenerator.class, DefaultLogEntryLoader.class);					// FIXME
+		builder.setEntry (Role.class, true, RoleData.class, NullIdGenerator.class, DefaultRoleLoader.class);
+		builder.setEntry (User.class, true, UserData.class, NullIdGenerator.class, DefaultUserLoader.class);
 	}
 }
