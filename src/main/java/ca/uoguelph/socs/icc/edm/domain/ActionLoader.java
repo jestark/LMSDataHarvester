@@ -29,7 +29,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface ActionLoader extends ElementLoader<Action>
 {
 	/**
-	 * Retrieve the Action with the specified name from the
+	 * Retrieve the <code>Action</code> with the specified name from the
 	 * <code>DataStore</code>.
 	 *
 	 * @param  name The name of the <code>Action</code> to retrieve, not null
