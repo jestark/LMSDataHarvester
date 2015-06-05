@@ -55,7 +55,7 @@ import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
 import ca.uoguelph.socs.icc.edm.domain.element.LogData;
 import ca.uoguelph.socs.icc.edm.domain.element.RoleData;
 import ca.uoguelph.socs.icc.edm.domain.element.UserData;
-import ca.uoguelph.socs.icc.edm.domain.element.UserEnrolmentData;
+import ca.uoguelph.socs.icc.edm.domain.element.EnrolmentData;
 
 import ca.uoguelph.socs.icc.edm.domain.database.UserDatabaseFactory;
 import ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleActivity;
@@ -139,7 +139,6 @@ public class App
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.LogData");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.RoleData");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.UserData");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.UserEnrolmentData");
 
 		// Element implmentations for the Moodle Database
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleActivity");

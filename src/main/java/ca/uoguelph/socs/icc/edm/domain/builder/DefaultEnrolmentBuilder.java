@@ -20,9 +20,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Role;
-import ca.uoguelph.socs.icc.edm.domain.User;
-
-import ca.uoguelph.socs.icc.edm.domain.element.UserEnrolmentData;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
@@ -76,8 +73,6 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		this.setCourse (enrolment.getCourse ());
 		this.setFinalGrade (enrolment.getFinalGrade ());
 		this.setRole (enrolment.getRole ());
-
-		this.setUser (((UserEnrolmentData) enrolment).getUser ());
 	}
 
 	@Override
@@ -132,34 +127,6 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		}
 
 		this.setPropertyValue (Enrolment.Properties.ROLE, role);
-
-		return this;
-	}
-
-	@Override
-	public User getUser ()
-	{
-		return null; // this.getPropertyValue (Enrolment.Properties.USER);
-	}
-
-	@Override
-	public EnrolmentBuilder setUser (final User user)
-	{
-		this.log.trace ("setUser: user={}", user);
-
-		if (user == null)
-		{
-			this.log.error ("User is NULL");
-			throw new NullPointerException ("User is NULL");
-		}
-
-		if (! this.datastore.contains (user))
-		{
-			this.log.error ("This specified User does not exist in the DataStore");
-			throw new IllegalArgumentException ("User is not in the DataStore");
-		}
-
-		// this.setPropertyValue (Enrolment.Properties.USER, user);
 
 		return this;
 	}

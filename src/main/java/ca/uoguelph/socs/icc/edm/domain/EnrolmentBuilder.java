@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,6 @@ public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
 	public abstract EnrolmentBuilder setCourse (Course course);
 	public abstract Role getRole ();
 	public abstract EnrolmentBuilder setRole (Role role);
-	public abstract User getUser ();
-	public abstract EnrolmentBuilder setUser (User user);
 	public abstract Integer getFinalGrade ();
 	public abstract EnrolmentBuilder setFinalGrade (Integer finalgrade);
 	public abstract Boolean isUsable ();

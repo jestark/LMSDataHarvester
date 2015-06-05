@@ -115,4 +115,42 @@ public interface UserBuilder extends ElementBuilder<User>
 	 */
 
 	public abstract UserBuilder setUsername (String username);
+
+	/**
+	 * Create an association between the <code>User</code> and the specified
+	 * <code>Enrolment</code>.  Note that only one <code>User</code> may be
+	 * associated with a given <code>Enrolment</code>.
+	 *
+	 * @param  enrolment                The <code>Enrolment</code> to be
+	 *                                  associated with the <code>User</code>,
+	 *                                  not null
+	 *
+	 * @return                          This <code>UserBuilder</code>
+	 * @throws IllegalArgumentException If there is already a <code>User</code>
+	 *                                  associated with the
+	 *                                  <code>Enrolment</code>
+	 */
+
+	public abstract UserBuilder addEnrolment (Enrolment enrolment);
+
+	/**
+	 * Break an association between the <code>User</code> and the specified
+	 * <code>Enrolment</code>.  To break an association between the
+	 * <code>User</code> and the specified <code>Enrolment</code>, both
+	 * the <code>User</code> and <code>Enrolment</code> must be exist in
+	 * the <code>DataStore</code> associated with the <code>UserBuilder</code>
+	 * instance that is to break the association. Furthermore, there must be an
+	 * existing association between the <code>User</code> and the
+	 * <code>Enrolment</code>.
+	 *
+	 * @param  enrolment                The <code>Enrolment</code> to remove
+	 *                                  from the <code>User</code>, not null
+	 *
+	 * @return                          This <code>UserBuilder</code>
+	 * @throws IllegalArgumentException If there is no association between the
+	 *                                  <code>User</code> and the
+	 *                                  <code>Enrolment</code>
+	 */
+
+	public abstract UserBuilder removeEnrolment (Enrolment enrolment);
 }

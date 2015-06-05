@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
+import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 
@@ -266,6 +267,79 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 		}
 
 		this.setPropertyValue (User.Properties.USERNAME, username);
+
+		return this;
+	}
+
+	/**
+	 * Create an association between the <code>User</code> and the specified
+	 * <code>Enrolment</code>.  Note that only one <code>User</code> may be
+	 * associated with a given <code>Enrolment</code>.
+	 *
+	 * @param  enrolment                The <code>Enrolment</code> to be
+	 *                                  associated with the <code>User</code>,
+	 *                                  not null
+	 *
+	 * @return                          This <code>UserBuilder</code>
+	 * @throws IllegalArgumentException If there is already a <code>User</code>
+	 *                                  associated with the
+	 *                                  <code>Enrolment</code>
+	 */
+
+	@Override
+	public UserBuilder addEnrolment (final Enrolment enrolment)
+	{
+		this.log.trace ("addEnrolment: enrolment={}", enrolment);
+
+		if (enrolment == null)
+		{
+			this.log.error ("Specified enrolment is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (! this.datastore.contains (enrolment))
+		{
+			this.log.error ("Specified Enrolment does not exist in the DataStore");
+			throw new IllegalArgumentException ("Enrolment not in DataStore");
+		}
+
+		return this;
+	}
+
+	/**
+	 * Break an association between the <code>User</code> and the specified
+	 * <code>Enrolment</code>.  To break an association between the
+	 * <code>User</code> and the specified <code>Enrolment</code>, both
+	 * the <code>User</code> and <code>Enrolment</code> must be exist in
+	 * the <code>DataStore</code> associated with the <code>UserBuilder</code>
+	 * instance that is to break the association. Furthermore, there must be an
+	 * existing association between the <code>User</code> and the
+	 * <code>Enrolment</code>.
+	 *
+	 * @param  enrolment                The <code>Enrolment</code> to remove
+	 *                                  from the <code>User</code>, not null
+	 *
+	 * @return                          This <code>UserBuilder</code>
+	 * @throws IllegalArgumentException If there is no association between the
+	 *                                  <code>User</code> and the
+	 *                                  <code>Enrolment</code>
+	 */
+
+	public UserBuilder removeEnrolment (final Enrolment enrolment)
+	{
+		this.log.trace ("removeEnrolment: enrolment={}", enrolment);
+
+		if (enrolment == null)
+		{
+			this.log.error ("Specified enrolment is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (! this.datastore.contains (enrolment))
+		{
+			this.log.error ("Specified Enrolment does not exist in the DataStore");
+			throw new IllegalArgumentException ("Enrolment not in DataStore");
+		}
 
 		return this;
 	}

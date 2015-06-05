@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.loader;
 import java.util.Map;
 import java.util.HashMap;
 
+import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 import ca.uoguelph.socs.icc.edm.domain.UserLoader;
@@ -104,5 +105,30 @@ public final class DefaultUserLoader extends AbstractLoader<User> implements Use
 		}
 
 		return ((this.fetchQuery ("username")).setParameter ("username", username)).query ();
+	}
+
+	/**
+	 * Retrieve the <code>User</code> instance which is associated with the
+	 * specified <code>Enrolment</code> from the <code>DataStore</code>.
+	 *
+	 * @param  enrolment The <code>Enrolment</code> associated with the
+	 *                   <code>User</code> instance to be retrieved, not null
+	 *
+	 * @return           The <code>User</code> instance associated with the
+	 *                   <code>Enrolment</code>
+	 */
+
+	@Override
+	public User fetchByEnrolment (final Enrolment enrolment)
+	{
+		this.log.trace ("fetchByEnrolment: enrolment={}", enrolment);
+
+		if (enrolment == null)
+		{
+			this.log.error ("The specified enrolment is NULL");
+			throw new NullPointerException ();
+		}
+
+		return ((this.fetchQuery ("enrolment")).setParameter ("enrolment", enrolment)).query ();
 	}
 }

@@ -32,7 +32,7 @@ import ca.uoguelph.socs.icc.edm.domain.element.ActivityInstance;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
 import ca.uoguelph.socs.icc.edm.domain.element.CourseData;
-import ca.uoguelph.socs.icc.edm.domain.element.UserEnrolmentData;
+import ca.uoguelph.socs.icc.edm.domain.element.EnrolmentData;
 import ca.uoguelph.socs.icc.edm.domain.element.GradedActivity;
 import ca.uoguelph.socs.icc.edm.domain.element.RoleData;
 import ca.uoguelph.socs.icc.edm.domain.element.UserData;
@@ -77,7 +77,7 @@ public final class MoodleDatabaseFactory extends DatabaseFactory
 		builder.setEntry (ActivitySource.class, false, ActivitySourceData.class, NullIdGenerator.class, DefaultActivitySourceLoader.class);
 		builder.setEntry (ActivityType.class, true, ActivityTypeData.class, NullIdGenerator.class, DefaultActivityTypeLoader.class);
 		builder.setEntry (Course.class, true, CourseData.class, NullIdGenerator.class, DefaultCourseLoader.class);							// FIXME
-		builder.setEntry (Enrolment.class, true, UserEnrolmentData.class, NullIdGenerator.class, DefaultEnrolmentLoader.class);
+		builder.setEntry (Enrolment.class, true, EnrolmentData.class, NullIdGenerator.class, DefaultEnrolmentLoader.class);
 		builder.setEntry (Grade.class, true, GradedActivity.class, NullIdGenerator.class, null);
 		builder.setEntry (LogEntry.class, true, MoodleLogData.class, NullIdGenerator.class, DefaultLogEntryLoader.class);					// FIXME
 		builder.setEntry (Role.class, true, RoleData.class, NullIdGenerator.class, DefaultRoleLoader.class);

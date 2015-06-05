@@ -49,7 +49,12 @@
 			<basic name="lastname">
 				<column name="last_name" nullable="false"/>
 			</basic>
-			<one-to-many name="enrolments" target-entity="UserEnrolmentData" mapped-by="user"/>
+			<one-to-many name="enrolments" target-entity="EnrolmentData">
+				<join-table name="user_enrolment">
+					<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
+					<inverse-join-column name="user_id" nullable="false" referenced-column-name="id"/>
+				</join-table>
+			</one-to-many>
 			<transient name="name"/>
 		</attributes>
 	</entity>

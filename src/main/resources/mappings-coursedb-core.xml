@@ -120,7 +120,6 @@
 		<secondary-table name="enrolment_final_grade">
 			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
 		</secondary-table>
-		<inheritance strategy="JOINED"/>
 		<named-query name="EnrolmentData:maxid">
 			<query>SELECT MAX(e.id) FROM Enrolment e</query>
 		</named-query>
@@ -153,29 +152,6 @@
 			<!--<one-to-many name="log" target-entity="LogData" mapped-by="enrolment" orphan-removal="true"/>-->
 			<transient name="grades"/>
 			<transient name="log"/>
-			<transient name="name"/>
-		</attributes>
-	</entity>
-
-	<entity name="UserEnrolment" class="UserEnrolmentData" metadata-complete="true">
-		<table schema="userdb" name="user_enrolment"/>
-		<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
-		<named-query name="UserEnrolmentData:maxid">
-			<query>SELECT MAX(e.id) FROM UserEnrolment e</query>
-		</named-query>
-		<named-query name="UserEnrolmentData:allid">
-			<query>SELECT e.id FROM UserEnrolment e</query>
-		</named-query>
-		<named-query name="UserEnrolmentData:all">
-			<query>SELECT e FROM UserEnrolment e</query>
-		</named-query>
-		<named-query name="UserEnrolmentData:role">
-			<query>SELECT e FROM UserEnrolment e WHERE e.role = :role</query>
-		</named-query>
-		<attributes>
-			<many-to-one name="user" target-entity="UserData" optional="false">
-				<join-column name="user_id" nullable="false" referenced-column-name="id"/>
-			</many-to-one>
 			<transient name="name"/>
 		</attributes>
 	</entity>

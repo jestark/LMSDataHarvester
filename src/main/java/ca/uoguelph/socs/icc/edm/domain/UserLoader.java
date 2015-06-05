@@ -33,27 +33,40 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface UserLoader extends ElementLoader<User>
 {
 	/**
-	 * Retrieve a single <code>User</code> object, with the specified id
+	 * Retrieve the <code>User</code> instance, with the specified id
 	 * number, from the <code>DataStore</code>.
 	 *
 	 * @param  idnumber The ID number of the <code>User</code> to retrieve, not
 	 *                  null
 	 *
-	 * @return          The <code>User</code> object associated with the ID
+	 * @return          The <code>User</code> instance associated with the ID
 	 *                  number
 	 */
 
 	public abstract User fetchByIdNumber (Integer idnumber);
 
 	/**
-	 * Retrieve a single <code>User</code> object, with the specified username,
+	 * Retrieve the <code>User</code> instance, with the specified username,
 	 * from the <code>DataStore</code>.
 	 *
 	 * @param  username The username of the entry to retrieve, not null
 	 *
-	 * @return          The <code>User</code> object associated with the
+	 * @return          The <code>User</code> instance associated with the
 	 *                  username
 	 */
 
 	public abstract User fetchByUsername (String username);
+
+	/**
+	 * Retrieve the <code>User</code> instance which is associated with the
+	 * specified <code>Enrolment</code> from the <code>DataStore</code>.
+	 *
+	 * @param  enrolment The <code>Enrolment</code> associated with the
+	 *                   <code>User</code> instance to be retrieved, not null
+	 *
+	 * @return           The <code>User</code> instance associated with the
+	 *                   <code>Enrolment</code>
+	 */
+
+	public abstract User fetchByEnrolment (Enrolment enrolment);
 }
