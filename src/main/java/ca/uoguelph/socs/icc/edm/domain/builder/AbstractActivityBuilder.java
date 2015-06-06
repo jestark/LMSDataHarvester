@@ -20,8 +20,11 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
+import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
 
 /**
  * Abstract implementation of the <code>ActivityBuilder</code> interface.  This
@@ -36,18 +39,40 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, Activity.Properties> implements ActivityBuilder
 {
 	/**
+	 * Get an instance of the <code>ActivityBuilder</code> which corresponds to
+	 * the specified <code>ActivityType</code>.
+	 *
+	 * @param  <T>       The <code>ActivityBuilder</code> type to be returned
+	 * @param  type      The <code>ActivityType</code> of the
+	 *                   <code>Activity</code> instances to be created
+	 * @param  datastore The <code>DataStore</code> instance, not null
+	 */
+
+	public static final <T extends ActivityBuilder> T getInstance (final ActivityType type, final DataStore datastore)
+	{
+		assert type != null : "type is NULL";
+		assert datastore != null : "datastore is NULL";
+		assert datastore.contains (type) : "ActivityType is not in the DataStore";
+
+		T builder = AbstractBuilder.getInstance (AbstractActivity.getActivityClass (type), datastore);
+		((AbstractActivityBuilder) builder).setActivityType (type);
+
+		return builder;
+	}
+
+	/**
 	 * Create the <code>DefaultActivityBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>Activity</code> instance will be
 	 *                   inserted
 	 */
 
-	public AbstractActivityBuilder (final DataStore datastore)
+	public AbstractActivityBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (Activity.Properties.class, datastore);
-
-		this.setActivityType (null); // FIXME
+		super (impl, datastore);
 	}
 
 	/**
@@ -71,8 +96,22 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, 
 	{
 		this.log.trace ("load: activity={}", activity);
 
+		if (activity == null)
+		{
+			this.log.error ("Attempting to load a NULL Activity");
+			throw new NullPointerException ();
+		}
+
+		if (! (this.getActivityType ()).equals (activity.getType ()))
+		{
+			this.log.error ("Invalid ActivityType:  required {}, received {}", this.getActivityType (), activity.getType ());
+			throw new IllegalArgumentException ("Invalid ActivityType");
+		}
+
 		super.load (activity);
 		this.setCourse (activity.getCourse ());
+
+		this.setPropertyValue (Activity.Properties.ID, activity.getId ());
 	}
 
 	/**
@@ -84,16 +123,23 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, 
 	@Override
 	public final ActivityType getActivityType ()
 	{
-		return this.getPropertyValue (Activity.Properties.TYPE);
+		return this.getPropertyValue (ActivityType.class, Activity.Properties.TYPE);
 	}
 
 	/**
+	 * Set the <code>ActivityType</code> for the <code>Activity</code>.
 	 *
+	 * @param  type The <code>Course</code>, not null
+	 *
+	 * @return      This <code>ActivityBuilder</code>
 	 */
 
 	private ActivityBuilder setActivityType (ActivityType type)
 	{
 		this.log.trace ("setActivityType: type={}", type);
+
+		assert type != null : "type is NULL";
+		assert this.datastore.contains (type) : "ActivityType is not in the DataStore";
 
 		this.setPropertyValue (Activity.Properties.TYPE, type);
 
@@ -110,7 +156,7 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, 
 	@Override
 	public final Course getCourse ()
 	{
-		return this.getPropertyValue (Activity.Properties.COURSE);
+		return this.getPropertyValue (Course.class, Activity.Properties.COURSE);
 	}
 
 	/**

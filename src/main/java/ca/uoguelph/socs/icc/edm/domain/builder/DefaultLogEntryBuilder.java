@@ -41,13 +41,15 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	/**
 	 * Create the <code>DefaultLogEntryBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>LogEntry</code> instance will be inserted
 	 */
 
-	protected DefaultLogEntryBuilder (final DataStore datastore)
+	protected DefaultLogEntryBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (LogEntry.Properties.class, datastore);
+		super (impl, datastore);
 	}
 
 	/**
@@ -71,6 +73,12 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	{
 		this.log.trace ("load: entry={}", entry);
 
+		if (entry == null)
+		{
+			this.log.error ("Attempting to load a NULL LogEntry");
+			throw new NullPointerException ();
+		}
+
 		super.load (entry);
 		this.setAction (entry.getAction ());
 		this.setActivity (entry.getActivity ());
@@ -79,6 +87,8 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		this.setTime (entry.getTime ());
 
 		// reference ??
+
+		this.setPropertyValue (LogEntry.Properties.ID, entry.getId ());
 	}
 
 	/**
@@ -91,7 +101,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	@Override
 	public Action getAction ()
 	{
-		return this.getPropertyValue (LogEntry.Properties.ACTION);
+		return this.getPropertyValue (Action.class, LogEntry.Properties.ACTION);
 	}
 
 	@Override
@@ -120,7 +130,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	@Override
 	public Activity getActivity ()
 	{
-		return this.getPropertyValue (LogEntry.Properties.ACTIVITY);
+		return this.getPropertyValue (Activity.class, LogEntry.Properties.ACTIVITY);
 	}
 
 	@Override
@@ -149,7 +159,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	@Override
 	public Enrolment getEnrolment ()
 	{
-		return this.getPropertyValue (LogEntry.Properties.ENROLMENT);
+		return this.getPropertyValue (Enrolment.class, LogEntry.Properties.ENROLMENT);
 	}
 
 	@Override
@@ -177,7 +187,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	@Override
 	public Date getTime ()
 	{
-		return this.getPropertyValue (LogEntry.Properties.TIME);
+		return this.getPropertyValue (Date.class, LogEntry.Properties.TIME);
 	}
 
 	@Override
@@ -207,7 +217,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	@Override
 	public String getIPAddress ()
 	{
-		return this.getPropertyValue (LogEntry.Properties.IPADDRESS);
+		return this.getPropertyValue (String.class, LogEntry.Properties.IPADDRESS);
 	}
 
 	@Override

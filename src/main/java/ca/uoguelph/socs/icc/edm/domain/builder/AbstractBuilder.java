@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.EnumMap;
 import java.util.HashMap;
 
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,18 +41,19 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> implements ElementBuilder<T>
 {
 	/** Factory for the <code>ElementBuilder</code> implementations */
-	private static final Map<Class<? extends ElementBuilder<? extends Element>>, Function<DataStore, ? extends ElementBuilder<? extends Element>>> FACTORIES;
+	private static final Map<Class<? extends ElementBuilder<? extends Element>>, BiFunction<Class<?>, DataStore, ? extends ElementBuilder<? extends Element>>> FACTORIES;
 
 	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
 	private static final Map<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ELEMENTS;
+
+	/** The builder */
+	private final Builder<T, E> builder;
 
 	/** The Logger */
 	protected final Logger log;
 
 	/** The <code>DataStore</code> */
 	protected final DataStore datastore;
-
-	private final Map<E, Object> elementData;
 
 	/** The <code>Element</code> produced by the <code>ElementBuilder</code> */
 	protected T element;
@@ -63,7 +64,7 @@ public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> impl
 
 	static
 	{
-		FACTORIES = new HashMap<Class<? extends ElementBuilder<? extends Element>>, Function<DataStore, ? extends ElementBuilder<? extends Element>>> ();
+		FACTORIES = new HashMap<Class<? extends ElementBuilder<? extends Element>>, BiFunction<Class<?>, DataStore, ? extends ElementBuilder<? extends Element>>> ();
 		ELEMENTS = new HashMap<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ();
 	}
 
@@ -81,7 +82,7 @@ public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> impl
 	 *                 class, not null
 	 */
 
-	protected static final <T extends ElementBuilder<U>, U extends Element> void registerBuilder (final Class<? extends T> builder, final Function<DataStore, T> factory)
+	protected static final <T extends ElementBuilder<U>, U extends Element> void registerBuilder (final Class<? extends T> builder, final BiFunction<Class<?>, DataStore, T> factory)
 	{
 		assert builder != null : "builder is NULL";
 		assert factory != null : "factory is NULL";
@@ -92,10 +93,7 @@ public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> impl
 
 	/**
 	 * Get an instance of the <code>ElementBuilder</code> which corresponds to
-	 * the specified <code>Element</code> implementation class.  This method is
-	 * intended to be used by the <code>ElementManager</code> implementations
-	 * to get the relevant builder for the <code>ElementManager</code> instance
-	 * and the <code>Element</code> upon which it is operating.
+	 * the specified <code>Element</code> implementation class.
 	 *
 	 * @param  <T>       The <code>ElementBuilder</code> type to be returned
 	 * @param  <U>       The <code>Element</code> type produced by the builder
@@ -103,7 +101,7 @@ public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> impl
 	 *                   null
 	 * @param  element   The <code>Element</code> implementation class, not
 	 *                   null
-	 * @param  datastore The <code>ElementManager</code> instance, not null
+	 * @param  datastore The <code>DataStore</code> instance, not null
 	 */
 
 	@SuppressWarnings("unchecked")
@@ -115,7 +113,7 @@ public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> impl
 		assert AbstractBuilder.ELEMENTS.containsKey (element) : "Element class is not registered: " + element.getSimpleName ();
 		assert AbstractBuilder.FACTORIES.containsKey (AbstractBuilder.ELEMENTS.get (element)) : "Class not registered: " + (AbstractBuilder.ELEMENTS.get (element)).getSimpleName ();
 
-		return ((Function<DataStore, T>) AbstractBuilder.FACTORIES.get (AbstractBuilder.ELEMENTS.get (element))).apply (datastore);
+		return ((BiFunction<Class<?>, DataStore, T>) AbstractBuilder.FACTORIES.get (AbstractBuilder.ELEMENTS.get (element))).apply (element, datastore);
 	}
 
 	/**
@@ -145,35 +143,62 @@ public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> impl
 	/**
 	 * Create the <code>AbstractBuilder</code>.
 	 *
-	 * @param  type      The <code>Element</code> type produced by the
-	 *                   <code>ElementBuilder</code>
+	 * @param  impl      The <code>Element</code> implementation class produced
+	 *                   by the <code>ElementBuilder</code>
 	 * @param  datastore The <code>DataStore</code> into which new
 	 *                   <code>Element</code> instances will be inserted
 	 */
 
-	protected AbstractBuilder (final Class<E> properties, final DataStore datastore)
+	protected AbstractBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		assert properties != null : "properties is NULL";
+		assert impl != null : "impl is NULL";
 		assert datastore != null : "datastore is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.datastore = datastore;
 
-		this.elementData = new EnumMap<E, Object> (properties);
-	}
-
-	protected final <V> V getPropertyValue (final E property)
-	{
-		return null;
-	}
-
-	protected final <V> void setPropertyValue (final E property, final V value)
-	{
-
+		this.builder = null;
 	}
 
 	/**
+	 * Get the value for the specified property.
+	 *
+	 * @param  <V>      The type of the value associated with the property
+	 * @param  property The property for which the value is to be retrieved
+	 * @param  type     The type Class of the value to return
+	 *
+	 * @return          The value associated with the specified property
+	 */
+
+	protected final <V> V getPropertyValue (final Class<V> type, final E property)
+	{
+		assert type != null : "type is NULL";
+		assert property != null : "property is NULL";
+
+		return this.builder.getProperty (property, type);
+	}
+
+	/**
+	 * Set the specified property to the specified value.
+	 *
+	 * @param  <V>      The type of the value associated with the property
+	 * @param  property The property for which the value is to be set
+	 * @param  value    The value to set for the property
+	 */
+
+	protected final <V> void setPropertyValue (final E property, final V value)
+	{
+		this.log.trace ("setPropertyValue: property={}, value={}", property, value);
+
+		assert property != null : "property is NULL";
+		assert value != null : "value is NULL";
+
+		this.builder.setProperty (property, value);
+	}
+
+	/**
+	 * Create an instance of the <code>Element</code>.
 	 *
 	 * @return                       The new <code>Element</code> instance
 	 * @throws IllegalStateException If any if the fields is missing
@@ -184,7 +209,10 @@ public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> impl
 	{
 		this.log.trace ("build:");
 
-		return null;
+		this.element = this.builder.build (this.element);
+		this.datastore.insert (this.element);
+
+		return this.element;
 	}
 
 	/**
@@ -196,6 +224,8 @@ public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> impl
 	public final void clear ()
 	{
 		this.log.trace ("clear:");
+
+		this.builder.clear ();
 
 		this.element = null;
 	}

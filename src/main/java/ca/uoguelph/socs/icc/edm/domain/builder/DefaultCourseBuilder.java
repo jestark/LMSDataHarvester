@@ -44,13 +44,15 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 	/**
 	 * Create the <code>DefaultCourseBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>Course</code> instance will be inserted
 	 */
 
-	protected DefaultCourseBuilder (final DataStore datastore)
+	protected DefaultCourseBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (Course.Properties.class, datastore);
+		super (impl, datastore);
 	}
 
 	/**
@@ -73,10 +75,18 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 	{
 		this.log.trace ("load course={}", course);
 
+		if (course == null)
+		{
+			this.log.error ("Attempting to load a NULL Course");
+			throw new NullPointerException ();
+		}
+
 		super.load (course);
 		this.setName (course.getName ());
 		this.setSemester (course.getSemester ());
 		this.setYear (course.getYear ());
+
+		this.setPropertyValue (Course.Properties.ID, course.getId ());
 	}
 
 	/**
@@ -89,7 +99,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 	@Override
 	public String getName ()
 	{
-		return this.getPropertyValue (Course.Properties.NAME);
+		return this.getPropertyValue (String.class, Course.Properties.NAME);
 	}
 
 	/**
@@ -134,7 +144,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 	@Override
 	public Semester getSemester ()
 	{
-		return this.getPropertyValue (Course.Properties.SEMESTER);
+		return this.getPropertyValue (Semester.class, Course.Properties.SEMESTER);
 	}
 
 	/**
@@ -171,7 +181,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 	@Override
 	public Integer getYear ()
 	{
-		return this.getPropertyValue (Course.Properties.YEAR);
+		return this.getPropertyValue (Integer.class, Course.Properties.YEAR);
 	}
 
 	/**

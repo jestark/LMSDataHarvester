@@ -25,13 +25,15 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.AbstractBuilder;
-import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
+import ca.uoguelph.socs.icc.edm.domain.builder.AbstractActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.builder.AbstractSubActivityBuilder;
+
 import ca.uoguelph.socs.icc.edm.domain.loader.AbstractLoader;
 
 /**
  * Access and manipulate <code>Element</code> instances contained within the
  * encapsulated <code>DataStore</code>.  This class provides a High-level
- * interface to the <code>DataStore</code>.  
+ * interface to the <code>DataStore</code>.
  *
  * @author  James E. Stark
  * @version 1.1
@@ -161,12 +163,19 @@ public final class DomainModel
 	 * correct <code>ElementBuilder</code> implementation for the specified
 	 * <code>Element</code> interface class, for the <code>DataStore</code>.
 	 *
-	 * @param  <T>     The type of <code>ElementBuilder</code> to be returned
-	 * @param  <U>     The type of <code>Element</code> to be built by the
-	 *                 <code>ElementBuilder</code>
-	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  <T>                      The type of <code>ElementBuilder</code>
+	 *                                  to be returned
+	 * @param  <U>                      The type of <code>Element</code> to be
+	 *                                  built by the <code>ElementBuilder</code>
+	 * @param  element                  The <code>Element</code> interface
+	 *                                  class, not null
 	 *
-	 * @return         The <code>ElementBuilder</code> instance
+	 * @return                          The <code>ElementBuilder</code> instance
+	 * @throws IllegalStateException    If the <code>DataStore</code> is
+	 *                                  immutable
+	 * @throws IllegalArgumentException If the provided <code>Element</code>
+	 *                                  class is not an interface of is an
+	 *                                  <code>Activity</code> interface
 	 */
 
 	public <T extends ElementBuilder<U>, U extends Element> T getBuilder (final Class<? extends U> element)
@@ -189,6 +198,12 @@ public final class DomainModel
 		{
 			this.log.error ("Attempting to create an ElementBuilder using an implementation class");
 			throw new IllegalArgumentException ("Element Interface class Required");
+		}
+
+		if (! Activity.class.isAssignableFrom (element))
+		{
+			this.log.error ("Can't create builder for Activity");
+			throw new IllegalArgumentException ("Can't create Activity builders");
 		}
 
 		return AbstractBuilder.getInstance (this.datastore.getElementClass (element), this.datastore);
@@ -228,7 +243,13 @@ public final class DomainModel
 			throw new IllegalStateException ("DataStore is immutable");
 		}
 
-		return AbstractBuilder.getInstance (AbstractActivity.getActivityClass (type), this.datastore);
+		if (! this.datastore.contains (type))
+		{
+			this.log.error ("This specified ActivityType does not exist in the DataStore");
+			throw new IllegalArgumentException ("ActivityType is not in the DataStore");
+		}
+
+		return AbstractActivityBuilder.getInstance (type, this.datastore);
 	}
 
 	/**
@@ -263,7 +284,13 @@ public final class DomainModel
 			throw new IllegalStateException ("DataStore is immutable");
 		}
 
-		return AbstractBuilder.getInstance (AbstractActivity.getSubActivityClass (activity.getClass ()), this.datastore);
+		if (! this.datastore.contains (activity))
+		{
+			this.log.error ("This specified Activity does not exist in the DataStore");
+			throw new IllegalArgumentException ("Activity is not in the DataStore");
+		}
+
+		return AbstractSubActivityBuilder.getInstance (activity, this.datastore);
 	}
 
 	/**

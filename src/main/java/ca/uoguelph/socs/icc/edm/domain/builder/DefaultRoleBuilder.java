@@ -43,13 +43,15 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, Role.Propert
 	/**
 	 * Create the <code>DefaultRoleBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>Role</code> instance will be inserted
 	 */
 
-	protected DefaultRoleBuilder (final DataStore datastore)
+	protected DefaultRoleBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (Role.Properties.class, datastore);
+		super (impl, datastore);
 	}
 
 	/**
@@ -71,8 +73,16 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, Role.Propert
 	{
 		this.log.trace ("load: role={}", role);
 
+		if (role == null)
+		{
+			this.log.error ("Attempting to load a NULL Role");
+			throw new NullPointerException ();
+		}
+
 		super.load (role);
 		this.setName (role.getName ());
+
+		this.setPropertyValue (Role.Properties.ID, role.getId ());
 	}
 
 	/**
@@ -85,7 +95,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, Role.Propert
 	@Override
 	public String getName ()
 	{
-		return this.getPropertyValue (Role.Properties.NAME);
+		return this.getPropertyValue (String.class, Role.Properties.NAME);
 	}
 
 	/**

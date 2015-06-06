@@ -42,14 +42,16 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	/**
 	 * Create the <code>DefaultActivityTypeBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>ActivityType</code> instance will be
 	 *                   inserted
 	 */
 
-	protected DefaultActivityTypeBuilder (final DataStore datastore)
+	protected DefaultActivityTypeBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (ActivityType.Properties.class, datastore);
+		super (impl, datastore);
 	}
 
 	/**
@@ -74,9 +76,17 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	{
 		this.log.trace ("load: type={}", type);
 
+		if (type == null)
+		{
+			this.log.error ("Attempting to load a NULL ActivityType");
+			throw new NullPointerException ();
+		}
+
 		super.load (type);
 		this.setName (type.getName ());
 		this.setActivitySource (type.getSource ());
+
+		this.setPropertyValue (ActivityType.Properties.ID, type.getId ());
 	}
 
 	/**
@@ -89,7 +99,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	@Override
 	public String getName ()
 	{
-		return this.getPropertyValue (ActivityType.Properties.NAME);
+		return this.getPropertyValue (String.class, ActivityType.Properties.NAME);
 	}
 
 	/**
@@ -133,7 +143,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	@Override
 	public ActivitySource getActivitySource ()
 	{
-		return this.getPropertyValue (ActivityType.Properties.SOURCE);
+		return this.getPropertyValue (ActivitySource.class, ActivityType.Properties.SOURCE);
 	}
 
 	/**

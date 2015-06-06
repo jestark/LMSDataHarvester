@@ -38,13 +38,15 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 	/**
 	 * Create the <code>DefaultGradeBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>Grade</code> instance will be inserted
 	 */
 
-	protected DefaultGradeBuilder (final DataStore datastore)
+	protected DefaultGradeBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (Grade.Properties.class, datastore);
+		super (impl, datastore);
 	}
 
 	/**
@@ -66,6 +68,12 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 	{
 		this.log.trace ("load: grade={}", grade);
 
+		if (grade == null)
+		{
+			this.log.error ("Attempting to load a NULL Grade");
+			throw new NullPointerException ();
+		}
+
 		super.load (grade);
 		this.setActivity (grade.getActivity ());
 		this.setEnrolment (grade.getEnrolment ());
@@ -82,7 +90,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 	@Override
 	public Activity getActivity ()
 	{
-		return this.getPropertyValue (Grade.Properties.ACTIVITY);
+		return this.getPropertyValue (Activity.class, Grade.Properties.ACTIVITY);
 	}
 
 	@Override
@@ -111,7 +119,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 	@Override
 	public Enrolment getEnrolment ()
 	{
-		return this.getPropertyValue (Grade.Properties.ENROLMENT);
+		return this.getPropertyValue (Enrolment.class, Grade.Properties.ENROLMENT);
 	}
 
 	@Override
@@ -142,7 +150,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 	@Override
 	public Integer getGrade ()
 	{
-		return this.getPropertyValue (Grade.Properties.GRADE);
+		return this.getPropertyValue (Integer.class, Grade.Properties.GRADE);
 	}
 
 	/**

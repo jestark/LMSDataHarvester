@@ -46,13 +46,15 @@ public final class DefaultGenericActivityBuilder extends AbstractActivityBuilder
 	/**
 	 * Create the <code>DefaultGenericActivityBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>GenericActivity</code> instance will be
 	 *                   inserted
 	 */
 
-	protected DefaultGenericActivityBuilder (final DataStore datastore)
+	protected DefaultGenericActivityBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (datastore);
+		super (impl, datastore);
 	}
 }

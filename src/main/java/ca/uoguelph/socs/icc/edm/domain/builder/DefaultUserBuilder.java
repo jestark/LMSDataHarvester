@@ -44,13 +44,15 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	/**
 	 * Create an instance of the <code>DefaultUserBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>User</code> instance will be inserted
 	 */
 
-	protected DefaultUserBuilder (final DataStore datastore)
+	protected DefaultUserBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (User.Properties.class, datastore);
+		super (impl, datastore);
 	}
 
 	/**
@@ -83,6 +85,8 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 		this.setUsername (user.getUsername ());
 		this.setLastname (user.getLastname ());
 		this.setFirstname (user.getFirstname ());
+
+		this.setPropertyValue (User.Properties.ID, user.getId ());
 	}
 
 	/**
@@ -98,7 +102,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	@Override
 	public Integer getIdNumber()
 	{
-		return this.getPropertyValue (User.Properties.IDNUMBER);
+		return this.getPropertyValue (Integer.class, User.Properties.IDNUMBER);
 	}
 
 	/**
@@ -144,7 +148,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	@Override
 	public String getFirstname ()
 	{
-		return this.getPropertyValue (User.Properties.FIRSTNAME);
+		return this.getPropertyValue (String.class, User.Properties.FIRSTNAME);
 	}
 
 	/**
@@ -188,7 +192,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	@Override
 	public String getLastname ()
 	{
-		return this.getPropertyValue (User.Properties.LASTNAME);
+		return this.getPropertyValue (String.class, User.Properties.LASTNAME);
 	}
 
 	/**
@@ -236,7 +240,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	@Override
 	public String getUsername ()
 	{
-		return this.getPropertyValue (User.Properties.USERNAME);
+		return this.getPropertyValue (String.class, User.Properties.USERNAME);
 	}
 
 	/**

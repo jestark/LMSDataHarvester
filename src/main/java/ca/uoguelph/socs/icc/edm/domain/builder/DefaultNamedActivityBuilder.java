@@ -43,14 +43,16 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder i
 	/**
 	 * Create the <code>DefaultNamedActivityBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>NamedActivity</code> instance will be
 	 *                   inserted
 	 */
 
-	protected DefaultNamedActivityBuilder (final DataStore datastore)
+	protected DefaultNamedActivityBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (datastore);
+		super (impl, datastore);
 	}
 
 	/**
@@ -74,6 +76,12 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder i
 	{
 		this.log.trace ("load: activity={}", activity);
 
+		if (activity == null)
+		{
+			this.log.error ("Attempting to load a NULL Activity");
+			throw new NullPointerException ();
+		}
+
 		super.load (activity);
 		this.setName (activity.getName ());
 	}
@@ -86,7 +94,7 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder i
 
 	public String getName ()
 	{
-		return this.getPropertyValue (Activity.Properties.NAME);
+		return this.getPropertyValue (String.class, Activity.Properties.NAME);
 	}
 
 	/**

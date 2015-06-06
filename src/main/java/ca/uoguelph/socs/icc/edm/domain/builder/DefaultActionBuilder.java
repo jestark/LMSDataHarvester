@@ -46,13 +46,15 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, Action.P
 	/**
 	 * Create the <code>DefaultActionBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>Action</code> instance will be inserted
 	 */
 
-	protected DefaultActionBuilder (final DataStore datastore)
+	protected DefaultActionBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (Action.Properties.class, datastore);
+		super (impl, datastore);
 	}
 
 	/**
@@ -75,8 +77,16 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, Action.P
 	{
 		this.log.trace ("load: action={}", action);
 
+		if (action == null)
+		{
+			this.log.error ("Attempting to load a NULL Action");
+			throw new NullPointerException ();
+		}
+
 		super.load (action);
 		this.setName (action.getName ());
+
+		this.setPropertyValue (Action.Properties.ID, action.getId ());
 	}
 
 	/**
@@ -88,7 +98,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, Action.P
 	@Override
 	public String getName ()
 	{
-		return this.getPropertyValue (Action.Properties.NAME);
+		return this.getPropertyValue (String.class, Action.Properties.NAME);
 	}
 
 	/**

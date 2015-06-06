@@ -16,7 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.builder;
 
-import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
 
@@ -29,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultSubActivityBuilder extends AbstractBuilder<SubActivity, SubActivity.Properties> implements SubActivityBuilder
+public final class DefaultSubActivityBuilder extends AbstractSubActivityBuilder
 {
 	/**
 	 * static initializer to register the
@@ -42,114 +41,17 @@ public final class DefaultSubActivityBuilder extends AbstractBuilder<SubActivity
 	}
 
 	/**
-	 * Create the <code>DefaultSubActivityBuilder</code>.
+	 * Create the <code>DefaultGenericActivityBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
-	 *                   created <code>SubActivity</code> instance will be
+	 *                   created <code>GenericActivity</code> instance will be
 	 *                   inserted
 	 */
 
-	protected DefaultSubActivityBuilder (final DataStore datastore)
+	protected DefaultSubActivityBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (SubActivity.Properties.class, datastore);
-
-/*		assert (Activity) this.manager.getArgument () != null : "parent is NULL";
-
-		if (! (this.manager.getManager (Activity.class, ActivityManager.class)).contains ((Activity) this.manager.getArgument ()))
-		{
-			this.log.error ("The parent Activity does not exist in the DataStore: {}", (Activity) this.manager.getArgument ());
-			throw new IllegalArgumentException ("Activity is not in the DataStore");
-		}
-*/
-//		this.parent = null; //(Activity) this.manager.getArgument ();
-	}
-
-	/**
-	 * Load a <code>Activity</code> instance into the
-	 * <code>ActivityBuilder</code>.  This method resets the
-	 * <code>ActivityBuilder</code> and initializes all of its parameters from
-	 * the specified <code>Activity</code> instance.  The parameters are
-	 * validated as they are set.
-	 *
-	 * @param  activity                 The <code>Activity</code> to load into
-	 *                                  the <code>ActivityBuilder</code>, not
-	 *                                  null
-	 *
-	 * @throws IllegalArgumentException If any of the fields in the
-	 *                                  <code>Activity</code> instance to be
-	 *                                  loaded are not valid
-	 */
-
-	@Override
-	public void load (final SubActivity subactivity)
-	{
-		this.log.trace ("load: activity={}", subactivity);
-
-/*		if (! this.parent.equals (((SubActivity) activity).getParent ()))
-		{
-			this.log.error ("Can not load:  Parent activity instances are not equal");
-			throw new IllegalArgumentException ("Parent activity instances are different");
-		}*/
-
-		super.load (subactivity);
-		this.setName (subactivity.getName ());
-	}
-
-	/**
-	 * Get the name of the <code>Activity</code>.
-	 *
-	 * @return A <code>String</code> containing the name of the
-	 *         <code>SubActivity</code>
-	 */
-
-	@Override
-	public String getName ()
-	{
-		return this.getPropertyValue (SubActivity.Properties.NAME);
-	}
-
-	/**
-	 * Set the name of the <code>SubActivity</code>.
-	 *
-	 * @param  name                     The name of the
-	 *                                  <code>SubActivity</code>, not null
-	 *
-	 * @return                          This <code>SubActivityBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
-	 */
-
-	@Override
-	public SubActivityBuilder setName (final String name)
-	{
-		this.log.trace ("setName: name={}", name);
-
-		if (name == null)
-		{
-			this.log.error ("Attempting to set a NULL name");
-			throw new NullPointerException ();
-		}
-
-		if (name.length () == 0)
-		{
-			this.log.error ("name is an empty string");
-			throw new IllegalArgumentException ("name is empty");
-		}
-
-		this.setPropertyValue (SubActivity.Properties.NAME, name);
-
-		return this;
-	}
-
-	/**
-	 * Get the parent <code>Activity</code> instance for the
-	 * <code>SubActivity</code> instance.
-	 *
-	 * @return The parent <code>Activity</code>
-	 */
-
-	@Override
-	public Activity getParent ()
-	{
-		return this.getPropertyValue (SubActivity.Properties.PARENT);
+		super (impl, datastore);
 	}
 }

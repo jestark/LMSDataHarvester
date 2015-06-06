@@ -38,14 +38,16 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	/**
 	 * Create the <code>DefaultEnrolmentBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>Enrolment</code> instance will be
 	 *                   inserted
 	 */
 
-	protected DefaultEnrolmentBuilder (final DataStore datastore)
+	protected DefaultEnrolmentBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (Enrolment.Properties.class, datastore);
+		super (impl, datastore);
 	}
 
 	/**
@@ -69,16 +71,24 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	{
 		this.log.trace ("load: enrolment={}", enrolment);
 
+		if (enrolment == null)
+		{
+			this.log.error ("Attempting to load a NULL Enrolment");
+			throw new NullPointerException ();
+		}
+
 		super.load (enrolment);
 		this.setCourse (enrolment.getCourse ());
 		this.setFinalGrade (enrolment.getFinalGrade ());
 		this.setRole (enrolment.getRole ());
+
+		this.setPropertyValue (Enrolment.Properties.ID, enrolment.getId ());
 	}
 
 	@Override
 	public Course getCourse ()
 	{
-		return this.getPropertyValue (Enrolment.Properties.COURSE);
+		return this.getPropertyValue (Course.class, Enrolment.Properties.COURSE);
 	}
 
 	@Override
@@ -106,7 +116,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	@Override
 	public Role getRole ()
 	{
-		return this.getPropertyValue (Enrolment.Properties.ROLE);
+		return this.getPropertyValue (Role.class, Enrolment.Properties.ROLE);
 	}
 
 	@Override
@@ -134,7 +144,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	@Override
 	public Integer getFinalGrade ()
 	{
-		return this.getPropertyValue (Enrolment.Properties.FINALGRADE);
+		return this.getPropertyValue (Integer.class, Enrolment.Properties.FINALGRADE);
 	}
 
 	@Override
@@ -156,7 +166,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	@Override
 	public Boolean isUsable ()
 	{
-		return this.getPropertyValue (Enrolment.Properties.USABLE);
+		return this.getPropertyValue (Boolean.class, Enrolment.Properties.USABLE);
 	}
 
 	@Override

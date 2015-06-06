@@ -46,14 +46,16 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	/**
 	 * Create the <code>DefaultActivitySourceBuilder</code>.
 	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>ActivitySource</code> instance will be
 	 *                   inserted
 	 */
 
-	protected DefaultActivitySourceBuilder (final DataStore datastore)
+	protected DefaultActivitySourceBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (ActivitySource.Properties.class, datastore);
+		super (impl, datastore);
 	}
 
 	/**
@@ -78,8 +80,16 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	{
 		this.log.trace ("load: source={}", source);
 
+		if (source == null)
+		{
+			this.log.error ("Attempting to load a NULL ActivitySource");
+			throw new NullPointerException ();
+		}
+
 		super.load (source);
 		this.setName (source.getName ());
+
+		this.setPropertyValue (ActivitySource.Properties.ID, source.getId ());
 	}
 
 	/**
@@ -92,7 +102,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	@Override
 	public String getName ()
 	{
-		return this.getPropertyValue (ActivitySource.Properties.NAME);
+		return this.getPropertyValue (String.class, ActivitySource.Properties.NAME);
 	}
 
 	/**
