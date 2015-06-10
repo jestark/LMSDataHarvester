@@ -36,8 +36,17 @@ import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
  * @param   <T> The type of <code>Activity</code>
  */
 
-public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, Activity.Properties> implements ActivityBuilder
+public abstract class AbstractActivityBuilder<T extends Activity, E extends Enum<E>> extends AbstractBuilder<T, E> implements ActivityBuilder<T>
 {
+	/** The "id" Property */
+	private final E id;
+
+	/** The "type" Property */
+	private final E type;
+
+	/** The "course" Property */
+	private final E course;
+
 	/**
 	 * Get an instance of the <code>ActivityBuilder</code> which corresponds to
 	 * the specified <code>ActivityType</code>.
@@ -48,7 +57,7 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, 
 	 * @param  datastore The <code>DataStore</code> instance, not null
 	 */
 
-	public static final <T extends ActivityBuilder> T getInstance (final ActivityType type, final DataStore datastore)
+	public static final <T extends ActivityBuilder<U>, U extends Activity> T getInstance (final ActivityType type, final DataStore datastore)
 	{
 		assert type != null : "type is NULL";
 		assert datastore != null : "datastore is NULL";
@@ -68,11 +77,22 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, 
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>Activity</code> instance will be
 	 *                   inserted
+	 * @param  id        The <code>DataStore</code> id <code>Property</code>
+	 * @param  type      The <code>ActivityType</code> <code>Property</code>
+	 * @param  course    The <code>Course</code> <code>Property</code>
 	 */
 
-	public AbstractActivityBuilder (final Class<?> impl, final DataStore datastore)
+	public AbstractActivityBuilder (final Class<?> impl, final DataStore datastore, final E id, final E type, final E course)
 	{
 		super (impl, datastore);
+
+		assert id != null : "id is NULL";
+		assert type != null : "type is NULL";
+		assert course != null : "course is NULL";
+
+		this.id = id;
+		this.type = type;
+		this.course = course;
 	}
 
 	/**
@@ -92,7 +112,7 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, 
 	 */
 
 	@Override
-	public void load (final Activity activity)
+	public void load (final T activity)
 	{
 		this.log.trace ("load: activity={}", activity);
 
@@ -111,7 +131,7 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, 
 		super.load (activity);
 		this.setCourse (activity.getCourse ());
 
-		this.setPropertyValue (Activity.Properties.ID, activity.getId ());
+		this.setPropertyValue (this.id, activity.getId ());
 	}
 
 	/**
@@ -123,27 +143,23 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, 
 	@Override
 	public final ActivityType getActivityType ()
 	{
-		return this.getPropertyValue (ActivityType.class, Activity.Properties.TYPE);
+		return this.getPropertyValue (ActivityType.class, this.type);
 	}
 
 	/**
 	 * Set the <code>ActivityType</code> for the <code>Activity</code>.
 	 *
 	 * @param  type The <code>Course</code>, not null
-	 *
-	 * @return      This <code>ActivityBuilder</code>
 	 */
 
-	private ActivityBuilder setActivityType (ActivityType type)
+	private void setActivityType (final ActivityType type)
 	{
 		this.log.trace ("setActivityType: type={}", type);
 
 		assert type != null : "type is NULL";
 		assert this.datastore.contains (type) : "ActivityType is not in the DataStore";
 
-		this.setPropertyValue (Activity.Properties.TYPE, type);
-
-		return this;
+		this.setPropertyValue (this.type, type);
 	}
 
 	/**
@@ -156,7 +172,7 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, 
 	@Override
 	public final Course getCourse ()
 	{
-		return this.getPropertyValue (Course.class, Activity.Properties.COURSE);
+		return this.getPropertyValue (Course.class, this.course);
 	}
 
 	/**
@@ -165,13 +181,12 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, 
 	 *
 	 * @param  course                   The <code>Course</code>, not null
 	 *
-	 * @return                          This <code>ActivityBuilder</code>
 	 * @throws IllegalArgumentException If the <code>Course</code> does not
 	 *                                  exist in the <code>DataStore</code>
 	 */
 
 	@Override
-	public final ActivityBuilder setCourse (final Course course)
+	public final void setCourse (final Course course)
 	{
 		this.log.trace ("setCourse: course={}", course);
 
@@ -187,8 +202,6 @@ public abstract class AbstractActivityBuilder extends AbstractBuilder<Activity, 
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
 
-		this.setPropertyValue (Activity.Properties.COURSE, course);
-
-		return this;
+		this.setPropertyValue (this.course, course);
 	}
 }

@@ -28,7 +28,7 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public interface NamedActivityBuilder extends ActivityBuilder
+public interface NamedActivityBuilder<T extends Activity> extends ActivityBuilder<T>
 {
 	/**
 	 * Get the name of the <code>Activity</code>.
@@ -44,9 +44,8 @@ public interface NamedActivityBuilder extends ActivityBuilder
 	 * @param  name                     The name of the <code>Activity</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>NamedActivityBuilder</code>
 	 * @throws IllegalArgumentException if the name is empty
 	 */
 
-	public abstract ActivityBuilder setName (String name);
+	public abstract void setName (String name);
 }

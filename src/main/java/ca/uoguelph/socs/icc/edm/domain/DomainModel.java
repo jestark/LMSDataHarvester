@@ -220,6 +220,8 @@ public final class DomainModel
 	 * <code>ActivityType</code> in the <code>DataStore</code>.
 	 *
 	 * @param  <T>     The type of <code>ActivityBuilder</code>
+	 * @param  <U>     The type of <code>Activity</code> to be created by the
+	 *                 <code>ActivityBuilder</code>
 	 * @param  type    The <code>ActivityType</code> of the
 	 *                 <code>Activity</code> to be created by the
 	 *                 <code>ActivityBuilder</code>
@@ -227,7 +229,7 @@ public final class DomainModel
 	 * @return         An <code>ActivityBuilder</code> instance
 	 */
 
-	public <T extends ActivityBuilder> T getBuilder (final ActivityType type)
+	public <T extends ActivityBuilder<U>, U extends Activity> T getBuilder (final ActivityType type)
 	{
 		this.log.trace ("getBuilder: type={}", type);
 
@@ -262,13 +264,15 @@ public final class DomainModel
 	 *
 	 * @param  <T>      The type of <code>SubActivityBuilder</code> to be
 	 *                  returned
+	 * @param  <U>      The type of <code>SubActivity</code> to be created by
+	 *                  the <code>SubActivityBuilder</code>
 	 * @param  activity The <code>Activity</code> instance to which the new
 	 *                  <code>SubActivity</code> instance is to be assigned
 	 *
 	 * @return          A <code>SubActivityBuilder</code> instance
 	 */
 
-	public <T extends SubActivityBuilder> T getBuilder (final Activity activity)
+	public <T extends SubActivityBuilder<U>, U extends SubActivity> T getBuilder (final Activity activity)
 	{
 		this.log.trace ("getBuilder: activity={}", activity);
 

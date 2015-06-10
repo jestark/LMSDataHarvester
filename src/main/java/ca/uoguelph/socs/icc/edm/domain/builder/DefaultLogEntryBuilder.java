@@ -26,6 +26,13 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+/**
+ * Default implementation of the <code>LogEntryBuilder</code>.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
+
 public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogEntry.Properties> implements LogEntryBuilder
 {
 	/**
@@ -104,8 +111,18 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		return this.getPropertyValue (Action.class, LogEntry.Properties.ACTION);
 	}
 
+	/**
+	 * Set the <code>Action</code> which was performed upon the logged
+	 * <code>Activity</code>.
+	 *
+	 * @param  action                   The <code>Action</code>, not null
+	 *
+	 * @throws IllegalArgumentException if the <code>Action</code> is not in
+	 *                                  the <code>DataStore</code>
+	 */
+
 	@Override
-	public LogEntryBuilder setAction (final Action action)
+	public void setAction (final Action action)
 	{
 		this.log.trace ("setAction: action={}", action);
 
@@ -115,9 +132,13 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 			throw new NullPointerException ("Action is NULL");
 		}
 
-		this.setPropertyValue (LogEntry.Properties.ACTION, action);
+		if (! this.datastore.contains (action))
+		{
+			this.log.error ("The specified Action does not exist in the DataStore");
+			throw new IllegalArgumentException ("Action is not in the DataStore");
+		}
 
-		return this;
+		this.setPropertyValue (LogEntry.Properties.ACTION, action);
 	}
 
 	/**
@@ -133,8 +154,18 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		return this.getPropertyValue (Activity.class, LogEntry.Properties.ACTIVITY);
 	}
 
+	/**
+	 * Set the <code>Activity</code> upon which the logged action was
+	 * performed.
+	 *
+	 * @param  activity                 The <code>Activity</code>, not null
+	 *
+	 * @throws IllegalArgumentException if the <code>Activity</code> is not in
+	 *                                  the <code>DataStore</code>
+	 */
+
 	@Override
-	public LogEntryBuilder setActivity (final Activity activity)
+	public void setActivity (final Activity activity)
 	{
 		this.log.trace ("setActivity: activity={}", activity);
 
@@ -144,9 +175,13 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 			throw new NullPointerException ("Activity is NULL");
 		}
 
-		this.setPropertyValue (LogEntry.Properties.ACTIVITY, activity);
+		if (! this.datastore.contains (activity))
+		{
+			this.log.error ("The specified Activity does not exist in the DataStore");
+			throw new IllegalArgumentException ("Activity is not in the DataStore");
+		}
 
-		return this;
+		this.setPropertyValue (LogEntry.Properties.ACTIVITY, activity);
 	}
 
 	/**
@@ -162,8 +197,18 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		return this.getPropertyValue (Enrolment.class, LogEntry.Properties.ENROLMENT);
 	}
 
+	/**
+	 * Set the <code>Enrolment</code> instance for the <code>User</code> which
+	 * performed the logged action.
+	 *
+	 * @param  enrolment                The <code>Enrolment</code>, not null
+	 *
+	 * @throws IllegalArgumentException if the <code>Enrolment</code> is not in
+	 *                                  the <code>DataStore</code>
+	 */
+
 	@Override
-	public LogEntryBuilder setEnrolment (final Enrolment enrolment)
+	public void setEnrolment (final Enrolment enrolment)
 	{
 		this.log.trace ("setEnrolment: enrolment={}", enrolment);
 
@@ -173,9 +218,13 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 			throw new NullPointerException ("Enrolment is NULL");
 		}
 
-		this.setPropertyValue (LogEntry.Properties.ENROLMENT, enrolment);
+		if (! this.datastore.contains (enrolment))
+		{
+			this.log.error ("The specified Enrolment does not exist in the DataStore");
+			throw new IllegalArgumentException ("Enrolment is not in the DataStore");
+		}
 
-		return this;
+		this.setPropertyValue (LogEntry.Properties.ENROLMENT, enrolment);
 	}
 
 	/**
@@ -190,8 +239,14 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		return this.getPropertyValue (Date.class, LogEntry.Properties.TIME);
 	}
 
+	/**
+	 * Set the time of the logged <code>Action</code>.
+	 *
+	 * @param  time The time
+	 */
+
 	@Override
-	public LogEntryBuilder setTime (final Date time)
+	public void setTime (final Date time)
 	{
 		this.log.trace ("setTime: time={}", time);
 
@@ -203,8 +258,6 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		{
 			this.setPropertyValue (LogEntry.Properties.IPADDRESS, time);
 		}
-
-		return this;
 	}
 
 	/**
@@ -220,13 +273,18 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 		return this.getPropertyValue (String.class, LogEntry.Properties.IPADDRESS);
 	}
 
+	/**
+	 * Set the Internet Protocol Address which is associated with the logged
+	 * <code>Action</code>.
+	 *
+	 * @param  ipaddress A <code>String</code> containing the IP Address
+	 */
+
 	@Override
-	public LogEntryBuilder setIPAddress (final String ipaddress)
+	public void setIPAddress (final String ipaddress)
 	{
 		this.log.trace ("setIPAddress: ipaddress={}", ipaddress);
 
 		this.setPropertyValue (LogEntry.Properties.IPADDRESS, ipaddress);
-
-		return this;
 	}
 }

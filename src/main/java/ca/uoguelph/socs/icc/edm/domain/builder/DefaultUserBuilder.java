@@ -110,14 +110,11 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	 *
 	 * @param  idnumber                 The ID Number, not null
 	 *
-	 * @return                          A reference to this
-	 *                                  <code>UserBuilder</code>
-	 *
 	 * @throws IllegalArgumentException If the ID number is negative
 	 */
 
 	@Override
-	public UserBuilder setIdNumber (final Integer idnumber)
+	public void setIdNumber (final Integer idnumber)
 	{
 		this.log.trace ("setIdNumber: idnumber={}", idnumber);
 
@@ -134,8 +131,6 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 		}
 
 		this.setPropertyValue (User.Properties.IDNUMBER, idnumber);
-
-		return this;
 	}
 
 	/**
@@ -157,12 +152,11 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	 * @param  firstname                The firstname of the <code>User</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>UserBuilder</code>
-	 * @throws IllegalArgumentException If the firstname is an empty
+	 * @throws IllegalArgumentException If the firstname is empty
 	 */
 
 	@Override
-	public UserBuilder setFirstname (final String firstname)
+	public void setFirstname (final String firstname)
 	{
 		this.log.trace ("setFirstname: firstname={}", firstname);
 
@@ -179,8 +173,6 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 		}
 
 		this.setPropertyValue (User.Properties.FIRSTNAME, firstname);
-
-		return this;
 	}
 
 	/**
@@ -201,12 +193,11 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	 * @param  lastname                 The lastname of the <code>User</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>UserBuilder</code>
-	 * @throws IllegalArgumentException If the lastname is an empty
+	 * @throws IllegalArgumentException If the lastname is empty
 	 */
 
 	@Override
-	public UserBuilder setLastname (final String lastname)
+	public void setLastname (final String lastname)
 	{
 		this.log.trace ("setLastname: lastname={}", lastname);
 
@@ -223,8 +214,6 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 		}
 
 		this.setPropertyValue (User.Properties.LASTNAME, lastname);
-
-		return this;
 	}
 
 	/**
@@ -249,12 +238,11 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	 * @param  username                 The username of the <code>User</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>UserBuilder</code>
-	 * @throws IllegalArgumentException If the username is an empty
+	 * @throws IllegalArgumentException If the username is empty
 	 */
 
 	@Override
-	public UserBuilder setUsername (final String username)
+	public void setUsername (final String username)
 	{
 		this.log.trace ("setUsername: username={}", username);
 
@@ -271,8 +259,6 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 		}
 
 		this.setPropertyValue (User.Properties.USERNAME, username);
-
-		return this;
 	}
 
 	/**
@@ -284,14 +270,13 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	 *                                  associated with the <code>User</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If there is already a <code>User</code>
 	 *                                  associated with the
 	 *                                  <code>Enrolment</code>
 	 */
 
 	@Override
-	public UserBuilder addEnrolment (final Enrolment enrolment)
+	public void addEnrolment (final Enrolment enrolment)
 	{
 		this.log.trace ("addEnrolment: enrolment={}", enrolment);
 
@@ -306,8 +291,6 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 			this.log.error ("Specified Enrolment does not exist in the DataStore");
 			throw new IllegalArgumentException ("Enrolment not in DataStore");
 		}
-
-		return this;
 	}
 
 	/**
@@ -323,13 +306,12 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	 * @param  enrolment                The <code>Enrolment</code> to remove
 	 *                                  from the <code>User</code>, not null
 	 *
-	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If there is no association between the
 	 *                                  <code>User</code> and the
 	 *                                  <code>Enrolment</code>
 	 */
 
-	public UserBuilder removeEnrolment (final Enrolment enrolment)
+	public void removeEnrolment (final Enrolment enrolment)
 	{
 		this.log.trace ("removeEnrolment: enrolment={}", enrolment);
 
@@ -344,7 +326,5 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 			this.log.error ("Specified Enrolment does not exist in the DataStore");
 			throw new IllegalArgumentException ("Enrolment not in DataStore");
 		}
-
-		return this;
 	}
 }

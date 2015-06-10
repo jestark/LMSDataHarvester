@@ -19,6 +19,9 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Set;
 
 /**
+ * Create new <code>ActivityType</code> instances.  This interface extends the
+ * <code>ElementBuilder</code> interface with the functionality required to
+ * create <code>ActivityType</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -41,11 +44,10 @@ public interface ActivityTypeBuilder extends ElementBuilder<ActivityType>
 	 * @param  name                     The name of the
 	 *                                  <code>ActivityType</code>, not null
 	 *
-	 * @return                          This <code>ActivityTypeBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public abstract ActivityTypeBuilder setName (String name);
+	public abstract void setName (String name);
 
 	/**
 	 * Get the <code>ActivitySource</code> for the <code>ActivityType</code>.
@@ -61,12 +63,11 @@ public interface ActivityTypeBuilder extends ElementBuilder<ActivityType>
 	 * @param  source                   The <code>ActivitySource</code> for the
 	 *                                  <code>ActivityType</code>
 	 *
-	 * @return                          This <code>ActivityTypeBuilder</code>
 	 * @throws IllegalArgumentException If the <code>AcivitySourse</code> does
 	 *                                  not exist in the <code>DataStore</code>
 	 */
 
-	public abstract ActivityTypeBuilder setActivitySource (ActivitySource source);
+	public abstract void setActivitySource (ActivitySource source);
 
 	/**
 	 * Get the <code>Set</code> of <code>Action</code> instances which are
@@ -89,7 +90,7 @@ public interface ActivityTypeBuilder extends ElementBuilder<ActivityType>
 	 * @throws IllegalArgumentException If the <code>Action</code>
 	 */
 
-	public abstract ActivityTypeBuilder addAction (Action action);
+	public abstract void addAction (Action action);
 
 	/**
 	 * Break an association between the <code>ActivityType</code> and an
@@ -108,5 +109,5 @@ public interface ActivityTypeBuilder extends ElementBuilder<ActivityType>
 	 *                <code>ActivityType</code>, not null
 	 */
 
-	public abstract ActivityTypeBuilder removeAction (Action action);
+	public abstract void removeAction (Action action);
 }

@@ -108,12 +108,11 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 	 * @param  name                     The name of the <code>Course</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>CourseBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
 	@Override
-	public CourseBuilder setName (final String name)
+	public void setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -130,8 +129,6 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 		}
 
 		this.setPropertyValue (Course.Properties.NAME, name);
-
-		return this;
 	}
 
 	/**
@@ -152,12 +149,10 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 	 * offered.
 	 *
 	 * @param  semester The <code>Semester</code> of offering, not null
-	 *
-	 * @return This <code>CourseBuilder</code>
 	 */
 
 	@Override
-	public CourseBuilder setSemester (final Semester semester)
+	public void setSemester (final Semester semester)
 	{
 		this.log.trace ("setSemester: semester={}", semester);
 
@@ -168,8 +163,6 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 		}
 
 		this.setPropertyValue (Course.Properties.SEMESTER, semester);
-
-		return this;
 	}
 
 	/**
@@ -189,12 +182,11 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 	 *
 	 * @param  year                     The year of offering, not null
 	 *
-	 * @return                          This <code>CourseBuilder</code>
 	 * @throws IllegalArgumentException If the year is negative
 	 */
 
 	@Override
-	public CourseBuilder setYear (final Integer year)
+	public void setYear (final Integer year)
 	{
 		this.log.trace ("setYear: year={}", year);
 
@@ -211,7 +203,5 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 		}
 
 		this.setPropertyValue (Course.Properties.YEAR, year);
-
-		return this;
 	}
 }

@@ -31,8 +31,12 @@ import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
  * @version 1.0
  */
 
-public abstract class AbstractSubActivityBuilder extends AbstractBuilder<SubActivity, SubActivity.Properties> implements SubActivityBuilder
+public abstract class AbstractSubActivityBuilder<T extends SubActivity, E extends Enum<E>> extends AbstractBuilder<T, E> implements SubActivityBuilder<T>
 {
+	private final E id;
+	private final E name;
+	private final E parent;
+
 	/**
 	 * Get an instance of the <code>SubActivityBuilder</code> which corresponds
 	 * to the specified parent <code>Activity</code>.
@@ -42,7 +46,7 @@ public abstract class AbstractSubActivityBuilder extends AbstractBuilder<SubActi
 	 * @param  datastore The <code>DataStore</code> instance, not null
 	 */
 
-	public static final <T extends SubActivityBuilder> T getInstance (final Activity activity, final DataStore datastore)
+	public static final <T extends SubActivityBuilder<U>, U extends SubActivity> T getInstance (final Activity activity, final DataStore datastore)
 	{
 		assert activity != null : "activity is NULL";
 		assert datastore != null : "datastore is NULL";
@@ -62,11 +66,22 @@ public abstract class AbstractSubActivityBuilder extends AbstractBuilder<SubActi
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>SubActivity</code> instance will be
 	 *                   inserted
+	 * @param  id        The <code>DataStore</code> id <code>Property</code>
+	 * @param  name      The name <code>Property</code>
+	 * @param  parent    The parent <code>Activity</code> <code>Property</code>
 	 */
 
-	protected AbstractSubActivityBuilder (final Class<?> impl, final DataStore datastore)
+	protected AbstractSubActivityBuilder (final Class<?> impl, final DataStore datastore, final E id, final E name, final E parent)
 	{
 		super (impl, datastore);
+
+		assert id != null : "id is NULL";
+		assert name != null : "name is NULL";
+		assert parent != null : "parent is NULL";
+
+		this.id = id;
+		this.name = name;
+		this.parent = parent;
 	}
 
 	/**
@@ -87,7 +102,7 @@ public abstract class AbstractSubActivityBuilder extends AbstractBuilder<SubActi
 	 */
 
 	@Override
-	public void load (final SubActivity subactivity)
+	public void load (final T subactivity)
 	{
 		this.log.trace ("load: activity={}", subactivity);
 
@@ -106,7 +121,7 @@ public abstract class AbstractSubActivityBuilder extends AbstractBuilder<SubActi
 		super.load (subactivity);
 		this.setName (subactivity.getName ());
 
-		this.setPropertyValue (SubActivity.Properties.ID, subactivity.getId ());
+		this.setPropertyValue (this.id, subactivity.getId ());
 	}
 
 	/**
@@ -117,9 +132,9 @@ public abstract class AbstractSubActivityBuilder extends AbstractBuilder<SubActi
 	 */
 
 	@Override
-	public String getName ()
+	public final String getName ()
 	{
-		return this.getPropertyValue (String.class, SubActivity.Properties.NAME);
+		return this.getPropertyValue (String.class, this.name);
 	}
 
 	/**
@@ -128,12 +143,11 @@ public abstract class AbstractSubActivityBuilder extends AbstractBuilder<SubActi
 	 * @param  name                     The name of the
 	 *                                  <code>SubActivity</code>, not null
 	 *
-	 * @return                          This <code>SubActivityBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
 	@Override
-	public SubActivityBuilder setName (final String name)
+	public final void setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -149,9 +163,7 @@ public abstract class AbstractSubActivityBuilder extends AbstractBuilder<SubActi
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.setPropertyValue (SubActivity.Properties.NAME, name);
-
-		return this;
+		this.setPropertyValue (this.name, name);
 	}
 
 	/**
@@ -162,20 +174,25 @@ public abstract class AbstractSubActivityBuilder extends AbstractBuilder<SubActi
 	 */
 
 	@Override
-	public Activity getParent ()
+	public final Activity getParent ()
 	{
-		return this.getPropertyValue (Activity.class, SubActivity.Properties.PARENT);
+		return this.getPropertyValue (Activity.class, this.parent);
 	}
 
-	private SubActivityBuilder setParent (final Activity parent)
+	/**
+	 * Set the parent <code>Activity</code> instance for the
+	 * <code>SubActivity</code> instance.
+	 *
+	 * @param  activity The parent <code>Activity</code>
+	 */
+
+	private void setParent (final Activity parent)
 	{
 		this.log.trace ("setParent: parent={}", parent);
 
 		assert parent != null : "parent is NULL";
 		assert this.datastore.contains (parent) : "parent is not in the DataStore";
 
-		this.setPropertyValue (SubActivity.Properties.PARENT, parent);
-
-		return this;
+		this.setPropertyValue (this.parent, parent);
 	}
 }

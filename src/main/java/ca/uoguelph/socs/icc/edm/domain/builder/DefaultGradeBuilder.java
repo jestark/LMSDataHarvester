@@ -23,6 +23,13 @@ import ca.uoguelph.socs.icc.edm.domain.GradeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+/**
+ * Default implementation of the <code>GradeBuilder</code>.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
+
 public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Properties> implements GradeBuilder
 {
 	/**
@@ -84,7 +91,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 	 * Get the <code>Activity</code> for which the <code>Grade</code> is
 	 * assigned.
 	 *
-	 * @return The associated <code>Activity</code>, may be null
+	 * @return The associated <code>Activity</code>
 	 */
 
 	@Override
@@ -93,8 +100,18 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 		return this.getPropertyValue (Activity.class, Grade.Properties.ACTIVITY);
 	}
 
+	/**
+	 * Set the <code>Activity</code> which is associated with the
+	 * <code>Grade</code>.
+	 *
+	 * @param  activity                 The <code>Activity</code>, not null
+	 *
+	 * @throws IllegalArgumentException if the <code>Activity</code> is not in
+	 *                                  the <code>DataStore</code>
+	 */
+
 	@Override
-	public GradeBuilder setActivity (final Activity activity)
+	public void setActivity (final Activity activity)
 	{
 		this.log.trace ("setActivity: activity={}", activity);
 
@@ -105,15 +122,13 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 		}
 
 		this.setPropertyValue (Grade.Properties.ACTIVITY, activity);
-
-		return this;
 	}
 
 	/**
 	 * Get the <code>Enrolment</code>, for the student, to which the
 	 * <code>Grade</code> is assigned
 	 *
-	 * @return The associated <code>Enrolment</code>, may be null
+	 * @return The associated <code>Enrolment</code>
 	 */
 
 	@Override
@@ -122,8 +137,18 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 		return this.getPropertyValue (Enrolment.class, Grade.Properties.ENROLMENT);
 	}
 
+	/**
+	 * Set the <code>Enrolment</code> which is associated with the
+	 * <code>Grade</code>.
+	 *
+	 * @param  enrolment                The <code>Enrolment</code>, not null
+	 *
+	 * @throws IllegalArgumentException if the <code>Activity</code> is not in
+	 *                                  the <code>DataStore</code>
+	 */
+
 	@Override
-	public GradeBuilder setEnrolment (final Enrolment enrolment)
+	public void setEnrolment (final Enrolment enrolment)
 	{
 		this.log.trace ("setEnrolment: enrolment={}", enrolment);
 
@@ -134,8 +159,6 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 		}
 
 		this.setPropertyValue (Grade.Properties.ENROLMENT, enrolment);
-
-		return this;
 	}
 
 	/**
@@ -165,7 +188,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 	 */
 
 	@Override
-	public GradeBuilder setGrade (final Integer grade)
+	public void setGrade (final Integer grade)
 	{
 		this.log.trace ("setGrade: grade={}", grade);
 
@@ -188,7 +211,5 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 		}
 
 		this.setPropertyValue (Grade.Properties.GRADE, grade);
-
-		return this;
 	}
 }

@@ -25,7 +25,7 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public interface ActivityBuilder extends ElementBuilder<Activity>
+public interface ActivityBuilder<T extends Activity> extends ElementBuilder<T>
 {
 	/**
 	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
@@ -50,10 +50,9 @@ public interface ActivityBuilder extends ElementBuilder<Activity>
 	 *
 	 * @param  course                   The <code>Course</code>, not null
 	 *
-	 * @return                          This <code>ActivityBuilder</code>
 	 * @throws IllegalArgumentException If the <code>Course</code> does not
 	 *                                  exist in the <code>DataStore</code>
 	 */
 
-	public abstract ActivityBuilder setCourse (Course course);
+	public abstract void setCourse (Course course);
 }

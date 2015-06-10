@@ -39,12 +39,13 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 * Set the <code>Action</code> which was performed upon the logged
 	 * <code>Activity</code>.
 	 *
-	 * @param  action The <code>Action</code>, not null
+	 * @param  action                   The <code>Action</code>, not null
 	 *
-	 * @return        A reference to this<code>LogEntryBuilder</code>
+	 * @throws IllegalArgumentException if the <code>Action</code> is not in
+	 *                                  the <code>DataStore</code>
 	 */
 
-	public abstract LogEntryBuilder setAction (Action action);
+	public abstract void setAction (Action action);
 
 	/**
 	 * Get the <code>Activity</code> upon which the logged action was
@@ -59,12 +60,13 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 * Set the <code>Activity</code> upon which the logged action was
 	 * performed.
 	 *
-	 * @param  activity The <code>Activity</code>, not null
+	 * @param  activity                 The <code>Activity</code>, not null
 	 *
-	 * @return          A reference to this<code>LogEntryBuilder</code>
+	 * @throws IllegalArgumentException if the <code>Activity</code> is not in
+	 *                                  the <code>DataStore</code>
 	 */
 
-	public abstract LogEntryBuilder setActivity (Activity activity);
+	public abstract void setActivity (Activity activity);
 
 	/**
 	 * Get the <code>Enrolment</code> instance for the user which performed the
@@ -79,10 +81,13 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 * Set the <code>Enrolment</code> instance for the <code>User</code> which
 	 * performed the logged action.
 	 *
-	 * @param  enrolment The <code>Enrolment</code>, not null
+	 * @param  enrolment                The <code>Enrolment</code>, not null
+	 *
+	 * @throws IllegalArgumentException if the <code>Enrolment</code> is not in
+	 *                                  the <code>DataStore</code>
 	 */
 
-	public abstract LogEntryBuilder setEnrolment (Enrolment enrolment);
+	public abstract void setEnrolment (Enrolment enrolment);
 
 	/**
 	 * Get the time of the logged action.
@@ -98,7 +103,7 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 * @param  time The time
 	 */
 
-	public abstract LogEntryBuilder setTime (Date time);
+	public abstract void setTime (Date time);
 
 	/**
 	 * Get the Internet Protocol address which is associated with the logged
@@ -113,8 +118,8 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 * Set the Internet Protocol Address which is associated with the logged
 	 * <code>Action</code>.
 	 *
-	 * @param  ip A <code>String</code> containing the IP Address
+	 * @param  ipaddress A <code>String</code> containing the IP Address
 	 */
 
-	public abstract LogEntryBuilder setIPAddress (String ipaddress);
+	public abstract void setIPAddress (String ipaddress);
 }

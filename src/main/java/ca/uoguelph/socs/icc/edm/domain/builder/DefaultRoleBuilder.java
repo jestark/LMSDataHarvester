@@ -104,12 +104,11 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, Role.Propert
 	 * @param  name                     The name of the <code>Role</code>, not
 	 *                                  null
 	 *
-	 * @return                          This <code>RoleBuilder</code>
 	 * @throws IllegalArgumentException If the name is an empty
 	 */
 
 	@Override
-	public RoleBuilder setName (final String name)
+	public void setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -126,7 +125,5 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, Role.Propert
 		}
 
 		this.setPropertyValue (Role.Properties.NAME, name);
-
-		return this;
 	}
 }

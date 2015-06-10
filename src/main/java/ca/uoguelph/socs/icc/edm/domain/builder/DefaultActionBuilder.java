@@ -107,12 +107,11 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, Action.P
 	 * @param  name                     The name of the <code>Action</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>ActionBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
 	@Override
-	public ActionBuilder setName (final String name)
+	public void setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -129,7 +128,5 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, Action.P
 		}
 
 		this.setPropertyValue (Action.Properties.NAME, name);
-
-		return this;
 	}
 }

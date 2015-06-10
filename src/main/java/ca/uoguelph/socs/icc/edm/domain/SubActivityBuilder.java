@@ -27,7 +27,7 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @version 1.0
  */
 
-public interface SubActivityBuilder extends ElementBuilder<SubActivity>
+public interface SubActivityBuilder<T extends SubActivity> extends ElementBuilder<T>
 {
 	/**
 	 * Get the name of the <code>Activity</code>.
@@ -44,11 +44,10 @@ public interface SubActivityBuilder extends ElementBuilder<SubActivity>
 	 * @param  name                     The name of the
 	 *                                  <code>SubActivity</code>, not null
 	 *
-	 * @return                          This <code>SubActivityBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public abstract SubActivityBuilder setName (String name);
+	public abstract void setName (String name);
 
 	/**
 	 * Get the parent <code>Activity</code> instance for the

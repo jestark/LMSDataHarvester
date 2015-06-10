@@ -16,12 +16,59 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+/**
+ * Create new <code>Grade</code> instances.  This interface extends the
+ * <code>ElementBuilder</code> by adding the functionality required to
+ * create <code>Grade</code> instances.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     Grade
+ */
+
 public interface GradeBuilder extends ElementBuilder<Grade>
 {
+	/**
+	 * Get the <code>Activity</code> for which the <code>Grade</code> is
+	 * assigned.
+	 *
+	 * @return The associated <code>Activity</code>
+	 */
+
 	public abstract Activity getActivity ();
-	public abstract GradeBuilder setActivity (Activity activity);
+
+	/**
+	 * Set the <code>Activity</code> which is associated with the
+	 * <code>Grade</code>.
+	 *
+	 * @param  activity                 The <code>Activity</code>, not null
+	 *
+	 * @throws IllegalArgumentException if the <code>Activity</code> is not in
+	 *                                  the <code>DataStore</code>
+	 */
+
+	public abstract void setActivity (Activity activity);
+
+	/**
+	 * Get the <code>Enrolment</code>, for the student, to which the
+	 * <code>Grade</code> is assigned
+	 *
+	 * @return The associated <code>Enrolment</code>
+	 */
+
 	public abstract Enrolment getEnrolment ();
-	public abstract GradeBuilder setEnrolment (Enrolment enrolment);
+
+	/**
+	 * Set the <code>Enrolment</code> which is associated with the
+	 * <code>Grade</code>.
+	 *
+	 * @param  enrolment                The <code>Enrolment</code>, not null
+	 *
+	 * @throws IllegalArgumentException if the <code>Activity</code> is not in
+	 *                                  the <code>DataStore</code>
+	 */
+
+	public abstract void setEnrolment (Enrolment enrolment);
 
 	/**
 	 * Get the grade that the student received for the <code>Activity</code>.
@@ -45,5 +92,5 @@ public interface GradeBuilder extends ElementBuilder<Grade>
 	 *                                  greater than 100
 	 */
 
-	public abstract GradeBuilder setGrade (Integer grade);
+	public abstract void setGrade (Integer grade);
 }

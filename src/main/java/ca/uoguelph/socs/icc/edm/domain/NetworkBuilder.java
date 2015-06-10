@@ -43,9 +43,8 @@ public interface NetworkBuilder extends ElementBuilder<Network>
 	 * @param  name                     The name of the <code>Network</code>, not
 	 *                                  null
 	 *
-	 * @return                          This <code>NetworkBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public abstract NetworkBuilder setName (String name);
+	public abstract void setName (String name);
 }

@@ -108,12 +108,11 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	 * @param  name                     The name of the
 	 *                                  <code>ActivityType</code>, not null
 	 *
-	 * @return                          This <code>ActivityTypeBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
 	@Override
-	public ActivityTypeBuilder setName (final String name)
+	public void setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -130,8 +129,6 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 		}
 
 		this.setPropertyValue (ActivityType.Properties.NAME, name);
-
-		return this;
 	}
 
 	/**
@@ -152,13 +149,12 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	 * @param  source                   The <code>ActivitySource</code> for the
 	 *                                  <code>ActivityType</code>
 	 *
-	 * @return                          This <code>ActivityTypeBuilder</code>
 	 * @throws IllegalArgumentException If the <code>AcivitySourse</code> does
 	 *                                  not exist in the <code>DataStore</code>
 	 */
 
 	@Override
-	public ActivityTypeBuilder setActivitySource (final ActivitySource source)
+	public void setActivitySource (final ActivitySource source)
 	{
 		this.log.trace ("setSource: source={}", source);
 
@@ -175,8 +171,6 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 		}
 
 		this.setPropertyValue (ActivityType.Properties.SOURCE, source);
-
-		return this;
 	}
 
 	/**
@@ -201,14 +195,12 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	 *                                  associated with the
 	 *                                  <code>ActivityType</code>, not null
 	 *
-	 * @return                          This <code>ActivityTypeBuilder</code>
 	 * @throws IllegalArgumentException If the <code>Action</code> does not
 	 *                                  exist in the <code>DataStore</code>
 	 */
 
-	public ActivityTypeBuilder addAction (final Action action)
+	public void addAction (final Action action)
 	{
-		return this;
 	}
 
 	/**
@@ -218,14 +210,12 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	 * @param  action                The <code>Action</code> to remove from the
 	 *                               <code>ActivityType</code>, not null
 	 *
-	 * @return                       This <code>ActivityTypeBuilder</code>
 	 * @throws IllegalStateException If there are any log entries containing
 	 *                               the <code>ActivityType</code> and the
 	 *                               <code>Action</code>
 	 */
 
-	public ActivityTypeBuilder removeAction (final Action action)
+	public void removeAction (final Action action)
 	{
-		return this;
 	}
 }

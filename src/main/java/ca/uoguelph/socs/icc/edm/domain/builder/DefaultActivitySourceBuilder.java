@@ -111,12 +111,11 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	 * @param  name                     The name of the
 	 *                                  <code>ActivitySource</code>, not null
 	 *
-	 * @return                          This <code>ActivitySourceBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
 	@Override
-	public ActivitySourceBuilder setName (final String name)
+	public void setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -133,7 +132,5 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 		}
 
 		this.setPropertyValue (ActivitySource.Properties.NAME, name);
-
-		return this;
 	}
 }

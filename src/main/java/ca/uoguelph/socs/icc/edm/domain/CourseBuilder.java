@@ -42,11 +42,10 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	 * @param  name                     The name of the <code>Course</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>CourseBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public abstract CourseBuilder setName (String name);
+	public abstract void setName (String name);
 
 	/**
 	 * Get the <code>Semester</code> in which the <code>Course</code> was
@@ -62,11 +61,9 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	 * offered.
 	 *
 	 * @param  semester The <code>Semester</code> of offering, not null
-	 *
-	 * @return This <code>CourseBuilder</code>
 	 */
 
-	public abstract CourseBuilder setSemester (Semester semester);
+	public abstract void setSemester (Semester semester);
 
 	/**
 	 * Get the year in which the <code>Course</code> was offered.
@@ -79,10 +76,10 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	/**
 	 * Set the year in which the <code>Course</code> was offered.
 	 *
-	 * @param  year The year of offering, not null
+	 * @param  year                     The year of offering, not null
 	 *
-	 * @return This <code>CourseBuilder</code>
+	 * @throws IllegalArgumentException If the year is negative
 	 */
 
-	public abstract CourseBuilder setYear (Integer year);
+	public abstract void setYear (Integer year);
 }

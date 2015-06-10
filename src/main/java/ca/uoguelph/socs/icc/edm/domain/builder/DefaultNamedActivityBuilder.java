@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder implements NamedActivityBuilder
+public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder<Activity, Activity.Properties> implements NamedActivityBuilder<Activity>
 {
 	/**
 	 * static initializer to register the
@@ -52,7 +52,7 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder i
 
 	protected DefaultNamedActivityBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (impl, datastore);
+		super (impl, datastore, Activity.Properties.ID, Activity.Properties.TYPE, Activity.Properties.COURSE);
 	}
 
 	/**
@@ -103,11 +103,10 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder i
 	 * @param  name                     The name of the <code>Activity</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>NamedActivityBuilder</code>
 	 * @throws IllegalArgumentException if the name is empty
 	 */
 
-	public NamedActivityBuilder setName (final String name)
+	public void setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -124,7 +123,5 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder i
 		}
 
 		this.setPropertyValue (Activity.Properties.NAME, name);
-
-		return this;
 	}
 }

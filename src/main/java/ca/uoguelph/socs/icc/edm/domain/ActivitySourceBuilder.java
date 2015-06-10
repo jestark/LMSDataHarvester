@@ -42,9 +42,8 @@ public interface ActivitySourceBuilder extends ElementBuilder<ActivitySource>
 	 * @param  name                     The name of the
 	 *                                  <code>ActivitySource</code>, not null
 	 *
-	 * @return                          This <code>ActivitySourceBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public abstract ActivitySourceBuilder setName (String name);
+	public abstract void setName (String name);
 }

@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultGenericActivityBuilder extends AbstractActivityBuilder
+public final class DefaultGenericActivityBuilder extends AbstractActivityBuilder<Activity, Activity.Properties>
 {
 	/**
 	 * static initializer to register the
@@ -55,6 +55,6 @@ public final class DefaultGenericActivityBuilder extends AbstractActivityBuilder
 
 	protected DefaultGenericActivityBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (impl, datastore);
+		super (impl, datastore, Activity.Properties.ID, Activity.Properties.TYPE, Activity.Properties.COURSE);
 	}
 }

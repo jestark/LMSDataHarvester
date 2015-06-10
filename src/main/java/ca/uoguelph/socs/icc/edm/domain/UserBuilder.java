@@ -46,13 +46,10 @@ public interface UserBuilder extends ElementBuilder<User>
 	 *
 	 * @param  idnumber                 The ID Number, not null
 	 *
-	 * @return                          A reference to this
-	 *                                  <code>UserBuilder</code>
-	 *
 	 * @throws IllegalArgumentException If the ID number is negative
 	 */
 
-	public abstract UserBuilder setIdNumber (Integer idnumber);
+	public abstract void setIdNumber (Integer idnumber);
 
 	/**
 	 * Get the first name (given name) of the <code>User</code>.
@@ -69,11 +66,10 @@ public interface UserBuilder extends ElementBuilder<User>
 	 * @param  firstname                The first name of the
 	 *                                  <code>User</code>, not null
 	 *
-	 * @return                          This <code>UserBuilder</code>
-	 * @throws IllegalArgumentException If the firstname is an empty
+	 * @throws IllegalArgumentException If the firstname is empty
 	 */
 
-	public abstract UserBuilder setFirstname (String firstname);
+	public abstract void setFirstname (String firstname);
 
 	/**
 	 * Get the last name (surname) of the <code>User</code>.
@@ -89,11 +85,10 @@ public interface UserBuilder extends ElementBuilder<User>
 	 * @param  lastname                 The last name of the <code>User</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>UserBuilder</code>
-	 * @throws IllegalArgumentException If the lastname is an empty
+	 * @throws IllegalArgumentException If the lastname is empty
 	 */
 
-	public abstract UserBuilder setLastname (String lastname);
+	public abstract void setLastname (String lastname);
 
 	/**
 	 * Get the username for the <code>User</code>.
@@ -110,11 +105,10 @@ public interface UserBuilder extends ElementBuilder<User>
 	 * @param  username                 The username of the <code>User</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>UserBuilder</code>
-	 * @throws IllegalArgumentException If the username is an empty
+	 * @throws IllegalArgumentException If the username is empty
 	 */
 
-	public abstract UserBuilder setUsername (String username);
+	public abstract void setUsername (String username);
 
 	/**
 	 * Create an association between the <code>User</code> and the specified
@@ -125,13 +119,12 @@ public interface UserBuilder extends ElementBuilder<User>
 	 *                                  associated with the <code>User</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If there is already a <code>User</code>
 	 *                                  associated with the
 	 *                                  <code>Enrolment</code>
 	 */
 
-	public abstract UserBuilder addEnrolment (Enrolment enrolment);
+	public abstract void addEnrolment (Enrolment enrolment);
 
 	/**
 	 * Break an association between the <code>User</code> and the specified
@@ -146,11 +139,10 @@ public interface UserBuilder extends ElementBuilder<User>
 	 * @param  enrolment                The <code>Enrolment</code> to remove
 	 *                                  from the <code>User</code>, not null
 	 *
-	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If there is no association between the
 	 *                                  <code>User</code> and the
 	 *                                  <code>Enrolment</code>
 	 */
 
-	public abstract UserBuilder removeEnrolment (Enrolment enrolment);
+	public abstract void removeEnrolment (Enrolment enrolment);
 }

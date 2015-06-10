@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultSubActivityBuilder extends AbstractSubActivityBuilder
+public final class DefaultSubActivityBuilder extends AbstractSubActivityBuilder<SubActivity, SubActivity.Properties>
 {
 	/**
 	 * static initializer to register the
@@ -52,6 +52,6 @@ public final class DefaultSubActivityBuilder extends AbstractSubActivityBuilder
 
 	protected DefaultSubActivityBuilder (final Class<?> impl, final DataStore datastore)
 	{
-		super (impl, datastore);
+		super (impl, datastore, SubActivity.Properties.ID, SubActivity.Properties.NAME, SubActivity.Properties.PARENT);
 	}
 }

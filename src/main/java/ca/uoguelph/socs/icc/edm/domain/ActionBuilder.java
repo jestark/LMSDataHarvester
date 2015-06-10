@@ -41,9 +41,8 @@ public interface ActionBuilder extends ElementBuilder<Action>
 	 * @param  name                     The name of the <code>Action</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>ActionBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public abstract ActionBuilder setName (String name);
+	public abstract void setName (String name);
 }

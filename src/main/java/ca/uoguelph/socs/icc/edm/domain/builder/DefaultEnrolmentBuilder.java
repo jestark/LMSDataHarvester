@@ -23,6 +23,13 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+/**
+ * Default implementation of the <code>EnrolmentBuilder</code>.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
+
 public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, Enrolment.Properties> implements EnrolmentBuilder
 {
 	/**
@@ -85,14 +92,30 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		this.setPropertyValue (Enrolment.Properties.ID, enrolment.getId ());
 	}
 
+	/**
+	 * Get the <code>Course</code> in which the <code>User</code> represented
+	 * by the <code>Enrolment</code> instance is enrolled.
+	 *
+	 * @return The <code>Course</code> instance
+	 */
+
 	@Override
 	public Course getCourse ()
 	{
 		return this.getPropertyValue (Course.class, Enrolment.Properties.COURSE);
 	}
 
+	/**
+	 * Set the <code>Course</code> in which the <code>User</code> is enrolled.
+	 *
+	 * @param  course                   The <code>Course</code>, not null
+	 *
+	 * @throws IllegalArgumentException if the <code>Course</code> is not in
+	 *                                  the <code>DataStore</code>
+	 */
+
 	@Override
-	public EnrolmentBuilder setCourse (final Course course)
+	public void setCourse (final Course course)
 	{
 		this.log.trace ("setCourse: course={}", course);
 
@@ -109,9 +132,14 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		}
 
 		this.setPropertyValue (Enrolment.Properties.COURSE, course);
-
-		return this;
 	}
+
+	/**
+	 * Get the <code>Role</code> of the <code>User</code> represented by this
+	 * <code>Enrolment</code>, in the associated <code>Course</code>.
+	 *
+	 * @return The <code>Role</code> instance
+	 */
 
 	@Override
 	public Role getRole ()
@@ -119,8 +147,18 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		return this.getPropertyValue (Role.class, Enrolment.Properties.ROLE);
 	}
 
+	/**
+	 * Set the <code>Role</code> of the <code>User</code> in the
+	 * <code>Course</code>.
+	 *
+	 * @param  role                      The <code>Role</code>, not null
+	 *
+	 * @throws IllegalArgumentException if the <code>Role</code> is not in
+	 *                                  the <code>DataStore</code>
+	 */
+
 	@Override
-	public EnrolmentBuilder setRole (final Role role)
+	public void setRole (final Role role)
 	{
 		this.log.trace ("setRole: role={}", role);
 
@@ -137,9 +175,17 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		}
 
 		this.setPropertyValue (Enrolment.Properties.ROLE, role);
-
-		return this;
 	}
+
+	/**
+	 * Get the final grade for the <code>User</code> represented by this
+	 * <code>Enrolment</code>, in the associated <code>Course</code>.  The
+	 * final grade will be null if no final grade was assigned for the
+	 * <code>User</code> associated with this <code>Enrolment</code>.
+	 *
+	 * @return An <code>Integer</code> containing the final grade, or null if
+	 *         there is no final grade
+	 */
 
 	@Override
 	public Integer getFinalGrade ()
@@ -147,8 +193,19 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		return this.getPropertyValue (Integer.class, Enrolment.Properties.FINALGRADE);
 	}
 
+	/**
+	 * Set the final grade for the <code>User</code> in the
+	 * <code>Course</code>.
+	 *
+	 * @param  finalgrade The final grade for the <code>User</code> in the
+	 *                    course, on the interval [0, 100]
+	 *
+	 * @throws IllegalArgumentException If the value is less than zero or
+	 *                                  greater than 100
+	 */
+
 	@Override
-	public EnrolmentBuilder setFinalGrade (final Integer finalgrade)
+	public void setFinalGrade (final Integer finalgrade)
 	{
 		this.log.trace ("setFinalGrade: finalgrade={}", finalgrade);
 
@@ -159,9 +216,15 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		}
 
 		this.setPropertyValue (Enrolment.Properties.FINALGRADE, finalgrade);
-
-		return this;
 	}
+
+	/**
+	 * Determine if the <code>User</code> has given their consent for the data
+	 * associated with this <code>Enrolment</code> to be used for research.
+	 *
+	 * @return <code>True</code> if the <code>User</code> has consented,
+	 *         <code>False</code> otherwise.
+	 */
 
 	@Override
 	public Boolean isUsable ()
@@ -169,8 +232,17 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		return this.getPropertyValue (Boolean.class, Enrolment.Properties.USABLE);
 	}
 
+	/**
+	 * Set the usable flag for the data related to the <code>User</code> in the
+	 * <code>Course</code>. This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
+	 * loaded.
+	 *
+	 * @param  usable Indication if the data may be used for research, not null
+	 */
+
 	@Override
-	public EnrolmentBuilder setUsable (final Boolean usable)
+	public void setUsable (final Boolean usable)
 	{
 		this.log.trace ("setUsable: usable={}", usable);
 
@@ -181,7 +253,5 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		}
 
 		this.setPropertyValue (Enrolment.Properties.USABLE, usable);
-
-		return this;
 	}
 }

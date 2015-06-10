@@ -43,9 +43,8 @@ public interface RoleBuilder extends ElementBuilder<Role>
 	 * @param  name                     The name of the <code>Role</code>, not
 	 *                                  null
 	 *
-	 * @return                          This <code>RoleBuilder</code>
-	 * @throws IllegalArgumentException If the name is an empty
+	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public abstract RoleBuilder setName (String name);
+	public abstract void setName (String name);
 }
