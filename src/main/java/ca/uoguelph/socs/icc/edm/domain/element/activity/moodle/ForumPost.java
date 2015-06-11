@@ -62,7 +62,7 @@ public class ForumPost extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<ForumPost, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, ForumPost.class, SubActivity.Properties.class);
+		DefinitionBuilder<SubActivity, ForumPost, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, ForumPost.class, SubActivity.Properties.class);
 		builder.setCreateMethod (ForumPost::new);
 
 		builder.addUniqueAttribute (SubActivity.Properties.ID, Long.class, false, false, ForumPost::getId, ForumPost::setId);

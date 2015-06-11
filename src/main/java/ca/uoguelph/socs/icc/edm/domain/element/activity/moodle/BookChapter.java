@@ -62,7 +62,7 @@ public class BookChapter extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<BookChapter, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, BookChapter.class, SubActivity.Properties.class);
+		DefinitionBuilder<SubActivity, BookChapter, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, BookChapter.class, SubActivity.Properties.class);
 		builder.setCreateMethod (BookChapter::new);
 
 		builder.addUniqueAttribute (SubActivity.Properties.ID, Long.class, false, false, BookChapter::getId, BookChapter::setId);

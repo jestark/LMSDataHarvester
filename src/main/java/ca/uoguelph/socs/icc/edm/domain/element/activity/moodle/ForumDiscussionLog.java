@@ -62,7 +62,7 @@ class ForumDiscussionLog extends LogReference
 
 	static
 	{
-		DefinitionBuilder<ForumDiscussionLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, ForumDiscussionLog.class, LogEntry.Properties.class);
+		DefinitionBuilder<LogEntry, ForumDiscussionLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, ForumDiscussionLog.class, LogEntry.Properties.class);
 		builder.setCreateMethod (ForumDiscussionLog::new);
 
 //		builder.addAttribute (LogEntry.Properties.ENTRY, LogEntry.class, true, false, ForumDiscussionLog::getEntry, ForumDiscussionLog::setEntry);

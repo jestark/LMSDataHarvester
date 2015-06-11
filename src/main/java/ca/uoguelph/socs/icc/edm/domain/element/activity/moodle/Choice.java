@@ -63,7 +63,7 @@ public class Choice extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Choice, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Choice.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Choice, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Choice.class, Activity.Properties.class);
 		builder.setCreateMethod (Choice::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Choice::getId, Choice::setId);

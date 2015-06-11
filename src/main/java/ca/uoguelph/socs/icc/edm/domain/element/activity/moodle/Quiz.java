@@ -63,7 +63,7 @@ public class Quiz extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Quiz, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Quiz.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Quiz, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Quiz.class, Activity.Properties.class);
 		builder.setCreateMethod (Quiz::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Quiz::getId, Quiz::setId);

@@ -63,7 +63,7 @@ public class Scheduler extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Scheduler, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Scheduler.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Scheduler, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Scheduler.class, Activity.Properties.class);
 		builder.setCreateMethod (Scheduler::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Scheduler::getId, Scheduler::setId);

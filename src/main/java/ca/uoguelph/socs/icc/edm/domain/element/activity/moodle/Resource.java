@@ -63,7 +63,7 @@ public class Resource extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Resource, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Resource.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Resource, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Resource.class, Activity.Properties.class);
 		builder.setCreateMethod (Resource::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Resource::getId, Resource::setId);

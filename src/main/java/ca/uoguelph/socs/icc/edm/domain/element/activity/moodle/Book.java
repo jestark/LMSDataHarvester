@@ -64,7 +64,7 @@ public class Book extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Book, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Book.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Book, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Book.class, Activity.Properties.class);
 		builder.setCreateMethod (Book::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Book::getId, Book::setId);

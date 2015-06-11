@@ -63,7 +63,7 @@ public class Folder extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Folder, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Folder.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Folder, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Folder.class, Activity.Properties.class);
 		builder.setCreateMethod (Folder::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Folder::getId, Folder::setId);

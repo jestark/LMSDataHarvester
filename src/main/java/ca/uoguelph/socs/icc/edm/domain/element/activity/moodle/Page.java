@@ -63,7 +63,7 @@ public class Page extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Page, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Page.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Page, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Page.class, Activity.Properties.class);
 		builder.setCreateMethod (Page::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Page::getId, Page::setId);

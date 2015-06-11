@@ -63,7 +63,7 @@ public class URL extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<URL, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, URL.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, URL, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, URL.class, Activity.Properties.class);
 		builder.setCreateMethod (URL::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, URL::getId, URL::setId);

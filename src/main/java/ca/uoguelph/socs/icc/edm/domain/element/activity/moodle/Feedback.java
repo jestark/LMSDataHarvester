@@ -63,7 +63,7 @@ public class Feedback extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Feedback, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Feedback.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Feedback, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Feedback.class, Activity.Properties.class);
 		builder.setCreateMethod (Feedback::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Feedback::getId, Feedback::setId);

@@ -75,7 +75,7 @@ public class UserData extends AbstractElement implements User, Serializable
 
 	static
 	{
-		DefinitionBuilder<UserData, User.Properties> builder = DefinitionBuilder.newInstance (User.class, UserData.class, User.Properties.class);
+		DefinitionBuilder<User, UserData, User.Properties> builder = DefinitionBuilder.newInstance (User.class, UserData.class, User.Properties.class);
 		builder.setCreateMethod (UserData::new);
 
 		builder.addUniqueAttribute (User.Properties.ID, Long.class, false, false, UserData::getId, UserData::setId);

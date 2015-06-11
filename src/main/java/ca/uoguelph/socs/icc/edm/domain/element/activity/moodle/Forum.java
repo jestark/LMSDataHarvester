@@ -64,7 +64,7 @@ public class Forum extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Forum, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Forum.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Forum, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Forum.class, Activity.Properties.class);
 		builder.setCreateMethod (Forum::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Forum::getId, Forum::setId);

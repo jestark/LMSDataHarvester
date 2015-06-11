@@ -82,7 +82,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 
 	static
 	{
-		DefinitionBuilder<LogData, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, LogData.class, LogEntry.Properties.class);
+		DefinitionBuilder<LogEntry, LogData, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, LogData.class, LogEntry.Properties.class);
 		builder.setCreateMethod (LogData::new);
 
 		builder.addUniqueAttribute (LogEntry.Properties.ID, Long.class, false, false, LogData::getId, LogData::setId);

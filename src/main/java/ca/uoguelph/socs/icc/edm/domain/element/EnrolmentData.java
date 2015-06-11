@@ -87,7 +87,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 
 	static
 	{
-		DefinitionBuilder<EnrolmentData, Enrolment.Properties> builder = DefinitionBuilder.newInstance (Enrolment.class, EnrolmentData.class, Enrolment.Properties.class);
+		DefinitionBuilder<Enrolment, EnrolmentData, Enrolment.Properties> builder = DefinitionBuilder.newInstance (Enrolment.class, EnrolmentData.class, Enrolment.Properties.class);
 		builder.setCreateMethod (EnrolmentData::new);
 
 		builder.addUniqueAttribute (Enrolment.Properties.ID, Long.class, false, false, EnrolmentData::getId, EnrolmentData::setId);

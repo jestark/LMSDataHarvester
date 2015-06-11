@@ -63,7 +63,7 @@ public class Assign extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Assign, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Assign.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Assign, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Assign.class, Activity.Properties.class);
 		builder.setCreateMethod (Assign::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Assign::getId, Assign::setId);

@@ -62,7 +62,7 @@ class BookChapterLog extends LogReference
 
 	static
 	{
-		DefinitionBuilder<BookChapterLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, BookChapterLog.class, LogEntry.Properties.class);
+		DefinitionBuilder<LogEntry, BookChapterLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, BookChapterLog.class, LogEntry.Properties.class);
 		builder.setCreateMethod (BookChapterLog::new);
 
 //		builder.addAttribute (LogEntry.Properties.ENTRY, LogEntry.class, true, false, BookChapterLog::getEntry, BookChapterLog::setEntry);

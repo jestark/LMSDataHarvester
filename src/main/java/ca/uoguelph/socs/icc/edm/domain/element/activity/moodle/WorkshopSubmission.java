@@ -62,7 +62,7 @@ public class WorkshopSubmission extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<WorkshopSubmission, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, WorkshopSubmission.class, SubActivity.Properties.class);
+		DefinitionBuilder<SubActivity, WorkshopSubmission, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, WorkshopSubmission.class, SubActivity.Properties.class);
 		builder.setCreateMethod (WorkshopSubmission::new);
 
 		builder.addUniqueAttribute (SubActivity.Properties.ID, Long.class, false, false, WorkshopSubmission::getId, WorkshopSubmission::setId);

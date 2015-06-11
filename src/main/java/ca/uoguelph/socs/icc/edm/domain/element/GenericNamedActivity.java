@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
 
 /**
  * Generic representation of an <code>Activity</code> which has a name.  This
@@ -62,16 +62,16 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	 * @param  type       The name of the <code>ActivityType</code> not null
 	 */
 
-	protected static final <T extends Activity, U extends ActivityBuilder> void registerActivity (final Definition<T, Activity.Properties> definition, final Class<U> builder, final String source, final String type)
+	protected static final <T extends Activity, U extends ActivityBuilder<T>> void registerActivity (final MetaData metadata, final Class<U> builder, final String source, final String type)
 	{
-		assert definition != null : "definition is NULL";
+		assert metadata != null : "metadata is NULL";
 		assert builder != null : "builder is NULL";
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
 
-		AbstractActivity.registerActivityClass (source, type, definition.getImplementationClass ());
+//		AbstractActivity.registerActivityClass (source, type, definition.getElementType ());
 
-		AbstractElement.registerElement (definition, builder);
+		AbstractElement.registerElement (metadata, builder);
 	}
 
 	/**

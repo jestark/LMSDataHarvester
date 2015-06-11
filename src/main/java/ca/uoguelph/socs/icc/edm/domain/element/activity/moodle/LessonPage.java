@@ -62,7 +62,7 @@ public class LessonPage extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<LessonPage, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, LessonPage.class, SubActivity.Properties.class);
+		DefinitionBuilder<SubActivity, LessonPage, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, LessonPage.class, SubActivity.Properties.class);
 		builder.setCreateMethod (LessonPage::new);
 
 		builder.addUniqueAttribute (SubActivity.Properties.ID, Long.class, false, false, LessonPage::getId, LessonPage::setId);

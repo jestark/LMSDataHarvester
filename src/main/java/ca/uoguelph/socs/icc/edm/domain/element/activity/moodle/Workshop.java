@@ -64,7 +64,7 @@ public class Workshop extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Workshop, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Workshop.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Workshop, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Workshop.class, Activity.Properties.class);
 		builder.setCreateMethod (Workshop::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Workshop::getId, Workshop::setId);

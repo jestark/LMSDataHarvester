@@ -58,7 +58,7 @@ public class RoleData extends AbstractElement implements Role, Serializable
 
 	static
 	{
-		DefinitionBuilder<RoleData, Role.Properties> builder = DefinitionBuilder.newInstance (Role.class, RoleData.class, Role.Properties.class);
+		DefinitionBuilder<Role, RoleData, Role.Properties> builder = DefinitionBuilder.newInstance (Role.class, RoleData.class, Role.Properties.class);
 		builder.setCreateMethod (RoleData::new);
 
 		builder.addUniqueAttribute (Role.Properties.ID, Long.class, false, false, RoleData::getId, RoleData::setId);

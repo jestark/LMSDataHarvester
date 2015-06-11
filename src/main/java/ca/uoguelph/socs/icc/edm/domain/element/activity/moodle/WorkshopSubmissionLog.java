@@ -62,7 +62,7 @@ class WorkshopSubmissionLog extends LogReference
 
 	static
 	{
-		DefinitionBuilder<WorkshopSubmissionLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, WorkshopSubmissionLog.class, LogEntry.Properties.class);
+		DefinitionBuilder<LogEntry, WorkshopSubmissionLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, WorkshopSubmissionLog.class, LogEntry.Properties.class);
 		builder.setCreateMethod (WorkshopSubmissionLog::new);
 
 //		builder.addAttribute (LogEntry.Properties.ENTRY, LogEntry.class, true, false, WorkshopSubmissionLog::getEntry, WorkshopSubmissionLog::setEntry);

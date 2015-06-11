@@ -62,7 +62,7 @@ class ${ClassName} extends LogReference
 
 	static
 	{
-		DefinitionBuilder<${ClassName}, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, ${ClassName}.class, LogEntry.Properties.class);
+		DefinitionBuilder<LogEntry, ${ClassName}, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, ${ClassName}.class, LogEntry.Properties.class);
 		builder.setCreateMethod (${ClassName}::new);
 
 //		builder.addAttribute (LogEntry.Properties.ENTRY, LogEntry.class, true, false, ${ClassName}::getEntry, ${ClassName}::setEntry);

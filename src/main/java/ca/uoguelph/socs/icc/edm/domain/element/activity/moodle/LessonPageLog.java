@@ -62,7 +62,7 @@ class LessonPageLog extends LogReference
 
 	static
 	{
-		DefinitionBuilder<LessonPageLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, LessonPageLog.class, LogEntry.Properties.class);
+		DefinitionBuilder<LogEntry, LessonPageLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, LessonPageLog.class, LogEntry.Properties.class);
 		builder.setCreateMethod (LessonPageLog::new);
 
 //		builder.addAttribute (LogEntry.Properties.ENTRY, LogEntry.class, true, false, LessonPageLog::getEntry, LessonPageLog::setEntry);

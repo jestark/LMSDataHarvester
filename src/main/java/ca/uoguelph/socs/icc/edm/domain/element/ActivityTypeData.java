@@ -69,7 +69,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 
 	static
 	{
-		DefinitionBuilder<ActivityTypeData, ActivityType.Properties> builder = DefinitionBuilder.newInstance (ActivityType.class, ActivityTypeData.class, ActivityType.Properties.class);
+		DefinitionBuilder<ActivityType, ActivityTypeData, ActivityType.Properties> builder = DefinitionBuilder.newInstance (ActivityType.class, ActivityTypeData.class, ActivityType.Properties.class);
 		builder.setCreateMethod (ActivityTypeData::new);
 
 		builder.addUniqueAttribute (ActivityType.Properties.ID, Long.class, false, false, ActivityTypeData::getId, ActivityTypeData::setId);

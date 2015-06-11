@@ -64,7 +64,7 @@ public class Lesson extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Lesson, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Lesson.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Lesson, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Lesson.class, Activity.Properties.class);
 		builder.setCreateMethod (Lesson::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Lesson::getId, Lesson::setId);

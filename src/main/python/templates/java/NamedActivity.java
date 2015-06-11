@@ -63,7 +63,7 @@ public class ${ClassName} extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<${ClassName}, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, ${ClassName}.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, ${ClassName}, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, ${ClassName}.class, Activity.Properties.class);
 		builder.setCreateMethod (${ClassName}::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);

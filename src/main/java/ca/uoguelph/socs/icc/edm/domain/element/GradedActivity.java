@@ -63,7 +63,7 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 
 	static
 	{
-		DefinitionBuilder<GradedActivity, Grade.Properties> builder = DefinitionBuilder.newInstance (Grade.class, GradedActivity.class, Grade.Properties.class);
+		DefinitionBuilder<Grade, GradedActivity, Grade.Properties> builder = DefinitionBuilder.newInstance (Grade.class, GradedActivity.class, Grade.Properties.class);
 		builder.setCreateMethod (GradedActivity::new);
 
 		builder.addAttribute (Grade.Properties.ACTIVITY, Activity.class, true, false, GradedActivity::getActivity, GradedActivity::setActivity);

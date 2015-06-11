@@ -65,7 +65,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 
 	static
 	{
-		DefinitionBuilder<ActivitySourceData, ActivitySource.Properties> builder = DefinitionBuilder.newInstance (ActivitySource.class, ActivitySourceData.class, ActivitySource.Properties.class);
+		DefinitionBuilder<ActivitySource, ActivitySourceData, ActivitySource.Properties> builder = DefinitionBuilder.newInstance (ActivitySource.class, ActivitySourceData.class, ActivitySource.Properties.class);
 		builder.setCreateMethod (ActivitySourceData::new);
 
 		builder.addUniqueAttribute (ActivitySource.Properties.ID, Long.class, false, false, ActivitySourceData::getId, ActivitySourceData::setId);

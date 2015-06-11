@@ -65,7 +65,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 
 	static
 	{
-		DefinitionBuilder<ActionData, Action.Properties> builder = DefinitionBuilder.newInstance (Action.class, ActionData.class, Action.Properties.class);
+		DefinitionBuilder<Action, ActionData, Action.Properties> builder = DefinitionBuilder.newInstance (Action.class, ActionData.class, Action.Properties.class);
 		builder.setCreateMethod (ActionData::new);
 
 		builder.addUniqueAttribute (Action.Properties.ID, Long.class, false, false, ActionData::getId, ActionData::setId);

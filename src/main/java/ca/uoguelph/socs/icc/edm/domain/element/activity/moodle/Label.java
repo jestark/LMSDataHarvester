@@ -63,7 +63,7 @@ public class Label extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Label, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Label.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Label, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Label.class, Activity.Properties.class);
 		builder.setCreateMethod (Label::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Label::getId, Label::setId);

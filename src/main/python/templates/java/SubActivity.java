@@ -62,7 +62,7 @@ public class ${ClassName} extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<${ClassName}, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, ${ClassName}.class, SubActivity.Properties.class);
+		DefinitionBuilder<SubActivity, ${ClassName}, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, ${ClassName}.class, SubActivity.Properties.class);
 		builder.setCreateMethod (${ClassName}::new);
 
 		builder.addUniqueAttribute (SubActivity.Properties.ID, Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);

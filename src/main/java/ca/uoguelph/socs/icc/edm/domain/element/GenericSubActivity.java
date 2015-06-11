@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
 
 /**
  * An generic representation of a <code>SubActivity</code> in the domain model.
@@ -64,15 +64,15 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 	 *                    not null
 	 */
 
-	protected static final <S extends SubActivity, T extends SubActivityBuilder> void registerActivity (final Definition<S, SubActivity.Properties> definition, final Class<? extends Activity> activity, final Class<T> builder)
+	protected static final <S extends SubActivity, T extends SubActivityBuilder<S>> void registerActivity (final MetaData metadata, final Class<? extends Activity> activity, final Class<T> builder)
 	{
-		assert definition != null : "definition is NULL";
+		assert metadata != null : "metadata is NULL";
 		assert activity != null : "activity is NULL";
 		assert builder != null : "builder is NULL";
 
-		AbstractActivity.registerSubActivityClass (activity, definition.getImplementationClass ());
+//		AbstractActivity.registerSubActivityClass (activity, definition.getElementType ());
 
-		AbstractElement.registerElement (definition, builder);
+		AbstractElement.registerElement (metadata, builder);
 	}
 
 	/**

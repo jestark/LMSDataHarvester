@@ -63,7 +63,7 @@ public class Checklist extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Checklist, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Checklist.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Checklist, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Checklist.class, Activity.Properties.class);
 		builder.setCreateMethod (Checklist::new);
 
 		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Checklist::getId, Checklist::setId);

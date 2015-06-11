@@ -59,7 +59,7 @@ public class ForumDiscussion extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<ForumDiscussion, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, ForumDiscussion.class, SubActivity.Properties.class);
+		DefinitionBuilder<SubActivity, ForumDiscussion, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, ForumDiscussion.class, SubActivity.Properties.class);
 		builder.setCreateMethod (ForumDiscussion::new);
 
 		builder.addUniqueAttribute (SubActivity.Properties.ID, Long.class, false, false, ForumDiscussion::getId, ForumDiscussion::setId);

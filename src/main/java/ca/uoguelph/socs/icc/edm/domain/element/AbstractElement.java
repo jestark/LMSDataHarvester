@@ -23,7 +23,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.AbstractBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.AbstractQuery;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
 
 /**
  * Abstract base class for all of the domain model <code>Element</code>
@@ -39,25 +39,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Definition;
 public abstract class AbstractElement implements Element
 {
 	/**
-	 * Register an <code>Element</code> implementation class with the
-	 * <code>QueryFactory</code>.
-	 *
-	 * @param  <T>         The interface type of the <code>Element</code>
-	 * @param  <U>         The implementation type of the <code>Element</code>
-	 * @param  element     The <code>Element</code> interface class, not null
-	 * @param  elementImpl The <code>Element</code> implementation class, not
-	 *                     null
-	 */
-
-	protected static <T extends Element, U extends T> void registerQuery (final Class<T> element, final Class<U> elementImpl)
-	{
-		assert element != null : "element is NULL";
-		assert elementImpl != null : "elementImpl is NULL";
-
-//		AbstractQuery.registerElement (element, elementImpl);
-	}
-
-	/**
 	 * Register an <code>Element</code> implementation with the factories.
 	 *
 	 * @param  <T>        The <code>Element</code> interface type
@@ -68,13 +49,13 @@ public abstract class AbstractElement implements Element
 	 *                    null
 	 */
 
-	protected static <T extends Element, U extends T, E extends Enum<E>, B extends ElementBuilder<T>> void registerElement (final Definition<U, E> definition, final Class<B> builder)
+	protected static <T extends Element, U extends T, E extends Enum<E>, B extends ElementBuilder<T>> void registerElement (final MetaData metadata, final Class<B> builder)
 	{
 		assert builder != null : "builder is NULL";
-		assert definition != null : "definition is NULL";
+		assert metadata != null : "metadata is NULL";
 
 //		registerQuery (element, elementImpl);
-		AbstractBuilder.registerElement (definition.getImplementationClass (), builder);
+//		AbstractBuilder.registerElement (definition.getElementType (), builder);
 	}
 
 	/**
