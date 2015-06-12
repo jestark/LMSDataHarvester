@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultActionBuilder extends AbstractBuilder<Action, Action.Properties> implements ActionBuilder
+public final class DefaultActionBuilder extends AbstractBuilder<Action> implements ActionBuilder
 {
 	/**
 	 * static initializer to register the <code>DefaultActionBuilder</code>
@@ -86,7 +86,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, Action.P
 		super.load (action);
 		this.setName (action.getName ());
 
-		this.setPropertyValue (Action.Properties.ID, action.getId ());
+		this.setPropertyValue ("id", action.getId ());
 	}
 
 	/**
@@ -98,7 +98,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, Action.P
 	@Override
 	public String getName ()
 	{
-		return this.getPropertyValue (String.class, Action.Properties.NAME);
+		return this.getPropertyValue (String.class, "name");
 	}
 
 	/**
@@ -127,6 +127,6 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action, Action.P
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.setPropertyValue (Action.Properties.NAME, name);
+		this.setPropertyValue ("name", name);
 	}
 }

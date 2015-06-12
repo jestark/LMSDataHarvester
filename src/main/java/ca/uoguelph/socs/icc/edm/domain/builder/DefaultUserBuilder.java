@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultUserBuilder extends AbstractBuilder<User, User.Properties> implements UserBuilder
+public final class DefaultUserBuilder extends AbstractBuilder<User> implements UserBuilder
 {
 	/**
 	 * static initializer to register the <code>DefaultUserBuilder</code> with
@@ -86,7 +86,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 		this.setLastname (user.getLastname ());
 		this.setFirstname (user.getFirstname ());
 
-		this.setPropertyValue (User.Properties.ID, user.getId ());
+		this.setPropertyValue ("id", user.getId ());
 	}
 
 	/**
@@ -102,7 +102,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	@Override
 	public Integer getIdNumber()
 	{
-		return this.getPropertyValue (Integer.class, User.Properties.IDNUMBER);
+		return this.getPropertyValue (Integer.class, "idnumber");
 	}
 
 	/**
@@ -130,7 +130,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 			throw new IllegalArgumentException ("idnumber is negative");
 		}
 
-		this.setPropertyValue (User.Properties.IDNUMBER, idnumber);
+		this.setPropertyValue ("idnumber", idnumber);
 	}
 
 	/**
@@ -143,7 +143,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	@Override
 	public String getFirstname ()
 	{
-		return this.getPropertyValue (String.class, User.Properties.FIRSTNAME);
+		return this.getPropertyValue (String.class, "firstname");
 	}
 
 	/**
@@ -172,7 +172,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 			throw new IllegalArgumentException ("firstname is empty");
 		}
 
-		this.setPropertyValue (User.Properties.FIRSTNAME, firstname);
+		this.setPropertyValue ("firstname", firstname);
 	}
 
 	/**
@@ -184,7 +184,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	@Override
 	public String getLastname ()
 	{
-		return this.getPropertyValue (String.class, User.Properties.LASTNAME);
+		return this.getPropertyValue (String.class, "lastname");
 	}
 
 	/**
@@ -213,7 +213,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 			throw new IllegalArgumentException ("lastname is empty");
 		}
 
-		this.setPropertyValue (User.Properties.LASTNAME, lastname);
+		this.setPropertyValue ("lastname", lastname);
 	}
 
 	/**
@@ -229,7 +229,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 	@Override
 	public String getUsername ()
 	{
-		return this.getPropertyValue (String.class, User.Properties.USERNAME);
+		return this.getPropertyValue (String.class, "username");
 	}
 
 	/**
@@ -258,7 +258,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User, User.Propert
 			throw new IllegalArgumentException ("Username is empty");
 		}
 
-		this.setPropertyValue (User.Properties.USERNAME, username);
+		this.setPropertyValue ("username", username);
 	}
 
 	/**

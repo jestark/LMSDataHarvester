@@ -63,14 +63,14 @@ public class Resource extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Resource, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Resource.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Resource> builder = DefinitionBuilder.newInstance (Activity.class, Resource.class);
 		builder.setCreateMethod (Resource::new);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Resource::getId, Resource::setId);
+		builder.addUniqueAttribute ("id", Long.class, false, false, Resource::getId, Resource::setId);
 
-		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, Resource::getCourse, Resource::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, Resource::getType, Resource::setType);
-		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, Resource::getName, Resource::setName);
+		builder.addAttribute ("course", Course.class, true, false, Resource::getCourse, Resource::setCourse);
+		builder.addAttribute ("type", ActivityType.class, true, false, Resource::getType, Resource::setType);
+		builder.addAttribute ("name", String.class, true, false, Resource::getName, Resource::setName);
 
 		builder.addRelationship ("grades", Grade.class, Resource::addGrade, Resource::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Resource::addLog, Resource::removeLog);

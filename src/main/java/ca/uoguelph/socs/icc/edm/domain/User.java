@@ -46,14 +46,6 @@ import java.util.Set;
 public interface User extends Element
 {
 	/**
-	 * Enumeration of all of the properties of an <code>User</code>.
-	 * Properties represent the data contained within the <code>User</code>
-	 * instance.
-	 */
-
-	public static enum Properties { ID, IDNUMBER, FIRSTNAME, LASTNAME, USERNAME };
-
-	/**
 	 * Get the (student) ID number of the <code>User</code>.  This will be the
 	 * student number, or a similar identifier used to track the
 	 * <code>User</code> by the institution from which the data was harvested.

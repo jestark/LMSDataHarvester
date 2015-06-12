@@ -36,17 +36,8 @@ import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
  * @param   <T> The type of <code>Activity</code>
  */
 
-public abstract class AbstractActivityBuilder<T extends Activity, E extends Enum<E>> extends AbstractBuilder<T, E> implements ActivityBuilder<T>
+public abstract class AbstractActivityBuilder<T extends Activity> extends AbstractBuilder<T> implements ActivityBuilder<T>
 {
-	/** The "id" Property */
-	private final E id;
-
-	/** The "type" Property */
-	private final E type;
-
-	/** The "course" Property */
-	private final E course;
-
 	/**
 	 * Get an instance of the <code>ActivityBuilder</code> which corresponds to
 	 * the specified <code>ActivityType</code>.
@@ -77,22 +68,11 @@ public abstract class AbstractActivityBuilder<T extends Activity, E extends Enum
 	 * @param  datastore The <code>DataStore</code> into which the newly
 	 *                   created <code>Activity</code> instance will be
 	 *                   inserted
-	 * @param  id        The <code>DataStore</code> id <code>Property</code>
-	 * @param  type      The <code>ActivityType</code> <code>Property</code>
-	 * @param  course    The <code>Course</code> <code>Property</code>
 	 */
 
-	public AbstractActivityBuilder (final Class<?> impl, final DataStore datastore, final E id, final E type, final E course)
+	public AbstractActivityBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
-
-		assert id != null : "id is NULL";
-		assert type != null : "type is NULL";
-		assert course != null : "course is NULL";
-
-		this.id = id;
-		this.type = type;
-		this.course = course;
 	}
 
 	/**
@@ -131,7 +111,7 @@ public abstract class AbstractActivityBuilder<T extends Activity, E extends Enum
 		super.load (activity);
 		this.setCourse (activity.getCourse ());
 
-		this.setPropertyValue (this.id, activity.getId ());
+		this.setPropertyValue ("id", activity.getId ());
 	}
 
 	/**
@@ -143,7 +123,7 @@ public abstract class AbstractActivityBuilder<T extends Activity, E extends Enum
 	@Override
 	public final ActivityType getActivityType ()
 	{
-		return this.getPropertyValue (ActivityType.class, this.type);
+		return this.getPropertyValue (ActivityType.class, "type");
 	}
 
 	/**
@@ -159,7 +139,7 @@ public abstract class AbstractActivityBuilder<T extends Activity, E extends Enum
 		assert type != null : "type is NULL";
 		assert this.datastore.contains (type) : "ActivityType is not in the DataStore";
 
-		this.setPropertyValue (this.type, type);
+		this.setPropertyValue ("type", type);
 	}
 
 	/**
@@ -172,7 +152,7 @@ public abstract class AbstractActivityBuilder<T extends Activity, E extends Enum
 	@Override
 	public final Course getCourse ()
 	{
-		return this.getPropertyValue (Course.class, this.course);
+		return this.getPropertyValue (Course.class, "course");
 	}
 
 	/**
@@ -202,6 +182,6 @@ public abstract class AbstractActivityBuilder<T extends Activity, E extends Enum
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
 
-		this.setPropertyValue (this.course, course);
+		this.setPropertyValue ("course", course);
 	}
 }

@@ -57,14 +57,6 @@ import java.util.Set;
 public interface Action extends Element
 {
 	/**
-	 * Enumeration of all of the properties of an <code>Action</code>.
-	 * Properties represent the data contained within the <code>Action</code>
-	 * instance.
-	 */
-
-	public static enum Properties { ID, NAME };
-
-	/**
 	 * Get the <code>Set</code> of <code>ActivityType</code> instances
 	 * containing the <code>Action</code>.
 	 *

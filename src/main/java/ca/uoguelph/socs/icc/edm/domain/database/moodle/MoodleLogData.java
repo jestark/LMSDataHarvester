@@ -73,13 +73,13 @@ public class MoodleLogData extends AbstractElement implements LogEntry
 
 	static
 	{
-		DefinitionBuilder<MoodleLogData, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, MoodleLogData.class, LogEntry.Properties.class);
+		DefinitionBuilder<LogEntry, MoodleLogData> builder = DefinitionBuilder.newInstance (LogEntry.class, MoodleLogData.class);
 		builder.setCreateMethod (MoodleLogData::new);
 
-		builder.addUniqueAttribute (LogEntry.Properties.ID, Long.class, false, false, MoodleLogData::getId, MoodleLogData::setId);
+		builder.addUniqueAttribute ("id", Long.class, false, false, MoodleLogData::getId, MoodleLogData::setId);
 
-		builder.addAttribute (LogEntry.Properties.IPADDRESS, String.class, true, false, MoodleLogData::getIPAddress, MoodleLogData::setIPAddress);
-		builder.addAttribute (LogEntry.Properties.TIME, Date.class, true, true, MoodleLogData::getTime, MoodleLogData::setTime);
+		builder.addAttribute ("ipaddress", String.class, true, false, MoodleLogData::getIPAddress, MoodleLogData::setIPAddress);
+		builder.addAttribute ("time", Date.class, true, true, MoodleLogData::getTime, MoodleLogData::setTime);
 
 
 		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);

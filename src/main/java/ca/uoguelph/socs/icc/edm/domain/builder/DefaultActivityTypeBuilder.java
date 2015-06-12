@@ -27,7 +27,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType, ActivityType.Properties> implements ActivityTypeBuilder
+public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType> implements ActivityTypeBuilder
 {
 	/**
 	 * static initializer to register the
@@ -86,7 +86,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 		this.setName (type.getName ());
 		this.setActivitySource (type.getSource ());
 
-		this.setPropertyValue (ActivityType.Properties.ID, type.getId ());
+		this.setPropertyValue ("id", type.getId ());
 	}
 
 	/**
@@ -99,7 +99,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	@Override
 	public String getName ()
 	{
-		return this.getPropertyValue (String.class, ActivityType.Properties.NAME);
+		return this.getPropertyValue (String.class, "name");
 	}
 
 	/**
@@ -128,7 +128,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.setPropertyValue (ActivityType.Properties.NAME, name);
+		this.setPropertyValue ("name", name);
 	}
 
 	/**
@@ -140,7 +140,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	@Override
 	public ActivitySource getActivitySource ()
 	{
-		return this.getPropertyValue (ActivitySource.class, ActivityType.Properties.SOURCE);
+		return this.getPropertyValue (ActivitySource.class, "source");
 	}
 
 	/**
@@ -170,7 +170,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 			throw new IllegalArgumentException ("ActivitySource is not in the DataStore");
 		}
 
-		this.setPropertyValue (ActivityType.Properties.SOURCE, source);
+		this.setPropertyValue ("source", source);
 	}
 
 	/**

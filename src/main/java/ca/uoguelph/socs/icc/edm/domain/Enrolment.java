@@ -69,14 +69,6 @@ import java.util.Set;
 public interface Enrolment extends Element
 {
 	/**
-	 * Enumeration of all of the properties of an <code>Enrolment</code>.
-	 * Properties represent the data contained within the
-	 * <code>Enrolment</code> instance.
-	 */
-
-	public static enum Properties { ID, COURSE, FINALGRADE, ROLE, USABLE };
-
-	/**
 	 * Get the name associated with the <code>Enrolment</code>.  The contents
 	 * of the <code>String</code> returned by this method are implementation
 	 * dependent.  If the implementation has access to the <code>User</code>

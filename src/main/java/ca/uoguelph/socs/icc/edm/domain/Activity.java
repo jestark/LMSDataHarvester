@@ -61,14 +61,6 @@ import java.util.Set;
 public interface Activity extends Element
 {
 	/**
-	 * Enumeration of all of the properties of an <code>Activity</code>.
-	 * Properties represent the data contained within the <code>Activity</code>
-	 * instance.
-	 */
-
-	public static enum Properties { ID, COURSE, NAME, TYPE };
-
-	/**
 	 * Get the name of the <code>Activity</code>.  Not all
 	 * <code>Activity</code> instances have names.  For those
 	 * <code>Activity</code> instances which do not have names, the name of the

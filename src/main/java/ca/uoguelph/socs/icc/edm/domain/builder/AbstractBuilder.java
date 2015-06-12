@@ -31,6 +31,8 @@ import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Builder;
+
 /**
  * Abstract implementation of the <code>ElementBuilder</code> interface.
  *
@@ -38,7 +40,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> implements ElementBuilder<T>
+public abstract class AbstractBuilder<T extends Element> implements ElementBuilder<T>
 {
 	/** Factory for the <code>ElementBuilder</code> implementations */
 	private static final Map<Class<? extends ElementBuilder<? extends Element>>, BiFunction<Class<?>, DataStore, ? extends ElementBuilder<? extends Element>>> FACTORIES;
@@ -47,7 +49,7 @@ public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> impl
 	private static final Map<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ELEMENTS;
 
 	/** The builder */
-	private final Builder<T, E> builder;
+	private final Builder<T> builder;
 
 	/** The Logger */
 	protected final Logger log;
@@ -171,7 +173,7 @@ public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> impl
 	 * @return          The value associated with the specified property
 	 */
 
-	protected final <V> V getPropertyValue (final Class<V> type, final E property)
+	protected final <V> V getPropertyValue (final Class<V> type, final String property)
 	{
 		assert type != null : "type is NULL";
 		assert property != null : "property is NULL";
@@ -187,7 +189,7 @@ public abstract class AbstractBuilder<T extends Element, E extends Enum<E>> impl
 	 * @param  value    The value to set for the property
 	 */
 
-	protected final <V> void setPropertyValue (final E property, final V value)
+	protected final <V> void setPropertyValue (final String property, final V value)
 	{
 		this.log.trace ("setPropertyValue: property={}, value={}", property, value);
 

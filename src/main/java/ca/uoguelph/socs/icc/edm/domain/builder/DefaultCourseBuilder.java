@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.Properties> implements CourseBuilder
+public final class DefaultCourseBuilder extends AbstractBuilder<Course> implements CourseBuilder
 {
 	/**
 	 * static initializer to register the <code>DefaultCourseBuilder</code>
@@ -86,7 +86,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 		this.setSemester (course.getSemester ());
 		this.setYear (course.getYear ());
 
-		this.setPropertyValue (Course.Properties.ID, course.getId ());
+		this.setPropertyValue ("id", course.getId ());
 	}
 
 	/**
@@ -99,7 +99,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 	@Override
 	public String getName ()
 	{
-		return this.getPropertyValue (String.class, Course.Properties.NAME);
+		return this.getPropertyValue (String.class, "name");
 	}
 
 	/**
@@ -128,7 +128,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.setPropertyValue (Course.Properties.NAME, name);
+		this.setPropertyValue ("name", name);
 	}
 
 	/**
@@ -141,7 +141,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 	@Override
 	public Semester getSemester ()
 	{
-		return this.getPropertyValue (Semester.class, Course.Properties.SEMESTER);
+		return this.getPropertyValue (Semester.class, "semester");
 	}
 
 	/**
@@ -162,7 +162,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 			throw new NullPointerException ("semester is NULL");
 		}
 
-		this.setPropertyValue (Course.Properties.SEMESTER, semester);
+		this.setPropertyValue ("semester", semester);
 	}
 
 	/**
@@ -174,7 +174,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 	@Override
 	public Integer getYear ()
 	{
-		return this.getPropertyValue (Integer.class, Course.Properties.YEAR);
+		return this.getPropertyValue (Integer.class, "year");
 	}
 
 	/**
@@ -202,6 +202,6 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course, Course.P
 			throw new IllegalArgumentException ("Year is negative");
 		}
 
-		this.setPropertyValue (Course.Properties.YEAR, year);
+		this.setPropertyValue ("year", year);
 	}
 }

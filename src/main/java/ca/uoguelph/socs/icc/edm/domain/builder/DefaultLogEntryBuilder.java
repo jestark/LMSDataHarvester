@@ -33,7 +33,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogEntry.Properties> implements LogEntryBuilder
+public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> implements LogEntryBuilder
 {
 	/**
 	 * static initializer to register the <code>DefaultLogEntryBuilder</code>
@@ -95,7 +95,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 
 		// reference ??
 
-		this.setPropertyValue (LogEntry.Properties.ID, entry.getId ());
+		this.setPropertyValue ("id", entry.getId ());
 	}
 
 	/**
@@ -108,7 +108,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	@Override
 	public Action getAction ()
 	{
-		return this.getPropertyValue (Action.class, LogEntry.Properties.ACTION);
+		return this.getPropertyValue (Action.class, "action");
 	}
 
 	/**
@@ -138,7 +138,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 			throw new IllegalArgumentException ("Action is not in the DataStore");
 		}
 
-		this.setPropertyValue (LogEntry.Properties.ACTION, action);
+		this.setPropertyValue ("action", action);
 	}
 
 	/**
@@ -151,7 +151,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	@Override
 	public Activity getActivity ()
 	{
-		return this.getPropertyValue (Activity.class, LogEntry.Properties.ACTIVITY);
+		return this.getPropertyValue (Activity.class, "activity");
 	}
 
 	/**
@@ -181,7 +181,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 			throw new IllegalArgumentException ("Activity is not in the DataStore");
 		}
 
-		this.setPropertyValue (LogEntry.Properties.ACTIVITY, activity);
+		this.setPropertyValue ("activity", activity);
 	}
 
 	/**
@@ -194,7 +194,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	@Override
 	public Enrolment getEnrolment ()
 	{
-		return this.getPropertyValue (Enrolment.class, LogEntry.Properties.ENROLMENT);
+		return this.getPropertyValue (Enrolment.class, "enrolment");
 	}
 
 	/**
@@ -224,7 +224,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 			throw new IllegalArgumentException ("Enrolment is not in the DataStore");
 		}
 
-		this.setPropertyValue (LogEntry.Properties.ENROLMENT, enrolment);
+		this.setPropertyValue ("enrolment", enrolment);
 	}
 
 	/**
@@ -236,7 +236,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	@Override
 	public Date getTime ()
 	{
-		return this.getPropertyValue (Date.class, LogEntry.Properties.TIME);
+		return this.getPropertyValue (Date.class, "time");
 	}
 
 	/**
@@ -252,11 +252,11 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 
 		if (time == null)
 		{
-			this.setPropertyValue (LogEntry.Properties.TIME, new Date ());
+			this.setPropertyValue ("time", new Date ());
 		}
 		else
 		{
-			this.setPropertyValue (LogEntry.Properties.IPADDRESS, time);
+			this.setPropertyValue ("ipaddress", time);
 		}
 	}
 
@@ -270,7 +270,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	@Override
 	public String getIPAddress ()
 	{
-		return this.getPropertyValue (String.class, LogEntry.Properties.IPADDRESS);
+		return this.getPropertyValue (String.class, "ipaddress");
 	}
 
 	/**
@@ -285,6 +285,6 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry, LogE
 	{
 		this.log.trace ("setIPAddress: ipaddress={}", ipaddress);
 
-		this.setPropertyValue (LogEntry.Properties.IPADDRESS, ipaddress);
+		this.setPropertyValue ("ipaddress", ipaddress);
 	}
 }

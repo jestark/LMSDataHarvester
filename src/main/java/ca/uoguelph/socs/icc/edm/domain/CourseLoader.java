@@ -31,33 +31,6 @@ import java.util.List;
 public interface CourseLoader extends ElementLoader<Course>
 {
 	/**
-	 *  Retrieve a <code>List</code> of <code>Course</code> instances from the
-	 * <code>DataStore</code> based on the time of offering.
-	 *
-	 * @param  semester The <code>Semester</code> of offering, not null
-	 * @param  year     The year of offering, not null
-	 *
-	 * @return          A <code>List</code> of <code>Course</code> instances
-	 */
-
-	public abstract List<Course> fetchAllForOffering (Semester semester, Integer year);
-
-	/**
-	 * Retrieve a <code>List</code> of <code>Course</code> instances from the
-	 * <code>DataStore</code> based on the time of offering, and a regular
-	 * expression matching the courses name.
-	 *
-	 * @param  name     The regular expression to match against the name of the
-	 *                  <code>Course</code>, not null
-	 * @param  semester The <code>Semester</code> of offering, not null
-	 * @param  year     The year of offering, not null
-	 *
-	 * @return          A <code>List</code> of <code>Course</code> instances
-	 */
-
-	public abstract List<Course> fetchAllForOffering (String name, Semester semester, Integer year);
-
-	/**
 	 * Retrieve a course from the underlying data-store based on its name and
 	 * time of offering.
 	 *

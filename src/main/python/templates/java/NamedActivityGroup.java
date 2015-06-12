@@ -64,14 +64,14 @@ public class ${ClassName} extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, ${ClassName}, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, ${ClassName}.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, ${ClassName}> builder = DefinitionBuilder.newInstance (Activity.class, ${ClassName}.class);
 		builder.setCreateMethod (${ClassName}::new);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);
+		builder.addUniqueAttribute ("id", Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);
 
-		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, ${ClassName}::getCourse, ${ClassName}::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, ${ClassName}::getType, ${ClassName}::setType);
-		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, ${ClassName}::getName, ${ClassName}::setName);
+		builder.addAttribute ("course", Course.class, true, false, ${ClassName}::getCourse, ${ClassName}::setCourse);
+		builder.addAttribute ("type", ActivityType.class, true, false, ${ClassName}::getType, ${ClassName}::setType);
+		builder.addAttribute ("name", String.class, true, false, ${ClassName}::getName, ${ClassName}::setName);
 
 		builder.addRelationship ("grades", Grade.class, ${ClassName}::addGrade, ${ClassName}::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);

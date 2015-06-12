@@ -64,14 +64,14 @@ public class Workshop extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Workshop, Activity.Properties> builder = DefinitionBuilder.newInstance (Activity.class, Workshop.class, Activity.Properties.class);
+		DefinitionBuilder<Activity, Workshop> builder = DefinitionBuilder.newInstance (Activity.class, Workshop.class);
 		builder.setCreateMethod (Workshop::new);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Long.class, false, false, Workshop::getId, Workshop::setId);
+		builder.addUniqueAttribute ("id", Long.class, false, false, Workshop::getId, Workshop::setId);
 
-		builder.addAttribute (Activity.Properties.COURSE, Course.class, true, false, Workshop::getCourse, Workshop::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, ActivityType.class, true, false, Workshop::getType, Workshop::setType);
-		builder.addAttribute (Activity.Properties.NAME, String.class, true, false, Workshop::getName, Workshop::setName);
+		builder.addAttribute ("course", Course.class, true, false, Workshop::getCourse, Workshop::setCourse);
+		builder.addAttribute ("type", ActivityType.class, true, false, Workshop::getType, Workshop::setType);
+		builder.addAttribute ("name", String.class, true, false, Workshop::getName, Workshop::setName);
 
 		builder.addRelationship ("grades", Grade.class, Workshop::addGrade, Workshop::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Workshop::addLog, Workshop::removeLog);

@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultRoleBuilder extends AbstractBuilder<Role, Role.Properties> implements RoleBuilder
+public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements RoleBuilder
 {
 	/**
 	 * static initializer to register the <code>DefaultRoleBuilder</code> with
@@ -82,7 +82,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, Role.Propert
 		super.load (role);
 		this.setName (role.getName ());
 
-		this.setPropertyValue (Role.Properties.ID, role.getId ());
+		this.setPropertyValue ("id", role.getId ());
 	}
 
 	/**
@@ -95,7 +95,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, Role.Propert
 	@Override
 	public String getName ()
 	{
-		return this.getPropertyValue (String.class, Role.Properties.NAME);
+		return this.getPropertyValue (String.class, "name");
 	}
 
 	/**
@@ -124,6 +124,6 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role, Role.Propert
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.setPropertyValue (Role.Properties.NAME, name);
+		this.setPropertyValue ("name", name);
 	}
 }

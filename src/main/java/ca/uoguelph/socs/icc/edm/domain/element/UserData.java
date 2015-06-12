@@ -75,15 +75,15 @@ public class UserData extends AbstractElement implements User, Serializable
 
 	static
 	{
-		DefinitionBuilder<User, UserData, User.Properties> builder = DefinitionBuilder.newInstance (User.class, UserData.class, User.Properties.class);
+		DefinitionBuilder<User, UserData> builder = DefinitionBuilder.newInstance (User.class, UserData.class);
 		builder.setCreateMethod (UserData::new);
 
-		builder.addUniqueAttribute (User.Properties.ID, Long.class, false, false, UserData::getId, UserData::setId);
-		builder.addUniqueAttribute (User.Properties.IDNUMBER, Integer.class, true, false, UserData::getIdNumber, UserData::setIdNumber);
-		builder.addUniqueAttribute (User.Properties.USERNAME, String.class, true, false, UserData::getUsername, UserData::setUsername);
+		builder.addUniqueAttribute ("id", Long.class, false, false, UserData::getId, UserData::setId);
+		builder.addUniqueAttribute ("idnumber", Integer.class, true, false, UserData::getIdNumber, UserData::setIdNumber);
+		builder.addUniqueAttribute ("username", String.class, true, false, UserData::getUsername, UserData::setUsername);
 
-		builder.addAttribute (User.Properties.FIRSTNAME, String.class, true, true, UserData::getFirstname, UserData::setFirstname);
-		builder.addAttribute (User.Properties.LASTNAME, String.class, true, true, UserData::getLastname, UserData::setLastname);
+		builder.addAttribute ("firstname", String.class, true, true, UserData::getFirstname, UserData::setFirstname);
+		builder.addAttribute ("lastname", String.class, true, true, UserData::getLastname, UserData::setLastname);
 
 		builder.addRelationship ("enrolments", Enrolment.class, UserData::addEnrolment, UserData::removeEnrolment);
 

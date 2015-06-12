@@ -29,14 +29,6 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 public interface SubActivity extends Activity
 {
 	/**
-	 * Enumeration of all of the properties of an <code>SubActivity</code>.
-	 * Properties represent the data contained within the
-	 * <code>SubActivity</code> instance.
-	 */
-
-	public static enum Properties { ID, NAME, PARENT };
-
-	/**
 	 * Get the parent <code>Activity</code> instance for the
 	 * <code>SubActivity</code>.
 	 *

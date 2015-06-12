@@ -30,7 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Properties> implements GradeBuilder
+public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements GradeBuilder
 {
 	/**
 	 * static initializer to register the <code>DefaultGradeBuilder</code> with
@@ -97,7 +97,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 	@Override
 	public Activity getActivity ()
 	{
-		return this.getPropertyValue (Activity.class, Grade.Properties.ACTIVITY);
+		return this.getPropertyValue (Activity.class, "activity");
 	}
 
 	/**
@@ -121,7 +121,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 			throw new NullPointerException ("The specified activity is NULL");
 		}
 
-		this.setPropertyValue (Grade.Properties.ACTIVITY, activity);
+		this.setPropertyValue ("activity", activity);
 	}
 
 	/**
@@ -134,7 +134,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 	@Override
 	public Enrolment getEnrolment ()
 	{
-		return this.getPropertyValue (Enrolment.class, Grade.Properties.ENROLMENT);
+		return this.getPropertyValue (Enrolment.class, "enrolment");
 	}
 
 	/**
@@ -158,7 +158,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 			throw new NullPointerException ("The specified Enrolment is NULL");
 		}
 
-		this.setPropertyValue (Grade.Properties.ENROLMENT, enrolment);
+		this.setPropertyValue ("enrolment", enrolment);
 	}
 
 	/**
@@ -173,7 +173,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 	@Override
 	public Integer getGrade ()
 	{
-		return this.getPropertyValue (Integer.class, Grade.Properties.GRADE);
+		return this.getPropertyValue (Integer.class, "grade");
 	}
 
 	/**
@@ -210,6 +210,6 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade, Grade.Prop
 			throw new IllegalArgumentException ("Grade is greater than 100%");
 		}
 
-		this.setPropertyValue (Grade.Properties.GRADE, grade);
+		this.setPropertyValue ("grade", grade);
 	}
 }

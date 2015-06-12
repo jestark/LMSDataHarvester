@@ -243,7 +243,7 @@ public final class DomainModelBuilder
 	}
 
 	/**
-	 * Get the <code>ElementManager</code> implementation used to access the
+	 * Get the <code>ElementLoader</code> implementation used to access the
 	 * <code>DataStore</code> for the specified domain model interface.
 	 *
 	 * @param  element                  Domain model interface class, not null
@@ -252,13 +252,13 @@ public final class DomainModelBuilder
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
-	public Class<? extends ElementManager<? extends Element>> getManagerClass (Class<? extends Element> element)
+	public Class<? extends ElementLoader<? extends Element>> getLoaderClass (Class<? extends Element> element)
 	{
-		Class<? extends ElementManager<? extends Element>> manager = null;
+		Class<? extends ElementLoader<? extends Element>> loader = null;
 
 		try
 		{
-			manager = this.profile.getManagerClass (element);
+			loader = this.profile.getLoaderClass (element);
 		}
 		catch (NullPointerException ex)
 		{
@@ -270,12 +270,12 @@ public final class DomainModelBuilder
 			this.log.debug (ex.getMessage ());
 		}
 
-		return manager;
+		return loader;
 	}
 
-	public Class<? extends ElementManager<? extends Element>> getManagerClass (DomainModelType element)
+	public Class<? extends ElementLoader<? extends Element>> getLoaderClass (DomainModelType element)
 	{
-		return this.getManagerClass (element.getInterfaceClass ());
+		return this.getLoaderClass (element.getInterfaceClass ());
 	}
 
 	/**
@@ -287,7 +287,7 @@ public final class DomainModelBuilder
 	 *        model interfaces.  Subsequent entries for a given element will
 	 *        replace previous entries.
 	 *   <li> An indication if the interface is represented by the database. If
-	 *        the interface is not represented, requests for the manager
+	 *        the interface is not represented, requests for the loader
 	 *        associated with the interface will throw an
 	 *        <code>IllegalStateException</code>.
 	 *   <li> The implementation of the interface to be used, which must
@@ -308,11 +308,11 @@ public final class DomainModelBuilder
 	 *                                  element
 	 */
 
-	public void setEntry (Class<? extends Element> element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
+	public void setEntry (Class<? extends Element> element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementLoader<? extends Element>> loader)
 	{
 		try
 		{
-			this.profile.addEntry (element, available, impl, generator, manager);
+			this.profile.addEntry (element, available, impl, generator, loader);
 		}
 		catch (NullPointerException ex)
 		{
@@ -326,9 +326,9 @@ public final class DomainModelBuilder
 		}
 	}
 
-	public void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
+	public void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementLoader<? extends Element>> loader)
 	{
-		this.setEntry (element.getInterfaceClass (), available, impl, generator, manager);
+		this.setEntry (element.getInterfaceClass (), available, impl, generator, loader);
 	}
 
 	/**

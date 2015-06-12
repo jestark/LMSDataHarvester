@@ -41,14 +41,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface Role extends Element
 {
 	/**
-	 * Enumeration of all of the properties of an <code>Role</code>.
-	 * Properties represent the data contained within the <code>Role</code>
-	 * instance.
-	 */
-
-	public static enum Properties { ID, NAME };
-
-	/**
 	 * Get the name of the <code>Role</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the

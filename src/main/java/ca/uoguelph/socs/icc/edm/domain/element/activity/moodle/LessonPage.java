@@ -62,13 +62,13 @@ public class LessonPage extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<SubActivity, LessonPage, SubActivity.Properties> builder = DefinitionBuilder.newInstance (SubActivity.class, LessonPage.class, SubActivity.Properties.class);
+		DefinitionBuilder<SubActivity, LessonPage> builder = DefinitionBuilder.newInstance (SubActivity.class, LessonPage.class);
 		builder.setCreateMethod (LessonPage::new);
 
-		builder.addUniqueAttribute (SubActivity.Properties.ID, Long.class, false, false, LessonPage::getId, LessonPage::setId);
+		builder.addUniqueAttribute ("id", Long.class, false, false, LessonPage::getId, LessonPage::setId);
 
-		builder.addAttribute (SubActivity.Properties.PARENT, Activity.class, true, false, LessonPage::getParent, LessonPage::setParent);
-		builder.addAttribute (SubActivity.Properties.NAME, String.class, true, false, LessonPage::getName, LessonPage::setName);
+		builder.addAttribute ("parent", Activity.class, true, false, LessonPage::getParent, LessonPage::setParent);
+		builder.addAttribute ("name", String.class, true, false, LessonPage::getName, LessonPage::setName);
 
 		builder.addRelationship ("log", LogEntry.class, LessonPage::addLog, LessonPage::removeLog);
 

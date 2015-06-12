@@ -62,11 +62,11 @@ class LessonPageLog extends LogReference
 
 	static
 	{
-		DefinitionBuilder<LogEntry, LessonPageLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, LessonPageLog.class, LogEntry.Properties.class);
+		DefinitionBuilder<LogEntry, LessonPageLog> builder = DefinitionBuilder.newInstance (LogEntry.class, LessonPageLog.class);
 		builder.setCreateMethod (LessonPageLog::new);
 
-//		builder.addAttribute (LogEntry.Properties.ENTRY, LogEntry.class, true, false, LessonPageLog::getEntry, LessonPageLog::setEntry);
-		builder.addAttribute (LogEntry.Properties.SUBACTIVITY, SubActivity.class, true, false, LessonPageLog::getSubActivity, LessonPageLog::setSubActivity);
+		builder.addAttribute ("entry", LogEntry.class, true, false, LessonPageLog::getEntry, LessonPageLog::setEntry);
+		builder.addAttribute ("subactivity", SubActivity.class, true, false, LessonPageLog::getSubActivity, LessonPageLog::setSubActivity);
 
 		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
 	}

@@ -48,14 +48,6 @@ import java.util.Set;
 public interface ActivitySource extends Element
 {
 	/**
-	 * Enumeration of all of the properties of an <code>ActivitySource</code>.
-	 * Properties represent the data contained within the
-	 * <code>ActivitySource</code> instance.
-	 */
-
-	public static enum Properties { ID, NAME };
-
-	/**
 	 * Get the name of the <code>ActivitySource</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the

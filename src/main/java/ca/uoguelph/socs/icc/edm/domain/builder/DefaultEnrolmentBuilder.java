@@ -30,7 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, Enrolment.Properties> implements EnrolmentBuilder
+public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> implements EnrolmentBuilder
 {
 	/**
 	 * static initializer to register the <code>DefaultEnrolmentBuilder</code>
@@ -89,7 +89,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 		this.setFinalGrade (enrolment.getFinalGrade ());
 		this.setRole (enrolment.getRole ());
 
-		this.setPropertyValue (Enrolment.Properties.ID, enrolment.getId ());
+		this.setPropertyValue ("id", enrolment.getId ());
 	}
 
 	/**
@@ -102,7 +102,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	@Override
 	public Course getCourse ()
 	{
-		return this.getPropertyValue (Course.class, Enrolment.Properties.COURSE);
+		return this.getPropertyValue (Course.class, "course");
 	}
 
 	/**
@@ -131,7 +131,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
 
-		this.setPropertyValue (Enrolment.Properties.COURSE, course);
+		this.setPropertyValue ("course", course);
 	}
 
 	/**
@@ -144,7 +144,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	@Override
 	public Role getRole ()
 	{
-		return this.getPropertyValue (Role.class, Enrolment.Properties.ROLE);
+		return this.getPropertyValue (Role.class, "role");
 	}
 
 	/**
@@ -174,7 +174,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new IllegalArgumentException ("Role is not in the DataStore");
 		}
 
-		this.setPropertyValue (Enrolment.Properties.ROLE, role);
+		this.setPropertyValue ("role", role);
 	}
 
 	/**
@@ -190,7 +190,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	@Override
 	public Integer getFinalGrade ()
 	{
-		return this.getPropertyValue (Integer.class, Enrolment.Properties.FINALGRADE);
+		return this.getPropertyValue (Integer.class, "finalgrade");
 	}
 
 	/**
@@ -215,7 +215,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new IllegalArgumentException ("Grade must be between 0 and 100");
 		}
 
-		this.setPropertyValue (Enrolment.Properties.FINALGRADE, finalgrade);
+		this.setPropertyValue ("finalgrade", finalgrade);
 	}
 
 	/**
@@ -229,7 +229,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 	@Override
 	public Boolean isUsable ()
 	{
-		return this.getPropertyValue (Boolean.class, Enrolment.Properties.USABLE);
+		return this.getPropertyValue (Boolean.class, "usable");
 	}
 
 	/**
@@ -252,6 +252,6 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment, En
 			throw new NullPointerException ("usable is NULL");
 		}
 
-		this.setPropertyValue (Enrolment.Properties.USABLE, usable);
+		this.setPropertyValue ("usable", usable);
 	}
 }

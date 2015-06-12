@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public final class DefaultActivitySourceBuilder extends AbstractBuilder<ActivitySource, ActivitySource.Properties> implements ActivitySourceBuilder
+public final class DefaultActivitySourceBuilder extends AbstractBuilder<ActivitySource> implements ActivitySourceBuilder
 {
 	/**
 	 * static initializer to register the
@@ -89,7 +89,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 		super.load (source);
 		this.setName (source.getName ());
 
-		this.setPropertyValue (ActivitySource.Properties.ID, source.getId ());
+		this.setPropertyValue ("id", source.getId ());
 	}
 
 	/**
@@ -102,7 +102,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	@Override
 	public String getName ()
 	{
-		return this.getPropertyValue (String.class, ActivitySource.Properties.NAME);
+		return this.getPropertyValue (String.class, "name");
 	}
 
 	/**
@@ -131,6 +131,6 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.setPropertyValue (ActivitySource.Properties.NAME, name);
+		this.setPropertyValue ("name", name);
 	}
 }

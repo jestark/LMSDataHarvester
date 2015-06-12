@@ -87,15 +87,15 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 
 	static
 	{
-		DefinitionBuilder<Enrolment, EnrolmentData, Enrolment.Properties> builder = DefinitionBuilder.newInstance (Enrolment.class, EnrolmentData.class, Enrolment.Properties.class);
+		DefinitionBuilder<Enrolment, EnrolmentData> builder = DefinitionBuilder.newInstance (Enrolment.class, EnrolmentData.class);
 		builder.setCreateMethod (EnrolmentData::new);
 
-		builder.addUniqueAttribute (Enrolment.Properties.ID, Long.class, false, false, EnrolmentData::getId, EnrolmentData::setId);
+		builder.addUniqueAttribute ("id", Long.class, false, false, EnrolmentData::getId, EnrolmentData::setId);
 
-		builder.addAttribute (Enrolment.Properties.COURSE, Course.class, true, false, EnrolmentData::getCourse, EnrolmentData::setCourse);
-		builder.addAttribute (Enrolment.Properties.ROLE, Role.class, true, false, EnrolmentData::getRole, EnrolmentData::setRole);
-		builder.addAttribute (Enrolment.Properties.FINALGRADE, Integer.class, false, true, EnrolmentData::getFinalGrade, EnrolmentData::setFinalGrade);
-		builder.addAttribute (Enrolment.Properties.USABLE, Boolean.class, false, true, EnrolmentData::isUsable, EnrolmentData::setUsable);
+		builder.addAttribute ("course", Course.class, true, false, EnrolmentData::getCourse, EnrolmentData::setCourse);
+		builder.addAttribute ("role", Role.class, true, false, EnrolmentData::getRole, EnrolmentData::setRole);
+		builder.addAttribute ("finalgrade", Integer.class, false, true, EnrolmentData::getFinalGrade, EnrolmentData::setFinalGrade);
+		builder.addAttribute ("usable", Boolean.class, false, true, EnrolmentData::isUsable, EnrolmentData::setUsable);
 
 		builder.addRelationship ("grades", Grade.class, EnrolmentData::addGrade, EnrolmentData::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, EnrolmentData::addLog, EnrolmentData::removeLog);

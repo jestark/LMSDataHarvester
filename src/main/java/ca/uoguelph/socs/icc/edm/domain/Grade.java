@@ -44,14 +44,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 public interface Grade extends Element
 {
 	/**
-	 * Enumeration of all of the properties of an <code>Grade</code>.
-	 * Properties represent the data contained within the <code>Grade</code>
-	 * instance.
-	 */
-
-	public static enum Properties { ACTIVITY, ENROLMENT, GRADE };
-
-	/**
 	 * Get the name of the <code>Enrolment</code> to which the
 	 * <code>Grade</code> is assigned.  This is a convenience method which
 	 * return the result from the <code>getName</code> method on the associated

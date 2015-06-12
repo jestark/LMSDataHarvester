@@ -62,11 +62,11 @@ class ForumPostLog extends LogReference
 
 	static
 	{
-		DefinitionBuilder<LogEntry, ForumPostLog, LogEntry.Properties> builder = DefinitionBuilder.newInstance (LogEntry.class, ForumPostLog.class, LogEntry.Properties.class);
+		DefinitionBuilder<LogEntry, ForumPostLog> builder = DefinitionBuilder.newInstance (LogEntry.class, ForumPostLog.class);
 		builder.setCreateMethod (ForumPostLog::new);
 
-//		builder.addAttribute (LogEntry.Properties.ENTRY, LogEntry.class, true, false, ForumPostLog::getEntry, ForumPostLog::setEntry);
-		builder.addAttribute (LogEntry.Properties.SUBACTIVITY, SubActivity.class, true, false, ForumPostLog::getSubActivity, ForumPostLog::setSubActivity);
+		builder.addAttribute ("entry", LogEntry.class, true, false, ForumPostLog::getEntry, ForumPostLog::setEntry);
+		builder.addAttribute ("subactivity", SubActivity.class, true, false, ForumPostLog::getSubActivity, ForumPostLog::setSubActivity);
 
 		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
 	}
