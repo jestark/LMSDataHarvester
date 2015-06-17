@@ -24,6 +24,8 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * Default implementation of the <code>SubActivityBuilder</code>.
  *
@@ -33,6 +35,15 @@ import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
 
 public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends AbstractBuilder<T> implements SubActivityBuilder<T>
 {
+	/** The "id" <code>Property</code> */
+	private final Property<Long> ID;
+
+	/** The "name" <code>Property</code> */
+	private final Property<String> NAME;
+
+	/** The "parent" <code>Property</code> */
+	private final Property<Activity> PARENT;
+
 	/**
 	 * Get an instance of the <code>SubActivityBuilder</code> which corresponds
 	 * to the specified parent <code>Activity</code>.
@@ -67,6 +78,10 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	protected AbstractSubActivityBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
+
+		this.ID = this.builder.getProperty ("id", Long.class);
+		this.NAME = this.builder.getProperty ("name", String.class);
+		this.PARENT = this.builder.getProperty ("parent", Activity.class);
 	}
 
 	/**
@@ -106,7 +121,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 		super.load (subactivity);
 		this.setName (subactivity.getName ());
 
-		this.setPropertyValue ("id", subactivity.getId ());
+		this.builder.setProperty (this.ID, subactivity.getId ());
 	}
 
 	/**
@@ -119,7 +134,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	@Override
 	public final String getName ()
 	{
-		return this.getPropertyValue (String.class, "name");
+		return this.builder.getPropertyValue (this.NAME);
 	}
 
 	/**
@@ -148,7 +163,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.setPropertyValue ("name", name);
+		this.builder.setProperty (this.NAME, name);
 	}
 
 	/**
@@ -161,7 +176,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	@Override
 	public final Activity getParent ()
 	{
-		return this.getPropertyValue (Activity.class, "parent");
+		return this.builder.getPropertyValue (this.PARENT);
 	}
 
 	/**
@@ -178,6 +193,6 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 		assert parent != null : "parent is NULL";
 		assert this.datastore.contains (parent) : "parent is not in the DataStore";
 
-		this.setPropertyValue ("parent", parent);
+		this.builder.setProperty (this.PARENT, parent);
 	}
 }

@@ -32,6 +32,8 @@ import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Builder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 
 /**
  * Abstract implementation of the <code>ElementBuilder</code> interface.
@@ -46,10 +48,12 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	private static final Map<Class<? extends ElementBuilder<? extends Element>>, BiFunction<Class<?>, DataStore, ? extends ElementBuilder<? extends Element>>> FACTORIES;
 
 	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
-	private static final Map<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ELEMENTS;
+	private static final Map<Class<?>, Class<? extends ElementBuilder<? extends Element>>> ELEMENTS;
+
+	private static final Map<Class<?>, MetaData<? extends Element>> metadata;
 
 	/** The builder */
-	private final Builder<T> builder;
+	protected final Builder<T> builder;
 
 	/** The Logger */
 	protected final Logger log;
@@ -67,7 +71,8 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	static
 	{
 		FACTORIES = new HashMap<Class<? extends ElementBuilder<? extends Element>>, BiFunction<Class<?>, DataStore, ? extends ElementBuilder<? extends Element>>> ();
-		ELEMENTS = new HashMap<Class<? extends Element>, Class<? extends ElementBuilder<? extends Element>>> ();
+		ELEMENTS = new HashMap<Class<?>, Class<? extends ElementBuilder<? extends Element>>> ();
+		metadata = new HashMap<Class<?>, MetaData<? extends Element>> ();
 	}
 
 	/**
@@ -133,13 +138,23 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 *                 not null
 	 */
 
-	public static final <T extends ElementBuilder<U>, U extends Element> void registerElement (final Class<? extends U> element, final Class<T> builder)
+	public static final <T extends ElementBuilder<U>, U extends Element> void registerElement (final MetaData<U> metadata, final Class<T> builder)
+	{
+		assert metadata != null : "metadata is NULL";
+		assert builder != null : "builder is NULL";
+		assert (! AbstractBuilder.ELEMENTS.containsKey (metadata.getElementClass ())) : "Class already registered: " + (metadata.getElementClass ()).getSimpleName ();
+
+		AbstractBuilder.ELEMENTS.put (metadata.getElementClass (), builder);
+		AbstractBuilder.metadata.put (metadata.getElementClass (), metadata);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static final <T extends Element> Builder<T> getBuilder (final Class<?> element)
 	{
 		assert element != null : "element is NULL";
-		assert builder != null : "builder is NULL";
-		assert (! AbstractBuilder.ELEMENTS.containsKey (element)) : "Class already registered: " + element.getSimpleName ();
+		assert AbstractBuilder.metadata.containsKey (element) : "Element class is not registered: " + element.getSimpleName ();
 
-		AbstractBuilder.ELEMENTS.put (element, builder);
+		return ((MetaData<T>) AbstractBuilder.metadata.get (element)).getBuilder ();
 	}
 
 	/**
@@ -160,43 +175,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 
 		this.datastore = datastore;
 
-		this.builder = null;
-	}
-
-	/**
-	 * Get the value for the specified property.
-	 *
-	 * @param  <V>      The type of the value associated with the property
-	 * @param  property The property for which the value is to be retrieved
-	 * @param  type     The type Class of the value to return
-	 *
-	 * @return          The value associated with the specified property
-	 */
-
-	protected final <V> V getPropertyValue (final Class<V> type, final String property)
-	{
-		assert type != null : "type is NULL";
-		assert property != null : "property is NULL";
-
-		return this.builder.getProperty (property, type);
-	}
-
-	/**
-	 * Set the specified property to the specified value.
-	 *
-	 * @param  <V>      The type of the value associated with the property
-	 * @param  property The property for which the value is to be set
-	 * @param  value    The value to set for the property
-	 */
-
-	protected final <V> void setPropertyValue (final String property, final V value)
-	{
-		this.log.trace ("setPropertyValue: property={}, value={}", property, value);
-
-		assert property != null : "property is NULL";
-		assert value != null : "value is NULL";
-
-		this.builder.setProperty (property, value);
+		this.builder = AbstractBuilder.getBuilder (impl);
 	}
 
 	/**

@@ -22,6 +22,8 @@ import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * Default implementation of the <code>UserBuilder</code> interface.
  *
@@ -31,6 +33,21 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultUserBuilder extends AbstractBuilder<User> implements UserBuilder
 {
+	/** The "id" <code>Property</code> */
+	private final Property<Long> ID;
+
+	/** The "firstname" <code>Property</code> */
+	private final Property<String> FIRSTNAME;
+
+	/** The "idnumber" <code>Property</code> */
+	private final Property<Integer> IDNUMBER;
+
+	/** The "lastname" <code>Property</code> */
+	private final Property<String> LASTNAME;
+
+	/** The "username" <code>Property</code> */
+	private final Property<String> USERNAME;
+
 	/**
 	 * static initializer to register the <code>DefaultUserBuilder</code> with
 	 * the factory
@@ -53,6 +70,12 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	protected DefaultUserBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
+
+		this.ID = this.builder.getProperty ("id", Long.class);
+		this.FIRSTNAME = this.builder.getProperty ("firstname", String.class);
+		this.IDNUMBER = this.builder.getProperty ("idnumber", Integer.class);
+		this.LASTNAME = this.builder.getProperty ("lastname", String.class);
+		this.USERNAME = this.builder.getProperty ("username", String.class);
 	}
 
 	/**
@@ -86,7 +109,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 		this.setLastname (user.getLastname ());
 		this.setFirstname (user.getFirstname ());
 
-		this.setPropertyValue ("id", user.getId ());
+		this.builder.setProperty (this.ID, user.getId ());
 	}
 
 	/**
@@ -102,7 +125,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public Integer getIdNumber()
 	{
-		return this.getPropertyValue (Integer.class, "idnumber");
+		return this.builder.getPropertyValue (this.IDNUMBER);
 	}
 
 	/**
@@ -130,7 +153,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new IllegalArgumentException ("idnumber is negative");
 		}
 
-		this.setPropertyValue ("idnumber", idnumber);
+		this.builder.setProperty (this.IDNUMBER, idnumber);
 	}
 
 	/**
@@ -143,7 +166,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public String getFirstname ()
 	{
-		return this.getPropertyValue (String.class, "firstname");
+		return this.builder.getPropertyValue (this.FIRSTNAME);
 	}
 
 	/**
@@ -172,7 +195,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new IllegalArgumentException ("firstname is empty");
 		}
 
-		this.setPropertyValue ("firstname", firstname);
+		this.builder.setProperty (this.FIRSTNAME, firstname);
 	}
 
 	/**
@@ -184,7 +207,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public String getLastname ()
 	{
-		return this.getPropertyValue (String.class, "lastname");
+		return this.builder.getPropertyValue (this.LASTNAME);
 	}
 
 	/**
@@ -213,7 +236,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new IllegalArgumentException ("lastname is empty");
 		}
 
-		this.setPropertyValue ("lastname", lastname);
+		this.builder.setProperty (this.LASTNAME, lastname);
 	}
 
 	/**
@@ -229,7 +252,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 	@Override
 	public String getUsername ()
 	{
-		return this.getPropertyValue (String.class, "username");
+		return this.builder.getPropertyValue (this.USERNAME);
 	}
 
 	/**
@@ -258,7 +281,7 @@ public final class DefaultUserBuilder extends AbstractBuilder<User> implements U
 			throw new IllegalArgumentException ("Username is empty");
 		}
 
-		this.setPropertyValue ("username", username);
+		this.builder.setProperty (this.USERNAME, username);
 	}
 
 	/**

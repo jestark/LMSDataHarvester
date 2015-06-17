@@ -26,6 +26,8 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * Abstract implementation of the <code>ActivityBuilder</code> interface.  This
  * class acts as the common base for all of the <code>ActivityBuilder</code>
@@ -38,6 +40,15 @@ import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
 
 public abstract class AbstractActivityBuilder<T extends Activity> extends AbstractBuilder<T> implements ActivityBuilder<T>
 {
+	/** The "id" <code>Property</code> */
+	private final Property<Long> ID;
+
+	/** The "type" <code>Property</code> */
+	private final Property<ActivityType> TYPE;
+
+	/** The "course" <code>Property</code> */
+	private final Property<Course> COURSE;
+
 	/**
 	 * Get an instance of the <code>ActivityBuilder</code> which corresponds to
 	 * the specified <code>ActivityType</code>.
@@ -73,6 +84,10 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	public AbstractActivityBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
+
+		this.ID = this.builder.getProperty ("id", Long.class);
+		this.TYPE = this.builder.getProperty ("type", ActivityType.class);
+		this.COURSE = this.builder.getProperty ("course", Course.class);
 	}
 
 	/**
@@ -111,7 +126,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 		super.load (activity);
 		this.setCourse (activity.getCourse ());
 
-		this.setPropertyValue ("id", activity.getId ());
+		this.builder.setProperty (this.ID, activity.getId ());
 	}
 
 	/**
@@ -123,7 +138,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	@Override
 	public final ActivityType getActivityType ()
 	{
-		return this.getPropertyValue (ActivityType.class, "type");
+		return this.builder.getPropertyValue (this.TYPE);
 	}
 
 	/**
@@ -139,7 +154,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 		assert type != null : "type is NULL";
 		assert this.datastore.contains (type) : "ActivityType is not in the DataStore";
 
-		this.setPropertyValue ("type", type);
+		this.builder.setProperty (this.TYPE, type);
 	}
 
 	/**
@@ -152,7 +167,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	@Override
 	public final Course getCourse ()
 	{
-		return this.getPropertyValue (Course.class, "course");
+		return this.builder.getPropertyValue (this.COURSE);
 	}
 
 	/**
@@ -182,6 +197,6 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
 
-		this.setPropertyValue ("course", course);
+		this.builder.setProperty (this.COURSE, course);
 	}
 }

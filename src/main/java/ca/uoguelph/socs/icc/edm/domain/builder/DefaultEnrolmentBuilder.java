@@ -23,6 +23,8 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * Default implementation of the <code>EnrolmentBuilder</code>.
  *
@@ -32,6 +34,21 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> implements EnrolmentBuilder
 {
+	/** The "id" <code>Property</code> */
+	private final Property<Long> ID;
+
+	/** The "course" <code>Property</code> */
+	private final Property<Course> COURSE;
+
+	/** The "finalgrade" <code>Property</code> */
+	private final Property<Integer> FINALGRADE;
+
+	/** The "role" <code>Property</code> */
+	private final Property<Role> ROLE;
+
+	/** The "usable" <code>Property</code> */
+	private final Property<Boolean> USABLE;
+
 	/**
 	 * static initializer to register the <code>DefaultEnrolmentBuilder</code>
 	 * with the factory
@@ -55,6 +72,12 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	protected DefaultEnrolmentBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
+
+		this.ID = this.builder.getProperty ("id", Long.class);
+		this.COURSE = this.builder.getProperty ("course", Course.class);
+		this.FINALGRADE = this.builder.getProperty ("finalgrade", Integer.class);
+		this.ROLE = this.builder.getProperty ("role", Role.class);
+		this.USABLE = this.builder.getProperty ("usable", Boolean.class);
 	}
 
 	/**
@@ -89,7 +112,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 		this.setFinalGrade (enrolment.getFinalGrade ());
 		this.setRole (enrolment.getRole ());
 
-		this.setPropertyValue ("id", enrolment.getId ());
+		this.builder.setProperty (this.ID, enrolment.getId ());
 	}
 
 	/**
@@ -102,7 +125,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	@Override
 	public Course getCourse ()
 	{
-		return this.getPropertyValue (Course.class, "course");
+		return this.builder.getPropertyValue (this.COURSE);
 	}
 
 	/**
@@ -131,7 +154,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
 
-		this.setPropertyValue ("course", course);
+		this.builder.setProperty (this.COURSE, course);
 	}
 
 	/**
@@ -144,7 +167,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	@Override
 	public Role getRole ()
 	{
-		return this.getPropertyValue (Role.class, "role");
+		return this.builder.getPropertyValue (this.ROLE);
 	}
 
 	/**
@@ -174,7 +197,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 			throw new IllegalArgumentException ("Role is not in the DataStore");
 		}
 
-		this.setPropertyValue ("role", role);
+		this.builder.setProperty (this.ROLE, role);
 	}
 
 	/**
@@ -190,7 +213,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	@Override
 	public Integer getFinalGrade ()
 	{
-		return this.getPropertyValue (Integer.class, "finalgrade");
+		return this.builder.getPropertyValue (this.FINALGRADE);
 	}
 
 	/**
@@ -215,7 +238,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 			throw new IllegalArgumentException ("Grade must be between 0 and 100");
 		}
 
-		this.setPropertyValue ("finalgrade", finalgrade);
+		this.builder.setProperty (this.FINALGRADE, finalgrade);
 	}
 
 	/**
@@ -229,7 +252,7 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 	@Override
 	public Boolean isUsable ()
 	{
-		return this.getPropertyValue (Boolean.class, "usable");
+		return this.builder.getPropertyValue (this.USABLE);
 	}
 
 	/**
@@ -252,6 +275,6 @@ public final class DefaultEnrolmentBuilder extends AbstractBuilder<Enrolment> im
 			throw new NullPointerException ("usable is NULL");
 		}
 
-		this.setPropertyValue ("usable", usable);
+		this.builder.setProperty (this.USABLE, usable);
 	}
 }

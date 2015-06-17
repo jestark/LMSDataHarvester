@@ -24,6 +24,8 @@ import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * Default implementation of the <code>ActionBuilder</code> interface.
  *
@@ -33,6 +35,12 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultActionBuilder extends AbstractBuilder<Action> implements ActionBuilder
 {
+	/** The "id" <code>Property</code> */
+	private final Property<Long> ID;
+
+	/** The "name" <code>Property</code> */
+	private final Property<String> NAME;
+
 	/**
 	 * static initializer to register the <code>DefaultActionBuilder</code>
 	 * with the factory
@@ -55,6 +63,9 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 	protected DefaultActionBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
+
+		this.ID = this.builder.getProperty ("id", Long.class);
+		this.NAME = this.builder.getProperty ("name", String.class);
 	}
 
 	/**
@@ -86,7 +97,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 		super.load (action);
 		this.setName (action.getName ());
 
-		this.setPropertyValue ("id", action.getId ());
+		this.builder.setProperty (this.ID, action.getId ());
 	}
 
 	/**
@@ -98,7 +109,7 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 	@Override
 	public String getName ()
 	{
-		return this.getPropertyValue (String.class, "name");
+		return this.builder.getPropertyValue (this.NAME);
 	}
 
 	/**
@@ -127,6 +138,6 @@ public final class DefaultActionBuilder extends AbstractBuilder<Action> implemen
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.setPropertyValue ("name", name);
+		this.builder.setProperty (this.NAME, name);
 	}
 }

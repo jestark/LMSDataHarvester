@@ -23,6 +23,8 @@ import ca.uoguelph.socs.icc.edm.domain.GradeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * Default implementation of the <code>GradeBuilder</code>.
  *
@@ -32,6 +34,15 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements GradeBuilder
 {
+	/** The "activity" <code>Property</code> */
+	private final Property<Activity> ACTIVITY;
+
+	/** The "enrolment" <code>Property</code> */
+	private final Property<Enrolment> ENROLMENT;
+
+	/** The "grade" <code>Property</code> */
+	private final Property<Integer> GRADE;
+
 	/**
 	 * static initializer to register the <code>DefaultGradeBuilder</code> with
 	 * the factory
@@ -54,6 +65,10 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	protected DefaultGradeBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
+
+		this.ACTIVITY = this.builder.getProperty ("activity", Activity.class);
+		this.ENROLMENT = this.builder.getProperty ("enrolment", Enrolment.class);
+		this.GRADE = this.builder.getProperty ("grade", Integer.class);
 	}
 
 	/**
@@ -97,7 +112,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	@Override
 	public Activity getActivity ()
 	{
-		return this.getPropertyValue (Activity.class, "activity");
+		return this.builder.getPropertyValue (this.ACTIVITY);
 	}
 
 	/**
@@ -121,7 +136,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 			throw new NullPointerException ("The specified activity is NULL");
 		}
 
-		this.setPropertyValue ("activity", activity);
+		this.builder.setProperty (this.ACTIVITY, activity);
 	}
 
 	/**
@@ -134,7 +149,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	@Override
 	public Enrolment getEnrolment ()
 	{
-		return this.getPropertyValue (Enrolment.class, "enrolment");
+		return this.builder.getPropertyValue (this.ENROLMENT);
 	}
 
 	/**
@@ -158,7 +173,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 			throw new NullPointerException ("The specified Enrolment is NULL");
 		}
 
-		this.setPropertyValue ("enrolment", enrolment);
+		this.builder.setProperty (this.ENROLMENT, enrolment);
 	}
 
 	/**
@@ -173,7 +188,7 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 	@Override
 	public Integer getGrade ()
 	{
-		return this.getPropertyValue (Integer.class, "grade");
+		return this.builder.getPropertyValue (this.GRADE);
 	}
 
 	/**
@@ -210,6 +225,6 @@ public final class DefaultGradeBuilder extends AbstractBuilder<Grade> implements
 			throw new IllegalArgumentException ("Grade is greater than 100%");
 		}
 
-		this.setPropertyValue ("grade", grade);
+		this.builder.setProperty (this.GRADE, grade);
 	}
 }
