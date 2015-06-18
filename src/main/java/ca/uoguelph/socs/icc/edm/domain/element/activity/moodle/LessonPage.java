@@ -64,6 +64,7 @@ public class LessonPage extends GenericSubActivity
 	{
 		DefinitionBuilder<SubActivity, LessonPage> builder = DefinitionBuilder.newInstance (SubActivity.class, LessonPage.class);
 		builder.setCreateMethod (LessonPage::new);
+		builder.setBuilder (DefaultSubActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, LessonPage::getId, LessonPage::setId);
 
@@ -72,28 +73,16 @@ public class LessonPage extends GenericSubActivity
 
 		builder.addRelationship ("log", LogEntry.class, LessonPage::addLog, LessonPage::removeLog);
 
-		GenericSubActivity.registerActivity (builder.build (), Lesson.class, DefaultSubActivityBuilder.class);
+		GenericSubActivity.registerActivity (builder.build (), Lesson.class);
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public LessonPage ()
+	protected LessonPage ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create a new <code>SubActivity</code> instance.
-	 *
-	 * @param  activity The parent <code>Activity</code>, not null
-	 * @param  name     The name of the <code>SubActivity</code>, not null
-	 */
-
-	public LessonPage (final Activity activity, final String name)
-	{
-		super (activity, name);
 	}
 
 	/**

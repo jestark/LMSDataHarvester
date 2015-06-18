@@ -66,6 +66,7 @@ public class Workshop extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, Workshop> builder = DefinitionBuilder.newInstance (Activity.class, Workshop.class);
 		builder.setCreateMethod (Workshop::new);
+		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, Workshop::getId, Workshop::setId);
 
@@ -77,31 +78,16 @@ public class Workshop extends GenericNamedActivity
 		builder.addRelationship ("log", LogEntry.class, Workshop::addLog, Workshop::removeLog);
 		builder.addRelationship ("subactivities", SubActivity.class, Workshop::addSubActivity, Workshop::removeSubActivity);
 
-		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "workshop");
+		GenericNamedActivity.registerActivity (builder.build (), "moodle", "workshop");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public Workshop ()
+	protected Workshop ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create a new <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public Workshop (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 
 	/**

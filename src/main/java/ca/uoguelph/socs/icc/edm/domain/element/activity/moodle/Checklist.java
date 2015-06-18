@@ -65,6 +65,7 @@ public class Checklist extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, Checklist> builder = DefinitionBuilder.newInstance (Activity.class, Checklist.class);
 		builder.setCreateMethod (Checklist::new);
+		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, Checklist::getId, Checklist::setId);
 
@@ -75,14 +76,14 @@ public class Checklist extends GenericNamedActivity
 		builder.addRelationship ("grades", Grade.class, Checklist::addGrade, Checklist::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Checklist::addLog, Checklist::removeLog);
 
-		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "checklist");
+		GenericNamedActivity.registerActivity (builder.build (), "moodle", "checklist");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public Checklist ()
+	protected Checklist ()
 	{
 		super ();
 	}
@@ -122,20 +123,5 @@ public class Checklist extends GenericNamedActivity
 	protected void setId (final Long id)
 	{
 		super.setId (id);
-	}
-
-	/**
-	 * Create the <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public Checklist (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 }

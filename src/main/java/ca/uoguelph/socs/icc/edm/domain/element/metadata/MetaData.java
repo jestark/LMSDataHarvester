@@ -19,11 +19,14 @@ package ca.uoguelph.socs.icc.edm.domain.element.metadata;
 import java.util.function.Function;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 public interface MetaData<T extends Element>
 {
 	public abstract Class<T> getElementType ();
-	public abstract Class<?> getElementClass ();
+	public abstract Class<? extends T> getElementClass ();
+
+	public abstract Class<? extends ElementBuilder<T>> getBuilderClass ();
 
 	public abstract Builder<T> getBuilder ();
 }

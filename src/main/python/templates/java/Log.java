@@ -64,33 +64,20 @@ class ${ClassName} extends LogReference
 	{
 		DefinitionBuilder<LogEntry, ${ClassName}> builder = DefinitionBuilder.newInstance (LogEntry.class, ${ClassName}.class);
 		builder.setCreateMethod (${ClassName}::new);
+		builder.setBuilder (DefaultLogEntryBuilder.class);
 
 		builder.addAttribute ("entry", LogEntry.class, true, false, ${ClassName}::getEntry, ${ClassName}::setEntry);
 		builder.addAttribute ("subactivity", SubActivity.class, true, false, ${ClassName}::getSubActivity, ${ClassName}::setSubActivity);
 
-		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>LogEntry</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	protected ${ClassName} ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create the <code>${ClassName}</code>.
-	 *
-	 * @param  entry       The <code>LogEntry</code> which refers to the
-	 *                     <code>SubActivity</code>, not null
-	 * @param  subactivity The <code>SubActivity</code> which is being
-	 *                     referenced, not null
-	 */
-
-	public ${ClassName} (final LogEntry entry, final SubActivity subactivity)
-	{
-		super (entry, subactivity);
 	}
 }

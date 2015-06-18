@@ -65,6 +65,7 @@ public class Page extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, Page> builder = DefinitionBuilder.newInstance (Activity.class, Page.class);
 		builder.setCreateMethod (Page::new);
+		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, Page::getId, Page::setId);
 
@@ -75,14 +76,14 @@ public class Page extends GenericNamedActivity
 		builder.addRelationship ("grades", Grade.class, Page::addGrade, Page::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Page::addLog, Page::removeLog);
 
-		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "page");
+		GenericNamedActivity.registerActivity (builder.build (), "moodle", "page");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public Page ()
+	protected Page ()
 	{
 		super ();
 	}
@@ -122,20 +123,5 @@ public class Page extends GenericNamedActivity
 	protected void setId (final Long id)
 	{
 		super.setId (id);
-	}
-
-	/**
-	 * Create the <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public Page (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 }

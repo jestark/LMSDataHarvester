@@ -45,11 +45,9 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 public abstract class AbstractBuilder<T extends Element> implements ElementBuilder<T>
 {
 	/** Factory for the <code>ElementBuilder</code> implementations */
-	private static final Map<Class<? extends ElementBuilder<? extends Element>>, BiFunction<Class<?>, DataStore, ? extends ElementBuilder<? extends Element>>> FACTORIES;
+	private static final Map<Class<? extends ElementBuilder<? extends Element>>, BiFunction<Class<?>, DataStore, ? extends ElementBuilder<? extends Element>>> factories;
 
-	/** <code>Element<code> to <code>ElementBuilder</code> implementation mapping */
-	private static final Map<Class<?>, Class<? extends ElementBuilder<? extends Element>>> ELEMENTS;
-
+	/** <code>Element<code> meta-data */
 	private static final Map<Class<?>, MetaData<? extends Element>> metadata;
 
 	/** The builder */
@@ -70,9 +68,67 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 
 	static
 	{
-		FACTORIES = new HashMap<Class<? extends ElementBuilder<? extends Element>>, BiFunction<Class<?>, DataStore, ? extends ElementBuilder<? extends Element>>> ();
-		ELEMENTS = new HashMap<Class<?>, Class<? extends ElementBuilder<? extends Element>>> ();
+		factories = new HashMap<Class<? extends ElementBuilder<? extends Element>>, BiFunction<Class<?>, DataStore, ? extends ElementBuilder<? extends Element>>> ();
 		metadata = new HashMap<Class<?>, MetaData<? extends Element>> ();
+	}
+
+	/**
+	 * Retrieve the <code>MetaData</code> for the specified
+	 * <code>Element</code> implementation <code>Class</code>.  This is a
+	 * convenience method that will retrieve the <code>MetaData</code> instance
+	 * from the <code>Map</code> and cast is appropriately.
+	 *
+	 * @param  element The <code>Element</code> implementation class
+	 *
+	 * @return         The <code>MetaData</code> instance
+	 */
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Element> MetaData<T> getElementMetaData (final Class<?> element)
+	{
+		assert element != null : "element is NULL";
+
+		return (MetaData<T>) AbstractBuilder.metadata.get (element);
+	}
+
+	/**
+	 * Get the <code>MetaData</code> based <code>Builder</code> for the
+	 * <code>Element</code> implementation <code>Class</code>.
+	 *
+	 * @param element The <code>Element</code> implementation class
+	 *
+	 * @return        The <code>Builder</code>
+	 */
+
+	private static <T extends Element> Builder<T> getBuilder (final Class<?> element)
+	{
+		assert element != null : "element is NULL";
+
+		MetaData<T> metadata = AbstractBuilder.getElementMetaData (element);
+
+		assert metadata != null : "Element class is not registered: " + element.getSimpleName ();
+
+		return metadata.getBuilder ();
+	}
+
+	/**
+	 * Register the association between an <code>Element</code> implementation
+	 * and the appropriate <code>ElementBuilder</code> implementation.  This
+	 * method is intended to be used by the <code>Element</code>
+	 * implementations to specify the appropriate <code>ElementBuilder</code>
+	 * implementation to use for creating instances of that
+	 * <code>Element</code>.
+	 *
+	 * @param  <T>      The interface type of the <code>Element</code>
+	 * @param  metadata The implementation class, not null
+	 */
+
+	public static final <T extends Element> void registerElement (final MetaData<T> metadata)
+	{
+		assert metadata != null : "metadata is NULL";
+		assert (! AbstractBuilder.metadata.containsKey (metadata.getElementClass ())) : "Class already registered: " + (metadata.getElementClass ()).getSimpleName ();
+
+		AbstractBuilder.metadata.put (metadata.getElementClass (), metadata);
 	}
 
 	/**
@@ -93,9 +149,9 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	{
 		assert builder != null : "builder is NULL";
 		assert factory != null : "factory is NULL";
-		assert (! AbstractBuilder.FACTORIES.containsKey (builder)) : "Class already registered: " + builder.getSimpleName ();
+		assert (! AbstractBuilder.factories.containsKey (builder)) : "Class already registered: " + builder.getSimpleName ();
 
-		AbstractBuilder.FACTORIES.put (builder, factory);
+		AbstractBuilder.factories.put (builder, factory);
 	}
 
 	/**
@@ -104,8 +160,6 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 *
 	 * @param  <T>       The <code>ElementBuilder</code> type to be returned
 	 * @param  <U>       The <code>Element</code> type produced by the builder
-	 * @param  builder   The <code>ElementBuilder</code> interface class, not
-	 *                   null
 	 * @param  element   The <code>Element</code> implementation class, not
 	 *                   null
 	 * @param  datastore The <code>DataStore</code> instance, not null
@@ -117,44 +171,15 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 		assert element   != null : "element is NULL";
 		assert datastore != null : "manager is NULL";
 
-		assert AbstractBuilder.ELEMENTS.containsKey (element) : "Element class is not registered: " + element.getSimpleName ();
-		assert AbstractBuilder.FACTORIES.containsKey (AbstractBuilder.ELEMENTS.get (element)) : "Class not registered: " + (AbstractBuilder.ELEMENTS.get (element)).getSimpleName ();
+		MetaData<U> metadata = AbstractBuilder.getElementMetaData (element);
 
-		return ((BiFunction<Class<?>, DataStore, T>) AbstractBuilder.FACTORIES.get (AbstractBuilder.ELEMENTS.get (element))).apply (element, datastore);
-	}
+		assert metadata != null : "Element class is not registered: " + element.getSimpleName ();
 
-	/**
-	 * Register the association between an <code>Element</code> implementation
-	 * and the appropriate <code>ElementBuilder</code> implementation.  This
-	 * method is intended to be used by the <code>Element</code>
-	 * implementations to specify the appropriate <code>ElementBuilder</code>
-	 * implementation to use for creating instances of that
-	 * <code>Element</code>.
-	 *
-	 * @param  <T>     The interface type of the <code>Element</code>
-	 * @param  <U>     The implementation type of the <code>Element</code>
-	 * @param  element The implementation class, not null
-	 * @param  builder The <code>ElementBuilder</code> implementation class,
-	 *                 not null
-	 */
+		BiFunction<Class<?>, DataStore, T> factory = (BiFunction<Class<?>, DataStore, T>) AbstractBuilder.factories.get (metadata.getBuilderClass ());
 
-	public static final <T extends ElementBuilder<U>, U extends Element> void registerElement (final MetaData<U> metadata, final Class<T> builder)
-	{
-		assert metadata != null : "metadata is NULL";
-		assert builder != null : "builder is NULL";
-		assert (! AbstractBuilder.ELEMENTS.containsKey (metadata.getElementClass ())) : "Class already registered: " + (metadata.getElementClass ()).getSimpleName ();
+		assert factory != null : "Class not registered: " + (metadata.getBuilderClass ()).getSimpleName ();
 
-		AbstractBuilder.ELEMENTS.put (metadata.getElementClass (), builder);
-		AbstractBuilder.metadata.put (metadata.getElementClass (), metadata);
-	}
-
-	@SuppressWarnings("unchecked")
-	private static final <T extends Element> Builder<T> getBuilder (final Class<?> element)
-	{
-		assert element != null : "element is NULL";
-		assert AbstractBuilder.metadata.containsKey (element) : "Element class is not registered: " + element.getSimpleName ();
-
-		return ((MetaData<T>) AbstractBuilder.metadata.get (element)).getBuilder ();
+		return factory.apply (element, datastore);
 	}
 
 	/**

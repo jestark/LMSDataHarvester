@@ -65,6 +65,7 @@ public class Feedback extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, Feedback> builder = DefinitionBuilder.newInstance (Activity.class, Feedback.class);
 		builder.setCreateMethod (Feedback::new);
+		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, Feedback::getId, Feedback::setId);
 
@@ -75,14 +76,14 @@ public class Feedback extends GenericNamedActivity
 		builder.addRelationship ("grades", Grade.class, Feedback::addGrade, Feedback::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Feedback::addLog, Feedback::removeLog);
 
-		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "feedback");
+		GenericNamedActivity.registerActivity (builder.build (), "moodle", "feedback");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public Feedback ()
+	protected Feedback ()
 	{
 		super ();
 	}
@@ -122,20 +123,5 @@ public class Feedback extends GenericNamedActivity
 	protected void setId (final Long id)
 	{
 		super.setId (id);
-	}
-
-	/**
-	 * Create the <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public Feedback (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 }

@@ -87,28 +87,10 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * Create the <code>LogEntry</code> with null values.
 	 */
 
-	public LogReference ()
+	protected LogReference ()
 	{
 		this.entry = null;
 		this.subactivity = null;
-	}
-
-	/**
-	 * Create the <code>LogReference</code> specifying all of its values.
-	 *
-	 * @param  entry       The parent <code>LogEntry</code> instance
-	 * @param  subactivity The <code>SubActivity</code> instance
-	 */
-
-	public LogReference (final LogEntry entry, final SubActivity subactivity)
-	{
-		this ();
-
-		assert entry != null : "entry is NULL";
-		assert subactivity != null : "activity is NULL";
-
-		this.entry = entry;
-		this.subactivity = subactivity;
 	}
 
 	/**

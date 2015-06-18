@@ -64,33 +64,20 @@ class BookChapterLog extends LogReference
 	{
 		DefinitionBuilder<LogEntry, BookChapterLog> builder = DefinitionBuilder.newInstance (LogEntry.class, BookChapterLog.class);
 		builder.setCreateMethod (BookChapterLog::new);
+		builder.setBuilder (DefaultLogEntryBuilder.class);
 
 		builder.addAttribute ("entry", LogEntry.class, true, false, BookChapterLog::getEntry, BookChapterLog::setEntry);
 		builder.addAttribute ("subactivity", SubActivity.class, true, false, BookChapterLog::getSubActivity, BookChapterLog::setSubActivity);
 
-		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>LogEntry</code> instance with Null values.
 	 */
 
-	public BookChapterLog ()
+	protected BookChapterLog ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create the <code>BookChapterLog</code>.
-	 *
-	 * @param  entry       The <code>LogEntry</code> which refers to the
-	 *                     <code>SubActivity</code>, not null
-	 * @param  subactivity The <code>SubActivity</code> which is being
-	 *                     referenced, not null
-	 */
-
-	public BookChapterLog (final LogEntry entry, final SubActivity subactivity)
-	{
-		super (entry, subactivity);
 	}
 }

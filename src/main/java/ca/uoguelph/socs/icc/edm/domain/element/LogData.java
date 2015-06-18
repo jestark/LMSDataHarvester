@@ -84,6 +84,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	{
 		DefinitionBuilder<LogEntry, LogData> builder = DefinitionBuilder.newInstance (LogEntry.class, LogData.class);
 		builder.setCreateMethod (LogData::new);
+		builder.setBuilder (DefaultLogEntryBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, LogData::getId, LogData::setId);
 
@@ -94,14 +95,14 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		builder.addAttribute ("ipaddress", String.class, true, false, LogData::getIPAddress, LogData::setIPAddress);
 		builder.addAttribute ("time", Date.class, true, true, LogData::getTime, LogData::setTime);
 
-		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>LogEntry</code> with null values.
 	 */
 
-	public LogData ()
+	protected LogData ()
 	{
 		this.id = null;
 		this.ip = null;
@@ -110,36 +111,6 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		this.enrolment = null;
 		this.reference = null;
 		this.time = new Date ();
-	}
-
-	/**
-	 * Create a new <code>LogEntry</code> instance.  Defaults to the current
-	 * system time, if the specified time is null.
-	 *
-	 * @param  action    The <code>Action</code>, not null
-	 * @param  activity  The <code>Activity</code> upon which the
-	 *                   <code>Action</code> was performed, not null
-	 * @param  enrolment The <code>Enrolment</code> which performed the
-	 *                   <code>Action</code>, not null
-	 * @param  ip        The remote IP Address
-	 * @param  time      The time that the <code>Action</code> was performed
-	 */
-
-	public LogData (final Action action, final Activity activity, final Enrolment enrolment, final String ip, final Date time)
-	{
-		assert action != null : "action is NULL";
-		assert activity != null : "activity is NULL";
-		assert enrolment != null : "enrolment is NULL";
-
-		this.id = null;
-		this.reference = null;
-
-		this.action = action;
-		this.activity = activity;
-		this.enrolment = enrolment;
-		this.ip = ip;
-
-		this.time = (time != null) ? new Date (time.getTime ()) : new Date ();
 	}
 
 	/**

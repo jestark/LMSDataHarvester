@@ -65,6 +65,7 @@ public class Quiz extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, Quiz> builder = DefinitionBuilder.newInstance (Activity.class, Quiz.class);
 		builder.setCreateMethod (Quiz::new);
+		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, Quiz::getId, Quiz::setId);
 
@@ -75,14 +76,14 @@ public class Quiz extends GenericNamedActivity
 		builder.addRelationship ("grades", Grade.class, Quiz::addGrade, Quiz::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Quiz::addLog, Quiz::removeLog);
 
-		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "quiz");
+		GenericNamedActivity.registerActivity (builder.build (), "moodle", "quiz");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public Quiz ()
+	protected Quiz ()
 	{
 		super ();
 	}
@@ -122,20 +123,5 @@ public class Quiz extends GenericNamedActivity
 	protected void setId (final Long id)
 	{
 		super.setId (id);
-	}
-
-	/**
-	 * Create the <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public Quiz (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 }

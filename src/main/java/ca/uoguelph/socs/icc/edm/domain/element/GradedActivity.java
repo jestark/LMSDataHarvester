@@ -65,45 +65,24 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	{
 		DefinitionBuilder<Grade, GradedActivity> builder = DefinitionBuilder.newInstance (Grade.class, GradedActivity.class);
 		builder.setCreateMethod (GradedActivity::new);
+		builder.setBuilder (DefaultGradeBuilder.class);
 
 		builder.addAttribute ("activity", Activity.class, true, false, GradedActivity::getActivity, GradedActivity::setActivity);
 		builder.addAttribute ("enrolment", Enrolment.class, true, false, GradedActivity::getEnrolment, GradedActivity::setEnrolment);
 		builder.addAttribute ("grade", Integer.class, true, true, GradedActivity::getGrade, GradedActivity::setGrade);
 
-		AbstractElement.registerElement (builder.build (), DefaultGradeBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>Grade</code> with null values.
 	 */
 
-	public GradedActivity ()
+	protected GradedActivity ()
 	{
 		this.grade = null;
 		this.activity = null;
 		this.enrolment = null;
-	}
-
-	/**
-	 * Create a new <code>Grade</code> instance.
-	 *
-	 * @param  enrolment The <code>Enrolment</code> to which the grade is
-	 *                   assigned, not null
-	 * @param  activity  The <code>Activity</code> for which the grade is
-	 *                   assigned, not null
-	 * @param  grade     The assigned grade, on the interval [0, 100], not null
-	 */
-
-	public GradedActivity (final Enrolment enrolment, final Activity activity, final Integer grade)
-	{
-		assert enrolment != null : "enrolment is NULL";
-		assert activity != null : "grade is NULL";
-		assert grade != null : "grade is NULL";
-		assert grade >= 0 : "grade can not be negative";
-
-		this.grade = grade;
-		this.activity = activity;
-		this.enrolment = enrolment;
 	}
 
 	/**

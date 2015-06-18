@@ -58,51 +58,29 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 	 * factories.  This method handles the registrations for the subclasses to
 	 * reduce code duplication.
 	 *
-	 * @param  definition The <code>ElementDefinition</code>, not null
-	 * @param  activity   The parent <code>Activity</code> class, not null
-	 * @param  builder    The <code>SubActivityBuilder</code> implementation,
-	 *                    not null
+	 * @param  metadata The <code>Metadata</code> definition, not null
+	 * @param  activity The parent <code>Activity</code> class, not null
 	 */
 
-	protected static final <S extends SubActivity, T extends SubActivityBuilder<S>> void registerActivity (final MetaData metadata, final Class<? extends Activity> activity, final Class<T> builder)
+	protected static final <T extends SubActivity> void registerActivity (final MetaData<T> metadata, final Class<? extends Activity> activity)
 	{
 		assert metadata != null : "metadata is NULL";
 		assert activity != null : "activity is NULL";
-		assert builder != null : "builder is NULL";
 
-//		AbstractActivity.registerSubActivityClass (activity, definition.getElementType ());
+		AbstractActivity.registerSubActivityClass (activity, metadata.getElementClass ());
 
-		AbstractElement.registerElement (metadata, builder);
+		AbstractElement.registerElement (metadata);
 	}
 
 	/**
 	 * Create the <code>Activity</code> with null values.
 	 */
 
-	public GenericSubActivity ()
+	protected GenericSubActivity ()
 	{
 		super ();
 		this.name = null;
 		this.parent = null;
-	}
-
-	/**
-	 * Create the <code>Activity</code>
-	 *
-	 * @param  parent The <code>Activity</code> containing this
-	 *                <code>Activity</code> instance
-	 * @param  name   The name of the <code>Activity</code>
-	 */
-
-	public GenericSubActivity (final Activity parent, final String name)
-	{
-		super ();
-
-		assert parent != null : "Parent element is null";
-		assert name != null : "name is null";
-
-		this.parent = parent;
-		this.name = name;
 	}
 
 	/**

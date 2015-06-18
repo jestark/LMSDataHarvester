@@ -64,33 +64,20 @@ class LessonPageLog extends LogReference
 	{
 		DefinitionBuilder<LogEntry, LessonPageLog> builder = DefinitionBuilder.newInstance (LogEntry.class, LessonPageLog.class);
 		builder.setCreateMethod (LessonPageLog::new);
+		builder.setBuilder (DefaultLogEntryBuilder.class);
 
 		builder.addAttribute ("entry", LogEntry.class, true, false, LessonPageLog::getEntry, LessonPageLog::setEntry);
 		builder.addAttribute ("subactivity", SubActivity.class, true, false, LessonPageLog::getSubActivity, LessonPageLog::setSubActivity);
 
-		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>LogEntry</code> instance with Null values.
 	 */
 
-	public LessonPageLog ()
+	protected LessonPageLog ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create the <code>LessonPageLog</code>.
-	 *
-	 * @param  entry       The <code>LogEntry</code> which refers to the
-	 *                     <code>SubActivity</code>, not null
-	 * @param  subactivity The <code>SubActivity</code> which is being
-	 *                     referenced, not null
-	 */
-
-	public LessonPageLog (final LogEntry entry, final SubActivity subactivity)
-	{
-		super (entry, subactivity);
 	}
 }

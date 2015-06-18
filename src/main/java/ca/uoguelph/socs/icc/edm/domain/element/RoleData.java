@@ -60,36 +60,22 @@ public class RoleData extends AbstractElement implements Role, Serializable
 	{
 		DefinitionBuilder<Role, RoleData> builder = DefinitionBuilder.newInstance (Role.class, RoleData.class);
 		builder.setCreateMethod (RoleData::new);
+		builder.setBuilder (DefaultRoleBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, RoleData::getId, RoleData::setId);
 		builder.addUniqueAttribute ("name", String.class, true, false, RoleData::getName, RoleData::setName);
 
-		AbstractElement.registerElement (builder.build (), DefaultRoleBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>Role</code> with null values.
 	 */
 
-	public RoleData ()
+	protected RoleData ()
 	{
 		this.id = null;
 		this.name = null;
-	}
-
-	/**
-	 * Create a new <code>Role</code> instance.
-	 *
-	 * @param  name The name of the <code>Role</code>, not null
-	 */
-
-	public RoleData (final String name)
-	{
-		this ();
-
-		assert name != null : "name is NULL";
-
-		this.name = name;
 	}
 
 	/**

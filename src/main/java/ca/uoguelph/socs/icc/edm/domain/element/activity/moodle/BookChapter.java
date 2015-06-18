@@ -64,6 +64,7 @@ public class BookChapter extends GenericSubActivity
 	{
 		DefinitionBuilder<SubActivity, BookChapter> builder = DefinitionBuilder.newInstance (SubActivity.class, BookChapter.class);
 		builder.setCreateMethod (BookChapter::new);
+		builder.setBuilder (DefaultSubActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, BookChapter::getId, BookChapter::setId);
 
@@ -72,28 +73,16 @@ public class BookChapter extends GenericSubActivity
 
 		builder.addRelationship ("log", LogEntry.class, BookChapter::addLog, BookChapter::removeLog);
 
-		GenericSubActivity.registerActivity (builder.build (), Book.class, DefaultSubActivityBuilder.class);
+		GenericSubActivity.registerActivity (builder.build (), Book.class);
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public BookChapter ()
+	protected BookChapter ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create a new <code>SubActivity</code> instance.
-	 *
-	 * @param  activity The parent <code>Activity</code>, not null
-	 * @param  name     The name of the <code>SubActivity</code>, not null
-	 */
-
-	public BookChapter (final Activity activity, final String name)
-	{
-		super (activity, name);
 	}
 
 	/**

@@ -65,6 +65,7 @@ public class Assign extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, Assign> builder = DefinitionBuilder.newInstance (Activity.class, Assign.class);
 		builder.setCreateMethod (Assign::new);
+		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, Assign::getId, Assign::setId);
 
@@ -75,14 +76,14 @@ public class Assign extends GenericNamedActivity
 		builder.addRelationship ("grades", Grade.class, Assign::addGrade, Assign::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Assign::addLog, Assign::removeLog);
 
-		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "assign");
+		GenericNamedActivity.registerActivity (builder.build (), "moodle", "assign");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public Assign ()
+	protected Assign ()
 	{
 		super ();
 	}
@@ -122,20 +123,5 @@ public class Assign extends GenericNamedActivity
 	protected void setId (final Long id)
 	{
 		super.setId (id);
-	}
-
-	/**
-	 * Create the <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public Assign (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 }

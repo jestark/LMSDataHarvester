@@ -66,6 +66,7 @@ public class Forum extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, Forum> builder = DefinitionBuilder.newInstance (Activity.class, Forum.class);
 		builder.setCreateMethod (Forum::new);
+		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, Forum::getId, Forum::setId);
 
@@ -77,31 +78,16 @@ public class Forum extends GenericNamedActivity
 		builder.addRelationship ("log", LogEntry.class, Forum::addLog, Forum::removeLog);
 		builder.addRelationship ("subactivities", SubActivity.class, Forum::addSubActivity, Forum::removeSubActivity);
 
-		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "forum");
+		GenericNamedActivity.registerActivity (builder.build (), "moodle", "forum");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public Forum ()
+	protected Forum ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create a new <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public Forum (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 
 	/**

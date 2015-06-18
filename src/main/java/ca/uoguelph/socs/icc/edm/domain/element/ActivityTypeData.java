@@ -71,6 +71,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	{
 		DefinitionBuilder<ActivityType, ActivityTypeData> builder = DefinitionBuilder.newInstance (ActivityType.class, ActivityTypeData.class);
 		builder.setCreateMethod (ActivityTypeData::new);
+		builder.setBuilder (DefaultActivityTypeBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, ActivityTypeData::getId, ActivityTypeData::setId);
 
@@ -81,38 +82,18 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 
 		builder.addRelationship ("actions", Action.class, ActivityTypeData::addAction, ActivityTypeData::removeAction);
 
-		AbstractElement.registerElement (builder.build (), DefaultActivityTypeBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>ActivityType</code> with null values.
 	 */
 
-	public ActivityTypeData ()
+	protected ActivityTypeData ()
 	{
 		this.id = null;
 		this.name = null;
 		this.source = null;
-
-		this.actions = new HashSet<Action> ();
-	}
-
-	/**
-	 * Create a new <code>ActivityType</code> instance.
-	 *
-	 * @param  source The <code>ActivitySource</code> for the
-	 *                <code>ActivityType</code>, not null
-	 * @param  name   The name of the <code>ActivityType</code>, not null
-	 */
-
-	public ActivityTypeData (final ActivitySource source, final String name)
-	{
-		assert source != null : "source is NULL";
-		assert name != null : "name is NULL";
-
-		this.id = null;
-		this.name = name;
-		this.source = source;
 
 		this.actions = new HashSet<Action> ();
 	}

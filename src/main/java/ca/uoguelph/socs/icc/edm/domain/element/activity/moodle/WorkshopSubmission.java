@@ -64,6 +64,7 @@ public class WorkshopSubmission extends GenericSubActivity
 	{
 		DefinitionBuilder<SubActivity, WorkshopSubmission> builder = DefinitionBuilder.newInstance (SubActivity.class, WorkshopSubmission.class);
 		builder.setCreateMethod (WorkshopSubmission::new);
+		builder.setBuilder (DefaultSubActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, WorkshopSubmission::getId, WorkshopSubmission::setId);
 
@@ -72,28 +73,16 @@ public class WorkshopSubmission extends GenericSubActivity
 
 		builder.addRelationship ("log", LogEntry.class, WorkshopSubmission::addLog, WorkshopSubmission::removeLog);
 
-		GenericSubActivity.registerActivity (builder.build (), Workshop.class, DefaultSubActivityBuilder.class);
+		GenericSubActivity.registerActivity (builder.build (), Workshop.class);
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public WorkshopSubmission ()
+	protected WorkshopSubmission ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create a new <code>SubActivity</code> instance.
-	 *
-	 * @param  activity The parent <code>Activity</code>, not null
-	 * @param  name     The name of the <code>SubActivity</code>, not null
-	 */
-
-	public WorkshopSubmission (final Activity activity, final String name)
-	{
-		super (activity, name);
 	}
 
 	/**

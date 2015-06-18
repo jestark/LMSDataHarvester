@@ -24,8 +24,7 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
@@ -46,10 +45,10 @@ final class ActivityDataMap
 	private final Map<String, ActivitySource> sources;
 
 	/** <code>ActivityType</code> to implementation class map */
-	private final Map<ActivityType, Class<? extends Activity>> activities;
+	private final Map<ActivityType, Class<? extends Element>> activities;
 
 	/** <code>Activity</code> to <code>SubActivity</code> class mapping */
-	private final Map<Class<? extends Activity>, Class<? extends SubActivity>> subactivities;
+	private final Map<Class<? extends Element>, Class<? extends Element>> subactivities;
 
 	/**
 	 * Create the <code>ActivityDataMap</code>.
@@ -60,8 +59,8 @@ final class ActivityDataMap
 		this.log = LoggerFactory.getLogger (ActivityDataMap.class);
 
 		this.sources = new HashMap<String, ActivitySource> ();
-		this.activities = new HashMap<ActivityType, Class<? extends Activity>> ();
-		this.subactivities = new HashMap<Class<? extends Activity>, Class<? extends SubActivity>> ();
+		this.activities = new HashMap<ActivityType, Class<? extends Element>> ();
+		this.subactivities = new HashMap<Class<? extends Element>, Class<? extends Element>> ();
 	}
 
 	/**
@@ -81,7 +80,10 @@ final class ActivityDataMap
 
 		if (! this.sources.containsKey (name))
 		{
-			this.sources.put (name, new ActivitySourceData (name));
+			ActivitySourceData source = new ActivitySourceData ();
+			source.setName (name);
+
+			this.sources.put (name, source);
 		}
 
 		return this.sources.get (name);
@@ -96,7 +98,7 @@ final class ActivityDataMap
 	 * @param  impl The implementation class, not null
 	 */
 
-	public void registerActivityClass (final ActivityType type, final Class<? extends Activity> impl)
+	public void registerActivityClass (final ActivityType type, final Class<? extends Element> impl)
 	{
 		this.log.trace ("registerActivityImplClass type={}, impl={}", type, impl);
 
@@ -119,7 +121,7 @@ final class ActivityDataMap
 	 * @param  impl   The implementation class, not null
 	 */
 
-	public void registerActivityClass (final String source, final String type, final Class<? extends Activity> impl)
+	public void registerActivityClass (final String source, final String type, final Class<? extends Element> impl)
 	{
 		this.log.trace ("registerElement source={}, type={}, impl={}", type, source, impl);
 
@@ -127,7 +129,11 @@ final class ActivityDataMap
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 
-		this.registerActivityClass (new ActivityTypeData (this.getActivitySource (source), type), impl);
+		ActivityTypeData atype = new ActivityTypeData ();
+		atype.setSource (this.getActivitySource (source));
+		atype.setName (type);
+
+		this.registerActivityClass (atype, impl);
 	}
 
 	/**
@@ -138,7 +144,7 @@ final class ActivityDataMap
 	 * @param  subactivity The <code>SubActivity</code> implementation, not null
 	 */
 
-	public void registerSubActivityClass (final Class<? extends Activity> activity, final Class<? extends SubActivity> subactivity)
+	public void registerSubActivityClass (final Class<? extends Element> activity, final Class<? extends Element> subactivity)
 	{
 		this.log.trace ("registerSubActivity activity={}, subactivity={}", activity, subactivity);
 
@@ -159,7 +165,7 @@ final class ActivityDataMap
 	 *              <code>ActivityType</code>, may be null
 	 */
 
-	public Class<? extends Activity> getActivityClass (final ActivityType type)
+	public Class<? extends Element> getActivityClass (final ActivityType type)
 	{
 		return this.activities.get (type);
 	}
@@ -175,7 +181,7 @@ final class ActivityDataMap
 	 *                  be null
 	 */
 
-	public Class<? extends SubActivity> getSubActivityClass (final Class<? extends Activity> activity)
+	public Class<? extends Element> getSubActivityClass (final Class<? extends Element> activity)
 	{
 		return this.subactivities.get (activity);
 	}

@@ -16,7 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element.metadata;
 
+import java.util.Map;
 import java.util.Set;
+
+import java.util.HashMap;
 import java.util.HashSet;
 
 import java.util.function.BiConsumer;
@@ -24,15 +27,18 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 public final class DefinitionBuilder<T extends Element, U extends T>
 {
 	private final Class<T> type;
 	private final Class<U> impl;
 
+	private Class<? extends ElementBuilder<T>> builder;
+
 	private Supplier<U> create;
 
-//	private final Set<AttributeDefinition<U, ?>> attributes;
+	private final Map<Property<?>, Definition.Reference<U, ?>> refs;
 
 	public static <T extends Element, U extends T> DefinitionBuilder<T, U> newInstance (final Class<T> type, final Class<U> impl)
 	{
@@ -49,6 +55,8 @@ public final class DefinitionBuilder<T extends Element, U extends T>
 
 		this.type = type;
 		this.impl = impl;
+
+		this.refs = new HashMap<Property<?>, Definition.Reference<U, ?>> ();
 	}
 
 	public void setCreateMethod (final Supplier<U> create)
@@ -58,28 +66,34 @@ public final class DefinitionBuilder<T extends Element, U extends T>
 		this.create = create;
 	}
 
-	public <A extends Element, V> void addAttribute (final String name, final Class<V> type, final boolean required, final boolean mutable, final Function<A, V> get, final BiConsumer<A, V> set)
+	public <B extends ElementBuilder<T>> void setBuilder (final Class<B> builder)
 	{
-		assert name != null : "name is NULL";
-		assert name.length () > 0 : "name is empty";
+		this.builder = builder;
+	}
+
+	public <V> void addAttribute (final String property, final Class<V> type, final boolean required, final boolean mutable, final Function<U, V> get, final BiConsumer<U, V> set)
+	{
+		assert property != null : "property is NULL";
 		assert type != null : "type is NULL";
 		assert get != null : "get is NULL";
 		assert set != null : "set is NULL";
 
+		Property<V> prop = new Property<V> (property, type, this.type, mutable, required);
+
+		this.refs.put (prop, new Definition.Reference<U, V> (get, set));
 	}
 
-	public <A extends Element, V> void addUniqueAttribute (final String name, final Class<V> type, final boolean required, final boolean mutable, final Function<A, V> get, final BiConsumer<A, V> set)
+	public <V> void addUniqueAttribute (final String property, final Class<V> type, final boolean required, final boolean mutable, final Function<U, V> get, final BiConsumer<U, V> set)
 	{
-		assert name != null : "name is NULL";
-		assert name.length () > 0 : "name is empty";
+		assert property != null : "property is NULL";
 		assert type != null : "type is NULL";
 		assert get != null : "get is NULL";
 		assert set != null : "set is NULL";
 
-
+		this.addAttribute (property, type, required, mutable, get, set);
 	}
 
-	public <A extends Element, V> void addRelationship (final String name, final Class<V> type, final BiConsumer<A, V> get, final BiConsumer<A, V> set)
+	public <V> void addRelationship (final String name, final Class<V> type, final BiConsumer<U, V> get, final BiConsumer<U, V> set)
 	{
 		assert name != null : "name is NULL";
 		assert name.length () > 0 : "name is empty";
@@ -95,8 +109,10 @@ public final class DefinitionBuilder<T extends Element, U extends T>
 
 	}
 
-	public Definition<T, U> build ()
+	public MetaData<T> build ()
 	{
-		return null;
+		Definition<T, U> defn = new Definition<T, U> (this.type, this.impl, this.create, this.refs);
+
+		return new MetaDataImpl<T, U> (defn, this.builder);
 	}
 }

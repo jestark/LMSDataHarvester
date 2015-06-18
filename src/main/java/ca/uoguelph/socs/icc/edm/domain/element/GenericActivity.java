@@ -60,6 +60,7 @@ public class GenericActivity extends ActivityInstance implements Serializable
 	{
 		DefinitionBuilder<Activity, GenericActivity> builder = DefinitionBuilder.newInstance (Activity.class, GenericActivity.class);
 		builder.setCreateMethod (GenericActivity::new);
+		builder.setBuilder (DefaultGenericActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, AbstractElement::getId, AbstractElement::setId);
 
@@ -69,7 +70,7 @@ public class GenericActivity extends ActivityInstance implements Serializable
 		builder.addRelationship ("grades", Grade.class, ActivityInstance::addGrade, ActivityInstance::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, AbstractActivity::addLog, AbstractActivity::removeLog);
 
-		AbstractElement.registerElement (builder.build (), DefaultGenericActivityBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
@@ -79,20 +80,6 @@ public class GenericActivity extends ActivityInstance implements Serializable
 	protected GenericActivity ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create a new <code>GenericActivity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 */
-
-	public GenericActivity (final ActivityType type, final Course course)
-	{
-		super (type, course);
 	}
 
 	/**

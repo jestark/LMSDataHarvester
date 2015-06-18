@@ -64,33 +64,20 @@ class ForumPostLog extends LogReference
 	{
 		DefinitionBuilder<LogEntry, ForumPostLog> builder = DefinitionBuilder.newInstance (LogEntry.class, ForumPostLog.class);
 		builder.setCreateMethod (ForumPostLog::new);
+		builder.setBuilder (DefaultLogEntryBuilder.class);
 
 		builder.addAttribute ("entry", LogEntry.class, true, false, ForumPostLog::getEntry, ForumPostLog::setEntry);
 		builder.addAttribute ("subactivity", SubActivity.class, true, false, ForumPostLog::getSubActivity, ForumPostLog::setSubActivity);
 
-		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>LogEntry</code> instance with Null values.
 	 */
 
-	public ForumPostLog ()
+	protected ForumPostLog ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create the <code>ForumPostLog</code>.
-	 *
-	 * @param  entry       The <code>LogEntry</code> which refers to the
-	 *                     <code>SubActivity</code>, not null
-	 * @param  subactivity The <code>SubActivity</code> which is being
-	 *                     referenced, not null
-	 */
-
-	public ForumPostLog (final LogEntry entry, final SubActivity subactivity)
-	{
-		super (entry, subactivity);
 	}
 }

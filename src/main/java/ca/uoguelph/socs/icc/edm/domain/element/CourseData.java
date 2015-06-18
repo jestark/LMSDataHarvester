@@ -80,6 +80,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	{
 		DefinitionBuilder<Course, CourseData> builder = DefinitionBuilder.newInstance (Course.class, CourseData.class);
 		builder.setCreateMethod (CourseData::new);
+		builder.setBuilder (DefaultCourseBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, CourseData::getId, CourseData::setId);
 
@@ -92,42 +93,19 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		builder.addRelationship ("activities", Activity.class, CourseData::addActivity, CourseData::removeActivity);
 		builder.addRelationship ("enrolments", Enrolment.class, CourseData::addEnrolment, CourseData::removeEnrolment);
 
-		AbstractElement.registerElement (builder.build (), DefaultCourseBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>Course</code> with null values.
 	 */
 
-	public CourseData ()
+	protected CourseData ()
 	{
 		this.id = null;
 		this.name = null;
 		this.semester = null;
 		this.year = null;
-
-		this.activities = new LinkedList<Activity> ();
-		this.enrolments = new HashSet<Enrolment> ();
-	}
-
-	/**
-	 * Create a new <code>Course</code> instance.
-	 *
-	 * @param  name     The name of the <code>Course</code>, not null
-	 * @param  semester The <code>Semester</code> of offering, not null
-	 * @param  year     The year of offering, not null
-	 */
-
-	public CourseData (final String name, final Semester semester, final Integer year)
-	{
-		assert name != null : "name is NULL";
-		assert semester != null : "semester is NULL";
-		assert year != null : "year is NULL";
-
-		this.id = null;
-		this.name = name;
-		this.semester = semester;
-		this.year = year;
 
 		this.activities = new LinkedList<Activity> ();
 		this.enrolments = new HashSet<Enrolment> ();

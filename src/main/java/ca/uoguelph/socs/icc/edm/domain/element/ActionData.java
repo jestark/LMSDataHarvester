@@ -67,39 +67,24 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	{
 		DefinitionBuilder<Action, ActionData> builder = DefinitionBuilder.newInstance (Action.class, ActionData.class);
 		builder.setCreateMethod (ActionData::new);
+		builder.setBuilder (DefaultActionBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, ActionData::getId, ActionData::setId);
 		builder.addUniqueAttribute ("name", String.class, true, false, ActionData::getName, ActionData::setName);
 
 		builder.addRelationship ("types", ActivityType.class, ActionData::addType, ActionData::removeType);
 
-		AbstractElement.registerElement (builder.build (), DefaultActionBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>Action</code> with null values.
 	 */
 
-	public ActionData ()
+	protected ActionData ()
 	{
 		this.id= null;
 		this.name = null;
-
-		this.types = new HashSet<ActivityType> ();
-	}
-
-	/**
-	 * Create a new <code>Action</code> instance.
-	 *
-	 * @param  name The name of the <code>Action</code>, not null
-	 */
-
-	public ActionData (final String name)
-	{
-		assert name != null : "name is NULL";
-
-		this.id = null;
-		this.name = name;
 
 		this.types = new HashSet<ActivityType> ();
 	}

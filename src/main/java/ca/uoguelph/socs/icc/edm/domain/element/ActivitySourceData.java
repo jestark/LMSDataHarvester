@@ -67,39 +67,24 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	{
 		DefinitionBuilder<ActivitySource, ActivitySourceData> builder = DefinitionBuilder.newInstance (ActivitySource.class, ActivitySourceData.class);
 		builder.setCreateMethod (ActivitySourceData::new);
+		builder.setBuilder (DefaultActivitySourceBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, ActivitySourceData::getId, ActivitySourceData::setId);
 		builder.addUniqueAttribute ("name", String.class, true, false, ActivitySourceData::getName, ActivitySourceData::setName);
 
 		builder.addRelationship ("types", ActivityType.class, ActivitySourceData::addType, ActivitySourceData::removeType);
 
-		AbstractElement.registerElement (builder.build (), DefaultActivitySourceBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>ActivitySource</code> with null values.
 	 */
 
-	public ActivitySourceData ()
+	protected ActivitySourceData ()
 	{
 		this.id = null;
 		this.name = null;
-
-		this.types = new HashSet<ActivityType> ();
-	}
-
-	/**
-	 * Create a new <code>ActivitySource</code> instance.
-	 *
-	 * @param  name The name of the <code>ActivitySource</code>, not null
-	 */
-
-	public ActivitySourceData (final String name)
-	{
-		assert name != null : "name is NULL";
-
-		this.id = null;
-		this.name = name;
 
 		this.types = new HashSet<ActivityType> ();
 	}

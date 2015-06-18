@@ -65,6 +65,7 @@ public class Label extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, Label> builder = DefinitionBuilder.newInstance (Activity.class, Label.class);
 		builder.setCreateMethod (Label::new);
+		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, Label::getId, Label::setId);
 
@@ -75,14 +76,14 @@ public class Label extends GenericNamedActivity
 		builder.addRelationship ("grades", Grade.class, Label::addGrade, Label::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Label::addLog, Label::removeLog);
 
-		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "label");
+		GenericNamedActivity.registerActivity (builder.build (), "moodle", "label");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public Label ()
+	protected Label ()
 	{
 		super ();
 	}
@@ -122,20 +123,5 @@ public class Label extends GenericNamedActivity
 	protected void setId (final Long id)
 	{
 		super.setId (id);
-	}
-
-	/**
-	 * Create the <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public Label (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 }

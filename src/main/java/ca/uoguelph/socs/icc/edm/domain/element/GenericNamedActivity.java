@@ -55,52 +55,30 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	 * factories.  This method handles the registrations for the subclasses to
 	 * reduce code duplication.
 	 *
-	 * @param  definition The <code>ElementDefinition</code>, not null
-	 * @param  builder    The <code>ActivityBuilder</code> implementation, not
-	 *                    null
-	 * @param  source     The name of the <code>ActivitySource</code> not null
-	 * @param  type       The name of the <code>ActivityType</code> not null
+	 * @param  metadata The <code>MetaData</code> definition, not null
+	 * @param  source   The name of the <code>ActivitySource</code> not null
+	 * @param  type     The name of the <code>ActivityType</code> not null
 	 */
 
-	protected static final <T extends Activity, U extends ActivityBuilder<T>> void registerActivity (final MetaData metadata, final Class<U> builder, final String source, final String type)
+	protected static final <T extends Activity> void registerActivity (final MetaData<T> metadata, final String source, final String type)
 	{
 		assert metadata != null : "metadata is NULL";
-		assert builder != null : "builder is NULL";
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
 
-//		AbstractActivity.registerActivityClass (source, type, definition.getElementType ());
+		AbstractActivity.registerActivityClass (source, type, metadata.getElementClass ());
 
-		AbstractElement.registerElement (metadata, builder);
+		AbstractElement.registerElement (metadata);
 	}
 
 	/**
 	 * Create the <code>GenericNamedActivity</code> with null values.
 	 */
 
-	public GenericNamedActivity ()
+	protected GenericNamedActivity ()
 	{
 		super ();
 		this.name = null;
-	}
-
-	/**
-	 * Create the <code>GenericNamedActivity</code>.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public GenericNamedActivity (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course);
-
-		assert name != null : "name is NULL";
-
-		this.name = name;
 	}
 
 	/**

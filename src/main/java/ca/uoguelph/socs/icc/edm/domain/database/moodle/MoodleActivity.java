@@ -78,6 +78,7 @@ public class MoodleActivity extends ActivityInstance
 	{
 		DefinitionBuilder<Activity, MoodleActivity> builder = DefinitionBuilder.newInstance (Activity.class, MoodleActivity.class);
 		builder.setCreateMethod (MoodleActivity::new);
+		builder.setBuilder (DefaultGenericActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, MoodleActivity::getId, MoodleActivity::setId);
 
@@ -87,33 +88,16 @@ public class MoodleActivity extends ActivityInstance
 		builder.addRelationship ("grades", Grade.class, MoodleActivity::addGrade, MoodleActivity::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, MoodleActivity::addLog, MoodleActivity::removeLog);
 
-		AbstractElement.registerElement (builder.build (), DefaultGenericActivityBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>Activity</code> with null values.
 	 */
 
-	public MoodleActivity ()
+	protected MoodleActivity ()
 	{
 		super ();
-
-		this.activity = null;
-		this.instanceid = null;
-	}
-
-	/**
-	 * Create a new <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 */
-
-	public MoodleActivity (final ActivityType type, final Course course)
-	{
-		super (type, course);
 
 		this.activity = null;
 		this.instanceid = null;

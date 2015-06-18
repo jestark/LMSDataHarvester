@@ -89,6 +89,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	{
 		DefinitionBuilder<Enrolment, EnrolmentData> builder = DefinitionBuilder.newInstance (Enrolment.class, EnrolmentData.class);
 		builder.setCreateMethod (EnrolmentData::new);
+		builder.setBuilder (DefaultEnrolmentBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, EnrolmentData::getId, EnrolmentData::setId);
 
@@ -100,14 +101,14 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		builder.addRelationship ("grades", Grade.class, EnrolmentData::addGrade, EnrolmentData::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, EnrolmentData::addLog, EnrolmentData::removeLog);
 
-		AbstractElement.registerElement (builder.build (), DefaultEnrolmentBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>Enrolment</code> with null values.
 	 */
 
-	public EnrolmentData ()
+	protected EnrolmentData ()
 	{
 		this.id = null;
 		this.role = null;
@@ -115,38 +116,6 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		this.finalgrade = null;
 
 		this.usable = Boolean.valueOf (false);
-
-		this.grades = new HashSet<Grade> ();
-		this.log = new ArrayList<LogEntry> ();
-	}
-
-	/**
-	 * Create a new <code>Enrolment</code> instance.
-	 *
-	 * @param  course The <code>Course</code> in which the <code>User</code> is
-	 *                enrolled, not null
-	 * @param  role   The <code>Role</code> of the <code>User</code> in the
-	 *                <code>Course</code>, not null
-	 * @param  grade  The final grade assigned to the <code>User</code> in the
-	 *                <code>Course</code>
-	 * @param  usable Indication if the <code>User</code> has consented to their
-	 *                data being used for research
-	 */
-
-	public EnrolmentData (final Course course, final Role role, final Integer grade, final Boolean usable)
-	{
-		assert course != null : "course is NULL";
-		assert role != null : "role is NULL";
-		assert usable != null : "usable is NULL";
-
-		assert ((grade == null) || (grade >= 0)) : "Grade can not be negative";
-		assert ((grade == null) || (grade <= 100)) : "Grade can not be greater than 100%";
-
-		this.id = null;
-		this.course = course;
-		this.role = role;
-		this.finalgrade = grade;
-		this.usable = usable;
 
 		this.grades = new HashSet<Grade> ();
 		this.log = new ArrayList<LogEntry> ();

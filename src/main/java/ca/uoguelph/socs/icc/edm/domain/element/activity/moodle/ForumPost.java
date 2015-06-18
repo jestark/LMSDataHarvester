@@ -64,6 +64,7 @@ public class ForumPost extends GenericSubActivity
 	{
 		DefinitionBuilder<SubActivity, ForumPost> builder = DefinitionBuilder.newInstance (SubActivity.class, ForumPost.class);
 		builder.setCreateMethod (ForumPost::new);
+		builder.setBuilder (DefaultSubActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, ForumPost::getId, ForumPost::setId);
 
@@ -72,28 +73,16 @@ public class ForumPost extends GenericSubActivity
 
 		builder.addRelationship ("log", LogEntry.class, ForumPost::addLog, ForumPost::removeLog);
 
-		GenericSubActivity.registerActivity (builder.build (), ForumDiscussion.class, DefaultSubActivityBuilder.class);
+		GenericSubActivity.registerActivity (builder.build (), ForumDiscussion.class);
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ForumPost ()
+	protected ForumPost ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create a new <code>SubActivity</code> instance.
-	 *
-	 * @param  activity The parent <code>Activity</code>, not null
-	 * @param  name     The name of the <code>SubActivity</code>, not null
-	 */
-
-	public ForumPost (final Activity activity, final String name)
-	{
-		super (activity, name);
 	}
 
 	/**

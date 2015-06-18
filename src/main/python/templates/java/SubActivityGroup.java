@@ -61,6 +61,7 @@ public class ${ClassName} extends GenericSubActivity
 	{
 		DefinitionBuilder<SubActivity, ${ClassName}> builder = DefinitionBuilder.newInstance (SubActivity.class, ${ClassName}.class);
 		builder.setCreateMethod (${ClassName}::new);
+		builder.setBuilder (${Builder}.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);
 
@@ -70,7 +71,7 @@ public class ${ClassName} extends GenericSubActivity
 		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);
 		builder.addRelationship ("subactivities", SubActivity.class, ${ClassName}::addSubActivity, ${ClassName}::removeSubActivity);
 
-		GenericSubActivity.registerActivity (builder.build (), ${ParentClass}.class, ${Builder}.class);
+		GenericSubActivity.registerActivity (builder.build (), ${ParentClass}.class);
 	}
 
 	/** Serial version id, required by the Serializable interface */
@@ -80,21 +81,9 @@ public class ${ClassName} extends GenericSubActivity
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	protected ${ClassName} ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create a <code>SubActivity</code> instance.
-	 *
-	 * @param  activity The parent <code>Activity</code>, not null
-	 * @param  name   The name of the <code>SubActivity</code>, not null
-	 */
-
-	public ${ClassName} (final Activity activity, final String name)
-	{
-		super (activity, name);
 	}
 
 	/**

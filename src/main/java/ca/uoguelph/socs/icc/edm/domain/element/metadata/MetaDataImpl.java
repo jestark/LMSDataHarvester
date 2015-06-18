@@ -19,14 +19,18 @@ package ca.uoguelph.socs.icc.edm.domain.element.metadata;
 import java.util.function.Function;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 public class MetaDataImpl<T extends Element, U extends T> implements MetaData<T>
 {
 	private final Definition<T, U> definition;
 
-	protected MetaDataImpl (Definition<T, U> definition)
+	private final Class<? extends ElementBuilder<T>> builder;
+
+	protected MetaDataImpl (final Definition<T, U> definition, final Class<? extends ElementBuilder<T>> builder)
 	{
 		this.definition = definition;
+		this.builder = builder;
 	}
 
 	public Class<T> getElementType ()
@@ -37,6 +41,11 @@ public class MetaDataImpl<T extends Element, U extends T> implements MetaData<T>
 	public Class<U> getElementClass ()
 	{
 		return this.definition.getElementClass ();
+	}
+
+	public Class<? extends ElementBuilder<T>> getBuilderClass ()
+	{
+		return this.builder;
 	}
 
 	public Builder<T> getBuilder ()

@@ -63,7 +63,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	 * Create the <code>Activity</code> with null values.
 	 */
 
-	public ActivityInstance ()
+	protected ActivityInstance ()
 	{
 		super ();
 
@@ -71,26 +71,6 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 		this.course = null;
 
 		this.grades = new HashSet<Grade> ();
-	}
-
-	/**
-	 * Create a new <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 */
-
-	public ActivityInstance (final ActivityType type, final Course course)
-	{
-		this ();
-
-		assert type != null : "type is NULL";
-		assert course != null : "course is NULL";
-
-		this.type = type;
-		this.course = course;
 	}
 
 	/**

@@ -77,6 +77,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	{
 		DefinitionBuilder<User, UserData> builder = DefinitionBuilder.newInstance (User.class, UserData.class);
 		builder.setCreateMethod (UserData::new);
+		builder.setBuilder (DefaultUserBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, UserData::getId, UserData::setId);
 		builder.addUniqueAttribute ("idnumber", Integer.class, true, false, UserData::getIdNumber, UserData::setIdNumber);
@@ -87,45 +88,20 @@ public class UserData extends AbstractElement implements User, Serializable
 
 		builder.addRelationship ("enrolments", Enrolment.class, UserData::addEnrolment, UserData::removeEnrolment);
 
-		AbstractElement.registerElement (builder.build (), DefaultUserBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the user with null values.
 	 */
 
-	public UserData ()
+	protected UserData ()
 	{
 		this.id = null;
 		this.idnumber = null;
 		this.username = null;
 		this.lastname = null;
 		this.firstname= null;
-
-		this.enrolments = new HashSet<Enrolment> ();
-	}
-
-	/**
-	 * Create a new <code>User</code> instance.
-	 *
-	 * @param  idnumber  The user's ID number, not null
-	 * @param  firstname The user's first name, not null
-	 * @param  lastname  The user's last name, not null
-	 * @param  username  The user's username, not null
-	 */
-
-	public UserData (final Integer idnumber, final String firstname, final String lastname, final String username)
-	{
-		assert idnumber != null : "idnumber is NULL";
-		assert firstname != null : "firstname is NULL";
-		assert lastname != null : "lastname is NULL";
-		assert username != null : "username is NULL";
-
-		this.id = null;
-		this.idnumber = idnumber;
-		this.username = username;
-		this.lastname = lastname;
-		this.firstname = firstname;
 
 		this.enrolments = new HashSet<Enrolment> ();
 	}

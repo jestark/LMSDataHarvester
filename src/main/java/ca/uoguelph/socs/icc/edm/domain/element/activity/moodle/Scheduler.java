@@ -65,6 +65,7 @@ public class Scheduler extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, Scheduler> builder = DefinitionBuilder.newInstance (Activity.class, Scheduler.class);
 		builder.setCreateMethod (Scheduler::new);
+		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, Scheduler::getId, Scheduler::setId);
 
@@ -75,14 +76,14 @@ public class Scheduler extends GenericNamedActivity
 		builder.addRelationship ("grades", Grade.class, Scheduler::addGrade, Scheduler::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Scheduler::addLog, Scheduler::removeLog);
 
-		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "scheduler");
+		GenericNamedActivity.registerActivity (builder.build (), "moodle", "scheduler");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public Scheduler ()
+	protected Scheduler ()
 	{
 		super ();
 	}
@@ -122,20 +123,5 @@ public class Scheduler extends GenericNamedActivity
 	protected void setId (final Long id)
 	{
 		super.setId (id);
-	}
-
-	/**
-	 * Create the <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public Scheduler (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 }

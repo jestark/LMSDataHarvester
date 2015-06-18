@@ -61,6 +61,7 @@ public class ForumDiscussion extends GenericSubActivity
 	{
 		DefinitionBuilder<SubActivity, ForumDiscussion> builder = DefinitionBuilder.newInstance (SubActivity.class, ForumDiscussion.class);
 		builder.setCreateMethod (ForumDiscussion::new);
+		builder.setBuilder (DefaultSubActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, ForumDiscussion::getId, ForumDiscussion::setId);
 
@@ -70,7 +71,7 @@ public class ForumDiscussion extends GenericSubActivity
 		builder.addRelationship ("log", LogEntry.class, ForumDiscussion::addLog, ForumDiscussion::removeLog);
 		builder.addRelationship ("subactivities", SubActivity.class, ForumDiscussion::addSubActivity, ForumDiscussion::removeSubActivity);
 
-		GenericSubActivity.registerActivity (builder.build (), Forum.class, DefaultSubActivityBuilder.class);
+		GenericSubActivity.registerActivity (builder.build (), Forum.class);
 	}
 
 	/** Serial version id, required by the Serializable interface */
@@ -80,21 +81,9 @@ public class ForumDiscussion extends GenericSubActivity
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ForumDiscussion ()
+	protected ForumDiscussion ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create a <code>SubActivity</code> instance.
-	 *
-	 * @param  activity The parent <code>Activity</code>, not null
-	 * @param  name   The name of the <code>SubActivity</code>, not null
-	 */
-
-	public ForumDiscussion (final Activity activity, final String name)
-	{
-		super (activity, name);
 	}
 
 	/**

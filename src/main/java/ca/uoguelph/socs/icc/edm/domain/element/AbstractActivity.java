@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 /**
  * Abstract base class for all of the <code>Activity</code> implementations.
@@ -66,7 +67,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 *              <code>ActivityType</code>, may be null
 	 */
 
-	public static final Class<? extends Activity> getActivityClass (final ActivityType type)
+	public static final Class<? extends Element> getActivityClass (final ActivityType type)
 	{
 		return AbstractActivity.ACTIVITYIMPL.getActivityClass (type);
 	}
@@ -82,7 +83,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 *                  null
 	 */
 
-	public static final Class<? extends Activity> getSubActivityClass (final Class<? extends Activity> activity)
+	public static final Class<? extends Element> getSubActivityClass (final Class<? extends Element> activity)
 	{
 		return AbstractActivity.ACTIVITYIMPL.getSubActivityClass (activity);
 	}
@@ -99,7 +100,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @param  impl   The implementation class, not null
 	 */
 
-	protected static final void registerActivityClass (final String source, final String type, final Class<? extends Activity> impl)
+	protected static final void registerActivityClass (final String source, final String type, final Class<? extends Element> impl)
 	{
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
@@ -116,7 +117,7 @@ public abstract class AbstractActivity extends AbstractElement implements Activi
 	 * @param  subactivity The <code>SubActivity</code> implementation, not null
 	 */
 
-	protected static final void registerSubActivityClass (final Class<? extends Activity> activity, final Class<? extends SubActivity> subactivity)
+	protected static final void registerSubActivityClass (final Class<? extends Element> activity, final Class<? extends Element> subactivity)
 	{
 		assert activity != null : "activity is NULL";
 		assert subactivity != null : "subactivity is NULL";

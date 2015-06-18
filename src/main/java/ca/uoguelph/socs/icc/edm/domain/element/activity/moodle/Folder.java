@@ -65,6 +65,7 @@ public class Folder extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, Folder> builder = DefinitionBuilder.newInstance (Activity.class, Folder.class);
 		builder.setCreateMethod (Folder::new);
+		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, Folder::getId, Folder::setId);
 
@@ -75,14 +76,14 @@ public class Folder extends GenericNamedActivity
 		builder.addRelationship ("grades", Grade.class, Folder::addGrade, Folder::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Folder::addLog, Folder::removeLog);
 
-		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "folder");
+		GenericNamedActivity.registerActivity (builder.build (), "moodle", "folder");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public Folder ()
+	protected Folder ()
 	{
 		super ();
 	}
@@ -122,20 +123,5 @@ public class Folder extends GenericNamedActivity
 	protected void setId (final Long id)
 	{
 		super.setId (id);
-	}
-
-	/**
-	 * Create the <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public Folder (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 }

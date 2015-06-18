@@ -75,6 +75,7 @@ public class MoodleLogData extends AbstractElement implements LogEntry
 	{
 		DefinitionBuilder<LogEntry, MoodleLogData> builder = DefinitionBuilder.newInstance (LogEntry.class, MoodleLogData.class);
 		builder.setCreateMethod (MoodleLogData::new);
+		builder.setBuilder (DefaultLogEntryBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, MoodleLogData::getId, MoodleLogData::setId);
 
@@ -82,7 +83,7 @@ public class MoodleLogData extends AbstractElement implements LogEntry
 		builder.addAttribute ("time", Date.class, true, true, MoodleLogData::getTime, MoodleLogData::setTime);
 
 
-		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	protected MoodleLogData ()

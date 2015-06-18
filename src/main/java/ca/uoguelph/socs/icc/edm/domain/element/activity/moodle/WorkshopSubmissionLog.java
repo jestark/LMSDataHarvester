@@ -64,33 +64,20 @@ class WorkshopSubmissionLog extends LogReference
 	{
 		DefinitionBuilder<LogEntry, WorkshopSubmissionLog> builder = DefinitionBuilder.newInstance (LogEntry.class, WorkshopSubmissionLog.class);
 		builder.setCreateMethod (WorkshopSubmissionLog::new);
+		builder.setBuilder (DefaultLogEntryBuilder.class);
 
 		builder.addAttribute ("entry", LogEntry.class, true, false, WorkshopSubmissionLog::getEntry, WorkshopSubmissionLog::setEntry);
 		builder.addAttribute ("subactivity", SubActivity.class, true, false, WorkshopSubmissionLog::getSubActivity, WorkshopSubmissionLog::setSubActivity);
 
-		AbstractElement.registerElement (builder.build (), DefaultLogEntryBuilder.class);
+		AbstractElement.registerElement (builder.build ());
 	}
 
 	/**
 	 * Create the <code>LogEntry</code> instance with Null values.
 	 */
 
-	public WorkshopSubmissionLog ()
+	protected WorkshopSubmissionLog ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create the <code>WorkshopSubmissionLog</code>.
-	 *
-	 * @param  entry       The <code>LogEntry</code> which refers to the
-	 *                     <code>SubActivity</code>, not null
-	 * @param  subactivity The <code>SubActivity</code> which is being
-	 *                     referenced, not null
-	 */
-
-	public WorkshopSubmissionLog (final LogEntry entry, final SubActivity subactivity)
-	{
-		super (entry, subactivity);
 	}
 }

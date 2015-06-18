@@ -66,6 +66,7 @@ public class Book extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, Book> builder = DefinitionBuilder.newInstance (Activity.class, Book.class);
 		builder.setCreateMethod (Book::new);
+		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, Book::getId, Book::setId);
 
@@ -77,31 +78,16 @@ public class Book extends GenericNamedActivity
 		builder.addRelationship ("log", LogEntry.class, Book::addLog, Book::removeLog);
 		builder.addRelationship ("subactivities", SubActivity.class, Book::addSubActivity, Book::removeSubActivity);
 
-		GenericNamedActivity.registerActivity (builder.build (), DefaultNamedActivityBuilder.class, "moodle", "book");
+		GenericNamedActivity.registerActivity (builder.build (), "moodle", "book");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public Book ()
+	protected Book ()
 	{
 		super ();
-	}
-
-	/**
-	 * Create a new <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public Book (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 
 	/**

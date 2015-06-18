@@ -65,6 +65,7 @@ public class ${ClassName} extends GenericNamedActivity
 	{
 		DefinitionBuilder<Activity, ${ClassName}> builder = DefinitionBuilder.newInstance (Activity.class, ${ClassName}.class);
 		builder.setCreateMethod (${ClassName}::new);
+		builder.setBuilder (${Builder}.class);
 
 		builder.addUniqueAttribute ("id", Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);
 
@@ -75,14 +76,14 @@ public class ${ClassName} extends GenericNamedActivity
 		builder.addRelationship ("grades", Grade.class, ${ClassName}::addGrade, ${ClassName}::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);
 
-		GenericNamedActivity.registerActivity (builder.build (), ${Builder}.class, "${ActivitySource}", "${ActivityType}");
+		GenericNamedActivity.registerActivity (builder.build (), "${ActivitySource}", "${ActivityType}");
 	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
 	 */
 
-	public ${ClassName} ()
+	protected ${ClassName} ()
 	{
 		super ();
 	}
@@ -122,20 +123,5 @@ public class ${ClassName} extends GenericNamedActivity
 	protected void setId (final Long id)
 	{
 		super.setId (id);
-	}
-
-	/**
-	 * Create the <code>Activity</code> instance.
-	 *
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code>, not null
-	 * @param  course  The <code>Course</code> which is associated with the
-	 *                 <code>Activity</code> instance, not null
-	 * @param  name    The name of the <code>Activity</code>, not null
-	 */
-
-	public ${ClassName} (final ActivityType type, final Course course, final String name)
-	{
-		super (type, course, name);
 	}
 }

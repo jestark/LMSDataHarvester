@@ -41,21 +41,16 @@ public abstract class AbstractElement implements Element
 	/**
 	 * Register an <code>Element</code> implementation with the factories.
 	 *
-	 * @param  <T>        The <code>Element</code> interface type
-	 * @param  <U>        The <code>Element</code> implementation type
-	 * @param  <B>        The <code>ElementBuilder</code> implementation type
-	 * @param  definition The <code>Element</code> meta-data definition
-	 * @param  builder    The <code>ElementBuilder</code> implementation, not
-	 *                    null
+	 * @param  <T>      The <code>Element</code> interface type
+	 * @param  metadata The <code>Element</code> meta-data definition
 	 */
 
-	protected static <T extends Element, U extends T, E extends Enum<E>, B extends ElementBuilder<T>> void registerElement (final MetaData metadata, final Class<B> builder)
+	protected static <T extends Element> void registerElement (final MetaData<T> metadata)
 	{
-		assert builder != null : "builder is NULL";
 		assert metadata != null : "metadata is NULL";
 
+		AbstractBuilder.registerElement (metadata);
 //		registerQuery (element, elementImpl);
-//		AbstractBuilder.registerElement (definition.getElementType (), builder);
 	}
 
 	/**
