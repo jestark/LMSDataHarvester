@@ -28,13 +28,12 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * 
+ * Implementation of the <code>Builder</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The type of <code>Element</code>
  * @param   <U> The implementation type of the <code>Element</code>
- * @param   <E> The <code>Enum</code> containing the properties
  */
 
 final class BuilderImpl<T extends Element, U extends T> implements Builder<T>

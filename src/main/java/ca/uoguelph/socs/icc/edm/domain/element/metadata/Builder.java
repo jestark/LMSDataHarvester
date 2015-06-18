@@ -20,6 +20,26 @@ import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
+/**
+ * <code>MetaData</code> based <code>Element</code> builder.  This interface
+ * exists to bury the generics for the <code>Builder</code> implementation
+ * which operated in terms of the <code>Element</code> implementation class.
+ * <p>
+ * <code>Element</code> instances are built by this builder though a
+ * <code>MetaData</code> mapping between a <code>Property</code> and the
+ * instance methods that control access to its value.  Though this method a
+ * single builder implementation can build any <code>Element</code> with a few
+ * limitations.
+ * <p>
+ * The builder is not designed to handle properties that are mapped to
+ * collections, unless the collection is static.  Also, value associated with
+ * each <code>Property</code> must not contain any type parameters.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @param   <T> The type of <code>Element</code>
+ */
+
 public interface Builder<T extends Element>
 {
 	/**
