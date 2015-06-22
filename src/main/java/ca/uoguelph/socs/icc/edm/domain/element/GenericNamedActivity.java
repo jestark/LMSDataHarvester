@@ -60,7 +60,7 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	 * @param  type     The name of the <code>ActivityType</code> not null
 	 */
 
-	protected static final <T extends Activity> void registerActivity (final MetaData<T> metadata, final String source, final String type)
+	protected static final <T extends Activity, U extends T> void registerActivity (final MetaData<T, U> metadata, final String source, final String type)
 	{
 		assert metadata != null : "metadata is NULL";
 		assert source != null : "source is NULL";

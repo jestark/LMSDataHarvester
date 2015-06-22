@@ -21,7 +21,7 @@ import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.AbstractBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.AbstractQuery;
+import ca.uoguelph.socs.icc.edm.domain.datastore.AbstractDataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
 
@@ -45,12 +45,12 @@ public abstract class AbstractElement implements Element
 	 * @param  metadata The <code>Element</code> meta-data definition
 	 */
 
-	protected static <T extends Element> void registerElement (final MetaData<T> metadata)
+	protected static <T extends Element, U extends T> void registerElement (final MetaData<T, U> metadata)
 	{
 		assert metadata != null : "metadata is NULL";
 
 		AbstractBuilder.registerElement (metadata);
-//		registerQuery (element, elementImpl);
+		AbstractDataStore.registerElement (metadata);
 	}
 
 	/**

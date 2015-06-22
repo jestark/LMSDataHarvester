@@ -14,11 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.element.metadata;
+package ca.uoguelph.socs.icc.edm.domain.builder;
 
 import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 
 /**
  * <code>MetaData</code> based <code>Element</code> builder.  This interface
@@ -40,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @param   <T> The type of <code>Element</code>
  */
 
-public interface Builder<T extends Element>
+interface Builder<T extends Element>
 {
 	/**
 	 * Get the <code>Property</code> associated with the <code>Element</code>

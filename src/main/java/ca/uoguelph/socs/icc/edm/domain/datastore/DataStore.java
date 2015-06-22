@@ -100,7 +100,22 @@ public interface DataStore
 	 *                 otherwise
 	 */
 
-	public abstract boolean contains (Element element);
+	public abstract <T extends Element> boolean contains (T element);
+
+	/**
+	 * Fetch the specified <code>Element</code> instance from the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  <T>  The type of <code>Element</code> to be retrieved
+	 * @param  type The implementation class of the <code>Element</code>
+	 *              to retrieve
+	 * @param  id   The <code>DataStore</code> Id of the <code>Element</code>
+	 *              to retrieve
+	 *
+	 * @return      The requested <code>Element</code> instance
+	 */
+
+	public abstract <T extends Element> T fetch (Class<T> type, Long id);
 
 	/**
 	 * Insert the specified <code>Element</code> instance into the
@@ -109,7 +124,7 @@ public interface DataStore
 	 * @param  element The <code>Element</code> instance to insert, not null
 	 */
 
-	public abstract void insert (Element element);
+	public abstract <T extends Element> void insert (T element);
 
 	/**
 	 * Remove the specified <code>Element</code> instance from the
@@ -118,5 +133,5 @@ public interface DataStore
 	 * @param  element The <code>Element</code> instance to remove, not null
 	 */
 
-	public abstract void remove (Element element);
+	public abstract <T extends Element> void remove (T element);
 }

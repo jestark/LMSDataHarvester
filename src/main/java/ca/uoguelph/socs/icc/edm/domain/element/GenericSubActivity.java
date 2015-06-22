@@ -62,7 +62,7 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 	 * @param  activity The parent <code>Activity</code> class, not null
 	 */
 
-	protected static final <T extends SubActivity> void registerActivity (final MetaData<T> metadata, final Class<? extends Activity> activity)
+	protected static final <T extends SubActivity, U extends T> void registerActivity (final MetaData<T, U> metadata, final Class<? extends Activity> activity)
 	{
 		assert metadata != null : "metadata is NULL";
 		assert activity != null : "activity is NULL";

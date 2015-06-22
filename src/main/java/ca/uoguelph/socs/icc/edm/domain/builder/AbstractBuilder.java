@@ -31,7 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Builder;
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 
@@ -44,11 +43,86 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 
 public abstract class AbstractBuilder<T extends Element> implements ElementBuilder<T>
 {
+	/**
+	 * Interface to hide the <code>Element</code> implementation class from the
+	 * <code>ElementBuilder</code> implementation.
+	 */
+
+	private static interface BuilderData<T extends Element>
+	{
+		/**
+		 * Get the <code>ElementBuilder</code> implementation class for the
+		 * specified <code>Element</code>.
+		 *
+		 * @return The implementation <code>Class</code>
+		 */
+
+		public abstract Class<? extends ElementBuilder<T>> getBuilderClass ();
+
+		/**
+		 * Get an instance of the <code>Builder</code> for the
+		 * <code>Element</code> implementation.
+		 *
+		 * @return  The <code>Builder</code> instance
+		 */
+
+		public abstract Builder<T> getBuilder ();
+	}
+
+	/**
+	 * Wrapper class to hide the details of the <code>MetaData</code> from the
+	 * <code>ElementBuilder</code> instance.
+	 */
+
+	private static final class BuilderDataImpl<T extends Element, U extends T> implements BuilderData<T>
+	{
+		/** The <code>MetaData</code> */
+		private final MetaData<T, U> metadata;
+
+		/**
+		 * Create the <code>BuilderDataImpl</code>.
+		 *
+		 * @param  metadata The <code>MetaData</code> instance which is being
+		 *                  wrapped
+		 */
+
+		public BuilderDataImpl (final MetaData<T, U> metadata)
+		{
+			assert metadata != null : "metadata is NULL";
+
+			this.metadata = metadata;
+		}
+
+		/**
+		 * Get the <code>ElementBuilder</code> implementation class for the
+		 * specified <code>Element</code>.
+		 *
+		 * @return The implementation <code>Class</code>
+		 */
+
+		public Class<? extends ElementBuilder<T>> getBuilderClass ()
+		{
+			return this.metadata.getBuilderClass ();
+		}
+
+		/**
+		 * Get an instance of the <code>Builder</code> for the
+		 * <code>Element</code> implementation.
+		 *
+		 * @return  The <code>Builder</code> instance
+		 */
+
+		public Builder<T> getBuilder ()
+		{
+			return new BuilderImpl<T, U> (this.metadata.getDefinition ());
+		}
+	}
+
 	/** Factory for the <code>ElementBuilder</code> implementations */
 	private static final Map<Class<? extends ElementBuilder<? extends Element>>, BiFunction<Class<?>, DataStore, ? extends ElementBuilder<? extends Element>>> factories;
 
 	/** <code>Element<code> meta-data */
-	private static final Map<Class<?>, MetaData<? extends Element>> metadata;
+	private static final Map<Class<?>, BuilderData<? extends Element>> metadata;
 
 	/** The builder */
 	protected final Builder<T> builder;
@@ -69,7 +143,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	static
 	{
 		factories = new HashMap<Class<? extends ElementBuilder<? extends Element>>, BiFunction<Class<?>, DataStore, ? extends ElementBuilder<? extends Element>>> ();
-		metadata = new HashMap<Class<?>, MetaData<? extends Element>> ();
+		metadata = new HashMap<Class<?>, BuilderData<? extends Element>> ();
 	}
 
 	/**
@@ -84,11 +158,11 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 */
 
 	@SuppressWarnings("unchecked")
-	private static <T extends Element> MetaData<T> getElementMetaData (final Class<?> element)
+	private static <T extends Element> BuilderData<T> getElementMetaData (final Class<?> element)
 	{
 		assert element != null : "element is NULL";
 
-		return (MetaData<T>) AbstractBuilder.metadata.get (element);
+		return (BuilderData<T>) AbstractBuilder.metadata.get (element);
 	}
 
 	/**
@@ -104,7 +178,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	{
 		assert element != null : "element is NULL";
 
-		MetaData<T> metadata = AbstractBuilder.getElementMetaData (element);
+		BuilderData<T> metadata = AbstractBuilder.getElementMetaData (element);
 
 		assert metadata != null : "Element class is not registered: " + element.getSimpleName ();
 
@@ -123,12 +197,12 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 	 * @param  metadata The implementation class, not null
 	 */
 
-	public static final <T extends Element> void registerElement (final MetaData<T> metadata)
+	public static final <T extends Element, U extends T> void registerElement (final MetaData<T, U> metadata)
 	{
 		assert metadata != null : "metadata is NULL";
 		assert (! AbstractBuilder.metadata.containsKey (metadata.getElementClass ())) : "Class already registered: " + (metadata.getElementClass ()).getSimpleName ();
 
-		AbstractBuilder.metadata.put (metadata.getElementClass (), metadata);
+		AbstractBuilder.metadata.put (metadata.getElementClass (), new BuilderDataImpl<T, U> (metadata));
 	}
 
 	/**
@@ -171,7 +245,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 		assert element   != null : "element is NULL";
 		assert datastore != null : "manager is NULL";
 
-		MetaData<U> metadata = AbstractBuilder.getElementMetaData (element);
+		BuilderData<U> metadata = AbstractBuilder.getElementMetaData (element);
 
 		assert metadata != null : "Element class is not registered: " + element.getSimpleName ();
 

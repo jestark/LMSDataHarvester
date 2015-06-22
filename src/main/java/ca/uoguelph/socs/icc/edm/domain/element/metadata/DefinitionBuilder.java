@@ -109,10 +109,10 @@ public final class DefinitionBuilder<T extends Element, U extends T>
 
 	}
 
-	public MetaData<T> build ()
+	public MetaData<T, U> build ()
 	{
 		Definition<T, U> defn = new Definition<T, U> (this.type, this.impl, this.create, this.refs);
 
-		return new MetaDataImpl<T, U> (defn, this.builder);
+		return new MetaData<T, U> (defn, this.builder);
 	}
 }
