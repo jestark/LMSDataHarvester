@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation of the <code>Action</code> that a <code>User</code>
  * performed upon an <code>Activity</code> as recored in a
@@ -56,6 +58,18 @@ import java.util.Set;
 
 public interface Action extends Element
 {
+	/**
+	 * Constants representing all of the properties of an <code>Action</code>.
+	 * A <code>Property</code> represents a piece of data contained within the
+	 * <code>Action</code> instance.
+	 */
+
+	public static class Properties extends Element.Properties
+	{
+		/** The name of the <code>Action</code> */
+		public static final Property<String> NAME = Property.getInstance (Action.class, String.class, "name", false, true);
+	}
+
 	/**
 	 * Get the <code>Set</code> of <code>ActivityType</code> instances
 	 * containing the <code>Action</code>.

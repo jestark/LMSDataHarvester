@@ -66,8 +66,8 @@ class LessonPageLog extends LogReference
 		builder.setCreateMethod (LessonPageLog::new);
 		builder.setBuilder (DefaultLogEntryBuilder.class);
 
-		builder.addAttribute ("entry", LogEntry.class, true, false, LessonPageLog::getEntry, LessonPageLog::setEntry);
-		builder.addAttribute ("subactivity", SubActivity.class, true, false, LessonPageLog::getSubActivity, LessonPageLog::setSubActivity);
+//		builder.addAttribute (, LessonPageLog::getEntry, LessonPageLog::setEntry);
+//		builder.addAttribute (, LessonPageLog::getSubActivity, LessonPageLog::setSubActivity);
 
 		AbstractElement.registerElement (builder.build ());
 	}

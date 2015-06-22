@@ -68,11 +68,11 @@ public class ${ClassName} extends GenericNamedActivity
 		builder.setCreateMethod (${ClassName}::new);
 		builder.setBuilder (${Builder}.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, ${ClassName}::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, ${ClassName}::getCourse, ${ClassName}::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, ${ClassName}::getType, ${ClassName}::setType);
-		builder.addAttribute ("name", String.class, true, false, ${ClassName}::getName, ${ClassName}::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, ${ClassName}::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, ${ClassName}::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, ${ClassName}::setName);
 
 		builder.addRelationship ("grades", Grade.class, ${ClassName}::addGrade, ${ClassName}::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);

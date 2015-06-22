@@ -59,6 +59,16 @@ public final class DefinitionBuilder<T extends Element, U extends T>
 		this.refs = new HashMap<Property<?>, Definition.Reference<U, ?>> ();
 	}
 
+	public Class<T> getElementType ()
+	{
+		return this.type;
+	}
+
+	public Class<U> getElementClass ()
+	{
+		return this.impl;
+	}
+
 	public void setCreateMethod (final Supplier<U> create)
 	{
 		assert create != null : "create is NULL";
@@ -71,26 +81,23 @@ public final class DefinitionBuilder<T extends Element, U extends T>
 		this.builder = builder;
 	}
 
-	public <V> void addAttribute (final String property, final Class<V> type, final boolean required, final boolean mutable, final Function<U, V> get, final BiConsumer<U, V> set)
+	public <V> void addAttribute (final Property<V> property, final Function<U, V> get, final BiConsumer<U, V> set)
 	{
 		assert property != null : "property is NULL";
-		assert type != null : "type is NULL";
 		assert get != null : "get is NULL";
 		assert set != null : "set is NULL";
 
-		Property<V> prop = new Property<V> (property, type, this.type, mutable, required);
+		this.refs.put (property, new Definition.Reference<U, V> (get, set));
 
-		this.refs.put (prop, new Definition.Reference<U, V> (get, set));
 	}
 
-	public <V> void addUniqueAttribute (final String property, final Class<V> type, final boolean required, final boolean mutable, final Function<U, V> get, final BiConsumer<U, V> set)
+	public <V> void addUniqueAttribute (final Property<V> property, final Function<U, V> get, final BiConsumer<U, V> set)
 	{
 		assert property != null : "property is NULL";
-		assert type != null : "type is NULL";
 		assert get != null : "get is NULL";
 		assert set != null : "set is NULL";
 
-		this.addAttribute (property, type, required, mutable, get, set);
+		this.addAttribute (property, get, set);
 	}
 
 	public <V> void addRelationship (final String name, final Class<V> type, final BiConsumer<U, V> get, final BiConsumer<U, V> set)
@@ -104,7 +111,7 @@ public final class DefinitionBuilder<T extends Element, U extends T>
 
 	}
 
-	public void addIndex (final String... attributes)
+	public void addIndex (final String name, Property<?>... properties)
 	{
 
 	}

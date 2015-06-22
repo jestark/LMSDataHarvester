@@ -67,11 +67,11 @@ public class Page extends GenericNamedActivity
 		builder.setCreateMethod (Page::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Page::getId, Page::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Page::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Page::getCourse, Page::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Page::getType, Page::setType);
-		builder.addAttribute ("name", String.class, true, false, Page::getName, Page::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Page::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Page::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Page::setName);
 
 		builder.addRelationship ("grades", Grade.class, Page::addGrade, Page::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Page::addLog, Page::removeLog);

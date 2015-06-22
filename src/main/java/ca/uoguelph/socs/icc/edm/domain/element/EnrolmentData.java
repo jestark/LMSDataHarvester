@@ -91,12 +91,12 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		builder.setCreateMethod (EnrolmentData::new);
 		builder.setBuilder (DefaultEnrolmentBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, EnrolmentData::getId, EnrolmentData::setId);
+		builder.addUniqueAttribute (Enrolment.Properties.ID, Enrolment::getId, EnrolmentData::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, EnrolmentData::getCourse, EnrolmentData::setCourse);
-		builder.addAttribute ("role", Role.class, true, false, EnrolmentData::getRole, EnrolmentData::setRole);
-		builder.addAttribute ("finalgrade", Integer.class, false, true, EnrolmentData::getFinalGrade, EnrolmentData::setFinalGrade);
-		builder.addAttribute ("usable", Boolean.class, false, true, EnrolmentData::isUsable, EnrolmentData::setUsable);
+		builder.addAttribute (Enrolment.Properties.COURSE, Enrolment::getCourse, EnrolmentData::setCourse);
+		builder.addAttribute (Enrolment.Properties.ROLE, Enrolment::getRole, EnrolmentData::setRole);
+		builder.addAttribute (Enrolment.Properties.FINALGRADE, Enrolment::getFinalGrade, EnrolmentData::setFinalGrade);
+		builder.addAttribute (Enrolment.Properties.USABLE, Enrolment::isUsable, EnrolmentData::setUsable);
 
 		builder.addRelationship ("grades", Grade.class, EnrolmentData::addGrade, EnrolmentData::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, EnrolmentData::addLog, EnrolmentData::removeLog);

@@ -66,10 +66,10 @@ public class WorkshopSubmission extends GenericSubActivity
 		builder.setCreateMethod (WorkshopSubmission::new);
 		builder.setBuilder (DefaultSubActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, WorkshopSubmission::getId, WorkshopSubmission::setId);
+		builder.addUniqueAttribute (SubActivity.Properties.ID, SubActivity::getId, WorkshopSubmission::setId);
 
-		builder.addAttribute ("parent", Activity.class, true, false, WorkshopSubmission::getParent, WorkshopSubmission::setParent);
-		builder.addAttribute ("name", String.class, true, false, WorkshopSubmission::getName, WorkshopSubmission::setName);
+		builder.addAttribute (SubActivity.Properties.PARENT, SubActivity::getParent, WorkshopSubmission::setParent);
+		builder.addAttribute (SubActivity.Properties.NAME, SubActivity::getName, WorkshopSubmission::setName);
 
 		builder.addRelationship ("log", LogEntry.class, WorkshopSubmission::addLog, WorkshopSubmission::removeLog);
 

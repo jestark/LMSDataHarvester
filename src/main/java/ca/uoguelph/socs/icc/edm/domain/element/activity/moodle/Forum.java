@@ -68,11 +68,11 @@ public class Forum extends GenericNamedActivity
 		builder.setCreateMethod (Forum::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Forum::getId, Forum::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Forum::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Forum::getCourse, Forum::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Forum::getType, Forum::setType);
-		builder.addAttribute ("name", String.class, true, false, Forum::getName, Forum::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Forum::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Forum::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Forum::setName);
 
 		builder.addRelationship ("grades", Grade.class, Forum::addGrade, Forum::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Forum::addLog, Forum::removeLog);

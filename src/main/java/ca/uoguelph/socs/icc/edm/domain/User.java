@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation of a user within the domain model.  Classes implementing
  * this interface contain the information required to identify the person who
@@ -45,6 +47,27 @@ import java.util.Set;
 
 public interface User extends Element
 {
+	/**
+	 * Constants representing all of the properties of an <code>User</code>.
+	 * A <code>Property</code> represents a piece of data contained within the
+	 * <code>User</code> instance.
+	 */
+
+	public static class Properties extends Element.Properties
+	{
+		/** The idnumber for the <code>User</code> */
+		public static final Property<Integer> IDNUMBER = Property.getInstance (User.class, Integer.class, "idnumber", false, true);
+
+		/** The first name of the <code>User</code> */
+		public static final Property<String> FIRSTNAME = Property.getInstance (User.class, String.class, "firstname", true, true);
+
+		/** The last name of the <code>User</code> */
+		public static final Property<String> LASTNAME = Property.getInstance (User.class, String.class, "lastname", true, true);
+
+		/** The username of the <code>User</code> */
+		public static final Property<String> USERNAME = Property.getInstance (User.class, String.class, "username", false, true);
+	}
+
 	/**
 	 * Get the (student) ID number of the <code>User</code>.  This will be the
 	 * student number, or a similar identifier used to track the

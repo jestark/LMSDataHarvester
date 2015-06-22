@@ -26,6 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
@@ -62,10 +63,10 @@ public class GenericActivity extends ActivityInstance implements Serializable
 		builder.setCreateMethod (GenericActivity::new);
 		builder.setBuilder (DefaultGenericActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, AbstractElement::getId, AbstractElement::setId);
+		builder.addUniqueAttribute (Element.Properties.ID, Element::getId, AbstractElement::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, ActivityInstance::getCourse, ActivityInstance::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, ActivityInstance::getType, ActivityInstance::setType);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, ActivityInstance::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, ActivityInstance::setType);
 
 		builder.addRelationship ("grades", Grade.class, ActivityInstance::addGrade, ActivityInstance::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, AbstractActivity::addLog, AbstractActivity::removeLog);

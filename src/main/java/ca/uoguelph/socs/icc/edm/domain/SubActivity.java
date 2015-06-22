@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation of a child element in a hierarchy of <code>Activity</code>
  * instances.
@@ -28,6 +30,18 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 
 public interface SubActivity extends Activity
 {
+	/**
+	 * Constants representing all of the properties of an <code>SubActivity</code>.
+	 * A <code>Property</code> represents a piece of data contained within the
+	 * <code>SubActivity</code> instance.
+	 */
+
+	public static class Properties extends Activity.Properties
+	{
+		/** The parent <code>Activity</code> */
+		public static final Property<Activity> PARENT = Property.getInstance (SubActivity.class, Activity.class, "parent", false, true);
+	}
+
 	/**
 	 * Get the parent <code>Activity</code> instance for the
 	 * <code>SubActivity</code>.

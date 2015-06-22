@@ -69,8 +69,8 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 		builder.setCreateMethod (ActivitySourceData::new);
 		builder.setBuilder (DefaultActivitySourceBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, ActivitySourceData::getId, ActivitySourceData::setId);
-		builder.addUniqueAttribute ("name", String.class, true, false, ActivitySourceData::getName, ActivitySourceData::setName);
+		builder.addUniqueAttribute (ActivitySource.Properties.ID, ActivitySource::getId, ActivitySourceData::setId);
+		builder.addUniqueAttribute (ActivitySource.Properties.NAME, ActivitySource::getName, ActivitySourceData::setName);
 
 		builder.addRelationship ("types", ActivityType.class, ActivitySourceData::addType, ActivitySourceData::removeType);
 

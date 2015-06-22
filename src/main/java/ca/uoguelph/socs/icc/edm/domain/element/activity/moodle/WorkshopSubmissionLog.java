@@ -66,8 +66,8 @@ class WorkshopSubmissionLog extends LogReference
 		builder.setCreateMethod (WorkshopSubmissionLog::new);
 		builder.setBuilder (DefaultLogEntryBuilder.class);
 
-		builder.addAttribute ("entry", LogEntry.class, true, false, WorkshopSubmissionLog::getEntry, WorkshopSubmissionLog::setEntry);
-		builder.addAttribute ("subactivity", SubActivity.class, true, false, WorkshopSubmissionLog::getSubActivity, WorkshopSubmissionLog::setSubActivity);
+//		builder.addAttribute (, WorkshopSubmissionLog::getEntry, WorkshopSubmissionLog::setEntry);
+//		builder.addAttribute (, WorkshopSubmissionLog::getSubActivity, WorkshopSubmissionLog::setSubActivity);
 
 		AbstractElement.registerElement (builder.build ());
 	}

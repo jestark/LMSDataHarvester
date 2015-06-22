@@ -67,11 +67,11 @@ public class Quiz extends GenericNamedActivity
 		builder.setCreateMethod (Quiz::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Quiz::getId, Quiz::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Quiz::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Quiz::getCourse, Quiz::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Quiz::getType, Quiz::setType);
-		builder.addAttribute ("name", String.class, true, false, Quiz::getName, Quiz::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Quiz::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Quiz::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Quiz::setName);
 
 		builder.addRelationship ("grades", Grade.class, Quiz::addGrade, Quiz::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Quiz::addLog, Quiz::removeLog);

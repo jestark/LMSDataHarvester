@@ -52,6 +52,24 @@ public final class Property<T>
 	/**
 	 * Create the <code>Property</code>.
 	 *
+	 * @param  element  The Java type of the <code>Element</code>, not null
+	 * @param  type     The Java type of the <code>Property</code>, not null
+	 * @param  name     The name of the <code>Property</code>, not null
+	 * @param  mutable  Indication if the <code>Attribute</code> can be changed
+	 * @param  required Indication if the <code>Attribute</code> is allowed to
+	 *                  be null
+	 */
+
+	public static <T extends Element, V> Property<V> getInstance (final Class<T> element, final Class<V> type, final String name, final boolean mutable, final boolean required)
+	{
+		Property<V> property = new Property<V> (name, type, element, mutable, required);
+
+		return property;
+	}
+
+	/**
+	 * Create the <code>Property</code>.
+	 *
 	 * @param  name     The name of the <code>Property</code>, not null
 	 * @param  type     The Java type of the <code>Property</code>, not null
 	 * @param  element  The Java type of the <code>Element</code>, not null

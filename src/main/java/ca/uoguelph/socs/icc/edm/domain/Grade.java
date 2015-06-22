@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation of the grade received by a <code>User</code> for a
  * particular <code>Activity</code>.  Instances of the <code>Grade</code>
@@ -43,6 +45,24 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 public interface Grade extends Element
 {
+	/**
+	 * Constants representing all of the properties of an <code>Grade</code>.
+	 * A <code>Property</code> represents a piece of data contained within the
+	 * <code>Grade</code> instance.
+	 */
+
+	public static class Properties
+	{
+		/** The associated <code>Activity</code> */
+		public static final Property<Activity> ACTIVITY = Property.getInstance (Grade.class, Activity.class, "activity", false, true);
+
+		/** The associated <code>Enrolment</code> */
+		public static final Property<Enrolment> ENROLMENT = Property.getInstance (Grade.class, Enrolment.class, "enrolment", false, true);
+
+		/** The assigned grade */
+		public static final Property<Integer> GRADE = Property.getInstance (Grade.class, Integer.class, "grade", true, true);
+	}
+
 	/**
 	 * Get the name of the <code>Enrolment</code> to which the
 	 * <code>Grade</code> is assigned.  This is a convenience method which

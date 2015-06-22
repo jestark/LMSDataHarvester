@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
-
 /**
  * Default implementation of the <code>LogEntryBuilder</code>.
  *
@@ -37,24 +35,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 
 public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> implements LogEntryBuilder
 {
-	/** The "id" <code>Property</code> */
-	private final Property<Long> ID;
-
-	/** The "name" <code>Property</code> */
-	private final Property<Action> ACTION;
-
-	/** The "name" <code>Property</code> */
-	private final Property<Activity> ACTIVITY;
-
-	/** The "name" <code>Property</code> */
-	private final Property<Enrolment> ENROLMENT;
-
-	/** The "name" <code>Property</code> */
-	private final Property<Date> TIME;
-
-	/** The "name" <code>Property</code> */
-	private final Property<String> IPADDRESS;
-
 	/**
 	 * static initializer to register the <code>DefaultLogEntryBuilder</code>
 	 * with the factory
@@ -77,13 +57,6 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	protected DefaultLogEntryBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
-
-		this.ID = this.builder.getProperty ("id", Long.class);
-		this.ACTION = this.builder.getProperty ("action", Action.class);
-		this.ACTIVITY= this.builder.getProperty ("activity", Activity.class);
-		this.ENROLMENT = this.builder.getProperty ("enrolment", Enrolment.class);
-		this.TIME = this.builder.getProperty ("time", Date.class);
-		this.IPADDRESS = this.builder.getProperty ("ipaddress", String.class);
 	}
 
 	/**
@@ -122,7 +95,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 
 		// reference ??
 
-		this.builder.setProperty (this.ID, entry.getId ());
+		this.builder.setProperty (LogEntry.Properties.ID, entry.getId ());
 	}
 
 	/**
@@ -135,7 +108,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	@Override
 	public Action getAction ()
 	{
-		return this.builder.getPropertyValue (this.ACTION);
+		return this.builder.getPropertyValue (LogEntry.Properties.ACTION);
 	}
 
 	/**
@@ -165,7 +138,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 			throw new IllegalArgumentException ("Action is not in the DataStore");
 		}
 
-		this.builder.setProperty (this.ACTION, action);
+		this.builder.setProperty (LogEntry.Properties.ACTION, action);
 	}
 
 	/**
@@ -178,7 +151,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	@Override
 	public Activity getActivity ()
 	{
-		return this.builder.getPropertyValue (this.ACTIVITY);
+		return this.builder.getPropertyValue (LogEntry.Properties.ACTIVITY);
 	}
 
 	/**
@@ -208,7 +181,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 			throw new IllegalArgumentException ("Activity is not in the DataStore");
 		}
 
-		this.builder.setProperty (this.ACTIVITY, activity);
+		this.builder.setProperty (LogEntry.Properties.ACTIVITY, activity);
 	}
 
 	/**
@@ -221,7 +194,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	@Override
 	public Enrolment getEnrolment ()
 	{
-		return this.builder.getPropertyValue (this.ENROLMENT);
+		return this.builder.getPropertyValue (LogEntry.Properties.ENROLMENT);
 	}
 
 	/**
@@ -251,7 +224,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 			throw new IllegalArgumentException ("Enrolment is not in the DataStore");
 		}
 
-		this.builder.setProperty (this.ENROLMENT, enrolment);
+		this.builder.setProperty (LogEntry.Properties.ENROLMENT, enrolment);
 	}
 
 	/**
@@ -263,7 +236,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	@Override
 	public Date getTime ()
 	{
-		return this.builder.getPropertyValue (this.TIME);
+		return this.builder.getPropertyValue (LogEntry.Properties.TIME);
 	}
 
 	/**
@@ -279,11 +252,11 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 
 		if (time == null)
 		{
-			this.builder.setProperty (this.TIME, new Date ());
+			this.builder.setProperty (LogEntry.Properties.TIME, new Date ());
 		}
 		else
 		{
-			this.builder.setProperty (this.TIME, time);
+			this.builder.setProperty (LogEntry.Properties.TIME, time);
 		}
 	}
 
@@ -297,7 +270,7 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	@Override
 	public String getIPAddress ()
 	{
-		return this.builder.getPropertyValue (this.IPADDRESS);
+		return this.builder.getPropertyValue (LogEntry.Properties.IPADDRESS);
 	}
 
 	/**
@@ -312,6 +285,6 @@ public final class DefaultLogEntryBuilder extends AbstractBuilder<LogEntry> impl
 	{
 		this.log.trace ("setIPAddress: ipaddress={}", ipaddress);
 
-		this.builder.setProperty (this.IPADDRESS, ipaddress);
+		this.builder.setProperty (LogEntry.Properties.IPADDRESS, ipaddress);
 	}
 }

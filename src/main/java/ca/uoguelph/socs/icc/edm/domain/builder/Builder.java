@@ -45,34 +45,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 interface Builder<T extends Element>
 {
 	/**
-	 * Get the <code>Property</code> associated with the <code>Element</code>
-	 * with the specified name.
-	 *
-	 * @param  name The name of the <code>Property</code>
-	 *
-	 * @return      The specified <code>Property</code> instance or
-	 *              <code>null</code> if a <code>Property</code> with the
-	 *              specified name does not exist
-	 */
-
-	public abstract Property<?> getProperty (String name);
-
-	/**
-	 * Get the <code>Property</code> associated with the <code>Element</code>
-	 * with the specified name and value type.
-	 *
-	 * @param  name The name of the <code>Property</code>
-	 * @param  type The type of the value associated with the
-	 *              <code>Property</code>
-	 *
-	 * @return      The specified <code>Property</code> instance or
-	 *              <code>null</code> if a <code>Property</code> with the
-	 *              specified name and type does not exist
-	 */
-
-	public abstract <V> Property<V> getProperty (String name, Class<V> type);
-
-	/**
 	 * Get the <code>Set</code> of <code>Property</code> instances
 	 * corresponding to the <code>Element</code>.
 	 *

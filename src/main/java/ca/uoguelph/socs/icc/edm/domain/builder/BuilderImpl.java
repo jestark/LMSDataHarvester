@@ -67,49 +67,6 @@ final class BuilderImpl<T extends Element, U extends T> implements Builder<T>
 	}
 
 	/**
-	 * Get the <code>Property</code> associated with the <code>Element</code>
-	 * with the specified name.
-	 *
-	 * @param  name The name of the <code>Property</code>
-	 *
-	 * @return The specified <code>Property</code> instance or
-	 *         <code>null</code> if a <code>Property</code> with the specified
-	 *         name does not exist
-	 */
-
-	public Property<?> getProperty (final String name)
-	{
-		this.log.trace ("getProperty: name={}", name);
-
-		assert name != null : "name is NULL";
-
-		return this.definition.getProperty (name);
-	}
-
-	/**
-	 * Get the <code>Property</code> associated with the <code>Element</code>
-	 * with the specified name and value type.
-	 *
-	 * @param  name The name of the <code>Property</code>
-	 * @param  type The type of the value associated with the
-	 *              <code>Property</code>
-	 *
-	 * @return The specified <code>Property</code> instance or
-	 *         <code>null</code> if a <code>Property</code> with the specified
-	 *         name and type does not exist
-	 */
-
-	public <V> Property<V> getProperty (final String name, final Class<V> type)
-	{
-		this.log.trace ("getProperty: name={}, type={}", name, type);
-
-		assert name != null : "name is NULL";
-		assert type != null : "type is NULL";
-
-		return this.definition.getProperty (name, type);
-	}
-
-	/**
 	 * Get the <code>Set</code> of <code>Property</code> instances
 	 * corresponding to the <code>Element</code>.
 	 *

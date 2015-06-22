@@ -67,11 +67,11 @@ public class Assign extends GenericNamedActivity
 		builder.setCreateMethod (Assign::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Assign::getId, Assign::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Assign::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Assign::getCourse, Assign::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Assign::getType, Assign::setType);
-		builder.addAttribute ("name", String.class, true, false, Assign::getName, Assign::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Assign::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Assign::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Assign::setName);
 
 		builder.addRelationship ("grades", Grade.class, Assign::addGrade, Assign::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Assign::addLog, Assign::removeLog);

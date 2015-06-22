@@ -130,9 +130,6 @@ public final class Definition<T extends Element, U extends T>
 	/** Method reference for creating new instances */
 	private final Supplier<U> create;
 
-	/** Map for looking up <code>Property</code> instances by name */
-	private final Map<String, Property<?>> properties;
-
 	/** <code>Property</code> to <code>Reference</code> instance mapping */
 	private final Map<Property<?>, Reference<U, ?>> references;
 
@@ -157,12 +154,6 @@ public final class Definition<T extends Element, U extends T>
 		this.impl = impl;
 		this.create = create;
 		this.references = references;
-		this.properties = new HashMap<String, Property<?>> ();
-
-		for (Property<?> prop : references.keySet ())
-		{
-			this.properties.put (prop.getName (), prop);
-		}
 	}
 
 	/**
@@ -179,18 +170,10 @@ public final class Definition<T extends Element, U extends T>
 	@SuppressWarnings ("unchecked")
 	private <V> Reference<U, V> getReference (final Property<V> property)
 	{
+		assert property != null : "reference is NULL";
+		assert this.references.containsKey (property) : "Property is not registered";
+
 		return (Reference<U, V>) this.references.get (property);
-	}
-
-	/**
-	 * Create a new instance of the <code>Element</code>.
-	 *
-	 * @return The new <code>Element</code> instance
-	 */
-
-	public U createElement ()
-	{
-		return this.create.get ();
 	}
 
 	/**
@@ -216,44 +199,14 @@ public final class Definition<T extends Element, U extends T>
 	}
 
 	/**
-	 * Get the <code>Property</code> associated with the <code>Element</code>
-	 * with the specified name.
+	 * Create a new instance of the <code>Element</code>.
 	 *
-	 * @param  name The name of the <code>Property</code>
-	 *
-	 * @return The specified <code>Property</code> instance or
-	 *         <code>null</code> if a <code>Property</code> with the specified
-	 *         name does not exist
+	 * @return The new <code>Element</code> instance
 	 */
 
-	public Property<?> getProperty (final String name)
+	public U createElement ()
 	{
-		assert name != null : "name is NULL";
-
-		return this.properties.get (name);
-	}
-
-	/**
-	 * Get the <code>Property</code> associated with the <code>Element</code>
-	 * with the specified name and value type.
-	 *
-	 * @param  name The name of the <code>Property</code>
-	 * @param  type The type of the value associated with the
-	 *         <code>Property</code>
-	 *
-	 * @return The specified <code>Property</code> instance or
-	 *         <code>null</code> if a <code>Property</code> with the specified
-	 *         name and type does not exist
-	 */
-
-	@SuppressWarnings ("unchecked")
-	public <V> Property<V> getProperty (final String name, final Class<V> type)
-	{
-		assert name != null : "name is NULL";
-		assert type != null : "type is NULL";
-		assert type == (this.properties.get (name)).getPropertyType () : "Type Mismatch";
-
-		return (Property<V>) this.properties.get (name);
+		return this.create.get ();
 	}
 
 	/**

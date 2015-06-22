@@ -63,10 +63,10 @@ public class ForumDiscussion extends GenericSubActivity
 		builder.setCreateMethod (ForumDiscussion::new);
 		builder.setBuilder (DefaultSubActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, ForumDiscussion::getId, ForumDiscussion::setId);
+		builder.addUniqueAttribute (SubActivity.Properties.ID, SubActivity::getId, ForumDiscussion::setId);
 
-		builder.addAttribute ("parent", Activity.class, true, false, ForumDiscussion::getParent, ForumDiscussion::setParent);
-		builder.addAttribute ("name", String.class, true, false, ForumDiscussion::getName, ForumDiscussion::setName);
+		builder.addAttribute (SubActivity.Properties.PARENT, SubActivity::getParent, ForumDiscussion::setParent);
+		builder.addAttribute (SubActivity.Properties.NAME, SubActivity::getName, ForumDiscussion::setName);
 
 		builder.addRelationship ("log", LogEntry.class, ForumDiscussion::addLog, ForumDiscussion::removeLog);
 		builder.addRelationship ("subactivities", SubActivity.class, ForumDiscussion::addSubActivity, ForumDiscussion::removeSubActivity);

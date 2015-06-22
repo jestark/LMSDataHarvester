@@ -67,11 +67,11 @@ public class Label extends GenericNamedActivity
 		builder.setCreateMethod (Label::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Label::getId, Label::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Label::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Label::getCourse, Label::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Label::getType, Label::setType);
-		builder.addAttribute ("name", String.class, true, false, Label::getName, Label::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Label::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Label::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Label::setName);
 
 		builder.addRelationship ("grades", Grade.class, Label::addGrade, Label::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Label::addLog, Label::removeLog);

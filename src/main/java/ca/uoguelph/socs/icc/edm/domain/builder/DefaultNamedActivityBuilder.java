@@ -21,8 +21,6 @@ import ca.uoguelph.socs.icc.edm.domain.NamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
-
 /**
  * Default implementation of the <code>NamedActivityBuilder</code>
  *
@@ -32,9 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 
 public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder<Activity> implements NamedActivityBuilder<Activity>
 {
-	/** The "name" <code>Property</code> */
-	private final Property<String> NAME;
-
 	/**
 	 * static initializer to register the
 	 * <code>DefaultNamedActivityBuilder</code> with the factory
@@ -58,8 +53,6 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder<A
 	protected DefaultNamedActivityBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
-
-		this.NAME = this.builder.getProperty ("name", String.class);
 	}
 
 	/**
@@ -101,7 +94,7 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder<A
 
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (this.NAME);
+		return this.builder.getPropertyValue (Activity.Properties.NAME);
 	}
 
 	/**
@@ -129,6 +122,6 @@ public final class DefaultNamedActivityBuilder extends AbstractActivityBuilder<A
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (this.NAME, name);
+		this.builder.setProperty (Activity.Properties.NAME, name);
 	}
 }

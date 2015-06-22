@@ -67,11 +67,11 @@ public class Feedback extends GenericNamedActivity
 		builder.setCreateMethod (Feedback::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Feedback::getId, Feedback::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Feedback::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Feedback::getCourse, Feedback::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Feedback::getType, Feedback::setType);
-		builder.addAttribute ("name", String.class, true, false, Feedback::getName, Feedback::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Feedback::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Feedback::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Feedback::setName);
 
 		builder.addRelationship ("grades", Grade.class, Feedback::addGrade, Feedback::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Feedback::addLog, Feedback::removeLog);

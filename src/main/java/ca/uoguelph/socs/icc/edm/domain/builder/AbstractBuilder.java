@@ -32,7 +32,6 @@ import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 
 /**
  * Abstract implementation of the <code>ElementBuilder</code> interface.

@@ -80,10 +80,10 @@ public class MoodleActivity extends ActivityInstance
 		builder.setCreateMethod (MoodleActivity::new);
 		builder.setBuilder (DefaultGenericActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, MoodleActivity::getId, MoodleActivity::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, MoodleActivity::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, MoodleActivity::getCourse, MoodleActivity::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, MoodleActivity::getType, MoodleActivity::setType);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, MoodleActivity::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, MoodleActivity::setType);
 
 		builder.addRelationship ("grades", Grade.class, MoodleActivity::addGrade, MoodleActivity::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, MoodleActivity::addLog, MoodleActivity::removeLog);

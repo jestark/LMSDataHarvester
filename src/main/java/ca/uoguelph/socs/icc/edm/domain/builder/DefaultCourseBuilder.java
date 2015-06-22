@@ -22,8 +22,6 @@ import ca.uoguelph.socs.icc.edm.domain.Semester;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
-
 /**
  * Default implementation of the <code>CourseBuilder</code> interface.
  *
@@ -33,18 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 
 public final class DefaultCourseBuilder extends AbstractBuilder<Course> implements CourseBuilder
 {
-	/** The "id" <code>Property</code> */
-	private final Property<Long> ID;
-
-	/** The "name" <code>Property</code> */
-	private final Property<String> NAME;
-
-	/** The "semester" <code>Property</code> */
-	private final Property<Semester> SEMESTER;
-
-	/** The "year" <code>Property</code> */
-	private final Property<Integer> YEAR;
-
 	/**
 	 * static initializer to register the <code>DefaultCourseBuilder</code>
 	 * with the factory
@@ -67,11 +53,6 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	protected DefaultCourseBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
-
-		this.ID = this.builder.getProperty ("id", Long.class);
-		this.NAME = this.builder.getProperty ("name", String.class);
-		this.SEMESTER = this.builder.getProperty ("semester", Semester.class);
-		this.YEAR = this.builder.getProperty ("year", Integer.class);
 	}
 
 	/**
@@ -105,7 +86,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 		this.setSemester (course.getSemester ());
 		this.setYear (course.getYear ());
 
-		this.builder.setProperty (this.ID, course.getId ());
+		this.builder.setProperty (Course.Properties.ID, course.getId ());
 	}
 
 	/**
@@ -118,7 +99,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	@Override
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (this.NAME);
+		return this.builder.getPropertyValue (Course.Properties.NAME);
 	}
 
 	/**
@@ -147,7 +128,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (this.NAME, name);
+		this.builder.setProperty (Course.Properties.NAME, name);
 	}
 
 	/**
@@ -160,7 +141,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	@Override
 	public Semester getSemester ()
 	{
-		return this.builder.getPropertyValue (this.SEMESTER);
+		return this.builder.getPropertyValue (Course.Properties.SEMESTER);
 	}
 
 	/**
@@ -181,7 +162,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 			throw new NullPointerException ("semester is NULL");
 		}
 
-		this.builder.setProperty (this.SEMESTER, semester);
+		this.builder.setProperty (Course.Properties.SEMESTER, semester);
 	}
 
 	/**
@@ -193,7 +174,7 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 	@Override
 	public Integer getYear ()
 	{
-		return this.builder.getPropertyValue (this.YEAR);
+		return this.builder.getPropertyValue (Course.Properties.YEAR);
 	}
 
 	/**
@@ -221,6 +202,6 @@ public final class DefaultCourseBuilder extends AbstractBuilder<Course> implemen
 			throw new IllegalArgumentException ("Year is negative");
 		}
 
-		this.builder.setProperty (this.YEAR, year);
+		this.builder.setProperty (Course.Properties.YEAR, year);
 	}
 }

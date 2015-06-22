@@ -67,11 +67,11 @@ public class Checklist extends GenericNamedActivity
 		builder.setCreateMethod (Checklist::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Checklist::getId, Checklist::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Checklist::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Checklist::getCourse, Checklist::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Checklist::getType, Checklist::setType);
-		builder.addAttribute ("name", String.class, true, false, Checklist::getName, Checklist::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Checklist::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Checklist::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Checklist::setName);
 
 		builder.addRelationship ("grades", Grade.class, Checklist::addGrade, Checklist::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Checklist::addLog, Checklist::removeLog);

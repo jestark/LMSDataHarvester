@@ -69,8 +69,8 @@ public class ActionData extends AbstractElement implements Action, Serializable
 		builder.setCreateMethod (ActionData::new);
 		builder.setBuilder (DefaultActionBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, ActionData::getId, ActionData::setId);
-		builder.addUniqueAttribute ("name", String.class, true, false, ActionData::getName, ActionData::setName);
+		builder.addUniqueAttribute (Action.Properties.ID, Action::getId, ActionData::setId);
+		builder.addUniqueAttribute (Action.Properties.NAME, Action::getName, ActionData::setName);
 
 		builder.addRelationship ("types", ActivityType.class, ActionData::addType, ActionData::removeType);
 

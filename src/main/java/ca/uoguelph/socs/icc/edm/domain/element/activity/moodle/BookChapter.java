@@ -66,10 +66,10 @@ public class BookChapter extends GenericSubActivity
 		builder.setCreateMethod (BookChapter::new);
 		builder.setBuilder (DefaultSubActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, BookChapter::getId, BookChapter::setId);
+		builder.addUniqueAttribute (SubActivity.Properties.ID, SubActivity::getId, BookChapter::setId);
 
-		builder.addAttribute ("parent", Activity.class, true, false, BookChapter::getParent, BookChapter::setParent);
-		builder.addAttribute ("name", String.class, true, false, BookChapter::getName, BookChapter::setName);
+		builder.addAttribute (SubActivity.Properties.PARENT, SubActivity::getParent, BookChapter::setParent);
+		builder.addAttribute (SubActivity.Properties.NAME, SubActivity::getName, BookChapter::setName);
 
 		builder.addRelationship ("log", LogEntry.class, BookChapter::addLog, BookChapter::removeLog);
 

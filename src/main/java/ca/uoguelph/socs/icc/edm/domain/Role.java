@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation of the role of a user in a particular <code>Course</code>.
  * The <code>Role</code> describes the nature of the participation in the
@@ -40,6 +42,18 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 public interface Role extends Element
 {
+	/**
+	 * Constants representing all of the properties of an <code>Role</code>.
+	 * A <code>Property</code> represents a piece of data contained within the
+	 * <code>Role</code> instance.
+	 */
+
+	public static class Properties extends Element.Properties
+	{
+		/** The name of the <code>Role</code> */
+		public static final Property<String> NAME = Property.getInstance (Role.class, String.class, "name", false, true);
+	}
+
 	/**
 	 * Get the name of the <code>Role</code>.
 	 *

@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * Root level interface for all of the elements of the domain model.  The
  * primary purpose of the <code>Element</code> interface is to allow instances
@@ -32,6 +34,18 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 public interface Element
 {
+	/**
+	 * Constants representing all of the properties of an <code>Element</code>.
+	 * A <code>Property</code> represents a piece of data contained within the
+	 * <code>Element</code> instance.
+	 */
+
+	public static class Properties
+	{
+		/** The <code>DataStore</code> identifier of the <code>Element</code> */
+		public static final Property<Long> ID = Property.getInstance (Element.class, Long.class, "id", false, false);
+	}
+
 	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
 	 * instance.  Some <code>Element</code> interfaces are dependent on other

@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation of the participation of a particular <code>User</code> in a
  * <code>Course</code>.  The purpose of the <code>Enrolment</code> interface,
@@ -68,6 +70,27 @@ import java.util.Set;
 
 public interface Enrolment extends Element
 {
+	/**
+	 * Constants representing all of the properties of an <code>Enrolment</code>.
+	 * A <code>Property</code> represents a piece of data contained within the
+	 * <code>Enrolment</code> instance.
+	 */
+
+	public static class Properties extends Element.Properties
+	{
+		/** The associated <code>Course</code> */
+		public static final Property<Course> COURSE = Property.getInstance (Enrolment.class, Course.class, "course", false, true);
+
+		/** The final grade */
+		public static final Property<Integer> FINALGRADE = Property.getInstance (Enrolment.class, Integer.class, "finalgrade", true, false);
+
+		/** The associated <code>Role</code> */
+		public static final Property<Role> ROLE = Property.getInstance (Enrolment.class, Role.class, "role", false, true);
+
+		/** Has consent been given to use this data for research */
+		public static final Property<Boolean> USABLE = Property.getInstance (Enrolment.class, Boolean.class, "usable", true, true);
+	}
+
 	/**
 	 * Get the name associated with the <code>Enrolment</code>.  The contents
 	 * of the <code>String</code> returned by this method are implementation

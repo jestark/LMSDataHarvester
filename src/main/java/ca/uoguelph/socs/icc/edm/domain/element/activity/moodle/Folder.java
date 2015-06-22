@@ -67,11 +67,11 @@ public class Folder extends GenericNamedActivity
 		builder.setCreateMethod (Folder::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Folder::getId, Folder::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Folder::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Folder::getCourse, Folder::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Folder::getType, Folder::setType);
-		builder.addAttribute ("name", String.class, true, false, Folder::getName, Folder::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Folder::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Folder::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Folder::setName);
 
 		builder.addRelationship ("grades", Grade.class, Folder::addGrade, Folder::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Folder::addLog, Folder::removeLog);

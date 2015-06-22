@@ -66,8 +66,8 @@ class ForumDiscussionLog extends LogReference
 		builder.setCreateMethod (ForumDiscussionLog::new);
 		builder.setBuilder (DefaultLogEntryBuilder.class);
 
-		builder.addAttribute ("entry", LogEntry.class, true, false, ForumDiscussionLog::getEntry, ForumDiscussionLog::setEntry);
-		builder.addAttribute ("subactivity", SubActivity.class, true, false, ForumDiscussionLog::getSubActivity, ForumDiscussionLog::setSubActivity);
+//		builder.addAttribute (, ForumDiscussionLog::getEntry, ForumDiscussionLog::setEntry);
+//		builder.addAttribute (, ForumDiscussionLog::getSubActivity, ForumDiscussionLog::setSubActivity);
 
 		AbstractElement.registerElement (builder.build ());
 	}

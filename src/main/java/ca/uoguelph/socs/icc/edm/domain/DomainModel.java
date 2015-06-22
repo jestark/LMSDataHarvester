@@ -68,7 +68,7 @@ public final class DomainModel
 	 *                   not null
 	 */
 
-	protected DomainModel (final DataStore datastore)
+	public DomainModel (final DataStore datastore)
 	{
 		this.log = LoggerFactory.getLogger (DomainModel.class);
 
@@ -200,7 +200,7 @@ public final class DomainModel
 			throw new IllegalArgumentException ("Element Interface class Required");
 		}
 
-		if (! Activity.class.isAssignableFrom (element))
+		if (Activity.class.isAssignableFrom (element))
 		{
 			this.log.error ("Can't create builder for Activity");
 			throw new IllegalArgumentException ("Can't create Activity builders");

@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation the network from which logged <code>Action</code> originated.
  *
@@ -27,6 +29,18 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 public interface Network extends Element
 {
+	/**
+	 * Constants representing all of the properties of an <code>Network</code>.
+	 * A <code>Property</code> represents a piece of data contained within the
+	 * <code>Network</code> instance.
+	 */
+
+	public static class Properties extends Element.Properties
+	{
+		/** The name of the <code>Network</code> */
+		public static final Property<String> NAME = Property.getInstance (Network.class, String.class, "name", false, true);
+	}
+
 	/**
 	 * Get the name of the <code>Network</code>.
 	 *

@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation of the nature of a particular <code>Activity</code>.
  * Instances of the <code>ActivityType</code> interface serve to describe the
@@ -57,6 +59,21 @@ import java.util.Set;
 
 public interface ActivityType extends Element
 {
+	/**
+	 * Constants representing all of the properties of an
+	 * <code>ActivityType</code>.  A <code>Property</code> represents a piece
+	 * of data contained within the <code>ActivityType</code> instance.
+	 */
+
+	public static class Properties extends Element.Properties
+	{
+		/** The name of the <code>ActivityType</code> */
+		public static final Property<String> NAME = Property.getInstance (ActivityType.class, String.class, "name", false, true);
+
+		/** The associated <code>ActivitySource</code> */
+		public static final Property<ActivitySource> SOURCE = Property.getInstance (ActivityType.class, ActivitySource.class, "source", false, true);
+	}
+
 	/**
 	 * Get the name of the <code>ActivityType</code>.
 	 *

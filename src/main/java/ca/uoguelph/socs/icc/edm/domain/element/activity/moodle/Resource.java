@@ -67,11 +67,11 @@ public class Resource extends GenericNamedActivity
 		builder.setCreateMethod (Resource::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Resource::getId, Resource::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Resource::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Resource::getCourse, Resource::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Resource::getType, Resource::setType);
-		builder.addAttribute ("name", String.class, true, false, Resource::getName, Resource::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Resource::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Resource::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Resource::setName);
 
 		builder.addRelationship ("grades", Grade.class, Resource::addGrade, Resource::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Resource::addLog, Resource::removeLog);

@@ -68,11 +68,11 @@ public class Lesson extends GenericNamedActivity
 		builder.setCreateMethod (Lesson::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Lesson::getId, Lesson::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Lesson::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Lesson::getCourse, Lesson::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Lesson::getType, Lesson::setType);
-		builder.addAttribute ("name", String.class, true, false, Lesson::getName, Lesson::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Lesson::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Lesson::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Lesson::setName);
 
 		builder.addRelationship ("grades", Grade.class, Lesson::addGrade, Lesson::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Lesson::addLog, Lesson::removeLog);

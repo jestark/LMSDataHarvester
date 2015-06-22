@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation of the source of a <code>Activity</code> in the domain
  * model.  Instances of the <code>ActivitySource</code> interface represent the
@@ -47,6 +49,18 @@ import java.util.Set;
 
 public interface ActivitySource extends Element
 {
+	/**
+	 * Constants representing all of the properties of an
+	 * <code>ActivitySource</code>.  A <code>Property</code> represents a piece
+	 * of data contained within the <code>ActivitySource</code> instance.
+	 */
+
+	public static class Properties extends Element.Properties
+	{
+		/** The name of the <code>ActivitySource</code> */
+		public static final Property<String> NAME = Property.getInstance (ActivitySource.class, String.class, "name", false, true);
+	}
+
 	/**
 	 * Get the name of the <code>ActivitySource</code>.
 	 *

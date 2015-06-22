@@ -63,10 +63,10 @@ public class ${ClassName} extends GenericSubActivity
 		builder.setCreateMethod (${ClassName}::new);
 		builder.setBuilder (${Builder}.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, ${ClassName}::getId, ${ClassName}::setId);
+		builder.addUniqueAttribute (SubActivity.Properties.ID, SubActivity::getId, ${ClassName}::setId);
 
-		builder.addAttribute ("parent", Activity.class, true, false, ${ClassName}::getParent, ${ClassName}::setParent);
-		builder.addAttribute ("name", String.class, true, false, ${ClassName}::getName, ${ClassName}::setName);
+		builder.addAttribute (SubActivity.Properties.PARENT, SubActivity::getParent, ${ClassName}::setParent);
+		builder.addAttribute (SubActivity.Properties.NAME, SubActivity::getName, ${ClassName}::setName);
 
 		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);
 		builder.addRelationship ("subactivities", SubActivity.class, ${ClassName}::addSubActivity, ${ClassName}::removeSubActivity);

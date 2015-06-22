@@ -24,8 +24,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
-
 /**
  * Default implementation of the <code>ActivitySourceBuilder</code>.
  *
@@ -35,12 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 
 public final class DefaultActivitySourceBuilder extends AbstractBuilder<ActivitySource> implements ActivitySourceBuilder
 {
-	/** The "id" <code>Property</code> */
-	private final Property<Long> ID;
-
-	/** The "name" <code>Property</code> */
-	private final Property<String> NAME;
-
 	/**
 	 * static initializer to register the
 	 * <code>DefaultActivitySourceBuilder</code> with the factory
@@ -64,9 +56,6 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	protected DefaultActivitySourceBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
-
-		this.ID = this.builder.getProperty ("id", Long.class);
-		this.NAME = this.builder.getProperty ("name", String.class);
 	}
 
 	/**
@@ -100,7 +89,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 		super.load (source);
 		this.setName (source.getName ());
 
-		this.builder.setProperty (this.ID, source.getId ());
+		this.builder.setProperty (ActivitySource.Properties.ID, source.getId ());
 	}
 
 	/**
@@ -113,7 +102,7 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 	@Override
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (this.NAME);
+		return this.builder.getPropertyValue (ActivitySource.Properties.NAME);
 	}
 
 	/**
@@ -142,6 +131,6 @@ public final class DefaultActivitySourceBuilder extends AbstractBuilder<Activity
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (this.NAME, name);
+		this.builder.setProperty (ActivitySource.Properties.NAME, name);
 	}
 }

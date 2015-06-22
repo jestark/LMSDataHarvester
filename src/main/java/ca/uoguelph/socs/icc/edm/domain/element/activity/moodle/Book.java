@@ -68,11 +68,11 @@ public class Book extends GenericNamedActivity
 		builder.setCreateMethod (Book::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, Book::getId, Book::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Book::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, Book::getCourse, Book::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, Book::getType, Book::setType);
-		builder.addAttribute ("name", String.class, true, false, Book::getName, Book::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Book::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Book::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Book::setName);
 
 		builder.addRelationship ("grades", Grade.class, Book::addGrade, Book::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, Book::addLog, Book::removeLog);

@@ -86,14 +86,14 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		builder.setCreateMethod (LogData::new);
 		builder.setBuilder (DefaultLogEntryBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, LogData::getId, LogData::setId);
+		builder.addUniqueAttribute (LogEntry.Properties.ID, LogEntry::getId, LogData::setId);
 
-		builder.addAttribute ("action", Action.class, true, false, LogData::getAction, LogData::setAction);
-		builder.addAttribute ("activity", Activity.class, true, false, LogData::getActivity, LogData::setActivity);
-		builder.addAttribute ("enrolment", Enrolment.class, true, false, LogData::getEnrolment, LogData::setEnrolment);
-		builder.addAttribute ("reference", LogReference.class, false, false, LogData::getReference, LogData::setReference);
-		builder.addAttribute ("ipaddress", String.class, true, false, LogData::getIPAddress, LogData::setIPAddress);
-		builder.addAttribute ("time", Date.class, true, true, LogData::getTime, LogData::setTime);
+		builder.addAttribute (LogEntry.Properties.ACTION, LogEntry::getAction, LogData::setAction);
+		builder.addAttribute (LogEntry.Properties.ACTIVITY, LogEntry::getActivity, LogData::setActivity);
+		builder.addAttribute (LogEntry.Properties.ENROLMENT, LogEntry::getEnrolment, LogData::setEnrolment);
+//		builder.addAttribute (LogEntry.Properties.REFERENCE, LogData::getReference, LogData::setReference);
+		builder.addAttribute (LogEntry.Properties.IPADDRESS, LogEntry::getIPAddress, LogData::setIPAddress);
+		builder.addAttribute (LogEntry.Properties.TIME, LogEntry::getTime, LogData::setTime);
 
 		AbstractElement.registerElement (builder.build ());
 	}

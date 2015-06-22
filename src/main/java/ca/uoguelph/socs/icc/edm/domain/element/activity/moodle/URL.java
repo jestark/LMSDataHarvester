@@ -67,11 +67,11 @@ public class URL extends GenericNamedActivity
 		builder.setCreateMethod (URL::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, URL::getId, URL::setId);
+		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, URL::setId);
 
-		builder.addAttribute ("course", Course.class, true, false, URL::getCourse, URL::setCourse);
-		builder.addAttribute ("type", ActivityType.class, true, false, URL::getType, URL::setType);
-		builder.addAttribute ("name", String.class, true, false, URL::getName, URL::setName);
+		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, URL::setCourse);
+		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, URL::setType);
+		builder.addAttribute (Activity.Properties.NAME, Activity::getName, URL::setName);
 
 		builder.addRelationship ("grades", Grade.class, URL::addGrade, URL::removeGrade);
 		builder.addRelationship ("log", LogEntry.class, URL::addLog, URL::removeLog);

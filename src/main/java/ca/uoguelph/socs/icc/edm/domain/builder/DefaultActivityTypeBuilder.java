@@ -27,19 +27,8 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
-
 public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityType> implements ActivityTypeBuilder
 {
-	/** The "id" <code>Property</code> */
-	private final Property<Long> ID;
-
-	/** The "name" <code>Property</code> */
-	private final Property<String> NAME;
-
-	/** The "source" <code>Property</code> */
-	private final Property<ActivitySource> SOURCE;
-
 	/**
 	 * static initializer to register the
 	 * <code>DefaultActivityTypeBuilder</code> with the factory
@@ -63,10 +52,6 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	protected DefaultActivityTypeBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
-
-		this.ID = this.builder.getProperty ("id", Long.class);
-		this.NAME = this.builder.getProperty ("name", String.class);
-		this.SOURCE = this.builder.getProperty ("source", ActivitySource.class);
 	}
 
 	/**
@@ -101,7 +86,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 		this.setName (type.getName ());
 		this.setActivitySource (type.getSource ());
 
-		this.builder.setProperty (this.ID, type.getId ());
+		this.builder.setProperty (ActivityType.Properties.ID, type.getId ());
 	}
 
 	/**
@@ -114,7 +99,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	@Override
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (this.NAME);
+		return this.builder.getPropertyValue (ActivityType.Properties.NAME);
 	}
 
 	/**
@@ -143,7 +128,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (this.NAME, name);
+		this.builder.setProperty (ActivityType.Properties.NAME, name);
 	}
 
 	/**
@@ -155,7 +140,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 	@Override
 	public ActivitySource getActivitySource ()
 	{
-		return this.builder.getPropertyValue (this.SOURCE);
+		return this.builder.getPropertyValue (ActivityType.Properties.SOURCE);
 	}
 
 	/**
@@ -185,7 +170,7 @@ public final class DefaultActivityTypeBuilder extends AbstractBuilder<ActivityTy
 			throw new IllegalArgumentException ("ActivitySource is not in the DataStore");
 		}
 
-		this.builder.setProperty (this.SOURCE, source);
+		this.builder.setProperty (ActivityType.Properties.SOURCE, source);
 	}
 
 	/**

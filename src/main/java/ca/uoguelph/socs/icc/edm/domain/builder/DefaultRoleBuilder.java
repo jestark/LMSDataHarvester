@@ -21,8 +21,6 @@ import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
-
 /**
  * Default implementation of the <code>RoleBuilder</code> interface.
  *
@@ -32,12 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 
 public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements RoleBuilder
 {
-	/** The "id" <code>Property</code> */
-	private final Property<Long> ID;
-
-	/** The "name" <code>Property</code> */
-	private final Property<String> NAME;
-
 	/**
 	 * static initializer to register the <code>DefaultRoleBuilder</code> with
 	 * the factory
@@ -60,9 +52,6 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 	protected DefaultRoleBuilder (final Class<?> impl, final DataStore datastore)
 	{
 		super (impl, datastore);
-
-		this.ID = this.builder.getProperty ("id", Long.class);
-		this.NAME = this.builder.getProperty ("name", String.class);
 	}
 
 	/**
@@ -93,7 +82,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 		super.load (role);
 		this.setName (role.getName ());
 
-		this.builder.setProperty (this.ID, role.getId ());
+		this.builder.setProperty (Role.Properties.ID, role.getId ());
 	}
 
 	/**
@@ -106,7 +95,7 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 	@Override
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (this.NAME);
+		return this.builder.getPropertyValue (Role.Properties.NAME);
 	}
 
 	/**
@@ -135,6 +124,6 @@ public final class DefaultRoleBuilder extends AbstractBuilder<Role> implements R
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (this.NAME, name);
+		this.builder.setProperty (Role.Properties.NAME, name);
 	}
 }

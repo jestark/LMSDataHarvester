@@ -66,8 +66,8 @@ class BookChapterLog extends LogReference
 		builder.setCreateMethod (BookChapterLog::new);
 		builder.setBuilder (DefaultLogEntryBuilder.class);
 
-		builder.addAttribute ("entry", LogEntry.class, true, false, BookChapterLog::getEntry, BookChapterLog::setEntry);
-		builder.addAttribute ("subactivity", SubActivity.class, true, false, BookChapterLog::getSubActivity, BookChapterLog::setSubActivity);
+//		builder.addAttribute (, BookChapterLog::getEntry, BookChapterLog::setEntry);
+//		builder.addAttribute (, BookChapterLog::getSubActivity, BookChapterLog::setSubActivity);
 
 		AbstractElement.registerElement (builder.build ());
 	}

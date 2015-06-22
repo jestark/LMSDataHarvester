@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation of an entry in the log.  An instance of the
  * <code>LogEntry</code> interface contains information about an
@@ -46,12 +48,31 @@ import java.util.Date;
 public interface LogEntry extends Element
 {
 	/**
-	 * Enumeration of all of the properties of an <code>LogEntry</code>.
-	 * Properties represent the data contained within the <code>LogEntry</code>
-	 * instance.
+	 * Constants representing all of the properties of an <code>LogEntry</code>.
+	 * A <code>Property</code> represents a piece of data contained within the
+	 * <code>LogEntry</code> instance.
 	 */
 
-	public static enum Properties { ID, ACTION, ACTIVITY, ENROLMENT, IPADDRESS, SUBACTIVITY, TIME };
+	public static class Properties extends Element.Properties
+	{
+		/** The associated <code>Action</code> */
+		public static final Property<Action> ACTION = Property.getInstance (LogEntry.class, Action.class, "action", false, true);
+
+		/** The associated <code>Activity</code> */
+		public static final Property<Activity> ACTIVITY = Property.getInstance (LogEntry.class, Activity.class, "activity", false, true);
+
+		/** The associated <code>Course</code> (read only) */
+		public static final Property<Course> COURSE = Property.getInstance (LogEntry.class, Course.class, "activity", false, true);
+
+		/** The associated <code>Enrolment</code> */
+		public static final Property<Enrolment> ENROLMENT = Property.getInstance (LogEntry.class, Enrolment.class, "name", false, true);
+
+		/** The associated IP Address */
+		public static final Property<String> IPADDRESS = Property.getInstance (LogEntry.class, String.class, "ipaddress", false, true);
+
+		/** The time that the <code>LogEntry</code> was created */
+		public static final Property<Date> TIME = Property.getInstance (LogEntry.class, Date.class, "time", false, true);
+	}
 
 	/**
 	 * Get the <code>Enrolment</code> instance for the user which performed the

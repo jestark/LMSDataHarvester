@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation of the content of a <code>Course</code>.  All of the
  * content in a <code>Course</code> is represented by a <code>Set</code> of
@@ -60,6 +62,24 @@ import java.util.Set;
 
 public interface Activity extends Element
 {
+	/**
+	 * Constants representing all of the properties of an <code>Activiy</code>.
+	 * A <code>Property</code> represents a piece of data contained within the
+	 * <code>Activity</code> instance.
+	 */
+
+	public static class Properties extends Element.Properties
+	{
+		/** The associated <code>Course</code> */
+		public static final Property<Course> COURSE = Property.getInstance (Activity.class, Course.class, "course", false, true);
+
+		/** The associated <code>ActivityType</code> */
+		public static final Property<ActivityType> TYPE = Property.getInstance (Activity.class, ActivityType.class, "type", false, true);
+
+		/** The name of the <code>Activity</code> */
+		public static final Property<String> NAME = Property.getInstance (Activity.class, String.class, "name", false, true);
+	}
+
 	/**
 	 * Get the name of the <code>Activity</code>.  Not all
 	 * <code>Activity</code> instances have names.  For those

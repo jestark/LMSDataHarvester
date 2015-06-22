@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+
 /**
  * A representation of a course within the domain model.  Instances of the
  * <code>Course</code> interface contain the identifying information for a
@@ -47,6 +49,24 @@ import java.util.Set;
 
 public interface Course extends Element
 {
+	/**
+	 * Constants representing all of the properties of an <code>Course</code>.
+	 * A <code>Property</code> represents a piece of data contained within the
+	 * <code>Course</code> instance.
+	 */
+
+	public static class Properties extends Element.Properties
+	{
+		/** The name of the <code>Course</code> */
+		public static final Property<String> NAME = Property.getInstance (Course.class, String.class, "name", false, true);
+
+		/** The <code>Semester</code> of offering for the <code>Course</code> */
+		public static final Property<Semester> SEMESTER = Property.getInstance (Course.class, Semester.class, "semester", false, true);
+
+		/** The year of offering for the <code>Course</code> */
+		public static final Property<Integer> YEAR = Property.getInstance (Course.class, Integer.class, "year", false, true);
+	}
+
 	/**
 	 * Get the name of the <code>Course</code>.
 	 *

@@ -66,10 +66,10 @@ public class ForumPost extends GenericSubActivity
 		builder.setCreateMethod (ForumPost::new);
 		builder.setBuilder (DefaultSubActivityBuilder.class);
 
-		builder.addUniqueAttribute ("id", Long.class, false, false, ForumPost::getId, ForumPost::setId);
+		builder.addUniqueAttribute (SubActivity.Properties.ID, SubActivity::getId, ForumPost::setId);
 
-		builder.addAttribute ("parent", Activity.class, true, false, ForumPost::getParent, ForumPost::setParent);
-		builder.addAttribute ("name", String.class, true, false, ForumPost::getName, ForumPost::setName);
+		builder.addAttribute (SubActivity.Properties.PARENT, SubActivity::getParent, ForumPost::setParent);
+		builder.addAttribute (SubActivity.Properties.NAME, SubActivity::getName, ForumPost::setName);
 
 		builder.addRelationship ("log", LogEntry.class, ForumPost::addLog, ForumPost::removeLog);
 
