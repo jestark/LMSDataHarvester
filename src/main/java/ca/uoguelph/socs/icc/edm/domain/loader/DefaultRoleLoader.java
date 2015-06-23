@@ -16,15 +16,11 @@
 
 package ca.uoguelph.socs.icc.edm.domain.loader;
 
-import java.util.Map;
-
-import java.util.HashMap;
-
 import ca.uoguelph.socs.icc.edm.domain.Role;
-import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
 import ca.uoguelph.socs.icc.edm.domain.RoleLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Default implementation of the <code>RoleLoader</code> interface.
@@ -77,6 +73,9 @@ public final class DefaultRoleLoader extends AbstractLoader<Role> implements Rol
 			throw new NullPointerException ();
 		}
 
-		return ((this.fetchQuery ("name")).setParameter ("name", name)).query ();
+		Query<Role> query = this.fetchQuery ("name");
+		query.setProperty (Role.Properties.NAME, name);
+
+		return query.query ();
 	}
 }

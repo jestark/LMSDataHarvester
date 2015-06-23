@@ -16,18 +16,11 @@
 
 package ca.uoguelph.socs.icc.edm.domain.loader;
 
-import java.util.Map;
-
-import java.util.HashMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.Action;
-import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActionLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Default implementation of the <code>ActionLoader</code> interface.
@@ -80,6 +73,9 @@ public final class DefaultActionLoader extends AbstractLoader<Action> implements
 			throw new NullPointerException ();
 		}
 
-		return ((this.fetchQuery ("name")).setParameter ("name", name)).query ();
+		Query<Action> query = this.fetchQuery ("name");
+		query.setProperty (Action.Properties.NAME, name);
+
+		return query.query ();
 	}
 }

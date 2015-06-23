@@ -17,15 +17,15 @@
 package ca.uoguelph.socs.icc.edm.domain.loader;
 
 import java.util.List;
-import java.util.Map;
-
-import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityLoader;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
+import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
 
 /**
  * Default implementation of the <code>ActivityLoader</code> interface.
@@ -70,6 +70,8 @@ public final class DefaultActivityLoader extends AbstractLoader<Activity> implem
 			throw new NullPointerException ();
 		}
 
-		return ((this.fetchQuery ("type")).setParameter ("type", type)).queryAll ();
+		Query<Activity> query = this.fetchQuery ("all", AbstractActivity.getActivityClass (type));
+
+		return query.queryAll ();
 	}
 }

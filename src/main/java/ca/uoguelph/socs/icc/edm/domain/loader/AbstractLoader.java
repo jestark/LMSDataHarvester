@@ -197,7 +197,13 @@ public abstract class AbstractLoader<T extends Element> implements ElementLoader
 	{
 		this.log.trace ("fetchById: id={}", id);
 
-		return ((this.fetchQuery ("id")).setParameter ("id", id)).query ();
+		if (id == null)
+		{
+			this.log.error ("Attempting to fetch an element with a NULL id");
+			throw new NullPointerException ();
+		}
+
+		return this.datastore.fetch (this.datastore.getElementClass (this.type), id);
 	}
 
 	/**

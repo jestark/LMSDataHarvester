@@ -16,18 +16,11 @@
 
 package ca.uoguelph.socs.icc.edm.domain.loader;
 
-import java.util.Map;
-
-import java.util.HashMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
-import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySourceLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Default implementation of the <code>ActivitySourceLoader</code> interface.
@@ -83,6 +76,9 @@ public final class DefaultActivitySourceLoader extends AbstractLoader<ActivitySo
 			throw new NullPointerException ();
 		}
 
-		return ((this.fetchQuery ("name")).setParameter ("name", name)).query ();
+		Query<ActivitySource> query = this.fetchQuery ("name");
+		query.setProperty (ActivitySource.Properties.NAME, name);
+
+		return query.query ();
 	}
 }

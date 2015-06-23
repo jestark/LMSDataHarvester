@@ -16,10 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.loader;
 
-import java.util.Map;
-
-import java.util.HashMap;
-
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeLoader;
@@ -90,8 +86,8 @@ public final class DefaultActivityTypeLoader extends AbstractLoader<ActivityType
 		}
 
 		Query<ActivityType> query = this.fetchQuery ("name");
-		query.setParameter ("source", source);
-		query.setParameter ("name", name);
+		query.setProperty (ActivityType.Properties.SOURCE, source);
+		query.setProperty (ActivityType.Properties.NAME, name);
 
 		return query.query ();
 	}

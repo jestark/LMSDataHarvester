@@ -16,15 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain.loader;
 
-import java.util.Map;
-import java.util.HashMap;
-
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
-import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 import ca.uoguelph.socs.icc.edm.domain.UserLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Default implementation of the <code>UserLoader</code> interface.
@@ -80,7 +77,10 @@ public final class DefaultUserLoader extends AbstractLoader<User> implements Use
 			throw new NullPointerException ();
 		}
 
-		return ((this.fetchQuery ("idnumber")).setParameter ("idnumber", idnumber)).query ();
+		Query<User> query = this.fetchQuery ("idnumber");
+		query.setProperty (User.Properties.IDNUMBER, idnumber);
+
+		return query.query ();
 	}
 
 	/**
@@ -104,7 +104,10 @@ public final class DefaultUserLoader extends AbstractLoader<User> implements Use
 			throw new NullPointerException ();
 		}
 
-		return ((this.fetchQuery ("username")).setParameter ("username", username)).query ();
+		Query<User> query = this.fetchQuery ("username");
+		query.setProperty (User.Properties.USERNAME, username);
+
+		return query.query ();
 	}
 
 	/**
@@ -129,6 +132,9 @@ public final class DefaultUserLoader extends AbstractLoader<User> implements Use
 			throw new NullPointerException ();
 		}
 
-		return ((this.fetchQuery ("enrolment")).setParameter ("enrolment", enrolment)).query ();
+		Query<User> query = this.fetchQuery ("enrolment");
+//		query.setProperty (query.getProperty ("enrolment", Enrolment.class), enrolment);
+
+		return query.query ();
 	}
 }

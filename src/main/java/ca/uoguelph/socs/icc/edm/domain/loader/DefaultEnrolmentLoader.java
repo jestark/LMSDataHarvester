@@ -17,15 +17,13 @@
 package ca.uoguelph.socs.icc.edm.domain.loader;
 
 import java.util.List;
-import java.util.Map;
-
-import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.EnrolmentLoader;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Default implementation of the <code>EnrolmentLoader</code> interface.
@@ -80,6 +78,9 @@ public final class DefaultEnrolmentLoader extends AbstractLoader<Enrolment> impl
 			throw new NullPointerException ();
 		}
 
-		return ((this.fetchQuery ("role")).setParameter ("role", role)).queryAll ();
+		Query<Enrolment> query = this.fetchQuery ("role");
+		query.setProperty (Enrolment.Properties.ROLE, role);
+
+		return query.queryAll ();
 	}
 }

@@ -18,16 +18,13 @@ package ca.uoguelph.socs.icc.edm.domain.loader;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.LogEntryLoader;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Default implementation of the <code>LogEntryLoader</code> interface.
@@ -82,6 +79,9 @@ public final class DefaultLogEntryLoader extends AbstractLoader<LogEntry> implem
 			throw new NullPointerException ();
 		}
 
-		return ((this.fetchQuery ("course")).setParameter ("course", course)).queryAll ();
+		Query<LogEntry> query = this.fetchQuery ("course");
+		query.setProperty (LogEntry.Properties.COURSE, course);
+
+		return query.queryAll ();
 	}
 }

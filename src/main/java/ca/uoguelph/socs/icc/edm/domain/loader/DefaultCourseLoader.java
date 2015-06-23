@@ -17,9 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain.loader;
 
 import java.util.List;
-import java.util.Map;
-
-import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.CourseLoader;
@@ -69,7 +66,7 @@ public final class DefaultCourseLoader extends AbstractLoader<Course> implements
 	 * @return          A <code>List</code> of <code>Course</code> instances
 	 */
 
-	@Override
+//	@Override
 	public List<Course> fetchAllForOffering (final Semester semester, final Integer year)
 	{
 		this.log.trace ("fetchAllForOffering: semester={}, year={}", semester, year);
@@ -87,52 +84,8 @@ public final class DefaultCourseLoader extends AbstractLoader<Course> implements
 		}
 
 		Query<Course> query = this.fetchQuery ("allsemester");
-		query.setParameter ("semester", semester);
-		query.setParameter ("year", year);
-
-		return query.queryAll ();
-	}
-
-	/**
-	 * Retrieve a <code>List</code> of <code>Course</code> instances from the
-	 * <code>DataStore</code> based on the time of offering, and a regular
-	 * expression matching the courses name.
-	 *
-	 * @param  name     The regular expression to match against the name of the
-	 *                  <code>Course</code>, not null
-	 * @param  semester The <code>Semester</code> of offering, not null
-	 * @param  year     The year of offering, not null
-	 *
-	 * @return          A <code>List</code> of <code>Course</code> instances
-	 */
-
-	@Override
-	public List<Course> fetchAllForOffering (final String name, final Semester semester, final Integer year)
-	{
-		this.log.trace ("fetchAllForOffering: name={}, semester={}, year={}", name, semester, year);
-
-		if (semester == null)
-		{
-			this.log.error ("The specified semester is NULL");
-			throw new NullPointerException ();
-		}
-
-		if (year == null)
-		{
-			this.log.error ("The specified year is NULL");
-			throw new NullPointerException ();
-		}
-
-		if (name == null)
-		{
-			this.log.error ("The specified Course name is NULL");
-			throw new NullPointerException ();
-		}
-
-		Query<Course> query = this.fetchQuery ("alloffering");
-		query.setParameter ("semester", semester);
-		query.setParameter ("year", year);
-		query.setParameter ("name", name);
+		query.setProperty (Course.Properties.SEMESTER, semester);
+		query.setProperty (Course.Properties.YEAR, year);
 
 		return query.queryAll ();
 	}
@@ -172,9 +125,9 @@ public final class DefaultCourseLoader extends AbstractLoader<Course> implements
 		}
 
 		Query<Course> query = this.fetchQuery ("offering");
-		query.setParameter ("semester", semester);
-		query.setParameter ("year", year);
-		query.setParameter ("name", name);
+		query.setProperty (Course.Properties.SEMESTER, semester);
+		query.setProperty (Course.Properties.YEAR, year);
+		query.setProperty (Course.Properties.NAME, name);
 
 		return query.query ();
 	}
