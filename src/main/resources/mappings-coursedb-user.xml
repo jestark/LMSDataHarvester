@@ -5,7 +5,7 @@
                                      http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
                  version="2.1">
 	<description>Entity mappings for the course database</description>
-	<package>ca.uoguelph.socs.icc.edm.domain.core</package>
+	<package>ca.uoguelph.socs.icc.edm.domain.element</package>
 	<schema>userdb</schema>
 	<access>PROPERTY</access>
 
