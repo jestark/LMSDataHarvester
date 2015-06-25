@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,16 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
+import java.util.Map;
+
+import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
 
 /**
  * Representation of a <code>DataStore</code>.  This is an internal interface
@@ -28,8 +37,48 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @see     Transaction
  */
 
-public interface DataStore
+public abstract class DataStore
 {
+	private static interface DataStoreData<T extends Element>
+	{
+	}
+
+	private static final class DataStoreDataImpl<T extends Element, U extends T> implements DataStoreData<T>
+	{
+		private final MetaData<T, U> metadata;
+
+		public DataStoreDataImpl (final MetaData<T, U> metadata)
+		{
+			this.metadata = metadata;
+		}
+	}
+
+	private static final Map<Class<? extends Element>, DataStoreData<?>> metadata;
+
+	/** The logger */
+	protected final Logger log;
+
+	/** The profile */
+	protected final DataStoreProfile profile;
+
+	static
+	{
+		metadata = new HashMap<Class<? extends Element>, DataStoreData<?>> ();
+	}
+
+	public static final <T extends Element, U extends T> void registerElement (final MetaData<T, U> metadata)
+	{
+		assert metadata != null : "metadata is NULL";
+
+		DataStore.metadata.put (metadata.getElementClass (), new DataStoreDataImpl<T, U> (metadata));
+	}
+
+	protected DataStore (final DataStoreProfile profile)
+	{
+		this.log = LoggerFactory.getLogger (this.getClass ());
+		this.profile = profile;
+	}
+
 	/**
 	 * Determine if the <code>DataStore</code> is mutable.
 	 *
@@ -37,7 +86,28 @@ public interface DataStore
 	 *         <code>false</code> otherwise
 	 */
 
-	public abstract boolean isMutable ();
+	public final boolean isMutable ()
+	{
+		return true;
+	}
+
+	/**
+	 * Get the default implementation class used by the <code>DataStore</code>
+	 * for the specified <code>Element</code> interface class.
+	 *
+	 * @param  element The <code>Element</code> interface class
+	 *
+	 * @return         The <code>Element</code> implementation class
+	 */
+
+	public final Class<? extends Element> getElementClass (final Class<? extends Element> element)
+	{
+		this.log.trace ("getElementClass: element={}", element);
+
+		assert element != null : "element is NULL";
+
+		return this.profile.getImplClass (element);
+	}
 
 	/**
 	 * Determine if the <code>DataStore</code> is open.
@@ -53,32 +123,6 @@ public interface DataStore
 	 */
 
 	public abstract void close ();
-
-	/**
-	 * Get the default implementation class used by the <code>DataStore</code>
-	 * for the specified <code>Element</code> interface class.
-	 *
-	 * @param  element The <code>Element</code> interface class
-	 *
-	 * @return         The <code>Element</code> implementation class
-	 */
-
-	public abstract Class<? extends Element> getElementClass (Class<? extends Element> element);
-
-	/**
-	 * Get the <code>Query</code> with the specified name, returning
-	 * <code>Element</code> instances of the specified type.
-	 *
-	 * @param  <T>     The <code>Element</code> interface type of the
-	 *                 <code>Query</code>
-	 * @param  name    The name of the <code>Query</code> to return
-	 * @param  element The <code>Element</code> implementation class to be
-	 *                 returned by the </code>Query</code>
-	 *
-	 * @return         The <code>Query</code>
-	 */
-
-	public abstract <T extends Element> Query<T> getQuery (String name, Class<?> element);
 
 	/**
 	 * Get an instance of the transaction manager for the
@@ -100,22 +144,7 @@ public interface DataStore
 	 *                 otherwise
 	 */
 
-	public abstract <T extends Element> boolean contains (T element);
-
-	/**
-	 * Fetch the specified <code>Element</code> instance from the
-	 * <code>DataStore</code>.
-	 *
-	 * @param  <T>  The type of <code>Element</code> to be retrieved
-	 * @param  type The implementation class of the <code>Element</code>
-	 *              to retrieve
-	 * @param  id   The <code>DataStore</code> Id of the <code>Element</code>
-	 *              to retrieve
-	 *
-	 * @return      The requested <code>Element</code> instance
-	 */
-
-	public abstract <T extends Element> T fetch (Class<T> type, Long id);
+	public abstract <T extends Element> boolean contains (final T element);
 
 	/**
 	 * Insert the specified <code>Element</code> instance into the
@@ -124,7 +153,7 @@ public interface DataStore
 	 * @param  element The <code>Element</code> instance to insert, not null
 	 */
 
-	public abstract <T extends Element> void insert (T element);
+	public abstract <T extends Element> void insert (final T element);
 
 	/**
 	 * Remove the specified <code>Element</code> instance from the
@@ -133,5 +162,5 @@ public interface DataStore
 	 * @param  element The <code>Element</code> instance to remove, not null
 	 */
 
-	public abstract <T extends Element> void remove (T element);
+	public abstract <T extends Element> void remove (final T element);
 }
