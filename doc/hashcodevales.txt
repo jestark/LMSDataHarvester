@@ -1,4 +1,6 @@
 Class:							Base:	Multiplier:
+Property						883		11
+Selector						887		7
 DomainModelProfile				907		5
 DomainModelProfile.Entry		911		3
 JPADataStoreBuilder.Key			919		2

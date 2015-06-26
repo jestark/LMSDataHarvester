@@ -30,6 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The type of the value for the <code>Property</code>
+ * @see     Definition
  */
 
 public final class Property<T>
@@ -52,19 +53,43 @@ public final class Property<T>
 	/**
 	 * Create the <code>Property</code>.
 	 *
-	 * @param  element  The Java type of the <code>Element</code>, not null
-	 * @param  type     The Java type of the <code>Property</code>, not null
-	 * @param  name     The name of the <code>Property</code>, not null
-	 * @param  mutable  Indication if the <code>Attribute</code> can be changed
-	 * @param  required Indication if the <code>Attribute</code> is allowed to
-	 *                  be null
+	 * @param  element                  The <code>Element</code> interface
+	 *                                  class, not null
+	 * @param  type                     The type of the value associated with
+	 *                                  the<code>Property</code>, not null
+	 * @param  name                     The name of the <code>Property</code>,
+	 *                                  not null
+	 * @param  mutable                  Indication if the <code>Property</code>
+	 *                                  can be changed
+	 * @param  required                 Indication if the <code>Property</code>
+	 *                                  is allowed to be null
+	 *
+	 * @return                          The <code>Property</code>
+	 * @throws IllegalArgumentException if a different <code>Property</code>
+	 *                                  already exists in the definition with
+	 *                                  the same name
+	 * @throws IllegalStateException    if <code>Element</code> is assignable
+	 *                                  from more than one super-interface
 	 */
 
 	public static <T extends Element, V> Property<V> getInstance (final Class<T> element, final Class<V> type, final String name, final boolean mutable, final boolean required)
 	{
-		Property<V> property = new Property<V> (name, type, element, mutable, required);
+		if ((element == null) || (type == null) || (name == null))
+		{
+			throw new NullPointerException ();
+		}
 
-		return property;
+		if (! element.isInterface ())
+		{
+			throw new IllegalArgumentException ("element MUST be an interface");
+		}
+
+		if (name.length () == 0)
+		{
+			throw new IllegalArgumentException ("name is an empty String");
+		}
+
+		return MetaData.registerProperty (element, new Property<V> (name, type, element, mutable, required));
 	}
 
 	/**
@@ -134,8 +159,8 @@ public final class Property<T>
 	@Override
 	public int hashCode ()
 	{
-		final int base = 5;
-		final int mult = 7;
+		final int base = 883;
+		final int mult = 11;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.append (this.name);
@@ -208,5 +233,27 @@ public final class Property<T>
 	public boolean isRequired ()
 	{
 		return this.required;
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>Property</code>
+	 * instance.
+	 *
+	 * @return A <code>String</code> representation of the <code>Property</code>
+	 *         instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("name", this.name);
+		builder.append ("type", this.type);
+		builder.append ("element", this.element);
+		builder.append ("mutable", this.mutable);
+		builder.append ("required", this.required);
+
+		return builder.toString ();
 	}
 }

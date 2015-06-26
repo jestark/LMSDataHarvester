@@ -113,7 +113,7 @@ public abstract class AbstractBuilder<T extends Element> implements ElementBuild
 
 		public Builder<T> getBuilder ()
 		{
-			return new BuilderImpl<T, U> (this.metadata.getDefinition ());
+			return new BuilderImpl<T, U> (this.metadata);
 		}
 	}
 

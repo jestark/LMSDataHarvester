@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 
 /**
@@ -45,7 +45,7 @@ final class BuilderImpl<T extends Element, U extends T> implements Builder<T>
 	private final Logger log;
 
 	/** The meta-data definition of the <code>Element</code> */
-	private final Definition<T, U> definition;
+	private final MetaData<T, U> definition;
 
 	/** The value associated with each property */
 	private U values;
@@ -56,7 +56,7 @@ final class BuilderImpl<T extends Element, U extends T> implements Builder<T>
 	 * @param definition The meta-data definition of the <code>Element</code>
 	 */
 
-	protected BuilderImpl (final Definition<T, U> definition)
+	protected BuilderImpl (final MetaData<T, U> definition)
 	{
 		assert definition != null : "definition is NULL";
 

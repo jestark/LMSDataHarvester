@@ -22,158 +22,184 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * Meta-data definition for an <code>Element</code>.  This class is a meta-data
- * representation of an <code>Element</code>.  It uses a collection of
- * <code>Property</code> instances with their associated method references to
- * create and modify <code>Element</code> instances.  The
- * <code>DataStore</code> and <code>ElementBuilder</code> implementation use
- * this class indirectly.
+ * Meta-data definition for an <code>Element</code> interface.  This class
+ * collects all of the <code>Property</code> and <code>Selector</code>
+ * instances which are associated with an <code>Element</code> interface.  When
+ * The <code>Property</code> or <code>Selector</code> is defined it is
+ * automatically registered with the appropriate instance of this class.
+ * <p>
+ * Since the <code>Element</code> interfaces are defined hierarchically with
+ * all of the <code>Element</code> definitions inheriting <code>Element</code>,
+ * this class processes the definitions recursively.  When a
+ * <code>Property</code> or <code>Selector</code> is added or retrieved, this
+ * class will look at the instances associated it, and the instance for the
+ * super-interface for the <code>Element</code> if it exists.
+ * <p>
+ * Recursively processing the element definitions imposes the limitation that
+ * the <code>Element</code> interface may not be inherited twice (either
+ * directly or indirectly) by any <code>Element</code> definition.  Element
+ * definitions must be derived from the <code>Element</code> interface, and
+ * may also inherit from other non-<code>Element</code> interfaces.
  *
  * @author  James E. Stark
  * @version 1.0
- * @param   <T> The interface type of the <code>Element</code>
- * @param   <U> The implementation type of the <code>Element</code>
+ * @param   <T> The <code>Element</code> type of the <code>Definition</code>
+ * @see     Property
+ * @see     Selector
  */
 
-public final class Definition<T extends Element, U extends T>
+public final class Definition<T extends Element>
 {
-	/**
-	 *
-	 * @param  <T> The implementation type of the <code>Element</code>
-	 * @param  <V> The type of the value stored in the <code>Element</code>
-	 */
+	/** The logger */
+	private final Logger log;
 
-	protected static final class Reference<T extends Element, V>
-	{
-		/** Method reference to getting values */
-		final Function<T, V> get;
+	/** The <code>Definition</code> for any super interface */
+	private final Definition<?> parent;
 
-		/** Method reference for setting values */
-		final BiConsumer<T, V> set;
-
-		/**
-		 * Create the <code>Reference</code>.
-		 *
-		 * @param  get Method reference to get the value, not null
-		 * @param  set Method reference to set the value, not null
-		 */
-
-		public Reference (final Function<T, V> get, final BiConsumer<T, V> set)
-		{
-			assert get != null : "get method reference is NULL";
-			assert set != null : "set method reference is NULL";
-
-			this.get = get;
-			this.set = set;
-		}
-
-		/**
-		 * Get the value from the specified <code>Element</code> instance.
-		 *
-		 * @param  element  The <code>Element</code>, not null
-		 *
-		 * @return          The value from the <code>Element</code>
-		 */
-
-		public V get (final T element)
-		{
-			assert element != null : "element is NULL";
-
-			return this.get.apply (element);
-		}
-
-		/**
-		 * Enter the specified value into the specified <code>Element</code>
-		 * instance.
-		 *
-		 * @param  element  The <code>Element</code>, not null
-		 * @param  value    The value to be set, may be null
-		 */
-
-		public void set (final T element, final V value)
-		{
-			assert element != null : "element is NULL";
-
-			this.set.accept (element, value);
-		}
-
-		/**
-		 * Copy a value from the source <code>Element</code> to the destination
-		 * <code>Element</code>
-		 *
-		 * @param  dest     The destination <code>Element</code>, not null
-		 * @param  source   The source <code>Element</code>, not null
-		 */
-
-		public void copy (final T dest, final T source)
-		{
-			assert dest != null : "dest is NULL";
-			assert source != null : "source is NULL";
-
-			this.set.accept (dest, this.get.apply (source));
-		}
-	}
-
-	/** The interface class for the <code>Element</code> */
+	/** The interface represented by the definition */
 	private final Class<T> type;
 
-	/** The implementation class for the <code>Element</code> */
-	private final Class<U> impl;
+	/** The <code>Property</code> instances associated with the interface */
+	private final Map<String, Property<?>> properties;
 
-	/** Method reference for creating new instances */
-	private final Supplier<U> create;
-
-	/** <code>Property</code> to <code>Reference</code> instance mapping */
-	private final Map<Property<?>, Reference<U, ?>> references;
+	/** The <code>Selector</code> instances for the interface */
+	private final Map<String, Selector> selectors;
 
 	/**
-	 * Create the Meta-data <code>Definition</code>.
+	 * Create the <code>Definition</code>.
 	 *
-	 * @param  type       <code>Element</code> interface class, not null
-	 * @param  impl       <code>Element</code> implementation class, not null
-	 * @param  create     Method reference for creating new instances, not null
-	 * @param  references <code>Property</code> to <code>Reference</code> map,
-	 *                    not null
+	 * @param  type                  The <code>Element</code> interface, not
+	 *                               null
+	 *
+	 * @throws IllegalStateException if <code>Element</code> is assignable from
+	 *                               more than one super-interface or if the
+	 *                               parent <code>Element</code> is not
+	 *                               registered
 	 */
 
-	protected Definition (final Class<T> type, final Class<U> impl, final Supplier<U> create, final Map<Property<?>, Reference<U, ?>> references)
+	protected Definition (final Class<T> type)
 	{
 		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
-		assert create != null : "create is NULL";
-		assert references != null : "references is NULL";
+		assert type.isInterface () : "type must be an interface";
+
+		this.log = LoggerFactory.getLogger (Definition.class);
 
 		this.type = type;
-		this.impl = impl;
-		this.create = create;
-		this.references = references;
+		this.properties = new HashMap<String, Property<?>> ();
+		this.selectors = new HashMap<String, Selector> ();
+
+		Class<?> def = null;
+
+		for (Class<?> cls : type.getInterfaces ())
+		{
+			if (Element.class.isAssignableFrom (cls))
+			{
+				if (def != null)
+				{
+					this.log.error ("{} inherits Element multiple times: {}, {}, ...", type.getSimpleName (), def.getSimpleName (), cls.getSimpleName ());
+					throw new IllegalStateException ("Element can no be inherited more then once");
+				}
+
+				def = cls;
+			}
+		}
+
+		if (def != null)
+		{
+			this.parent = MetaData.getDefinition (def);
+
+			if (this.parent == null)
+			{
+				this.log.error ("Super-interface for {} is not registered: {}", this.type.getSimpleName (), def.getSimpleName ());
+				throw new IllegalStateException ("Super-interface is not registered");
+			}
+			else
+			{
+				this.log.debug ("Element: {} has Parent: {}", this.type.getSimpleName (), (this.parent.getElementType ()).getSimpleName ());
+			}
+		}
+		else
+		{
+			this.parent = null;
+			this.log.debug ("Element: {} has Parent: null", this.type.getSimpleName ());
+		}
 	}
 
 	/**
-	 * Convenience method to retrieve the <code>Reference</code> associated
-	 * with the specified <code>Property</code>.
+	 * Add a <code>Property</code> to the <code>Definition</code>.
 	 *
-	 * @param  <V>      The type of the value for the <code>Property</code>
-	 * @param  property The <code>Property</code>, not null
+	 * @param  property                 The <code>Property</code> to add, not
+	 *                                  null
 	 *
-	 * @return          The <code>Reference</code> associated with the
-	 *                  <code>Property</code>
+	 * @return                          The <code>Property</code> in the
+	 *                                  <code>Definition</code>
+	 * @throws IllegalArgumentException if a different <code>Property</code>
+	 *                                  already exists in the definition with
+	 *                                  the same name
 	 */
 
 	@SuppressWarnings ("unchecked")
-	private <V> Reference<U, V> getReference (final Property<V> property)
+	protected <V> Property<V> addProperty (final Property<V> property)
 	{
-		assert property != null : "reference is NULL";
-		assert this.references.containsKey (property) : "Property is not registered";
+		this.log.trace ("addProperty: property={}", property);
 
-		return (Reference<U, V>) this.references.get (property);
+		assert property != null : "property is NULL";
+
+		Property<?> result = this.getProperty (property.getName ());
+
+		if (result == null)
+		{
+			this.properties.put (property.getName (), property);
+			result = property;
+		}
+		else if (! property.equals (result))
+		{
+			this.log.error ("Conflicts for Property {}, existing: {}, new: {}", property.getName (), result, property);
+			throw new IllegalArgumentException ("A different property already exists with the specified name");
+		}
+
+		return (Property<V>) result;
+	}
+
+	/**
+	 * Add a <code>Selector</code> to the <code>Definition</code>.
+	 *
+	 * @param  selector                 The <code>Selector</code> to add, not
+	 *                                  null
+	 *
+	 * @return                          The <code>Selector</code> in the
+	 *                                  <code>Definition</code>
+	 * @throws IllegalArgumentException if a different <code>Selector</code>
+	 *                                  already exists in the definition with
+	 *                                  the same name
+	 */
+
+	protected Selector addSelector (final Selector selector)
+	{
+		this.log.trace ("addSelector: selector={}", selector);
+
+		assert selector != null : "selector is NULL";
+
+		Selector result = this.getSelector (selector.getName ());
+
+		if (result == null)
+		{
+			this.selectors.put (selector.getName (), selector);
+			result = selector;
+		}
+		else if (! result.equals (selector))
+		{
+			this.log.error ("Conflicts for Selector {}, existing: {}, new: {}", selector.getName (), result, selector);
+			throw new IllegalArgumentException ("A different selector already exists with the specified name");
+		}
+
+		return result;
 	}
 
 	/**
@@ -188,91 +214,111 @@ public final class Definition<T extends Element, U extends T>
 	}
 
 	/**
-	 * Get the Java type of the <code>Element</code> implementation.
+	 * Get the <code>Property</code> instance with the specified name.
 	 *
-	 * @return The <code>Class</code> representing the implementation type
+	 * @param  name The name of the <code>Property</code> to retrieve, not null
+	 *
+	 * @return      The <code>Property</code>, may be null
 	 */
 
-	public Class<U> getElementClass ()
+	public Property<?> getProperty (final String name)
 	{
-		return this.impl;
+		assert name != null : "name is NULL";
+
+		Property<?> result = this.properties.get (name);
+
+		if ((result == null) && (this.parent != null))
+		{
+			result = this.parent.getProperty (name);
+		}
+
+		return result;
 	}
 
 	/**
-	 * Create a new instance of the <code>Element</code>.
+	 * Get the <code>Property</code> instance with the specified name and type.
 	 *
-	 * @return The new <code>Element</code> instance
+	 * @param  name                     The name, not null
+	 * @param  type                     The type, not null
+	 *
+	 * @return                          The <code>Property</code>, may be null
+	 * @throws IllegalArgumentException if the type specified does not match
+	 *                                  the type of the <code>Property</code>
 	 */
 
-	public U createElement ()
+	@SuppressWarnings ("unchecked")
+	public <V> Property<V> getProperty (final String name, final Class<V> type)
 	{
-		return this.create.get ();
+		assert name != null : "name is NULL";
+		assert type != null : "type is NULL";
+
+		Property<?> result = this.getProperty (name);
+
+		if ((result != null) && (type != result.getPropertyType ()))
+		{
+			throw new IllegalArgumentException ("The type specified and the Type of the property do not match");
+		}
+
+		return (Property<V>) result;
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>Property</code> instances
-	 * corresponding to the <code>Element</code>.
+	 * Get the <code>Set</code> of <code>Property</code> instances which are
+	 * associated with the <code>Element</code>.
 	 *
-	 * @return A <code>Set</code> containing all of the <code>Property</code>
-	 *         instances for the <code>Element</code>
+	 * @return A <code>Set</code> of <code>Property</code> instances
 	 */
 
 	public Set<Property<?>> getProperties ()
 	{
-		return new HashSet<Property<?>> (this.references.keySet ());
+		Set<Property<?>> result = new HashSet<Property<?>> (this.properties.values ());
+
+		if (this.parent != null)
+		{
+			result.addAll (this.parent.getProperties ());
+		}
+
+		return result;
 	}
 
 	/**
-	 * Get the value corresponding to the specified <code>Property</code> from
-	 * the specified <code>Element</code> instance.
+	 * Get the <code>Selector</code> instance with the specified name.
 	 *
-	 * @param  property The <code>Property</code>, not null
-	 * @param  element  The <code>Element</code>, not null
+	 * @param  name The name of the <code>Selector</code> to retrieve, not null
 	 *
-	 * @return          The value corresponding to the <code>Property</code> in
-	 *                  the <code>Element</code>
+	 * @return      The <code>Property</code>, may be null
 	 */
 
-	public <V> V getValue (final Property<V> property, final U element)
+	public Selector getSelector (final String name)
 	{
-		assert element != null : "element is NULL";
-		assert property != null : "property is NULL";
+		assert name != null : "name is NULL";
 
-		return (this.getReference (property)).get (element);
+		Selector result = this.selectors.get (name);
+
+		if ((result == null) && (this.parent != null))
+		{
+			result = this.parent.getSelector (name);
+		}
+
+		return result;
 	}
 
 	/**
-	 * Set the value corresponding to the specified <code>Property</code> in
-	 * the specified <code>Element</code> instance to the specified value.
+	 * Get the <code>Set</code> of <code>Selector</code> instances which are
+	 * associated with the <code>Element</code>.
 	 *
-	 * @param  property The <code>Property</code>, not null
-	 * @param  element  The <code>Element</code>, not null
-	 * @param  value    The value to be set, may be null
+	 * @return A <code>Set</code> of <code>Selector</code> instances
 	 */
 
-	public <V> void setValue (final Property<V> property, final U element, final V value)
+	public Set<Selector> getSelectors ()
 	{
-		assert element != null : "element is NULL";
-		assert property != null : "property is NULL";
+		Set<Selector> result = new HashSet<Selector> (this.selectors.values ());
 
-		(this.getReference (property)).set (element, value);
-	}
+		if (this.parent != null)
+		{
+			result.addAll (this.parent.getSelectors ());
+		}
 
-	/**
-	 * Copy the value corresponding to the specified <code>Property</code> from
-	 * the source <code>Element</code> to the destination <code>Element</code>
-	 *
-	 * @param  property The <code>Property</code>, not null
-	 * @param  dest     The destination <code>Element</code>, not null
-	 * @param  source   The source <code>Element</code>, not null
-	 */
-
-	public void copyValue (final Property<?> property, final U dest, final U source)
-	{
-		assert dest != null : "dest is NULL";
-		assert source != null : "source is NULL";
-		assert property != null : "property is NULL";
-
-		(this.references.get (property)).copy (dest, source);
+		return result;
 	}
 }

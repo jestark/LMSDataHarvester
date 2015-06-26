@@ -19,24 +19,214 @@ package ca.uoguelph.socs.icc.edm.domain.element.metadata;
 import java.util.Map;
 import java.util.Set;
 
-import java.util.function.Function;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import java.util.function.Supplier;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
+/**
+ * Meta-data definition for an <code>Element</code> implementation class.  This
+ * class contains the meta-data for an <code>Element</code> implementation
+ * along with a reference to the <code>Definition</code> of the
+ * <code>Element</code> interface which is being implemented.  Though an
+ * instance of this class the referenced <code>Element</code> implementation
+ * class can be created and its data can be manipulated.
+ * <p>
+ * This class is intended to be used internally by the
+ * <code>ElementBuilder</code> and <code>DataStore</code> implementations.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @param   <T> The <code>Element</code> interface type
+ * @param   <U> The <code>Element</code> implementation type
+ * @see     Defionition
+ * @see     Property
+ */
+
 public class MetaData<T extends Element, U extends T>
 {
-	private final Map<String, Selector<T, U>> selectors;
+	/** Map of <code>Element</code> interface definitions */
+	private static final Map<Class<? extends Element>, Definition<? extends Element>> elements;
 
-	private final Definition<T, U> definition;
+	/** The interface definition for the <code>Element</code> */
+	private final Definition<T> element;
 
+	/** The implementation class for the <code>Element</code> */
+	private final Class<U> impl;
+
+	/** The <code>ElementBuilder</code> implementation class */
 	private final Class<? extends ElementBuilder<T>> builder;
 
-	protected MetaData (final Definition<T, U> definition, final Class<? extends ElementBuilder<T>> builder)
+	/** Method reference for creating new instances */
+	private final Supplier<U> create;
+
+	/** All of the <code>Property</code> instances which are writable */
+	private final Set<Property<?>> properties;
+
+	/** <code>Property</code> to <code>Reference</code> instance mapping */
+	private final Map<Property<?>, PropertyReference<U, ?>> references;
+
+	/**
+	 * Static initializer to create the elements <code>Map</code>
+	 */
+
+	static
 	{
-		this.selectors = null;
-		this.definition = definition;
+		elements = new HashMap<Class<? extends Element>, Definition<? extends Element>> ();
+	}
+
+	/**
+	 * Register a <code>Property</code> instance and add it to the
+	 * <code>Definition</code>.
+	 *
+	 * @param  element                  The <code>Element</code> class, not null
+	 * @param  property                 The <code>Property</code>, not null
+	 *
+	 * @return                          The <code>Property</code> in the
+	 *                                  <code>Definition</code>
+	 * @throws IllegalArgumentException if a different <code>Property</code>
+	 *                                  already exists in the definition with
+	 *                                  the same name
+	 * @throws IllegalStateException    if <code>Element</code> is assignable
+	 *                                  from more than one super-interface or
+	 *                                  if the parent <code>Element</code> is
+	 *                                  not registered
+	 */
+
+	protected static <T extends Element, V> Property<V> registerProperty (final Class<T> element, final Property<V> property)
+	{
+		assert element != null : "element is NULL";
+		assert property != null : "property is NULL";
+		assert element == property.getElementType () : "property is not of the element type";
+
+		if (! MetaData.elements.containsKey (element))
+		{
+			MetaData.elements.put (element, new Definition<T> (element));
+		}
+
+		return (MetaData.getDefinition (element)).addProperty (property);
+	}
+
+	/**
+	 * Register a <code>Selector</code> instance and add it to the
+	 * <code>Definition</code>.
+	 *
+	 * @param  selector                 The <code>Selector</code>, not null
+	 *
+	 * @return                          The <code>Selector</code> in the
+	 *                                  <code>Definition</code>
+	 * @throws IllegalArgumentException if a different <code>Selector</code>
+	 *                                  already exists in the definition with
+	 *                                  the same name
+	 * @throws IllegalStateException    If the <code>Element</code> associated
+	 *                                  with the <code>Selector</code> has not
+	 *                                  been registered
+	 */
+
+	protected static Selector registerSelector (final Selector selector)
+	{
+		assert selector != null : "selector is NULL";
+
+		if (! MetaData.elements.containsKey (selector.getElementType ()))
+		{
+			throw new IllegalStateException ("No Properties registered for the Selector");
+		}
+
+		return (MetaData.getDefinition (selector.getElementType ())).addSelector (selector);
+	}
+
+	/**
+	 * Get the <code>Set</code> of <code>Element</code> interfaces which have
+	 * been registered.
+	 *
+	 * @return The <code>Set</code> of <code>Element</code> interfaces
+	 */
+
+	public static Set<Class<? extends Element>> getElements ()
+	{
+		return new HashSet<Class<? extends Element>> (MetaData.elements.keySet ());
+	}
+
+	/**
+	 * Get the <code>Definition</code> for the specified <code>Element</code>
+	 * interface.
+	 *
+	 * @param  element The <code>Element</code> interface class, not null
+	 *
+	 * @return         The <code>Definition</code>
+	 */
+
+	public static Definition<?> getDefinition (final Class<?> element)
+	{
+		assert element != null : "element is NULL";
+
+		return MetaData.elements.get (element);
+	}
+
+	/**
+	 * Create the <code>MetaData</code>.
+	 *
+	 * @param  type       The <code>Element</code> interface class, not null
+	 * @param  impl       The <code>Element</code> implementation class, not
+	 *                    null
+	 * @param  builder    The <code>ElementBuilder</code> implementation class,
+	 *                    not null
+	 * @param  create     Method reference to the no-argument constructor, not
+	 *                    null
+	 * @param  references <code>Property</code> to get/set method mapping, not
+	 *                    null
+	 */
+
+	@SuppressWarnings ("unchecked")
+	protected MetaData (final Class<T> type, final Class<U> impl, final Class<? extends ElementBuilder<T>> builder, final Supplier<U> create, final Map<Property<?>, PropertyReference<U, ?>> references)
+	{
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+		assert builder != null : "builder is NULL";
+		assert create != null : "create is NULL";
+		assert references != null : "references is NULL";
+
+		this.element = (Definition<T>) MetaData.elements.get (type);
+		this.impl = impl;
 		this.builder = builder;
+
+		this.create = create;
+
+		this.properties = new HashSet<Property<?>> ();
+		this.references = references;
+
+		assert (this.element.getProperties ()).equals (this.references.keySet ()) : "Mismatch between Property and reference definitions";
+
+		for (Property<?> property: references.keySet ())
+		{
+			if ((this.references.get (property)).isWritable ())
+			{
+				this.properties.add (property);
+			}
+		}
+	}
+
+	/**
+	 * Convenience method to retrieve the <code>Reference</code> associated
+	 * with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value for the <code>Property</code>
+	 * @param  property The <code>Property</code>, not null
+	 *
+	 * @return          The <code>Reference</code> associated with the
+	 *                  <code>Property</code>
+	 */
+
+	@SuppressWarnings ("unchecked")
+	private <V> PropertyReference<U, V> getReference (final Property<V> property)
+	{
+		assert property != null : "reference is NULL";
+		assert this.references.containsKey (property) : "Property is not registered";
+
+		return (PropertyReference<U, V>) this.references.get (property);
 	}
 
 	/**
@@ -47,7 +237,7 @@ public class MetaData<T extends Element, U extends T>
 
 	public Class<T> getElementType ()
 	{
-		return this.definition.getElementType ();
+		return this.element.getElementType ();
 	}
 
 	/**
@@ -58,52 +248,111 @@ public class MetaData<T extends Element, U extends T>
 
 	public Class<U> getElementClass ()
 	{
-		return this.definition.getElementClass ();
+		return this.impl;
 	}
+
+	/**
+	 * Get the <code>Definition</code>.
+	 *
+	 * @return The <code>Definition</code>
+	 */
+
+	public Definition<T> getDefinition ()
+	{
+		return this.element;
+	}
+
+	/**
+	 * Get the <code>ElementBuilder</code> implementation class.
+	 *
+	 * @return The <code>ElementBuilder</code> implementation class
+	 */
 
 	public Class<? extends ElementBuilder<T>> getBuilderClass ()
 	{
 		return this.builder;
 	}
 
-	public Long getId (final U element)
+	/**
+	 * Get the <code>Set</code> of writable <code>Property</code> instances
+	 * corresponding to the <code>Element</code>.
+	 *
+	 * @return A <code>Set</code> containing the writable <code>Property</code>
+	 *         instances for the <code>Element</code>
+	 */
+
+	public Set<Property<?>> getProperties ()
+	{
+		return new HashSet<Property<?>> (this.properties);
+	}
+
+	/**
+	 * Create a new instance of the <code>Element</code>.
+	 *
+	 * @return The new <code>Element</code> instance
+	 */
+
+	public U createElement ()
+	{
+		return this.create.get ();
+	}
+
+	/**
+	 * Get the value corresponding to the specified <code>Property</code> from
+	 * the specified <code>Element</code> instance.
+	 *
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 *
+	 * @return          The value corresponding to the <code>Property</code> in
+	 *                  the <code>Element</code>
+	 */
+
+	public <V> V getValue (final Property<V> property, final U element)
 	{
 		assert element != null : "element is NULL";
+		assert property != null : "property is NULL";
+		assert this.references.containsKey (property) : "Property is not registered";
 
-		return element.getId ();
+		return (this.getReference (property)).getValue (element);
 	}
 
-	public void setId (final U element, final Long id)
+	/**
+	 * Set the value corresponding to the specified <code>Property</code> in
+	 * the specified <code>Element</code> instance to the specified value.
+	 *
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 * @param  value    The value to be set, may be null
+	 */
+
+	public <V> void setValue (final Property<V> property, final U element, final V value)
 	{
 		assert element != null : "element is NULL";
+		assert property != null : "property is NULL";
+		assert this.references.containsKey (property) : "Property is not registered";
+		assert this.properties.contains (property) : "property can not be written";
 
+		(this.getReference (property)).setValue (element, value);
 	}
 
-	public void insertRelationships (final U element)
+	/**
+	 * Copy the value corresponding to the specified <code>Property</code> from
+	 * the source <code>Element</code> to the destination <code>Element</code>
+	 *
+	 * @param  property The <code>Property</code>, not null
+	 * @param  dest     The destination <code>Element</code>, not null
+	 * @param  source   The source <code>Element</code>, not null
+	 */
+
+	public void copyValue (final Property<?> property, final U dest, final U source)
 	{
-		assert element != null : "element is NULL";
+		assert dest != null : "dest is NULL";
+		assert source != null : "source is NULL";
+		assert property != null : "property is NULL";
+		assert this.references.containsKey (property) : "Property is not registered";
+		assert this.properties.contains (property) : "property can not be written";
 
-	}
-
-	public void removeRelationships (final U element)
-	{
-		assert element != null : "element is NULL";
-	}
-
-	public Definition<T, U> getDefinition ()
-	{
-		return this.definition;
-	}
-
-	public Set<Selector<T,U>> getSelectors ()
-	{
-		return null;
-	}
-
-	public Selector<T, U> getSelector (final String name)
-	{
-		assert name != null : "name is NULL";
-
-		return this.selectors.get (name);
+		(this.references.get (property)).copyValue (dest, source);
 	}
 }
