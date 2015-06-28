@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/checklist
@@ -63,18 +63,14 @@ public class Checklist extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Checklist> builder = DefinitionBuilder.newInstance (Activity.class, Checklist.class);
+		MetaDataBuilder<Activity, Checklist> builder = MetaDataBuilder.newInstance (Activity.class, Checklist.class);
 		builder.setCreateMethod (Checklist::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Checklist::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Checklist::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Checklist::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Checklist::setName);
-
-		builder.addRelationship ("grades", Grade.class, Checklist::addGrade, Checklist::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Checklist::addLog, Checklist::removeLog);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Checklist::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Checklist::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Checklist::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Checklist::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "checklist");
 	}

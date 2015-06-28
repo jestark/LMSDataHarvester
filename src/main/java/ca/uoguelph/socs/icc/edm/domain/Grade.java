@@ -52,7 +52,7 @@ public interface Grade extends Element
 	 * <code>Grade</code> instance.
 	 */
 
-	public static class Properties
+	public static class Properties extends Element.Properties
 	{
 		/** The associated <code>Activity</code> */
 		public static final Property<Activity> ACTIVITY = Property.getInstance (Grade.class, Activity.class, "activity", false, true);

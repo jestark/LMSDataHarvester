@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/assign
@@ -63,18 +63,14 @@ public class Assign extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Assign> builder = DefinitionBuilder.newInstance (Activity.class, Assign.class);
+		MetaDataBuilder<Activity, Assign> builder = MetaDataBuilder.newInstance (Activity.class, Assign.class);
 		builder.setCreateMethod (Assign::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Assign::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Assign::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Assign::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Assign::setName);
-
-		builder.addRelationship ("grades", Grade.class, Assign::addGrade, Assign::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Assign::addLog, Assign::removeLog);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Assign::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Assign::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Assign::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Assign::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "assign");
 	}

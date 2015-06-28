@@ -26,7 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
@@ -62,16 +62,15 @@ public class ${ClassName} extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<SubActivity, ${ClassName}> builder = DefinitionBuilder.newInstance (SubActivity.class, ${ClassName}.class);
+		MetaDataBuilder<SubActivity, ${ClassName}> builder = MetaDataBuilder.newInstance (SubActivity.class, ${ClassName}.class);
 		builder.setCreateMethod (${ClassName}::new);
 		builder.setBuilder (${Builder}.class);
 
-		builder.addUniqueAttribute (SubActivity.Properties.ID, SubActivity::getId, ${ClassName}::setId);
-
-		builder.addAttribute (SubActivity.Properties.PARENT, SubActivity::getParent, ${ClassName}::setParent);
-		builder.addAttribute (SubActivity.Properties.NAME, SubActivity::getName, ${ClassName}::setName);
-
-		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);
+		builder.addProperty (SubActivity.Properties.ID, SubActivity::getId, ${ClassName}::setId);
+		builder.addProperty (SubActivity.Properties.COURSE, SubActivity::getCourse, null);
+		builder.addProperty (SubActivity.Properties.NAME, SubActivity::getName, ${ClassName}::setName);
+		builder.addProperty (SubActivity.Properties.PARENT, SubActivity::getParent, ${ClassName}::setParent);
+		builder.addProperty (SubActivity.Properties.TYPE, SubActivity::getType, null);
 
 		GenericSubActivity.registerActivity (builder.build (), ${ParentClass}.class);
 	}

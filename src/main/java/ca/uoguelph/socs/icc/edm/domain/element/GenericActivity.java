@@ -32,7 +32,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface, for
@@ -59,17 +59,13 @@ public class GenericActivity extends ActivityInstance implements Serializable
 
 	static
 	{
-		DefinitionBuilder<Activity, GenericActivity> builder = DefinitionBuilder.newInstance (Activity.class, GenericActivity.class);
+		MetaDataBuilder<Activity, GenericActivity> builder = MetaDataBuilder.newInstance (Activity.class, GenericActivity.class);
 		builder.setCreateMethod (GenericActivity::new);
 		builder.setBuilder (DefaultGenericActivityBuilder.class);
 
-		builder.addUniqueAttribute (Element.Properties.ID, Element::getId, AbstractElement::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, ActivityInstance::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, ActivityInstance::setType);
-
-		builder.addRelationship ("grades", Grade.class, ActivityInstance::addGrade, ActivityInstance::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, AbstractActivity::addLog, AbstractActivity::removeLog);
+		builder.addProperty (Element.Properties.ID, Element::getId, AbstractElement::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, ActivityInstance::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, ActivityInstance::setType);
 
 		AbstractElement.registerElement (builder.build ());
 	}

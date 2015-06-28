@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
@@ -64,19 +64,14 @@ public class Forum extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Forum> builder = DefinitionBuilder.newInstance (Activity.class, Forum.class);
+		MetaDataBuilder<Activity, Forum> builder = MetaDataBuilder.newInstance (Activity.class, Forum.class);
 		builder.setCreateMethod (Forum::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Forum::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Forum::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Forum::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Forum::setName);
-
-		builder.addRelationship ("grades", Grade.class, Forum::addGrade, Forum::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Forum::addLog, Forum::removeLog);
-		builder.addRelationship ("subactivities", SubActivity.class, Forum::addSubActivity, Forum::removeSubActivity);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Forum::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Forum::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Forum::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Forum::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "forum");
 	}

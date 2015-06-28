@@ -35,7 +35,7 @@ import ca.uoguelph.socs.icc.edm.domain.Semester;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Course</code> interface.  It is expected that
@@ -78,20 +78,14 @@ public class CourseData extends AbstractElement implements Course, Serializable
 
 	static
 	{
-		DefinitionBuilder<Course, CourseData> builder = DefinitionBuilder.newInstance (Course.class, CourseData.class);
+		MetaDataBuilder<Course, CourseData> builder = MetaDataBuilder.newInstance (Course.class, CourseData.class);
 		builder.setCreateMethod (CourseData::new);
 		builder.setBuilder (DefaultCourseBuilder.class);
 
-		builder.addUniqueAttribute (Course.Properties.ID, Course::getId, CourseData::setId);
-
-		builder.addAttribute (Course.Properties.NAME, Course::getName, CourseData::setName);
-		builder.addAttribute (Course.Properties.SEMESTER, Course::getSemester, CourseData::setSemester);
-		builder.addAttribute (Course.Properties.YEAR, Course::getYear, CourseData::setYear);
-
-		builder.addIndex ("offering", Course.Properties.NAME, Course.Properties.SEMESTER, Course.Properties.YEAR);
-
-		builder.addRelationship ("activities", Activity.class, CourseData::addActivity, CourseData::removeActivity);
-		builder.addRelationship ("enrolments", Enrolment.class, CourseData::addEnrolment, CourseData::removeEnrolment);
+		builder.addProperty (Course.Properties.ID, Course::getId, CourseData::setId);
+		builder.addProperty (Course.Properties.NAME, Course::getName, CourseData::setName);
+		builder.addProperty (Course.Properties.SEMESTER, Course::getSemester, CourseData::setSemester);
+		builder.addProperty (Course.Properties.YEAR, Course::getYear, CourseData::setYear);
 
 		AbstractElement.registerElement (builder.build ());
 	}

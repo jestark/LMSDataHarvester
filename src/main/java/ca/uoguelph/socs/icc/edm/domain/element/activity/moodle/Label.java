@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/label
@@ -63,18 +63,14 @@ public class Label extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Label> builder = DefinitionBuilder.newInstance (Activity.class, Label.class);
+		MetaDataBuilder<Activity, Label> builder = MetaDataBuilder.newInstance (Activity.class, Label.class);
 		builder.setCreateMethod (Label::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Label::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Label::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Label::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Label::setName);
-
-		builder.addRelationship ("grades", Grade.class, Label::addGrade, Label::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Label::addLog, Label::removeLog);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Label::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Label::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Label::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Label::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "label");
 	}

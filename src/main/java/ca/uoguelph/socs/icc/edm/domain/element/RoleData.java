@@ -26,7 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Role</code> interface.  It is expected that
@@ -58,12 +58,12 @@ public class RoleData extends AbstractElement implements Role, Serializable
 
 	static
 	{
-		DefinitionBuilder<Role, RoleData> builder = DefinitionBuilder.newInstance (Role.class, RoleData.class);
+		MetaDataBuilder<Role, RoleData> builder = MetaDataBuilder.newInstance (Role.class, RoleData.class);
 		builder.setCreateMethod (RoleData::new);
 		builder.setBuilder (DefaultRoleBuilder.class);
 
-		builder.addUniqueAttribute (Role.Properties.ID, Role::getId, RoleData::setId);
-		builder.addUniqueAttribute (Role.Properties.NAME, Role::getName, RoleData::setName);
+		builder.addProperty (Role.Properties.ID, Role::getId, RoleData::setId);
+		builder.addProperty (Role.Properties.NAME, Role::getName, RoleData::setName);
 
 		AbstractElement.registerElement (builder.build ());
 	}

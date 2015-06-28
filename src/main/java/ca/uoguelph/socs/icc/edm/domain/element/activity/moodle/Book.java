@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/book
@@ -64,19 +64,14 @@ public class Book extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Book> builder = DefinitionBuilder.newInstance (Activity.class, Book.class);
+		MetaDataBuilder<Activity, Book> builder = MetaDataBuilder.newInstance (Activity.class, Book.class);
 		builder.setCreateMethod (Book::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Book::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Book::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Book::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Book::setName);
-
-		builder.addRelationship ("grades", Grade.class, Book::addGrade, Book::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Book::addLog, Book::removeLog);
-		builder.addRelationship ("subactivities", SubActivity.class, Book::addSubActivity, Book::removeSubActivity);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Book::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Book::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Book::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Book::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "book");
 	}

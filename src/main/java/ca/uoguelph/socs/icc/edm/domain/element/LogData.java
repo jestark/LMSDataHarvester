@@ -32,7 +32,7 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>LogEntry</code> interface.  It is expected that
@@ -82,18 +82,18 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 
 	static
 	{
-		DefinitionBuilder<LogEntry, LogData> builder = DefinitionBuilder.newInstance (LogEntry.class, LogData.class);
+		MetaDataBuilder<LogEntry, LogData> builder = MetaDataBuilder.newInstance (LogEntry.class, LogData.class);
 		builder.setCreateMethod (LogData::new);
 		builder.setBuilder (DefaultLogEntryBuilder.class);
 
-		builder.addUniqueAttribute (LogEntry.Properties.ID, LogEntry::getId, LogData::setId);
-
-		builder.addAttribute (LogEntry.Properties.ACTION, LogEntry::getAction, LogData::setAction);
-		builder.addAttribute (LogEntry.Properties.ACTIVITY, LogEntry::getActivity, LogData::setActivity);
-		builder.addAttribute (LogEntry.Properties.ENROLMENT, LogEntry::getEnrolment, LogData::setEnrolment);
-//		builder.addAttribute (LogEntry.Properties.REFERENCE, LogData::getReference, LogData::setReference);
-		builder.addAttribute (LogEntry.Properties.IPADDRESS, LogEntry::getIPAddress, LogData::setIPAddress);
-		builder.addAttribute (LogEntry.Properties.TIME, LogEntry::getTime, LogData::setTime);
+		builder.addProperty (LogEntry.Properties.ID, LogEntry::getId, LogData::setId);
+		builder.addProperty (LogEntry.Properties.ACTION, LogEntry::getAction, LogData::setAction);
+		builder.addProperty (LogEntry.Properties.ACTIVITY, LogEntry::getActivity, LogData::setActivity);
+		builder.addProperty (LogEntry.Properties.COURSE, LogEntry::getCourse, null);
+		builder.addProperty (LogEntry.Properties.ENROLMENT, LogEntry::getEnrolment, LogData::setEnrolment);
+//		builder.addProperty (LogEntry.Properties.REFERENCE, LogData::getReference, LogData::setReference);
+		builder.addProperty (LogEntry.Properties.IPADDRESS, LogEntry::getIPAddress, LogData::setIPAddress);
+		builder.addProperty (LogEntry.Properties.TIME, LogEntry::getTime, LogData::setTime);
 
 		AbstractElement.registerElement (builder.build ());
 	}

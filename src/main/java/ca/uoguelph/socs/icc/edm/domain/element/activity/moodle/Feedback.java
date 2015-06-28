@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/feedback
@@ -63,18 +63,14 @@ public class Feedback extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Feedback> builder = DefinitionBuilder.newInstance (Activity.class, Feedback.class);
+		MetaDataBuilder<Activity, Feedback> builder = MetaDataBuilder.newInstance (Activity.class, Feedback.class);
 		builder.setCreateMethod (Feedback::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Feedback::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Feedback::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Feedback::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Feedback::setName);
-
-		builder.addRelationship ("grades", Grade.class, Feedback::addGrade, Feedback::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Feedback::addLog, Feedback::removeLog);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Feedback::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Feedback::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Feedback::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Feedback::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "feedback");
 	}

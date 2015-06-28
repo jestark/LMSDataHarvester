@@ -30,7 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivitySourceBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>ActivitySource</code> interface.  It is expected
@@ -65,14 +65,12 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 
 	static
 	{
-		DefinitionBuilder<ActivitySource, ActivitySourceData> builder = DefinitionBuilder.newInstance (ActivitySource.class, ActivitySourceData.class);
+		MetaDataBuilder<ActivitySource, ActivitySourceData> builder = MetaDataBuilder.newInstance (ActivitySource.class, ActivitySourceData.class);
 		builder.setCreateMethod (ActivitySourceData::new);
 		builder.setBuilder (DefaultActivitySourceBuilder.class);
 
-		builder.addUniqueAttribute (ActivitySource.Properties.ID, ActivitySource::getId, ActivitySourceData::setId);
-		builder.addUniqueAttribute (ActivitySource.Properties.NAME, ActivitySource::getName, ActivitySourceData::setName);
-
-		builder.addRelationship ("types", ActivityType.class, ActivitySourceData::addType, ActivitySourceData::removeType);
+		builder.addProperty (ActivitySource.Properties.ID, ActivitySource::getId, ActivitySourceData::setId);
+		builder.addProperty (ActivitySource.Properties.NAME, ActivitySource::getName, ActivitySourceData::setName);
 
 		AbstractElement.registerElement (builder.build ());
 	}

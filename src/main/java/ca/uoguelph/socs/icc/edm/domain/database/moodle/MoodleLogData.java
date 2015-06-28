@@ -34,7 +34,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 public class MoodleLogData extends AbstractElement implements LogEntry
 {
@@ -73,14 +73,13 @@ public class MoodleLogData extends AbstractElement implements LogEntry
 
 	static
 	{
-		DefinitionBuilder<LogEntry, MoodleLogData> builder = DefinitionBuilder.newInstance (LogEntry.class, MoodleLogData.class);
+		MetaDataBuilder<LogEntry, MoodleLogData> builder = MetaDataBuilder.newInstance (LogEntry.class, MoodleLogData.class);
 		builder.setCreateMethod (MoodleLogData::new);
 		builder.setBuilder (DefaultLogEntryBuilder.class);
 
-		builder.addUniqueAttribute (LogEntry.Properties.ID, MoodleLogData::getId, MoodleLogData::setId);
-
-		builder.addAttribute (LogEntry.Properties.IPADDRESS, MoodleLogData::getIPAddress, MoodleLogData::setIPAddress);
-		builder.addAttribute (LogEntry.Properties.TIME, MoodleLogData::getTime, MoodleLogData::setTime);
+		builder.addProperty (LogEntry.Properties.ID, MoodleLogData::getId, MoodleLogData::setId);
+		builder.addProperty (LogEntry.Properties.IPADDRESS, MoodleLogData::getIPAddress, MoodleLogData::setIPAddress);
+		builder.addProperty (LogEntry.Properties.TIME, MoodleLogData::getTime, MoodleLogData::setTime);
 
 
 		AbstractElement.registerElement (builder.build ());

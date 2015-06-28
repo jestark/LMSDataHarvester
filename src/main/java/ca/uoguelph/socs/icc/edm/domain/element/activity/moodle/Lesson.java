@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/lesson
@@ -64,19 +64,14 @@ public class Lesson extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Lesson> builder = DefinitionBuilder.newInstance (Activity.class, Lesson.class);
+		MetaDataBuilder<Activity, Lesson> builder = MetaDataBuilder.newInstance (Activity.class, Lesson.class);
 		builder.setCreateMethod (Lesson::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Lesson::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Lesson::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Lesson::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Lesson::setName);
-
-		builder.addRelationship ("grades", Grade.class, Lesson::addGrade, Lesson::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Lesson::addLog, Lesson::removeLog);
-		builder.addRelationship ("subactivities", SubActivity.class, Lesson::addSubActivity, Lesson::removeSubActivity);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Lesson::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Lesson::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Lesson::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Lesson::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "lesson");
 	}

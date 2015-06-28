@@ -24,6 +24,9 @@ import java.util.HashSet;
 
 import java.util.function.Supplier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
@@ -48,6 +51,9 @@ import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 public class MetaData<T extends Element, U extends T>
 {
+	/** The Logger */
+	private final Logger log;
+
 	/** Map of <code>Element</code> interface definitions */
 	private static final Map<Class<? extends Element>, Definition<? extends Element>> elements;
 
@@ -169,7 +175,7 @@ public class MetaData<T extends Element, U extends T>
 	/**
 	 * Create the <code>MetaData</code>.
 	 *
-	 * @param  type       The <code>Element</code> interface class, not null
+	 * @param  element    The <code>Definition</code>, not null
 	 * @param  impl       The <code>Element</code> implementation class, not
 	 *                    null
 	 * @param  builder    The <code>ElementBuilder</code> implementation class,
@@ -180,16 +186,17 @@ public class MetaData<T extends Element, U extends T>
 	 *                    null
 	 */
 
-	@SuppressWarnings ("unchecked")
-	protected MetaData (final Class<T> type, final Class<U> impl, final Class<? extends ElementBuilder<T>> builder, final Supplier<U> create, final Map<Property<?>, PropertyReference<U, ?>> references)
+	protected MetaData (final Definition<T> element, final Class<U> impl, final Class<? extends ElementBuilder<T>> builder, final Supplier<U> create, final Map<Property<?>, PropertyReference<U, ?>> references)
 	{
-		assert type != null : "type is NULL";
+		assert element != null : "element is NULL";
 		assert impl != null : "impl is NULL";
 		assert builder != null : "builder is NULL";
 		assert create != null : "create is NULL";
 		assert references != null : "references is NULL";
 
-		this.element = (Definition<T>) MetaData.elements.get (type);
+		this.log = LoggerFactory.getLogger (MetaData.class);
+
+		this.element = element;
 		this.impl = impl;
 		this.builder = builder;
 
@@ -294,6 +301,8 @@ public class MetaData<T extends Element, U extends T>
 
 	public U createElement ()
 	{
+		this.log.trace ("createElement:");
+
 		return this.create.get ();
 	}
 
@@ -310,6 +319,8 @@ public class MetaData<T extends Element, U extends T>
 
 	public <V> V getValue (final Property<V> property, final U element)
 	{
+		this.log.trace ("getValue: property={}, element={}", property, element);
+
 		assert element != null : "element is NULL";
 		assert property != null : "property is NULL";
 		assert this.references.containsKey (property) : "Property is not registered";
@@ -328,6 +339,8 @@ public class MetaData<T extends Element, U extends T>
 
 	public <V> void setValue (final Property<V> property, final U element, final V value)
 	{
+		this.log.trace ("setValue: property={}, element={}, value={}", property, element, value);
+
 		assert element != null : "element is NULL";
 		assert property != null : "property is NULL";
 		assert this.references.containsKey (property) : "Property is not registered";
@@ -347,6 +360,8 @@ public class MetaData<T extends Element, U extends T>
 
 	public void copyValue (final Property<?> property, final U dest, final U source)
 	{
+		this.log.trace ("copyValue: property={}, dest={}, source={}", property, dest, source);
+
 		assert dest != null : "dest is NULL";
 		assert source != null : "source is NULL";
 		assert property != null : "property is NULL";

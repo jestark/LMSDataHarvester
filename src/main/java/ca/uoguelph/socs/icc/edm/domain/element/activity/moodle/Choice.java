@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/choice
@@ -63,18 +63,14 @@ public class Choice extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Choice> builder = DefinitionBuilder.newInstance (Activity.class, Choice.class);
+		MetaDataBuilder<Activity, Choice> builder = MetaDataBuilder.newInstance (Activity.class, Choice.class);
 		builder.setCreateMethod (Choice::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Choice::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Choice::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Choice::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Choice::setName);
-
-		builder.addRelationship ("grades", Grade.class, Choice::addGrade, Choice::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Choice::addLog, Choice::removeLog);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Choice::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Choice::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Choice::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Choice::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "choice");
 	}

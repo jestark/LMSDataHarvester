@@ -49,13 +49,12 @@ final class PropertyReference<T extends Element, V>
 	 * Create the <code>Reference</code>.
 	 *
 	 * @param  get Method reference to get the value, not null
-	 * @param  set Method reference to set the value, not null
+	 * @param  set Method reference to set the value, may be null
 	 */
 
 	public PropertyReference (final Function<T, V> get, final BiConsumer<T, V> set)
 	{
 		assert get != null : "get method reference is NULL";
-		assert set != null : "set method reference is NULL";
 
 		this.get = get;
 		this.set = set;

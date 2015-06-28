@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/scheduler
@@ -63,18 +63,14 @@ public class Scheduler extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Scheduler> builder = DefinitionBuilder.newInstance (Activity.class, Scheduler.class);
+		MetaDataBuilder<Activity, Scheduler> builder = MetaDataBuilder.newInstance (Activity.class, Scheduler.class);
 		builder.setCreateMethod (Scheduler::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Scheduler::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Scheduler::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Scheduler::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Scheduler::setName);
-
-		builder.addRelationship ("grades", Grade.class, Scheduler::addGrade, Scheduler::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Scheduler::addLog, Scheduler::removeLog);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Scheduler::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Scheduler::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Scheduler::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Scheduler::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "scheduler");
 	}

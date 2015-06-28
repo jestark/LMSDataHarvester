@@ -26,7 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/workshop
@@ -62,16 +62,15 @@ public class WorkshopSubmission extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<SubActivity, WorkshopSubmission> builder = DefinitionBuilder.newInstance (SubActivity.class, WorkshopSubmission.class);
+		MetaDataBuilder<SubActivity, WorkshopSubmission> builder = MetaDataBuilder.newInstance (SubActivity.class, WorkshopSubmission.class);
 		builder.setCreateMethod (WorkshopSubmission::new);
 		builder.setBuilder (DefaultSubActivityBuilder.class);
 
-		builder.addUniqueAttribute (SubActivity.Properties.ID, SubActivity::getId, WorkshopSubmission::setId);
-
-		builder.addAttribute (SubActivity.Properties.PARENT, SubActivity::getParent, WorkshopSubmission::setParent);
-		builder.addAttribute (SubActivity.Properties.NAME, SubActivity::getName, WorkshopSubmission::setName);
-
-		builder.addRelationship ("log", LogEntry.class, WorkshopSubmission::addLog, WorkshopSubmission::removeLog);
+		builder.addProperty (SubActivity.Properties.ID, SubActivity::getId, WorkshopSubmission::setId);
+		builder.addProperty (SubActivity.Properties.COURSE, SubActivity::getCourse, null);
+		builder.addProperty (SubActivity.Properties.NAME, SubActivity::getName, WorkshopSubmission::setName);
+		builder.addProperty (SubActivity.Properties.PARENT, SubActivity::getParent, WorkshopSubmission::setParent);
+		builder.addProperty (SubActivity.Properties.TYPE, SubActivity::getType, null);
 
 		GenericSubActivity.registerActivity (builder.build (), Workshop.class);
 	}

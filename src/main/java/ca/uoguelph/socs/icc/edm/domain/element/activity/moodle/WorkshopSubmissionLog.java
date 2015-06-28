@@ -26,7 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.element.LogReference;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>LogEntry</code> interface for logs referencing
@@ -62,9 +62,18 @@ class WorkshopSubmissionLog extends LogReference
 
 	static
 	{
-		DefinitionBuilder<LogEntry, WorkshopSubmissionLog> builder = DefinitionBuilder.newInstance (LogEntry.class, WorkshopSubmissionLog.class);
+		MetaDataBuilder<LogEntry, WorkshopSubmissionLog> builder = MetaDataBuilder.newInstance (LogEntry.class, WorkshopSubmissionLog.class);
 		builder.setCreateMethod (WorkshopSubmissionLog::new);
 		builder.setBuilder (DefaultLogEntryBuilder.class);
+
+		builder.addProperty (LogEntry.Properties.ID, LogEntry::getId, null);
+		builder.addProperty (LogEntry.Properties.ACTION, LogEntry::getAction, null);
+		builder.addProperty (LogEntry.Properties.ACTIVITY, LogEntry::getActivity, null);
+		builder.addProperty (LogEntry.Properties.COURSE, LogEntry::getCourse, null);
+		builder.addProperty (LogEntry.Properties.ENROLMENT, LogEntry::getEnrolment, null);
+//		builder.addProperty (LogEntry.Properties.REFERENCE, LogData::getReference, LogData::setReference);
+		builder.addProperty (LogEntry.Properties.IPADDRESS, LogEntry::getIPAddress, null);
+		builder.addProperty (LogEntry.Properties.TIME, LogEntry::getTime, null);
 
 //		builder.addAttribute (, WorkshopSubmissionLog::getEntry, WorkshopSubmissionLog::setEntry);
 //		builder.addAttribute (, WorkshopSubmissionLog::getSubActivity, WorkshopSubmissionLog::setSubActivity);

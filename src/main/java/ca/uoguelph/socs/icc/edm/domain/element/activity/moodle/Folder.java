@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/folder
@@ -63,18 +63,14 @@ public class Folder extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Folder> builder = DefinitionBuilder.newInstance (Activity.class, Folder.class);
+		MetaDataBuilder<Activity, Folder> builder = MetaDataBuilder.newInstance (Activity.class, Folder.class);
 		builder.setCreateMethod (Folder::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Folder::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Folder::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Folder::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Folder::setName);
-
-		builder.addRelationship ("grades", Grade.class, Folder::addGrade, Folder::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Folder::addLog, Folder::removeLog);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Folder::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Folder::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Folder::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Folder::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "folder");
 	}

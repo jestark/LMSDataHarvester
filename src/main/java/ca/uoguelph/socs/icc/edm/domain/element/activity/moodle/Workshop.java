@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/workshop
@@ -64,19 +64,14 @@ public class Workshop extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Workshop> builder = DefinitionBuilder.newInstance (Activity.class, Workshop.class);
+		MetaDataBuilder<Activity, Workshop> builder = MetaDataBuilder.newInstance (Activity.class, Workshop.class);
 		builder.setCreateMethod (Workshop::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Workshop::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Workshop::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Workshop::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Workshop::setName);
-
-		builder.addRelationship ("grades", Grade.class, Workshop::addGrade, Workshop::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Workshop::addLog, Workshop::removeLog);
-		builder.addRelationship ("subactivities", SubActivity.class, Workshop::addSubActivity, Workshop::removeSubActivity);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Workshop::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Workshop::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Workshop::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Workshop::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "workshop");
 	}

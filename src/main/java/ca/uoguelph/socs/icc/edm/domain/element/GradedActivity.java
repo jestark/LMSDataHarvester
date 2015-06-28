@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Grade</code> interface.  It is expected that
@@ -63,13 +63,14 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 
 	static
 	{
-		DefinitionBuilder<Grade, GradedActivity> builder = DefinitionBuilder.newInstance (Grade.class, GradedActivity.class);
+		MetaDataBuilder<Grade, GradedActivity> builder = MetaDataBuilder.newInstance (Grade.class, GradedActivity.class);
 		builder.setCreateMethod (GradedActivity::new);
 		builder.setBuilder (DefaultGradeBuilder.class);
 
-		builder.addAttribute (Grade.Properties.ACTIVITY, Grade::getActivity, GradedActivity::setActivity);
-		builder.addAttribute (Grade.Properties.ENROLMENT, Grade::getEnrolment, GradedActivity::setEnrolment);
-		builder.addAttribute (Grade.Properties.GRADE, Grade::getGrade, GradedActivity::setGrade);
+		builder.addProperty (Grade.Properties.ID, Grade::getId, null);
+		builder.addProperty (Grade.Properties.ACTIVITY, Grade::getActivity, GradedActivity::setActivity);
+		builder.addProperty (Grade.Properties.ENROLMENT, Grade::getEnrolment, GradedActivity::setEnrolment);
+		builder.addProperty (Grade.Properties.GRADE, Grade::getGrade, GradedActivity::setGrade);
 
 		AbstractElement.registerElement (builder.build ());
 	}

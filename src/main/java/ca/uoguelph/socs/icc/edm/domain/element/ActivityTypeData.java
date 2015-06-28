@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
@@ -69,18 +69,14 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 
 	static
 	{
-		DefinitionBuilder<ActivityType, ActivityTypeData> builder = DefinitionBuilder.newInstance (ActivityType.class, ActivityTypeData.class);
+		MetaDataBuilder<ActivityType, ActivityTypeData> builder = MetaDataBuilder.newInstance (ActivityType.class, ActivityTypeData.class);
 		builder.setCreateMethod (ActivityTypeData::new);
 		builder.setBuilder (DefaultActivityTypeBuilder.class);
 
-		builder.addUniqueAttribute (ActivityType.Properties.ID, ActivityType::getId, ActivityTypeData::setId);
+		builder.addProperty (ActivityType.Properties.ID, ActivityType::getId, ActivityTypeData::setId);
 
-		builder.addAttribute (ActivityType.Properties.NAME, ActivityType::getName, ActivityTypeData::setName);
-		builder.addAttribute (ActivityType.Properties.SOURCE, ActivityType::getSource, ActivityTypeData::setSource);
-
-		builder.addIndex ("name", ActivityType.Properties.SOURCE, ActivityType.Properties.NAME);
-
-		builder.addRelationship ("actions", Action.class, ActivityTypeData::addAction, ActivityTypeData::removeAction);
+		builder.addProperty (ActivityType.Properties.NAME, ActivityType::getName, ActivityTypeData::setName);
+		builder.addProperty (ActivityType.Properties.SOURCE, ActivityType::getSource, ActivityTypeData::setSource);
 
 		AbstractElement.registerElement (builder.build ());
 	}

@@ -26,7 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/book
@@ -62,16 +62,15 @@ public class BookChapter extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<SubActivity, BookChapter> builder = DefinitionBuilder.newInstance (SubActivity.class, BookChapter.class);
+		MetaDataBuilder<SubActivity, BookChapter> builder = MetaDataBuilder.newInstance (SubActivity.class, BookChapter.class);
 		builder.setCreateMethod (BookChapter::new);
 		builder.setBuilder (DefaultSubActivityBuilder.class);
 
-		builder.addUniqueAttribute (SubActivity.Properties.ID, SubActivity::getId, BookChapter::setId);
-
-		builder.addAttribute (SubActivity.Properties.PARENT, SubActivity::getParent, BookChapter::setParent);
-		builder.addAttribute (SubActivity.Properties.NAME, SubActivity::getName, BookChapter::setName);
-
-		builder.addRelationship ("log", LogEntry.class, BookChapter::addLog, BookChapter::removeLog);
+		builder.addProperty (SubActivity.Properties.ID, SubActivity::getId, BookChapter::setId);
+		builder.addProperty (SubActivity.Properties.COURSE, SubActivity::getCourse, null);
+		builder.addProperty (SubActivity.Properties.NAME, SubActivity::getName, BookChapter::setName);
+		builder.addProperty (SubActivity.Properties.PARENT, SubActivity::getParent, BookChapter::setParent);
+		builder.addProperty (SubActivity.Properties.TYPE, SubActivity::getType, null);
 
 		GenericSubActivity.registerActivity (builder.build (), Book.class);
 	}

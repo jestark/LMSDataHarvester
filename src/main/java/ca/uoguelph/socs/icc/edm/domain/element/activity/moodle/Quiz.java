@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/quiz
@@ -63,18 +63,14 @@ public class Quiz extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Quiz> builder = DefinitionBuilder.newInstance (Activity.class, Quiz.class);
+		MetaDataBuilder<Activity, Quiz> builder = MetaDataBuilder.newInstance (Activity.class, Quiz.class);
 		builder.setCreateMethod (Quiz::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Quiz::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Quiz::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Quiz::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Quiz::setName);
-
-		builder.addRelationship ("grades", Grade.class, Quiz::addGrade, Quiz::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Quiz::addLog, Quiz::removeLog);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Quiz::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Quiz::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Quiz::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Quiz::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "quiz");
 	}

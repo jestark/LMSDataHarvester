@@ -32,7 +32,7 @@ import ca.uoguelph.socs.icc.edm.domain.User;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
@@ -75,18 +75,15 @@ public class UserData extends AbstractElement implements User, Serializable
 
 	static
 	{
-		DefinitionBuilder<User, UserData> builder = DefinitionBuilder.newInstance (User.class, UserData.class);
+		MetaDataBuilder<User, UserData> builder = MetaDataBuilder.newInstance (User.class, UserData.class);
 		builder.setCreateMethod (UserData::new);
 		builder.setBuilder (DefaultUserBuilder.class);
 
-		builder.addUniqueAttribute (User.Properties.ID, User::getId, UserData::setId);
-		builder.addUniqueAttribute (User.Properties.IDNUMBER, User::getIdNumber, UserData::setIdNumber);
-		builder.addUniqueAttribute (User.Properties.USERNAME, User::getUsername, UserData::setUsername);
-
-		builder.addAttribute (User.Properties.FIRSTNAME, User::getFirstname, UserData::setFirstname);
-		builder.addAttribute (User.Properties.LASTNAME, User::getLastname, UserData::setLastname);
-
-		builder.addRelationship ("enrolments", Enrolment.class, UserData::addEnrolment, UserData::removeEnrolment);
+		builder.addProperty (User.Properties.ID, User::getId, UserData::setId);
+		builder.addProperty (User.Properties.IDNUMBER, User::getIdNumber, UserData::setIdNumber);
+		builder.addProperty (User.Properties.USERNAME, User::getUsername, UserData::setUsername);
+		builder.addProperty (User.Properties.FIRSTNAME, User::getFirstname, UserData::setFirstname);
+		builder.addProperty (User.Properties.LASTNAME, User::getLastname, UserData::setLastname);
 
 		AbstractElement.registerElement (builder.build ());
 	}

@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
@@ -64,19 +64,14 @@ public class ${ClassName} extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, ${ClassName}> builder = DefinitionBuilder.newInstance (Activity.class, ${ClassName}.class);
+		MetaDataBuilder<Activity, ${ClassName}> builder = MetaDataBuilder.newInstance (Activity.class, ${ClassName}.class);
 		builder.setCreateMethod (${ClassName}::new);
 		builder.setBuilder (${Builder}.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, ${ClassName}::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, ${ClassName}::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, ${ClassName}::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, ${ClassName}::setName);
-
-		builder.addRelationship ("grades", Grade.class, ${ClassName}::addGrade, ${ClassName}::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, ${ClassName}::addLog, ${ClassName}::removeLog);
-		builder.addRelationship ("subactivities", SubActivity.class, ${ClassName}::addSubActivity, ${ClassName}::removeSubActivity);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, ${ClassName}::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, ${ClassName}::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, ${ClassName}::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, ${ClassName}::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "${ActivitySource}", "${ActivityType}");
 	}

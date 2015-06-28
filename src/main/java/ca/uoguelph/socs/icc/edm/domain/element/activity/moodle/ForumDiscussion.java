@@ -26,7 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
@@ -59,17 +59,15 @@ public class ForumDiscussion extends GenericSubActivity
 
 	static
 	{
-		DefinitionBuilder<SubActivity, ForumDiscussion> builder = DefinitionBuilder.newInstance (SubActivity.class, ForumDiscussion.class);
+		MetaDataBuilder<SubActivity, ForumDiscussion> builder = MetaDataBuilder.newInstance (SubActivity.class, ForumDiscussion.class);
 		builder.setCreateMethod (ForumDiscussion::new);
 		builder.setBuilder (DefaultSubActivityBuilder.class);
 
-		builder.addUniqueAttribute (SubActivity.Properties.ID, SubActivity::getId, ForumDiscussion::setId);
-
-		builder.addAttribute (SubActivity.Properties.PARENT, SubActivity::getParent, ForumDiscussion::setParent);
-		builder.addAttribute (SubActivity.Properties.NAME, SubActivity::getName, ForumDiscussion::setName);
-
-		builder.addRelationship ("log", LogEntry.class, ForumDiscussion::addLog, ForumDiscussion::removeLog);
-		builder.addRelationship ("subactivities", SubActivity.class, ForumDiscussion::addSubActivity, ForumDiscussion::removeSubActivity);
+		builder.addProperty (SubActivity.Properties.ID, SubActivity::getId, ForumDiscussion::setId);
+		builder.addProperty (SubActivity.Properties.COURSE, SubActivity::getCourse, null);
+		builder.addProperty (SubActivity.Properties.NAME, SubActivity::getName, ForumDiscussion::setName);
+		builder.addProperty (SubActivity.Properties.PARENT, SubActivity::getParent, ForumDiscussion::setParent);
+		builder.addProperty (SubActivity.Properties.TYPE, SubActivity::getType, null);
 
 		GenericSubActivity.registerActivity (builder.build (), Forum.class);
 	}

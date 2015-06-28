@@ -30,7 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActionBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Action</code> interface.  It is expected that
@@ -65,14 +65,12 @@ public class ActionData extends AbstractElement implements Action, Serializable
 
 	static
 	{
-		DefinitionBuilder<Action, ActionData> builder = DefinitionBuilder.newInstance (Action.class, ActionData.class);
+		MetaDataBuilder<Action, ActionData> builder = MetaDataBuilder.newInstance (Action.class, ActionData.class);
 		builder.setCreateMethod (ActionData::new);
 		builder.setBuilder (DefaultActionBuilder.class);
 
-		builder.addUniqueAttribute (Action.Properties.ID, Action::getId, ActionData::setId);
-		builder.addUniqueAttribute (Action.Properties.NAME, Action::getName, ActionData::setName);
-
-		builder.addRelationship ("types", ActivityType.class, ActionData::addType, ActionData::removeType);
+		builder.addProperty (Action.Properties.ID, Action::getId, ActionData::setId);
+		builder.addProperty (Action.Properties.NAME, Action::getName, ActionData::setName);
 
 		AbstractElement.registerElement (builder.build ());
 	}

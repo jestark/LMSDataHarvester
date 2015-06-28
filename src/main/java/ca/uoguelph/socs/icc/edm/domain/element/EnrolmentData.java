@@ -36,7 +36,7 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 
 import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Enrolment</code> interface.  It is expected that
@@ -87,19 +87,15 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 
 	static
 	{
-		DefinitionBuilder<Enrolment, EnrolmentData> builder = DefinitionBuilder.newInstance (Enrolment.class, EnrolmentData.class);
+		MetaDataBuilder<Enrolment, EnrolmentData> builder = MetaDataBuilder.newInstance (Enrolment.class, EnrolmentData.class);
 		builder.setCreateMethod (EnrolmentData::new);
 		builder.setBuilder (DefaultEnrolmentBuilder.class);
 
-		builder.addUniqueAttribute (Enrolment.Properties.ID, Enrolment::getId, EnrolmentData::setId);
-
-		builder.addAttribute (Enrolment.Properties.COURSE, Enrolment::getCourse, EnrolmentData::setCourse);
-		builder.addAttribute (Enrolment.Properties.ROLE, Enrolment::getRole, EnrolmentData::setRole);
-		builder.addAttribute (Enrolment.Properties.FINALGRADE, Enrolment::getFinalGrade, EnrolmentData::setFinalGrade);
-		builder.addAttribute (Enrolment.Properties.USABLE, Enrolment::isUsable, EnrolmentData::setUsable);
-
-		builder.addRelationship ("grades", Grade.class, EnrolmentData::addGrade, EnrolmentData::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, EnrolmentData::addLog, EnrolmentData::removeLog);
+		builder.addProperty (Enrolment.Properties.ID, Enrolment::getId, EnrolmentData::setId);
+		builder.addProperty (Enrolment.Properties.COURSE, Enrolment::getCourse, EnrolmentData::setCourse);
+		builder.addProperty (Enrolment.Properties.ROLE, Enrolment::getRole, EnrolmentData::setRole);
+		builder.addProperty (Enrolment.Properties.FINALGRADE, Enrolment::getFinalGrade, EnrolmentData::setFinalGrade);
+		builder.addProperty (Enrolment.Properties.USABLE, Enrolment::isUsable, EnrolmentData::setUsable);
 
 		AbstractElement.registerElement (builder.build ());
 	}

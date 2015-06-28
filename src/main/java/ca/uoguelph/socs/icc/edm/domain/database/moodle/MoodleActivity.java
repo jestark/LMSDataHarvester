@@ -32,7 +32,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivityInstance;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Moodle specific implementation of the core <code>Activity</code> data.
@@ -76,17 +76,14 @@ public class MoodleActivity extends ActivityInstance
 
 	static
 	{
-		DefinitionBuilder<Activity, MoodleActivity> builder = DefinitionBuilder.newInstance (Activity.class, MoodleActivity.class);
+		MetaDataBuilder<Activity, MoodleActivity> builder = MetaDataBuilder.newInstance (Activity.class, MoodleActivity.class);
 		builder.setCreateMethod (MoodleActivity::new);
 		builder.setBuilder (DefaultGenericActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, MoodleActivity::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, MoodleActivity::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, MoodleActivity::setType);
-
-		builder.addRelationship ("grades", Grade.class, MoodleActivity::addGrade, MoodleActivity::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, MoodleActivity::addLog, MoodleActivity::removeLog);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, MoodleActivity::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, MoodleActivity::setCourse);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, null);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, MoodleActivity::setType);
 
 		AbstractElement.registerElement (builder.build ());
 	}

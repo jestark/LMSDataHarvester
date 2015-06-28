@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/url
@@ -63,18 +63,14 @@ public class URL extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, URL> builder = DefinitionBuilder.newInstance (Activity.class, URL.class);
+		MetaDataBuilder<Activity, URL> builder = MetaDataBuilder.newInstance (Activity.class, URL.class);
 		builder.setCreateMethod (URL::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, URL::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, URL::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, URL::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, URL::setName);
-
-		builder.addRelationship ("grades", Grade.class, URL::addGrade, URL::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, URL::addLog, URL::removeLog);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, URL::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, URL::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, URL::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, URL::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "url");
 	}

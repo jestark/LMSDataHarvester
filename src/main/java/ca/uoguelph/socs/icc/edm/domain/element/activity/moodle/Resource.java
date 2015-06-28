@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.DefinitionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/resource
@@ -63,18 +63,14 @@ public class Resource extends GenericNamedActivity
 
 	static
 	{
-		DefinitionBuilder<Activity, Resource> builder = DefinitionBuilder.newInstance (Activity.class, Resource.class);
+		MetaDataBuilder<Activity, Resource> builder = MetaDataBuilder.newInstance (Activity.class, Resource.class);
 		builder.setCreateMethod (Resource::new);
 		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
-		builder.addUniqueAttribute (Activity.Properties.ID, Activity::getId, Resource::setId);
-
-		builder.addAttribute (Activity.Properties.COURSE, Activity::getCourse, Resource::setCourse);
-		builder.addAttribute (Activity.Properties.TYPE, Activity::getType, Resource::setType);
-		builder.addAttribute (Activity.Properties.NAME, Activity::getName, Resource::setName);
-
-		builder.addRelationship ("grades", Grade.class, Resource::addGrade, Resource::removeGrade);
-		builder.addRelationship ("log", LogEntry.class, Resource::addLog, Resource::removeLog);
+		builder.addProperty (Activity.Properties.ID, Activity::getId, Resource::setId);
+		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Resource::setCourse);
+		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Resource::setType);
+		builder.addProperty (Activity.Properties.NAME, Activity::getName, Resource::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "resource");
 	}
