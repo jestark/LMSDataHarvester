@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
  * A representation of the source of a <code>Activity</code> in the domain
@@ -59,6 +60,19 @@ public interface ActivitySource extends Element
 	{
 		/** The name of the <code>ActivitySource</code> */
 		public static final Property<String> NAME = Property.getInstance (ActivitySource.class, String.class, "name", false, true);
+	}
+
+	/**
+	 * Constants representing all of the selectors of an
+	 * <code>ActivitySource</code>.  A <code>Selector</code> represents the
+	 * <code>Set</code> of <code>Property</code> instances used to load an
+	 * <code>ActivitySource</code> from the <code>DataStore</code>.
+	 */
+
+	public static class Selectors extends Element.Selectors
+	{
+		/** Select an <code>ActivitySource</code> instance by its name */
+		public static final Selector NAME = Selector.getInstance (ActivitySource.class, true, ActivitySource.Properties.NAME);
 	}
 
 	/**

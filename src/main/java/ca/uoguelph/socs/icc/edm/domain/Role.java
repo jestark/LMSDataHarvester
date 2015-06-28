@@ -17,6 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
  * A representation of the role of a user in a particular <code>Course</code>.
@@ -52,6 +53,19 @@ public interface Role extends Element
 	{
 		/** The name of the <code>Role</code> */
 		public static final Property<String> NAME = Property.getInstance (Role.class, String.class, "name", false, true);
+	}
+
+	/**
+	 * Constants representing all of the selectors of an <code>Role</code>.  A
+	 * <code>Selector</code> represents the <code>Set</code> of
+	 * <code>Property</code> instances used to load an <code>Role</code> from
+	 * the <code>DataStore</code>.
+	 */
+
+	public static class Selectors extends Element.Selectors
+	{
+		/** Select an <code>Role</code> instance by its name */
+		public static final Selector NAME = Selector.getInstance (Role.class, true, Role.Properties.NAME);
 	}
 
 	/**

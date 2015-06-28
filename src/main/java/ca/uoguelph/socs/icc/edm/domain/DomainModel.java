@@ -374,8 +374,6 @@ public final class DomainModel
 
 				builder.load (element);
 				result = builder.build ();
-
-				// FIXME: Add element == result to the translation table.
 			}
 		}
 

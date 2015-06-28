@@ -138,42 +138,6 @@ public final class DomainModelBuilder
 	}
 
 	/**
-	 * Determine if the <code>DataStore</code> contains a representation of a
-	 * given domain model interface.
-	 *
-	 * @param  element Domain model interface class, not null
-	 * @return         <code>true</code> if the <code>DataStore</code> contains
-	 *                 a representation of the specified domain model
-	 *                 interface, <code>false</code> otherwise
-	 */
-
-	public Boolean isAvailable (Class<? extends Element> element)
-	{
-		Boolean available = null;
-
-		try
-		{
-			available = this.profile.isAvailable (element);
-		}
-		catch (NullPointerException ex)
-		{
-			this.log.error (ex.getMessage ());
-			throw ex;
-		}
-		catch (IllegalArgumentException ex)
-		{
-			this.log.debug (ex.getMessage ());
-		}
-
-		return available;
-	}
-
-	public Boolean isAvailable (DomainModelType element)
-	{
-		return this.isAvailable (element.getInterfaceClass ());
-	}
-
-	/**
 	 * Get the <code>DataStore</code> ID generation class for the specified
 	 * domain model interface.
 	 *
@@ -200,11 +164,6 @@ public final class DomainModelBuilder
 		}
 
 		return generator;
-	}
-
-	public Class<? extends IdGenerator> getGenerator (DomainModelType element)
-	{
-		return this.getGenerator (element.getInterfaceClass ());
 	}
 
 	/**
@@ -235,47 +194,6 @@ public final class DomainModelBuilder
 		}
 
 		return impl;
-	}
-
-	public Class<? extends Element> getImplClass (DomainModelType element)
-	{
-		return this.getImplClass (element.getInterfaceClass ());
-	}
-
-	/**
-	 * Get the <code>ElementLoader</code> implementation used to access the
-	 * <code>DataStore</code> for the specified domain model interface.
-	 *
-	 * @param  element                  Domain model interface class, not null
-	 * @return                          The class used to represent the
-	 *                                  interface in the <code>DataStore</code>
-	 * @throws IllegalArgumentException if the element is not in the profile
-	 */
-
-	public Class<? extends ElementLoader<? extends Element>> getLoaderClass (Class<? extends Element> element)
-	{
-		Class<? extends ElementLoader<? extends Element>> loader = null;
-
-		try
-		{
-			loader = this.profile.getLoaderClass (element);
-		}
-		catch (NullPointerException ex)
-		{
-			this.log.error (ex.getMessage ());
-			throw ex;
-		}
-		catch (IllegalArgumentException ex)
-		{
-			this.log.debug (ex.getMessage ());
-		}
-
-		return loader;
-	}
-
-	public Class<? extends ElementLoader<? extends Element>> getLoaderClass (DomainModelType element)
-	{
-		return this.getLoaderClass (element.getInterfaceClass ());
 	}
 
 	/**

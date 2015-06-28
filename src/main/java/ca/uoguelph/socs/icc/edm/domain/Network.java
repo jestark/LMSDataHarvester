@@ -17,6 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
  * A representation the network from which logged <code>Action</code> originated.
@@ -39,6 +40,19 @@ public interface Network extends Element
 	{
 		/** The name of the <code>Network</code> */
 		public static final Property<String> NAME = Property.getInstance (Network.class, String.class, "name", false, true);
+	}
+
+	/**
+	 * Constants representing all of the selectors of an <code>Network</code>.
+	 * A <code>Selector</code> represents the <code>Set</code> of
+	 * <code>Property</code> instances used to load an <code>Network</code>
+	 * from the <code>DataStore</code>.
+	 */
+
+	public static class Selectors extends Element.Selectors
+	{
+		/** Select an <code>Network</code> instance by its name */
+		public static final Selector NAME = Selector.getInstance (Network.class, true, Network.Properties.NAME);
 	}
 
 	/**

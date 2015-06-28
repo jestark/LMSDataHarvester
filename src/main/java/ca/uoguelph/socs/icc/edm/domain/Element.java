@@ -17,6 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
  * Root level interface for all of the elements of the domain model.  The
@@ -44,6 +45,22 @@ public interface Element
 	{
 		/** The <code>DataStore</code> identifier of the <code>Element</code> */
 		public static final Property<Long> ID = Property.getInstance (Element.class, Long.class, "id", false, false);
+	}
+
+	/**
+	 * Constants representing all of the selectors of an <code>Element</code>.
+	 * A <code>Selector</code> represents the <code>Set</code> of
+	 * <code>Property</code> instances used to load an <code>Element</code>
+	 * from the <code>DataStore</code>.
+	 */
+
+	public static class Selectors
+	{
+		/** Select the <code>Element</code> instance by its id */
+		public static final Selector ID = Selector.getInstance (Element.class, true, Element.Properties.ID);
+
+		/** Select all of the <code>Element</code> instances */
+		public static final Selector ALL = Selector.getInstance (Element.class);
 	}
 
 	/**

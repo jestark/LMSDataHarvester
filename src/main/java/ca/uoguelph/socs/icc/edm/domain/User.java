@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
  * A representation of a user within the domain model.  Classes implementing
@@ -66,6 +67,22 @@ public interface User extends Element
 
 		/** The username of the <code>User</code> */
 		public static final Property<String> USERNAME = Property.getInstance (User.class, String.class, "username", false, true);
+	}
+
+	/**
+	 * Constants representing all of the selectors of an <code>User</code>.  A
+	 * <code>Selector</code> represents the <code>Set</code> of
+	 * <code>Property</code> instances used to load an <code>User</code> from
+	 * the <code>DataStore</code>.
+	 */
+
+	public static class Selectors extends Element.Selectors
+	{
+		/** Select an <code>User</code> instance by its id number */
+		public static final Selector IDNUMBER = Selector.getInstance (User.class, true, User.Properties.IDNUMBER);
+
+		/** Select an <code>User</code> instance by its username */
+		public static final Selector USERNAME = Selector.getInstance (User.class, true, User.Properties.USERNAME);
 	}
 
 	/**

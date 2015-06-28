@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
  * A representation of a course within the domain model.  Instances of the
@@ -65,6 +66,19 @@ public interface Course extends Element
 
 		/** The year of offering for the <code>Course</code> */
 		public static final Property<Integer> YEAR = Property.getInstance (Course.class, Integer.class, "year", false, true);
+	}
+
+	/**
+	 * Constants representing all of the selectors of an <code>Course</code>.  A
+	 * <code>Selector</code> represents the <code>Set</code> of
+	 * <code>Property</code> instances used to load an <code>Course</code> from
+	 * the <code>DataStore</code>.
+	 */
+
+	public static class Selectors extends Element.Selectors
+	{
+		/** Select an <code>Course</code> instance by its name and date of offering */
+		public static final Selector OFFERING = Selector.getInstance (Course.class, "offering", true, Course.Properties.NAME, Course.Properties.SEMESTER, Course.Properties.YEAR);
 	}
 
 	/**

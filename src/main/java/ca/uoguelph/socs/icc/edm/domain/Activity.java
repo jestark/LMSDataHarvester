@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
  * A representation of the content of a <code>Course</code>.  All of the
@@ -78,6 +79,19 @@ public interface Activity extends Element
 
 		/** The name of the <code>Activity</code> */
 		public static final Property<String> NAME = Property.getInstance (Activity.class, String.class, "name", false, true);
+	}
+
+	/**
+	 * Constants representing all of the selectors of an <code>Activity</code>.  A
+	 * <code>Selector</code> represents the <code>Set</code> of
+	 * <code>Property</code> instances used to load an <code>Activity</code> from
+	 * the <code>DataStore</code>.
+	 */
+
+	public static class Selectors extends Element.Selectors
+	{
+		/** Select all <code>Activity</code> instances by <code>ActivityType</code> */
+		public static final Selector TYPE = Selector.getInstance (Activity.class, false, Activity.Properties.TYPE);
 	}
 
 	/**

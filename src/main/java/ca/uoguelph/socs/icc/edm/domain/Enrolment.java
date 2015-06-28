@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
  * A representation of the participation of a particular <code>User</code> in a
@@ -89,6 +90,19 @@ public interface Enrolment extends Element
 
 		/** Has consent been given to use this data for research */
 		public static final Property<Boolean> USABLE = Property.getInstance (Enrolment.class, Boolean.class, "usable", true, true);
+	}
+
+	/**
+	 * Constants representing all of the selectors of an <code>Enrolment</code>.  A
+	 * <code>Selector</code> represents the <code>Set</code> of
+	 * <code>Property</code> instances used to load an <code>Enrolment</code> from
+	 * the <code>DataStore</code>.
+	 */
+
+	public static class Selectors extends Element.Selectors
+	{
+		/** Select all <code>Enrolment</code> by <code>Role</code>*/
+		public static final Selector ROLE = Selector.getInstance (Enrolment.class, false, Enrolment.Properties.ROLE);
 	}
 
 	/**

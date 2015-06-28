@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
  * A representation of a child element in a hierarchy of <code>Activity</code>
@@ -41,6 +42,15 @@ public interface SubActivity extends Activity
 		/** The parent <code>Activity</code> */
 		public static final Property<Activity> PARENT = Property.getInstance (SubActivity.class, Activity.class, "parent", false, true);
 	}
+
+	/**
+	 * Constants representing all of the selectors of an
+	 * <code>SubActivity</code>.  A <code>Selector</code> represents the
+	 * <code>Set</code> of <code>Property</code> instances used to load an
+	 * <code>Grade</code> from the <code>DataStore</code>.
+	 */
+
+	public static class Selectors extends Element.Selectors {}
 
 	/**
 	 * Get the parent <code>Activity</code> instance for the

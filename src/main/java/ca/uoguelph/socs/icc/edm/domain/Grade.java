@@ -17,6 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
  * A representation of the grade received by a <code>User</code> for a
@@ -62,6 +63,15 @@ public interface Grade extends Element
 		/** The assigned grade */
 		public static final Property<Integer> GRADE = Property.getInstance (Grade.class, Integer.class, "grade", true, true);
 	}
+
+	/**
+	 * Constants representing all of the selectors of an <code>Grade</code>.  A
+	 * <code>Selector</code> represents the <code>Set</code> of
+	 * <code>Property</code> instances used to load an <code>Grade</code> from
+	 * the <code>DataStore</code>.
+	 */
+
+	public static class Selectors extends Element.Selectors {}
 
 	/**
 	 * Get the name of the <code>Enrolment</code> to which the
