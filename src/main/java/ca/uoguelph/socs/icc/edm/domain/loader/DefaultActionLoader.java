@@ -73,7 +73,7 @@ public final class DefaultActionLoader extends AbstractLoader<Action> implements
 			throw new NullPointerException ();
 		}
 
-		Query<Action> query = this.fetchQuery ("name");
+		Query<Action> query = this.fetchQuery (Action.Selectors.NAME);
 		query.setProperty (Action.Properties.NAME, name);
 
 		return query.query ();

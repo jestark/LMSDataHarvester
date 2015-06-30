@@ -29,9 +29,11 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.ElementLoader;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.AbstractQuery;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
+import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
  * Top level interface for all operations involving the domain model and the
@@ -151,15 +153,15 @@ public abstract class AbstractLoader<T extends Element> implements ElementLoader
 	 * @return      The <code>Query</code> instance
 	 */
 
-	protected final Query<T> fetchQuery (final String name, final Class<? extends Element> impl)
+	protected final Query<T> fetchQuery (final Selector selector, final Class<? extends Element> impl)
 	{
-		this.log.trace ("fetchQuery: name={}, impl={}", name, impl);
+		this.log.trace ("fetchQuery: selector={}, impl={}", selector, impl);
 
-		assert name != null : "name is NULL";
+		assert selector != null : "selector is NULL";
 		assert impl != null : "impl is NULL";
 		assert this.type.isAssignableFrom (impl) : "impl does not extend " + this.type.getSimpleName ();
 
-		return this.datastore.getQuery (name, impl);
+		return AbstractQuery.getInstance (this.datastore, selector, impl);
 	}
 
 	/**
@@ -173,13 +175,13 @@ public abstract class AbstractLoader<T extends Element> implements ElementLoader
 	 * @return The <code>Query</code> instance
 	 */
 
-	protected final Query<T> fetchQuery (final String name)
+	protected final Query<T> fetchQuery (final Selector selector)
 	{
-		this.log.trace ("fetchQuery: name={}", name);
+		this.log.trace ("fetchQuery: selector={}", selector);
 
-		assert name != null : "name is NULL";
+		assert selector != null : "name is NULL";
 
-		return this.fetchQuery (name, this.datastore.getElementClass (this.type));
+		return this.fetchQuery (selector, this.datastore.getElementClass (this.type));
 	}
 
 	/**
@@ -203,7 +205,10 @@ public abstract class AbstractLoader<T extends Element> implements ElementLoader
 			throw new NullPointerException ();
 		}
 
-		return this.datastore.fetch (this.datastore.getElementClass (this.type), id);
+		Query<T> query = this.fetchQuery (Element.Selectors.ID);
+		query.setProperty (Element.Properties.ID, id);
+
+		return query.query ();
 	}
 
 	/**
@@ -218,6 +223,6 @@ public abstract class AbstractLoader<T extends Element> implements ElementLoader
 	{
 		this.log.trace ("fetchAll:");
 
-		return (this.fetchQuery ("all")).queryAll ();
+		return (this.fetchQuery (Element.Selectors.ALL)).queryAll ();
 	}
 }

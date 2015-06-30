@@ -79,7 +79,7 @@ public final class DefaultLogEntryLoader extends AbstractLoader<LogEntry> implem
 			throw new NullPointerException ();
 		}
 
-		Query<LogEntry> query = this.fetchQuery ("course");
+		Query<LogEntry> query = this.fetchQuery (LogEntry.Selectors.COURSE);
 		query.setProperty (LogEntry.Properties.COURSE, course);
 
 		return query.queryAll ();

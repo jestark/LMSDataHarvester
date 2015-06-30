@@ -56,51 +56,6 @@ public final class DefaultCourseLoader extends AbstractLoader<Course> implements
 		super (Course.class, datastore);
 	}
 
-	/**
-	 *  Retrieve a <code>List</code> of <code>Course</code> instances from the
-	 * <code>DataStore</code> based on the time of offering.
-	 *
-	 * @param  semester The <code>Semester</code> of offering, not null
-	 * @param  year     The year of offering, not null
-	 *
-	 * @return          A <code>List</code> of <code>Course</code> instances
-	 */
-
-//	@Override
-	public List<Course> fetchAllForOffering (final Semester semester, final Integer year)
-	{
-		this.log.trace ("fetchAllForOffering: semester={}, year={}", semester, year);
-
-		if (semester == null)
-		{
-			this.log.error ("The specified semester is NULL");
-			throw new NullPointerException ();
-		}
-
-		if (year == null)
-		{
-			this.log.error ("The specified year is NULL");
-			throw new NullPointerException ();
-		}
-
-		Query<Course> query = this.fetchQuery ("allsemester");
-		query.setProperty (Course.Properties.SEMESTER, semester);
-		query.setProperty (Course.Properties.YEAR, year);
-
-		return query.queryAll ();
-	}
-
-	/**
-	 * Retrieve a <code>Course</code> from the <code>DataStore</code> based on
-	 * its name and time of offering.
-	 *
-	 * @param  name     The name of the <code>Course</code>, not null
-	 * @param  semester The <code>Semester</code> of offering, not null
-	 * @param  year     The year of offering, not null
-	 *
-	 * @return          A single <code>Course</code> object
-	 */
-
 	@Override
 	public Course fetchByOffering (final String name, final Semester semester, final Integer year)
 	{
@@ -124,7 +79,7 @@ public final class DefaultCourseLoader extends AbstractLoader<Course> implements
 			throw new NullPointerException ();
 		}
 
-		Query<Course> query = this.fetchQuery ("offering");
+		Query<Course> query = this.fetchQuery (Course.Selectors.OFFERING);
 		query.setProperty (Course.Properties.SEMESTER, semester);
 		query.setProperty (Course.Properties.YEAR, year);
 		query.setProperty (Course.Properties.NAME, name);

@@ -76,7 +76,7 @@ public final class DefaultActivitySourceLoader extends AbstractLoader<ActivitySo
 			throw new NullPointerException ();
 		}
 
-		Query<ActivitySource> query = this.fetchQuery ("name");
+		Query<ActivitySource> query = this.fetchQuery (ActivitySource.Selectors.NAME);
 		query.setProperty (ActivitySource.Properties.NAME, name);
 
 		return query.query ();

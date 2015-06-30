@@ -70,7 +70,7 @@ public final class DefaultActivityLoader extends AbstractLoader<Activity> implem
 			throw new NullPointerException ();
 		}
 
-		Query<Activity> query = this.fetchQuery ("all", AbstractActivity.getActivityClass (type));
+		Query<Activity> query = this.fetchQuery (Activity.Selectors.ALL, AbstractActivity.getActivityClass (type));
 
 		return query.queryAll ();
 	}

@@ -78,7 +78,7 @@ public final class DefaultEnrolmentLoader extends AbstractLoader<Enrolment> impl
 			throw new NullPointerException ();
 		}
 
-		Query<Enrolment> query = this.fetchQuery ("role");
+		Query<Enrolment> query = this.fetchQuery (Enrolment.Selectors.ROLE);
 		query.setProperty (Enrolment.Properties.ROLE, role);
 
 		return query.queryAll ();

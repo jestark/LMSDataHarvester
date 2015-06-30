@@ -73,7 +73,7 @@ public final class DefaultRoleLoader extends AbstractLoader<Role> implements Rol
 			throw new NullPointerException ();
 		}
 
-		Query<Role> query = this.fetchQuery ("name");
+		Query<Role> query = this.fetchQuery (Role.Selectors.NAME);
 		query.setProperty (Role.Properties.NAME, name);
 
 		return query.query ();

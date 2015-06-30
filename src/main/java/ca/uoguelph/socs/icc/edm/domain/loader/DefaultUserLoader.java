@@ -77,7 +77,7 @@ public final class DefaultUserLoader extends AbstractLoader<User> implements Use
 			throw new NullPointerException ();
 		}
 
-		Query<User> query = this.fetchQuery ("idnumber");
+		Query<User> query = this.fetchQuery (User.Selectors.IDNUMBER);
 		query.setProperty (User.Properties.IDNUMBER, idnumber);
 
 		return query.query ();
@@ -104,7 +104,7 @@ public final class DefaultUserLoader extends AbstractLoader<User> implements Use
 			throw new NullPointerException ();
 		}
 
-		Query<User> query = this.fetchQuery ("username");
+		Query<User> query = this.fetchQuery (User.Selectors.USERNAME);
 		query.setProperty (User.Properties.USERNAME, username);
 
 		return query.query ();
@@ -132,9 +132,9 @@ public final class DefaultUserLoader extends AbstractLoader<User> implements Use
 			throw new NullPointerException ();
 		}
 
-		Query<User> query = this.fetchQuery ("enrolment");
+//		Query<User> query = this.fetchQuery ("enrolment");
 //		query.setProperty (query.getProperty ("enrolment", Enrolment.class), enrolment);
 
-		return query.query ();
+		return null; // query.query ();
 	}
 }
