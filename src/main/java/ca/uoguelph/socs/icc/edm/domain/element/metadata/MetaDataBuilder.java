@@ -63,7 +63,7 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 	private Supplier<U> create;
 
 	/** <code>Property</code> to <code>PropertyReference</code> mapping */
-	private final Map<Property<?>, PropertyReference<U, ?>> refs;
+	private final Map<Property<?>, PropertyReference<T, U, ?>> refs;
 
 	/**
 	 * Create the <code>MetaDataBuilder</code>.
@@ -112,7 +112,7 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 		assert this.definition != null : "Element Definition is not Registered";
 		this.properties = this.definition.getProperties ();
 
-		this.refs = new HashMap<Property<?>, PropertyReference<U, ?>> ();
+		this.refs = new HashMap<Property<?>, PropertyReference<T, U, ?>> ();
 	}
 
 	/**
@@ -212,7 +212,7 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 	 * @param  set      Method reference to set the value, may be null
 	 */
 
-	public <V> void addProperty (final Property<V> property, final Function<U, V> get, final BiConsumer<U, V> set)
+	public <V> void addProperty (final Property<V> property, final Function<T, V> get, final BiConsumer<U, V> set)
 	{
 		this.log.trace ("addProperty: property={}, get={}, set={}", property, get, set);
 
@@ -220,7 +220,7 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 		assert get != null : "get is NULL";
 		assert this.properties.contains (property) : "property is not registered for Element";
 
-		this.refs.put (property, new PropertyReference<U, V> (get, set));
+		this.refs.put (property, new PropertyReference<T, U, V> (get, set));
 	}
 
 	/**

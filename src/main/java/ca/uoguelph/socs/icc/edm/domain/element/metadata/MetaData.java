@@ -24,6 +24,8 @@ import java.util.HashSet;
 
 import java.util.function.Supplier;
 
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +75,7 @@ public class MetaData<T extends Element, U extends T>
 	private final Set<Property<?>> properties;
 
 	/** <code>Property</code> to <code>Reference</code> instance mapping */
-	private final Map<Property<?>, PropertyReference<U, ?>> references;
+	private final Map<Property<?>, PropertyReference<T, U, ?>> references;
 
 	/**
 	 * Static initializer to create the elements <code>Map</code>
@@ -186,7 +188,7 @@ public class MetaData<T extends Element, U extends T>
 	 *                    null
 	 */
 
-	protected MetaData (final Definition<T> element, final Class<U> impl, final Class<? extends ElementBuilder<T>> builder, final Supplier<U> create, final Map<Property<?>, PropertyReference<U, ?>> references)
+	protected MetaData (final Definition<T> element, final Class<U> impl, final Class<? extends ElementBuilder<T>> builder, final Supplier<U> create, final Map<Property<?>, PropertyReference<T, U, ?>> references)
 	{
 		assert element != null : "element is NULL";
 		assert impl != null : "impl is NULL";
@@ -202,18 +204,15 @@ public class MetaData<T extends Element, U extends T>
 
 		this.create = create;
 
-		this.properties = new HashSet<Property<?>> ();
 		this.references = references;
 
 		assert (this.element.getProperties ()).equals (this.references.keySet ()) : "Mismatch between Property and reference definitions";
 
-		for (Property<?> property: references.keySet ())
-		{
-			if ((this.references.get (property)).isWritable ())
-			{
-				this.properties.add (property);
-			}
-		}
+		this.properties = this.references.entrySet ()
+			.stream ()
+			.filter ((x) -> x.getValue ().isWritable ())
+			.map ((x) -> x.getKey ())
+			.collect (Collectors.toSet ());
 	}
 
 	/**
@@ -228,12 +227,12 @@ public class MetaData<T extends Element, U extends T>
 	 */
 
 	@SuppressWarnings ("unchecked")
-	private <V> PropertyReference<U, V> getReference (final Property<V> property)
+	private <V> PropertyReference<T, U, V> getReference (final Property<V> property)
 	{
 		assert property != null : "reference is NULL";
 		assert this.references.containsKey (property) : "Property is not registered";
 
-		return (PropertyReference<U, V>) this.references.get (property);
+		return (PropertyReference<T, U, V>) this.references.get (property);
 	}
 
 	/**
@@ -317,7 +316,7 @@ public class MetaData<T extends Element, U extends T>
 	 *                  the <code>Element</code>
 	 */
 
-	public <V> V getValue (final Property<V> property, final U element)
+	public <V> V getValue (final Property<V> property, final T element)
 	{
 		this.log.trace ("getValue: property={}, element={}", property, element);
 
@@ -358,7 +357,7 @@ public class MetaData<T extends Element, U extends T>
 	 * @param  source   The source <code>Element</code>, not null
 	 */
 
-	public void copyValue (final Property<?> property, final U dest, final U source)
+	public void copyValue (final Property<?> property, final U dest, final T source)
 	{
 		this.log.trace ("copyValue: property={}, dest={}, source={}", property, dest, source);
 

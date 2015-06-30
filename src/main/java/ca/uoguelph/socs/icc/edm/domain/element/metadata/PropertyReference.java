@@ -37,13 +37,13 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @param  <V> The type of the value stored in the <code>Element</code>
  */
 
-final class PropertyReference<T extends Element, V>
+final class PropertyReference<T extends Element, U extends T, V>
 {
 	/** Method reference to getting values */
 	final Function<T, V> get;
 
 	/** Method reference for setting values */
-	final BiConsumer<T, V> set;
+	final BiConsumer<U, V> set;
 
 	/**
 	 * Create the <code>Reference</code>.
@@ -52,7 +52,7 @@ final class PropertyReference<T extends Element, V>
 	 * @param  set Method reference to set the value, may be null
 	 */
 
-	public PropertyReference (final Function<T, V> get, final BiConsumer<T, V> set)
+	public PropertyReference (final Function<T, V> get, final BiConsumer<U, V> set)
 	{
 		assert get != null : "get method reference is NULL";
 
@@ -95,7 +95,7 @@ final class PropertyReference<T extends Element, V>
 	 * @param  value    The value to be set, may be null
 	 */
 
-	public void setValue (final T element, final V value)
+	public void setValue (final U element, final V value)
 	{
 		assert element != null : "element is NULL";
 		assert this.isWritable () : "element is Read-Only";
@@ -111,7 +111,7 @@ final class PropertyReference<T extends Element, V>
 	 * @param  source   The source <code>Element</code>, not null
 	 */
 
-	public void copyValue (final T dest, final T source)
+	public void copyValue (final U dest, final T source)
 	{
 		assert dest != null : "dest is NULL";
 		assert source != null : "source is NULL";
