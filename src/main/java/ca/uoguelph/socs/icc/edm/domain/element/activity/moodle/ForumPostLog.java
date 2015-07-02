@@ -21,8 +21,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.element.LogReference;
 
@@ -64,7 +62,6 @@ class ForumPostLog extends LogReference
 	{
 		MetaDataBuilder<LogEntry, ForumPostLog> builder = MetaDataBuilder.newInstance (LogEntry.class, ForumPostLog.class);
 		builder.setCreateMethod (ForumPostLog::new);
-		builder.setBuilder (DefaultLogEntryBuilder.class);
 
 		builder.addProperty (LogEntry.Properties.ID, LogEntry::getId, null);
 		builder.addProperty (LogEntry.Properties.ACTION, LogEntry::getAction, null);

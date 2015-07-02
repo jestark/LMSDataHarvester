@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,137 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
+ * Create new <code>LogEntry</code> instances.  This class extends
+ * <code>AbstractBuilder</code>, adding the functionality required to
+ * create <code>LogEntry</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
+ * @see     LogEntry
  */
 
-public interface LogEntryBuilder extends ElementBuilder<LogEntry>
+public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 {
+	/**
+	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>LogEntryBuilder</code> instance
+	 */
+
+	public static LogEntryBuilder getInstance (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new LogEntryBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (LogEntry.class)));
+	}
+
+	/**
+	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
+	 * <code>DataStore</code>, loaded with the data from the specified
+	 * <code>LogEntry</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  entry     The <code>LogEntry</code>, not null
+	 *
+	 * @return           The <code>LogEntryBuilder</code> instance
+	 */
+
+	public static LogEntryBuilder getInstance (final DataStore datastore, LogEntry entry)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert entry != null : "entry is NULL";
+
+		LogEntryBuilder builder = LogEntryBuilder.getInstance (datastore);
+		builder.load (entry);
+
+		return builder;
+	}
+
+	/**
+	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>LogEntryBuilder</code> instance
+	 */
+
+
+	public static LogEntryBuilder getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return LogEntryBuilder.getInstance (model.getDataStore ());
+	}
+
+	/**
+	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
+	 * <code>DomainModel</code>, loaded with the data from the specified
+	 * <code>LogEntry</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  entry The <code>LogEntry</code>, not null
+	 *
+	 * @return       The <code>LogEntryBuilder</code> instance
+	 */
+
+	public static LogEntryBuilder getInstance (final DomainModel model, LogEntry entry)
+	{
+		if (entry == null)
+		{
+			throw new NullPointerException ("entry is NULL");
+		}
+
+		LogEntryBuilder builder = LogEntryBuilder.getInstance (model);
+		builder.load (entry);
+
+		return builder;
+	}
+
+	/**
+	 * Create the <code>LogEntryBuilder</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  builder   The <code>Builder</code>, not null
+	 */
+
+	protected LogEntryBuilder (final DataStore datastore, final Builder<LogEntry> builder)
+	{
+		super (datastore, builder);
+	}
+
+	@Override
+	public void load (final LogEntry entry)
+	{
+		this.log.trace ("load: entry={}", entry);
+
+		if (entry == null)
+		{
+			this.log.error ("Attempting to load a NULL LogEntry");
+			throw new NullPointerException ();
+		}
+
+		super.load (entry);
+		this.setAction (entry.getAction ());
+		this.setActivity (entry.getActivity ());
+		this.setEnrolment (entry.getEnrolment ());
+		this.setIPAddress (entry.getIPAddress ());
+		this.setTime (entry.getTime ());
+
+		// reference ??
+
+		this.builder.setProperty (LogEntry.Properties.ID, entry.getId ());
+	}
+
 	/**
 	 * Get the <code>Action</code> which was performed upon the logged
 	 * activity.
@@ -33,7 +156,10 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 * @return A reference to the logged <code>Action</code>
 	 */
 
-	public abstract Action getAction ();
+	public Action getAction ()
+	{
+		return this.builder.getPropertyValue (LogEntry.Properties.ACTION);
+	}
 
 	/**
 	 * Set the <code>Action</code> which was performed upon the logged
@@ -45,16 +171,36 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public abstract void setAction (Action action);
+	public void setAction (final Action action)
+	{
+		this.log.trace ("setAction: action={}", action);
+
+		if (action == null)
+		{
+			this.log.error ("Action is NULL");
+			throw new NullPointerException ("Action is NULL");
+		}
+
+		if (! this.datastore.contains (action))
+		{
+			this.log.error ("The specified Action does not exist in the DataStore");
+			throw new IllegalArgumentException ("Action is not in the DataStore");
+		}
+
+		this.builder.setProperty (LogEntry.Properties.ACTION, action);
+	}
 
 	/**
 	 * Get the <code>Activity</code> upon which the logged action was
 	 * performed.
 	 *
-	 * @return A reference to the associated <code>Activity</code> instance
+	 * @return A reference to the associated <code>Activity</code> object.
 	 */
 
-	public abstract Activity getActivity ();
+	public Activity getActivity ()
+	{
+		return this.builder.getPropertyValue (LogEntry.Properties.ACTIVITY);
+	}
 
 	/**
 	 * Set the <code>Activity</code> upon which the logged action was
@@ -66,7 +212,24 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public abstract void setActivity (Activity activity);
+	public void setActivity (final Activity activity)
+	{
+		this.log.trace ("setActivity: activity={}", activity);
+
+		if (activity == null)
+		{
+			this.log.error ("Activity is NULL");
+			throw new NullPointerException ("Activity is NULL");
+		}
+
+		if (! this.datastore.contains (activity))
+		{
+			this.log.error ("The specified Activity does not exist in the DataStore");
+			throw new IllegalArgumentException ("Activity is not in the DataStore");
+		}
+
+		this.builder.setProperty (LogEntry.Properties.ACTIVITY, activity);
+	}
 
 	/**
 	 * Get the <code>Enrolment</code> instance for the user which performed the
@@ -75,7 +238,10 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 * @return A reference to the associated <code>Enrolment</code>
 	 */
 
-	public abstract Enrolment getEnrolment ();
+	public Enrolment getEnrolment ()
+	{
+		return this.builder.getPropertyValue (LogEntry.Properties.ENROLMENT);
+	}
 
 	/**
 	 * Set the <code>Enrolment</code> instance for the <code>User</code> which
@@ -87,7 +253,24 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public abstract void setEnrolment (Enrolment enrolment);
+	public void setEnrolment (final Enrolment enrolment)
+	{
+		this.log.trace ("setEnrolment: enrolment={}", enrolment);
+
+		if (enrolment == null)
+		{
+			this.log.error ("Enrolment is NULL");
+			throw new NullPointerException ("Enrolment is NULL");
+		}
+
+		if (! this.datastore.contains (enrolment))
+		{
+			this.log.error ("The specified Enrolment does not exist in the DataStore");
+			throw new IllegalArgumentException ("Enrolment is not in the DataStore");
+		}
+
+		this.builder.setProperty (LogEntry.Properties.ENROLMENT, enrolment);
+	}
 
 	/**
 	 * Get the time of the logged action.
@@ -95,7 +278,10 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 * @return A <code>Date</code> object containing the logged time
 	 */
 
-	public abstract Date getTime ();
+	public Date getTime ()
+	{
+		return this.builder.getPropertyValue (LogEntry.Properties.TIME);
+	}
 
 	/**
 	 * Set the time of the logged <code>Action</code>.
@@ -103,7 +289,19 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 * @param  time The time
 	 */
 
-	public abstract void setTime (Date time);
+	public void setTime (final Date time)
+	{
+		this.log.trace ("setTime: time={}", time);
+
+		if (time == null)
+		{
+			this.builder.setProperty (LogEntry.Properties.TIME, new Date ());
+		}
+		else
+		{
+			this.builder.setProperty (LogEntry.Properties.TIME, time);
+		}
+	}
 
 	/**
 	 * Get the Internet Protocol address which is associated with the logged
@@ -112,7 +310,10 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 * @return A <code>String</code> containing the IP address, may be null
 	 */
 
-	public abstract String getIPAddress ();
+	public String getIPAddress ()
+	{
+		return this.builder.getPropertyValue (LogEntry.Properties.IPADDRESS);
+	}
 
 	/**
 	 * Set the Internet Protocol Address which is associated with the logged
@@ -121,5 +322,10 @@ public interface LogEntryBuilder extends ElementBuilder<LogEntry>
 	 * @param  ipaddress A <code>String</code> containing the IP Address
 	 */
 
-	public abstract void setIPAddress (String ipaddress);
+	public void setIPAddress (final String ipaddress)
+	{
+		this.log.trace ("setIPAddress: ipaddress={}", ipaddress);
+
+		this.builder.setProperty (LogEntry.Properties.IPADDRESS, ipaddress);
+	}
 }

@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 /**
  * Meta-data definition for an <code>Element</code> implementation class.  This
@@ -67,9 +66,6 @@ public class MetaData<T extends Element, U extends T>
 
 	/** The implementation class for the <code>Element</code> */
 	private final Class<U> impl;
-
-	/** The <code>ElementBuilder</code> implementation class */
-	private final Class<? extends ElementBuilder<T>> builder;
 
 	/** Method reference for creating new instances */
 	private final Supplier<U> create;
@@ -212,7 +208,7 @@ public class MetaData<T extends Element, U extends T>
 	 *                    null
 	 */
 
-	protected MetaData (final Definition<T> element, final Class<U> impl, final Class<? extends ElementBuilder<T>> builder, final Supplier<U> create, final Map<Property<?>, PropertyReference<T, U, ?>> references)
+	protected MetaData (final Definition<T> element, final Class<U> impl, final Supplier<U> create, final Map<Property<?>, PropertyReference<T, U, ?>> references)
 	{
 		assert element != null : "element is NULL";
 		assert impl != null : "impl is NULL";
@@ -224,7 +220,6 @@ public class MetaData<T extends Element, U extends T>
 
 		this.element = element;
 		this.impl = impl;
-		this.builder = builder;
 
 		this.create = create;
 
@@ -290,17 +285,6 @@ public class MetaData<T extends Element, U extends T>
 	public Definition<T> getDefinition ()
 	{
 		return this.element;
-	}
-
-	/**
-	 * Get the <code>ElementBuilder</code> implementation class.
-	 *
-	 * @return The <code>ElementBuilder</code> implementation class
-	 */
-
-	public Class<? extends ElementBuilder<T>> getBuilderClass ()
-	{
-		return this.builder;
 	}
 
 	/**

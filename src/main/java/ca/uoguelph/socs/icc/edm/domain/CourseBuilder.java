@@ -16,17 +16,133 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
- * Create new <code>Course</code> instances.  This interface extends the
- * <code>ElementBuilder</code> interface with the functionality required to
+ * Create new <code>Course</code> instances.  This class extends
+ * <code>AbstractBuilder</code>, adding the functionality required to
  * create <code>Course</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
+ * @see     Course
  */
 
-public interface CourseBuilder extends ElementBuilder<Course>
+public final class CourseBuilder extends AbstractBuilder<Course>
 {
+	/**
+	 * Get an instance of the <code>CourseBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>CourseBuilder</code> instance
+	 */
+
+	public static CourseBuilder getInstance (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new CourseBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (Course.class)));
+	}
+
+	/**
+	 * Get an instance of the <code>CourseBuilder</code> for the specified
+	 * <code>DataStore</code>, loaded with the data from the specified
+	 * <code>Course</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  course    The <code>Course</code>, not null
+	 *
+	 * @return           The <code>CourseBuilder</code> instance
+	 */
+
+	public static CourseBuilder getInstance (final DataStore datastore, Course course)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert course != null : "course is NULL";
+
+		CourseBuilder builder = CourseBuilder.getInstance (datastore);
+		builder.load (course);
+
+		return builder;
+	}
+
+	/**
+	 * Get an instance of the <code>CourseBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>CourseBuilder</code> instance
+	 */
+
+
+	public static CourseBuilder getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return CourseBuilder.getInstance (model.getDataStore ());
+	}
+
+	/**
+	 * Get an instance of the <code>CourseBuilder</code> for the specified
+	 * <code>DomainModel</code>, loaded with the data from the specified
+	 * <code>Course</code>.
+	 *
+	 * @param  model  The <code>DomainModel</code>, not null
+	 * @param  course The <code>Course</code>, not null
+	 *
+	 * @return        The <code>CourseBuilder</code> instance
+	 */
+
+	public static CourseBuilder getInstance (final DomainModel model, Course course)
+	{
+		if (course == null)
+		{
+			throw new NullPointerException ("course is NULL");
+		}
+
+		CourseBuilder builder = CourseBuilder.getInstance (model);
+		builder.load (course);
+
+		return builder;
+	}
+
+	/**
+	 * Create the <code>CourseBuilder</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  builder   The <code>Builder</code>, not null
+	 */
+
+	protected CourseBuilder (final DataStore datastore, final Builder<Course> builder)
+	{
+		super (datastore, builder);
+	}
+
+	@Override
+	public void load (final Course course)
+	{
+		this.log.trace ("load course={}", course);
+
+		if (course == null)
+		{
+			this.log.error ("Attempting to load a NULL Course");
+			throw new NullPointerException ();
+		}
+
+		super.load (course);
+		this.setName (course.getName ());
+		this.setSemester (course.getSemester ());
+		this.setYear (course.getYear ());
+
+		this.builder.setProperty (Course.Properties.ID, course.getId ());
+	}
+
 	/**
 	 * Get the name of the <code>Course</code>.
 	 *
@@ -34,7 +150,10 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	 *         <code>Course</code>
 	 */
 
-	public abstract String getName ();
+	public String getName ()
+	{
+		return this.builder.getPropertyValue (Course.Properties.NAME);
+	}
 
 	/**
 	 * Set the name of the <code>Course</code>.
@@ -45,7 +164,24 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public abstract void setName (String name);
+	public void setName (final String name)
+	{
+		this.log.trace ("setName: name={}", name);
+
+		if (name == null)
+		{
+			this.log.error ("name is NULL");
+			throw new NullPointerException ("name is NULL");
+		}
+
+		if (name.length () == 0)
+		{
+			this.log.error ("name is an empty string");
+			throw new IllegalArgumentException ("name is empty");
+		}
+
+		this.builder.setProperty (Course.Properties.NAME, name);
+	}
 
 	/**
 	 * Get the <code>Semester</code> in which the <code>Course</code> was
@@ -54,7 +190,10 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	 * @return The <code>Semester</code> of offering
 	 */
 
-	public abstract Semester getSemester ();
+	public Semester getSemester ()
+	{
+		return this.builder.getPropertyValue (Course.Properties.SEMESTER);
+	}
 
 	/**
 	 * Set the <code>Semester</code> in which the <code>Course</code> was
@@ -63,7 +202,18 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	 * @param  semester The <code>Semester</code> of offering, not null
 	 */
 
-	public abstract void setSemester (Semester semester);
+	public void setSemester (final Semester semester)
+	{
+		this.log.trace ("setSemester: semester={}", semester);
+
+		if (semester == null)
+		{
+			this.log.error ("semester is NULL");
+			throw new NullPointerException ("semester is NULL");
+		}
+
+		this.builder.setProperty (Course.Properties.SEMESTER, semester);
+	}
 
 	/**
 	 * Get the year in which the <code>Course</code> was offered.
@@ -71,7 +221,10 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	 * @return An <code>Integer</code> containing the year of offering
 	 */
 
-	public abstract Integer getYear ();
+	public Integer getYear ()
+	{
+		return this.builder.getPropertyValue (Course.Properties.YEAR);
+	}
 
 	/**
 	 * Set the year in which the <code>Course</code> was offered.
@@ -81,5 +234,22 @@ public interface CourseBuilder extends ElementBuilder<Course>
 	 * @throws IllegalArgumentException If the year is negative
 	 */
 
-	public abstract void setYear (Integer year);
+	public void setYear (final Integer year)
+	{
+		this.log.trace ("setYear: year={}", year);
+
+		if (year == null)
+		{
+			this.log.error ("year is NULL");
+			throw new NullPointerException ("year is NULL");
+		}
+
+		if (year < 0)
+		{
+			this.log.error ("Year is negative");
+			throw new IllegalArgumentException ("Year is negative");
+		}
+
+		this.builder.setProperty (Course.Properties.YEAR, year);
+	}
 }

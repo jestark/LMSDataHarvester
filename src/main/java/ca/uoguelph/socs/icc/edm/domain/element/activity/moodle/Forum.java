@@ -25,8 +25,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
@@ -45,7 +43,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  * <li>ActivitySource = moodle
  * <li>ActivityType   = forum
  * <li>ClassName      = Forum
- * <li>Builder        = DefaultNamedActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
@@ -66,7 +63,6 @@ public class Forum extends GenericNamedActivity
 	{
 		MetaDataBuilder<Activity, Forum> builder = MetaDataBuilder.newInstance (Activity.class, Forum.class);
 		builder.setCreateMethod (Forum::new);
-		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addProperty (Activity.Properties.ID, Activity::getId, Forum::setId);
 		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Forum::setCourse);

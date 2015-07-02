@@ -24,8 +24,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
@@ -44,7 +42,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  * <li>ActivitySource = moodle
  * <li>ActivityType   = page
  * <li>ClassName      = Page
- * <li>Builder        = DefaultNamedActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
@@ -65,7 +62,6 @@ public class Page extends GenericNamedActivity
 	{
 		MetaDataBuilder<Activity, Page> builder = MetaDataBuilder.newInstance (Activity.class, Page.class);
 		builder.setCreateMethod (Page::new);
-		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addProperty (Activity.Properties.ID, Activity::getId, Page::setId);
 		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Page::setCourse);

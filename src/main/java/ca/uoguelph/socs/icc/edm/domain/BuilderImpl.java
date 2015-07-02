@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.builder;
+package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Map;
 import java.util.Set;
@@ -24,8 +24,6 @@ import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;

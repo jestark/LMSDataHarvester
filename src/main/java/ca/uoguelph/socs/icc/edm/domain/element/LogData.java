@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
@@ -84,7 +82,6 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	{
 		MetaDataBuilder<LogEntry, LogData> builder = MetaDataBuilder.newInstance (LogEntry.class, LogData.class);
 		builder.setCreateMethod (LogData::new);
-		builder.setBuilder (DefaultLogEntryBuilder.class);
 
 		builder.addProperty (LogEntry.Properties.ID, LogEntry::getId, LogData::setId);
 		builder.addProperty (LogEntry.Properties.ACTION, LogEntry::getAction, LogData::setAction);

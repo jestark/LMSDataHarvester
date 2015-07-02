@@ -14,11 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.builder;
+package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
-
-import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 

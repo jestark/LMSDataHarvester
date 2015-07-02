@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
@@ -42,7 +40,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder
  */
 
 public class UserData extends AbstractElement implements User, Serializable
@@ -77,7 +74,6 @@ public class UserData extends AbstractElement implements User, Serializable
 	{
 		MetaDataBuilder<User, UserData> builder = MetaDataBuilder.newInstance (User.class, UserData.class);
 		builder.setCreateMethod (UserData::new);
-		builder.setBuilder (DefaultUserBuilder.class);
 
 		builder.addProperty (User.Properties.ID, User::getId, UserData::setId);
 		builder.addProperty (User.Properties.IDNUMBER, User::getIdNumber, UserData::setIdNumber);

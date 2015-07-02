@@ -34,8 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
@@ -50,8 +48,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder
- * @see     UserEnrolmentData
  */
 
 public class EnrolmentData extends AbstractElement implements Enrolment, Serializable
@@ -89,7 +85,6 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	{
 		MetaDataBuilder<Enrolment, EnrolmentData> builder = MetaDataBuilder.newInstance (Enrolment.class, EnrolmentData.class);
 		builder.setCreateMethod (EnrolmentData::new);
-		builder.setBuilder (DefaultEnrolmentBuilder.class);
 
 		builder.addProperty (Enrolment.Properties.ID, Enrolment::getId, EnrolmentData::setId);
 		builder.addProperty (Enrolment.Properties.COURSE, Enrolment::getCourse, EnrolmentData::setCourse);

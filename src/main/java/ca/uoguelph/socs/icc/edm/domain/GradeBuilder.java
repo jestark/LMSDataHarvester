@@ -16,18 +16,132 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
- * Create new <code>Grade</code> instances.  This interface extends the
- * <code>ElementBuilder</code> by adding the functionality required to
- * create <code>Grade</code> instances.
+ * Create new <code>Grade</code> instances.  This class extends
+ * <code>AddingBuilder</code>, adding the functionality required to
+ * create <code>Grade</code> instances.  The "grade" field of existing grade
+ * instances may be modified in place.
  *
  * @author  James E. Stark
  * @version 1.0
  * @see     Grade
  */
 
-public interface GradeBuilder extends ElementBuilder<Grade>
+public final class GradeBuilder extends AbstractBuilder<Grade>
 {
+	/**
+	 * Get an instance of the <code>GradeBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>GradeBuilder</code> instance
+	 */
+
+	public static GradeBuilder getInstance (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new GradeBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (Grade.class)));
+	}
+
+	/**
+	 * Get an instance of the <code>GradeBuilder</code> for the specified
+	 * <code>DataStore</code>, loaded with the data from the specified
+	 * <code>Grade</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  grade     The <code>Grade</code>, not null
+	 *
+	 * @return           The <code>GradeBuilder</code> instance
+	 */
+
+	public static GradeBuilder getInstance (final DataStore datastore, Grade grade)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert grade != null : "grade is NULL";
+
+		GradeBuilder builder = GradeBuilder.getInstance (datastore);
+		builder.load (grade);
+
+		return builder;
+	}
+
+	/**
+	 * Get an instance of the <code>GradeBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>GradeBuilder</code> instance
+	 */
+
+
+	public static GradeBuilder getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return GradeBuilder.getInstance (model.getDataStore ());
+	}
+
+	/**
+	 * Get an instance of the <code>GradeBuilder</code> for the specified
+	 * <code>DomainModel</code>, loaded with the data from the specified
+	 * <code>Grade</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  grade The <code>Grade</code>, not null
+	 *
+	 * @return       The <code>GradeBuilder</code> instance
+	 */
+
+	public static GradeBuilder getInstance (final DomainModel model, Grade grade)
+	{
+		if (grade == null)
+		{
+			throw new NullPointerException ("grade is NULL");
+		}
+
+		GradeBuilder builder = GradeBuilder.getInstance (model);
+		builder.load (grade);
+
+		return builder;
+	}
+
+	/**
+	 * Create the <code>GradeBuilder</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  builder   The <code>Builder</code>, not null
+	 */
+
+	protected GradeBuilder (final DataStore datastore, final Builder<Grade> builder)
+	{
+		super (datastore, builder);
+	}
+
+	@Override
+	public void load (final Grade grade)
+	{
+		this.log.trace ("load: grade={}", grade);
+
+		if (grade == null)
+		{
+			this.log.error ("Attempting to load a NULL Grade");
+			throw new NullPointerException ();
+		}
+
+		super.load (grade);
+		this.setActivity (grade.getActivity ());
+		this.setEnrolment (grade.getEnrolment ());
+		this.setGrade (grade.getGrade ());
+	}
+
 	/**
 	 * Get the <code>Activity</code> for which the <code>Grade</code> is
 	 * assigned.
@@ -35,7 +149,10 @@ public interface GradeBuilder extends ElementBuilder<Grade>
 	 * @return The associated <code>Activity</code>
 	 */
 
-	public abstract Activity getActivity ();
+	public Activity getActivity ()
+	{
+		return this.builder.getPropertyValue (Grade.Properties.ACTIVITY);
+	}
 
 	/**
 	 * Set the <code>Activity</code> which is associated with the
@@ -47,7 +164,18 @@ public interface GradeBuilder extends ElementBuilder<Grade>
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public abstract void setActivity (Activity activity);
+	public void setActivity (final Activity activity)
+	{
+		this.log.trace ("setActivity: activity={}", activity);
+
+		if (activity == null)
+		{
+			this.log.error ("The specified activity is NULL");
+			throw new NullPointerException ("The specified activity is NULL");
+		}
+
+		this.builder.setProperty (Grade.Properties.ACTIVITY, activity);
+	}
 
 	/**
 	 * Get the <code>Enrolment</code>, for the student, to which the
@@ -56,7 +184,10 @@ public interface GradeBuilder extends ElementBuilder<Grade>
 	 * @return The associated <code>Enrolment</code>
 	 */
 
-	public abstract Enrolment getEnrolment ();
+	public Enrolment getEnrolment ()
+	{
+		return this.builder.getPropertyValue (Grade.Properties.ENROLMENT);
+	}
 
 	/**
 	 * Set the <code>Enrolment</code> which is associated with the
@@ -68,7 +199,18 @@ public interface GradeBuilder extends ElementBuilder<Grade>
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public abstract void setEnrolment (Enrolment enrolment);
+	public void setEnrolment (final Enrolment enrolment)
+	{
+		this.log.trace ("setEnrolment: enrolment={}", enrolment);
+
+		if (enrolment == null)
+		{
+			this.log.error ("The specified Enrolment is NULL");
+			throw new NullPointerException ("The specified Enrolment is NULL");
+		}
+
+		this.builder.setProperty (Grade.Properties.ENROLMENT, enrolment);
+	}
 
 	/**
 	 * Get the grade that the student received for the <code>Activity</code>.
@@ -79,7 +221,10 @@ public interface GradeBuilder extends ElementBuilder<Grade>
 	 *         null
 	 */
 
-	public abstract Integer getGrade ();
+	public Integer getGrade ()
+	{
+		return this.builder.getPropertyValue (Grade.Properties.GRADE);
+	}
 
 	/**
 	 * Set the value of the <code>Grade</code>.
@@ -92,5 +237,28 @@ public interface GradeBuilder extends ElementBuilder<Grade>
 	 *                                  greater than 100
 	 */
 
-	public abstract void setGrade (Integer grade);
+	public void setGrade (final Integer grade)
+	{
+		this.log.trace ("setGrade: grade={}", grade);
+
+		if (grade == null)
+		{
+			this.log.error ("The specified grade is NULL");
+			throw new NullPointerException ("The specified grade is NULL");
+		}
+
+		if (grade < 0)
+		{
+			this.log.error ("Grades can not be negative: {}", grade);
+			throw new IllegalArgumentException ("Grade is negative");
+		}
+
+		if (grade > 100)
+		{
+			this.log.error ("Grades can not be greater than 100%: {}", grade);
+			throw new IllegalArgumentException ("Grade is greater than 100%");
+		}
+
+		this.builder.setProperty (Grade.Properties.GRADE, grade);
+	}
 }

@@ -22,8 +22,6 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
-
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
@@ -43,7 +41,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  * <li>ActivityType   = ${ActivityType}
  * <li>ClassName      = ${ClassName}
  * <li>ParentClass    = ${ParentClass}
- * <li>Builder        = ${Builder}
  * </ul>
  *
  * @author  James E. Stark
@@ -64,7 +61,6 @@ public class ${ClassName} extends GenericSubActivity
 	{
 		MetaDataBuilder<SubActivity, ${ClassName}> builder = MetaDataBuilder.newInstance (SubActivity.class, ${ClassName}.class);
 		builder.setCreateMethod (${ClassName}::new);
-		builder.setBuilder (${Builder}.class);
 
 		builder.addProperty (SubActivity.Properties.ID, SubActivity::getId, ${ClassName}::setId);
 		builder.addProperty (SubActivity.Properties.COURSE, SubActivity::getCourse, null);

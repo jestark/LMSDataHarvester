@@ -33,8 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
@@ -45,7 +43,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder
  */
 
 public class CourseData extends AbstractElement implements Course, Serializable
@@ -80,7 +77,6 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	{
 		MetaDataBuilder<Course, CourseData> builder = MetaDataBuilder.newInstance (Course.class, CourseData.class);
 		builder.setCreateMethod (CourseData::new);
-		builder.setBuilder (DefaultCourseBuilder.class);
 
 		builder.addProperty (Course.Properties.ID, Course::getId, CourseData::setId);
 		builder.addProperty (Course.Properties.NAME, Course::getName, CourseData::setName);

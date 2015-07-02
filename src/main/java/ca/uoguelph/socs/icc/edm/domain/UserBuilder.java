@@ -16,19 +16,135 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
- * Create and modify <code>User</code> instances.  This interface extends the
- * <code>ElementBuilder</code> interface with the necessary functionality to
- * handle <code>User</code> instances.  Implementations of this interface
- * should allow for the modification of the "Firstname" and "Lastname" fields
- * of existing <code>User</code> instances.
+ * Create and modify <code>User</code> instances.  This class extends
+ * <code>AbstractBuilder</code>, adding the necessary functionality to
+ * handle <code>User</code> instances.  The "Firstname" and "Lastname" fields
+ * of existing <code>User</code> instances, may be modified in place.
  *
  * @author  James E. Stark
  * @version 1.0
+ * @see     User
  */
 
-public interface UserBuilder extends ElementBuilder<User>
+public final class UserBuilder extends AbstractBuilder<User>
 {
+	/**
+	 * Get an instance of the <code>UserBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>UserBuilder</code> instance
+	 */
+
+	public static UserBuilder getInstance (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new UserBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (User.class)));
+	}
+
+	/**
+	 * Get an instance of the <code>UserBuilder</code> for the specified
+	 * <code>DataStore</code>, loaded with the data from the specified
+	 * <code>User</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  user   The <code>User</code>, not null
+	 *
+	 * @return           The <code>UserBuilder</code> instance
+	 */
+
+	public static UserBuilder getInstance (final DataStore datastore, User user)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert user != null : "user is NULL";
+
+		UserBuilder builder = UserBuilder.getInstance (datastore);
+		builder.load (user);
+
+		return builder;
+	}
+
+	/**
+	 * Get an instance of the <code>UserBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model   The <code>DomainModel</code>, not null
+	 *
+	 * @return         The <code>UserBuilder</code> instance
+	 */
+
+
+	public static UserBuilder getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return UserBuilder.getInstance (model.getDataStore ());
+	}
+
+	/**
+	 * Get an instance of the <code>UserBuilder</code> for the specified
+	 * <code>DomainModel</code>, loaded with the data from the specified
+	 * <code>User</code>.
+	 *
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  user The <code>User</code>, not null
+	 *
+	 * @return         The <code>UserBuilder</code> instance
+	 */
+
+	public static UserBuilder getInstance (final DomainModel model, User user)
+	{
+		if (user == null)
+		{
+			throw new NullPointerException ("user is NULL");
+		}
+
+		UserBuilder builder = UserBuilder.getInstance (model);
+		builder.load (user);
+
+		return builder;
+	}
+
+	/**
+	 * Create an instance of the <code>UserBuilder</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  builder   The <code>Builder</code>, not null
+	 */
+
+	protected UserBuilder (final DataStore datastore, final Builder<User> builder)
+	{
+		super (datastore, builder);
+	}
+
+	@Override
+	public void load (final User user)
+	{
+		this.log.trace ("load: user={}", user);
+
+		if (user == null)
+		{
+			this.log.error ("Attempting to load a NULL User");
+			throw new NullPointerException ();
+		}
+
+		super.load (user);
+		this.setIdNumber (user.getIdNumber ());
+		this.setUsername (user.getUsername ());
+		this.setLastname (user.getLastname ());
+		this.setFirstname (user.getFirstname ());
+
+		this.builder.setProperty (User.Properties.ID, user.getId ());
+	}
+
 	/**
 	 * Get the (student) ID number of the <code>User</code>.  This will be the
 	 * student number, or a similar identifier used to track the
@@ -36,10 +152,13 @@ public interface UserBuilder extends ElementBuilder<User>
 	 * While the ID number is not used as the database identifier it is
 	 * expected to be unique.
 	 *
-	 * @return An <code>Integer</code> representation of the ID number.
+	 * @return An Integer representation of the ID number
 	 */
 
-	public abstract Integer getIdNumber ();
+	public Integer getIdNumber()
+	{
+		return this.builder.getPropertyValue (User.Properties.IDNUMBER);
+	}
 
 	/**
 	 * Set the (student) ID number of the <code>User</code>.
@@ -49,7 +168,24 @@ public interface UserBuilder extends ElementBuilder<User>
 	 * @throws IllegalArgumentException If the ID number is negative
 	 */
 
-	public abstract void setIdNumber (Integer idnumber);
+	public void setIdNumber (final Integer idnumber)
+	{
+		this.log.trace ("setIdNumber: idnumber={}", idnumber);
+
+		if (idnumber == null)
+		{
+			this.log.error ("The specified ID number is NULL");
+			throw new NullPointerException ("The specified ID number is NULL");
+		}
+
+		if (idnumber < 0)
+		{
+			this.log.error ("Trying to set a negative id number");
+			throw new IllegalArgumentException ("idnumber is negative");
+		}
+
+		this.builder.setProperty (User.Properties.IDNUMBER, idnumber);
+	}
 
 	/**
 	 * Get the first name (given name) of the <code>User</code>.
@@ -58,18 +194,38 @@ public interface UserBuilder extends ElementBuilder<User>
 	 *         <code>User</code>
 	 */
 
-	public abstract String getFirstname ();
+	public String getFirstname ()
+	{
+		return this.builder.getPropertyValue (User.Properties.FIRSTNAME);
+	}
 
 	/**
 	 * Set the first name of the <code>User</code>.
 	 *
-	 * @param  firstname                The first name of the
-	 *                                  <code>User</code>, not null
+	 * @param  firstname                The firstname of the <code>User</code>,
+	 *                                  not null
 	 *
 	 * @throws IllegalArgumentException If the firstname is empty
 	 */
 
-	public abstract void setFirstname (String firstname);
+	public void setFirstname (final String firstname)
+	{
+		this.log.trace ("setFirstname: firstname={}", firstname);
+
+		if (firstname == null)
+		{
+			this.log.error ("The specified first name is NULL");
+			throw new NullPointerException ("The specified first name is NULL");
+		}
+
+		if (firstname.length () == 0)
+		{
+			this.log.error ("firstname is an empty string");
+			throw new IllegalArgumentException ("firstname is empty");
+		}
+
+		this.builder.setProperty (User.Properties.FIRSTNAME, firstname);
+	}
 
 	/**
 	 * Get the last name (surname) of the <code>User</code>.
@@ -77,27 +233,53 @@ public interface UserBuilder extends ElementBuilder<User>
 	 * @return A String containing the surname of the <code>User</code>.
 	 */
 
-	public abstract String getLastname ();
+	public String getLastname ()
+	{
+		return this.builder.getPropertyValue (User.Properties.LASTNAME);
+	}
 
 	/**
 	 * Set the last name of the <code>User</code>.
 	 *
-	 * @param  lastname                 The last name of the <code>User</code>,
+	 * @param  lastname                 The lastname of the <code>User</code>,
 	 *                                  not null
 	 *
 	 * @throws IllegalArgumentException If the lastname is empty
 	 */
 
-	public abstract void setLastname (String lastname);
+	public void setLastname (final String lastname)
+	{
+		this.log.trace ("setLastname: lastname={}", lastname);
+
+		if (lastname == null)
+		{
+			this.log.error ("The specified last name is NULL");
+			throw new NullPointerException ("The specified last name is NULL");
+		}
+
+		if (lastname.length () == 0)
+		{
+			this.log.error ("lastname is an empty string");
+			throw new IllegalArgumentException ("lastname is empty");
+		}
+
+		this.builder.setProperty (User.Properties.LASTNAME, lastname);
+	}
 
 	/**
-	 * Get the username for the <code>User</code>.
+	 * Get the username for the <code>User</code>.  This will be the username
+	 * that the <code>User</code> used to access the LMS from which the data
+	 * associated with the <code>User</code> was harvested.  The username is
+	 * expected to be unique.
 	 *
 	 * @return A <code>String</code> containing the username for the
 	 *         <code>User</code>
 	 */
 
-	public abstract String getUsername ();
+	public String getUsername ()
+	{
+		return this.builder.getPropertyValue (User.Properties.USERNAME);
+	}
 
 	/**
 	 * Set the username of the <code>User</code>.
@@ -108,7 +290,24 @@ public interface UserBuilder extends ElementBuilder<User>
 	 * @throws IllegalArgumentException If the username is empty
 	 */
 
-	public abstract void setUsername (String username);
+	public void setUsername (final String username)
+	{
+		this.log.trace ("setUsername: username={}", username);
+
+		if (username == null)
+		{
+			this.log.error ("Specified username is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (username.length () == 0)
+		{
+			this.log.error ("Specified username is empty (String has length 0)");
+			throw new IllegalArgumentException ("Username is empty");
+		}
+
+		this.builder.setProperty (User.Properties.USERNAME, username);
+	}
 
 	/**
 	 * Create an association between the <code>User</code> and the specified
@@ -124,7 +323,22 @@ public interface UserBuilder extends ElementBuilder<User>
 	 *                                  <code>Enrolment</code>
 	 */
 
-	public abstract void addEnrolment (Enrolment enrolment);
+	public void addEnrolment (final Enrolment enrolment)
+	{
+		this.log.trace ("addEnrolment: enrolment={}", enrolment);
+
+		if (enrolment == null)
+		{
+			this.log.error ("Specified enrolment is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (! this.datastore.contains (enrolment))
+		{
+			this.log.error ("Specified Enrolment does not exist in the DataStore");
+			throw new IllegalArgumentException ("Enrolment not in DataStore");
+		}
+	}
 
 	/**
 	 * Break an association between the <code>User</code> and the specified
@@ -144,5 +358,20 @@ public interface UserBuilder extends ElementBuilder<User>
 	 *                                  <code>Enrolment</code>
 	 */
 
-	public abstract void removeEnrolment (Enrolment enrolment);
+	public void removeEnrolment (final Enrolment enrolment)
+	{
+		this.log.trace ("removeEnrolment: enrolment={}", enrolment);
+
+		if (enrolment == null)
+		{
+			this.log.error ("Specified enrolment is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (! this.datastore.contains (enrolment))
+		{
+			this.log.error ("Specified Enrolment does not exist in the DataStore");
+			throw new IllegalArgumentException ("Enrolment not in DataStore");
+		}
+	}
 }

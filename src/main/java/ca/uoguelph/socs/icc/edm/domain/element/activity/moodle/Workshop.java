@@ -25,8 +25,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
@@ -45,7 +43,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  * <li>ActivitySource = moodle
  * <li>ActivityType   = workshop
  * <li>ClassName      = Workshop
- * <li>Builder        = DefaultNamedActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
@@ -66,7 +63,6 @@ public class Workshop extends GenericNamedActivity
 	{
 		MetaDataBuilder<Activity, Workshop> builder = MetaDataBuilder.newInstance (Activity.class, Workshop.class);
 		builder.setCreateMethod (Workshop::new);
-		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addProperty (Activity.Properties.ID, Activity::getId, Workshop::setId);
 		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Workshop::setCourse);

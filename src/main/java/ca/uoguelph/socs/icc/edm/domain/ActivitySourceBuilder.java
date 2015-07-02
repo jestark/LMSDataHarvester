@@ -16,17 +16,134 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
- * Create new <code>ActivitySource</code> instances.  This interface extends
- * the <code>ElementBuilder</code> interface with the functionality required
+ * Create new <code>ActivitySource</code> instances.  This class extends
+ * <code>AbstractBuilder</code>, adding the functionality required
  * to create <code>ActivitySource</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
+ * @see     ActivitySource
  */
 
-public interface ActivitySourceBuilder extends ElementBuilder<ActivitySource>
+public final class ActivitySourceBuilder extends AbstractBuilder<ActivitySource>
 {
+	/**
+	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
+	 * specified <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>ActivitySourceBuilder</code> instance
+	 */
+
+	public static ActivitySourceBuilder getInstance (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new ActivitySourceBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (ActivitySource.class)));
+	}
+
+	/**
+	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
+	 * specified <code>DataStore</code>, loaded with the data from the
+	 * specified <code>ActivitySource</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  source    The <code>ActivitySource</code>, not null
+	 *
+	 * @return           The <code>ActivitySourceBuilder</code> instance
+	 */
+
+	public static ActivitySourceBuilder getInstance (final DataStore datastore, ActivitySource source)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert source != null : "source is NULL";
+
+		ActivitySourceBuilder builder = ActivitySourceBuilder.getInstance (datastore);
+		builder.load (source);
+
+		return builder;
+	}
+
+	/**
+	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
+	 * specified <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>ActivitySourceBuilder</code> instance
+	 */
+
+
+	public static ActivitySourceBuilder getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return ActivitySourceBuilder.getInstance (model.getDataStore ());
+	}
+
+	/**
+	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
+	 * specified <code>DomainModel</code>, loaded with the data from the
+	 * specified <code>ActivitySource</code>.
+	 *
+	 * @param  model  The <code>DomainModel</code>, not null
+	 * @param  source The <code>ActivitySource</code>, not null
+	 *
+	 * @return        The <code>ActivitySourceBuilder</code> instance
+	 */
+
+	public static ActivitySourceBuilder getInstance (final DomainModel model, ActivitySource source)
+	{
+		if (source == null)
+		{
+			throw new NullPointerException ("source is NULL");
+		}
+
+		ActivitySourceBuilder builder = ActivitySourceBuilder.getInstance (model);
+		builder.load (source);
+
+		return builder;
+	}
+
+	/**
+	 * Create the <code>ActivitySourceBuilder</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  builder   The <code>Builder</code>, not null
+	 */
+
+	protected ActivitySourceBuilder (final DataStore datastore, final Builder<ActivitySource> builder)
+	{
+		super (datastore, builder);
+	}
+
+	@Override
+	public void load (final ActivitySource source)
+	{
+		this.log.trace ("load: source={}", source);
+
+		if (source == null)
+		{
+			this.log.error ("Attempting to load a NULL ActivitySource");
+			throw new NullPointerException ();
+		}
+
+		super.load (source);
+		this.setName (source.getName ());
+
+		this.builder.setProperty (ActivitySource.Properties.ID, source.getId ());
+	}
+
 	/**
 	 * Get the name of the <code>ActivitySource</code>.
 	 *
@@ -34,7 +151,10 @@ public interface ActivitySourceBuilder extends ElementBuilder<ActivitySource>
 	 *         <code>ActivitySource</code>
 	 */
 
-	public abstract String getName ();
+	public String getName ()
+	{
+		return this.builder.getPropertyValue (ActivitySource.Properties.NAME);
+	}
 
 	/**
 	 * Set the name of the <code>ActivitySource</code>.
@@ -45,5 +165,22 @@ public interface ActivitySourceBuilder extends ElementBuilder<ActivitySource>
 	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public abstract void setName (String name);
+	public void setName (final String name)
+	{
+		this.log.trace ("setName: name={}", name);
+
+		if (name == null)
+		{
+			this.log.error ("name is NULL");
+			throw new NullPointerException ("name is NULL");
+		}
+
+		if (name.length () == 0)
+		{
+			this.log.error ("name is an empty string");
+			throw new IllegalArgumentException ("name is empty");
+		}
+
+		this.builder.setProperty (ActivitySource.Properties.NAME, name);
+	}
 }

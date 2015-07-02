@@ -24,8 +24,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
@@ -44,7 +42,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  * <li>ActivitySource = moodle
  * <li>ActivityType   = scheduler
  * <li>ClassName      = Scheduler
- * <li>Builder        = DefaultNamedActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
@@ -65,7 +62,6 @@ public class Scheduler extends GenericNamedActivity
 	{
 		MetaDataBuilder<Activity, Scheduler> builder = MetaDataBuilder.newInstance (Activity.class, Scheduler.class);
 		builder.setCreateMethod (Scheduler::new);
-		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addProperty (Activity.Properties.ID, Activity::getId, Scheduler::setId);
 		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Scheduler::setCourse);

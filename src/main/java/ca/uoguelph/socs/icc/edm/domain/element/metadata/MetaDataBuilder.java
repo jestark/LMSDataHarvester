@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
 
 /**
  * <code>MetaData</code> builder for <code>Element</code> implementation
@@ -55,9 +54,6 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 
 	/** The <code>Set</code> of <code>Property</code> instances */
 	private final Set<Property<?>> properties;
-
-	/** The <code>ElementBuilder</code> implementation class */
-	private Class<? extends ElementBuilder<T>> builder;
 
 	/** Reference to the Constructor for the implementation class */
 	private Supplier<U> create;
@@ -176,26 +172,6 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 	}
 
 	/**
-	 * Set the <code>ElementBuilder</code> implementation class to be used to
-	 * builder new instances of the <code>Element</code>.
-	 *
-	 * @param  <B>     The <code>ElementBuilder</code> interface type
-	 * @param  builder The <code>ElementBuilder</code> implementation class,
-	 *                 not null
-	 */
-
-	public <B extends ElementBuilder<T>> void setBuilder (final Class<B> builder)
-	{
-		this.log.trace ("setBuilder: builder={}", builder);
-
-		assert builder != null : "builder is NULL";
-
-		this.forceClassLoad (builder);
-
-		this.builder = builder;
-	}
-
-	/**
 	 * Set the method references for getting and setting the value associated
 	 * with the specified <code>Property</code>.  All of the
 	 * <code>Property</code> instances associated with the <code>Element</code>
@@ -234,10 +210,9 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 	{
 		this.log.trace ("build:");
 
-		assert this.builder != null : "builder is NULL";
 		assert this.create != null : "create is NULL";
 		assert this.properties.equals (this.refs.keySet ()) : "Missing references from some properties";
 
-		return MetaData.registerMetaData (new MetaData<T, U> (this.definition, this.impl, this.builder, this.create, this.refs));
+		return MetaData.registerMetaData (new MetaData<T, U> (this.definition, this.impl, this.create, this.refs));
 	}
 }

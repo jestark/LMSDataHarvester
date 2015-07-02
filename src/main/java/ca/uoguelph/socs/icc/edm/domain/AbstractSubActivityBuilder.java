@@ -14,42 +14,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.builder;
+package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
+import java.util.function.BiFunction;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
 
 /**
- * Default implementation of the <code>SubActivityBuilder</code>.
+ * Abstract builder for <code>SubActivity</code> instances.  This class acts as
+ * the common base for all of the builders which produce
+ * <code>SubActivity</code> instances, handling all of the common
+ * <code>SubActivity</code> components.
+ * <p>
+ * To create builders for <code>SubActivity</code> instances, the
+ * parent <code>Activity</code> must be supplied when the builder is created.
+ * The parent <code>Activity</code> is needed to determine which
+ * <code>SubActivity</code> implementation class is to be created by the
+ * builder.  It is possible to specify a parent <code>Activity</code> which
+ * does not match the selected builder.  In this case the builder will be
+ * created successfully, but an exception will occur when a field is set in the
+ * builder that does not exist in the implementation, or when the
+ * implementation is built and a required field is determined to be missing.
  *
  * @author  James E. Stark
  * @version 1.0
+ * @param   <T> The type of <code>SubActivity</code>
+ * @see     SubActivity
  */
 
-public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends AbstractBuilder<T> implements SubActivityBuilder<T>
+public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends AbstractBuilder<T>
 {
 	/**
 	 * Get an instance of the <code>SubActivityBuilder</code> which corresponds
 	 * to the specified parent <code>Activity</code>.
 	 *
-	 * @param  <T>       The <code>SubActivityBuilder</code> type to be returned
-	 * @param  parent    The parent <code>Activity</code>
-	 * @param  datastore The <code>DataStore</code> instance, not null
+	 * @param  <T>       The <code>SubActivity</code> type of the builder
+	 * @param  <U>       The <code>SubActivityBuilder</code> type to be returned
+	 * @param  parent    The parent <code>Activity</code>, not null
+	 * @param  datastore The <code>DataStore</code>, not null
 	 */
 
-	public static final <T extends SubActivityBuilder<U>, U extends SubActivity> T getInstance (final Activity activity, final DataStore datastore)
+	protected static <T extends SubActivity, U extends AbstractSubActivityBuilder<T>> U getInstance (final DataStore datastore, final Activity parent, final BiFunction<DataStore, Builder<T>, U> create)
 	{
-		assert activity != null : "activity is NULL";
 		assert datastore != null : "datastore is NULL";
-		assert datastore.contains (activity) : "acitivity is not in the DataStore";
+		assert parent != null : "parent is NULL";
+		assert create != null : "create is NULL";
+		assert datastore.contains (parent) : "parent is not in the datastore";
 
-		T builder = AbstractBuilder.getInstance (AbstractActivity.getSubActivityClass (activity.getClass ()), datastore);
-		((AbstractSubActivityBuilder) builder).setParent (activity);
+		U builder = create.apply (datastore, AbstractBuilder.getBuilder (datastore, AbstractActivity.getSubActivityClass (parent.getClass ())));
+		builder.setParent (parent);
 
 		return builder;
 	}
@@ -64,27 +79,10 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 *                   inserted
 	 */
 
-	protected AbstractSubActivityBuilder (final Class<?> impl, final DataStore datastore)
+	protected AbstractSubActivityBuilder (final DataStore datastore, final Builder<T> builder)
 	{
-		super (impl, datastore);
+		super (datastore, builder);
 	}
-
-	/**
-	 * Load a <code>Activity</code> instance into the
-	 * <code>ActivityBuilder</code>.  This method resets the
-	 * <code>ActivityBuilder</code> and initializes all of its parameters from
-	 * the specified <code>Activity</code> instance.  The parameters are
-	 * validated as they are set.
-	 *
-	 * @param  subactivity              The <code>SubActivity</code> to load
-	 *                                  into the
-	 *                                  <code>SubActivityBuilder</code>, not
-	 *                                  null
-	 *
-	 * @throws IllegalArgumentException If any of the fields in the
-	 *                                  <code>Activity</code> instance to be
-	 *                                  loaded are not valid
-	 */
 
 	@Override
 	public void load (final T subactivity)
@@ -116,7 +114,6 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 *         <code>SubActivity</code>
 	 */
 
-	@Override
 	public final String getName ()
 	{
 		return this.builder.getPropertyValue (SubActivity.Properties.NAME);
@@ -131,7 +128,6 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	@Override
 	public final void setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
@@ -158,7 +154,6 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 * @return The parent <code>Activity</code>
 	 */
 
-	@Override
 	public final Activity getParent ()
 	{
 		return this.builder.getPropertyValue (SubActivity.Properties.PARENT);
@@ -171,7 +166,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 * @param  activity The parent <code>Activity</code>
 	 */
 
-	private void setParent (final Activity parent)
+	protected void setParent (final Activity parent)
 	{
 		this.log.trace ("setParent: parent={}", parent);
 

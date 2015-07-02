@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
@@ -43,7 +41,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder
  */
 
 
@@ -61,7 +58,6 @@ public class GenericActivity extends ActivityInstance implements Serializable
 	{
 		MetaDataBuilder<Activity, GenericActivity> builder = MetaDataBuilder.newInstance (Activity.class, GenericActivity.class);
 		builder.setCreateMethod (GenericActivity::new);
-		builder.setBuilder (DefaultGenericActivityBuilder.class);
 
 		builder.addProperty (Element.Properties.ID, Element::getId, AbstractElement::setId);
 		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, ActivityInstance::setCourse);

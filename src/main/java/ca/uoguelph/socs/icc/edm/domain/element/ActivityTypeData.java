@@ -29,8 +29,6 @@ import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
@@ -42,7 +40,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder
  */
 
 public class ActivityTypeData extends AbstractElement implements ActivityType, Serializable
@@ -71,7 +68,6 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	{
 		MetaDataBuilder<ActivityType, ActivityTypeData> builder = MetaDataBuilder.newInstance (ActivityType.class, ActivityTypeData.class);
 		builder.setCreateMethod (ActivityTypeData::new);
-		builder.setBuilder (DefaultActivityTypeBuilder.class);
 
 		builder.addProperty (ActivityType.Properties.ID, ActivityType::getId, ActivityTypeData::setId);
 

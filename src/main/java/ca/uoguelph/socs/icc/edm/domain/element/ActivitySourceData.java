@@ -28,8 +28,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivitySourceBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
@@ -41,7 +39,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivitySourceBuilder
  */
 
 public class ActivitySourceData extends AbstractElement implements ActivitySource, Serializable
@@ -67,7 +64,6 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	{
 		MetaDataBuilder<ActivitySource, ActivitySourceData> builder = MetaDataBuilder.newInstance (ActivitySource.class, ActivitySourceData.class);
 		builder.setCreateMethod (ActivitySourceData::new);
-		builder.setBuilder (DefaultActivitySourceBuilder.class);
 
 		builder.addProperty (ActivitySource.Properties.ID, ActivitySource::getId, ActivitySourceData::setId);
 		builder.addProperty (ActivitySource.Properties.NAME, ActivitySource::getName, ActivitySourceData::setName);

@@ -42,7 +42,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.AbstractActivityBuilder
  */
 
 public abstract class ActivityInstance extends AbstractActivity implements Serializable

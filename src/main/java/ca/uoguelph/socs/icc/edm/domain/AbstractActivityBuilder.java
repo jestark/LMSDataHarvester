@@ -14,48 +14,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.builder;
+package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
-import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.Element;
+import java.util.function.BiFunction;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
 
 /**
- * Abstract implementation of the <code>ActivityBuilder</code> interface.  This
- * class acts as the common base for all of the <code>ActivityBuilder</code>
+ * Abstract builder for <code>Activity</code> instances.  This class acts as
+ * the common base for all of the builders which produce <code>Activity</code>
  * instances, handling all of the common <code>Activity</code> components.
+ * <p>
+ * To create builders for <code>Activity</code> instances, the
+ * <code>ActivityType</code> must be supplied when the builder is created.  The
+ * <code>ActivityType</code> is needed to determine which <code>Activity</code>
+ * implementation class is to be created by the builder.  It is possible to
+ * specify an <code>ActivityType</code> which does not match the selected
+ * builder.  In this case the builder will be created successfully, but an
+ * exception will occur when a field is set in the builder that does not exist
+ * in the implementation, or when the implementation is built and a required
+ * field is determined to be missing.
  *
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The type of <code>Activity</code>
+ * @see     Activity
  */
 
-public abstract class AbstractActivityBuilder<T extends Activity> extends AbstractBuilder<T> implements ActivityBuilder<T>
+public abstract class AbstractActivityBuilder<T extends Activity> extends AbstractBuilder<T>
 {
 	/**
 	 * Get an instance of the <code>ActivityBuilder</code> which corresponds to
 	 * the specified <code>ActivityType</code>.
 	 *
-	 * @param  <T>       The <code>ActivityBuilder</code> type to be returned
-	 * @param  type      The <code>ActivityType</code> of the
-	 *                   <code>Activity</code> instances to be created
-	 * @param  datastore The <code>DataStore</code> instance, not null
+	 * @param  <T>       The <code>Element</code> type of the builder
+	 * @param  <U>       The type of the builder
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  type      The <code>ActivityType</code>, not null
+	 * @param  create    Method reference to the constructor for the builder
 	 */
 
-	public static final <T extends ActivityBuilder<U>, U extends Activity> T getInstance (final ActivityType type, final DataStore datastore)
+	public static <T extends Activity, U extends AbstractActivityBuilder<T>> U getInstance (final DataStore datastore, final ActivityType type, final BiFunction<DataStore, Builder<T>, U> create)
 	{
-		assert type != null : "type is NULL";
 		assert datastore != null : "datastore is NULL";
-		assert datastore.contains (type) : "ActivityType is not in the DataStore";
+		assert type != null : "type is NULL";
+		assert create != null : "create is NULL";
+		assert datastore.contains (type) : "type is not in the datastore";
 
-		T builder = AbstractBuilder.getInstance (AbstractActivity.getActivityClass (type), datastore);
-		((AbstractActivityBuilder) builder).setActivityType (type);
+		U builder = create.apply (datastore, AbstractBuilder.getBuilder (datastore, AbstractActivity.getActivityClass (type)));
+		builder.setActivityType (type);
 
 		return builder;
 	}
@@ -70,26 +79,10 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	 *                   inserted
 	 */
 
-	public AbstractActivityBuilder (final Class<?> impl, final DataStore datastore)
+	protected AbstractActivityBuilder (final DataStore datastore, final Builder<T> builder)
 	{
-		super (impl, datastore);
+		super (datastore, builder);
 	}
-
-	/**
-	 * Load a <code>Activity</code> instance into the
-	 * <code>ActivityBuilder</code>.  This method resets the
-	 * <code>ActivityBuilder</code> and initializes all of its parameters from
-	 * the specified <code>Activity</code> instance.  The parameters are
-	 * validated as they are set.
-	 *
-	 * @param  activity                 The <code>Activity</code> to load into
-	 *                                  the <code>ActivityBuilder</code>, not
-	 *                                  null
-	 *
-	 * @throws IllegalArgumentException If any of the fields in the
-	 *                                  <code>Activity</code> instance to be
-	 *                                  loaded are not valid
-	 */
 
 	@Override
 	public void load (final T activity)
@@ -120,7 +113,6 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	 * @return The <code>ActivityType</code> instance
 	 */
 
-	@Override
 	public final ActivityType getActivityType ()
 	{
 		return this.builder.getPropertyValue (Activity.Properties.TYPE);
@@ -132,7 +124,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	 * @param  type The <code>Course</code>, not null
 	 */
 
-	private void setActivityType (final ActivityType type)
+	protected void setActivityType (final ActivityType type)
 	{
 		this.log.trace ("setActivityType: type={}", type);
 
@@ -149,7 +141,6 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	 * @return The <code>Course</code> instance
 	 */
 
-	@Override
 	public final Course getCourse ()
 	{
 		return this.builder.getPropertyValue (Activity.Properties.COURSE);
@@ -165,7 +156,6 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	 *                                  exist in the <code>DataStore</code>
 	 */
 
-	@Override
 	public final void setCourse (final Course course)
 	{
 		this.log.trace ("setCourse: course={}", course);

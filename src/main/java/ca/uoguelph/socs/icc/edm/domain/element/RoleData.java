@@ -24,8 +24,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
@@ -36,7 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder
  */
 
 
@@ -60,7 +57,6 @@ public class RoleData extends AbstractElement implements Role, Serializable
 	{
 		MetaDataBuilder<Role, RoleData> builder = MetaDataBuilder.newInstance (Role.class, RoleData.class);
 		builder.setCreateMethod (RoleData::new);
-		builder.setBuilder (DefaultRoleBuilder.class);
 
 		builder.addProperty (Role.Properties.ID, Role::getId, RoleData::setId);
 		builder.addProperty (Role.Properties.NAME, Role::getName, RoleData::setName);

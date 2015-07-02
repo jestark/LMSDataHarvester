@@ -16,9 +16,11 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
- * Create new <code>Role</code> instances.  This interface extends the
- * <code>ElementBuilder</code> by adding the functionality required to
+ * Create new <code>Role</code> instances.  This class extends
+ * <code>AbstractBuilder</code>, adding the functionality required to
  * create <code>Role</code> instances.
  *
  * @author  James E. Stark
@@ -26,8 +28,119 @@ package ca.uoguelph.socs.icc.edm.domain;
  * @see     Role
  */
 
-public interface RoleBuilder extends ElementBuilder<Role>
+public final class RoleBuilder extends AbstractBuilder<Role>
 {
+	/**
+	 * Get an instance of the <code>RoleBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>RoleBuilder</code> instance
+	 */
+
+	public static RoleBuilder getInstance (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new RoleBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (Role.class)));
+	}
+
+	/**
+	 * Get an instance of the <code>RoleBuilder</code> for the specified
+	 * <code>DataStore</code>, loaded with the data from the specified
+	 * <code>Role</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  role      The <code>Role</code>, not null
+	 *
+	 * @return           The <code>RoleBuilder</code> instance
+	 */
+
+	public static RoleBuilder getInstance (final DataStore datastore, Role role)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert role != null : "role is NULL";
+
+		RoleBuilder builder = RoleBuilder.getInstance (datastore);
+		builder.load (role);
+
+		return builder;
+	}
+
+	/**
+	 * Get an instance of the <code>RoleBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>RoleBuilder</code> instance
+	 */
+
+
+	public static RoleBuilder getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return RoleBuilder.getInstance (model.getDataStore ());
+	}
+
+	/**
+	 * Get an instance of the <code>RoleBuilder</code> for the specified
+	 * <code>DomainModel</code>, loaded with the data from the specified
+	 * <code>Role</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  role  The <code>Role</code>, not null
+	 *
+	 * @return       The <code>RoleBuilder</code> instance
+	 */
+
+	public static RoleBuilder getInstance (final DomainModel model, Role role)
+	{
+		if (role == null)
+		{
+			throw new NullPointerException ("role is NULL");
+		}
+
+		RoleBuilder builder = RoleBuilder.getInstance (model);
+		builder.load (role);
+
+		return builder;
+	}
+
+	/**
+	 * Create the <code>RoleBuilder</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  builder   The <code>Builder</code>, not null
+	 */
+
+	protected RoleBuilder (final DataStore datastore, final Builder<Role> builder)
+	{
+		super (datastore, builder);
+	}
+
+	@Override
+	public void load (final Role role)
+	{
+		this.log.trace ("load: role={}", role);
+
+		if (role == null)
+		{
+			this.log.error ("Attempting to load a NULL Role");
+			throw new NullPointerException ();
+		}
+
+		super.load (role);
+		this.setName (role.getName ());
+
+		this.builder.setProperty (Role.Properties.ID, role.getId ());
+	}
+
 	/**
 	 * Get the name of the <code>Role</code>.
 	 *
@@ -35,7 +148,10 @@ public interface RoleBuilder extends ElementBuilder<Role>
 	 *         <code>Role</code>
 	 */
 
-	public abstract String getName ();
+	public String getName ()
+	{
+		return this.builder.getPropertyValue (Role.Properties.NAME);
+	}
 
 	/**
 	 * Set the name of the <code>Role</code>.
@@ -46,5 +162,22 @@ public interface RoleBuilder extends ElementBuilder<Role>
 	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public abstract void setName (String name);
+	public void setName (final String name)
+	{
+		this.log.trace ("setName: name={}", name);
+
+		if (name == null)
+		{
+			this.log.error ("name is NULL");
+			throw new NullPointerException ("Name is NULL");
+		}
+
+		if (name.length () == 0)
+		{
+			this.log.error ("name is an empty string");
+			throw new IllegalArgumentException ("name is empty");
+		}
+
+		this.builder.setProperty (Role.Properties.NAME, name);
+	}
 }

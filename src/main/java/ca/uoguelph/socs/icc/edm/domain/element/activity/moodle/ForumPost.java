@@ -22,8 +22,6 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
@@ -43,7 +41,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  * <li>ActivityType   = forum
  * <li>ClassName      = ForumPost
  * <li>ParentClass    = ForumDiscussion
- * <li>Builder        = DefaultSubActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
@@ -64,7 +61,6 @@ public class ForumPost extends GenericSubActivity
 	{
 		MetaDataBuilder<SubActivity, ForumPost> builder = MetaDataBuilder.newInstance (SubActivity.class, ForumPost.class);
 		builder.setCreateMethod (ForumPost::new);
-		builder.setBuilder (DefaultSubActivityBuilder.class);
 
 		builder.addProperty (SubActivity.Properties.ID, SubActivity::getId, ForumPost::setId);
 		builder.addProperty (SubActivity.Properties.COURSE, SubActivity::getCourse, null);

@@ -17,11 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain.element;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.ElementBuilder;
-
-import ca.uoguelph.socs.icc.edm.domain.builder.AbstractBuilder;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
 
@@ -48,9 +43,6 @@ public abstract class AbstractElement implements Element
 	protected static <T extends Element, U extends T> void registerElement (final MetaData<T, U> metadata)
 	{
 		assert metadata != null : "metadata is NULL";
-
-		AbstractBuilder.registerElement (metadata);
-		DataStore.registerElement (metadata);
 	}
 
 	/**

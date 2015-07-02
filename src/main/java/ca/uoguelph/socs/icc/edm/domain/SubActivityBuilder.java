@@ -16,45 +16,126 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
- * Create <code>SubActivity</code> instances.  This interface extends the
- * <code>ElementBuilder</code> interface with the functionality required to
- * handle <code>SubActivity</code> instances.  It is indented that this
- * interface will act as a base for all of the <code>ElementBuilder</code>
- * implementations which handle <code>SubActivity</code> instances.
+ * Create <code>SubActivity</code> instances.  This class provides a default
+ * implementation of the <code>AbstractSubActivityBuilder</code> without adding
+ * any additional functionality.
  *
  * @author  James E. Stark
  * @version 1.0
+ * @see     SubActivity
  */
 
-public interface SubActivityBuilder<T extends SubActivity> extends ElementBuilder<T>
+public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActivity>
 {
 	/**
-	 * Get the name of the <code>Activity</code>.
+	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
+	 * <code>DataStore</code>.
 	 *
-	 * @return A <code>String</code> containing the name of the
-	 *         <code>SubActivity</code>
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>SubActivityBuilder</code> instance
 	 */
 
-	public abstract String getName ();
+	public static SubActivityBuilder getInstance (final DataStore datastore, Activity parent)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert parent != null : "parent is NULL";
+		assert datastore.contains (parent) : "parent is not in the datastore";
+
+		return AbstractSubActivityBuilder.getInstance (datastore, parent, SubActivityBuilder::new);
+	}
 
 	/**
-	 * Set the name of the <code>SubActivity</code>.
-	 *
-	 * @param  name                     The name of the
-	 *                                  <code>SubActivity</code>, not null
-	 *
-	 * @throws IllegalArgumentException If the name is empty
-	 */
-
-	public abstract void setName (String name);
-
-	/**
-	 * Get the parent <code>Activity</code> instance for the
+	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
+	 * <code>DataStore</code>, loaded with the data from the specified
 	 * <code>SubActivity</code>.
 	 *
-	 * @return The parent <code>Activity</code>
+	 * @param  datastore   The <code>DataStore</code>, not null
+	 * @param  subactivity The <code>SubActivity</code>, not null
+	 *
+	 * @return             The <code>SubActivityBuilder</code> instance
 	 */
 
-	public abstract Activity getParent ();
+	public static SubActivityBuilder getInstance (final DataStore datastore, SubActivity subactivity)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert subactivity != null : "subactivity is NULL";
+
+		SubActivityBuilder builder = SubActivityBuilder.getInstance (datastore, subactivity.getParent ());
+		builder.load (subactivity);
+
+		return builder;
+	}
+
+	/**
+	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model   The <code>DomainModel</code>, not null
+	 *
+	 * @return         The <code>SubActivityBuilder</code> instance
+	 */
+
+
+	public static SubActivityBuilder getInstance (final DomainModel model, Activity parent)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		if (parent == null)
+		{
+			throw new NullPointerException ("parent is NULL");
+		}
+
+		if (! model.contains (parent))
+		{
+			throw new IllegalArgumentException ("parent is not in the datastore");
+		}
+
+		return SubActivityBuilder.getInstance (model.getDataStore (), parent);
+	}
+
+	/**
+	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
+	 * <code>DomainModel</code>, loaded with the data from the specified
+	 * <code>SubActivity</code>.
+	 *
+	 * @param  model       The <code>DomainModel</code>, not null
+	 * @param  subactivity The <code>SubActivity</code>, not null
+	 *
+	 * @return             The <code>SubActivityBuilder</code> instance
+	 */
+
+	public static SubActivityBuilder getInstance (final DomainModel model, SubActivity subactivity)
+	{
+		if (subactivity == null)
+		{
+			throw new NullPointerException ("subactivity is NULL");
+		}
+
+		SubActivityBuilder builder = SubActivityBuilder.getInstance (model, subactivity.getParent ());
+		builder.load (subactivity);
+
+		return builder;
+	}
+
+	/**
+	 * Create the <code>SubActivityBuilder</code>.
+	 *
+	 * @param  impl      The implementation class of the <code>Element</code>
+	 *                   to be built
+	 * @param  datastore The <code>DataStore</code> into which the newly
+	 *                   created <code>GenericActivity</code> instance will be
+	 *                   inserted
+	 */
+
+	protected SubActivityBuilder (final DataStore datastore, final Builder<SubActivity> builder)
+	{
+		super (datastore, builder);
+	}
 }

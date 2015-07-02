@@ -28,8 +28,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultActionBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
@@ -40,8 +38,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActionBuilder
- * @see     ca.uoguelph.socs.icc.edm.domain.manager.DefaultActionManager
  */
 
 public class ActionData extends AbstractElement implements Action, Serializable
@@ -67,7 +63,6 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	{
 		MetaDataBuilder<Action, ActionData> builder = MetaDataBuilder.newInstance (Action.class, ActionData.class);
 		builder.setCreateMethod (ActionData::new);
-		builder.setBuilder (DefaultActionBuilder.class);
 
 		builder.addProperty (Action.Properties.ID, Action::getId, ActionData::setId);
 		builder.addProperty (Action.Properties.NAME, Action::getName, ActionData::setName);

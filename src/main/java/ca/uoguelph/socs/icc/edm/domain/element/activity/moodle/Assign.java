@@ -24,8 +24,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
@@ -44,7 +42,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  * <li>ActivitySource = moodle
  * <li>ActivityType   = assign
  * <li>ClassName      = Assign
- * <li>Builder        = DefaultNamedActivityBuilder
  * </ul>
  *
  * @author  James E. Stark
@@ -65,7 +62,6 @@ public class Assign extends GenericNamedActivity
 	{
 		MetaDataBuilder<Activity, Assign> builder = MetaDataBuilder.newInstance (Activity.class, Assign.class);
 		builder.setCreateMethod (Assign::new);
-		builder.setBuilder (DefaultNamedActivityBuilder.class);
 
 		builder.addProperty (Activity.Properties.ID, Activity::getId, Assign::setId);
 		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Assign::setCourse);

@@ -24,8 +24,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.${Builder};
-
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
@@ -44,7 +42,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
  * <li>ActivitySource = ${ActivitySource}
  * <li>ActivityType   = ${ActivityType}
  * <li>ClassName      = ${ClassName}
- * <li>Builder        = ${Builder}
  * </ul>
  *
  * @author  James E. Stark
@@ -65,7 +62,6 @@ public class ${ClassName} extends GenericNamedActivity
 	{
 		MetaDataBuilder<Activity, ${ClassName}> builder = MetaDataBuilder.newInstance (Activity.class, ${ClassName}.class);
 		builder.setCreateMethod (${ClassName}::new);
-		builder.setBuilder (${Builder}.class);
 
 		builder.addProperty (Activity.Properties.ID, Activity::getId, ${ClassName}::setId);
 		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, ${ClassName}::setCourse);

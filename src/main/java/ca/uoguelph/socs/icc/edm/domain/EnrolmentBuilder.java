@@ -16,18 +16,134 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
- * Create new <code>Enrolment</code> instances.  This interface extends the
- * <code>ElementBuilder</code> by adding the functionality required to
- * create <code>Enrolment</code> instances.
+ * Create new <code>Enrolment</code> instances.  This class extends
+ * <code>AbstractBuilder</code>, adding the functionality required to
+ * create <code>Enrolment</code> instances.  The "finalgrade" and "usable"
+ * fields may be modified in place.
  *
  * @author  James E. Stark
  * @version 1.0
  * @see     Enrolment
  */
 
-public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
+public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 {
+	/**
+	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>EnrolmentBuilder</code> instance
+	 */
+
+	public static EnrolmentBuilder getInstance (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new EnrolmentBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (Enrolment.class)));
+	}
+
+	/**
+	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
+	 * <code>DataStore</code>, loaded with the data from the specified
+	 * <code>Enrolment</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  enrolment The <code>Enrolment</code>, not null
+	 *
+	 * @return           The <code>EnrolmentBuilder</code> instance
+	 */
+
+	public static EnrolmentBuilder getInstance (final DataStore datastore, Enrolment enrolment)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert enrolment != null : "enrolment is NULL";
+
+		EnrolmentBuilder builder = EnrolmentBuilder.getInstance (datastore);
+		builder.load (enrolment);
+
+		return builder;
+	}
+
+	/**
+	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>EnrolmentBuilder</code> instance
+	 */
+
+
+	public static EnrolmentBuilder getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return EnrolmentBuilder.getInstance (model.getDataStore ());
+	}
+
+	/**
+	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
+	 * <code>DomainModel</code>, loaded with the data from the specified
+	 * <code>Enrolment</code>.
+	 *
+	 * @param  model     The <code>DomainModel</code>, not null
+	 * @param  enrolment The <code>Enrolment</code>, not null
+	 *
+	 * @return           The <code>EnrolmentBuilder</code> instance
+	 */
+
+	public static EnrolmentBuilder getInstance (final DomainModel model, Enrolment enrolment)
+	{
+		if (enrolment == null)
+		{
+			throw new NullPointerException ("enrolment is NULL");
+		}
+
+		EnrolmentBuilder builder = EnrolmentBuilder.getInstance (model);
+		builder.load (enrolment);
+
+		return builder;
+	}
+
+	/**
+	 * Create the <code>EnrolmentBuilder</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  builder   The <code>Builder</code>, not null
+	 */
+
+	protected EnrolmentBuilder (final DataStore datastore, final Builder<Enrolment> builder)
+	{
+		super (datastore, builder);
+	}
+
+	@Override
+	public void load (final Enrolment enrolment)
+	{
+		this.log.trace ("load: enrolment={}", enrolment);
+
+		if (enrolment == null)
+		{
+			this.log.error ("Attempting to load a NULL Enrolment");
+			throw new NullPointerException ();
+		}
+
+		super.load (enrolment);
+		this.setCourse (enrolment.getCourse ());
+		this.setFinalGrade (enrolment.getFinalGrade ());
+		this.setRole (enrolment.getRole ());
+
+		this.builder.setProperty (Enrolment.Properties.ID, enrolment.getId ());
+	}
+
 	/**
 	 * Get the <code>Course</code> in which the <code>User</code> represented
 	 * by the <code>Enrolment</code> instance is enrolled.
@@ -35,7 +151,10 @@ public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
 	 * @return The <code>Course</code> instance
 	 */
 
-	public abstract Course getCourse ();
+	public Course getCourse ()
+	{
+		return this.builder.getPropertyValue (Enrolment.Properties.COURSE);
+	}
 
 	/**
 	 * Set the <code>Course</code> in which the <code>User</code> is enrolled.
@@ -46,7 +165,24 @@ public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public abstract void setCourse (Course course);
+	public void setCourse (final Course course)
+	{
+		this.log.trace ("setCourse: course={}", course);
+
+		if (course == null)
+		{
+			this.log.error ("Course is NULL");
+			throw new NullPointerException ("Course is NULL");
+		}
+
+		if (! this.datastore.contains (course))
+		{
+			this.log.error ("This specified Course does not exist in the DataStore");
+			throw new IllegalArgumentException ("Course is not in the DataStore");
+		}
+
+		this.builder.setProperty (Enrolment.Properties.COURSE, course);
+	}
 
 	/**
 	 * Get the <code>Role</code> of the <code>User</code> represented by this
@@ -55,7 +191,10 @@ public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
 	 * @return The <code>Role</code> instance
 	 */
 
-	public abstract Role getRole ();
+	public Role getRole ()
+	{
+		return this.builder.getPropertyValue (Enrolment.Properties.ROLE);
+	}
 
 	/**
 	 * Set the <code>Role</code> of the <code>User</code> in the
@@ -67,7 +206,24 @@ public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public abstract void setRole (Role role);
+	public void setRole (final Role role)
+	{
+		this.log.trace ("setRole: role={}", role);
+
+		if (role == null)
+		{
+			this.log.error ("Role is NULL");
+			throw new NullPointerException ("Role is NULL");
+		}
+
+		if (! this.datastore.contains (role))
+		{
+			this.log.error ("This specified Role does not exist in the DataStore");
+			throw new IllegalArgumentException ("Role is not in the DataStore");
+		}
+
+		this.builder.setProperty (Enrolment.Properties.ROLE, role);
+	}
 
 	/**
 	 * Get the final grade for the <code>User</code> represented by this
@@ -79,7 +235,10 @@ public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
 	 *         there is no final grade
 	 */
 
-	public abstract Integer getFinalGrade ();
+	public Integer getFinalGrade ()
+	{
+		return this.builder.getPropertyValue (Enrolment.Properties.FINALGRADE);
+	}
 
 	/**
 	 * Set the final grade for the <code>User</code> in the
@@ -92,7 +251,18 @@ public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
 	 *                                  greater than 100
 	 */
 
-	public abstract void setFinalGrade (Integer finalgrade);
+	public void setFinalGrade (final Integer finalgrade)
+	{
+		this.log.trace ("setFinalGrade: finalgrade={}", finalgrade);
+
+		if ((finalgrade != null) && ((finalgrade < 0) || (finalgrade > 100)))
+		{
+			this.log.error ("Grade must be between 0 and 100");
+			throw new IllegalArgumentException ("Grade must be between 0 and 100");
+		}
+
+		this.builder.setProperty (Enrolment.Properties.FINALGRADE, finalgrade);
+	}
 
 	/**
 	 * Determine if the <code>User</code> has given their consent for the data
@@ -102,7 +272,10 @@ public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
 	 *         <code>False</code> otherwise.
 	 */
 
-	public abstract Boolean isUsable ();
+	public Boolean isUsable ()
+	{
+		return this.builder.getPropertyValue (Enrolment.Properties.USABLE);
+	}
 
 	/**
 	 * Set the usable flag for the data related to the <code>User</code> in the
@@ -113,5 +286,16 @@ public interface EnrolmentBuilder extends ElementBuilder<Enrolment>
 	 * @param  usable Indication if the data may be used for research, not null
 	 */
 
-	public abstract void setUsable (Boolean usable);
+	public void setUsable (final Boolean usable)
+	{
+		this.log.trace ("setUsable: usable={}", usable);
+
+		if (usable == null)
+		{
+			this.log.error ("usable is NULL");
+			throw new NullPointerException ("usable is NULL");
+		}
+
+		this.builder.setProperty (Enrolment.Properties.USABLE, usable);
+	}
 }

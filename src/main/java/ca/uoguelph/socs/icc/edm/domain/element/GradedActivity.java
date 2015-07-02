@@ -27,8 +27,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
 
 /**
@@ -65,7 +63,6 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	{
 		MetaDataBuilder<Grade, GradedActivity> builder = MetaDataBuilder.newInstance (Grade.class, GradedActivity.class);
 		builder.setCreateMethod (GradedActivity::new);
-		builder.setBuilder (DefaultGradeBuilder.class);
 
 		builder.addProperty (Grade.Properties.ID, Grade::getId, null);
 		builder.addProperty (Grade.Properties.ACTIVITY, Grade::getActivity, GradedActivity::setActivity);
