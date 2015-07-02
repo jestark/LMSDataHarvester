@@ -238,6 +238,6 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 		assert this.create != null : "create is NULL";
 		assert this.properties.equals (this.refs.keySet ()) : "Missing references from some properties";
 
-		return new MetaData<T, U> (this.definition, this.impl, this.builder, this.create, this.refs);
+		return MetaData.registerMetaData (new MetaData<T, U> (this.definition, this.impl, this.builder, this.create, this.refs));
 	}
 }

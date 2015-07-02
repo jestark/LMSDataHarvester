@@ -59,6 +59,9 @@ public class MetaData<T extends Element, U extends T>
 	/** Map of <code>Element</code> interface definitions */
 	private static final Map<Class<? extends Element>, Definition<? extends Element>> elements;
 
+	/** The <code>MetaData</code> container */
+	private static final Container container;
+
 	/** The interface definition for the <code>Element</code> */
 	private final Definition<T> element;
 
@@ -84,6 +87,27 @@ public class MetaData<T extends Element, U extends T>
 	static
 	{
 		elements = new HashMap<Class<? extends Element>, Definition<? extends Element>> ();
+		container = new Container ();
+	}
+
+	/**
+	 * Register a <code>MetaData</code> instance and add it to the
+	 * <code>Container</code>.
+	 *
+	 * @param  <T>      The <code>Element</code> interface type
+	 * @param  <U>      The <code>Element</code> implementation type
+	 * @param  metadata The <code>MetaData</code>, not null
+	 *
+	 * @return          The <code>MetaData</code>
+	 */
+
+	protected static <T extends Element, U extends T> MetaData<T, U> registerMetaData (final MetaData<T, U> metadata)
+	{
+		assert metadata != null : "metadata is NULL";
+
+		MetaData.container.put (metadata);
+
+		return metadata;
 	}
 
 	/**
