@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 James E. Stark
+/* Copyright (C) 2014, 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,26 +16,71 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
 /**
  * Load <code>Network</code> instances from the <code>DataStore</code>.  This
- * interface extends <code>ElementLoader</code> with the extra functionality
+ * class extends <code>AbstractLoader</code>, adding the functionality
  * required to handle <code>Network</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     NetworkBuilder
  */
 
-public interface NetworkLoader extends ElementLoader<Network>
+public final class NetworkLoader extends AbstractLoader<Network>
 {
 	/**
-	 * Retrieve a <code>Network</code> instance from the <code>DataStore</code>
-	 * based on  its name.
+	 * Get an instance of the <code>NetworkLoader</code> for the specified
+	 * <code>DomainModel</code>.
 	 *
-	 * @param  name The name of the <code>Network</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
 	 *
-	 * @return      A <code>Network</code> instance
+	 * @return       The <code>NetworkLoader</code>
 	 */
 
-	public abstract Network fetchByName (String name);
+	public NetworkLoader getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new NetworkLoader (model.getDataStore ());
+	}
+
+	/**
+	 * Create the <code>NetworkLoader</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 */
+
+	public NetworkLoader (final DataStore datastore)
+	{
+		super (Network.class, datastore);
+	}
+
+	/**
+	 * Retrieve a <code>Network</code> object from the underlying
+	 * <code>DataStore</code> based on its name.
+	 *
+	 * @param  name The name of the <code>Network</code>, not null
+	 * @return      A <code>Network</code> object
+	 */
+
+	public Network fetchByName (final String name)
+	{
+		this.log.trace ("fetchByName: name={}", name);
+
+		if (name == null)
+		{
+			this.log.error ("The specified Network name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Query<Network> query = this.fetchQuery (Network.Selectors.NAME);
+		query.setProperty (Network.Properties.NAME, name);
+
+		return query.query ();
+	}
 }

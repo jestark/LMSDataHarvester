@@ -16,46 +16,102 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
 /**
  * Load <code>User</code> instances from the <code>DataStore</code>.  This
- * interface extends <code>ElementLoader</code> with the extra functionality
+ * class extends <code>AbstractLoader</code>, adding the functionality
  * required to handle <code>User</code> instances.
- * <p>
- * Since the binding between <code>User</code> instances and
- * <code>enrolment</code> instances is weak, a <code>User</code> instance may
- * be removed from the <code>DataStore</code>
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     UserBuilder
  */
 
-public interface UserLoader extends ElementLoader<User>
+public final class UserLoader extends AbstractLoader<User>
 {
 	/**
-	 * Retrieve the <code>User</code> instance, with the specified id
+	 * Get an instance of the <code>UserLoader</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>UserLoader</code>
+	 */
+
+	public UserLoader getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new UserLoader (model.getDataStore ());
+	}
+
+	/**
+	 * Create the <code>DefaultUserLoader</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 */
+
+	public UserLoader (final DataStore datastore)
+	{
+		super (User.class, datastore);
+	}
+
+	/**
+	 * Retrieve a single <code>User</code> object, with the specified ID
 	 * number, from the <code>DataStore</code>.
 	 *
 	 * @param  idnumber The ID number of the <code>User</code> to retrieve, not
 	 *                  null
 	 *
-	 * @return          The <code>User</code> instance associated with the ID
+	 * @return          The <code>User</code> object associated with the ID
 	 *                  number
 	 */
 
-	public abstract User fetchByIdNumber (Integer idnumber);
+	public User fetchByIdNumber (final Integer idnumber)
+	{
+		this.log.trace ("fetchByIdNumber: idnumber={}", idnumber);
+
+		if (idnumber == null)
+		{
+			this.log.error ("The specified User ID number is NULL");
+			throw new NullPointerException ();
+		}
+
+		Query<User> query = this.fetchQuery (User.Selectors.IDNUMBER);
+		query.setProperty (User.Properties.IDNUMBER, idnumber);
+
+		return query.query ();
+	}
 
 	/**
-	 * Retrieve the <code>User</code> instance, with the specified username,
+	 * Retrieve a single <code>User</code> object, with the specified username,
 	 * from the <code>DataStore</code>.
 	 *
 	 * @param  username The username of the entry to retrieve, not null
 	 *
-	 * @return          The <code>User</code> instance associated with the
+	 * @return          The <code>User</code> object associated with the
 	 *                  username
 	 */
 
-	public abstract User fetchByUsername (String username);
+	public User fetchByUsername (final String username)
+	{
+		this.log.trace ("fetchByUsername: username={}", username);
+
+		if (username == null)
+		{
+			this.log.error ("The specified user name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Query<User> query = this.fetchQuery (User.Selectors.USERNAME);
+		query.setProperty (User.Properties.USERNAME, username);
+
+		return query.query ();
+	}
 
 	/**
 	 * Retrieve the <code>User</code> instance which is associated with the
@@ -68,5 +124,19 @@ public interface UserLoader extends ElementLoader<User>
 	 *                   <code>Enrolment</code>
 	 */
 
-	public abstract User fetchByEnrolment (Enrolment enrolment);
+	public User fetchByEnrolment (final Enrolment enrolment)
+	{
+		this.log.trace ("fetchByEnrolment: enrolment={}", enrolment);
+
+		if (enrolment == null)
+		{
+			this.log.error ("The specified enrolment is NULL");
+			throw new NullPointerException ();
+		}
+
+//		Query<User> query = this.fetchQuery ("enrolment");
+//		query.setProperty (query.getProperty ("enrolment", Enrolment.class), enrolment);
+
+		return null; // query.query ();
+	}
 }

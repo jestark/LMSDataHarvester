@@ -14,43 +14,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.loader;
+package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 import java.util.Map;
 
 import java.util.HashMap;
 
-import java.util.function.Function;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.ElementLoader;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.AbstractQuery;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 
 /**
- * Top level interface for all operations involving the domain model and the
- * underlying data-store.  This class and its subclasses are responsible for
- * all operations related to adding, retrieving or removing elements from the
- * domain model and its underlying data-store.
+ * Load <code>Element</code> instances from the <code>DataStore</code>.  This
+ * class and its sub-classes is responsible for preparing the
+ * <code>Query</code> instances required to load <code>Element</code> instances
+ * from the <code>DataStore</code>.  The loader classes are defined in terms of
+ * the <code>Element</code> interfaces.  A loader class exists for any
+ * <code>Element</code> interfaces where it is beneficial to load the
+ * <code>Element</code> instances via a <code>Query</code>.  A few of the
+ * <code>Element</code> interfaces are fully defined in terms of their
+ * relationships and as a result do not need a loader.
+ * <p>
+ * Loaders and <code>Query</code> query instances operate using a
+ * <code>Selector</code> which defines the <code>Query</code> in terms of a set
+ * of <code>Property</code> instances.  The loader classes translate the
+ * <code>Selector</code> into a method, which can be called normally.
  *
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The type of <code>Element</code> to be processed
+ * @see     ca.uoguelph.socs.icc.edm.domain.metadata.Selector
  */
 
-public abstract class AbstractLoader<T extends Element> implements ElementLoader<T>
+public abstract class AbstractLoader<T extends Element>
 {
-	/** <code>ElementLoader</code> factories */
-	private static final Map<Class<?>, Function<DataStore, ?>> factories;
-
 	/** The logger */
 	protected final Logger log;
 
@@ -61,79 +63,13 @@ public abstract class AbstractLoader<T extends Element> implements ElementLoader
 	protected final DataStore datastore;
 
 	/**
-	 * static initializer to create the factory.
-	 */
-
-	static
-	{
-		factories = new HashMap<Class<?>, Function<DataStore, ?>> ();
-	}
-
-	/**
-	 * Get an instance of an <code>ElementLoader</code> interface for the
-	 * specified <code>DataStore</code>.  This method is intended to be used by
-	 * the <code>DomainModel</code> and <code>ElementLoader</code> instances
-	 * to get an instance of the requeested <code>ElementLoader</code> as
-	 * required.
-	 *
-	 * @param  <T>       The type of <code>ElementLoader</code> to return
-	 * @param  <U>       The type of <code>Element</code> returned by the
-	 *                   <code>ElementLoader</code>
-	 * @param  element   The <code>Element</code> implementation class, not null
-	 * @param  datastore The <code>DataStore</code> upon which the
-	 *                   <code>ElementLoader</code> instance is to operate,
-	 *                   not null
-	 *
-	 * @return           An instance of the requested
-	 *                   <code>ElementLoader</code> interface on the specified
-	 *                   <code>DataStore</code>
-	 */
-
-	@SuppressWarnings("unchecked")
-	public static final <T extends ElementLoader<U>, U extends Element> T getInstance (final Class<U> element, final DataStore datastore)
-	{
-		assert element != null : "element is NULL";
-		assert datastore != null : "datastore is NULL";
-
-		assert AbstractLoader.factories.containsKey (element) : "No ElementLoader registered for " + element.getSimpleName ();
-
-		return (T) (AbstractLoader.factories.get (element)).apply (datastore);
-	}
-
-	/**
-	 * Register an <code>ElementLoader</code> implementation with the factory.
-	 * This method is intended to be used by the <code>ElementLoader</code>
-	 * implementations to register themselves with the factory so that they may
-	 * be instantiated on demand.
-	 *
-	 * @param  <T>     The type of <code>ElementLoader</code> to register
-	 * @param  <U>     The type of <code>Element</code> returned by the
-	 *                 <code>ElementLoader</code>
-	 * @param  element The <code>Element</code> interface class, not null
-	 * @param  factory Method reference to the <code>ElementLoader</code>
-	 *                 implementation class constructor, not null
-	 */
-
-	protected static final <T extends ElementLoader<U>, U extends Element> void registerLoader (final Class<U> element, final Function<DataStore, T> factory)
-	{
-		assert element != null : "element is NULL";
-		assert factory != null : "factory is NULL";
-
-		assert (! AbstractLoader.factories.containsKey (element)) : "Class already registered: " + element.getSimpleName ();
-
-		AbstractLoader.factories.put (element, factory);
-	}
-
-	/**
 	 * Create the <code>AbstractLoader</code>.
 	 *
-	 * @param  type      The type of <code>Element</code> which is being
-	 *                   managed, not null
-	 * @param  datastore The <code>DataStore</code> upon which this
-	 *                   <code>ElementLoader</code> will operate, not null
+	 * @param  type      The <code>Element</code> interface class, not null
+	 * @param  datastore The <code>DataStore</code>, not null
 	 */
 
-	public AbstractLoader (final Class<T> type, final DataStore datastore)
+	protected AbstractLoader (final Class<T> type, final DataStore datastore)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
@@ -161,7 +97,7 @@ public abstract class AbstractLoader<T extends Element> implements ElementLoader
 		assert impl != null : "impl is NULL";
 		assert this.type.isAssignableFrom (impl) : "impl does not extend " + this.type.getSimpleName ();
 
-		return AbstractQuery.getInstance (this.datastore, selector, impl);
+		return null; // AbstractQuery.getInstance (this.datastore, selector, impl);
 	}
 
 	/**
@@ -194,7 +130,6 @@ public abstract class AbstractLoader<T extends Element> implements ElementLoader
 	 * @return    The requested <code>Element</code>
 	 */
 
-	@Override
 	public T fetchById (final Long id)
 	{
 		this.log.trace ("fetchById: id={}", id);
@@ -218,7 +153,6 @@ public abstract class AbstractLoader<T extends Element> implements ElementLoader
 	 * @return A <code>List</code> of <code>Element</code> instances
 	 */
 
-	@Override
 	public List<T> fetchAll ()
 	{
 		this.log.trace ("fetchAll:");

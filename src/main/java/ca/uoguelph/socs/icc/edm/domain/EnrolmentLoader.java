@@ -18,18 +18,50 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
 /**
  * Load <code>Enrolment</code> instances from the <code>DataStore</code>.  This
- * interface extends <code>ElementLoader</code> with the extra functionality
+ * class extends <code>AbstractLoader</code>, adding the functionality
  * required to handle <code>Enrolment</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     EnrolmentBuilder
  */
 
-public interface EnrolmentLoader extends ElementLoader<Enrolment>
+public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 {
+	/**
+	 * Get an instance of the <code>EnrolmentLoader</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>EnrolmentLoader</code>
+	 */
+
+	public EnrolmentLoader getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new EnrolmentLoader (model.getDataStore ());
+	}
+
+	/**
+	 * Create the <code>EnrolmentLoader</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 */
+
+	public EnrolmentLoader (final DataStore datastore)
+	{
+		super (Enrolment.class, datastore);
+	}
+
 	/**
 	 * Retrieve a list of <code>Enrolment</code> objects from the
 	 * <code>DataStore</code> for the specified <code>Role</code>.
@@ -40,5 +72,19 @@ public interface EnrolmentLoader extends ElementLoader<Enrolment>
 	 * @return      A <code>List</code> of <code>Enrolment</code> instances
 	 */
 
-	public abstract List<Enrolment> fetchAllForRole (Role role);
+	public List<Enrolment> fetchAllForRole (final Role role)
+	{
+		this.log.trace ("fetchingAllForRole: role={}", role);
+
+		if (role == null)
+		{
+			this.log.error ("The specified Role is NULL");
+			throw new NullPointerException ();
+		}
+
+		Query<Enrolment> query = this.fetchQuery (Enrolment.Selectors.ROLE);
+		query.setProperty (Enrolment.Properties.ROLE, role);
+
+		return query.queryAll ();
+	}
 }

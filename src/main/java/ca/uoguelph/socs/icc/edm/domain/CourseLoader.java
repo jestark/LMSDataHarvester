@@ -18,18 +18,50 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
 /**
  * Load <code>Course</code> instances from the <code>DataStore</code>.  This
- * interface extends <code>ElementLoader</code> with the extra functionality
+ * class extends <code>AbstractLoader</code>, adding the functionality
  * required to handle <code>Course</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     CourseBuilder
  */
 
-public interface CourseLoader extends ElementLoader<Course>
+public final class CourseLoader extends AbstractLoader<Course>
 {
+	/**
+	 * Get an instance of the <code>CourseLoader</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>CourseLoader</code>
+	 */
+
+	public CourseLoader getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new CourseLoader (model.getDataStore ());
+	}
+
+	/**
+	 * Create the <code>CourseLoader</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 */
+
+	public CourseLoader (final DataStore datastore)
+	{
+		super (Course.class, datastore);
+	}
+
 	/**
 	 * Retrieve a course from the underlying data-store based on its name and
 	 * time of offering.
@@ -41,5 +73,33 @@ public interface CourseLoader extends ElementLoader<Course>
 	 * @return          A single <code>Course</code> object
 	 */
 
-	public abstract Course fetchByOffering (String name, Semester semester, Integer year);
+	public Course fetchByOffering (final String name, final Semester semester, final Integer year)
+	{
+		this.log.trace ("fetchAllForOffering: name={}, semester={}, year={}", name, semester, year);
+
+		if (semester == null)
+		{
+			this.log.error ("The specified semester is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (year == null)
+		{
+			this.log.error ("The specified year is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (name == null)
+		{
+			this.log.error ("The specified Course name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Query<Course> query = this.fetchQuery (Course.Selectors.OFFERING);
+		query.setProperty (Course.Properties.SEMESTER, semester);
+		query.setProperty (Course.Properties.YEAR, year);
+		query.setProperty (Course.Properties.NAME, name);
+
+		return query.query ();
+	}
 }

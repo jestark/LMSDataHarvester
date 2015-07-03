@@ -23,10 +23,10 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
  * A representation of the grade received by a <code>User</code> for a
  * particular <code>Activity</code>.  Instances of the <code>Grade</code>
  * interface are identified by the associated instances of the
- * <code>Activity</code> and <code>Enrolment</code> interfaces.  As such, an
- * <code>ElementLoader</code> does not exist for the <code>Grade</code>
- * interface, as the <code>Grade</code> instance may be retrieved from the
- * associated <code>Enrolment</code> or <code>Activity</code>.
+ * <code>Activity</code> and <code>Enrolment</code> interfaces.  As such, a
+ * loader does not exist for the <code>Grade</code> interface, as the
+ * <code>Grade</code> instance may be retrieved from the associated
+ * <code>Enrolment</code> or <code>Activity</code>.
  * <p>
  * Within the domain model, <code>Grade</code> is a leaf level interface.  No
  * instances of any other domain model interface depend upon the existence of

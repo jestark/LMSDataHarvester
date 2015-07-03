@@ -16,26 +16,71 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
 /**
  * Load <code>Role</code> instances from the <code>DataStore</code>.  This
- * interface extends <code>ElementLoader</code> with the extra functionality
+ * class extends <code>AbstractLoader</code>, adding the functionality
  * required to handle <code>Role</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     RoleBuilder
  */
 
-public interface RoleLoader extends ElementLoader<Role>
+public final class RoleLoader extends AbstractLoader<Role>
 {
 	/**
-	 * Retrieve a <code>Role</code> instance from the <code>DataStore</code>
-	 * based on  its name.
+	 * Get an instance of the <code>RoleLoader</code> for the specified
+	 * <code>DomainModel</code>.
 	 *
-	 * @param  name The name of the <code>Role</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
 	 *
-	 * @return      A <code>Role</code> instance
+	 * @return       The <code>RoleLoader</code>
 	 */
 
-	public abstract Role fetchByName (String name);
+	public RoleLoader getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new RoleLoader (model.getDataStore ());
+	}
+
+	/**
+	 * Create the <code>DefaultRoleLoader</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 */
+
+	public RoleLoader (final DataStore datastore)
+	{
+		super (Role.class, datastore);
+	}
+
+	/**
+	 * Retrieve a <code>Role</code> object from the underlying
+	 * <code>DataStore</code> based on its name.
+	 *
+	 * @param  name The name of the <code>Role</code>, not null
+	 * @return      A <code>Role</code> object
+	 */
+
+	public Role fetchByName (final String name)
+	{
+		this.log.trace ("fetchByName: name={}", name);
+
+		if (name == null)
+		{
+			this.log.error ("The specified Role name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Query<Role> query = this.fetchQuery (Role.Selectors.NAME);
+		query.setProperty (Role.Properties.NAME, name);
+
+		return query.query ();
+	}
 }

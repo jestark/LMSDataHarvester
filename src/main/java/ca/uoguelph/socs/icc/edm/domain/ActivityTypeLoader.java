@@ -16,29 +16,83 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
 /**
  * Load <code>ActivityType</code> instances from the <code>DataStore</code>.
- * This interface extends <code>ElementLoader</code> with the extra
- * functionality required to handle <code>ActivityType</code> instances.
+ * This class extends <code>AbstractLoader</code>, adding the functionality
+ * required to handle <code>ActivityType</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ActivityTypeBuilder
  */
 
-public interface ActivityTypeLoader extends ElementLoader<ActivityType>
+public final class ActivityTypeLoader extends AbstractLoader<ActivityType>
 {
 	/**
-	 * Retrieve the <code>ActivityType</code> object from the underlying
-	 * data-store which has the specified <code>ActivitySource</code> and name.
+	 * Get an instance of the <code>ActivityLoader</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>ActivityLoader</code>
+	 */
+
+	public ActivityTypeLoader getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new ActivityTypeLoader (model.getDataStore ());
+	}
+
+	/**
+	 * Create the <code>ActivityTypeLoader</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 */
+
+	public ActivityTypeLoader (final DataStore datastore)
+	{
+		super (ActivityType.class, datastore);
+	}
+
+	/**
+	 * Retrieve the <code>ActivityType</code> object from the
+	 * <code>DataStore</code> which has the specified
+	 * <code>ActivitySource</code> and name.
 	 *
 	 * @param  source The <code>ActivitySource</code> containing the
 	 *                <code>ActivityType</code>, not null
 	 * @param  name   The name of the <code>ActivityType</code>, not null
 	 *
-	 * @return        The <code>ActivityType</code> object which is associated
-	 *                with the specified source and name
+	 * @return        The <code>ActivityType</code> instance which is
+	 *                associated with the specified source and name
 	 */
 
-	public abstract ActivityType fetchByName (ActivitySource source, String name);
+	public ActivityType fetchByName (final ActivitySource source, final String name)
+	{
+		this.log.trace ("fetchByName source={}, name={}", source, name);
+
+		if (source == null)
+		{
+			this.log.error ("The specified ActivitySource is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (name == null)
+		{
+			this.log.error ("The specified ActivityType name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Query<ActivityType> query = this.fetchQuery (ActivityType.Selectors.NAME);
+		query.setProperty (ActivityType.Properties.SOURCE, source);
+		query.setProperty (ActivityType.Properties.NAME, name);
+
+		return query.query ();
+	}
 }

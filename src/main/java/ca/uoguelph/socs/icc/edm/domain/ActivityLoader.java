@@ -18,18 +18,54 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
+import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
+
 /**
  * Load <code>Activity</code> instances from the <code>DataStore</code>.  This
- * interface extends <code>ElementLoader</code> with the extra functionality
+ * class extends <code>AbstractLoader</code>, adding the functionality
  * required to handle <code>Activity</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ActivityBuilder
  */
 
-public interface ActivityLoader extends ElementLoader<Activity>
+public final class ActivityLoader extends AbstractLoader<Activity>
 {
+	/**
+	 * Get an instance of the <code>ActivityLoader</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>ActivityLoader</code>
+	 */
+
+	public ActivityLoader getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new ActivityLoader (model.getDataStore ());
+	}
+
+	/**
+	 * Create the <code>ActivityLoader</code>.
+	 *
+	 * @param  datastore The instance of the <code>DataStore</code> upon which
+	 *                   the <code>ActivityLoader</code> will operate, not
+	 *                   null
+	 */
+
+	protected ActivityLoader (final DataStore datastore)
+	{
+		super (Activity.class, datastore);
+	}
+
 	/**
 	 * Get a <code>List</code> of all of the <code>Activity</code> instances
 	 * which are associated with a particular <code>ActivityType</code>.
@@ -37,5 +73,18 @@ public interface ActivityLoader extends ElementLoader<Activity>
 	 * @param  type The <code>ActivityType</code>, not null
 	 */
 
-	public abstract List<Activity> fetchAllForType (ActivityType type);
+	public List<Activity> fetchAllForType (final ActivityType type)
+	{
+		this.log.trace ("fetchAllForType: type={}", type);
+
+		if (type == null)
+		{
+			this.log.error ("The specified ActivityType is NULL");
+			throw new NullPointerException ();
+		}
+
+		Query<Activity> query = this.fetchQuery (Activity.Selectors.ALL, AbstractActivity.getActivityClass (type));
+
+		return query.queryAll ();
+	}
 }

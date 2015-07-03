@@ -19,28 +19,74 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Date;
 import java.util.List;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
 /**
  * Load <code>LogEntry</code> instances from the <code>DataStore</code>.  This
- * interface extends <code>ElementLoader</code> with the extra functionality
+ * class extends <code>AbstractLoader</code>, adding the functionality
  * required to handle <code>LogEntry</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     LogEntryBuilder
  */
 
-public interface LogEntryLoader extends ElementLoader<LogEntry>
+public final class LogEntryLoader extends AbstractLoader<LogEntry>
 {
 	/**
-	 * Retrieve a list of <code>LogEntry</code> objects, which are associated
-	 * with the specified course, from the <code>DataStore</code>.
+	 * Get an instance of the <code>LogEntryLoader</code> for the specified
+	 * <code>DomainModel</code>.
 	 *
-	 * @param  course The <code>Course</code> for which the list of
-	 *                <code>LogEntry</code> objects should be retrieved, not
-	 *                null
+	 * @param  model The <code>DomainModel</code>, not null
 	 *
-	 * @return        A list of <code>LogEntry</code> objects
+	 * @return       The <code>LogEntryLoader</code>
 	 */
 
-	public abstract List<LogEntry> fetchAllforCourse (Course course);
+	public LogEntryLoader getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new LogEntryLoader (model.getDataStore ());
+	}
+
+	/**
+	 * Create the <code>LogEntryLoader</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 */
+
+	public LogEntryLoader (final DataStore datastore)
+	{
+		super (LogEntry.class, datastore);
+	}
+
+	/**
+	 * Retrieve a list of <code>LogEntry</code> instances, which are associated
+	 * with the specified <code>Course</code>, from the <code>DataStore</code>.
+	 *
+	 * @param  course The <code>Course</code> for which the <code>List</code>
+	 *                of <code>LogEntry</code> instances should be retrieved,
+	 *                not null
+	 *
+	 * @return        A <code>List</code> of <code>LogEntry</code> instances
+	 */
+
+	public List<LogEntry> fetchAllforCourse (final Course course)
+	{
+		this.log.trace ("fetchAllForCourse: course={}", course);
+
+		if (course == null)
+		{
+			this.log.error ("The specified Course is NULL");
+			throw new NullPointerException ();
+		}
+
+		Query<LogEntry> query = this.fetchQuery (LogEntry.Selectors.COURSE);
+		query.setProperty (LogEntry.Properties.COURSE, course);
+
+		return query.queryAll ();
+	}
 }

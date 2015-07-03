@@ -16,18 +16,51 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
 /**
  * Load <code>Action</code> instances from the <code>DataStore</code>.  This
- * interface extends <code>ElementLoader</code> with the extra functionality
+ * class extends <code>AbstractLoader</code>, adding the functionality
  * required to handle <code>Action</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ActionBuilder
  */
 
-public interface ActionLoader extends ElementLoader<Action>
+public final class ActionLoader extends AbstractLoader<Action>
 {
+	/**
+	 * Get an instance of the <code>ActionLoader</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>ActionLoader</code>
+	 */
+
+	public ActionLoader getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new ActionLoader (model.getDataStore ());
+	}
+
+	/**
+	 * Create the <code>ActionLoader</code>
+	 *
+	 * @param  datastore The instance of the <code>DataStore</code> upon which
+	 *                   the <code>ActionLoader</code> will operate, not null
+	 */
+
+	public ActionLoader (final DataStore datastore)
+	{
+		super (Action.class, datastore);
+	}
+
 	/**
 	 * Retrieve the <code>Action</code> with the specified name from the
 	 * <code>DataStore</code>.
@@ -37,5 +70,19 @@ public interface ActionLoader extends ElementLoader<Action>
 	 * @return      The <code>Action</code> associated with the specified name
 	 */
 
-	public abstract Action fetchByName (String name);
+	public Action fetchByName (final String name)
+	{
+		this.log.trace ("fetchByName: name={}", name);
+
+		if (name == null)
+		{
+			this.log.error ("The specified Action name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Query<Action> query = this.fetchQuery (Action.Selectors.NAME);
+		query.setProperty (Action.Properties.NAME, name);
+
+		return query.query ();
+	}
 }

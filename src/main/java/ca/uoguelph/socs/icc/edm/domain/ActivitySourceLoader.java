@@ -16,18 +16,52 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
 /**
  * Load <code>ActivitySource</code> instances from the <code>DataStore</code>.
- * This interface extends <code>ElementLoader</code> with the extra
- * functionality required to handle <code>ActivitySource</code> instances.
+ * This class extends <code>AbstractLoader</code>, adding the functionality
+ * required to handle <code>ActivitySource</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ActivitySourceBuilder
  */
 
-public interface ActivitySourceLoader extends ElementLoader<ActivitySource>
+public final class ActivitySourceLoader extends AbstractLoader<ActivitySource>
 {
+	/**
+	 * Get an instance of the <code>ActivitySourceLoader</code> for the
+	 * specified <code>DomainModel</code>.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The <code>ActivitySourceLoader</code>
+	 */
+
+	public ActivitySourceLoader getInstance (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new ActivitySourceLoader (model.getDataStore ());
+	}
+
+	/**
+	 * Create the <code>ActivitySourceLoader</code>.
+	 *
+	 * @param  datastore The instance of the <code>DataStore</code> upon which
+	 *                   the <code>ActivitySourceLoader</code> will operate,
+	 *                   not null
+	 */
+
+	public ActivitySourceLoader (final DataStore datastore)
+	{
+		super (ActivitySource.class, datastore);
+	}
+
 	/**
 	 * Retrieve the <code>ActivitySource</code> object associated with the
 	 * specified name from the <code>DataStore</code>.
@@ -39,5 +73,19 @@ public interface ActivitySourceLoader extends ElementLoader<ActivitySource>
 	 *              the specified name
 	 */
 
-	public abstract ActivitySource fetchByName (String name);
+	public ActivitySource fetchByName (final String name)
+	{
+		this.log.trace ("fetchByName: name={}", name);
+
+		if (name == null)
+		{
+			this.log.error ("The specified ActivitySource name is NULL");
+			throw new NullPointerException ();
+		}
+
+		Query<ActivitySource> query = this.fetchQuery (ActivitySource.Selectors.NAME);
+		query.setProperty (ActivitySource.Properties.NAME, name);
+
+		return query.query ();
+	}
 }

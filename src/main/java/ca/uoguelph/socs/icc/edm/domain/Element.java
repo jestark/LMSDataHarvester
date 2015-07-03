@@ -22,15 +22,11 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
 /**
  * Root level interface for all of the elements of the domain model.  The
  * primary purpose of the <code>Element</code> interface is to allow instances
- * of the <code>ElementBuilder</code> and <code>ElementLoader</code>
- * interfaces along with their supporting infrastructure to refer to use
- * bounded generic types when referring to the domain model interfaces and
- * their implementations.
+ * of the builders and loaders to use bounded generic types when referring to
+ * the domain model interfaces and their implementations.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ElementBuilder
- * @see     ElementLoader
  */
 
 public interface Element
