@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 
-import ca.uoguelph.socs.icc.edm.domain.loader.AbstractLoader;
-
 /**
  * Access and manipulate <code>Element</code> instances contained within the
  * encapsulated <code>DataStore</code>.  This class provides a High-level
@@ -69,6 +67,17 @@ public final class DomainModel
 		this.log = LoggerFactory.getLogger (DomainModel.class);
 
 		this.datastore = datastore;
+	}
+
+	/**
+	 * Get a reference to the <code>DataStore</code>.
+	 *
+	 * @return The <code>DataStore</code>
+	 */
+
+	protected DataStore getDataStore ()
+	{
+		return this.datastore;
 	}
 
 	/**
@@ -126,171 +135,6 @@ public final class DomainModel
 		}
 
 		return this.datastore.getTransaction ();
-	}
-
-	/**
-	 * Get an <code>ElementLoader</code> instance corresponding to the
-	 * specified <code>Element</code> interface.
-	 *
-	 * @param  <T>     The type of <code>ElementLoader</code> to return
-	 * @param  <U>     The type of <code>Element</code> operated on by the
-	 *                 <code>ElementLoader</code>
-	 * @param  element The <code>Element</code> interface class, not null
-	 *
-	 * @return         The <code>ElementLoader</code> instance
-	 */
-
-	public <T extends ElementLoader<U>, U extends Element> T getLoader (final Class<U> element)
-	{
-		this.log.trace ("getLoader: element={}", element);
-
-		if (element == null)
-		{
-			this.log.error ("Attempting to get a Loader for a NULL Element");
-			throw new NullPointerException ();
-		}
-
-		return AbstractLoader.getInstance (element, this.datastore);
-	}
-
-	/**
-	 * Get an <code>ElementBuilder</code> instance corresponding to the
-	 * specified <code>Element</code> interface.  This method will return the
-	 * correct <code>ElementBuilder</code> implementation for the specified
-	 * <code>Element</code> interface class, for the <code>DataStore</code>.
-	 *
-	 * @param  <T>                      The type of <code>ElementBuilder</code>
-	 *                                  to be returned
-	 * @param  <U>                      The type of <code>Element</code> to be
-	 *                                  built by the <code>ElementBuilder</code>
-	 * @param  element                  The <code>Element</code> interface
-	 *                                  class, not null
-	 *
-	 * @return                          The <code>ElementBuilder</code> instance
-	 * @throws IllegalStateException    If the <code>DataStore</code> is
-	 *                                  immutable
-	 * @throws IllegalArgumentException If the provided <code>Element</code>
-	 *                                  class is not an interface of is an
-	 *                                  <code>Activity</code> interface
-	 */
-
-	public <T extends ElementBuilder<U>, U extends Element> T getBuilder (final Class<? extends U> element)
-	{
-		this.log.trace ("getBuilder: element={}", element);
-
-		if (element == null)
-		{
-			this.log.error ("Attempting to get a builder for a NULL Element");
-			throw new NullPointerException ();
-		}
-
-		if (! this.datastore.isMutable ())
-		{
-			this.log.error ("Attempting to get an ElementBuilder for an immutable DataStore");
-			throw new IllegalStateException ("DataStore is immutable");
-		}
-
-		if (! element.isInterface ())
-		{
-			this.log.error ("Attempting to create an ElementBuilder using an implementation class");
-			throw new IllegalArgumentException ("Element Interface class Required");
-		}
-
-		if (Activity.class.isAssignableFrom (element))
-		{
-			this.log.error ("Can't create builder for Activity");
-			throw new IllegalArgumentException ("Can't create Activity builders");
-		}
-
-		return AbstractBuilder.getInstance (this.datastore.getElementClass (element), this.datastore);
-	}
-
-	/**
-	 * Get an <code>ElementBuilder</code> instance corresponding to the
-	 * specified <code>ActivityType</code>.  This method is a special case of
-	 * the <code>getBuilder</code> method which will determine and return the
-	 * correct <code>ActivityBuilder</code> based on the supplied
-	 * <code>ActivityType</code> instance.  The supplied
-	 * <code>ActivityType</code> instance does not need to exist in the
-	 * <code>DataStore</code>.  However, there must be an identical
-	 * <code>ActivityType</code> in the <code>DataStore</code>.
-	 *
-	 * @param  <T>     The type of <code>ActivityBuilder</code>
-	 * @param  <U>     The type of <code>Activity</code> to be created by the
-	 *                 <code>ActivityBuilder</code>
-	 * @param  type    The <code>ActivityType</code> of the
-	 *                 <code>Activity</code> to be created by the
-	 *                 <code>ActivityBuilder</code>
-	 *
-	 * @return         An <code>ActivityBuilder</code> instance
-	 */
-
-	public <T extends ActivityBuilder<U>, U extends Activity> T getBuilder (final ActivityType type)
-	{
-		this.log.trace ("getBuilder: type={}", type);
-
-		if (type == null)
-		{
-			this.log.error ("Attempting to get a Builder for a NULL ActivityType");
-			throw new NullPointerException ();
-		}
-
-		if (! this.datastore.isMutable ())
-		{
-			this.log.error ("Attempting to get an ElementBuilder for an immutable DataStore");
-			throw new IllegalStateException ("DataStore is immutable");
-		}
-
-		if (! this.datastore.contains (type))
-		{
-			this.log.error ("This specified ActivityType does not exist in the DataStore");
-			throw new IllegalArgumentException ("ActivityType is not in the DataStore");
-		}
-
-		return AbstractActivityBuilder.getInstance (type, this.datastore);
-	}
-
-	/**
-	 * Get an <code>ElementBuilder</code> instance corresponding to the
-	 * specified <code>Activity</code>.  This method is a special case of the
-	 * <code>getBuilder</code> method which will determine and return the
-	 * correct <code>SubActivityBuilder</code> based on the supplied
-	 * <code>Activity</code>.  The supplied <code>Activity</code> will not be
-	 * entered into the builder.
-	 *
-	 * @param  <T>      The type of <code>SubActivityBuilder</code> to be
-	 *                  returned
-	 * @param  <U>      The type of <code>SubActivity</code> to be created by
-	 *                  the <code>SubActivityBuilder</code>
-	 * @param  activity The <code>Activity</code> instance to which the new
-	 *                  <code>SubActivity</code> instance is to be assigned
-	 *
-	 * @return          A <code>SubActivityBuilder</code> instance
-	 */
-
-	public <T extends SubActivityBuilder<U>, U extends SubActivity> T getBuilder (final Activity activity)
-	{
-		this.log.trace ("getBuilder: activity={}", activity);
-
-		if (activity == null)
-		{
-			this.log.error ("Attempting to get a Builder for a NULL Activity");
-			throw new NullPointerException ();
-		}
-
-		if (! this.datastore.isMutable ())
-		{
-			this.log.error ("Attempting to get an ElementBuilder for an immutable DataStore");
-			throw new IllegalStateException ("DataStore is immutable");
-		}
-
-		if (! this.datastore.contains (activity))
-		{
-			this.log.error ("This specified Activity does not exist in the DataStore");
-			throw new IllegalArgumentException ("Activity is not in the DataStore");
-		}
-
-		return AbstractSubActivityBuilder.getInstance (activity, this.datastore);
 	}
 
 	/**
@@ -366,10 +210,10 @@ public final class DomainModel
 			}
 			else
 			{
-				ElementBuilder<T> builder = AbstractBuilder.getInstance (element.getClass (), this.datastore);
+//				AbstractBuilder<T> builder = AbstractBuilder.getInstance (this.datastore, element.getClass ());
 
-				builder.load (element);
-				result = builder.build ();
+//				builder.load (element);
+//				result = builder.build ();
 			}
 		}
 

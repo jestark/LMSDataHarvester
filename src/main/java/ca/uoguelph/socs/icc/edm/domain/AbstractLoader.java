@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * Load <code>Element</code> instances from the <code>DataStore</code>.  This

@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Container;
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Container;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 
 /**
  * Create and modify instances of the <code>Element</code> implementations.
@@ -96,7 +96,7 @@ public abstract class AbstractBuilder<T extends Element>
 	/** The <code>DataStore</code> */
 	protected final DataStore datastore;
 
-	/** The <code>Element</code> produced by the <code>ElementBuilder</code> */
+	/** The reference <code>Element</code> */
 	protected T element;
 
 	/**
@@ -121,10 +121,8 @@ public abstract class AbstractBuilder<T extends Element>
 	/**
 	 * Create the <code>AbstractBuilder</code>.
 	 *
-	 * @param  impl      The <code>Element</code> implementation class produced
-	 *                   by the <code>ElementBuilder</code>
-	 * @param  datastore The <code>DataStore</code> into which new
-	 *                   <code>Element</code> instances will be inserted
+	 * @param  impl      The <code>Element</code> implementation class, not null
+	 * @param  datastore The <code>DataStore</code>, not null
 	 */
 
 	protected AbstractBuilder (final DataStore datastore, final Builder<T> builder)
@@ -156,8 +154,8 @@ public abstract class AbstractBuilder<T extends Element>
 	}
 
 	/**
-	 * Reset the <code>ElementBuilder</code>.  This method will set all of the
-	 * fields for the <code>Element</code> to be built to <code>null</code>.
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
 	 */
 
 	public final void clear ()
@@ -170,15 +168,12 @@ public abstract class AbstractBuilder<T extends Element>
 	}
 
 	/**
-	 * Load a <code>Element</code> instance into the
-	 * <code>ElementBuilder</code>.  This method resets the
-	 * <code>ElementBuilder</code> and initializes all of its parameters from
+	 * Load a <code>Element</code> instance into the builder.  This method
+	 * resets the builder and initializes all of its parameters from
 	 * the specified <code>Element</code> instance.  The  parameters are
 	 * validated as they are set.
 	 *
-	 * @param  element                  The <code>Element</code> to load into
-	 *                                  the <code>ElementBuilder</code>, not
-	 *                                  null
+	 * @param  element                  The <code>Element</code>, not null
 	 *
 	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>Element</code> instance to be

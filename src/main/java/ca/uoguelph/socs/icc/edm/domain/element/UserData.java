@@ -30,7 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>User</code> interface.  It is expected that

@@ -16,8 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * A representation the network from which logged <code>Action</code> originated.

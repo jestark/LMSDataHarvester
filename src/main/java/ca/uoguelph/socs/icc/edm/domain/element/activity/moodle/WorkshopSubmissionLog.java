@@ -24,7 +24,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.element.LogReference;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>LogEntry</code> interface for logs referencing

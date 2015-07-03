@@ -18,8 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * A representation of an entry in the log.  An instance of the

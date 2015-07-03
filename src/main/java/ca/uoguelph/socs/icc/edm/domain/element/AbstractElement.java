@@ -18,7 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 
 /**
  * Abstract base class for all of the domain model <code>Element</code>

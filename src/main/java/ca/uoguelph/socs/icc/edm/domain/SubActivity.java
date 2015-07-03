@@ -18,8 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * A representation of a child element in a hierarchy of <code>Activity</code>

@@ -19,8 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Selector;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * A representation of the participation of a particular <code>User</code> in a

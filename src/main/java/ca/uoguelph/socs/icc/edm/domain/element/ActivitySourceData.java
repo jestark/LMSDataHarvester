@@ -28,7 +28,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>ActivitySource</code> interface.  It is expected

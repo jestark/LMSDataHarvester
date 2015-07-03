@@ -18,7 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 
 /**
  * <code>MetaData</code> based <code>Element</code> builder.  This interface

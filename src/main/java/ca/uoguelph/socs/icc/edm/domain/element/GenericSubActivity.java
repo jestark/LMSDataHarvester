@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 
 /**
  * An generic representation of a <code>SubActivity</code> in the domain model.

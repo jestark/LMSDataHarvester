@@ -27,12 +27,10 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivityInstance;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 
 /**
  * Moodle specific implementation of the core <code>Activity</code> data.
@@ -78,7 +76,6 @@ public class MoodleActivity extends ActivityInstance
 	{
 		MetaDataBuilder<Activity, MoodleActivity> builder = MetaDataBuilder.newInstance (Activity.class, MoodleActivity.class);
 		builder.setCreateMethod (MoodleActivity::new);
-		builder.setBuilder (DefaultGenericActivityBuilder.class);
 
 		builder.addProperty (Activity.Properties.ID, Activity::getId, MoodleActivity::setId);
 		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, MoodleActivity::setCourse);

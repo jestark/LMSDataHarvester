@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.element.metadata;
+package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Map;
 import java.util.Set;
@@ -212,7 +212,6 @@ public class MetaData<T extends Element, U extends T>
 	{
 		assert element != null : "element is NULL";
 		assert impl != null : "impl is NULL";
-		assert builder != null : "builder is NULL";
 		assert create != null : "create is NULL";
 		assert references != null : "references is NULL";
 

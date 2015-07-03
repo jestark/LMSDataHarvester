@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.element.metadata;
+package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Map;
 import java.util.HashMap;

@@ -30,11 +30,9 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 
 public class MoodleLogData extends AbstractElement implements LogEntry
 {
@@ -75,7 +73,6 @@ public class MoodleLogData extends AbstractElement implements LogEntry
 	{
 		MetaDataBuilder<LogEntry, MoodleLogData> builder = MetaDataBuilder.newInstance (LogEntry.class, MoodleLogData.class);
 		builder.setCreateMethod (MoodleLogData::new);
-		builder.setBuilder (DefaultLogEntryBuilder.class);
 
 		builder.addProperty (LogEntry.Properties.ID, LogEntry::getId, MoodleLogData::setId);
 		builder.addProperty (LogEntry.Properties.IPADDRESS, LogEntry::getIPAddress, MoodleLogData::setIPAddress);
