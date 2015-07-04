@@ -16,7 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * An <code>IdGenerator</code> which always returns a null reference.  This
@@ -29,38 +31,24 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  * @version 1.0
  */
 
-public class NullIdGenerator implements IdGenerator
+public class NullIdGenerator extends IdGenerator
 {
 	/**
-	 * Implementation of the <code>IdGeneratorImplFatory</code> to create
-	 * <code>RamdomIdGenerator</code> instances.
-	 */
-
-	private static final class Factory implements IdGeneratorImplFactory
-	{
-		/**
-		 * Create the <code>IdGenerator</code> using the specified
-		 * <code>DataStoreQuery</code>.
-		 *
-		 * @param  query The <code>DataStoreQuery</code>, not null
-		 *
-		 * @return The <code>IdGenerator</code> instance
-		 */
-
-		public IdGenerator create (DataStoreQuery<?> query)
-		{
-			return new NullIdGenerator ();
-		}
-	}
-
-	/**
 	 * Static initializer to register the <code>IdGenerator</code> with the
-	 * <code>IdGeneratorFactory</code>.
+	 * factory.
 	 */
 
 	static
 	{
-		(IdGeneratorFactory.getInstance ()).registerClass (NullIdGenerator.class, new Factory ());
+		IdGenerator.registerGenerator (NullIdGenerator.class, NullIdGenerator::newInstance);
+	}
+
+	public static <T extends Element> NullIdGenerator newInstance (final Class<T> element, final DataStore datastore)
+	{
+		assert element != null : "element is NULL";
+		assert datastore != null : "datastore is NULL";
+
+		return new NullIdGenerator ();
 	}
 
 	/**

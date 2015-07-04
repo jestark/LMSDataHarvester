@@ -16,7 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * An <code>IdGenerator</code> which return ID numbers from a sequence.  ID
@@ -27,30 +30,8 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreQuery;
  * @version 1.0
  */
 
-public class SequentialIdGenerator implements IdGenerator
+public class SequentialIdGenerator extends IdGenerator
 {
-	/**
-	 * Implementation of the <code>IdGeneratorImplFatory</code> to create
-	 * <code>RamdomIdGenerator</code> instances.
-	 */
-
-	private static final class Factory implements IdGeneratorImplFactory
-	{
-		/**
-		 * Create the <code>IdGenerator</code> using the specified
-		 * <code>DataStoreQuery</code>.
-		 *
-		 * @param  query The <code>DataStoreQuery</code>, not null
-		 *
-		 * @return The <code>IdGenerator</code> instance
-		 */
-
-		public IdGenerator create (DataStoreQuery<?> query)
-		{
-			return new SequentialIdGenerator (query.queryMaxId ());
-		}
-	}
-
 	/** The next value to be returned by the generator. */
 	private long currentid;
 
@@ -61,7 +42,15 @@ public class SequentialIdGenerator implements IdGenerator
 
 	static
 	{
-		(IdGeneratorFactory.getInstance ()).registerClass (SequentialIdGenerator.class, new Factory ());
+		IdGenerator.registerGenerator (SequentialIdGenerator.class, SequentialIdGenerator::newInstance);
+	}
+
+	public static <T extends Element> SequentialIdGenerator newInstance (final Class<T> element, final DataStore datastore)
+	{
+		assert element != null : "element is NULL";
+		assert datastore != null : "datastore is NULL";
+
+		return null; //new RandomIdGenerator (new HashSet<Long> ((datastore.getQuery ("allid", element)).queryAll ()));
 	}
 
 	/**
@@ -82,7 +71,7 @@ public class SequentialIdGenerator implements IdGenerator
 	 * @param  startingid The starting value of the sequence, not null
 	 */
 
-	public  SequentialIdGenerator (Long startingid)
+	public  SequentialIdGenerator (final Long startingid)
 	{
 		this.currentid = startingid.longValue ();
 	}
