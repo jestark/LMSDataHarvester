@@ -21,6 +21,22 @@
 		</attributes>
 	</mapped-superclass>-->
 
+	<!--	<entity name="Activity" class="ActivityInstance" metadata-complete="true">
+		<description>Mapping definition for the instances of the activities</description>
+		<named-query name="Activity:all">
+			<query>SELECT a FROM Activity a</query>
+		</named-query>
+		<attributes>
+			<many-to-one name="course" target-entity="CourseData" optional="false">
+				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
+			</many-to-one>
+			<transient name="type"/>
+			<transient name="grades"/>
+			<transient name="subActivities"/>
+			<transient name="log"/>
+		</attributes>
+	</entity>-->
+
 	<mapped-superclass class="GenericSubActivity" metadata-complete="true">
 		<description></description>
 		<attributes>
@@ -147,23 +163,6 @@
 		</attributes>
 	</entity>
 
-	<!--	<entity name="Activity" class="ActivityInstance" metadata-complete="true">
-		<description>Mapping definition for the instances of the activities</description>
-		<inheritance strategy="TABLE_PER_CLASS"/>
-		<named-query name="Activity:all">
-			<query>SELECT a FROM Activity a</query>
-		</named-query>
-		<attributes>
-			<many-to-one name="course" target-entity="CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
-			<transient name="type"/>
-			<transient name="grades"/>
-			<transient name="subActivities"/>
-			<transient name="log"/>
-		</attributes>
-	</entity>-->
-
 	<entity name="MoodleActivity" class="ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleActivity" metadata-complete="true">
 		<description>Activity mapping with moodle instance data</description>
 		<table name="mdl_course_modules"/>
@@ -188,7 +187,7 @@
 		</attributes>
 	</entity>
 
-		<!--*********************************************************************-->
+	<!--*********************************************************************-->
 	<!-- Core data mapping: Log entries                                      -->
 	<!--*********************************************************************-->
 
