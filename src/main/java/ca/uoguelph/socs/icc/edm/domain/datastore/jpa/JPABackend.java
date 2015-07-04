@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore;
+package ca.uoguelph.socs.icc.edm.domain.datastore.jpa;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +25,16 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.Backend;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Filter;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
 import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  *
@@ -35,16 +44,15 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @see     JPADataStoreTransaction
  */
 
-public final class JPADataStore extends AbstractDataStore
+public final class JPABackend implements Backend
 {
+	private final Logger log;
+
 	/** The JPA Entity manager factory for this database */
 	private final EntityManagerFactory emf;
 
 	/** The JPA entity manager for access to the database. */
 	private EntityManager em;
-
-	/** The transaction object */
-	private final JPADataStoreTransaction transaction;
 
 	/**
 	 * Create the JPA data store.  This method will setup a connection to the
@@ -57,38 +65,36 @@ public final class JPADataStore extends AbstractDataStore
 	 *                    database connection.
 	 */
 
-	public JPADataStore (final DataStoreProfile profile, final String unitname, final Map<String, String> properties)
+	public JPABackend (final Profile profile)
 	{
-		super (profile);
+		this.log = LoggerFactory.getLogger (JPABackend.class);
 
-		try
-		{
+//		try
+//		{
 			this.log.debug ("Creating the JPA EntityManagerFactory");
-			this.emf = Persistence.createEntityManagerFactory (unitname);
+			this.emf = null; //Persistence.createEntityManagerFactory (unitname);
 
 			this.log.debug ("Creating the JPA EntityManager");
-			this.em = this.emf.createEntityManager (properties);
+			this.em = null; //this.emf.createEntityManager (properties);
+//		}
+//		catch (RuntimeException ex)
+//		{
+//			this.log.error ("Failed to create database connection", ex);
 
-			this.transaction = new JPADataStoreTransaction (this);
-		}
-		catch (RuntimeException ex)
-		{
-			this.log.error ("Failed to create database connection", ex);
+//			if (this.em != null)
+//			{
+//				this.log.debug ("Close EntityManager due to initialization failure");
+//				this.em.close ();
+//			}
 
-			if (this.em != null)
-			{
-				this.log.debug ("Close EntityManager due to initialization failure");
-				this.em.close ();
-			}
+//			if (this.emf != null)
+//			{
+//				this.log.debug ("Close EntityManagerFactory due to initialization failure");
+//				this.emf.close ();
+//			}
 
-			if (this.emf != null)
-			{
-				this.log.debug ("Close EntityManagerFactory due to initialization failure");
-				this.emf.close ();
-			}
-
-			throw ex;
-		}
+//			throw ex;
+//		}
 	}
 
 	/**
@@ -96,38 +102,10 @@ public final class JPADataStore extends AbstractDataStore
 	 * ensure that all of the connections to the database have been closed.
 	 */
 
+	@Override
 	protected void finalize () throws Throwable
 	{
 		this.close ();
-	}
-
-	/**
-	 * Get a reference to the JPA entity manager.  This method is intended to
-	 * only be used by the <code>JPADataStoreQuery</code> and
-	 * <code>JPADataStoreTransaction</code> classes to perform their functions.
-	 *
-	 * @return A reference to the JPA <code>EntityManager</code>
-	 */
-
-	protected EntityManager getEntityManager ()
-	{
-		return this.em;
-	}
-
-	/**
-	 * Determine if the <code>DataStore</code> is open.  The
-	 * <code>DataStore</code> is only usable when it is open.  If the
-	 * <code>DataStore</code> is not open then the behaviour of its methods and
-	 * its associated query and transaction object is undefined.
-	 *
-	 * @return <code>true</code> if the connection to the database is open,
-	 *         <code>false</code> otherwise
-	 */
-
-	@Override
-	public Boolean isOpen ()
-	{
-		return this.em.isOpen ();
 	}
 
 	/**
@@ -158,37 +136,55 @@ public final class JPADataStore extends AbstractDataStore
 	}
 
 	/**
-	 * Get the relevant DataStoreQuery for the provided interface and
-	 * implementation classes.
+	 * Determine if the specifed <code>Element</code> instance exists in the
+	 * <code>DataStore</code>.
 	 *
-	 * @param  <T>                The interface type of the query object
-	 * @param  <X>                The implementation type of the query object
-	 * @param  type               Interface type class, not null
-	 * @param  impl               Implementation type class, not null
-	 * @return                    Query object for the specified interface and
-	 *                            implementation
+	 * @param  entity  The <code>Element</code> instance to check, not null
+	 *
+	 * @return         <code>true</code> if the <code>Element</code> instance
+	 *                 exists in the <code>DataStore</code>, <code>false</code>
+	 *                 otherwise
 	 */
 
 	@Override
-	protected <T extends Element, U extends T> AbstractDataStoreQuery<T, U> createQuery (final Class<T> type, final Class<U> impl)
+	public <T extends Element, U extends T> boolean contains (final U element)
 	{
-		this.log.trace ("createQuery: type={} impl={}", type, impl);
+		return this.em.contains (element);
+	}
 
-		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
-
-		return new JPADataStoreQuery<T, U> (this, type, impl);
+	@Override
+	public <T extends Element, U extends T> List<T> fetch (final Filter<T, U> filter)
+	{
+		return null;
 	}
 
 	/**
-	 * Get the transaction manager for the <code>DataStore</code>.
+	 * Insert the specified <code>Element</code> instance into the
+	 * <code>DataStore</code>.
 	 *
-	 * @return An instance of the transaction manager.
+	 * @param  element The <code>Element</code> instance to insert, not null
 	 */
 
 	@Override
-	public DataStoreTransaction getTransaction ()
+	public <T extends Element, U extends T> void insert (final U element)
 	{
-		return this.transaction;
+		assert element != null : "element is NULL";
+
+		this.em.persist (element);
+	}
+
+	/**
+	 * Remove the specified <code>Element</code> instance from the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code> instance to remove, not null
+	 */
+
+	@Override
+	public <T extends Element, U extends T> void remove (final U element)
+	{
+		assert element != null : "element is NULL";
+
+		this.em.remove (element);
 	}
 }

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore;
+package ca.uoguelph.socs.icc.edm.domain.datastore.jpa;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -25,10 +25,14 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreBuilder;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
 /**
  * A profile for any <code>DataStore</code> which used the Java Persistence
  * API.  This class adds the connection information required to connect to a
- * database using JPA to the <code>DataStoreProfile</code>.  The additional
+ * database using JPA to the <code>Profile</code>.  The additional
  * information includes the JPA unit name and the connection parameters, which
  * will be passed to the JDBC driver.
  * <p>
@@ -359,10 +363,10 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	 */
 
 	@Override
-	public DataStore createDataStore (DataStoreProfile profile)
+	public DataStore createDataStore (Profile profile)
 	{
 		this.log.trace ("Create the datastore using profile: {}", profile);
 
-		return new JPADataStore (profile, this.unitname, this.parameters);
+		return null; //new JPADataStore (profile, this.unitname, this.parameters);
 	}
 }
