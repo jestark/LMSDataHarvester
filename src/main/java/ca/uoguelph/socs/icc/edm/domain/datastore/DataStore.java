@@ -25,88 +25,158 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Container;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
- * Representation of a <code>DataStore</code>.  This is an internal interface
- * used by The <code>DomainModel</code> and <code>ElementBuilder</code>
- * implementations to manipulate the stored data.
+ * Representation of a <code>DataStore</code>.  This class provides the
+ * front-end interfaces to the <code>DataStore</code>.  It uses a back-end to
+ * actually store the <code>Element</code> instances.
  *
  * @author  James E. Stark
  * @version 2.0
  * @see     Transaction
  */
 
-public abstract class DataStore
+public final class DataStore
 {
-	private static interface DataStoreData<T extends Element>
-	{
-	}
+	/**
+	 * Factory to produce <code>Query</code> instances.
+	 *
+	 * @param <T> The <code>Element</code> interface type of the <code>Query</code>
+	 */
 
-	private static final class DataStoreDataImpl<T extends Element, U extends T> implements DataStoreData<T>
+	private static final class QueryFactory<T extends Element> implements Container.Receiver<T, Query<T>>
 	{
-		private final MetaData<T, U> metadata;
+		/** The Backend to be used by the <code>Query</code> */
+		private final Backend backend;
 
-		public DataStoreDataImpl (final MetaData<T, U> metadata)
+		/** The <code>Selector</code> which defines the <code>Query</code> */
+		private final Selector selector;
+
+		/**
+		 * Create the <code>QueryFactory</code>, for the specified
+		 * <code>Selector</code> on the specified <code>Backend</code>.
+		 *
+		 * @param  backend The <code>Backend</code>
+		 * @param  selector The <code>Selector</code>
+		 */
+
+		public QueryFactory (final Backend backend, final Selector selector)
 		{
-			this.metadata = metadata;
+			assert backend != null : "backend is NULL";
+			assert selector != null : "selector is NULL";
+
+			this.backend = backend;
+			this.selector = selector;
+		}
+
+		/**
+		 * Create the <code>Query</code> using the supplied
+		 * <code>MetaData</code>.
+		 *
+		 * @param  metadata The <code>MetaData</code>, not null
+		 *
+		 * @return          The <code>Query</code>
+		 */
+
+		@Override
+		public <U extends T> Query<T> apply (final MetaData<T, U> metadata)
+		{
+			assert metadata != null : "metadata is NULL";
+
+			return new QueryImpl<T, U> (metadata, selector, backend);
 		}
 	}
 
-	private static final Map<Class<? extends Element>, DataStoreData<?>> metadata;
+	/** <code>MetaData</code> for the <code>Element</code> implementations */
+	private static Container metadata;
 
 	/** The logger */
-	protected final Logger log;
+	private final Logger log;
+
+	/** The implementation specific <code>Backend</code> */
+	private final Backend backend;
 
 	/** The profile */
-	protected final DataStoreProfile profile;
+	private final Profile profile;
 
-	static
+	/** The <code>Transaction</code> */
+	private final Transaction transaction;
+
+	/** Flag indicating if the <code>DataStore</code> is accepting operations */
+	private boolean open;
+
+	/**
+	 * Create the <code>DataStore</code>.
+	 *
+	 * @param  profile The <code>Profile</code> data, not null
+	 */
+
+	protected DataStore (final Profile profile)
 	{
-		metadata = new HashMap<Class<? extends Element>, DataStoreData<?>> ();
-	}
+		assert profile != null : "profile is NULL";
 
-	public static final <T extends Element, U extends T> void registerElement (final MetaData<T, U> metadata)
-	{
-		assert metadata != null : "metadata is NULL";
-
-		DataStore.metadata.put (metadata.getElementClass (), new DataStoreDataImpl<T, U> (metadata));
-	}
-
-	protected DataStore (final DataStoreProfile profile)
-	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 		this.profile = profile;
+
+		this.open = true;
+		this.backend = null;
+		this.transaction = Transaction.getInstance (this);
 	}
 
 	/**
-	 * Determine if the <code>DataStore</code> is mutable.
+	 * Get the <code>Container</code> for the <code>MetaData</code>.
 	 *
-	 * @return <code>true</code> if the <code>DataStore</code> is mutable,
-	 *         <code>false</code> otherwise
+	 * @return The meta-data <code>Container</code>
 	 */
 
-	public final boolean isMutable ()
+	public Container getMetaDataContainer ()
 	{
-		return true;
+		return DataStore.metadata;
 	}
 
 	/**
-	 * Get the default implementation class used by the <code>DataStore</code>
-	 * for the specified <code>Element</code> interface class.
+	 * Get the <code>Query</code> for the specified <code>Selector</code> and
+	 * <code>Element</code> implementation class.
 	 *
-	 * @param  element The <code>Element</code> interface class
+	 * @param  selector The <code>Selector</code>, not null
+	 * @param  element  The <code>Element</code> implementation class, not null
 	 *
-	 * @return         The <code>Element</code> implementation class
+	 * @return          The <code>Query</code>
 	 */
 
-	public final Class<? extends Element> getElementClass (final Class<? extends Element> element)
+	public <T extends Element> Query<T> getQuery (final Selector selector, final Class<? extends Element> element)
 	{
-		this.log.trace ("getElementClass: element={}", element);
-
+		assert selector != null : "selector is NULL";
 		assert element != null : "element is NULL";
 
-		return this.profile.getImplClass (element);
+		return DataStore.metadata.inject (element, new QueryFactory<T> (this.backend, selector));
+	}
+
+	/**
+	 * Get a reference to the <code>Profile</code> data for the
+	 * <code>DataStore</code>.
+	 *
+	 * @return The <code>Profile</code>
+	 */
+
+	public Profile getProfile ()
+	{
+		return this.profile;
+	}
+
+	/**
+	 * Get an instance of the transaction manager for the
+	 * <code>DataStore</code>.
+	 *
+	 * @return An instance of the transaction manager
+	 */
+
+	public Transaction getTransaction ()
+	{
+		return this.transaction;
 	}
 
 	/**
@@ -116,35 +186,47 @@ public abstract class DataStore
 	 *         <code>false</code> otherwise
 	 */
 
-	public abstract boolean isOpen ();
+	public boolean isOpen ()
+	{
+		return this.open || this.transaction.isActive ();
+	}
 
 	/**
-	 * Close the <code>DataStore</code>.
+	 * Close the <code>DataStore</code>.  If there is an active transaction
+	 * then the <code>DataStore</code> will be closed when the transaction
+	 * completes.
 	 */
 
-	public abstract void close ();
+	public void close ()
+	{
+		this.open = false;
+
+		if (! this.transaction.isActive ())
+		{
+			this.backend.close ();
+		}
+	}
 
 	/**
-	 * Get an instance of the transaction manager for the
+	 * Determine if the specified <code>Element</code> instance exists in the
 	 * <code>DataStore</code>.
 	 *
-	 * @return An instance of the transaction manager
-	 */
-
-	public abstract Transaction getTransaction ();
-
-	/**
-	 * Determine if the specifed <code>Element</code> instance exists in the
-	 * <code>DataStore</code>.
-	 *
-	 * @param  entity  The <code>Element</code> instance to check, not null
+	 * @param  element The <code>Element</code> instance to check, not null
 	 *
 	 * @return         <code>true</code> if the <code>Element</code> instance
 	 *                 exists in the <code>DataStore</code>, <code>false</code>
 	 *                 otherwise
 	 */
 
-	public abstract <T extends Element> boolean contains (final T element);
+	public <T extends Element, U extends T> boolean contains (final U element)
+	{
+		this.log.trace ("contains: element={}", element);
+
+		assert element != null : "element is NULL";
+		assert this.isOpen () : "datastore is closed";
+
+		return this.backend.contains (element);
+	}
 
 	/**
 	 * Insert the specified <code>Element</code> instance into the
@@ -153,7 +235,19 @@ public abstract class DataStore
 	 * @param  element The <code>Element</code> instance to insert, not null
 	 */
 
-	public abstract <T extends Element> void insert (final T element);
+	public <T extends Element, U extends T> void insert (final U element)
+	{
+		this.log.trace ("insert: element={}", element);
+
+		assert element != null : "element is NULL";
+		assert this.transaction.isActive () : "No active transactions";
+
+		// Set Id
+
+		this.backend.insert (element);
+
+		// insert relationships
+	}
 
 	/**
 	 * Remove the specified <code>Element</code> instance from the
@@ -162,5 +256,15 @@ public abstract class DataStore
 	 * @param  element The <code>Element</code> instance to remove, not null
 	 */
 
-	public abstract <T extends Element> void remove (final T element);
+	public <T extends Element, U extends T> void remove (final U element)
+	{
+		this.log.trace ("remove: element={}", element);
+
+		assert element != null : "element is NULL";
+		assert this.transaction.isActive () : "No active transactions";
+
+		// Remove relationships
+
+		this.backend.remove (element);
+	}
 }

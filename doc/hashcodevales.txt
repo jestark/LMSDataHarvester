@@ -1,4 +1,5 @@
 Class:							Base:	Multiplier:
+Filter							881		13
 Property						883		11
 Selector						887		7
 DomainModelProfile				907		5

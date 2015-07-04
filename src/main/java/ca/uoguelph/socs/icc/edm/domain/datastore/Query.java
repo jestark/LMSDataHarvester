@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 
 /**
  * Interface for retrieving <code>Element</code> instances from the
@@ -38,60 +38,12 @@ import ca.uoguelph.socs.icc.edm.domain.element.metadata.Property;
 public interface Query<T extends Element>
 {
 	/**
-	 * Get the type of the <code>Element</code> returned by this
-	 * <code>Query</code>.
-	 *
-	 * @return The interface type of the <code>Element</code> returned by this
-	 *         <code>Query</code>
-	 */
-
-	public abstract Class<T> getElementType ();
-
-	/**
-	 * Get the implementation class of the <code>Element</code> returned by
-	 * this <code>Query</code>.
-	 *
-	 * @return The implementation type of the <code>Element</code> returned by
-	 *         this <code>Query</code>
-	 */
-
-	public abstract Class<?> getElementClass ();
-
-	/**
 	 * Get the name of the <code>Query</code>.
 	 *
 	 * @return A <code>String</code> which identifies the <code>Query</code>.
 	 */
 
 	public abstract String getName ();
-
-	/**
-	 * Get the <code>Property</code> associated with the <code>Element</code>
-	 * with the specified name.
-	 *
-	 * @param  name The name of the <code>Property</code>
-	 *
-	 * @return      The specified <code>Property</code> instance or
-	 *              <code>null</code> if a <code>Property</code> with the
-	 *              specified name does not exist
-	 */
-
-	public abstract Property<?> getProperty (String name);
-
-	/**
-	 * Get the <code>Property</code> associated with the <code>Element</code>
-	 * with the specified name and value type.
-	 *
-	 * @param  name The name of the <code>Property</code>
-	 * @param  type The type of the value associated with the
-	 *              <code>Property</code>
-	 *
-	 * @return      The specified <code>Property</code> instance or
-	 *              <code>null</code> if a <code>Property</code> with the
-	 *              specified name and type does not exist
-	 */
-
-	public abstract <V> Property<V> getProperty (String name, Class<V> type);
 
 	/**
 	 * Get the <code>Set</code> of <code>Property</code> instances
@@ -120,9 +72,23 @@ public interface Query<T extends Element>
 	 * @param  <V>      The type of the value associated with the property
 	 * @param  property The <code>Property</code>, not null
 	 * @param  value    The value to set for the property
+	 *
+	 * @return         A reference to this <code>Query</code>
 	 */
 
-	public abstract <V> void setProperty (Property<V> property, V value);
+	public abstract <V> Query<T> setProperty (Property<V> property, V value);
+
+	/**
+	 * Set all of the values for the <code>Property</code> instances associated
+	 * with the <code>Query</code> from the specified <code>Element</code>
+	 * instance.
+	 *
+	 * @param  element The <code>Element</code> instance, not null
+	 *
+	 * @return         A reference to this <code>Query</code>
+	 */
+
+	public abstract Query<T> setAllProperties (T element);
 
 	/**
 	 * Fetch the <code>Element</code> instance from the <code>DataStore</code>
