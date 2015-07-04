@@ -45,6 +45,13 @@
 			<version>LATEST</version>
 		</dependency>
 
+		<!-- Apache Commons Collections library -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>LATEST</version>
+		</dependency>
+
 		<!-- SLF4J:  Logging system facade -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
