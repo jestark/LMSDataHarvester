@@ -63,10 +63,10 @@ public class Quiz extends GenericNamedActivity
 		MetaDataBuilder<Activity, Quiz> builder = MetaDataBuilder.newInstance (Activity.class, Quiz.class);
 		builder.setCreateMethod (Quiz::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Quiz::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Quiz::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Quiz::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Quiz::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Quiz::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Quiz::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Quiz::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Quiz::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "quiz");
 	}

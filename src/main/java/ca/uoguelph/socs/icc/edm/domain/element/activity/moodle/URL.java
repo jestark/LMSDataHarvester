@@ -63,10 +63,10 @@ public class URL extends GenericNamedActivity
 		MetaDataBuilder<Activity, URL> builder = MetaDataBuilder.newInstance (Activity.class, URL.class);
 		builder.setCreateMethod (URL::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, URL::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, URL::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, URL::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, URL::setName);
+		builder.addProperty (Activity.ID, Activity::getId, URL::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, URL::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, URL::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, URL::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "url");
 	}

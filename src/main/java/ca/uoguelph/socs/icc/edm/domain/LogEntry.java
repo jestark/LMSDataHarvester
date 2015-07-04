@@ -48,48 +48,29 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface LogEntry extends Element
 {
-	/**
-	 * Constants representing all of the properties of an <code>LogEntry</code>.
-	 * A <code>Property</code> represents a piece of data contained within the
-	 * <code>LogEntry</code> instance.
-	 */
+	/** The associated <code>Action</code> */
+	public static final Property<Action> ACTION = Property.getInstance (LogEntry.class, Action.class, "action", false, true);
 
-	public static class Properties extends Element.Properties
-	{
-		/** The associated <code>Action</code> */
-		public static final Property<Action> ACTION = Property.getInstance (LogEntry.class, Action.class, "action", false, true);
+	/** The associated <code>Activity</code> */
+	public static final Property<Activity> ACTIVITY = Property.getInstance (LogEntry.class, Activity.class, "activity", false, true);
 
-		/** The associated <code>Activity</code> */
-		public static final Property<Activity> ACTIVITY = Property.getInstance (LogEntry.class, Activity.class, "activity", false, true);
+	/** The associated <code>Course</code> (read only) */
+	public static final Property<Course> COURSE = Property.getInstance (LogEntry.class, Course.class, "course", false, true);
 
-		/** The associated <code>Course</code> (read only) */
-		public static final Property<Course> COURSE = Property.getInstance (LogEntry.class, Course.class, "course", false, true);
+	/** The associated <code>Enrolment</code> */
+	public static final Property<Enrolment> ENROLMENT = Property.getInstance (LogEntry.class, Enrolment.class, "enrolment", false, true);
 
-		/** The associated <code>Enrolment</code> */
-		public static final Property<Enrolment> ENROLMENT = Property.getInstance (LogEntry.class, Enrolment.class, "enrolment", false, true);
+	/** The associated IP Address */
+	public static final Property<String> IPADDRESS = Property.getInstance (LogEntry.class, String.class, "ipaddress", false, true);
 
-		/** The associated IP Address */
-		public static final Property<String> IPADDRESS = Property.getInstance (LogEntry.class, String.class, "ipaddress", false, true);
+	/** The time that the <code>LogEntry</code> was created */
+	public static final Property<Date> TIME = Property.getInstance (LogEntry.class, Date.class, "time", false, true);
 
-		/** The time that the <code>LogEntry</code> was created */
-		public static final Property<Date> TIME = Property.getInstance (LogEntry.class, Date.class, "time", false, true);
-	}
+	/** Select all <code>LogEntry</code> instances by <code>Action</code> */
+	public static final Selector SELECTOR_ACTION = Selector.getInstance (LogEntry.class, false, LogEntry.ACTION);
 
-	/**
-	 * Constants representing all of the selectors of an <code>LogEntry</code>.
-	 * A <code>Selector</code> represents the <code>Set</code> of
-	 * <code>Property</code> instances used to load an <code>LogEntry</code>
-	 * from the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors
-	{
-		/** Select all <code>LogEntry</code> instances by <code>Action</code> */
-		public static final Selector ACTION = Selector.getInstance (LogEntry.class, false, LogEntry.Properties.ACTION);
-
-		/** Select all <code>LogEntry</code> instances by <code>Course</code> */
-		public static final Selector COURSE = Selector.getInstance (LogEntry.class, false, LogEntry.Properties.COURSE);
-	}
+	/** Select all <code>LogEntry</code> instances by <code>Course</code> */
+	public static final Selector SELECTOR_COURSE = Selector.getInstance (LogEntry.class, false, LogEntry.COURSE);
 
 	/**
 	 * Get the <code>Enrolment</code> instance for the user which performed the

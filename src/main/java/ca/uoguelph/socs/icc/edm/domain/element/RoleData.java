@@ -58,8 +58,8 @@ public class RoleData extends AbstractElement implements Role, Serializable
 		MetaDataBuilder<Role, RoleData> builder = MetaDataBuilder.newInstance (Role.class, RoleData.class);
 		builder.setCreateMethod (RoleData::new);
 
-		builder.addProperty (Role.Properties.ID, Role::getId, RoleData::setId);
-		builder.addProperty (Role.Properties.NAME, Role::getName, RoleData::setName);
+		builder.addProperty (Role.ID, Role::getId, RoleData::setId);
+		builder.addProperty (Role.NAME, Role::getName, RoleData::setName);
 
 		AbstractElement.registerElement (builder.build ());
 	}

@@ -78,10 +78,10 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		MetaDataBuilder<Course, CourseData> builder = MetaDataBuilder.newInstance (Course.class, CourseData.class);
 		builder.setCreateMethod (CourseData::new);
 
-		builder.addProperty (Course.Properties.ID, Course::getId, CourseData::setId);
-		builder.addProperty (Course.Properties.NAME, Course::getName, CourseData::setName);
-		builder.addProperty (Course.Properties.SEMESTER, Course::getSemester, CourseData::setSemester);
-		builder.addProperty (Course.Properties.YEAR, Course::getYear, CourseData::setYear);
+		builder.addProperty (Course.ID, Course::getId, CourseData::setId);
+		builder.addProperty (Course.NAME, Course::getName, CourseData::setName);
+		builder.addProperty (Course.SEMESTER, Course::getSemester, CourseData::setSemester);
+		builder.addProperty (Course.YEAR, Course::getYear, CourseData::setYear);
 
 		AbstractElement.registerElement (builder.build ());
 	}

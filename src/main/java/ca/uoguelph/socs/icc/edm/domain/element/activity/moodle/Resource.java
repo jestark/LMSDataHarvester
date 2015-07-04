@@ -63,10 +63,10 @@ public class Resource extends GenericNamedActivity
 		MetaDataBuilder<Activity, Resource> builder = MetaDataBuilder.newInstance (Activity.class, Resource.class);
 		builder.setCreateMethod (Resource::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Resource::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Resource::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Resource::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Resource::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Resource::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Resource::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Resource::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Resource::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "resource");
 	}

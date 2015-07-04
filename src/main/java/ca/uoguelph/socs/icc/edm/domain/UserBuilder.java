@@ -38,13 +38,17 @@ public final class UserBuilder extends AbstractBuilder<User>
 	 * @param  datastore The <code>DataStore</code>, not null
 	 *
 	 * @return           The <code>UserBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>User</code>
 	 */
 
 	public static UserBuilder getInstance (final DataStore datastore)
 	{
 		assert datastore != null : "datastore is NULL";
 
-		return new UserBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (User.class)));
+		return AbstractBuilder.getInstance (datastore, User.class, UserBuilder::new);
 	}
 
 	/**
@@ -56,6 +60,10 @@ public final class UserBuilder extends AbstractBuilder<User>
 	 * @param  user   The <code>User</code>, not null
 	 *
 	 * @return           The <code>UserBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>User</code>
 	 */
 
 	public static UserBuilder getInstance (final DataStore datastore, User user)
@@ -76,17 +84,18 @@ public final class UserBuilder extends AbstractBuilder<User>
 	 * @param  model   The <code>DomainModel</code>, not null
 	 *
 	 * @return         The <code>UserBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>User</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 
 	public static UserBuilder getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return UserBuilder.getInstance (model.getDataStore ());
+		return UserBuilder.getInstance (AbstractBuilder.getDataStore (model));
 	}
 
 	/**
@@ -94,10 +103,16 @@ public final class UserBuilder extends AbstractBuilder<User>
 	 * <code>DomainModel</code>, loaded with the data from the specified
 	 * <code>User</code>.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
-	 * @param  user The <code>User</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  user  The <code>User</code>, not null
 	 *
-	 * @return         The <code>UserBuilder</code> instance
+	 * @return       The <code>UserBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>User</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static UserBuilder getInstance (final DomainModel model, User user)
@@ -125,6 +140,19 @@ public final class UserBuilder extends AbstractBuilder<User>
 		super (datastore, builder);
 	}
 
+	/**
+	 * Load a <code>User</code> instance into the builder.  This method
+	 * resets the builder and initializes all of its parameters from
+	 * the specified <code>User</code> instance.  The  parameters are
+	 * validated as they are set.
+	 *
+	 * @param  user                     The <code>User</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>User</code> instance to be
+	 *                                  loaded are not valid
+	 */
+
 	@Override
 	public void load (final User user)
 	{
@@ -142,7 +170,7 @@ public final class UserBuilder extends AbstractBuilder<User>
 		this.setLastname (user.getLastname ());
 		this.setFirstname (user.getFirstname ());
 
-		this.builder.setProperty (User.Properties.ID, user.getId ());
+		this.builder.setProperty (User.ID, user.getId ());
 	}
 
 	/**
@@ -157,7 +185,7 @@ public final class UserBuilder extends AbstractBuilder<User>
 
 	public Integer getIdNumber()
 	{
-		return this.builder.getPropertyValue (User.Properties.IDNUMBER);
+		return this.builder.getPropertyValue (User.IDNUMBER);
 	}
 
 	/**
@@ -184,7 +212,7 @@ public final class UserBuilder extends AbstractBuilder<User>
 			throw new IllegalArgumentException ("idnumber is negative");
 		}
 
-		this.builder.setProperty (User.Properties.IDNUMBER, idnumber);
+		this.builder.setProperty (User.IDNUMBER, idnumber);
 	}
 
 	/**
@@ -196,7 +224,7 @@ public final class UserBuilder extends AbstractBuilder<User>
 
 	public String getFirstname ()
 	{
-		return this.builder.getPropertyValue (User.Properties.FIRSTNAME);
+		return this.builder.getPropertyValue (User.FIRSTNAME);
 	}
 
 	/**
@@ -224,7 +252,7 @@ public final class UserBuilder extends AbstractBuilder<User>
 			throw new IllegalArgumentException ("firstname is empty");
 		}
 
-		this.builder.setProperty (User.Properties.FIRSTNAME, firstname);
+		this.builder.setProperty (User.FIRSTNAME, firstname);
 	}
 
 	/**
@@ -235,7 +263,7 @@ public final class UserBuilder extends AbstractBuilder<User>
 
 	public String getLastname ()
 	{
-		return this.builder.getPropertyValue (User.Properties.LASTNAME);
+		return this.builder.getPropertyValue (User.LASTNAME);
 	}
 
 	/**
@@ -263,7 +291,7 @@ public final class UserBuilder extends AbstractBuilder<User>
 			throw new IllegalArgumentException ("lastname is empty");
 		}
 
-		this.builder.setProperty (User.Properties.LASTNAME, lastname);
+		this.builder.setProperty (User.LASTNAME, lastname);
 	}
 
 	/**
@@ -278,7 +306,7 @@ public final class UserBuilder extends AbstractBuilder<User>
 
 	public String getUsername ()
 	{
-		return this.builder.getPropertyValue (User.Properties.USERNAME);
+		return this.builder.getPropertyValue (User.USERNAME);
 	}
 
 	/**
@@ -306,7 +334,7 @@ public final class UserBuilder extends AbstractBuilder<User>
 			throw new IllegalArgumentException ("Username is empty");
 		}
 
-		this.builder.setProperty (User.Properties.USERNAME, username);
+		this.builder.setProperty (User.USERNAME, username);
 	}
 
 	/**

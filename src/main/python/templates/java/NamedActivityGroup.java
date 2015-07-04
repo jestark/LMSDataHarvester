@@ -64,10 +64,10 @@ public class ${ClassName} extends GenericNamedActivity
 		MetaDataBuilder<Activity, ${ClassName}> builder = MetaDataBuilder.newInstance (Activity.class, ${ClassName}.class);
 		builder.setCreateMethod (${ClassName}::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, ${ClassName}::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, ${ClassName}::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, ${ClassName}::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, ${ClassName}::setName);
+		builder.addProperty (Activity.ID, Activity::getId, ${ClassName}::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, ${ClassName}::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, ${ClassName}::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, ${ClassName}::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "${ActivitySource}", "${ActivityType}");
 	}

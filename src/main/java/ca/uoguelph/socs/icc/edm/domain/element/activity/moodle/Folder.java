@@ -63,10 +63,10 @@ public class Folder extends GenericNamedActivity
 		MetaDataBuilder<Activity, Folder> builder = MetaDataBuilder.newInstance (Activity.class, Folder.class);
 		builder.setCreateMethod (Folder::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Folder::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Folder::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Folder::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Folder::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Folder::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Folder::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Folder::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Folder::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "folder");
 	}

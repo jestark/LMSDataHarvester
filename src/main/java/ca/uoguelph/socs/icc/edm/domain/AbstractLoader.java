@@ -21,6 +21,8 @@ import java.util.Map;
 
 import java.util.HashMap;
 
+import java.util.function.Function;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +65,46 @@ public abstract class AbstractLoader<T extends Element>
 	protected final DataStore datastore;
 
 	/**
+	 * Create the loader for the specified <code>DomainModel</code>.
+	 *
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  type                  The <code>Element</code> interface class,
+	 *                               not null
+	 * @param  create                Method reference to the constructor, not
+	 *                               null
+	 *
+	 * @return                       The loader instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Element</code> queried by the
+	 *                               loader
+	 */
+
+	protected static <T extends Element, U extends AbstractLoader<T>> U getInstance (final DomainModel model, final Class<T> type, final Function<DataStore, U> create)
+	{
+		assert type != null : "type is NULL";
+		assert create != null : "create is NULL";
+
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		if (! model.getDataStore ().isOpen ())
+		{
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		if (model.getDataStore ().getProfile ().getElementClass (type) == null)
+		{
+			throw new IllegalStateException ("Element is not available for this datastore");
+		}
+
+		return create.apply (model.getDataStore ());
+	}
+
+	/**
 	 * Create the <code>AbstractLoader</code>.
 	 *
 	 * @param  type      The <code>Element</code> interface class, not null
@@ -79,14 +121,13 @@ public abstract class AbstractLoader<T extends Element>
 
 	/**
 	 * Get an instance of the <code>Query</code>.  This method will
-	 * get a <code>Query</code> for the <code>Element</code> type of
-	 * the Loader using the specified implementation class.
+	 * get a <code>Query</code> for the <code>Element</code> using the
+	 * specified <code>Selector</code> and implementation class.
 	 *
-	 * @param  name The name of the <code>Query</code> to retrieve
-	 * @param  impl The implementation class to be returned by the
-	 *              <code>Query</code>
+	 * @param  selector The <code>Selector</code>, not null
+	 * @param  impl     The <code>Element</code> implementation class, not null
 	 *
-	 * @return      The <code>Query</code> instance
+	 * @return          The <code>Query</code> instance
 	 */
 
 	protected final Query<T> fetchQuery (final Selector selector, final Class<? extends Element> impl)
@@ -97,18 +138,17 @@ public abstract class AbstractLoader<T extends Element>
 		assert impl != null : "impl is NULL";
 		assert this.type.isAssignableFrom (impl) : "impl does not extend " + this.type.getSimpleName ();
 
-		return null; // AbstractQuery.getInstance (this.datastore, selector, impl);
+		return this.datastore.getQuery (selector, impl);
 	}
 
 	/**
 	 * Get an instance of the <code>Query</code>.  This method will
-	 * get a <code>Query</code> for the <code>Element</code> type of
-	 * the Loader using the default implementation class for the
-	 * <code>DataStore</code>.
+	 * get a <code>Query</code> for the <code>Element</code> based on the
+	 * specified <code>Selector</code>.
 	 *
-	 * @param  name The name of the <code>Query</code> to retrieve
+	 * @param  selector The <code>Selector</code>, not null
 	 *
-	 * @return The <code>Query</code> instance
+	 * @return          The <code>Query</code> instance
 	 */
 
 	protected final Query<T> fetchQuery (final Selector selector)
@@ -117,7 +157,8 @@ public abstract class AbstractLoader<T extends Element>
 
 		assert selector != null : "name is NULL";
 
-		return this.fetchQuery (selector, this.datastore.getElementClass (this.type));
+		return this.fetchQuery (selector, this.datastore.getProfile ()
+				.getElementClass (this.type));
 	}
 
 	/**
@@ -140,8 +181,8 @@ public abstract class AbstractLoader<T extends Element>
 			throw new NullPointerException ();
 		}
 
-		Query<T> query = this.fetchQuery (Element.Selectors.ID);
-		query.setProperty (Element.Properties.ID, id);
+		Query<T> query = this.fetchQuery (Element.SELECTOR_ID);
+		query.setProperty (Element.ID, id);
 
 		return query.query ();
 	}
@@ -157,6 +198,6 @@ public abstract class AbstractLoader<T extends Element>
 	{
 		this.log.trace ("fetchAll:");
 
-		return (this.fetchQuery (Element.Selectors.ALL)).queryAll ();
+		return (this.fetchQuery (Element.SELECTOR_ALL)).queryAll ();
 	}
 }

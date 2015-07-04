@@ -34,16 +34,22 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 	 * Get an instance of the <code>NetworkBuilder</code> for the specified
 	 * <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
 	 *
-	 * @return           The <code>NetworkBuilder</code> instance
+	 * @return                       The <code>NetworkBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Network</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static NetworkBuilder getInstance (final DataStore datastore)
 	{
 		assert datastore != null : "datastore is NULL";
 
-		return new NetworkBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (Network.class)));
+		return AbstractBuilder.getInstance (datastore, Network.class, NetworkBuilder::new);
 	}
 
 	/**
@@ -51,10 +57,16 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 	 * <code>DataStore</code>, loaded with the data from the specified
 	 * <code>Network</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  network   The <code>Network</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  network               The <code>Network</code>, not null
 	 *
-	 * @return           The <code>NetworkBuilder</code> instance
+	 * @return                       The <code>NetworkBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Network</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static NetworkBuilder getInstance (final DataStore datastore, Network network)
@@ -72,20 +84,21 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 	 * Get an instance of the <code>NetworkBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return         The <code>NetworkBuilder</code> instance
+	 * @return                       The <code>NetworkBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Network</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 
 	public static NetworkBuilder getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return NetworkBuilder.getInstance (model.getDataStore ());
+		return NetworkBuilder.getInstance (AbstractBuilder.getDataStore (model));
 	}
 
 	/**
@@ -93,10 +106,16 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 	 * <code>DomainModel</code>, loaded with the data from the specified
 	 * <code>Network</code>.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
-	 * @param  network The <code>Network</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  network               The <code>Network</code>, not null
 	 *
-	 * @return         The <code>NetworkBuilder</code> instance
+	 * @return                       The <code>NetworkBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Network</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static NetworkBuilder getInstance (final DomainModel model, Network network)
@@ -124,6 +143,19 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 		super (datastore, builder);
 	}
 
+	/**
+	 * Load a <code>Network</code> instance into the builder.  This method
+	 * resets the builder and initializes all of its parameters from
+	 * the specified <code>Network</code> instance.  The  parameters are
+	 * validated as they are set.
+	 *
+	 * @param  network                  The <code>Network</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>Network</code> instance to be
+	 *                                  loaded are not valid
+	 */
+
 	@Override
 	public void load (final Network network)
 	{
@@ -138,7 +170,7 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 		super.load (network);
 		this.setName (network.getName ());
 
-		this.builder.setProperty (Network.Properties.ID, network.getId ());
+		this.builder.setProperty (Network.ID, network.getId ());
 	}
 
 	/**
@@ -150,7 +182,7 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (Network.Properties.NAME);
+		return this.builder.getPropertyValue (Network.NAME);
 	}
 
 	/**
@@ -178,6 +210,6 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (Network.Properties.NAME, name);
+		this.builder.setProperty (Network.NAME, name);
 	}
 }

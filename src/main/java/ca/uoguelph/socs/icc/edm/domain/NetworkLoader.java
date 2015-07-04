@@ -34,19 +34,19 @@ public final class NetworkLoader extends AbstractLoader<Network>
 	 * Get an instance of the <code>NetworkLoader</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>NetworkLoader</code>
+	 * @return                       The <code>NetworkLoader</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Element</code> queried by the
+	 *                               loader
 	 */
 
-	public NetworkLoader getInstance (final DomainModel model)
+	public static NetworkLoader getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new NetworkLoader (model.getDataStore ());
+		return AbstractLoader.getInstance (model, Network.class, NetworkLoader::new);
 	}
 
 	/**
@@ -64,8 +64,11 @@ public final class NetworkLoader extends AbstractLoader<Network>
 	 * Retrieve a <code>Network</code> object from the underlying
 	 * <code>DataStore</code> based on its name.
 	 *
-	 * @param  name The name of the <code>Network</code>, not null
-	 * @return      A <code>Network</code> object
+	 * @param  name                  The name of the <code>Network</code>, not
+	 *                               null
+	 *
+	 * @return                       The <code>Network</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
 	public Network fetchByName (final String name)
@@ -78,8 +81,14 @@ public final class NetworkLoader extends AbstractLoader<Network>
 			throw new NullPointerException ();
 		}
 
-		Query<Network> query = this.fetchQuery (Network.Selectors.NAME);
-		query.setProperty (Network.Properties.NAME, name);
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		Query<Network> query = this.fetchQuery (Network.SELECTOR_NAME);
+		query.setProperty (Network.NAME, name);
 
 		return query.query ();
 	}

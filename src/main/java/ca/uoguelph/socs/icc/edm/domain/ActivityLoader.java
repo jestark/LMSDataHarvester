@@ -38,19 +38,19 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 	 * Get an instance of the <code>ActivityLoader</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>ActivityLoader</code>
+	 * @return                       The <code>ActivityLoader</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Element</code> queried by the
+	 *                               loader
 	 */
 
-	public ActivityLoader getInstance (final DomainModel model)
+	public static ActivityLoader getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new ActivityLoader (model.getDataStore ());
+		return AbstractLoader.getInstance (model, Activity.class, ActivityLoader::new);
 	}
 
 	/**
@@ -70,7 +70,11 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 	 * Get a <code>List</code> of all of the <code>Activity</code> instances
 	 * which are associated with a particular <code>ActivityType</code>.
 	 *
-	 * @param  type The <code>ActivityType</code>, not null
+	 * @param  type                  The <code>ActivityType</code>, not null
+	 *
+	 * @return                       The <code>List</code> of
+	 *                               <code>ActivityType</code> instances
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
 	public List<Activity> fetchAllForType (final ActivityType type)
@@ -83,7 +87,13 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 			throw new NullPointerException ();
 		}
 
-		Query<Activity> query = this.fetchQuery (Activity.Selectors.ALL, AbstractActivity.getActivityClass (type));
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		Query<Activity> query = this.fetchQuery (Activity.SELECTOR_ALL, AbstractActivity.getActivityClass (type));
 
 		return query.queryAll ();
 	}

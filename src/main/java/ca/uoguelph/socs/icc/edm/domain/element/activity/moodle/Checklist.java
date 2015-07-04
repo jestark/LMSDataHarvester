@@ -63,10 +63,10 @@ public class Checklist extends GenericNamedActivity
 		MetaDataBuilder<Activity, Checklist> builder = MetaDataBuilder.newInstance (Activity.class, Checklist.class);
 		builder.setCreateMethod (Checklist::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Checklist::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Checklist::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Checklist::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Checklist::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Checklist::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Checklist::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Checklist::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Checklist::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "checklist");
 	}

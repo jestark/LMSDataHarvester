@@ -63,36 +63,17 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface Activity extends Element
 {
-	/**
-	 * Constants representing all of the properties of an <code>Activiy</code>.
-	 * A <code>Property</code> represents a piece of data contained within the
-	 * <code>Activity</code> instance.
-	 */
+	/** The associated <code>Course</code> */
+	public static final Property<Course> COURSE = Property.getInstance (Activity.class, Course.class, "course", false, true);
 
-	public static class Properties extends Element.Properties
-	{
-		/** The associated <code>Course</code> */
-		public static final Property<Course> COURSE = Property.getInstance (Activity.class, Course.class, "course", false, true);
+	/** The associated <code>ActivityType</code> */
+	public static final Property<ActivityType> TYPE = Property.getInstance (Activity.class, ActivityType.class, "type", false, true);
 
-		/** The associated <code>ActivityType</code> */
-		public static final Property<ActivityType> TYPE = Property.getInstance (Activity.class, ActivityType.class, "type", false, true);
+	/** The name of the <code>Activity</code> */
+	public static final Property<String> NAME = Property.getInstance (Activity.class, String.class, "name", false, true);
 
-		/** The name of the <code>Activity</code> */
-		public static final Property<String> NAME = Property.getInstance (Activity.class, String.class, "name", false, true);
-	}
-
-	/**
-	 * Constants representing all of the selectors of an <code>Activity</code>.  A
-	 * <code>Selector</code> represents the <code>Set</code> of
-	 * <code>Property</code> instances used to load an <code>Activity</code> from
-	 * the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors
-	{
-		/** Select all <code>Activity</code> instances by <code>ActivityType</code> */
-		public static final Selector TYPE = Selector.getInstance (Activity.class, false, Activity.Properties.TYPE);
-	}
+	/** Select all <code>Activity</code> instances by <code>ActivityType</code> */
+	public static final Selector SELECTOR_TYPE = Selector.getInstance (Activity.class, false, Activity.TYPE);
 
 	/**
 	 * Get the name of the <code>Activity</code>.  Not all

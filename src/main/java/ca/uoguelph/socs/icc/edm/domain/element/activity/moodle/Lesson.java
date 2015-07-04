@@ -64,10 +64,10 @@ public class Lesson extends GenericNamedActivity
 		MetaDataBuilder<Activity, Lesson> builder = MetaDataBuilder.newInstance (Activity.class, Lesson.class);
 		builder.setCreateMethod (Lesson::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Lesson::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Lesson::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Lesson::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Lesson::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Lesson::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Lesson::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Lesson::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Lesson::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "lesson");
 	}

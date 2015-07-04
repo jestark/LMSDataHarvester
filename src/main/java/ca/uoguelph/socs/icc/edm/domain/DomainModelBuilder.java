@@ -181,7 +181,7 @@ public final class DomainModelBuilder
 
 		try
 		{
-			impl = this.profile.getImplClass (element);
+			impl = this.profile.getElementClass (element);
 		}
 		catch (NullPointerException ex)
 		{
@@ -215,8 +215,6 @@ public final class DomainModelBuilder
 	 *
 	 * @param  element                  The <code>DomainModelType</code> of the
 	 *                                  element which is being added, not null
-	 * @param  available                Indication if the element is available
-	 *                                  in the <code>DataStore</code>, not null
 	 * @param  impl                     The implementation class to be used
 	 *                                  with the element, not null
 	 * @param  generator                The <code>IdGenerator</code> to be used
@@ -226,11 +224,11 @@ public final class DomainModelBuilder
 	 *                                  element
 	 */
 
-	public void setEntry (Class<? extends Element> element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends AbstractLoader<? extends Element>> loader)
+	public void setEntry (Class<? extends Element> element, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
 	{
 		try
 		{
-			this.profile.addEntry (element, available, impl, generator, loader);
+			this.profile.addEntry (element, impl, generator);
 		}
 		catch (NullPointerException ex)
 		{
@@ -244,9 +242,9 @@ public final class DomainModelBuilder
 		}
 	}
 
-	public void setEntry (DomainModelType element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends AbstractLoader<? extends Element>> loader)
+	public void setEntry (DomainModelType element, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
 	{
-		this.setEntry (element.getInterfaceClass (), available, impl, generator, loader);
+		this.setEntry (element.getInterfaceClass (), impl, generator);
 	}
 
 	/**

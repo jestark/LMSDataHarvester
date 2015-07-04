@@ -31,26 +31,8 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface SubActivity extends Activity
 {
-	/**
-	 * Constants representing all of the properties of an <code>SubActivity</code>.
-	 * A <code>Property</code> represents a piece of data contained within the
-	 * <code>SubActivity</code> instance.
-	 */
-
-	public static class Properties extends Activity.Properties
-	{
-		/** The parent <code>Activity</code> */
-		public static final Property<Activity> PARENT = Property.getInstance (SubActivity.class, Activity.class, "parent", false, true);
-	}
-
-	/**
-	 * Constants representing all of the selectors of an
-	 * <code>SubActivity</code>.  A <code>Selector</code> represents the
-	 * <code>Set</code> of <code>Property</code> instances used to load an
-	 * <code>Grade</code> from the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors {}
+	/** The parent <code>Activity</code> */
+	public static final Property<Activity> PARENT = Property.getInstance (SubActivity.class, Activity.class, "parent", false, true);
 
 	/**
 	 * Get the parent <code>Activity</code> instance for the

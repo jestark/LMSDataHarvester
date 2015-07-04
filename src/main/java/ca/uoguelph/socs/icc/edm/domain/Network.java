@@ -30,30 +30,11 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface Network extends Element
 {
-	/**
-	 * Constants representing all of the properties of an <code>Network</code>.
-	 * A <code>Property</code> represents a piece of data contained within the
-	 * <code>Network</code> instance.
-	 */
+	/** The name of the <code>Network</code> */
+	public static final Property<String> NAME = Property.getInstance (Network.class, String.class, "name", false, true);
 
-	public static class Properties extends Element.Properties
-	{
-		/** The name of the <code>Network</code> */
-		public static final Property<String> NAME = Property.getInstance (Network.class, String.class, "name", false, true);
-	}
-
-	/**
-	 * Constants representing all of the selectors of an <code>Network</code>.
-	 * A <code>Selector</code> represents the <code>Set</code> of
-	 * <code>Property</code> instances used to load an <code>Network</code>
-	 * from the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors
-	{
-		/** Select an <code>Network</code> instance by its name */
-		public static final Selector NAME = Selector.getInstance (Network.class, true, Network.Properties.NAME);
-	}
+	/** Select an <code>Network</code> instance by its name */
+	public static final Selector SELECTOR_NAME = Selector.getInstance (Network.class, true, Network.NAME);
 
 	/**
 	 * Get the name of the <code>Network</code>.

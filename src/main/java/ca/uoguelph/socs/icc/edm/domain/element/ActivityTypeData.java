@@ -69,10 +69,10 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		MetaDataBuilder<ActivityType, ActivityTypeData> builder = MetaDataBuilder.newInstance (ActivityType.class, ActivityTypeData.class);
 		builder.setCreateMethod (ActivityTypeData::new);
 
-		builder.addProperty (ActivityType.Properties.ID, ActivityType::getId, ActivityTypeData::setId);
+		builder.addProperty (ActivityType.ID, ActivityType::getId, ActivityTypeData::setId);
 
-		builder.addProperty (ActivityType.Properties.NAME, ActivityType::getName, ActivityTypeData::setName);
-		builder.addProperty (ActivityType.Properties.SOURCE, ActivityType::getSource, ActivityTypeData::setSource);
+		builder.addProperty (ActivityType.NAME, ActivityType::getName, ActivityTypeData::setName);
+		builder.addProperty (ActivityType.SOURCE, ActivityType::getSource, ActivityTypeData::setSource);
 
 		AbstractElement.registerElement (builder.build ());
 	}

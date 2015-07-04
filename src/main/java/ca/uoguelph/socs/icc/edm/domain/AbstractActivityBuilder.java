@@ -49,11 +49,18 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	 * Get an instance of the <code>ActivityBuilder</code> which corresponds to
 	 * the specified <code>ActivityType</code>.
 	 *
-	 * @param  <T>       The <code>Element</code> type of the builder
-	 * @param  <U>       The type of the builder
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  type      The <code>ActivityType</code>, not null
-	 * @param  create    Method reference to the constructor for the builder
+	 * @param  <T>                   The <code>Element</code> type of the 
+	 *                               builder
+	 * @param  <U>                   The type of the builder
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  type                  The <code>ActivityType</code>, not null
+	 * @param  create                Method reference to the constructor for
+	 *                               the builder
+	 *
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
 	 */
 
 	public static <T extends Activity, U extends AbstractActivityBuilder<T>> U getInstance (final DataStore datastore, final ActivityType type, final BiFunction<DataStore, Builder<T>, U> create)
@@ -63,6 +70,18 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 		assert create != null : "create is NULL";
 		assert datastore.contains (type) : "type is not in the datastore";
 
+		// Exception here because this is the fist time that it is checked
+		if (! datastore.isOpen ())
+		{
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		// Exception here because this is the fist time that it is checked
+		if (datastore.getProfile ().getElementClass (Activity.class) == null)
+		{
+			throw new IllegalStateException ("Element is not available for this datastore");
+		}
+
 		U builder = create.apply (datastore, AbstractBuilder.getBuilder (datastore, AbstractActivity.getActivityClass (type)));
 		builder.setActivityType (type);
 
@@ -70,19 +89,29 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	}
 
 	/**
-	 * Create the <code>DefaultActivityBuilder</code>.
+	 * Create the <code>AbstractActivityBuilder</code>.
 	 *
-	 * @param  impl      The implementation class of the <code>Element</code>
-	 *                   to be built
-	 * @param  datastore The <code>DataStore</code> into which the newly
-	 *                   created <code>Activity</code> instance will be
-	 *                   inserted
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  builder   The <code>Builder</code>, not null
 	 */
 
 	protected AbstractActivityBuilder (final DataStore datastore, final Builder<T> builder)
 	{
 		super (datastore, builder);
 	}
+
+	/**
+	 * Load a <code>Activity</code> instance into the builder.  This method
+	 * resets the builder and initializes all of its parameters from
+	 * the specified <code>Activity</code> instance.  The  parameters are
+	 * validated as they are set.
+	 *
+	 * @param  activity                 The <code>Activity</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>Activity</code> instance to be
+	 *                                  loaded are not valid
+	 */
 
 	@Override
 	public void load (final T activity)
@@ -104,7 +133,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 		super.load (activity);
 		this.setCourse (activity.getCourse ());
 
-		this.builder.setProperty (Activity.Properties.ID, activity.getId ());
+		this.builder.setProperty (Activity.ID, activity.getId ());
 	}
 
 	/**
@@ -115,7 +144,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 
 	public final ActivityType getActivityType ()
 	{
-		return this.builder.getPropertyValue (Activity.Properties.TYPE);
+		return this.builder.getPropertyValue (Activity.TYPE);
 	}
 
 	/**
@@ -131,7 +160,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 		assert type != null : "type is NULL";
 		assert this.datastore.contains (type) : "ActivityType is not in the DataStore";
 
-		this.builder.setProperty (Activity.Properties.TYPE, type);
+		this.builder.setProperty (Activity.TYPE, type);
 	}
 
 	/**
@@ -143,7 +172,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 
 	public final Course getCourse ()
 	{
-		return this.builder.getPropertyValue (Activity.Properties.COURSE);
+		return this.builder.getPropertyValue (Activity.COURSE);
 	}
 
 	/**
@@ -172,6 +201,6 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
 
-		this.builder.setProperty (Activity.Properties.COURSE, course);
+		this.builder.setProperty (Activity.COURSE, course);
 	}
 }

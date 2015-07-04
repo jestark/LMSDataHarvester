@@ -50,36 +50,17 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface Course extends Element
 {
-	/**
-	 * Constants representing all of the properties of an <code>Course</code>.
-	 * A <code>Property</code> represents a piece of data contained within the
-	 * <code>Course</code> instance.
-	 */
+	/** The name of the <code>Course</code> */
+	public static final Property<String> NAME = Property.getInstance (Course.class, String.class, "name", false, true);
 
-	public static class Properties extends Element.Properties
-	{
-		/** The name of the <code>Course</code> */
-		public static final Property<String> NAME = Property.getInstance (Course.class, String.class, "name", false, true);
+	/** The <code>Semester</code> of offering for the <code>Course</code> */
+	public static final Property<Semester> SEMESTER = Property.getInstance (Course.class, Semester.class, "semester", false, true);
 
-		/** The <code>Semester</code> of offering for the <code>Course</code> */
-		public static final Property<Semester> SEMESTER = Property.getInstance (Course.class, Semester.class, "semester", false, true);
+	/** The year of offering for the <code>Course</code> */
+	public static final Property<Integer> YEAR = Property.getInstance (Course.class, Integer.class, "year", false, true);
 
-		/** The year of offering for the <code>Course</code> */
-		public static final Property<Integer> YEAR = Property.getInstance (Course.class, Integer.class, "year", false, true);
-	}
-
-	/**
-	 * Constants representing all of the selectors of an <code>Course</code>.  A
-	 * <code>Selector</code> represents the <code>Set</code> of
-	 * <code>Property</code> instances used to load an <code>Course</code> from
-	 * the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors
-	{
-		/** Select an <code>Course</code> instance by its name and date of offering */
-		public static final Selector OFFERING = Selector.getInstance (Course.class, "offering", true, Course.Properties.NAME, Course.Properties.SEMESTER, Course.Properties.YEAR);
-	}
+	/** Select an <code>Course</code> instance by its name and date of offering */
+	public static final Selector SELECTOR_OFFERING = Selector.getInstance (Course.class, "offering", true, Course.NAME, Course.SEMESTER, Course.YEAR);
 
 	/**
 	 * Get the name of the <code>Course</code>.

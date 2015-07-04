@@ -74,9 +74,9 @@ public class MoodleLogData extends AbstractElement implements LogEntry
 		MetaDataBuilder<LogEntry, MoodleLogData> builder = MetaDataBuilder.newInstance (LogEntry.class, MoodleLogData.class);
 		builder.setCreateMethod (MoodleLogData::new);
 
-		builder.addProperty (LogEntry.Properties.ID, LogEntry::getId, MoodleLogData::setId);
-		builder.addProperty (LogEntry.Properties.IPADDRESS, LogEntry::getIPAddress, MoodleLogData::setIPAddress);
-		builder.addProperty (LogEntry.Properties.TIME, LogEntry::getTime, MoodleLogData::setTime);
+		builder.addProperty (LogEntry.ID, LogEntry::getId, MoodleLogData::setId);
+		builder.addProperty (LogEntry.IPADDRESS, LogEntry::getIPAddress, MoodleLogData::setIPAddress);
+		builder.addProperty (LogEntry.TIME, LogEntry::getTime, MoodleLogData::setTime);
 
 
 		AbstractElement.registerElement (builder.build ());

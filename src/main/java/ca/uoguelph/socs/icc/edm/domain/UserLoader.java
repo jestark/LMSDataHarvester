@@ -34,19 +34,19 @@ public final class UserLoader extends AbstractLoader<User>
 	 * Get an instance of the <code>UserLoader</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>UserLoader</code>
+	 * @return                       The <code>UserLoader</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Element</code> queried by the
+	 *                               loader
 	 */
 
-	public UserLoader getInstance (final DomainModel model)
+	public static UserLoader getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new UserLoader (model.getDataStore ());
+		return AbstractLoader.getInstance (model, User.class, UserLoader::new);
 	}
 
 	/**
@@ -64,11 +64,12 @@ public final class UserLoader extends AbstractLoader<User>
 	 * Retrieve a single <code>User</code> object, with the specified ID
 	 * number, from the <code>DataStore</code>.
 	 *
-	 * @param  idnumber The ID number of the <code>User</code> to retrieve, not
-	 *                  null
+	 * @param  idnumber              The ID number of the <code>User</code> to
+	 *                               retrieve, not null
 	 *
-	 * @return          The <code>User</code> object associated with the ID
-	 *                  number
+	 * @return                       The <code>User</code> instance associated
+	 *                               with the ID number
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
 	public User fetchByIdNumber (final Integer idnumber)
@@ -81,8 +82,8 @@ public final class UserLoader extends AbstractLoader<User>
 			throw new NullPointerException ();
 		}
 
-		Query<User> query = this.fetchQuery (User.Selectors.IDNUMBER);
-		query.setProperty (User.Properties.IDNUMBER, idnumber);
+		Query<User> query = this.fetchQuery (User.SELECTOR_IDNUMBER);
+		query.setProperty (User.IDNUMBER, idnumber);
 
 		return query.query ();
 	}
@@ -91,10 +92,12 @@ public final class UserLoader extends AbstractLoader<User>
 	 * Retrieve a single <code>User</code> object, with the specified username,
 	 * from the <code>DataStore</code>.
 	 *
-	 * @param  username The username of the entry to retrieve, not null
+	 * @param  username              The username of the entry to retrieve, not
+	 *                               null
 	 *
-	 * @return          The <code>User</code> object associated with the
-	 *                  username
+	 * @return                       The <code>User</code> instance associated
+	 *                               with the username
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
 	public User fetchByUsername (final String username)
@@ -107,8 +110,14 @@ public final class UserLoader extends AbstractLoader<User>
 			throw new NullPointerException ();
 		}
 
-		Query<User> query = this.fetchQuery (User.Selectors.USERNAME);
-		query.setProperty (User.Properties.USERNAME, username);
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		Query<User> query = this.fetchQuery (User.SELECTOR_USERNAME);
+		query.setProperty (User.USERNAME, username);
 
 		return query.query ();
 	}
@@ -117,11 +126,13 @@ public final class UserLoader extends AbstractLoader<User>
 	 * Retrieve the <code>User</code> instance which is associated with the
 	 * specified <code>Enrolment</code> from the <code>DataStore</code>.
 	 *
-	 * @param  enrolment The <code>Enrolment</code> associated with the
-	 *                   <code>User</code> instance to be retrieved, not null
+	 * @param  enrolment             The <code>Enrolment</code> associated with
+	 *                               the <code>User</code> instance to be
+	 *                               retrieved, not null
 	 *
-	 * @return           The <code>User</code> instance associated with the
-	 *                   <code>Enrolment</code>
+	 * @return                       The <code>User</code> instance associated
+	 *                               with the <code>Enrolment</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
 	public User fetchByEnrolment (final Enrolment enrolment)
@@ -132,6 +143,12 @@ public final class UserLoader extends AbstractLoader<User>
 		{
 			this.log.error ("The specified enrolment is NULL");
 			throw new NullPointerException ();
+		}
+
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
 		}
 
 //		Query<User> query = this.fetchQuery ("enrolment");

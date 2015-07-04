@@ -34,10 +34,14 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 	 * Get an instance of the <code>ActivityBuilder</code> for the specified
 	 * <code>DataStore</code> and <code>ActivityType</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  type      The <code>ActivityType</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  type                  The <code>ActivityType</code>, not null
 	 *
-	 * @return           The <code>ActivityBuilder</code> instance
+	 * @return                       The <code>ActivityBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
 	 */
 
 	public static ActivityBuilder getInstance (final DataStore datastore, ActivityType type)
@@ -54,10 +58,14 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 	 * <code>DataStore</code>, loaded with the data from the specified
 	 * <code>Activity</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  activity  The <code>Activity</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  activity              The <code>Activity</code>, not null
 	 *
-	 * @return           The <code>ActivityBuilder</code> instance
+	 * @return                       The <code>ActivityBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
 	 */
 
 	public static ActivityBuilder getInstance (final DataStore datastore, Activity activity)
@@ -75,12 +83,17 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 	 * Get an instance of the <code>ActivityBuilder</code> for the specified
 	 * <code>DomainModel</code> and <code>ActivityType</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
-	 * @param  type  The <code>ActivityType</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  type                  The <code>ActivityType</code>, not null
 	 *
-	 * @return       The <code>ActivityBuilder</code> instance
+	 * @return                       The <code>ActivityBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
-
 
 	public static ActivityBuilder getInstance (final DomainModel model, ActivityType type)
 	{
@@ -99,7 +112,7 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 			throw new IllegalArgumentException ("type is not in the datastore");
 		}
 
-		return ActivityBuilder.getInstance (model.getDataStore (), type);
+		return ActivityBuilder.getInstance (AbstractBuilder.getDataStore (model), type);
 	}
 
 	/**
@@ -107,10 +120,16 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 	 * <code>DomainModel</code>, loaded with the data from the specified
 	 * <code>Activity</code>.
 	 *
-	 * @param  model    The <code>DomainModel</code>, not null
-	 * @param  activity The <code>Activity</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  activity              The <code>Activity</code>, not null
 	 *
-	 * @return          The <code>ActivityBuilder</code> instance
+	 * @return                       The <code>ActivityBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static ActivityBuilder getInstance (final DomainModel model, Activity activity)
@@ -138,6 +157,19 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 		super (datastore, builder);
 	}
 
+	/**
+	 * Load a <code>Activity</code> instance into the builder.  This method
+	 * resets the builder and initializes all of its parameters from
+	 * the specified <code>Activity</code> instance.  The  parameters are
+	 * validated as they are set.
+	 *
+	 * @param  activity                 The <code>Activity</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>Activity</code> instance to be
+	 *                                  loaded are not valid
+	 */
+
 	@Override
 	public void load (final Activity activity)
 	{
@@ -161,7 +193,7 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (Activity.Properties.NAME);
+		return this.builder.getPropertyValue (Activity.NAME);
 	}
 
 	/**
@@ -189,6 +221,6 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (Activity.Properties.NAME, name);
+		this.builder.setProperty (Activity.NAME, name);
 	}
 }

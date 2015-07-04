@@ -40,7 +40,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * <code>ActivityType</code> interface must be deleted as well.
  * <p>
  * Once created, <code>ActivitySource</code> instances are immutable.
-
  *
  * @author  James E. Stark
  * @version 1.0
@@ -50,30 +49,11 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface ActivitySource extends Element
 {
-	/**
-	 * Constants representing all of the properties of an
-	 * <code>ActivitySource</code>.  A <code>Property</code> represents a piece
-	 * of data contained within the <code>ActivitySource</code> instance.
-	 */
+	/** The name of the <code>ActivitySource</code> */
+	public static final Property<String> NAME = Property.getInstance (ActivitySource.class, String.class, "name", false, true);
 
-	public static class Properties extends Element.Properties
-	{
-		/** The name of the <code>ActivitySource</code> */
-		public static final Property<String> NAME = Property.getInstance (ActivitySource.class, String.class, "name", false, true);
-	}
-
-	/**
-	 * Constants representing all of the selectors of an
-	 * <code>ActivitySource</code>.  A <code>Selector</code> represents the
-	 * <code>Set</code> of <code>Property</code> instances used to load an
-	 * <code>ActivitySource</code> from the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors
-	{
-		/** Select an <code>ActivitySource</code> instance by its name */
-		public static final Selector NAME = Selector.getInstance (ActivitySource.class, true, ActivitySource.Properties.NAME);
-	}
+	/** Select an <code>ActivitySource</code> instance by its name */
+	public static final Selector SELECTOR_NAME = Selector.getInstance (ActivitySource.class, true, ActivitySource.NAME);
 
 	/**
 	 * Get the name of the <code>ActivitySource</code>.

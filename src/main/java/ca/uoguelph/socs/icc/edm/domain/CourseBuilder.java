@@ -34,16 +34,22 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 	 * Get an instance of the <code>CourseBuilder</code> for the specified
 	 * <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
 	 *
-	 * @return           The <code>CourseBuilder</code> instance
+	 * @return                       The <code>CourseBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Course</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static CourseBuilder getInstance (final DataStore datastore)
 	{
 		assert datastore != null : "datastore is NULL";
 
-		return new CourseBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (Course.class)));
+		return AbstractBuilder.getInstance (datastore, Course.class, CourseBuilder::new);
 	}
 
 	/**
@@ -51,10 +57,16 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 	 * <code>DataStore</code>, loaded with the data from the specified
 	 * <code>Course</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  course    The <code>Course</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  course                The <code>Course</code>, not null
 	 *
-	 * @return           The <code>CourseBuilder</code> instance
+	 * @return                       The <code>CourseBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Course</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static CourseBuilder getInstance (final DataStore datastore, Course course)
@@ -72,20 +84,21 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 	 * Get an instance of the <code>CourseBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>CourseBuilder</code> instance
+	 * @return                       The <code>CourseBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Course</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 
 	public static CourseBuilder getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return CourseBuilder.getInstance (model.getDataStore ());
+		return CourseBuilder.getInstance (AbstractBuilder.getDataStore (model));
 	}
 
 	/**
@@ -93,10 +106,16 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 	 * <code>DomainModel</code>, loaded with the data from the specified
 	 * <code>Course</code>.
 	 *
-	 * @param  model  The <code>DomainModel</code>, not null
-	 * @param  course The <code>Course</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  course                The <code>Course</code>, not null
 	 *
-	 * @return        The <code>CourseBuilder</code> instance
+	 * @return                       The <code>CourseBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Course</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static CourseBuilder getInstance (final DomainModel model, Course course)
@@ -124,6 +143,19 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 		super (datastore, builder);
 	}
 
+	/**
+	 * Load a <code>Course</code> instance into the builder.  This method
+	 * resets the builder and initializes all of its parameters from
+	 * the specified <code>Course</code> instance.  The  parameters are
+	 * validated as they are set.
+	 *
+	 * @param  course                   The <code>Course</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>Course</code> instance to be
+	 *                                  loaded are not valid
+	 */
+
 	@Override
 	public void load (final Course course)
 	{
@@ -140,7 +172,7 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 		this.setSemester (course.getSemester ());
 		this.setYear (course.getYear ());
 
-		this.builder.setProperty (Course.Properties.ID, course.getId ());
+		this.builder.setProperty (Course.ID, course.getId ());
 	}
 
 	/**
@@ -152,7 +184,7 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (Course.Properties.NAME);
+		return this.builder.getPropertyValue (Course.NAME);
 	}
 
 	/**
@@ -180,7 +212,7 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (Course.Properties.NAME, name);
+		this.builder.setProperty (Course.NAME, name);
 	}
 
 	/**
@@ -192,7 +224,7 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 
 	public Semester getSemester ()
 	{
-		return this.builder.getPropertyValue (Course.Properties.SEMESTER);
+		return this.builder.getPropertyValue (Course.SEMESTER);
 	}
 
 	/**
@@ -212,7 +244,7 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 			throw new NullPointerException ("semester is NULL");
 		}
 
-		this.builder.setProperty (Course.Properties.SEMESTER, semester);
+		this.builder.setProperty (Course.SEMESTER, semester);
 	}
 
 	/**
@@ -223,7 +255,7 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 
 	public Integer getYear ()
 	{
-		return this.builder.getPropertyValue (Course.Properties.YEAR);
+		return this.builder.getPropertyValue (Course.YEAR);
 	}
 
 	/**
@@ -250,6 +282,6 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 			throw new IllegalArgumentException ("Year is negative");
 		}
 
-		this.builder.setProperty (Course.Properties.YEAR, year);
+		this.builder.setProperty (Course.YEAR, year);
 	}
 }

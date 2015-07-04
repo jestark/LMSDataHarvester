@@ -63,10 +63,10 @@ public class Feedback extends GenericNamedActivity
 		MetaDataBuilder<Activity, Feedback> builder = MetaDataBuilder.newInstance (Activity.class, Feedback.class);
 		builder.setCreateMethod (Feedback::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Feedback::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Feedback::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Feedback::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Feedback::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Feedback::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Feedback::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Feedback::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Feedback::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "feedback");
 	}

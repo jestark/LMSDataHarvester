@@ -64,10 +64,10 @@ public class Book extends GenericNamedActivity
 		MetaDataBuilder<Activity, Book> builder = MetaDataBuilder.newInstance (Activity.class, Book.class);
 		builder.setCreateMethod (Book::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Book::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Book::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Book::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Book::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Book::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Book::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Book::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Book::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "book");
 	}

@@ -59,30 +59,11 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface Action extends Element
 {
-	/**
-	 * Constants representing all of the properties of an <code>Action</code>.
-	 * A <code>Property</code> represents a piece of data contained within the
-	 * <code>Action</code> instance.
-	 */
+	/** The name of the <code>Action</code> */
+	public static final Property<String> NAME = Property.getInstance (Action.class, String.class, "name", false, true);
 
-	public static class Properties extends Element.Properties
-	{
-		/** The name of the <code>Action</code> */
-		public static final Property<String> NAME = Property.getInstance (Action.class, String.class, "name", false, true);
-	}
-
-	/**
-	 * Constants representing all of the selectors of an <code>Action</code>.
-	 * A <code>Selector</code> represents the <code>Set</code> of
-	 * <code>Property</code> instances used to load an <code>Action</code>
-	 * from the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors
-	{
-		/** Select an <code>Action</code> instance by its name */
-		public static final Selector NAME = Selector.getInstance (Action.class, true, Action.Properties.NAME);
-	}
+	/** Select an <code>Action</code> instance by its name */
+	public static final Selector SELECTOR_NAME = Selector.getInstance (Action.class, true, Action.NAME);
 
 	/**
 	 * Get the <code>Set</code> of <code>ActivityType</code> instances

@@ -36,19 +36,19 @@ public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 	 * Get an instance of the <code>EnrolmentLoader</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>EnrolmentLoader</code>
+	 * @return                       The <code>EnrolmentLoader</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Element</code> queried by the
+	 *                               loader
 	 */
 
-	public EnrolmentLoader getInstance (final DomainModel model)
+	public static EnrolmentLoader getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new EnrolmentLoader (model.getDataStore ());
+		return AbstractLoader.getInstance (model, Enrolment.class, EnrolmentLoader::new);
 	}
 
 	/**
@@ -66,10 +66,11 @@ public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 	 * Retrieve a list of <code>Enrolment</code> objects from the
 	 * <code>DataStore</code> for the specified <code>Role</code>.
 	 *
-	 * @param  role The <code>Role</code> for which the <code>List</code> of
-	 *              <code>Enrolment</code> instances should be retrieved, not
-	 *              null
-	 * @return      A <code>List</code> of <code>Enrolment</code> instances
+	 * @param  role                  The <code>Role</code>, not null
+	 *
+	 * @return                       A <code>List</code> of
+	 *                               <code>Enrolment</code> instances
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
 	public List<Enrolment> fetchAllForRole (final Role role)
@@ -82,8 +83,14 @@ public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 			throw new NullPointerException ();
 		}
 
-		Query<Enrolment> query = this.fetchQuery (Enrolment.Selectors.ROLE);
-		query.setProperty (Enrolment.Properties.ROLE, role);
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		Query<Enrolment> query = this.fetchQuery (Enrolment.SELECTOR_ROLE);
+		query.setProperty (Enrolment.ROLE, role);
 
 		return query.queryAll ();
 	}

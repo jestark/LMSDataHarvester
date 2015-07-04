@@ -62,11 +62,11 @@ public class BookChapter extends GenericSubActivity
 		MetaDataBuilder<SubActivity, BookChapter> builder = MetaDataBuilder.newInstance (SubActivity.class, BookChapter.class);
 		builder.setCreateMethod (BookChapter::new);
 
-		builder.addProperty (SubActivity.Properties.ID, SubActivity::getId, BookChapter::setId);
-		builder.addProperty (SubActivity.Properties.COURSE, SubActivity::getCourse, null);
-		builder.addProperty (SubActivity.Properties.NAME, SubActivity::getName, BookChapter::setName);
-		builder.addProperty (SubActivity.Properties.PARENT, SubActivity::getParent, BookChapter::setParent);
-		builder.addProperty (SubActivity.Properties.TYPE, SubActivity::getType, null);
+		builder.addProperty (SubActivity.ID, SubActivity::getId, BookChapter::setId);
+		builder.addProperty (SubActivity.COURSE, SubActivity::getCourse, null);
+		builder.addProperty (SubActivity.NAME, SubActivity::getName, BookChapter::setName);
+		builder.addProperty (SubActivity.PARENT, SubActivity::getParent, BookChapter::setParent);
+		builder.addProperty (SubActivity.TYPE, SubActivity::getType, null);
 
 		GenericSubActivity.registerActivity (builder.build (), Book.class);
 	}

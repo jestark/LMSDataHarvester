@@ -48,42 +48,23 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface User extends Element
 {
-	/**
-	 * Constants representing all of the properties of an <code>User</code>.
-	 * A <code>Property</code> represents a piece of data contained within the
-	 * <code>User</code> instance.
-	 */
+	/** The idnumber for the <code>User</code> */
+	public static final Property<Integer> IDNUMBER = Property.getInstance (User.class, Integer.class, "idnumber", false, true);
 
-	public static class Properties extends Element.Properties
-	{
-		/** The idnumber for the <code>User</code> */
-		public static final Property<Integer> IDNUMBER = Property.getInstance (User.class, Integer.class, "idnumber", false, true);
+	/** The first name of the <code>User</code> */
+	public static final Property<String> FIRSTNAME = Property.getInstance (User.class, String.class, "firstname", true, true);
 
-		/** The first name of the <code>User</code> */
-		public static final Property<String> FIRSTNAME = Property.getInstance (User.class, String.class, "firstname", true, true);
+	/** The last name of the <code>User</code> */
+	public static final Property<String> LASTNAME = Property.getInstance (User.class, String.class, "lastname", true, true);
 
-		/** The last name of the <code>User</code> */
-		public static final Property<String> LASTNAME = Property.getInstance (User.class, String.class, "lastname", true, true);
+	/** The username of the <code>User</code> */
+	public static final Property<String> USERNAME = Property.getInstance (User.class, String.class, "username", false, true);
 
-		/** The username of the <code>User</code> */
-		public static final Property<String> USERNAME = Property.getInstance (User.class, String.class, "username", false, true);
-	}
+	/** Select an <code>User</code> instance by its id number */
+	public static final Selector SELECTOR_IDNUMBER = Selector.getInstance (User.class, true, User.IDNUMBER);
 
-	/**
-	 * Constants representing all of the selectors of an <code>User</code>.  A
-	 * <code>Selector</code> represents the <code>Set</code> of
-	 * <code>Property</code> instances used to load an <code>User</code> from
-	 * the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors
-	{
-		/** Select an <code>User</code> instance by its id number */
-		public static final Selector IDNUMBER = Selector.getInstance (User.class, true, User.Properties.IDNUMBER);
-
-		/** Select an <code>User</code> instance by its username */
-		public static final Selector USERNAME = Selector.getInstance (User.class, true, User.Properties.USERNAME);
-	}
+	/** Select an <code>User</code> instance by its username */
+	public static final Selector SELECTOR_USERNAME = Selector.getInstance (User.class, true, User.USERNAME);
 
 	/**
 	 * Get the (student) ID number of the <code>User</code>.  This will be the

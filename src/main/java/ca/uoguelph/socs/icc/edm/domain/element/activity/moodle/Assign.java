@@ -63,10 +63,10 @@ public class Assign extends GenericNamedActivity
 		MetaDataBuilder<Activity, Assign> builder = MetaDataBuilder.newInstance (Activity.class, Assign.class);
 		builder.setCreateMethod (Assign::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Assign::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Assign::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Assign::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Assign::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Assign::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Assign::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Assign::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Assign::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "assign");
 	}

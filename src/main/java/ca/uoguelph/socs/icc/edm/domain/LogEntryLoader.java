@@ -37,19 +37,19 @@ public final class LogEntryLoader extends AbstractLoader<LogEntry>
 	 * Get an instance of the <code>LogEntryLoader</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>LogEntryLoader</code>
+	 * @return                       The <code>LogEntryLoader</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Element</code> queried by the
+	 *                               loader
 	 */
 
-	public LogEntryLoader getInstance (final DomainModel model)
+	public static LogEntryLoader getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new LogEntryLoader (model.getDataStore ());
+		return AbstractLoader.getInstance (model, LogEntry.class, LogEntryLoader::new);
 	}
 
 	/**
@@ -67,11 +67,11 @@ public final class LogEntryLoader extends AbstractLoader<LogEntry>
 	 * Retrieve a list of <code>LogEntry</code> instances, which are associated
 	 * with the specified <code>Course</code>, from the <code>DataStore</code>.
 	 *
-	 * @param  course The <code>Course</code> for which the <code>List</code>
-	 *                of <code>LogEntry</code> instances should be retrieved,
-	 *                not null
+	 * @param  course                The <code>Course</code>, not null
 	 *
-	 * @return        A <code>List</code> of <code>LogEntry</code> instances
+	 * @return                       A <code>List</code> of
+	 *                               <code>LogEntry</code> instances
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
 	public List<LogEntry> fetchAllforCourse (final Course course)
@@ -84,8 +84,14 @@ public final class LogEntryLoader extends AbstractLoader<LogEntry>
 			throw new NullPointerException ();
 		}
 
-		Query<LogEntry> query = this.fetchQuery (LogEntry.Selectors.COURSE);
-		query.setProperty (LogEntry.Properties.COURSE, course);
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		Query<LogEntry> query = this.fetchQuery (LogEntry.SELECTOR_COURSE);
+		query.setProperty (LogEntry.COURSE, course);
 
 		return query.queryAll ();
 	}

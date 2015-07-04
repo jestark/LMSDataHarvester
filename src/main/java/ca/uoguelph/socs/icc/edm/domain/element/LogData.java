@@ -44,7 +44,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder
  */
 
 public class LogData extends AbstractElement implements LogEntry, Serializable
@@ -83,14 +82,14 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		MetaDataBuilder<LogEntry, LogData> builder = MetaDataBuilder.newInstance (LogEntry.class, LogData.class);
 		builder.setCreateMethod (LogData::new);
 
-		builder.addProperty (LogEntry.Properties.ID, LogEntry::getId, LogData::setId);
-		builder.addProperty (LogEntry.Properties.ACTION, LogEntry::getAction, LogData::setAction);
-		builder.addProperty (LogEntry.Properties.ACTIVITY, LogEntry::getActivity, LogData::setActivity);
-		builder.addProperty (LogEntry.Properties.COURSE, LogEntry::getCourse, null);
-		builder.addProperty (LogEntry.Properties.ENROLMENT, LogEntry::getEnrolment, LogData::setEnrolment);
-//		builder.addProperty (LogEntry.Properties.REFERENCE, LogData::getReference, LogData::setReference);
-		builder.addProperty (LogEntry.Properties.IPADDRESS, LogEntry::getIPAddress, LogData::setIPAddress);
-		builder.addProperty (LogEntry.Properties.TIME, LogEntry::getTime, LogData::setTime);
+		builder.addProperty (LogEntry.ID, LogEntry::getId, LogData::setId);
+		builder.addProperty (LogEntry.ACTION, LogEntry::getAction, LogData::setAction);
+		builder.addProperty (LogEntry.ACTIVITY, LogEntry::getActivity, LogData::setActivity);
+		builder.addProperty (LogEntry.COURSE, LogEntry::getCourse, null);
+		builder.addProperty (LogEntry.ENROLMENT, LogEntry::getEnrolment, LogData::setEnrolment);
+//		builder.addProperty (LogEntry.REFERENCE, LogData::getReference, LogData::setReference);
+		builder.addProperty (LogEntry.IPADDRESS, LogEntry::getIPAddress, LogData::setIPAddress);
+		builder.addProperty (LogEntry.TIME, LogEntry::getTime, LogData::setTime);
 
 		AbstractElement.registerElement (builder.build ());
 	}

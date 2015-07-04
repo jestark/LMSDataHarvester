@@ -63,10 +63,10 @@ public class Scheduler extends GenericNamedActivity
 		MetaDataBuilder<Activity, Scheduler> builder = MetaDataBuilder.newInstance (Activity.class, Scheduler.class);
 		builder.setCreateMethod (Scheduler::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Scheduler::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Scheduler::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Scheduler::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Scheduler::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Scheduler::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Scheduler::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Scheduler::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Scheduler::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "scheduler");
 	}

@@ -34,19 +34,19 @@ public final class ActivitySourceLoader extends AbstractLoader<ActivitySource>
 	 * Get an instance of the <code>ActivitySourceLoader</code> for the
 	 * specified <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>ActivitySourceLoader</code>
+	 * @return                       The <code>ActivitySourceLoader</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Element</code> queried by the
+	 *                               loader
 	 */
 
-	public ActivitySourceLoader getInstance (final DomainModel model)
+	public static ActivitySourceLoader getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new ActivitySourceLoader (model.getDataStore ());
+		return AbstractLoader.getInstance (model, ActivitySource.class, ActivitySourceLoader::new);
 	}
 
 	/**
@@ -66,11 +66,12 @@ public final class ActivitySourceLoader extends AbstractLoader<ActivitySource>
 	 * Retrieve the <code>ActivitySource</code> object associated with the
 	 * specified name from the <code>DataStore</code>.
 	 *
-	 * @param  name The name of the <code>ActivitySource</code> to retrieve,
-	 *              not null
+	 * @param  name                  The name of the
+	 *                               <code>ActivitySource</code> to retrieve,
+	 *                               not null
 	 *
-	 * @return      The <code>ActivitySource</code> instance associated with
-	 *              the specified name
+	 * @return                       The <code>ActivitySource</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
 	public ActivitySource fetchByName (final String name)
@@ -83,8 +84,14 @@ public final class ActivitySourceLoader extends AbstractLoader<ActivitySource>
 			throw new NullPointerException ();
 		}
 
-		Query<ActivitySource> query = this.fetchQuery (ActivitySource.Selectors.NAME);
-		query.setProperty (ActivitySource.Properties.NAME, name);
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		Query<ActivitySource> query = this.fetchQuery (ActivitySource.SELECTOR_NAME);
+		query.setProperty (ActivitySource.NAME, name);
 
 		return query.query ();
 	}

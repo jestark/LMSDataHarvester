@@ -64,10 +64,10 @@ public class Workshop extends GenericNamedActivity
 		MetaDataBuilder<Activity, Workshop> builder = MetaDataBuilder.newInstance (Activity.class, Workshop.class);
 		builder.setCreateMethod (Workshop::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Workshop::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Workshop::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Workshop::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Workshop::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Workshop::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Workshop::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Workshop::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Workshop::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "workshop");
 	}

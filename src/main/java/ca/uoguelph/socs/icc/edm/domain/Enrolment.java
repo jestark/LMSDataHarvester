@@ -71,39 +71,20 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface Enrolment extends Element
 {
-	/**
-	 * Constants representing all of the properties of an <code>Enrolment</code>.
-	 * A <code>Property</code> represents a piece of data contained within the
-	 * <code>Enrolment</code> instance.
-	 */
+	/** The associated <code>Course</code> */
+	public static final Property<Course> COURSE = Property.getInstance (Enrolment.class, Course.class, "course", false, true);
 
-	public static class Properties extends Element.Properties
-	{
-		/** The associated <code>Course</code> */
-		public static final Property<Course> COURSE = Property.getInstance (Enrolment.class, Course.class, "course", false, true);
+	/** The final grade */
+	public static final Property<Integer> FINALGRADE = Property.getInstance (Enrolment.class, Integer.class, "finalgrade", true, false);
 
-		/** The final grade */
-		public static final Property<Integer> FINALGRADE = Property.getInstance (Enrolment.class, Integer.class, "finalgrade", true, false);
+	/** The associated <code>Role</code> */
+	public static final Property<Role> ROLE = Property.getInstance (Enrolment.class, Role.class, "role", false, true);
 
-		/** The associated <code>Role</code> */
-		public static final Property<Role> ROLE = Property.getInstance (Enrolment.class, Role.class, "role", false, true);
+	/** Has consent been given to use this data for research */
+	public static final Property<Boolean> USABLE = Property.getInstance (Enrolment.class, Boolean.class, "usable", true, true);
 
-		/** Has consent been given to use this data for research */
-		public static final Property<Boolean> USABLE = Property.getInstance (Enrolment.class, Boolean.class, "usable", true, true);
-	}
-
-	/**
-	 * Constants representing all of the selectors of an <code>Enrolment</code>.  A
-	 * <code>Selector</code> represents the <code>Set</code> of
-	 * <code>Property</code> instances used to load an <code>Enrolment</code> from
-	 * the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors
-	{
-		/** Select all <code>Enrolment</code> by <code>Role</code>*/
-		public static final Selector ROLE = Selector.getInstance (Enrolment.class, false, Enrolment.Properties.ROLE);
-	}
+	/** Select all <code>Enrolment</code> by <code>Role</code>*/
+	public static final Selector SELECTOR_ROLE = Selector.getInstance (Enrolment.class, false, Enrolment.ROLE);
 
 	/**
 	 * Get the name associated with the <code>Enrolment</code>.  The contents

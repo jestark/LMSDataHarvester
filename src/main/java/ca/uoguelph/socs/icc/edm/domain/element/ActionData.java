@@ -64,8 +64,8 @@ public class ActionData extends AbstractElement implements Action, Serializable
 		MetaDataBuilder<Action, ActionData> builder = MetaDataBuilder.newInstance (Action.class, ActionData.class);
 		builder.setCreateMethod (ActionData::new);
 
-		builder.addProperty (Action.Properties.ID, Action::getId, ActionData::setId);
-		builder.addProperty (Action.Properties.NAME, Action::getName, ActionData::setName);
+		builder.addProperty (Action.ID, Action::getId, ActionData::setId);
+		builder.addProperty (Action.NAME, Action::getName, ActionData::setName);
 
 		AbstractElement.registerElement (builder.build ());
 	}

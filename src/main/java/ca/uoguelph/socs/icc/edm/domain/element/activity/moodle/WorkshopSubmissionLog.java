@@ -63,14 +63,14 @@ class WorkshopSubmissionLog extends LogReference
 		MetaDataBuilder<LogEntry, WorkshopSubmissionLog> builder = MetaDataBuilder.newInstance (LogEntry.class, WorkshopSubmissionLog.class);
 		builder.setCreateMethod (WorkshopSubmissionLog::new);
 
-		builder.addProperty (LogEntry.Properties.ID, LogEntry::getId, null);
-		builder.addProperty (LogEntry.Properties.ACTION, LogEntry::getAction, null);
-		builder.addProperty (LogEntry.Properties.ACTIVITY, LogEntry::getActivity, null);
-		builder.addProperty (LogEntry.Properties.COURSE, LogEntry::getCourse, null);
-		builder.addProperty (LogEntry.Properties.ENROLMENT, LogEntry::getEnrolment, null);
-//		builder.addProperty (LogEntry.Properties.REFERENCE, LogData::getReference, LogData::setReference);
-		builder.addProperty (LogEntry.Properties.IPADDRESS, LogEntry::getIPAddress, null);
-		builder.addProperty (LogEntry.Properties.TIME, LogEntry::getTime, null);
+		builder.addProperty (LogEntry.ID, LogEntry::getId, null);
+		builder.addProperty (LogEntry.ACTION, LogEntry::getAction, null);
+		builder.addProperty (LogEntry.ACTIVITY, LogEntry::getActivity, null);
+		builder.addProperty (LogEntry.COURSE, LogEntry::getCourse, null);
+		builder.addProperty (LogEntry.ENROLMENT, LogEntry::getEnrolment, null);
+//		builder.addProperty (LogEntry.REFERENCE, LogData::getReference, LogData::setReference);
+		builder.addProperty (LogEntry.IPADDRESS, LogEntry::getIPAddress, null);
+		builder.addProperty (LogEntry.TIME, LogEntry::getTime, null);
 
 //		builder.addAttribute (, WorkshopSubmissionLog::getEntry, WorkshopSubmissionLog::setEntry);
 //		builder.addAttribute (, WorkshopSubmissionLog::getSubActivity, WorkshopSubmissionLog::setSubActivity);

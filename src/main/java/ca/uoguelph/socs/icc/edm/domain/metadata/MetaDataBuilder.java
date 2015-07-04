@@ -95,13 +95,6 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 
 		this.log = LoggerFactory.getLogger (MetaDataBuilder.class);
 
-		// Force the interface to be loaded, because it might not be and the
-		// next step will fail without it
-		for (Class<?> cls : type.getClasses ())
-		{
-			this.forceClassLoad (cls);
-		}
-
 		this.definition = (Definition<T>) MetaData.getDefinition (type);
 		this.impl = impl;
 
@@ -109,28 +102,6 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 		this.properties = this.definition.getProperties ();
 
 		this.refs = new HashMap<Property<?>, PropertyReference<T, U, ?>> ();
-	}
-
-	/**
-	 * Force the JVM to load the specified <code>Class</code>.  This is a
-	 * utility method used to ensure that classes are loaded, initialized and
-	 * registered before they are needed.
-	 *
-	 * @param  cls The <code>Class</code> to load
-	 */
-
-	private void forceClassLoad (final Class<?> cls)
-	{
-		try
-		{
-			Class.forName (cls.getName ());
-		}
-		catch (ClassNotFoundException ex)
-		{
-			// this should never happen, but we have to process the exception
-			this.log.error ("Interface Class not found: {}", cls.getName ());
-			throw new IllegalStateException (ex);
-		}
 	}
 
 	/**

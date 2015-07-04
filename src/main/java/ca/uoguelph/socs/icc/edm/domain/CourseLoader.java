@@ -36,19 +36,19 @@ public final class CourseLoader extends AbstractLoader<Course>
 	 * Get an instance of the <code>CourseLoader</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>CourseLoader</code>
+	 * @return                       The <code>CourseLoader</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Element</code> queried by the
+	 *                               loader
 	 */
 
-	public CourseLoader getInstance (final DomainModel model)
+	public static CourseLoader getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new CourseLoader (model.getDataStore ());
+		return AbstractLoader.getInstance (model, Course.class, CourseLoader::new);
 	}
 
 	/**
@@ -66,11 +66,13 @@ public final class CourseLoader extends AbstractLoader<Course>
 	 * Retrieve a course from the underlying data-store based on its name and
 	 * time of offering.
 	 *
-	 * @param  name     The name of the course, not null
-	 * @param  semester The <code>Semester</code> of offering, not null
-	 * @param  year     The year of offering, not null
+	 * @param  name                  The name of the course, not null
+	 * @param  semester              The <code>Semester</code> of offering, not
+	 *                               null
+	 * @param  year                  The year of offering, not null
 	 *
-	 * @return          A single <code>Course</code> object
+	 * @return                       The <code>Course</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
 	public Course fetchByOffering (final String name, final Semester semester, final Integer year)
@@ -95,10 +97,16 @@ public final class CourseLoader extends AbstractLoader<Course>
 			throw new NullPointerException ();
 		}
 
-		Query<Course> query = this.fetchQuery (Course.Selectors.OFFERING);
-		query.setProperty (Course.Properties.SEMESTER, semester);
-		query.setProperty (Course.Properties.YEAR, year);
-		query.setProperty (Course.Properties.NAME, name);
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		Query<Course> query = this.fetchQuery (Course.SELECTOR_OFFERING);
+		query.setProperty (Course.SEMESTER, semester);
+		query.setProperty (Course.YEAR, year);
+		query.setProperty (Course.NAME, name);
 
 		return query.query ();
 	}

@@ -60,33 +60,14 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface ActivityType extends Element
 {
-	/**
-	 * Constants representing all of the properties of an
-	 * <code>ActivityType</code>.  A <code>Property</code> represents a piece
-	 * of data contained within the <code>ActivityType</code> instance.
-	 */
+	/** The name of the <code>ActivityType</code> */
+	public static final Property<String> NAME = Property.getInstance (ActivityType.class, String.class, "name", false, true);
 
-	public static class Properties extends Element.Properties
-	{
-		/** The name of the <code>ActivityType</code> */
-		public static final Property<String> NAME = Property.getInstance (ActivityType.class, String.class, "name", false, true);
+	/** The associated <code>ActivitySource</code> */
+	public static final Property<ActivitySource> SOURCE = Property.getInstance (ActivityType.class, ActivitySource.class, "source", false, true);
 
-		/** The associated <code>ActivitySource</code> */
-		public static final Property<ActivitySource> SOURCE = Property.getInstance (ActivityType.class, ActivitySource.class, "source", false, true);
-	}
-
-	/**
-	 * Constants representing all of the selectors of an
-	 * <code>ActivityType</code>.  A <code>Selector</code> represents the
-	 * <code>Set</code> of <code>Property</code> instances used to load an
-	 * <code>ActivityType</code> from the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors
-	{
-		/** Select an <code>ActivityType</code> instance by name and <code>ActivitySource</code> */
-		public static final Selector NAME = Selector.getInstance (ActivityType.class, "name", true, ActivityType.Properties.NAME, ActivityType.Properties.SOURCE);
-	}
+	/** Select an <code>ActivityType</code> instance by name and <code>ActivitySource</code> */
+	public static final Selector SELECTOR_NAME = Selector.getInstance (ActivityType.class, "name", true, ActivityType.NAME, ActivityType.SOURCE);
 
 	/**
 	 * Get the name of the <code>ActivityType</code>.

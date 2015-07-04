@@ -63,10 +63,10 @@ public class Choice extends GenericNamedActivity
 		MetaDataBuilder<Activity, Choice> builder = MetaDataBuilder.newInstance (Activity.class, Choice.class);
 		builder.setCreateMethod (Choice::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Choice::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Choice::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Choice::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Choice::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Choice::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Choice::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Choice::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Choice::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "choice");
 	}

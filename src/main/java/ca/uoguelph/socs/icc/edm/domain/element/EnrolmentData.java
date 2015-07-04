@@ -86,11 +86,11 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		MetaDataBuilder<Enrolment, EnrolmentData> builder = MetaDataBuilder.newInstance (Enrolment.class, EnrolmentData.class);
 		builder.setCreateMethod (EnrolmentData::new);
 
-		builder.addProperty (Enrolment.Properties.ID, Enrolment::getId, EnrolmentData::setId);
-		builder.addProperty (Enrolment.Properties.COURSE, Enrolment::getCourse, EnrolmentData::setCourse);
-		builder.addProperty (Enrolment.Properties.ROLE, Enrolment::getRole, EnrolmentData::setRole);
-		builder.addProperty (Enrolment.Properties.FINALGRADE, Enrolment::getFinalGrade, EnrolmentData::setFinalGrade);
-		builder.addProperty (Enrolment.Properties.USABLE, Enrolment::isUsable, EnrolmentData::setUsable);
+		builder.addProperty (Enrolment.ID, Enrolment::getId, EnrolmentData::setId);
+		builder.addProperty (Enrolment.COURSE, Enrolment::getCourse, EnrolmentData::setCourse);
+		builder.addProperty (Enrolment.ROLE, Enrolment::getRole, EnrolmentData::setRole);
+		builder.addProperty (Enrolment.FINALGRADE, Enrolment::getFinalGrade, EnrolmentData::setFinalGrade);
+		builder.addProperty (Enrolment.USABLE, Enrolment::isUsable, EnrolmentData::setUsable);
 
 		AbstractElement.registerElement (builder.build ());
 	}

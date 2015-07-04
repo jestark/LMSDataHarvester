@@ -46,7 +46,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @version 1.0
  * @param   <T> The <code>Element</code> interface type
  * @param   <U> The <code>Element</code> implementation type
- * @see     Defionition
+ * @see     Definition
  * @see     Property
  */
 
@@ -200,8 +200,6 @@ public class MetaData<T extends Element, U extends T>
 	 * @param  element    The <code>Definition</code>, not null
 	 * @param  impl       The <code>Element</code> implementation class, not
 	 *                    null
-	 * @param  builder    The <code>ElementBuilder</code> implementation class,
-	 *                    not null
 	 * @param  create     Method reference to the no-argument constructor, not
 	 *                    null
 	 * @param  references <code>Property</code> to get/set method mapping, not

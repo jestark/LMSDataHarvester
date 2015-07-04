@@ -63,10 +63,10 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 		MetaDataBuilder<Grade, GradedActivity> builder = MetaDataBuilder.newInstance (Grade.class, GradedActivity.class);
 		builder.setCreateMethod (GradedActivity::new);
 
-		builder.addProperty (Grade.Properties.ID, Grade::getId, null);
-		builder.addProperty (Grade.Properties.ACTIVITY, Grade::getActivity, GradedActivity::setActivity);
-		builder.addProperty (Grade.Properties.ENROLMENT, Grade::getEnrolment, GradedActivity::setEnrolment);
-		builder.addProperty (Grade.Properties.GRADE, Grade::getGrade, GradedActivity::setGrade);
+		builder.addProperty (Grade.ID, Grade::getId, null);
+		builder.addProperty (Grade.ACTIVITY, Grade::getActivity, GradedActivity::setActivity);
+		builder.addProperty (Grade.ENROLMENT, Grade::getEnrolment, GradedActivity::setEnrolment);
+		builder.addProperty (Grade.GRADE, Grade::getGrade, GradedActivity::setGrade);
 
 		AbstractElement.registerElement (builder.build ());
 	}
@@ -134,42 +134,6 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 		hbuilder.append (this.enrolment);
 
 		return hbuilder.toHashCode ();
-	}
-
-	/**
-	 * Determine if two <code>Grade</code> instances are identical.  This
-	 * method acts as a stricter form of the equals method.  The equals method
-	 * only compares properties that are required to be unique (and therefore
-	 * immutable) for the <code>Grade</code> instance, while this method
-	 * compares all of the properties.
-	 *
-	 * @param  element The <code>Element</code> to compare to the current
-	 *                 instance
-	 *
-	 * @return         <code>True</code> if the <code>Element</code> instances
-	 *                 are logically identical, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean identicalTo (final Element element)
-	{
-		boolean result = false;
-
-		if (element == this)
-		{
-			result = true;
-		}
-		else if (element instanceof Grade)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.activity, ((Grade) element).getActivity ());
-			ebuilder.append (this.enrolment, ((Grade) element).getEnrolment ());
-			ebuilder.append (this.grade, ((Grade) element).getGrade ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
 	}
 
 	/**

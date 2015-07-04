@@ -62,11 +62,11 @@ public class ForumPost extends GenericSubActivity
 		MetaDataBuilder<SubActivity, ForumPost> builder = MetaDataBuilder.newInstance (SubActivity.class, ForumPost.class);
 		builder.setCreateMethod (ForumPost::new);
 
-		builder.addProperty (SubActivity.Properties.ID, SubActivity::getId, ForumPost::setId);
-		builder.addProperty (SubActivity.Properties.COURSE, SubActivity::getCourse, null);
-		builder.addProperty (SubActivity.Properties.NAME, SubActivity::getName, ForumPost::setName);
-		builder.addProperty (SubActivity.Properties.PARENT, SubActivity::getParent, ForumPost::setParent);
-		builder.addProperty (SubActivity.Properties.TYPE, SubActivity::getType, null);
+		builder.addProperty (SubActivity.ID, SubActivity::getId, ForumPost::setId);
+		builder.addProperty (SubActivity.COURSE, SubActivity::getCourse, null);
+		builder.addProperty (SubActivity.NAME, SubActivity::getName, ForumPost::setName);
+		builder.addProperty (SubActivity.PARENT, SubActivity::getParent, ForumPost::setParent);
+		builder.addProperty (SubActivity.TYPE, SubActivity::getType, null);
 
 		GenericSubActivity.registerActivity (builder.build (), ForumDiscussion.class);
 	}

@@ -36,16 +36,22 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
 	 * <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
 	 *
-	 * @return           The <code>LogEntryBuilder</code> instance
+	 * @return                       The <code>LogEntryBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>LogEntry</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static LogEntryBuilder getInstance (final DataStore datastore)
 	{
 		assert datastore != null : "datastore is NULL";
 
-		return new LogEntryBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (LogEntry.class)));
+		return AbstractBuilder.getInstance (datastore, LogEntry.class, LogEntryBuilder::new);
 	}
 
 	/**
@@ -53,10 +59,16 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 	 * <code>DataStore</code>, loaded with the data from the specified
 	 * <code>LogEntry</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  entry     The <code>LogEntry</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  entry                 The <code>LogEntry</code>, not null
 	 *
-	 * @return           The <code>LogEntryBuilder</code> instance
+	 * @return                       The <code>LogEntryBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>LogEntry</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static LogEntryBuilder getInstance (final DataStore datastore, LogEntry entry)
@@ -74,20 +86,21 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>LogEntryBuilder</code> instance
+	 * @return                       The <code>LogEntryBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>LogEntry</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 
 	public static LogEntryBuilder getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return LogEntryBuilder.getInstance (model.getDataStore ());
+		return LogEntryBuilder.getInstance (AbstractBuilder.getDataStore (model));
 	}
 
 	/**
@@ -95,10 +108,16 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 	 * <code>DomainModel</code>, loaded with the data from the specified
 	 * <code>LogEntry</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
-	 * @param  entry The <code>LogEntry</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  entry                 The <code>LogEntry</code>, not null
 	 *
-	 * @return       The <code>LogEntryBuilder</code> instance
+	 * @return                       The <code>LogEntryBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>LogEntry</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static LogEntryBuilder getInstance (final DomainModel model, LogEntry entry)
@@ -126,6 +145,19 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 		super (datastore, builder);
 	}
 
+	/**
+	 * Load a <code>LogEntry</code> instance into the builder.  This method
+	 * resets the builder and initializes all of its parameters from
+	 * the specified <code>LogEntry</code> instance.  The  parameters are
+	 * validated as they are set.
+	 *
+	 * @param  entry                    The <code>LogEntry</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>LogEntry</code> instance to be
+	 *                                  loaded are not valid
+	 */
+
 	@Override
 	public void load (final LogEntry entry)
 	{
@@ -146,7 +178,7 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 
 		// reference ??
 
-		this.builder.setProperty (LogEntry.Properties.ID, entry.getId ());
+		this.builder.setProperty (LogEntry.ID, entry.getId ());
 	}
 
 	/**
@@ -158,7 +190,7 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 
 	public Action getAction ()
 	{
-		return this.builder.getPropertyValue (LogEntry.Properties.ACTION);
+		return this.builder.getPropertyValue (LogEntry.ACTION);
 	}
 
 	/**
@@ -187,7 +219,7 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 			throw new IllegalArgumentException ("Action is not in the DataStore");
 		}
 
-		this.builder.setProperty (LogEntry.Properties.ACTION, action);
+		this.builder.setProperty (LogEntry.ACTION, action);
 	}
 
 	/**
@@ -199,7 +231,7 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 
 	public Activity getActivity ()
 	{
-		return this.builder.getPropertyValue (LogEntry.Properties.ACTIVITY);
+		return this.builder.getPropertyValue (LogEntry.ACTIVITY);
 	}
 
 	/**
@@ -228,7 +260,7 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 			throw new IllegalArgumentException ("Activity is not in the DataStore");
 		}
 
-		this.builder.setProperty (LogEntry.Properties.ACTIVITY, activity);
+		this.builder.setProperty (LogEntry.ACTIVITY, activity);
 	}
 
 	/**
@@ -240,7 +272,7 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 
 	public Enrolment getEnrolment ()
 	{
-		return this.builder.getPropertyValue (LogEntry.Properties.ENROLMENT);
+		return this.builder.getPropertyValue (LogEntry.ENROLMENT);
 	}
 
 	/**
@@ -269,7 +301,7 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 			throw new IllegalArgumentException ("Enrolment is not in the DataStore");
 		}
 
-		this.builder.setProperty (LogEntry.Properties.ENROLMENT, enrolment);
+		this.builder.setProperty (LogEntry.ENROLMENT, enrolment);
 	}
 
 	/**
@@ -280,7 +312,7 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 
 	public Date getTime ()
 	{
-		return this.builder.getPropertyValue (LogEntry.Properties.TIME);
+		return this.builder.getPropertyValue (LogEntry.TIME);
 	}
 
 	/**
@@ -295,11 +327,11 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 
 		if (time == null)
 		{
-			this.builder.setProperty (LogEntry.Properties.TIME, new Date ());
+			this.builder.setProperty (LogEntry.TIME, new Date ());
 		}
 		else
 		{
-			this.builder.setProperty (LogEntry.Properties.TIME, time);
+			this.builder.setProperty (LogEntry.TIME, time);
 		}
 	}
 
@@ -312,7 +344,7 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 
 	public String getIPAddress ()
 	{
-		return this.builder.getPropertyValue (LogEntry.Properties.IPADDRESS);
+		return this.builder.getPropertyValue (LogEntry.IPADDRESS);
 	}
 
 	/**
@@ -326,6 +358,6 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 	{
 		this.log.trace ("setIPAddress: ipaddress={}", ipaddress);
 
-		this.builder.setProperty (LogEntry.Properties.IPADDRESS, ipaddress);
+		this.builder.setProperty (LogEntry.IPADDRESS, ipaddress);
 	}
 }

@@ -46,32 +46,14 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface Grade extends Element
 {
-	/**
-	 * Constants representing all of the properties of an <code>Grade</code>.
-	 * A <code>Property</code> represents a piece of data contained within the
-	 * <code>Grade</code> instance.
-	 */
+	/** The associated <code>Activity</code> */
+	public static final Property<Activity> ACTIVITY = Property.getInstance (Grade.class, Activity.class, "activity", false, true);
 
-	public static class Properties extends Element.Properties
-	{
-		/** The associated <code>Activity</code> */
-		public static final Property<Activity> ACTIVITY = Property.getInstance (Grade.class, Activity.class, "activity", false, true);
+	/** The associated <code>Enrolment</code> */
+	public static final Property<Enrolment> ENROLMENT = Property.getInstance (Grade.class, Enrolment.class, "enrolment", false, true);
 
-		/** The associated <code>Enrolment</code> */
-		public static final Property<Enrolment> ENROLMENT = Property.getInstance (Grade.class, Enrolment.class, "enrolment", false, true);
-
-		/** The assigned grade */
-		public static final Property<Integer> GRADE = Property.getInstance (Grade.class, Integer.class, "grade", true, true);
-	}
-
-	/**
-	 * Constants representing all of the selectors of an <code>Grade</code>.  A
-	 * <code>Selector</code> represents the <code>Set</code> of
-	 * <code>Property</code> instances used to load an <code>Grade</code> from
-	 * the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors {}
+	/** The assigned grade */
+	public static final Property<Integer> GRADE = Property.getInstance (Grade.class, Integer.class, "grade", true, true);
 
 	/**
 	 * Get the name of the <code>Enrolment</code> to which the

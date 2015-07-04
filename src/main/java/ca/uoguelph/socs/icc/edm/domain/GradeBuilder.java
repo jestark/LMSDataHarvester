@@ -35,16 +35,22 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	 * Get an instance of the <code>GradeBuilder</code> for the specified
 	 * <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
 	 *
-	 * @return           The <code>GradeBuilder</code> instance
+	 * @return                       The <code>GradeBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Grade</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static GradeBuilder getInstance (final DataStore datastore)
 	{
 		assert datastore != null : "datastore is NULL";
 
-		return new GradeBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (Grade.class)));
+		return AbstractBuilder.getInstance (datastore, Grade.class, GradeBuilder::new);
 	}
 
 	/**
@@ -52,10 +58,16 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	 * <code>DataStore</code>, loaded with the data from the specified
 	 * <code>Grade</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  grade     The <code>Grade</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  grade                 The <code>Grade</code>, not null
 	 *
-	 * @return           The <code>GradeBuilder</code> instance
+	 * @return                       The <code>GradeBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Grade</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static GradeBuilder getInstance (final DataStore datastore, Grade grade)
@@ -73,20 +85,21 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	 * Get an instance of the <code>GradeBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>GradeBuilder</code> instance
+	 * @return                       The <code>GradeBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Grade</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 
 	public static GradeBuilder getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return GradeBuilder.getInstance (model.getDataStore ());
+		return GradeBuilder.getInstance (AbstractBuilder.getDataStore (model));
 	}
 
 	/**
@@ -94,10 +107,16 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	 * <code>DomainModel</code>, loaded with the data from the specified
 	 * <code>Grade</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
-	 * @param  grade The <code>Grade</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  grade                 The <code>Grade</code>, not null
 	 *
-	 * @return       The <code>GradeBuilder</code> instance
+	 * @return                       The <code>GradeBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Grade</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static GradeBuilder getInstance (final DomainModel model, Grade grade)
@@ -125,6 +144,19 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 		super (datastore, builder);
 	}
 
+	/**
+	 * Load a <code>Grade</code> instance into the builder.  This method
+	 * resets the builder and initializes all of its parameters from
+	 * the specified <code>Grade</code> instance.  The  parameters are
+	 * validated as they are set.
+	 *
+	 * @param  grade                    The <code>Grade</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>Grade</code> instance to be
+	 *                                  loaded are not valid
+	 */
+
 	@Override
 	public void load (final Grade grade)
 	{
@@ -151,7 +183,7 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 
 	public Activity getActivity ()
 	{
-		return this.builder.getPropertyValue (Grade.Properties.ACTIVITY);
+		return this.builder.getPropertyValue (Grade.ACTIVITY);
 	}
 
 	/**
@@ -174,7 +206,7 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 			throw new NullPointerException ("The specified activity is NULL");
 		}
 
-		this.builder.setProperty (Grade.Properties.ACTIVITY, activity);
+		this.builder.setProperty (Grade.ACTIVITY, activity);
 	}
 
 	/**
@@ -186,7 +218,7 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 
 	public Enrolment getEnrolment ()
 	{
-		return this.builder.getPropertyValue (Grade.Properties.ENROLMENT);
+		return this.builder.getPropertyValue (Grade.ENROLMENT);
 	}
 
 	/**
@@ -209,7 +241,7 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 			throw new NullPointerException ("The specified Enrolment is NULL");
 		}
 
-		this.builder.setProperty (Grade.Properties.ENROLMENT, enrolment);
+		this.builder.setProperty (Grade.ENROLMENT, enrolment);
 	}
 
 	/**
@@ -223,7 +255,7 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 
 	public Integer getGrade ()
 	{
-		return this.builder.getPropertyValue (Grade.Properties.GRADE);
+		return this.builder.getPropertyValue (Grade.GRADE);
 	}
 
 	/**
@@ -232,7 +264,6 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	 * @param  grade                    The value of the <code>Grade</code>,
 	 *                                  not null
 	 *
-	 * @return                          This <code>GradeBuilder</code>
 	 * @throws IllegalArgumentException If the value is less than zero or
 	 *                                  greater than 100
 	 */
@@ -259,6 +290,6 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 			throw new IllegalArgumentException ("Grade is greater than 100%");
 		}
 
-		this.builder.setProperty (Grade.Properties.GRADE, grade);
+		this.builder.setProperty (Grade.GRADE, grade);
 	}
 }

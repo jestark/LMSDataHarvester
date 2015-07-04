@@ -50,10 +50,16 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 * Get an instance of the <code>SubActivityBuilder</code> which corresponds
 	 * to the specified parent <code>Activity</code>.
 	 *
-	 * @param  <T>       The <code>SubActivity</code> type of the builder
-	 * @param  <U>       The <code>SubActivityBuilder</code> type to be returned
-	 * @param  parent    The parent <code>Activity</code>, not null
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  <T>                   The <code>SubActivity</code> type of the
+	 *                               builder
+	 * @param  <U>                   The <code>SubActivityBuilder</code> type
+	 *                               to be returned
+	 * @param  parent                The parent <code>Activity</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
 	 */
 
 	protected static <T extends SubActivity, U extends AbstractSubActivityBuilder<T>> U getInstance (final DataStore datastore, final Activity parent, final BiFunction<DataStore, Builder<T>, U> create)
@@ -62,6 +68,18 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 		assert parent != null : "parent is NULL";
 		assert create != null : "create is NULL";
 		assert datastore.contains (parent) : "parent is not in the datastore";
+
+		// Exception here because this is the fist time that it is checked
+		if (! datastore.isOpen ())
+		{
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		// Exception here because this is the fist time that it is checked
+		if (datastore.getProfile ().getElementClass (Activity.class) == null)
+		{
+			throw new IllegalStateException ("Element is not available for this datastore");
+		}
 
 		U builder = create.apply (datastore, AbstractBuilder.getBuilder (datastore, AbstractActivity.getSubActivityClass (parent.getClass ())));
 		builder.setParent (parent);
@@ -72,17 +90,27 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	/**
 	 * Create the <code>DefaultSubActivityBuilder</code>.
 	 *
-	 * @param  impl      The implementation class of the <code>Element</code>
-	 *                   to be built
-	 * @param  datastore The <code>DataStore</code> into which the newly
-	 *                   created <code>SubActivity</code> instance will be
-	 *                   inserted
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  builder   The <code>Builder</code>, not null
 	 */
 
 	protected AbstractSubActivityBuilder (final DataStore datastore, final Builder<T> builder)
 	{
 		super (datastore, builder);
 	}
+
+	/**
+	 * Load a <code>SubActivity</code> instance into the builder.  This method
+	 * resets the builder and initializes all of its parameters from
+	 * the specified <code>SubActivity</code> instance.  The  parameters are
+	 * validated as they are set.
+	 *
+	 * @param  subactivity              The <code>SubActivity</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>SubActivity</code> instance to be
+	 *                                  loaded are not valid
+	 */
 
 	@Override
 	public void load (final T subactivity)
@@ -104,7 +132,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 		super.load (subactivity);
 		this.setName (subactivity.getName ());
 
-		this.builder.setProperty (SubActivity.Properties.ID, subactivity.getId ());
+		this.builder.setProperty (SubActivity.ID, subactivity.getId ());
 	}
 
 	/**
@@ -116,7 +144,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 
 	public final String getName ()
 	{
-		return this.builder.getPropertyValue (SubActivity.Properties.NAME);
+		return this.builder.getPropertyValue (SubActivity.NAME);
 	}
 
 	/**
@@ -144,7 +172,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (SubActivity.Properties.NAME, name);
+		this.builder.setProperty (SubActivity.NAME, name);
 	}
 
 	/**
@@ -156,14 +184,14 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 
 	public final Activity getParent ()
 	{
-		return this.builder.getPropertyValue (SubActivity.Properties.PARENT);
+		return this.builder.getPropertyValue (SubActivity.PARENT);
 	}
 
 	/**
 	 * Set the parent <code>Activity</code> instance for the
 	 * <code>SubActivity</code> instance.
 	 *
-	 * @param  activity The parent <code>Activity</code>
+	 * @param  parent The parent <code>Activity</code>
 	 */
 
 	protected void setParent (final Activity parent)
@@ -173,6 +201,6 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 		assert parent != null : "parent is NULL";
 		assert this.datastore.contains (parent) : "parent is not in the DataStore";
 
-		this.builder.setProperty (SubActivity.Properties.PARENT, parent);
+		this.builder.setProperty (SubActivity.PARENT, parent);
 	}
 }

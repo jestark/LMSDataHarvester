@@ -34,9 +34,16 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
 	 * <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
 	 *
-	 * @return           The <code>SubActivityBuilder</code> instance
+	 * @return                       The <code>SubActivityBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>SubActivity</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static SubActivityBuilder getInstance (final DataStore datastore, Activity parent)
@@ -53,10 +60,17 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 * <code>DataStore</code>, loaded with the data from the specified
 	 * <code>SubActivity</code>.
 	 *
-	 * @param  datastore   The <code>DataStore</code>, not null
-	 * @param  subactivity The <code>SubActivity</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  subactivity           The <code>SubActivity</code>, not null
 	 *
-	 * @return             The <code>SubActivityBuilder</code> instance
+	 * @return                       The <code>SubActivityBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>SubActivity</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static SubActivityBuilder getInstance (final DataStore datastore, SubActivity subactivity)
@@ -74,9 +88,16 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return         The <code>SubActivityBuilder</code> instance
+	 * @return                       The <code>SubActivityBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>SubActivity</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 
@@ -97,7 +118,7 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 			throw new IllegalArgumentException ("parent is not in the datastore");
 		}
 
-		return SubActivityBuilder.getInstance (model.getDataStore (), parent);
+		return SubActivityBuilder.getInstance (AbstractBuilder.getDataStore (model), parent);
 	}
 
 	/**
@@ -105,10 +126,17 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 * <code>DomainModel</code>, loaded with the data from the specified
 	 * <code>SubActivity</code>.
 	 *
-	 * @param  model       The <code>DomainModel</code>, not null
-	 * @param  subactivity The <code>SubActivity</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  subactivity           The <code>SubActivity</code>, not null
 	 *
-	 * @return             The <code>SubActivityBuilder</code> instance
+	 * @return                       The <code>SubActivityBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>SubActivity</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static SubActivityBuilder getInstance (final DomainModel model, SubActivity subactivity)
@@ -127,11 +155,8 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	/**
 	 * Create the <code>SubActivityBuilder</code>.
 	 *
-	 * @param  impl      The implementation class of the <code>Element</code>
-	 *                   to be built
-	 * @param  datastore The <code>DataStore</code> into which the newly
-	 *                   created <code>GenericActivity</code> instance will be
-	 *                   inserted
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  builder   The <code>Builder</code>, not null
 	 */
 
 	protected SubActivityBuilder (final DataStore datastore, final Builder<SubActivity> builder)

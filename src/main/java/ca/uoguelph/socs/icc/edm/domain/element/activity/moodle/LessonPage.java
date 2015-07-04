@@ -62,11 +62,11 @@ public class LessonPage extends GenericSubActivity
 		MetaDataBuilder<SubActivity, LessonPage> builder = MetaDataBuilder.newInstance (SubActivity.class, LessonPage.class);
 		builder.setCreateMethod (LessonPage::new);
 
-		builder.addProperty (SubActivity.Properties.ID, SubActivity::getId, LessonPage::setId);
-		builder.addProperty (SubActivity.Properties.COURSE, SubActivity::getCourse, null);
-		builder.addProperty (SubActivity.Properties.NAME, SubActivity::getName, LessonPage::setName);
-		builder.addProperty (SubActivity.Properties.PARENT, SubActivity::getParent, LessonPage::setParent);
-		builder.addProperty (SubActivity.Properties.TYPE, SubActivity::getType, null);
+		builder.addProperty (SubActivity.ID, SubActivity::getId, LessonPage::setId);
+		builder.addProperty (SubActivity.COURSE, SubActivity::getCourse, null);
+		builder.addProperty (SubActivity.NAME, SubActivity::getName, LessonPage::setName);
+		builder.addProperty (SubActivity.PARENT, SubActivity::getParent, LessonPage::setParent);
+		builder.addProperty (SubActivity.TYPE, SubActivity::getType, null);
 
 		GenericSubActivity.registerActivity (builder.build (), Lesson.class);
 	}

@@ -75,11 +75,11 @@ public class UserData extends AbstractElement implements User, Serializable
 		MetaDataBuilder<User, UserData> builder = MetaDataBuilder.newInstance (User.class, UserData.class);
 		builder.setCreateMethod (UserData::new);
 
-		builder.addProperty (User.Properties.ID, User::getId, UserData::setId);
-		builder.addProperty (User.Properties.IDNUMBER, User::getIdNumber, UserData::setIdNumber);
-		builder.addProperty (User.Properties.USERNAME, User::getUsername, UserData::setUsername);
-		builder.addProperty (User.Properties.FIRSTNAME, User::getFirstname, UserData::setFirstname);
-		builder.addProperty (User.Properties.LASTNAME, User::getLastname, UserData::setLastname);
+		builder.addProperty (User.ID, User::getId, UserData::setId);
+		builder.addProperty (User.IDNUMBER, User::getIdNumber, UserData::setIdNumber);
+		builder.addProperty (User.USERNAME, User::getUsername, UserData::setUsername);
+		builder.addProperty (User.FIRSTNAME, User::getFirstname, UserData::setFirstname);
+		builder.addProperty (User.LASTNAME, User::getLastname, UserData::setLastname);
 
 		AbstractElement.registerElement (builder.build ());
 	}
@@ -151,43 +151,6 @@ public class UserData extends AbstractElement implements User, Serializable
 		hbuilder.append (this.username);
 
 		return hbuilder.toHashCode ();
-	}
-
-	/**
-	 * Determine if two <code>User</code> instances are identical.  This method
-	 * acts as a stricter form of the equals method.  The equals method only
-	 * compares properties that are required to be unique (and therefore
-	 * immutable) for the <code>User</code> instance, while this method
-	 * compares all of the properties.
-	 *
-	 * @param  element The <code>Element</code> to compare to the current
-	 *                 instance
-	 *
-	 * @return         <code>True</code> if the <code>Element</code> instances
-	 *                 are logically identical, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean identicalTo (final Element element)
-	{
-		boolean result = false;
-
-		if (element == this)
-		{
-			result = true;
-		}
-		else if (element instanceof User)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.idnumber, ((User) element).getIdNumber ());
-			ebuilder.append (this.username, ((User) element).getUsername ());
-			ebuilder.append (this.lastname, ((User) element).getLastname ());
-			ebuilder.append (this.firstname, ((User) element).getFirstname ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
 	}
 
 	/**

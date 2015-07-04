@@ -52,8 +52,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
  *
  * @author  James E. Stark
  * @version 1.1
- * @see     ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityBuilder
- * @see     MoodleActivityManager
  */
 
 public class MoodleActivity extends ActivityInstance
@@ -77,10 +75,10 @@ public class MoodleActivity extends ActivityInstance
 		MetaDataBuilder<Activity, MoodleActivity> builder = MetaDataBuilder.newInstance (Activity.class, MoodleActivity.class);
 		builder.setCreateMethod (MoodleActivity::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, MoodleActivity::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, MoodleActivity::setCourse);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, null);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, MoodleActivity::setType);
+		builder.addProperty (Activity.ID, Activity::getId, MoodleActivity::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, MoodleActivity::setCourse);
+		builder.addProperty (Activity.NAME, Activity::getName, null);
+		builder.addProperty (Activity.TYPE, Activity::getType, MoodleActivity::setType);
 
 		AbstractElement.registerElement (builder.build ());
 	}

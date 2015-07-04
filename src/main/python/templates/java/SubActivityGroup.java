@@ -59,11 +59,11 @@ public class ${ClassName} extends GenericSubActivity
 		MetaDataBuilder<SubActivity, ${ClassName}> builder = MetaDataBuilder.newInstance (SubActivity.class, ${ClassName}.class);
 		builder.setCreateMethod (${ClassName}::new);
 
-		builder.addProperty (SubActivity.Properties.ID, SubActivity::getId, ${ClassName}::setId);
-		builder.addProperty (SubActivity.Properties.COURSE, SubActivity::getCourse, null);
-		builder.addProperty (SubActivity.Properties.NAME, SubActivity::getName, ${ClassName}::setName);
-		builder.addProperty (SubActivity.Properties.PARENT, SubActivity::getParent, ${ClassName}::setParent);
-		builder.addProperty (SubActivity.Properties.TYPE, SubActivity::getType, null);
+		builder.addProperty (SubActivity.ID, SubActivity::getId, ${ClassName}::setId);
+		builder.addProperty (SubActivity.COURSE, SubActivity::getCourse, null);
+		builder.addProperty (SubActivity.NAME, SubActivity::getName, ${ClassName}::setName);
+		builder.addProperty (SubActivity.PARENT, SubActivity::getParent, ${ClassName}::setParent);
+		builder.addProperty (SubActivity.TYPE, SubActivity::getType, null);
 
 		GenericSubActivity.registerActivity (builder.build (), ${ParentClass}.class);
 	}

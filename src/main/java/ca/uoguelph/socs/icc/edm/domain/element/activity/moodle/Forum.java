@@ -64,10 +64,10 @@ public class Forum extends GenericNamedActivity
 		MetaDataBuilder<Activity, Forum> builder = MetaDataBuilder.newInstance (Activity.class, Forum.class);
 		builder.setCreateMethod (Forum::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Forum::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Forum::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Forum::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Forum::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Forum::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Forum::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Forum::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Forum::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "forum");
 	}

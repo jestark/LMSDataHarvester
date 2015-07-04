@@ -35,16 +35,22 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
 	 * <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
 	 *
-	 * @return           The <code>EnrolmentBuilder</code> instance
+	 * @return                       The <code>EnrolmentBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Enrolment</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static EnrolmentBuilder getInstance (final DataStore datastore)
 	{
 		assert datastore != null : "datastore is NULL";
 
-		return new EnrolmentBuilder (datastore, AbstractBuilder.getBuilder (datastore, datastore.getElementClass (Enrolment.class)));
+		return AbstractBuilder.getInstance (datastore, Enrolment.class, EnrolmentBuilder::new);
 	}
 
 	/**
@@ -52,10 +58,16 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 * <code>DataStore</code>, loaded with the data from the specified
 	 * <code>Enrolment</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  enrolment The <code>Enrolment</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  enrolment             The <code>Enrolment</code>, not null
 	 *
-	 * @return           The <code>EnrolmentBuilder</code> instance
+	 * @return                       The <code>EnrolmentBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Enrolment</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static EnrolmentBuilder getInstance (final DataStore datastore, Enrolment enrolment)
@@ -73,20 +85,21 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>EnrolmentBuilder</code> instance
+	 * @return                       The <code>EnrolmentBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Enrolment</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 
 	public static EnrolmentBuilder getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return EnrolmentBuilder.getInstance (model.getDataStore ());
+		return EnrolmentBuilder.getInstance (AbstractBuilder.getDataStore (model));
 	}
 
 	/**
@@ -94,10 +107,16 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 * <code>DomainModel</code>, loaded with the data from the specified
 	 * <code>Enrolment</code>.
 	 *
-	 * @param  model     The <code>DomainModel</code>, not null
-	 * @param  enrolment The <code>Enrolment</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  enrolment             The <code>Enrolment</code>, not null
 	 *
-	 * @return           The <code>EnrolmentBuilder</code> instance
+	 * @return                       The <code>EnrolmentBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Enrolment</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static EnrolmentBuilder getInstance (final DomainModel model, Enrolment enrolment)
@@ -125,6 +144,19 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 		super (datastore, builder);
 	}
 
+	/**
+	 * Load a <code>Enrolment</code> instance into the builder.  This method
+	 * resets the builder and initializes all of its parameters from
+	 * the specified <code>Enrolment</code> instance.  The  parameters are
+	 * validated as they are set.
+	 *
+	 * @param  enrolment                The <code>Enrolment</code>, not null
+	 *
+	 * @throws IllegalArgumentException If any of the fields in the
+	 *                                  <code>Enrolment</code> instance to be
+	 *                                  loaded are not valid
+	 */
+
 	@Override
 	public void load (final Enrolment enrolment)
 	{
@@ -141,7 +173,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 		this.setFinalGrade (enrolment.getFinalGrade ());
 		this.setRole (enrolment.getRole ());
 
-		this.builder.setProperty (Enrolment.Properties.ID, enrolment.getId ());
+		this.builder.setProperty (Enrolment.ID, enrolment.getId ());
 	}
 
 	/**
@@ -153,7 +185,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 
 	public Course getCourse ()
 	{
-		return this.builder.getPropertyValue (Enrolment.Properties.COURSE);
+		return this.builder.getPropertyValue (Enrolment.COURSE);
 	}
 
 	/**
@@ -181,7 +213,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
 
-		this.builder.setProperty (Enrolment.Properties.COURSE, course);
+		this.builder.setProperty (Enrolment.COURSE, course);
 	}
 
 	/**
@@ -193,7 +225,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 
 	public Role getRole ()
 	{
-		return this.builder.getPropertyValue (Enrolment.Properties.ROLE);
+		return this.builder.getPropertyValue (Enrolment.ROLE);
 	}
 
 	/**
@@ -222,7 +254,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 			throw new IllegalArgumentException ("Role is not in the DataStore");
 		}
 
-		this.builder.setProperty (Enrolment.Properties.ROLE, role);
+		this.builder.setProperty (Enrolment.ROLE, role);
 	}
 
 	/**
@@ -237,7 +269,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 
 	public Integer getFinalGrade ()
 	{
-		return this.builder.getPropertyValue (Enrolment.Properties.FINALGRADE);
+		return this.builder.getPropertyValue (Enrolment.FINALGRADE);
 	}
 
 	/**
@@ -261,7 +293,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 			throw new IllegalArgumentException ("Grade must be between 0 and 100");
 		}
 
-		this.builder.setProperty (Enrolment.Properties.FINALGRADE, finalgrade);
+		this.builder.setProperty (Enrolment.FINALGRADE, finalgrade);
 	}
 
 	/**
@@ -274,7 +306,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 
 	public Boolean isUsable ()
 	{
-		return this.builder.getPropertyValue (Enrolment.Properties.USABLE);
+		return this.builder.getPropertyValue (Enrolment.USABLE);
 	}
 
 	/**
@@ -296,6 +328,6 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 			throw new NullPointerException ("usable is NULL");
 		}
 
-		this.builder.setProperty (Enrolment.Properties.USABLE, usable);
+		this.builder.setProperty (Enrolment.USABLE, usable);
 	}
 }

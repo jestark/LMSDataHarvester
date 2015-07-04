@@ -42,19 +42,6 @@ public final class DomainModel
 	private final DataStore datastore;
 
 	/**
-	 * Get the <code>Set</code> of <code>Element</code> interface classes which
-	 * have implementations registered with the <code>DataStore</code>.
-	 *
-	 * @return A <code>Set</code> containing the <code>Element</code> interface
-	 *         classes
-	 */
-
-	public static Set<Class<? extends Element>> getElements ()
-	{
-		return null;
-	}
-
-	/**
 	 * Create the <code>DomainModel</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code> which contains all of the
@@ -89,7 +76,7 @@ public final class DomainModel
 
 	public boolean isMutable ()
 	{
-		return this.datastore.isMutable ();
+		return this.datastore.getProfile ().isMutable ();
 	}
 
 	/**
@@ -128,7 +115,7 @@ public final class DomainModel
 
 	public Transaction getTransaction ()
 	{
-		if (! this.datastore.isMutable ())
+		if (! this.isMutable ())
 		{
 			this.log.error ("Attempting to get a Transaction for a immutable DataStore");
 			throw new IllegalStateException ("DataStore is immutable");

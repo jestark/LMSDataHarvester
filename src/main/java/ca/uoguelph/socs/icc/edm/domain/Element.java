@@ -31,33 +31,14 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface Element
 {
-	/**
-	 * Constants representing all of the properties of an <code>Element</code>.
-	 * A <code>Property</code> represents a piece of data contained within the
-	 * <code>Element</code> instance.
-	 */
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID = Property.getInstance (Element.class, Long.class, "id", false, false);
 
-	public static class Properties
-	{
-		/** The <code>DataStore</code> identifier of the <code>Element</code> */
-		public static final Property<Long> ID = Property.getInstance (Element.class, Long.class, "id", false, false);
-	}
+	/** Select the <code>Element</code> instance by its id */
+	public static final Selector SELECTOR_ID = Selector.getInstance (Element.class, true, Element.ID);
 
-	/**
-	 * Constants representing all of the selectors of an <code>Element</code>.
-	 * A <code>Selector</code> represents the <code>Set</code> of
-	 * <code>Property</code> instances used to load an <code>Element</code>
-	 * from the <code>DataStore</code>.
-	 */
-
-	public static class Selectors
-	{
-		/** Select the <code>Element</code> instance by its id */
-		public static final Selector ID = Selector.getInstance (Element.class, true, Element.Properties.ID);
-
-		/** Select all of the <code>Element</code> instances */
-		public static final Selector ALL = Selector.getInstance (Element.class);
-	}
+	/** Select all of the <code>Element</code> instances */
+	public static final Selector SELECTOR_ALL = Selector.getInstance (Element.class);
 
 	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
@@ -70,20 +51,4 @@ public interface Element
 	 */
 
 	public abstract Long getId ();
-
-	/**
-	 * Determine if two <code>Element</code> instances are identical.  This
-	 * method acts as a stricter form of the equals method.  The equals method
-	 * only compares properties that are required to be unique (and therefore
-	 * immutable) for the <code>Element</code> instance, while this method
-	 * compares all of the properties.
-	 *
-	 * @param  element The <code>Element</code> to compare to the current
-	 *                 instance
-	 *
-	 * @return         <code>True</code> if the <code>Element</code> instances
-	 *                 are logically identical, <code>False</code> otherwise
-	 */
-
-	public abstract boolean identicalTo (Element element);
 }

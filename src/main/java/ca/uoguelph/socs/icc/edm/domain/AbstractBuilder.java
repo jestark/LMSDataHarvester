@@ -78,6 +78,15 @@ public abstract class AbstractBuilder<T extends Element>
 
 	private static final class Factory<T extends Element> implements Container.Receiver<T, Builder<T>>
 	{
+		/**
+		 * Create the <code>Builder</code> using the supplied
+		 * <code>MetaData</code>.
+		 *
+		 * @param  metadata The <code>MetaData</code>, not null
+		 *
+		 * @return          The <code>Builder</code>
+		 */
+
 		@Override
 		public <U extends T> Builder<T> apply (final MetaData<T, U> metadata)
 		{
@@ -119,10 +128,76 @@ public abstract class AbstractBuilder<T extends Element>
 	}
 
 	/**
+	 * Create an instance of the builder for the specified <code>Element</code>
+	 * on the supplied <code>DataStore</code>.
+	 *
+	 * @param  <T>       The <code>Element</code> interface type
+	 * @param  <U>       The builder type
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> interface class, not null
+	 * @param  create    Method reference to the constructor, not null
+	 *
+	 * @return           The builder instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Element</code>
+	 */
+
+	protected static <T extends Element, U extends AbstractBuilder<T>> U getInstance (final DataStore datastore, final Class<T> element, BiFunction<DataStore, Builder<T>, U> create)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		// Exception here because this is the fist time that it is checked
+		if (! datastore.isOpen ())
+		{
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		Class<? extends Element> impl = datastore.getProfile ()
+			.getElementClass (element);
+
+		// Exception here because this is the fist time that it is checked
+		if (impl == null)
+		{
+			throw new IllegalStateException ("Element is not available for this datastore");
+		}
+
+		return create.apply (datastore, AbstractBuilder.getBuilder (datastore, element));
+	}
+
+	/**
+	 * Utility method to get the <code>DataStore</code> out of the supplied
+	 * <code>DomainModel</code>, which checking its mutability.
+	 *
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 *
+	 * @return                       The <code>DataStore</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
+	 */
+
+	protected static DataStore getDataStore (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		if (! model.isMutable ())
+		{
+			throw new IllegalStateException ("model immutable");
+		}
+
+		return model.getDataStore ();
+	}
+
+	/**
 	 * Create the <code>AbstractBuilder</code>.
 	 *
-	 * @param  impl      The <code>Element</code> implementation class, not null
 	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  builder   The <code>Builder</code>, not null
 	 */
 
 	protected AbstractBuilder (final DataStore datastore, final Builder<T> builder)

@@ -34,19 +34,19 @@ public final class RoleLoader extends AbstractLoader<Role>
 	 * Get an instance of the <code>RoleLoader</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return       The <code>RoleLoader</code>
+	 * @return                       The <code>RoleLoader</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Element</code> queried by the
+	 *                               loader
 	 */
 
-	public RoleLoader getInstance (final DomainModel model)
+	public static RoleLoader getInstance (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new RoleLoader (model.getDataStore ());
+		return AbstractLoader.getInstance (model, Role.class, RoleLoader::new);
 	}
 
 	/**
@@ -64,8 +64,10 @@ public final class RoleLoader extends AbstractLoader<Role>
 	 * Retrieve a <code>Role</code> object from the underlying
 	 * <code>DataStore</code> based on its name.
 	 *
-	 * @param  name The name of the <code>Role</code>, not null
-	 * @return      A <code>Role</code> object
+	 * @param  name                  The name of the <code>Role</code>, not null
+	 *
+	 * @return                       The <code>Role</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
 	public Role fetchByName (final String name)
@@ -78,8 +80,14 @@ public final class RoleLoader extends AbstractLoader<Role>
 			throw new NullPointerException ();
 		}
 
-		Query<Role> query = this.fetchQuery (Role.Selectors.NAME);
-		query.setProperty (Role.Properties.NAME, name);
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		Query<Role> query = this.fetchQuery (Role.SELECTOR_NAME);
+		query.setProperty (Role.NAME, name);
 
 		return query.query ();
 	}

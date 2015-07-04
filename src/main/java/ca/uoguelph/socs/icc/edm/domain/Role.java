@@ -43,30 +43,11 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public interface Role extends Element
 {
-	/**
-	 * Constants representing all of the properties of an <code>Role</code>.
-	 * A <code>Property</code> represents a piece of data contained within the
-	 * <code>Role</code> instance.
-	 */
+	/** The name of the <code>Role</code> */
+	public static final Property<String> NAME = Property.getInstance (Role.class, String.class, "name", false, true);
 
-	public static class Properties extends Element.Properties
-	{
-		/** The name of the <code>Role</code> */
-		public static final Property<String> NAME = Property.getInstance (Role.class, String.class, "name", false, true);
-	}
-
-	/**
-	 * Constants representing all of the selectors of an <code>Role</code>.  A
-	 * <code>Selector</code> represents the <code>Set</code> of
-	 * <code>Property</code> instances used to load an <code>Role</code> from
-	 * the <code>DataStore</code>.
-	 */
-
-	public static class Selectors extends Element.Selectors
-	{
-		/** Select an <code>Role</code> instance by its name */
-		public static final Selector NAME = Selector.getInstance (Role.class, true, Role.Properties.NAME);
-	}
+	/** Select an <code>Role</code> instance by its name */
+	public static final Selector SELECTOR_NAME = Selector.getInstance (Role.class, true, Role.NAME);
 
 	/**
 	 * Get the name of the <code>Role</code>.

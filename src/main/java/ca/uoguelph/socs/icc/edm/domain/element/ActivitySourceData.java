@@ -65,8 +65,8 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 		MetaDataBuilder<ActivitySource, ActivitySourceData> builder = MetaDataBuilder.newInstance (ActivitySource.class, ActivitySourceData.class);
 		builder.setCreateMethod (ActivitySourceData::new);
 
-		builder.addProperty (ActivitySource.Properties.ID, ActivitySource::getId, ActivitySourceData::setId);
-		builder.addProperty (ActivitySource.Properties.NAME, ActivitySource::getName, ActivitySourceData::setName);
+		builder.addProperty (ActivitySource.ID, ActivitySource::getId, ActivitySourceData::setId);
+		builder.addProperty (ActivitySource.NAME, ActivitySource::getName, ActivitySourceData::setName);
 
 		AbstractElement.registerElement (builder.build ());
 	}

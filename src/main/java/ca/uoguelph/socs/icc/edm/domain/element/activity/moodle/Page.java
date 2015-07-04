@@ -63,10 +63,10 @@ public class Page extends GenericNamedActivity
 		MetaDataBuilder<Activity, Page> builder = MetaDataBuilder.newInstance (Activity.class, Page.class);
 		builder.setCreateMethod (Page::new);
 
-		builder.addProperty (Activity.Properties.ID, Activity::getId, Page::setId);
-		builder.addProperty (Activity.Properties.COURSE, Activity::getCourse, Page::setCourse);
-		builder.addProperty (Activity.Properties.TYPE, Activity::getType, Page::setType);
-		builder.addProperty (Activity.Properties.NAME, Activity::getName, Page::setName);
+		builder.addProperty (Activity.ID, Activity::getId, Page::setId);
+		builder.addProperty (Activity.COURSE, Activity::getCourse, Page::setCourse);
+		builder.addProperty (Activity.TYPE, Activity::getType, Page::setType);
+		builder.addProperty (Activity.NAME, Activity::getName, Page::setName);
 
 		GenericNamedActivity.registerActivity (builder.build (), "moodle", "page");
 	}

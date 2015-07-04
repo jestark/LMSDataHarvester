@@ -38,17 +38,22 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 	 * Get an instance of the <code>GenericActivityBuilder</code> for the specified
 	 * <code>DataStore</code> and <code>ActivityType</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  type      The <code>ActivityType</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  type                  The <code>ActivityType</code>, not null
 	 *
-	 * @return           The <code>GenericActivityBuilder</code> instance
+	 * @return                       The <code>GenericActivityBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
 	 */
 
 	public static GenericActivityBuilder getInstance (final DataStore datastore, ActivityType type)
 	{
 		assert datastore != null : "datastore is NULL";
 		assert type != null : "type is NULL";
-		assert datastore.contains (type) : "type is no in the datastore";
+		assert datastore.contains (type) : "type is NULL";
 
 		return AbstractActivityBuilder.getInstance (datastore, type, GenericActivityBuilder::new);
 	}
@@ -58,10 +63,15 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 	 * <code>DataStore</code>, loaded with the data from the specified
 	 * <code>Activity</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  activity   The <code>Activity</code>, not null
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  activity              The <code>Activity</code>, not null
 	 *
-	 * @return           The <code>GenericActivityBuilder</code> instance
+	 * @return                       The <code>GenericActivityBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
 	 */
 
 	public static GenericActivityBuilder getInstance (final DataStore datastore, Activity activity)
@@ -79,15 +89,18 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 	 * Get an instance of the <code>GenericActivityBuilder</code> for the specified
 	 * <code>DomainModel</code> and <code>ActivityType</code>.
 	 *
-	 * @param  model                    The <code>DomainModel</code>, not null
-	 * @param  type                     The <code>ActivityType</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  type                  The <code>ActivityType</code>, not null
 	 *
-	 * @return                          The <code>GenericActivityBuilder</code>
-	 *                                  instance
-	 * @throws IllegalArgumentException if the <code>ActivityType</code> is not
-	 *                                  in the <code>DataStore</code>
+	 * @return                       The <code>GenericActivityBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
-
 
 	public static GenericActivityBuilder getInstance (final DomainModel model, ActivityType type)
 	{
@@ -106,7 +119,7 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 			throw new IllegalArgumentException ("type is not in the datastore");
 		}
 
-		return GenericActivityBuilder.getInstance (model.getDataStore (), type);
+		return GenericActivityBuilder.getInstance (AbstractBuilder.getDataStore (model), type);
 	}
 
 	/**
@@ -114,14 +127,17 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 	 * <code>DomainModel</code>, loaded with the data from the specified
 	 * <code>Activity</code>.
 	 *
-	 * @param  model                    The <code>DomainModel</code>, not null
-	 * @param  activity                 The <code>Activity</code>, not null
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  activity              The <code>Activity</code>, not null
 	 *
-	 * @return                          The <code>GenericActivityBuilder</code>
-	 *                                  instance
-	 * @throws IllegalArgumentException if the <code>ActivityType</code> from
-	 *                                  the <code>Activity</code > is not in
-	 *                                  the <code>DataStore</code>
+	 * @return                       The <code>GenericActivityBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
 	 */
 
 	public static GenericActivityBuilder getInstance (final DomainModel model, Activity activity)
@@ -138,7 +154,7 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 	}
 
 	/**
-	 * Create the <code>ActivityBuilder</code>.
+	 * Create the <code>GenericActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
 	 * @param  builder   The <code>Builder</code>, not null

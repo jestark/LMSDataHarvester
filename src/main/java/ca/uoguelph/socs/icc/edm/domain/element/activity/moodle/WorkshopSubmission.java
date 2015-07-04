@@ -62,11 +62,11 @@ public class WorkshopSubmission extends GenericSubActivity
 		MetaDataBuilder<SubActivity, WorkshopSubmission> builder = MetaDataBuilder.newInstance (SubActivity.class, WorkshopSubmission.class);
 		builder.setCreateMethod (WorkshopSubmission::new);
 
-		builder.addProperty (SubActivity.Properties.ID, SubActivity::getId, WorkshopSubmission::setId);
-		builder.addProperty (SubActivity.Properties.COURSE, SubActivity::getCourse, null);
-		builder.addProperty (SubActivity.Properties.NAME, SubActivity::getName, WorkshopSubmission::setName);
-		builder.addProperty (SubActivity.Properties.PARENT, SubActivity::getParent, WorkshopSubmission::setParent);
-		builder.addProperty (SubActivity.Properties.TYPE, SubActivity::getType, null);
+		builder.addProperty (SubActivity.ID, SubActivity::getId, WorkshopSubmission::setId);
+		builder.addProperty (SubActivity.COURSE, SubActivity::getCourse, null);
+		builder.addProperty (SubActivity.NAME, SubActivity::getName, WorkshopSubmission::setName);
+		builder.addProperty (SubActivity.PARENT, SubActivity::getParent, WorkshopSubmission::setParent);
+		builder.addProperty (SubActivity.TYPE, SubActivity::getType, null);
 
 		GenericSubActivity.registerActivity (builder.build (), Workshop.class);
 	}
