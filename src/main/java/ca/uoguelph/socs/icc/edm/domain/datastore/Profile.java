@@ -25,7 +25,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.ElementManager;
+import ca.uoguelph.socs.icc.edm.domain.AbstractLoader;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
@@ -37,8 +37,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
  * each of the domain model interfaces the profile includes the following
  * information:
  * <ul>
- * <li>An indication if the interface is represented in the
- *     <code>DataStore</code>
  * <li>The class that implements the interface for the <code>DataStore</code>
  * <li>The class used to generate ID numbers for the interface in the
  *     <code>DataStore</code>
@@ -54,51 +52,37 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
  * @see     ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder
  */
 
-public final class DataStoreProfile
+public final class Profile
 {
 	/**
 	 * <code>DataStore</code> profile data for a single domain model interface.
 	 * This class is intended to be used internally in
-	 * <code>DataStoreProfile</code> to hold the profile data for a single
+	 * <code>Profile</code> to hold the profile data for a single
 	 * domain model interface.  All access to this class should come though the
 	 * enclosing class.
 	 */
 
 	private final class Entry
 	{
-		/** Is this interface represented in the <code>DataStore</code>? */
-		private final Boolean available;
-
 		/** <code>DataStore</code> generator for this interface */
 		private final Class<? extends IdGenerator> generator;
 
 		/** Class implementing the interface */
 		private final Class<? extends Element> implementation;
 
-		/** <code>DataStore</code> access for the interface */
-		private final Class<? extends ElementManager<? extends Element>> manager;
-
 		/**
 		 * Create the <code>Entry</code>.
 		 *
-		 * @param  available      An indication if the <code>DataStore</code>
-		 *                        represents the interface represented by this
-		 *                        entry, not null
 		 * @param  generator      The ID generator class used by with the
 		 *                        interface represented by this entry, not null
 		 * @param  implementation The class implementing the interface
 		 *                        represented by this entry, not null
-		 * @param  manager        The class which provides
-		 *                        <code>DataStore</code> access for the
-		 *                        interface represented by this Entry
 		 */
 
-		protected Entry (Boolean available, Class<? extends IdGenerator> generator, Class<? extends Element> implementation, Class<? extends ElementManager<? extends Element>> manager)
+		protected Entry (Class<? extends IdGenerator> generator, Class<? extends Element> implementation)
 		{
-			this.available = available;
 			this.generator = generator;
 			this.implementation = implementation;
-			this.manager = manager;
 		}
 
 		/**
@@ -119,13 +103,11 @@ public final class DataStoreProfile
 			{
 				result = true;
 			}
-			else if (obj instanceof DataStoreProfile)
+			else if (obj instanceof Profile)
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.available, ((Entry) obj).available);
 				ebuilder.append (this.generator, ((Entry) obj).generator);
 				ebuilder.append (this.implementation, ((Entry) obj).implementation);
-				ebuilder.append (this.manager, ((Entry) obj).manager);
 
 				result = ebuilder.isEquals ();
 			}
@@ -147,26 +129,10 @@ public final class DataStoreProfile
 			final int mult = 3;
 
 			HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-			hbuilder.append (this.available);
 			hbuilder.append (this.generator);
 			hbuilder.append (this.implementation);
-			hbuilder.append (this.manager);
 
 			return hbuilder.toHashCode ();
-		}
-
-		/**
-		 * Determine if the interface represented by this entry is represented
-		 * in the <code>DataStore</code>.
-		 *
-		 * @return <code>true</code> if the <code>DataStore</code> contains a
-		 *         representation of the specified domain model interface,
-		 *         <code>false</code> otherwise
-		 */
-
-		public Boolean isAvailable ()
-		{
-			return this.available;
 		}
 
 		/**
@@ -192,53 +158,36 @@ public final class DataStoreProfile
 		{
 			return this.implementation;
 		}
-
-		/**
-		 * Get the <code>ElementManager</code> implementation to be used to
-		 * access the <code>DataStore</code>.
-		 *
-		 * @return The accociated <code>ElementManager</code> class
-		 */
-
-		public Class<? extends ElementManager<? extends Element>> getManagerClass ()
-		{
-			return this.manager;
-		}
 	}
 
 	/** Is the <code>DataStore</code> mutable? */
-	private Boolean mutable;
+	private final boolean mutable;
 
 	/** Interface class to Implementation class mapping */
 	private final Map<Class<? extends Element>, Entry> entries;
 
 	/**
-	 * Create the <code>DataStoreProfile</code>.  This constructor is not intended
+	 * Create the <code>Profile</code>.  This constructor is not intended
 	 * to be called directly, the profile should be created though its builder.
 	 *
 	 * @param  mutable The designed mutability of the <code>DataStore</code>,
 	 *                 not null
 	 */
 
-	public DataStoreProfile (Boolean mutable)
+	public Profile (final boolean mutable)
 	{
-		if (mutable == null)
-		{
-			throw new NullPointerException ("Mutable is NULL");
-		}
-
 		this.mutable = mutable;
 		this.entries = new HashMap<Class<? extends Element>, Entry> ();
 	}
 
 	/**
-	 * Create the <code>DataStoreProfile</code>, from another profile.  This
+	 * Create the <code>Profile</code>, from another profile.  This
 	 * method is intended to be used by the builder to copy the profile.
 	 *
 	 * @param  profile The profile to copy, not null
 	 */
 
-	public DataStoreProfile (DataStoreProfile profile)
+	public Profile (Profile profile)
 	{
 		this (profile.mutable);
 
@@ -251,7 +200,7 @@ public final class DataStoreProfile
 	}
 
 	/**
-	 *  Create the <code>DataStoreProfile</code>, from another profile, but
+	 *  Create the <code>Profile</code>, from another profile, but
 	 *  overriding the mutability.  This method is intended to be used by the
 	 *  builder to copy the profile.
 	 *
@@ -260,7 +209,7 @@ public final class DataStoreProfile
 	 *  @param  profile The profile to copy, not null
 	 */
 
-	public DataStoreProfile (Boolean mutable, DataStoreProfile profile)
+	public Profile (boolean mutable, Profile profile)
 	{
 		this (mutable);
 
@@ -274,10 +223,10 @@ public final class DataStoreProfile
 
 	/**
 	 * Override the equals method to determine if this
-	 * <code>DataStoreProfile</code> is equal to another based on its
+	 * <code>Profile</code> is equal to another based on its
 	 * attributes.
 	 *
-	 * @param  obj The object to compare to this <code>DataStoreProfile</code>
+	 * @param  obj The object to compare to this <code>Profile</code>
 	 * @return     <code>true</code> if the two profiles are the same,
 	 *             <code>false</code> otherwise
 	 */
@@ -296,8 +245,8 @@ public final class DataStoreProfile
 			else if (obj.getClass () == this.getClass ())
 			{
 				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.mutable, ((DataStoreProfile) obj).mutable);
-				ebuilder.append (this.entries, ((DataStoreProfile) obj).entries);
+				ebuilder.append (this.mutable, ((Profile) obj).mutable);
+				ebuilder.append (this.entries, ((Profile) obj).entries);
 
 				result = ebuilder.isEquals ();
 			}
@@ -308,7 +257,7 @@ public final class DataStoreProfile
 
 	/**
 	 * Compute a unique <code>hashCode</code> for a
-	 * <code>DataStoreProfile</code> based on its attributes.
+	 * <code>Profile</code> based on its attributes.
 	 *
 	 * @return The hash code
 	 */
@@ -351,34 +300,6 @@ public final class DataStoreProfile
 	}
 
 	/**
-	 * Determine if the <code>DataStore</code> contains a representation of a
-	 * given domain model interface.
-	 *
-	 * @param  element                  Domain model interface class, not null
-	 * @return                          <code>true</code> if the
-	 *                                  <code>DataStore</code> contains a
-	 *                                  representation of the specified domain
-	 *                                  model interface, <code>false</code>
-	 *                                  otherwise
-	 * @throws IllegalArgumentException if the element is not in the profile
-	 */
-
-	public Boolean isAvailable (Class<? extends Element> element)
-	{
-		if (element == null)
-		{
-			throw new NullPointerException ();
-		}
-
-		if (! this.entries.containsKey (element))
-		{
-			throw new IllegalArgumentException ("Element is not in the profile: " + element.getName ());
-		}
-
-		return (this.entries.get (element)).isAvailable ();
-	}
-
-	/**
 	 * Get the <code>DataStore</code> ID generation class for the specified
 	 * domain model interface.
 	 *
@@ -412,7 +333,7 @@ public final class DataStoreProfile
 	 * @throws IllegalArgumentException if the element is not in the profile
 	 */
 
-	public Class<? extends Element> getImplClass (Class<? extends Element> element)
+	public Class<? extends Element> getElementClass (Class<? extends Element> element)
 	{
 		if (element == null)
 		{
@@ -428,39 +349,12 @@ public final class DataStoreProfile
 	}
 
 	/**
-	 * Get the <code>ElementManager</code> implementation used to access the
-	 * <code>DataStore</code> for the specified domain model interface.
-	 *
-	 * @param  element                  Domain model interface class, not null
-	 * @return                          The class used to represent the
-	 *                                  interface in the <code>DataStore</code>
-	 * @throws IllegalArgumentException if the element is not in the profile
-	 */
-
-	public Class<? extends ElementManager<? extends Element>> getManagerClass (Class<? extends Element> element)
-	{
-		if (element == null)
-		{
-			throw new NullPointerException ();
-		}
-
-		if (! this.entries.containsKey (element))
-		{
-			throw new IllegalArgumentException ("Element is not in the profile: " + element.getName ());
-		}
-
-		return (this.entries.get (element)).getManagerClass ();
-	}
-
-	/**
 	 * Add an entry to the profile from the specified element type.  This
 	 * method is intended to be used by the builder while is constructs the
 	 * profile.
 	 *
 	 * @param  element                  The domain model interface class of the
 	 *                                  element which is being added, not null
-	 * @param  available                Indication if the element is available
-	 *                                  in the <code>DataStore</code>, not null
 	 * @param  impl                     The implementation class to be used
 	 *                                  with the element, not null
 	 * @param  generator                The <code>IdGenerator</code> to be used
@@ -471,16 +365,11 @@ public final class DataStoreProfile
 	 * @see    ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder#setEntry
 	 */
 
-	public void addEntry (Class<? extends Element> element, Boolean available, Class<? extends Element> impl, Class<? extends IdGenerator> generator, Class<? extends ElementManager<? extends Element>> manager)
+	public void addEntry (Class<? extends Element> element, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
 	{
 		if (element == null)
 		{
 			throw new NullPointerException ("The specified element is NULL");
-		}
-
-		if (available == null)
-		{
-			throw new NullPointerException ("The specified availability is NULL");
 		}
 
 		if (impl == null)
@@ -493,17 +382,11 @@ public final class DataStoreProfile
 			throw new NullPointerException ("The specified generator is NULL");
 		}
 
-		// Special case:  Grades don't have managers.
-		if ((manager == null) && (element != Grade.class))
-		{
-			throw new NullPointerException ("The specified manager class is NULL");
-		}
-
 		if (! element.isAssignableFrom (impl))
 		{
 			throw new IllegalArgumentException (impl.getName () + " does not implement " + element.getName ());
 		}
 
-		this.entries.put (element, new Entry (available, generator, impl, manager));
+		this.entries.put (element, new Entry (generator, impl));
 	}
 }

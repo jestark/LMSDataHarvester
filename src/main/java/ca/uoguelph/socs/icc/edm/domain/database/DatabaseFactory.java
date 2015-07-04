@@ -20,11 +20,11 @@ import java.util.Map;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreProfile;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.jpa.JPADataStoreBuilder;
 
 /**
- * Create <code>DataStoreProfile</code>'s
+ * Create <code>Profile</code>'s
  *
  * @author  James E. Stark
  * @version 1.0
@@ -59,7 +59,7 @@ public abstract class DatabaseFactory
 	protected abstract void buildProfile (DomainModelBuilder builder);
 
 	/**
-	 * Create a <code>DataStoreProfile</code> for connecting to a database using
+	 * Create a <code>Profile</code> for connecting to a database using
 	 * the default connection parameters.  The unit name is default specified by
 	 * the factory implementation and the database connection parameters are
 	 * assumed to be stored in the JPA configuration (persistence.xml).
@@ -67,13 +67,13 @@ public abstract class DatabaseFactory
 	 * @return A complete profile using default connection parameters
 	 */
 
-	public DataStoreProfile createProfile ()
+	public Profile createProfile ()
 	{
 		return this.createProfile (this.unitname);
 	}
 
 	/**
-	 * Create a <code>DataStoreProfile</code> for connecting to a database using
+	 * Create a <code>Profile</code> for connecting to a database using
 	 * the specified JPA unit and default connection parameters.  The database
 	 * connection parameters are assumed to be stored in the JPA configuration
 	 * (persistence.xml).
@@ -83,13 +83,13 @@ public abstract class DatabaseFactory
 	 *                  unit.
 	 */
 
-	public DataStoreProfile createProfile (String unitname)
+	public Profile createProfile (String unitname)
 	{
 		return this.createProfile (unitname, null, null, null);
 	}
 
 	/**
-	 * Create a <code>DataStoreProfile</code> for connecting to a database using
+	 * Create a <code>Profile</code> for connecting to a database using
 	 * the specified connection parameters.  Each of the parameters is optional.
 	 * If a parameter is NULL it will be ignored.  If the specified
 	 * <code>unitname</code> is null, then the default <code>unitname</code> will
@@ -109,7 +109,7 @@ public abstract class DatabaseFactory
 	 * @return          A complete profile using the specified parameters
 	 */
 
-	public DataStoreProfile createProfile (String unitname, String url, String username, String password)
+	public Profile createProfile (String unitname, String url, String username, String password)
 	{
 		this.builder.clear ();
 
