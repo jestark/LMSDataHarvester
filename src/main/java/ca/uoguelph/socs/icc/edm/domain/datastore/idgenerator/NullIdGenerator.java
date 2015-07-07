@@ -16,9 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
-import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import java.util.List;
 
 /**
  * An <code>IdGenerator</code> which always returns a null reference.  This
@@ -33,6 +31,9 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public class NullIdGenerator extends IdGenerator
 {
+	/** Singleton Instance of the <code>NullIdGenerator</code> */
+	private static final NullIdGenerator INSTANCE;
+
 	/**
 	 * Static initializer to register the <code>IdGenerator</code> with the
 	 * factory.
@@ -40,15 +41,32 @@ public class NullIdGenerator extends IdGenerator
 
 	static
 	{
-		IdGenerator.registerGenerator (NullIdGenerator.class, NullIdGenerator::newInstance);
+		IdGenerator.registerGenerator (NullIdGenerator.class, NullIdGenerator::getInstance);
+		INSTANCE = new NullIdGenerator ();
 	}
 
-	public static <T extends Element> NullIdGenerator newInstance (final Class<T> element, final DataStore datastore)
-	{
-		assert element != null : "element is NULL";
-		assert datastore != null : "datastore is NULL";
+	/**
+	 * Get an instance of the <code>NullIdGenerator</code>.
+	 *
+	 * @param  ids The <code>List</code> of previously used id numbers, not null
+	 *
+	 * @return     The <code>NullIdGenerator</code> instance
+	 */
 
-		return new NullIdGenerator ();
+	public static NullIdGenerator getInstance (final List<Long> ids)
+	{
+		assert ids != null : "ids is NULL";
+
+		return NullIdGenerator.INSTANCE;
+	}
+
+	/**
+	 * Create the <code>NullIdGenerator</code>.
+	 */
+
+	private NullIdGenerator ()
+	{
+		// Does nothing
 	}
 
 	/**

@@ -17,13 +17,11 @@
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 import java.security.SecureRandom;
-import java.util.HashSet;
+
+import java.util.List;
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+import java.util.HashSet;
 
 /**
  * An <code>IdGenerator</code> which returns unique random ID numbers.  The ID
@@ -52,39 +50,35 @@ public class RandomIdGenerator extends IdGenerator
 
 	static
 	{
-		IdGenerator.registerGenerator (RandomIdGenerator.class, RandomIdGenerator::newInstance);
-	}
-
-	public static <T extends Element> RandomIdGenerator newInstance (final Class<T> element, final DataStore datastore)
-	{
-		assert element != null : "element is NULL";
-		assert datastore != null : "datastore is NULL";
-
-		return null; //new RandomIdGenerator (new HashSet<Long> ((datastore.getQuery ("allid", element)).queryAll ()));
+		IdGenerator.registerGenerator (RandomIdGenerator.class, RandomIdGenerator::getInstance);
 	}
 
 	/**
-	 * Create a new <code>RandomIdGenerator</code>.
-	 */
-
-	public RandomIdGenerator ()
-	{
-		this.usedids = new HashSet<Long> ();
-		this.generator = new SecureRandom ();
-	}
-
-	/**
-	 * Create a new <code>RandomIdGenerator</code>, with a set of previously
-	 * used Ids.
+	 * Get an instance of the <code>RandomIdGenerator</code>.
 	 *
-	 * @param  usedids A <code>Set</code> of all of the used ID numbers, not
-	 *                 null
+	 * @param  ids The <code>List</code> of previously used id numbers, not null
+	 *
+	 * @return     The <code>RandomIdGenerator</code> instance
 	 */
 
-	public RandomIdGenerator (Set<Long> usedids)
+	public static RandomIdGenerator getInstance (final List<Long> ids)
 	{
-		this ();
-		this.usedids.addAll (usedids);
+		assert ids != null : "ids is NULL";
+
+		return new RandomIdGenerator (ids);
+	}
+
+	/**
+	 * Create a new <code>RandomIdGenerator</code>, with a <code>List</code> of
+	 * previously used Ids.
+	 *
+	 * @param  usedids The <code>List</code> of used ID numbers, not null
+	 */
+
+	private RandomIdGenerator (List<Long> usedids)
+	{
+		this.usedids = new HashSet<Long> (usedids);
+		this.generator = new SecureRandom ();
 	}
 
 	/**

@@ -16,10 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
-import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+import java.util.List;
 
 /**
  * An <code>IdGenerator</code> which return ID numbers from a sequence.  ID
@@ -42,24 +39,22 @@ public class SequentialIdGenerator extends IdGenerator
 
 	static
 	{
-		IdGenerator.registerGenerator (SequentialIdGenerator.class, SequentialIdGenerator::newInstance);
-	}
-
-	public static <T extends Element> SequentialIdGenerator newInstance (final Class<T> element, final DataStore datastore)
-	{
-		assert element != null : "element is NULL";
-		assert datastore != null : "datastore is NULL";
-
-		return null; //new RandomIdGenerator (new HashSet<Long> ((datastore.getQuery ("allid", element)).queryAll ()));
+		IdGenerator.registerGenerator (SequentialIdGenerator.class, SequentialIdGenerator::getInstance);
 	}
 
 	/**
-	 * Create a new <code>SequentialIdGenerator</code>.
+	 * Get an instance of the <code>SequentialIdGenerator</code>.
+	 *
+	 * @param  ids The <code>List</code> of previously used id numbers, not null
+	 *
+	 * @return     The <code>SequentialIdGenerator</code> instance
 	 */
 
-	public SequentialIdGenerator ()
+	public static SequentialIdGenerator getInstance (final List<Long> ids)
 	{
-		this.currentid = 0;
+		assert ids != null : "ids is NULL";
+
+		return new SequentialIdGenerator (ids);
 	}
 
 	/**
@@ -68,12 +63,14 @@ public class SequentialIdGenerator extends IdGenerator
 	 * <code>IdGenerator</code> will be one greater than the specified starting
 	 * value.
 	 *
-	 * @param  startingid The starting value of the sequence, not null
+	 * @param  ids The starting value of the sequence, not null
 	 */
 
-	public  SequentialIdGenerator (final Long startingid)
+	private SequentialIdGenerator (final List<Long> ids)
 	{
-		this.currentid = startingid.longValue ();
+		this.currentid = ids.parallelStream ()
+			.reduce (0L, Long::max)
+			.longValue () + 1;
 	}
 
 	/**

@@ -16,20 +16,18 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
+import java.util.List;
 import java.util.Map;
+
 import java.util.HashMap;
 
-import java.util.function.BiFunction;
-
-import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import java.util.function.Function;
 
 /**
- * An ID number generator.  Classes implementing this interface will provide
- * ID numbers suitable for use with the underlying <code>DataStore</code>.
- * Each class implementing this interface is responsible for determining how
- * the  ID numbers are calculated, with different classes providing different
+ * An ID number generator.  This class and its subclasses provide ID numbers
+ * suitable for use with the underlying <code>DataStore</code>.  Each class
+ * implementing this interface is responsible for determining how the  ID
+ * numbers are calculated, with different classes providing different
  * distributions of ID numbers.
  *
  * @author  James E. Stark
@@ -39,7 +37,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 public abstract class IdGenerator
 {
 	/** Factories for the <code>IdGenerator</code> implementations */
-	private static final Map<Class<? extends IdGenerator>, BiFunction<Class<? extends Element>, DataStore, ? extends IdGenerator>> factories;
+	private static final Map<Class<? extends IdGenerator>, Function<List<Long>, ? extends IdGenerator>> factories;
 
 	/**
 	 * static initializer to create the factory.
@@ -47,7 +45,7 @@ public abstract class IdGenerator
 
 	static
 	{
-		factories = new HashMap<Class<? extends IdGenerator>, BiFunction<Class<? extends Element>, DataStore, ? extends IdGenerator>> ();
+		factories = new HashMap<> ();
 	}
 
 	/**
@@ -63,7 +61,7 @@ public abstract class IdGenerator
 	 *                   class, not null
 	 */
 
-	protected static <T extends IdGenerator> void registerGenerator (final Class<T> generator, final BiFunction<Class<? extends Element>, DataStore ,T> factory)
+	protected static <T extends IdGenerator> void registerGenerator (final Class<T> generator, final Function<List<Long> ,T> factory)
 	{
 		assert generator != null : "generator is NULL";
 		assert factory != null : "factory is NULL";
@@ -73,21 +71,23 @@ public abstract class IdGenerator
 	}
 
 	/**
+	 * Get an <code>IdGenerator</code> instance.
 	 *
-	 * @param  <T>
-	 * @param  generator
-	 * @param  datastore
+	 * @param  generator The <code>IdGenerator</code> implementation class,
+	 *                   not null
+	 * @param  ids       The <code>List</code> of previously used Id numbers,
+	 *                   not null
 	 *
-	 * @return 
+	 * @return The <code>IdGenerator</code>
 	 */
 
-	public static <T extends IdGenerator, U extends Element> T getInstance (final Class<T> generator, final Class<U> element, final DataStore datastore)
+	public static IdGenerator getInstance (final Class<?> generator, List<Long> ids)
 	{
 		assert generator != null : "generator is NULL";
-		assert datastore != null : "datastore is NULL";
+		assert ids != null : "ids is NULL";
 		assert IdGenerator.factories.containsKey (generator) : "Generator class is not registered";
 
-		return generator.cast ((IdGenerator.factories.get (generator)).apply (element, datastore));
+		return IdGenerator.factories.get (generator).apply (ids);
 	}
 
 	/**
