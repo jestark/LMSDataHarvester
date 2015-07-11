@@ -43,20 +43,11 @@
 	<entity name="Course" class="CourseData" metadata-complete="true">
 		<description>Date identifying a particular offering of a course</description>
 		<table name="course"/>
-		<named-query name="CourseData:maxid">
-			<query>SELECT MAX(c.id) FROM Course c</query>
-		</named-query>
 		<named-query name="CourseData:allid">
 			<query>SELECT c.id FROM Course c</query>
 		</named-query>
 		<named-query name="CourseData:all">
 			<query>SELECT c FROM Course c</query>
-		</named-query>
-		<named-query name="CourseData:allsemester">
-			<query>SELECT c FROM Course c WHERE c.year = :year AND c.semester = :semester</query>
-		</named-query>
-		<named-query name="CourseData:alloffering">
-			<query>SELECT c FROM Course c WHERE c.year = :year AND c.semester = :semester AND c.name LIKE :name</query>
 		</named-query>
 		<named-query name="CourseData:offering">
 			<query>SELECT c FROM Course c WHERE c.year = :year AND c.semester = :semester AND c.name = :name</query>
@@ -90,9 +81,6 @@
 	<entity name="Role" class="RoleData" metadata-complete="true">
 		<description>The Role of a participant in a course</description>
 		<table name="enrolment_role"/>
-		<named-query name="RoleData:maxid">
-			<query>SELECT MAX(r.id) FROM Role r</query>
-		</named-query>
 		<named-query name="RoleData:allid">
 			<query>SELECT r.id FROM Role r</query>
 		</named-query>
@@ -120,9 +108,6 @@
 		<secondary-table name="enrolment_final_grade">
 			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
 		</secondary-table>
-		<named-query name="EnrolmentData:maxid">
-			<query>SELECT MAX(e.id) FROM Enrolment e</query>
-		</named-query>
 		<named-query name="EnrolmentData:allid">
 			<query>SELECT e.id FROM Enrolment e</query>
 		</named-query>
@@ -182,9 +167,6 @@
 	<entity name="ActivitySource" class="ActivitySourceData" metadata-complete="true">
 		<description>The the source of the activity data</description>
 		<table name="activity_source"/>
-		<named-query name="ActivitySourceData:maxid">
-			<query>SELECT MAX(s.id) FROM ActivitySource s</query>
-		</named-query>
 		<named-query name="ActivitySourceData:allid">
 			<query>SELECT s.id FROM ActivitySource s</query>
 		</named-query>
@@ -209,10 +191,7 @@
 
 	<entity name="ActivityType" class="ActivityTypeData" metadata-complete="true">
 		<description>The type of the activity (or the module)</description>
-		<table name="activity"/>
-		<named-query name="ActivityTypeData:maxid">
-			<query>SELECT MAX(t.id) FROM ActivityType t</query>
-		</named-query>
+		<table name="activity_type"/>
 		<named-query name="ActivityTypeData:allid">
 			<query>SELECT t.id FROM ActivityType t</query>
 		</named-query>
@@ -234,50 +213,13 @@
 			<many-to-one name="source" target-entity="ActivitySourceData" optional="false">
 				<join-column name="source_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
-			<many-to-many name="actions" target-entity="ActionData">
-				<join-table name="activity_action_map" >
-					<join-column name="activity_id" nullable="false" referenced-column-name="id"/>
-					<inverse-join-column name="action_id" nullable="false" referenced-column-name="id"/>
-				</join-table>
-			</many-to-many>
-		</attributes>
-	</entity>
-
-	<entity name="Action" class="ActionData" metadata-complete="true">
-		<description>The name of the action performed</description>
-		<table name="activity_action"/>
-		<named-query name="ActionData:maxid">
-			<query>SELECT MAX(a.id) FROM Action a</query>
-		</named-query>
-		<named-query name="ActionData:allid">
-			<query>SELECT a.id FROM Action a</query>
-		</named-query>
-		<named-query name="ActionData:all">
-			<query>SELECT a FROM Action a</query>
-		</named-query>
-		<named-query name="ActionData:name">
-			<query>SELECT a FROM Action a WHERE a.name = :name</query>
-		</named-query>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-				<generated-value strategy="SEQUENCE" generator="activity_action_id_seq"/>
-				<sequence-generator name="activity_action_id_seq" sequence-name="activity_action_id_seq" initial-value="1" allocation-size="1"/>
-			</id>
-			<basic name="name">
-				<column name="name" nullable="false"/>
-			</basic>
-			<many-to-many name="types" target-entity="ActivityTypeData" mapped-by="actions"/>
 		</attributes>
 	</entity>
 
 	<entity name="Activity" class="ActivityInstance" metadata-complete="true">
 		<description>The activities which are associated with a given course</description>
-		<table name="activity_instance"/>
+		<table name="activity"/>
 		<inheritance strategy="JOINED"/>
-		<named-query name="ActivityInstance:maxid">
-			<query>SELECT MAX(a.id) FROM Activity a</query>
-		</named-query>
 		<named-query name="ActivityInstance:allid">
 			<query>SELECT a.id FROM Activity a</query>
 		</named-query>
@@ -305,7 +247,7 @@
 
 	<entity name="GenericActivity" class="GenericActivity" metadata-complete="true">
 		<description>Mapping For the Generic Activity and the relationship the the instance</description>
-		<table name="activity_instance_stealth"/>
+		<table name="activity_stealth"/>
 		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
 		<attributes>
 			<transient name="name"/>
@@ -316,15 +258,36 @@
 	<!-- Core data mapping: Log entries                                      -->
 	<!--*********************************************************************-->
 
+	<entity name="Action" class="ActionData" metadata-complete="true">
+		<description>The name of the action performed</description>
+		<table name="log_action"/>
+		<named-query name="ActionData:allid">
+			<query>SELECT a.id FROM Action a</query>
+		</named-query>
+		<named-query name="ActionData:all">
+			<query>SELECT a FROM Action a</query>
+		</named-query>
+		<named-query name="ActionData:name">
+			<query>SELECT a FROM Action a WHERE a.name = :name</query>
+		</named-query>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_action_id_seq"/>
+				<sequence-generator name="activity_action_id_seq" sequence-name="activity_action_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="name" nullable="false"/>
+			</basic>
+		</attributes>
+	</entity>
+
 	<entity name="LogEntry" class="LogData" metadata-complete="true">
 		<description>The course activity log</description>
 		<table name="log"/>
 		<secondary-table name="log_ip">
 			<primary-key-join-column name="log_id" referenced-column-name="id"/>
 		</secondary-table>
-		<named-query name="LogData:maxid">
-			<query>SELECT MAX(e.id) FROM LogEntry e</query>
-		</named-query>
 		<named-query name="LogData:allid">
 			<query>SELECT e.id FROM LogEntry e</query>
 		</named-query>

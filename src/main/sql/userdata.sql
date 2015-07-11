@@ -14,7 +14,7 @@ create table if not exists userdb.user (
 
 create table if not exists userdb.user_enrolment (
 	enrolment_id bigint primary key references enrolment (id) on delete cascade on update cascade,
-	user_id bigint not null references userdb.user (id) on delete cascade on update cascade,
+	user_id bigint not null references userdb.user (id) on delete cascade on update cascade
 );
 
 comment on schema userdb is 'Restricted access to identifying user information';

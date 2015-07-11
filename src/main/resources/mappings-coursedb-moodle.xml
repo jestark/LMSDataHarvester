@@ -55,9 +55,6 @@
 
 	<entity name="ForumDiscussion" class="ForumDiscussion" metadata-complete="true">
 		<table name="activity_moodle_forum_discussion"/>
-		<named-query name="ForumDiscussion:maxid">
-			<query>SELECT MAX(a.id) FROM ForumDiscussion a</query>
-		</named-query>
 		<named-query name="ForumDiscussion:allid">
 			<query>SELECT a.id FROM ForumDiscussion a</query>
 		</named-query>
@@ -80,9 +77,6 @@
 
 	<entity name="BookChapter" class="BookChapter" metadata-complete="true">
 		<table name="activity_moodle_book_chapter"/>
-		<named-query name="BookChapter:maxid">
-			<query>SELECT MAX(a.id) FROM BookChapter a</query>
-		</named-query>
 		<named-query name="BookChapter:allid">
 			<query>SELECT a.id FROM BookChapter a</query>
 		</named-query>
@@ -100,9 +94,6 @@
 
 	<entity name="ForumPost" class="ForumPost" metadata-complete="true">
 		<table name="activity_moodle_forum_post"/>
-		<named-query name="ForumPost:maxid">
-			<query>SELECT MAX(a.id) FROM ForumPost a</query>
-		</named-query>
 		<named-query name="ForumPost:allid">
 			<query>SELECT a.id FROM ForumPost a</query>
 		</named-query>
@@ -123,9 +114,6 @@
 
 	<entity name="LessonPage" class="LessonPage" metadata-complete="true">
 		<table name="activity_moodle_lesson_page"/>
-		<named-query name="LessonPage:maxid">
-			<query>SELECT MAX(a.id) FROM LessonPage a</query>
-		</named-query>
 		<named-query name="LessonPage:allid">
 			<query>SELECT a.id FROM LessonPage a</query>
 		</named-query>
@@ -143,9 +131,6 @@
 
 	<entity name="WorkshopSubmission" class="WorkshopSubmission" metadata-complete="true">
 		<table name="activity_moodle_workshop_submission"/>
-		<named-query name="WorkShopSubmission:maxid">
-			<query>SELECT MAX(a.id) FROM WorkshopSubmission a</query>
-		</named-query>
 		<named-query name="WorkShopSubmission:allid">
 			<query>SELECT a.id FROM WorkshopSubmission a</query>
 		</named-query>

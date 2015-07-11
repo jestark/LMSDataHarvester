@@ -17,16 +17,12 @@
 package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.io.Serializable;
-import java.util.Set;
-
-import java.util.HashSet;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
-import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 
@@ -50,9 +46,6 @@ public class ActionData extends AbstractElement implements Action, Serializable
 
 	/** The name of the action */
 	private String name;
-
-	/** A set of the Activity Types associated with the action */
-	private Set<ActivityType> types;
 
 	/**
 	 * Static initializer to register the <code>ActionData</code> class with
@@ -78,8 +71,6 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	{
 		this.id= null;
 		this.name = null;
-
-		this.types = new HashSet<ActivityType> ();
 	}
 
 	/**
@@ -158,65 +149,6 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	protected void setId (final Long id)
 	{
 		this.id = id;
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>ActivityType</code> instances
-	 * containing the action.
-	 *
-	 * @return A <code>Set</code> of <code>ActivityType</code> instances
-	 */
-
-	@Override
-	public Set<ActivityType> getTypes ()
-	{
-		return new HashSet<ActivityType> (this.types);
-	}
-
-	/**
-	 * Initialize the <code>Set</code> of associated <code>ActivityType</code>
-	 * instances.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Action</code> instance is loaded.
-	 *
-	 * @param  types The <code>Set</code> of <code>ActivityType</code>
-	 *               instances to be associated with the <code>Action</code>
-	 */
-
-	protected void setTypes (final Set<ActivityType> types)
-	{
-		this.types = types;
-	}
-
-	/**
-	 * Associate the specified <code>ActivityType</code> with the
-	 * <code>Action</code>
-	 *
-	 * @param  type The <code>ActivityType</code> associate with the
-	 *              <code>Action</code>
-	 *
-	 * @return      <code>True</code> if the <code>ActivityType</code> was
-	 *              successfully added, <code>False</code> otherwise.
-	 */
-
-	protected boolean addType (final ActivityType type)
-	{
-		return this.types.add (type);
-	}
-
-	/**
-	 * Remove the association between the specified <code>ActivityType</code>
-	 * and the <code>Action</code>
-	 *
-	 * @param  type The <code>ActivityType</code> associate with the
-	 *              <code>Action</code>
-	 *
-	 * @return      <code>True</code> if the <code>ActivityType</code> was
-	 *              successfully added, <code>False</code> otherwise.
-	 */
-
-	protected boolean removeType (final ActivityType type)
-	{
-		return this.types.remove (type);
 	}
 
 	/**

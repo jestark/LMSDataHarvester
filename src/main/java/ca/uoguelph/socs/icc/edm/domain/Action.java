@@ -38,18 +38,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * the <code>LogEntry</code> interface to exist.  If a particular instance of
  * the <code>Action</code> interface is deleted, then all of the associated
  * instances of the <code>LogEntry</code> interface must be deleted as well.
- * <p>
- * While the <code>Action</code> interface is associated with the
- * <code>ActivityType</code> interface, there is no dependency between them.
- * Instances of <code>ActivityType</code> and <code>Action</code> may exist
- * without any associations. However, each instance of the <code>Action</code>
- * interface should be associated with at least one instance of the
- * <code>ActivityType</code> interface, to be used within an instance of the
- * <code>LogEntry</code> interface.
- * <p>
- * With the exception of adding and removing associations to instance of the
- * <code>ActivityType</code> interface, instances of the <code>Action</code>
- * interface are immutable once created.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -64,15 +52,6 @@ public interface Action extends Element
 
 	/** Select an <code>Action</code> instance by its name */
 	public static final Selector SELECTOR_NAME = Selector.getInstance (Action.class, true, Action.NAME);
-
-	/**
-	 * Get the <code>Set</code> of <code>ActivityType</code> instances
-	 * containing the <code>Action</code>.
-	 *
-	 * @return A <code>Set</code> of <code>ActivityType</code> instances
-	 */
-
-	public abstract Set<ActivityType> getTypes ();
 
 	/**
 	 * Get the name of the <code>Action</code>.

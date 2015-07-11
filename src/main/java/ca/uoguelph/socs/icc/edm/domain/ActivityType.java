@@ -42,15 +42,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * instance of the <code>ActivityType</code> interface from the
  * <code>DataStore</code> will require the removal of the associated instances
  * of the <code>Activity</code> interface.
- * <p>
- * While the <code>ActvityType</code> interface is associated with the
- * <code>Action</code> interface, there is no dependency between them.
- * Instances of <code>ActivityType</code> and <code>Action</code> may exist
- * without any associations.
- * <p>
- * With the exception of adding and removing associations to instance of the
- * <code>Action</code> interface, instances of the <code>ActivityType</code>
- * interface are immutable once created.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -85,15 +76,4 @@ public interface ActivityType extends Element
 	 */
 
 	public abstract ActivitySource getSource ();
-
-	/**
-	 * Get the <code>Set</code> of <code>Action</code> instances which are
-	 * associated with the <code>ActivityType</code>.  If there are no
-	 * associated <code>Action</code> instances, then the <code>Set</code>
-	 * will be empty.
-	 *
-	 * @return A <code>Set</code> of <code>Action</code> instances
-	 */
-
-	public abstract Set<Action> getActions ();
 }

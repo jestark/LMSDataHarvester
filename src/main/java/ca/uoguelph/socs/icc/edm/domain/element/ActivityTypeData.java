@@ -17,15 +17,11 @@
 package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.io.Serializable;
-import java.util.Set;
-
-import java.util.HashSet;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
@@ -56,9 +52,6 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	/** The source of the activity type */
 	private ActivitySource source;
 
-	/** The set of actions which are associated with the activity type */
-	private Set<Action> actions;
-
 	/**
 	 * Static initializer to register the <code>ActivityTypeData</code> class
 	 * with the factories.
@@ -86,8 +79,6 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		this.id = null;
 		this.name = null;
 		this.source = null;
-
-		this.actions = new HashSet<Action> ();
 	}
 
 	/**
@@ -225,72 +216,6 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		assert source != null : "source is NULL";
 
 		this.source = source;
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Action</code> instances which are
-	 * associated with the <code>ActivityType</code>.  If there are no
-	 * associated <code>Action</code> instances, then the <code>Set</code>
-	 * will be empty.
-	 *
-	 * @return A <code>Set</code> of <code>Action</code> instances
-	 */
-
-	@Override
-	public Set<Action> getActions ()
-	{
-		return new HashSet<Action> (this.actions);
-	}
-
-	/**
-	 * Initialize the <code>Set</code> of associated <code>Action</code>
-	 * instances.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>ActivityType</code> instance is
-	 * loaded.
-	 *
-	 * @param  actions The <code>Set</code> of <code>Action</code> instances
-	 *                 to be associated with the <code>ActivityType</code>
-	 */
-
-	protected void setActions (final Set<Action> actions)
-	{
-		assert actions != null : "actions is NULL";
-
-		this.actions = actions;
-	}
-
-	/**
-	 * Add the specified <code>Action</code> to the
-	 * <code>ActivityType</code>.
-	 *
-	 * @param  action The <code>Action</code> to add, not null
-	 *
-	 * @return        <code>True</code> if the <code>Action</code> was
-	 *                successfully added, <code>False</code> otherwise
-	 */
-
-	protected boolean addAction (final Action action)
-	{
-		assert action != null : "action is NULL";
-
-		return this.actions.add (action);
-	}
-
-	/**
-	 * Remove the specified <code>Action</code> from the
-	 * <code>ActivityType</code>.
-	 *
-	 * @param  action The <code>Action</code> to remove, not null
-	 *
-	 * @return        <code>True</code> if the <code>Action</code> was
-	 *                successfully removed, <code>False</code> otherwise
-	 */
-
-	protected boolean removeAction (final Action action)
-	{
-		assert action != null : "action is NULL";
-
-		return this.actions.remove (action);
 	}
 
 	/**
