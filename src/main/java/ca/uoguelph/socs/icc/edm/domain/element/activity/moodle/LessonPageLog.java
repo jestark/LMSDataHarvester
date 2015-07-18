@@ -21,7 +21,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.element.LogReference;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
@@ -75,7 +74,7 @@ class LessonPageLog extends LogReference
 //		builder.addAttribute (, LessonPageLog::getEntry, LessonPageLog::setEntry);
 //		builder.addAttribute (, LessonPageLog::getSubActivity, LessonPageLog::setSubActivity);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**

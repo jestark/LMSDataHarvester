@@ -46,7 +46,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     UserLoader
  */
 
-public interface User extends Element
+public abstract class User extends Element
 {
 	/** The idnumber for the <code>User</code> */
 	public static final Property<Integer> IDNUMBER = Property.getInstance (User.class, Integer.class, "idnumber", false, true);
@@ -79,6 +79,16 @@ public interface User extends Element
 	public abstract Integer getIdNumber ();
 
 	/**
+	 * Set the (student) ID number of the <code>User</code>.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>User</code> instance is loaded.
+	 *
+	 * @param  idnumber The ID Number, not null
+	 */
+
+	protected abstract void setIdNumber (Integer idnumber);
+
+	/**
 	 * Get the first name (given name) of the <code>User</code>.
 	 *
 	 * @return A <code>String</code> containing the given name of the
@@ -88,12 +98,32 @@ public interface User extends Element
 	public abstract String getFirstname ();
 
 	/**
+	 * Set the first name of the <code>User</code>.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>User</code> instance
+	 * is loaded.
+	 *
+	 * @param  firstname The first name, not null
+	 */
+
+	protected abstract void setFirstname (String firstname);
+
+	/**
 	 * Get the last name (surname) of the <code>User</code>.
 	 *
 	 * @return A String containing the surname of the <code>User</code>.
 	 */
 
 	public abstract String getLastname ();
+
+	/**
+	 * Set the last name of the <code>User</code>.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>User</code> instance
+	 * is loaded.
+	 *
+	 * @param  lastname The last name, not null
+	 */
+
+	protected abstract void setLastname (String lastname);
 
 	/**
 	 * Get the username for the <code>User</code>.  This will be the username
@@ -106,6 +136,16 @@ public interface User extends Element
 	 */
 
 	public abstract String getUsername ();
+
+	/**
+	 * Set the username of the <code>User</code>.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>User</code> instance
+	 * is loaded.
+	 *
+	 * @param  username The username, not null
+	 */
+
+	protected abstract void setUsername (String username);
 
 	/**
 	 * Get the full name of the <code>User</code>.  This method will return a
@@ -140,5 +180,39 @@ public interface User extends Element
 	 */
 
 	public abstract Set<Enrolment> getEnrolments ();
+
+	/**
+	 * Initialize the <code>Set</code> of <code>Enrolment</code> instances
+	 * associated with the <code>User</code> instance.  This method is intended
+	 * to be used by a <code>DataStore</code> when the <code>User</code>
+	 * instance is loaded.
+	 *
+	 * @param  enrolments The <code>Set</code> of <code>Enrolment</code>
+	 *                    instances, not null
+	 */
+
+	protected abstract void setEnrolments (Set<Enrolment> enrolments);
+
+	/**
+	 * Add an <code>Enrolment</code> to the <code>User</code> instance.
+	 *
+	 * @param  enrolment The <code>Enrolment</code> to add
+	 * @return           <code>True</code> if the enrolment was added to the
+	 *                   <code>User</code> instance, <code>False</code>
+	 *                   otherwise
+	 */
+
+	protected abstract boolean addEnrolment (Enrolment enrolment);
+
+	/**
+	 * Remove an <code>Enrolment</code> from the <code>User</code> instance.
+	 *
+	 * @param  enrolment The <code>Enrolment</code> to remove
+	 * @return           <code>True</code> if the enrolment was removed from
+	 *                   the <code>User</code> instance, <code>False</code>
+	 *                   otherwise
+	 */
+
+	protected abstract boolean removeEnrolment (Enrolment enrolment);
 }
 

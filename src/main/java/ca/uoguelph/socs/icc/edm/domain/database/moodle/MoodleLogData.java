@@ -30,11 +30,9 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 
-public class MoodleLogData extends AbstractElement implements LogEntry
+public class MoodleLogData extends LogEntry
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -74,12 +72,16 @@ public class MoodleLogData extends AbstractElement implements LogEntry
 		MetaDataBuilder<LogEntry, MoodleLogData> builder = MetaDataBuilder.newInstance (LogEntry.class, MoodleLogData.class);
 		builder.setCreateMethod (MoodleLogData::new);
 
+		builder.addProperty (LogEntry.ACTION, LogEntry::getAction, null);
+		builder.addProperty (LogEntry.ACTIVITY, LogEntry::getActivity, null);
+		builder.addProperty (LogEntry.ENROLMENT, LogEntry::getEnrolment, null);
+
 		builder.addProperty (LogEntry.ID, LogEntry::getId, MoodleLogData::setId);
+		builder.addProperty (LogEntry.COURSE, LogEntry::getCourse, null);
 		builder.addProperty (LogEntry.IPADDRESS, LogEntry::getIPAddress, MoodleLogData::setIPAddress);
 		builder.addProperty (LogEntry.TIME, LogEntry::getTime, MoodleLogData::setTime);
 
-
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	protected MoodleLogData ()
@@ -137,6 +139,12 @@ public class MoodleLogData extends AbstractElement implements LogEntry
 		return null;
 	}
 
+	@Override
+	protected void setEnrolment (Enrolment enrolment)
+	{
+		throw new UnsupportedOperationException ();
+	}
+
 	public Long getUser ()
 	{
 		return this.user;
@@ -175,6 +183,12 @@ public class MoodleLogData extends AbstractElement implements LogEntry
 	public Activity getActivity ()
 	{
 		return null;
+	}
+
+	@Override
+	protected void setActivity (Activity activity)
+	{
+		throw new UnsupportedOperationException ();
 	}
 
 	/**
@@ -222,6 +236,12 @@ public class MoodleLogData extends AbstractElement implements LogEntry
 	public Action getAction ()
 	{
 		return null;
+	}
+
+	@Override
+	protected void setAction (Action action)
+	{
+		throw new UnsupportedOperationException ();
 	}
 
 	public String getActionName ()

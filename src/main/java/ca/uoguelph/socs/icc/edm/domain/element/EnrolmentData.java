@@ -50,7 +50,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
  * @version 1.0
  */
 
-public class EnrolmentData extends AbstractElement implements Enrolment, Serializable
+public class EnrolmentData extends Enrolment implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -92,7 +92,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 		builder.addProperty (Enrolment.FINALGRADE, Enrolment::getFinalGrade, EnrolmentData::setFinalGrade);
 		builder.addProperty (Enrolment.USABLE, Enrolment::isUsable, EnrolmentData::setUsable);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**
@@ -173,6 +173,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
+	@Override
 	public Long getId ()
 	{
 		return this.id;
@@ -188,6 +189,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
+	@Override
 	protected void setId (final Long id)
 	{
 		this.id = id;
@@ -214,6 +216,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 * @param  course The <code>Course</code>, not null
 	 */
 
+	@Override
 	protected void setCourse (final Course course)
 	{
 		assert course != null : "course is NULL";
@@ -243,6 +246,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 * @param  role The <code>Role</code>, not null
 	 */
 
+	@Override
 	protected void setRole (final Role role)
 	{
 		assert role != null : "role is NULL";
@@ -316,6 +320,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *                null
 	 */
 
+	@Override
 	protected void setGrades (final Set<Grade> grades)
 	{
 		assert grades != null : "grades is NULL";
@@ -332,6 +337,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *                successfully added, <code>False</code> otherwise
 	 */
 
+	@Override
 	protected boolean addGrade (final Grade grade)
 	{
 		assert grade != null : "grade is NULL";
@@ -348,6 +354,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *               successfully removed, <code>False</code> otherwise
 	 */
 
+	@Override
 	protected boolean removeGrade (final Grade grade)
 	{
 		assert grade != null : "grade is NULL";
@@ -381,6 +388,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *                    course, on the interval [0, 100]
 	 */
 
+	@Override
 	protected void setFinalGrade (final Integer finalgrade)
 	{
 		assert ((finalgrade == null) || (finalgrade >= 0)) : "Grade can not be negative";
@@ -412,6 +420,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 * @param  usable Indication if the data may be used for research, not null
 	 */
 
+	@Override
 	protected void setUsable (final Boolean usable)
 	{
 		assert usable != null : "usable is NULL";
@@ -443,6 +452,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *             not null
 	 */
 
+	@Override
 	protected void setLog (final List<LogEntry> log)
 	{
 		assert log != null : "log is NULL";
@@ -459,6 +469,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *               successfully added, <code>False</code> otherwise
 	 */
 
+	@Override
 	protected boolean addLog (final LogEntry entry)
 	{
 		assert entry != null : "entry is NULL";
@@ -476,6 +487,7 @@ public class EnrolmentData extends AbstractElement implements Enrolment, Seriali
 	 *               successfully removed, <code>False</code> otherwise
 	 */
 
+	@Override
 	protected boolean removeLog (final LogEntry entry)
 	{
 		assert entry != null : "entry is NULL";

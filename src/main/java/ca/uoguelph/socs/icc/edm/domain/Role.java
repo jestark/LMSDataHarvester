@@ -41,7 +41,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     RoleLoader
  */
 
-public interface Role extends Element
+public abstract class Role extends Element
 {
 	/** The name of the <code>Role</code> */
 	public static final Property<String> NAME = Property.getInstance (Role.class, String.class, "name", false, true);
@@ -57,5 +57,15 @@ public interface Role extends Element
 	 */
 
 	public abstract String getName ();
+
+	/**
+	 * Set the name of the <code>Role</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Role</code> instance is
+	 * loaded.
+	 *
+	 * @param name The name of the <code>Role</code>
+	 */
+
+	protected abstract void setName (String name);
 }
 

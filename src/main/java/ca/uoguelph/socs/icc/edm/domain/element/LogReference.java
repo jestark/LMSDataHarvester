@@ -72,7 +72,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
  * @version 1.1
  */
 
-public abstract class LogReference extends AbstractElement implements LogEntry, Serializable
+public abstract class LogReference extends LogEntry implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -169,6 +169,7 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
 	 */
 
+	@Override
 	public Long getId ()
 	{
 		return this.entry.getId ();
@@ -185,6 +186,7 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	 * @throws UnsupportedOperationException unconditionally
 	 */
 
+	@Override
 	protected void setId (final Long id)
 	{
 		throw new UnsupportedOperationException ();
@@ -227,6 +229,12 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	public Activity getActivity ()
 	{
 		return this.entry.getActivity ();
+	}
+
+	@Override
+	protected void setActivity (final Activity activity)
+	{
+		throw new UnsupportedOperationException ();
 	}
 
 	/**
@@ -272,6 +280,12 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 		return this.entry.getEnrolment ();
 	}
 
+	@Override
+	protected void setEnrolment (final Enrolment enrolment)
+	{
+		throw new UnsupportedOperationException ();
+	}
+
 	/**
 	 * Get the <code>Course</code> for which the activity was logged.
 	 *
@@ -297,6 +311,12 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 		return this.entry.getAction ();
 	}
 
+	@Override
+	protected void setAction (final Action acton)
+	{
+		throw new UnsupportedOperationException ();
+	}
+
 	/**
 	 * Get the time of the logged activity.
 	 *
@@ -307,6 +327,12 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	public Date getTime()
 	{
 		return this.entry.getTime ();
+	}
+
+	@Override
+	protected void setTime (final Date time)
+	{
+		throw new UnsupportedOperationException ();
 	}
 
 	/**
@@ -320,6 +346,12 @@ public abstract class LogReference extends AbstractElement implements LogEntry, 
 	public String getIPAddress ()
 	{
 		return this.entry.getIPAddress ();
+	}
+
+	@Override
+	protected void setIPAddress (final String ip)
+	{
+		throw new UnsupportedOperationException ();
 	}
 
 	/**

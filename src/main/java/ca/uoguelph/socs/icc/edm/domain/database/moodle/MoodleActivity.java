@@ -27,7 +27,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivityInstance;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
@@ -80,7 +79,7 @@ public class MoodleActivity extends ActivityInstance
 		builder.addProperty (Activity.NAME, Activity::getName, null);
 		builder.addProperty (Activity.TYPE, Activity::getType, MoodleActivity::setType);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**

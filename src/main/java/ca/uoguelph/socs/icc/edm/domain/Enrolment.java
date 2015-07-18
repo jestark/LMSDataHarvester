@@ -69,7 +69,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     EnrolmentLoader
  */
 
-public interface Enrolment extends Element
+public abstract class Enrolment extends Element
 {
 	/** The associated <code>Course</code> */
 	public static final Property<Course> COURSE = Property.getInstance (Enrolment.class, Course.class, "course", false, true);
@@ -112,6 +112,16 @@ public interface Enrolment extends Element
 	public abstract Course getCourse();
 
 	/**
+	 * Set the <code>Course</code> in which the <code>User</code> is enrolled.
+	 * This method is intended to be used by a <code>DataStore</code> when the
+	 * <code>Enrolment</code> instance is loaded.
+	 *
+	 * @param  course The <code>Course</code>, not null
+	 */
+
+	protected abstract void setCourse (final Course course);
+
+	/**
 	 * Get the <code>Role</code> of the <code>User</code> represented by this
 	 * <code>Enrolment</code>, in the associated <code>Course</code>.
 	 *
@@ -119,6 +129,17 @@ public interface Enrolment extends Element
 	 */
 
 	public abstract Role getRole();
+
+	/**
+	 * Set the <code>Role</code> of the <code>User</code> in the
+	 * <code>Course</code>. This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
+	 * loaded.
+	 *
+	 * @param  role The <code>Role</code>, not null
+	 */
+
+	protected abstract void setRole (Role role);
 
 	/**
 	 * Determine if the <code>User</code> has given their consent for the data
@@ -131,6 +152,17 @@ public interface Enrolment extends Element
 	public abstract Boolean isUsable ();
 
 	/**
+	 * Set the usable flag for the data related to the <code>User</code> in the
+	 * <code>Course</code>. This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
+	 * loaded.
+	 *
+	 * @param  usable Indication if the data may be used for research, not null
+	 */
+
+	protected abstract void setUsable (Boolean usable);
+
+	/**
 	 * Get the final grade for the <code>User</code> represented by this
 	 * <code>Enrolment</code>, in the associated <code>Course</code>.  The
 	 * final grade will be null if no final grade was assigned for the
@@ -141,6 +173,18 @@ public interface Enrolment extends Element
 	 */
 
 	public abstract Integer getFinalGrade ();
+
+	/**
+	 * Set the final grade for the <code>User</code> in the
+	 * <code>Course</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
+	 * loaded.
+	 *
+	 * @param  finalgrade The final grade for the <code>User</code> in the
+	 *                    course, on the interval [0, 100]
+	 */
+
+	protected abstract void setFinalGrade (Integer finalgrade);
 
 	/**
 	 * Get the <code>Grade</code> for the specified <code>Activity</code>.
@@ -163,6 +207,40 @@ public interface Enrolment extends Element
 	public abstract Set<Grade> getGrades ();
 
 	/**
+	 * Initialize the <code>Set</code> of <code>Grade</code> instances
+	 * associated with the <code>Enrolment</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Enrolment</code> instance is loaded.
+	 *
+	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
+	 *                null
+	 */
+
+	protected abstract void setGrades (Set<Grade> grades);
+
+	/**
+	 * Add the specified <code>Grade</code> to the <code>Enrolment</code>.
+	 *
+	 * @param  grade  The <code>Grade</code> to add, not null
+	 *
+	 * @return        <code>True</code> if the <code>Grade</code> was
+	 *                successfully added, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean addGrade (Grade grade);
+
+	/**
+	 * Remove the specified <code>Grade</code> from the <code>Enrolment</code>.
+	 *
+	 * @param  grade The <code>Grade</code> to remove, not null
+	 *
+	 * @return       <code>True</code> if the <code>Grade</code> was
+	 *               successfully removed, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean removeGrade (Grade grade);
+
+	/**
 	 * Get the <code>List</code> of <code>LogEntry</code> instances associated
 	 * with this <code>Enrolment</code>.  The <code>List</code> will be empty
 	 * if there are no associated <code>LogEntry</code> instances.
@@ -171,4 +249,39 @@ public interface Enrolment extends Element
 	 */
 
 	public abstract List<LogEntry> getLog ();
+
+	/**
+	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
+	 * associated with the <code>Enrolment</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Enrolment</code> instance is loaded.
+	 *
+	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
+	 *             not null
+	 */
+
+	protected abstract void setLog (List<LogEntry> log);
+
+	/**
+	 * Add the specified <code>LogEntry</code> to the <code>Enrolment</code>.
+	 *
+	 * @param  entry The <code>LogEntry</code> to add, not null
+	 *
+	 * @return       <code>True</code> if the <code>LogEntry</code> was
+	 *               successfully added, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean addLog (LogEntry entry);
+
+	/**
+	 * Remove the specified <code>LogEntry</code> from the
+	 * <code>Enrolment</code>.
+	 *
+	 * @param  entry The <code>LogEntry</code> to remove, not null
+	 *
+	 * @return       <code>True</code> if the <code>LogEntry</code> was
+	 *               successfully removed, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean removeLog (LogEntry entry);
 }

@@ -42,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
  * @version 1.1
  */
 
-public abstract class GenericSubActivity extends AbstractActivity implements SubActivity, Serializable
+public abstract class GenericSubActivity extends SubActivity implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -68,8 +68,6 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 		assert activity != null : "activity is NULL";
 
 		AbstractActivity.registerSubActivityClass (activity, metadata.getElementClass ());
-
-		AbstractElement.registerElement (metadata);
 	}
 
 	/**
@@ -229,6 +227,7 @@ public abstract class GenericSubActivity extends AbstractActivity implements Sub
 	 *                  <code>SubActivity</code> instance
 	 */
 
+	@Override
 	protected void setParent (final Activity activity)
 	{
 		assert activity != null : "activity is NULL";

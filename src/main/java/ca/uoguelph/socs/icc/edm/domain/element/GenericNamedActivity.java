@@ -67,8 +67,6 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 		assert type != null : "type is NULL";
 
 		AbstractActivity.registerActivityClass (source, type, metadata.getElementClass ());
-
-		AbstractElement.registerElement (metadata);
 	}
 
 	/**

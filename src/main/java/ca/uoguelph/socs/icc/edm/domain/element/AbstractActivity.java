@@ -38,7 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
  * @version 1.1
  */
 
-public abstract class AbstractActivity extends AbstractElement implements Activity
+public abstract class AbstractActivity extends Activity
 {
 	/** Mapping of <code>ActivityType</code> instances to implementation classes */
 	private static final ActivityDataMap ACTIVITYIMPL;

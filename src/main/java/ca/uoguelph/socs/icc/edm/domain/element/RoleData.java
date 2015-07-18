@@ -37,7 +37,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
  */
 
 
-public class RoleData extends AbstractElement implements Role, Serializable
+public class RoleData extends Role implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -61,7 +61,7 @@ public class RoleData extends AbstractElement implements Role, Serializable
 		builder.addProperty (Role.ID, Role::getId, RoleData::setId);
 		builder.addProperty (Role.NAME, Role::getName, RoleData::setName);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**

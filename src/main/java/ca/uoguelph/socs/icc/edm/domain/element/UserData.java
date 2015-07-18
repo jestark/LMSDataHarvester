@@ -42,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
  * @version 1.0
  */
 
-public class UserData extends AbstractElement implements User, Serializable
+public class UserData extends User implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -81,7 +81,7 @@ public class UserData extends AbstractElement implements User, Serializable
 		builder.addProperty (User.FIRSTNAME, User::getFirstname, UserData::setFirstname);
 		builder.addProperty (User.LASTNAME, User::getLastname, UserData::setLastname);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**
@@ -160,6 +160,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
+	@Override
 	public Long getId ()
 	{
 		return this.id;
@@ -175,6 +176,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
+	@Override
 	protected void setId (final Long id)
 	{
 		this.id = id;
@@ -204,6 +206,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @param  idnumber The ID Number, not null
 	 */
 
+	@Override
 	protected void setIdNumber (final Integer idnumber)
 	{
 		assert idnumber != null : "idnumber is NULL";
@@ -235,6 +238,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @param  username The username, not null
 	 */
 
+	@Override
 	protected void setUsername (final String username)
 	{
 		assert username != null : "username is NULL";
@@ -263,6 +267,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @param  firstname The first name, not null
 	 */
 
+	@Override
 	protected void setFirstname (final String firstname)
 	{
 		assert firstname != null : "firstname is NULL";
@@ -290,6 +295,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 * @param  lastname The last name, not null
 	 */
 
+	@Override
 	protected void setLastname (final String lastname)
 	{
 		assert lastname != null : "lastname is NULL";
@@ -364,6 +370,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 *                    instances, not null
 	 */
 
+	@Override
 	protected void setEnrolments (final Set<Enrolment> enrolments)
 	{
 		assert enrolments != null : "enrolments is NULL";
@@ -380,6 +387,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 *                   otherwise
 	 */
 
+	@Override
 	protected boolean addEnrolment (final Enrolment enrolment)
 	{
 		assert enrolment != null : "enrolment is NULL";
@@ -396,6 +404,7 @@ public class UserData extends AbstractElement implements User, Serializable
 	 *                   otherwise
 	 */
 
+	@Override
 	protected boolean removeEnrolment (final Enrolment enrolment)
 	{
 		assert enrolment != null : "enrolment is NULL";

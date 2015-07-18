@@ -47,7 +47,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     ActivitySourceLoader
  */
 
-public interface ActivitySource extends Element
+public abstract class ActivitySource extends Element
 {
 	/** The name of the <code>ActivitySource</code> */
 	public static final Property<String> NAME = Property.getInstance (ActivitySource.class, String.class, "name", false, true);
@@ -65,6 +65,16 @@ public interface ActivitySource extends Element
 	public abstract String getName ();
 
 	/**
+	 * Set the name of the <code>ActivitySource</code>.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>ActivitySource</code> instance is loaded.
+	 *
+	 * @param name The name of the <code>ActivitySource</code>
+	 */
+
+	protected abstract void setName (String name);
+
+	/**
 	 * Get the <code>Set</code> of <code>ActivityType</code> instances for the
 	 * <code>ActivitySource</code>.  If there are no <code>ActivityType</code>
 	 * instances associated with the <code>ActivitySource</code> then the
@@ -74,4 +84,41 @@ public interface ActivitySource extends Element
 	 */
 
 	public abstract Set<ActivityType> getTypes ();
+
+	/**
+	 * Initialize the <code>Set</code> of dependent <code>ActivityType</code>
+	 * instances.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>ActivitySource</code> instance is
+	 * loaded.
+	 *
+	 * @param  types The <code>Set</code> of <code>ActivityType</code>
+	 *               instances to be associated with the
+	 *               <code>ActivitySource</code>
+	 */
+
+	protected abstract void setTypes (Set<ActivityType> types);
+
+	/**
+	 * Add the specified <code>ActivityType</code> to the
+	 * <code>ActivitySource</code>.
+	 *
+	 * @param  type   The <code>ActivityType</code> to add, not null
+	 *
+	 * @return        <code>True</code> if the <code>ActivityType</code> was
+	 *                successfully added, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean addType (ActivityType type);
+
+	/**
+	 * Remove the specified <code>ActivityType</code> from the
+	 * <code>ActivitySource</code>.
+	 *
+	 * @param  type   The <code>ActivityType</code> to remove, not null
+	 *
+	 * @return        <code>True</code> if the <code>ActivityType</code> was
+	 *                successfully removed, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean removeType (ActivityType type);
 }

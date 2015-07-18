@@ -49,7 +49,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     ActivityTypeLoader
  */
 
-public interface ActivityType extends Element
+public abstract class ActivityType extends Element
 {
 	/** The name of the <code>ActivityType</code> */
 	public static final Property<String> NAME = Property.getInstance (ActivityType.class, String.class, "name", false, true);
@@ -70,10 +70,31 @@ public interface ActivityType extends Element
 	public abstract String getName ();
 
 	/**
+	 * Set the name of the <code>ActivityType</code>.  This method is intended
+	 * to be used by a <code>DataStore</code> when the
+	 * <code>ActivityType</code> instance is loaded.
+	 *
+	 * @param  name The name of the <code>ActivityType</code>
+	 */
+
+	protected abstract void setName (String name);
+
+	/**
 	 * Get the <code>ActivitySource</code> for the <code>ActivityType</code>.
 	 *
 	 * @return The <code>ActivitySource</code> instance
 	 */
 
 	public abstract ActivitySource getSource ();
+
+	/**
+	 * Set the <code>ActivitySource</code> for the <code>ActivityType</code>.
+	 * This method is intended to be used by a <code>DataStore</code> when the
+	 * <code>ActivityType</code> instance is loaded.
+	 *
+	 * @param  source The <code>ActivitySource</code> for the
+	 *                <code>ActivityType</code>
+	 */
+
+	protected abstract void setSource (ActivitySource source);
 }

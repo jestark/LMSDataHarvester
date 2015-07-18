@@ -36,7 +36,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
  * @version 1.0
  */
 
-public class ActionData extends AbstractElement implements Action, Serializable
+public class ActionData extends Action implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -60,7 +60,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 		builder.addProperty (Action.ID, Action::getId, ActionData::setId);
 		builder.addProperty (Action.NAME, Action::getName, ActionData::setName);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**
@@ -131,6 +131,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
+	@Override
 	public Long getId ()
 	{
 		return this.id;
@@ -146,6 +147,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
+	@Override
 	protected void setId (final Long id)
 	{
 		this.id = id;
@@ -157,6 +159,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 * @return A String containing the name of the <code>Action</code>
 	 */
 
+	@Override
 	public String getName()
 	{
 		return this.name;
@@ -170,6 +173,7 @@ public class ActionData extends AbstractElement implements Action, Serializable
 	 * @param  name The name of the <code>Action</code>
 	 */
 
+	@Override
 	protected void setName (final String name)
 	{
 		assert name != null : "name is NULL";

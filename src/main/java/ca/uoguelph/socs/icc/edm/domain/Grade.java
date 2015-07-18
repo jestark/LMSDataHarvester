@@ -44,7 +44,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     GradeBuilder
  */
 
-public interface Grade extends Element
+public abstract class Grade extends Element
 {
 	/** The associated <code>Activity</code> */
 	public static final Property<Activity> ACTIVITY = Property.getInstance (Grade.class, Activity.class, "activity", false, true);
@@ -78,6 +78,16 @@ public interface Grade extends Element
 	public abstract Activity getActivity ();
 
 	/**
+	 * Set the <code>Activity</code> which is associated with the
+	 * <code>Grade</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Grade</code> instance is loaded.
+	 *
+	 * @param  activity The <code>Activity</code>, not null
+	 */
+
+	protected abstract void setActivity (Activity activity);
+
+	/**
 	 * Get the <code>Enrolment</code>, for the student, to which the
 	 * <code>Grade</code> is assigned
 	 *
@@ -85,6 +95,16 @@ public interface Grade extends Element
 	 */
 
 	public abstract Enrolment getEnrolment ();
+
+	/**
+	 * Set the <code>Enrolment</code> which is associated with the
+	 * <code>Grade</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Grade</code> instance is loaded.
+	 *
+	 * @param  enrolment The <code>Enrolment</code>, not null
+	 */
+
+	protected abstract void setEnrolment (Enrolment enrolment);
 
 	/**
 	 * Get the grade that the student received for the <code>Activity</code>.
@@ -95,4 +115,14 @@ public interface Grade extends Element
 	 */
 
 	public abstract Integer getGrade ();
+
+	/**
+	 * Set the numeric grade assigned to the <code>Enrolment</code> for the
+	 * <code>Activity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Grade</code> instance is loaded.
+	 *
+	 * @param  grade The grade, on the interval [0, 100], not null
+	 */
+
+	protected abstract void setGrade (Integer grade);
 }

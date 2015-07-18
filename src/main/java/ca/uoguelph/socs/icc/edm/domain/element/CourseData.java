@@ -45,7 +45,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
  * @version 1.0
  */
 
-public class CourseData extends AbstractElement implements Course, Serializable
+public class CourseData extends Course implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -83,7 +83,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 		builder.addProperty (Course.SEMESTER, Course::getSemester, CourseData::setSemester);
 		builder.addProperty (Course.YEAR, Course::getYear, CourseData::setYear);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**
@@ -164,6 +164,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
+	@Override
 	public Long getId ()
 	{
 		return this.id;
@@ -179,6 +180,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
+	@Override
 	protected void setId (Long id)
 	{
 		this.id = id;
@@ -205,7 +207,8 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 * @param  name The name of the <code>Course</code>
 	 */
 
-	public void setName (final String name)
+	@Override
+	protected void setName (final String name)
 	{
 		assert name != null : "name is NULL";
 
@@ -234,6 +237,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                  <code>Course</code> was offered
 	 */
 
+	@Override
 	protected void setSemester (final Semester semester)
 	{
 		assert semester != null : "semester is NULL";
@@ -261,6 +265,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 * @param  year The year in which the <code>Course</code> was offered
 	 */
 
+	@Override
 	protected void setYear (final Integer year)
 	{
 		assert year != null : "year is NULL";
@@ -293,6 +298,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                    instances, not null
 	 */
 
+	@Override
 	protected void setActivities (final List<Activity> activities)
 	{
 		assert activities != null : "activities is NULL";
@@ -309,6 +315,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                  successfully added, <code>False</code> otherwise
 	 */
 
+	@Override
 	protected boolean addActivity (final Activity activity)
 	{
 		assert activity != null : "activity is NULL";
@@ -325,6 +332,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                  successfully removed, <code>False</code> otherwise
 	 */
 
+	@Override
 	protected boolean removeActivity (final Activity activity)
 	{
 		assert activity != null : "activity is NULL";
@@ -356,6 +364,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                    instances, not null
 	 */
 
+	@Override
 	protected void setEnrolments (final Set<Enrolment> enrolments)
 	{
 		assert enrolments != null : "enrolments is NULL";
@@ -372,6 +381,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                   successfully added, <code>False</code> otherwise
 	 */
 
+	@Override
 	protected boolean addEnrolment (final Enrolment enrolment)
 	{
 		assert enrolment != null : "enrolment is NULL";
@@ -389,6 +399,7 @@ public class CourseData extends AbstractElement implements Course, Serializable
 	 *                   successfully removed, <code>False</code> otherwise
 	 */
 
+	@Override
 	protected boolean removeEnrolment (final Enrolment enrolment)
 	{
 		assert enrolment != null : "enrolment is NULL";

@@ -59,11 +59,11 @@ public class GenericActivity extends ActivityInstance implements Serializable
 		MetaDataBuilder<Activity, GenericActivity> builder = MetaDataBuilder.newInstance (Activity.class, GenericActivity.class);
 		builder.setCreateMethod (GenericActivity::new);
 
-		builder.addProperty (Element.ID, Element::getId, AbstractElement::setId);
+		builder.addProperty (Element.ID, Element::getId, ActivityInstance::setId);
 		builder.addProperty (Activity.COURSE, Activity::getCourse, ActivityInstance::setCourse);
 		builder.addProperty (Activity.TYPE, Activity::getType, ActivityInstance::setType);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**

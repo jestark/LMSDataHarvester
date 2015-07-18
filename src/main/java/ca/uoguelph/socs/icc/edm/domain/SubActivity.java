@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.0
  */
 
-public interface SubActivity extends Activity
+public abstract class SubActivity extends AbstractActivity
 {
 	/** The parent <code>Activity</code> */
 	public static final Property<Activity> PARENT = Property.getInstance (SubActivity.class, Activity.class, "parent", false, true);
@@ -42,4 +42,16 @@ public interface SubActivity extends Activity
 	 */
 
 	public abstract Activity getParent ();
+
+	/**
+	 * Set the <code>Activity</code> instance which contains the
+	 * <code>SubActivity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
+	 *
+	 * @param  activity The <code>Activity</code> containing this
+	 *                  <code>SubActivity</code> instance
+	 */
+
+	protected abstract void setParent (Activity activity);
 }

@@ -46,7 +46,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
  * @version 1.0
  */
 
-public class LogData extends AbstractElement implements LogEntry, Serializable
+public class LogData extends LogEntry implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -91,7 +91,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 		builder.addProperty (LogEntry.IPADDRESS, LogEntry::getIPAddress, LogData::setIPAddress);
 		builder.addProperty (LogEntry.TIME, LogEntry::getTime, LogData::setTime);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**
@@ -210,6 +210,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
+	@Override
 	public Long getId ()
 	{
 		return this.id;
@@ -225,6 +226,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
+	@Override
 	protected void setId (final Long id)
 	{
 		this.id = id;
@@ -252,6 +254,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  action The <code>Action</code>, not null
 	 */
 
+	@Override
 	protected void setAction (final Action action)
 	{
 		assert action != null : "action is NULL";
@@ -281,6 +284,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  activity The <code>Activity</code>, not null
 	 */
 
+	@Override
 	protected void setActivity (final Activity activity)
 	{
 		assert activity != null : "activity is NULL";
@@ -336,6 +340,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  enrolment The <code>Enrolment</code>, not null
 	 */
 
+	@Override
 	protected void setEnrolment (final Enrolment enrolment)
 	{
 		assert enrolment != null : "enrolment is NULL";
@@ -365,6 +370,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  ip A <code>String</code> containing the IP Address
 	 */
 
+	@Override
 	protected void setIPAddress (final String ip)
 	{
 		this.ip = ip;
@@ -423,6 +429,7 @@ public class LogData extends AbstractElement implements LogEntry, Serializable
 	 * @param  time The time, not null
 	 */
 
+	@Override
 	protected void setTime (final Date time)
 	{
 		assert time != null : "time is NULL";

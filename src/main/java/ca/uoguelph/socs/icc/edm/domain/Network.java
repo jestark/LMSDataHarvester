@@ -28,7 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     NetworkLoader
  */
 
-public interface Network extends Element
+public abstract class Network extends Element
 {
 	/** The name of the <code>Network</code> */
 	public static final Property<String> NAME = Property.getInstance (Network.class, String.class, "name", false, true);
@@ -44,5 +44,15 @@ public interface Network extends Element
 	 */
 
 	public abstract String getName ();
+
+	/**
+	 * Set the name of the <code>Network</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Network</code> instance
+	 * is loaded.
+	 *
+	 * @param name The name of the <code>Network</code>
+	 */
+
+	protected abstract void setName (String name);
 }
 

@@ -38,7 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
  * @version 1.0
  */
 
-public class ActivityTypeData extends AbstractElement implements ActivityType, Serializable
+public class ActivityTypeData extends ActivityType implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -67,7 +67,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 		builder.addProperty (ActivityType.NAME, ActivityType::getName, ActivityTypeData::setName);
 		builder.addProperty (ActivityType.SOURCE, ActivityType::getSource, ActivityTypeData::setSource);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**
@@ -142,6 +142,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
+	@Override
 	public Long getId ()
 	{
 		return this.id;
@@ -157,6 +158,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
+	@Override
 	protected void setId (final Long id)
 	{
 		this.id = id;
@@ -183,6 +185,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 * @param  name The name of the <code>ActivityType</code>
 	 */
 
+	@Override
 	protected void setName (final String name)
 	{
 		assert name != null : "name is NULL";
@@ -211,6 +214,7 @@ public class ActivityTypeData extends AbstractElement implements ActivityType, S
 	 *                <code>ActivityType</code>
 	 */
 
+	@Override
 	protected void setSource (final ActivitySource source)
 	{
 		assert source != null : "source is NULL";

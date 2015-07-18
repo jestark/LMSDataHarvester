@@ -41,7 +41,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
  * @version 1.0
  */
 
-public class ActivitySourceData extends AbstractElement implements ActivitySource, Serializable
+public class ActivitySourceData extends ActivitySource implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -68,7 +68,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 		builder.addProperty (ActivitySource.ID, ActivitySource::getId, ActivitySourceData::setId);
 		builder.addProperty (ActivitySource.NAME, ActivitySource::getName, ActivitySourceData::setName);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**
@@ -142,6 +142,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
+	@Override
 	public Long getId ()
 	{
 		return this.id;
@@ -157,6 +158,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
+	@Override
 	protected void setId (final Long id)
 	{
 		this.id = id;
@@ -183,6 +185,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 * @param name The name of the <code>ActivitySource</code>
 	 */
 
+	@Override
 	protected void setName (final String name)
 	{
 		assert name != null : "name is NULL";
@@ -216,6 +219,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 *               <code>ActivitySource</code>
 	 */
 
+	@Override
 	protected void setTypes (final Set<ActivityType> types)
 	{
 		assert types != null : "types is NULL";
@@ -233,6 +237,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 *                successfully added, <code>False</code> otherwise
 	 */
 
+	@Override
 	protected boolean addType (final ActivityType type)
 	{
 		assert type != null : "type is NULL";
@@ -250,6 +255,7 @@ public class ActivitySourceData extends AbstractElement implements ActivitySourc
 	 *                successfully removed, <code>False</code> otherwise
 	 */
 
+	@Override
 	protected boolean removeType (final ActivityType type)
 	{
 		assert type != null : "type is NULL";

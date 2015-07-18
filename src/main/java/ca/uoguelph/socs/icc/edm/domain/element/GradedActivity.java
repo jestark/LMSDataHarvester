@@ -39,7 +39,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
  * @version 1.0
  */
 
-public class GradedActivity extends AbstractElement implements Grade, Serializable
+public class GradedActivity extends Grade implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -68,7 +68,7 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 		builder.addProperty (Grade.ENROLMENT, Grade::getEnrolment, GradedActivity::setEnrolment);
 		builder.addProperty (Grade.GRADE, Grade::getGrade, GradedActivity::setGrade);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**
@@ -146,6 +146,7 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
 	 */
 
+	@Override
 	public Long getId ()
 	{
 		return this.enrolment.getId ();
@@ -162,6 +163,7 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 * @throws UnsupportedOperationException unconditionally
 	 */
 
+	@Override
 	protected void setId (final Long id)
 	{
 		throw new UnsupportedOperationException ();
@@ -188,6 +190,7 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 * @param  activity The <code>Activity</code>, not null
 	 */
 
+	@Override
 	protected void setActivity (final Activity activity)
 	{
 		assert activity != null : "grade is NULL";
@@ -216,7 +219,8 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 * @param  enrolment The <code>Enrolment</code>, not null
 	 */
 
-	public void setEnrolment (final Enrolment enrolment)
+	@Override
+	protected void setEnrolment (final Enrolment enrolment)
 	{
 		assert enrolment != null : "enrolment is NULL";
 
@@ -245,6 +249,7 @@ public class GradedActivity extends AbstractElement implements Grade, Serializab
 	 * @param  grade The grade, on the interval [0, 100], not null
 	 */
 
+	@Override
 	protected void setGrade (final Integer grade)
 	{
 		assert grade != null : "grade is NULL";

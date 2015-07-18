@@ -29,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.0
  */
 
-public interface Element
+public abstract class Element
 {
 	/** The <code>DataStore</code> identifier of the <code>Element</code> */
 	public static final Property<Long> ID = Property.getInstance (Element.class, Long.class, "id", false, false);
@@ -51,4 +51,21 @@ public interface Element
 	 */
 
 	public abstract Long getId ();
+
+	/**
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Element</code>
+	 * instance is loaded, or by the <code>ElementBuilder</code> implementation
+	 * to set the <code>DataStore</code> identifier, prior to storing a new
+	 * <code>Element</code> instance.
+	 * <p>
+	 * <code>Element</code> implementations which are dependent on other
+	 * <code>Element</code> interfaces for their <code>DataStore</code>
+	 * identifier should throw an <code>UnsupportedOperationException</code>
+	 * when this method is called.
+	 *
+	 * @param  id The <code>DataStore</code> identifier, not null
+	 */
+
+	protected abstract void setId (Long id);
 }

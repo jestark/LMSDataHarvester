@@ -48,7 +48,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     CourseLoader
  */
 
-public interface Course extends Element
+public abstract class Course extends Element
 {
 	/** The name of the <code>Course</code> */
 	public static final Property<String> NAME = Property.getInstance (Course.class, String.class, "name", false, true);
@@ -72,6 +72,16 @@ public interface Course extends Element
 	public abstract String getName ();
 
 	/**
+	 * Set the name of the <code>Course</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Course</code> instance
+	 * is loaded.
+	 *
+	 * @param  name The name of the <code>Course</code>
+	 */
+
+	protected abstract void setName (String name);
+
+	/**
 	 * Get the <code>Semester</code> in which the <code>Course</code> was
 	 * offered.
 	 *
@@ -81,12 +91,33 @@ public interface Course extends Element
 	public abstract Semester getSemester ();
 
 	/**
+	 * Set the <code>Semester</code> in which the <code>Course</code> was
+	 * offered.  This method is intended to be used by a <code>DataStore</code>
+	 * when the <code>Course</code> instance is loaded.
+	 *
+	 * @param  semester The <code>Semester</code> in which the
+	 *                  <code>Course</code> was offered
+	 */
+
+	protected abstract void setSemester (Semester semester);
+
+	/**
 	 * Get the year in which the <code>Course</code> was offered.
 	 *
 	 * @return An <code>Integer</code> containing the year of offering
 	 */
 
 	public abstract Integer getYear ();
+
+	/**
+	 * Set the year in which the <code>Course</code> was offered.  This method
+	 * is intended to be used by a <code>DataStore</code> when the
+	 * <code>Course</code> instance is loaded.
+	 *
+	 * @param  year The year in which the <code>Course</code> was offered
+	 */
+
+	protected abstract void setYear (Integer year);
 
 	/**
 	 * Get the <code>List</code> of <code>Activity</code> instances which are
@@ -100,6 +131,40 @@ public interface Course extends Element
 	public abstract List<Activity> getActivities ();
 
 	/**
+	 * Initialize the <code>List</code> of <code>Activity</code> instances
+	 * associated with the <code>Course</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Course</code> instance is loaded.
+	 *
+	 * @param  activities The <code>List</code> of <code>Activity</code>
+	 *                    instances, not null
+	 */
+
+	protected abstract void setActivities (List<Activity> activities);
+
+	/**
+	 * Add the specified <code>Activity</code> to the <code>Course</code>.
+	 *
+	 * @param  activity The <code>Activity</code> to add, not null
+	 *
+	 * @return          <code>True</code> if the <code>Activity</code> was
+	 *                  successfully added, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean addActivity (Activity activity);
+
+	/**
+	 * Remove the specified <code>Activity</code> from the <code>Course</code>.
+	 *
+	 * @param  activity The <code>Activity</code> to remove,  not null
+	 *
+	 * @return          <code>True</code> if the <code>Activity</code> was
+	 *                  successfully removed, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean removeActivity (Activity activity);
+
+	/**
 	 * Get the <code>Set</code> of <code>Enrolment</code> instances which are
 	 * associated with the <code>Course</code>.  The <code>Set</code> will be
 	 * empty if no one is enrolled in the <code>Course</code>.
@@ -108,5 +173,40 @@ public interface Course extends Element
 	 */
 
 	public abstract Set<Enrolment> getEnrolments ();
+
+	/**
+	 * Initialize the <code>Set</code> of <code>Enrolment</code> instances
+	 * associated with the <code>Course</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Course</code> instance is loaded.
+	 *
+	 * @param  enrolments The <code>Set</code> of <code>Enrolment</code>
+	 *                    instances, not null
+	 */
+
+	protected abstract void setEnrolments (Set<Enrolment> enrolments);
+
+	/**
+	 * Add the specified <code>Enrolment</code> to the <code>Course</code>.
+	 *
+	 * @param  enrolment The <code>Enrolment</code> to add, not null
+	 *
+	 * @return           <code>True</code> if the <code>Enrolment</code> was
+	 *                   successfully added, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean addEnrolment (Enrolment enrolment);
+
+	/**
+	 * Remove the specified <code>Enrolment</code> from the
+	 * <code>Course</code>.
+	 *
+	 * @param  enrolment The <code>Enrolment</code> to remove, not null
+	 *
+	 * @return           <code>True</code> if the <code>Enrolment</code> was
+	 *                   successfully removed, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean removeEnrolment (Enrolment enrolment);
 }
 

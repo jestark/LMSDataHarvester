@@ -21,7 +21,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.element.AbstractElement;
 import ca.uoguelph.socs.icc.edm.domain.element.LogReference;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
@@ -75,7 +74,7 @@ class ForumDiscussionLog extends LogReference
 //		builder.addAttribute (, ForumDiscussionLog::getEntry, ForumDiscussionLog::setEntry);
 //		builder.addAttribute (, ForumDiscussionLog::getSubActivity, ForumDiscussionLog::setSubActivity);
 
-		AbstractElement.registerElement (builder.build ());
+		builder.build ();
 	}
 
 	/**

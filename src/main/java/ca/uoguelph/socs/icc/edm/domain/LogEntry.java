@@ -46,7 +46,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     LogEntryLoader
  */
 
-public interface LogEntry extends Element
+public abstract class LogEntry extends Element
 {
 	/** The associated <code>Action</code> */
 	public static final Property<Action> ACTION = Property.getInstance (LogEntry.class, Action.class, "action", false, true);
@@ -73,13 +73,44 @@ public interface LogEntry extends Element
 	public static final Selector SELECTOR_COURSE = Selector.getInstance (LogEntry.class, false, LogEntry.COURSE);
 
 	/**
-	 * Get the <code>Enrolment</code> instance for the user which performed the
-	 * logged <code>Action</code>.
+	 * Get the <code>Action</code> which was performed upon the logged
+	 * <code>Activity</code>.
 	 *
-	 * @return A reference to the associated <code>Enrolment</code>
+	 * @return A reference to the logged <code>Action</code>
 	 */
 
-	public abstract Enrolment getEnrolment();
+	public abstract Action getAction();
+
+	/**
+	 * Set the <code>Action</code> which was performed upon the logged
+	 * <code>Activity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded.
+	 *
+	 * @param  action The <code>Action</code>, not null
+	 */
+
+	protected abstract void setAction (Action action);
+
+	/**
+	 * Get the <code>Activity</code> upon which the logged <code>Action</code>
+	 * was performed.
+	 *
+	 * @return A reference to the associated <code>Activity</code>
+	 */
+
+	public abstract Activity getActivity();
+
+	/**
+	 * Set the <code>Activity</code>  upon which the logged action was
+	 * performed.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded.
+	 *
+	 * @param  activity The <code>Activity</code>, not null
+	 */
+
+	protected abstract void setActivity (Activity activity);
 
 	/**
 	 * Get the <code>Course</code> for which the <code>Action</code> was
@@ -91,13 +122,24 @@ public interface LogEntry extends Element
 	public abstract Course getCourse();
 
 	/**
-	 * Get the <code>Activity</code> upon which the logged <code>Action</code>
-	 * was performed.
+	 * Get the <code>Enrolment</code> instance for the user which performed the
+	 * logged <code>Action</code>.
 	 *
-	 * @return A reference to the associated <code>Activity</code>
+	 * @return A reference to the associated <code>Enrolment</code>
 	 */
 
-	public abstract Activity getActivity();
+	public abstract Enrolment getEnrolment();
+
+	/**
+	 * Set the <code>Enrolment</code> instance for the <code>User</code> which
+	 * performed the logged action.   This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded.
+	 *
+	 * @param  enrolment The <code>Enrolment</code>, not null
+	 */
+
+	protected abstract void setEnrolment (Enrolment enrolment);
 
 	/**
 	 * Get the <code>SubActivity</code> upon which the logged
@@ -110,21 +152,22 @@ public interface LogEntry extends Element
 	public abstract SubActivity getSubActivity ();
 
 	/**
-	 * Get the <code>Action</code> which was performed upon the logged
-	 * <code>Activity</code>.
-	 *
-	 * @return A reference to the logged <code>Action</code>
-	 */
-
-	public abstract Action getAction();
-
-	/**
 	 * Get the time of the logged <code>Action</code>.
 	 *
 	 * @return A <code>Date</code> containing the logged time
 	 */
 
 	public abstract Date getTime();
+
+	/**
+	 * Set the time of the logged <code>Action</code>.  This method is intended
+	 * to be used by a <code>DataStore</code> when the <code>LogEntry</code>
+	 * instance is loaded.
+	 *
+	 * @param  time The time, not null
+	 */
+
+	protected abstract void setTime (Date time);
 
 	/**
 	 * Get the Internet Protocol address which is associated with the logged
@@ -134,4 +177,15 @@ public interface LogEntry extends Element
 	 */
 
 	public abstract String getIPAddress ();
+
+	/**
+	 * Set the Internet Protocol Address which is associated with the logged
+	 * <code>Action</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded.
+	 *
+	 * @param  ip A <code>String</code> containing the IP Address
+	 */
+
+	protected abstract void setIPAddress (String ip);
 }

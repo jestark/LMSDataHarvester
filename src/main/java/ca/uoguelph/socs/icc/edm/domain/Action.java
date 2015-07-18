@@ -45,7 +45,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     ActionBuilder
  */
 
-public interface Action extends Element
+public abstract class Action extends Element
 {
 	/** The name of the <code>Action</code> */
 	public static final Property<String> NAME = Property.getInstance (Action.class, String.class, "name", false, true);
@@ -60,5 +60,15 @@ public interface Action extends Element
 	 */
 
 	public abstract String getName ();
+
+	/**
+	 * Set the name of the <code>Action</code>.  This method is intended to be
+	 * used by a <code>DataStore</code> when the <code>Action</code> instance
+	 * is loaded.
+	 *
+	 * @param  name The name of the <code>Action</code>
+	 */
+
+	protected abstract void setName (final String name);
 }
 
