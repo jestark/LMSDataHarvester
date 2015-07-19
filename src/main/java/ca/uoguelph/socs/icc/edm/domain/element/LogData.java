@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>LogEntry</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>LogEntry</code>
@@ -79,19 +77,7 @@ public class LogData extends LogEntry implements Serializable
 
 	static
 	{
-		MetaDataBuilder<LogEntry, LogData> builder = MetaDataBuilder.newInstance (LogEntry.class, LogData.class);
-		builder.setCreateMethod (LogData::new);
-
-		builder.addProperty (LogEntry.ID, LogEntry::getId, LogData::setId);
-		builder.addProperty (LogEntry.ACTION, LogEntry::getAction, LogData::setAction);
-		builder.addProperty (LogEntry.ACTIVITY, LogEntry::getActivity, LogData::setActivity);
-		builder.addProperty (LogEntry.COURSE, LogEntry::getCourse, null);
-		builder.addProperty (LogEntry.ENROLMENT, LogEntry::getEnrolment, LogData::setEnrolment);
-//		builder.addProperty (LogEntry.REFERENCE, LogData::getReference, LogData::setReference);
-		builder.addProperty (LogEntry.IPADDRESS, LogEntry::getIPAddress, LogData::setIPAddress);
-		builder.addProperty (LogEntry.TIME, LogEntry::getTime, LogData::setTime);
-
-		builder.build ();
+		LogEntry.metadata.addImplementation (LogData.class, LogData::new);
 	}
 
 	/**

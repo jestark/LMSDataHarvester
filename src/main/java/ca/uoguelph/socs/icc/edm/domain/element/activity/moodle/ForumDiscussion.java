@@ -24,8 +24,6 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -56,16 +54,8 @@ public class ForumDiscussion extends GenericSubActivity
 
 	static
 	{
-		MetaDataBuilder<SubActivity, ForumDiscussion> builder = MetaDataBuilder.newInstance (SubActivity.class, ForumDiscussion.class);
-		builder.setCreateMethod (ForumDiscussion::new);
-
-		builder.addProperty (SubActivity.ID, SubActivity::getId, ForumDiscussion::setId);
-		builder.addProperty (SubActivity.COURSE, SubActivity::getCourse, null);
-		builder.addProperty (SubActivity.NAME, SubActivity::getName, ForumDiscussion::setName);
-		builder.addProperty (SubActivity.PARENT, SubActivity::getParent, ForumDiscussion::setParent);
-		builder.addProperty (SubActivity.TYPE, SubActivity::getType, null);
-
-		GenericSubActivity.registerActivity (builder.build (), Forum.class);
+		SubActivity.metadata.addImplementation (ForumDiscussion.class, ForumDiscussion::new);
+		GenericSubActivity.registerActivity (ForumDiscussion.class, Forum.class);
 	}
 
 	/** Serial version id, required by the Serializable interface */

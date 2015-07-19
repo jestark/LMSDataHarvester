@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -51,14 +53,34 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class ActivityType extends Element
 {
+	/** The <code>MetaData</code> definition for the <code>ActivityType</code> */
+	protected static final MetaData<ActivityType> metadata;
+
 	/** The name of the <code>ActivityType</code> */
-	public static final Property<String> NAME = Property.getInstance (ActivityType.class, String.class, "name", false, true);
+	public static final Property<String> NAME;
 
 	/** The associated <code>ActivitySource</code> */
-	public static final Property<ActivitySource> SOURCE = Property.getInstance (ActivityType.class, ActivitySource.class, "source", false, true);
+	public static final Property<ActivitySource> SOURCE;
 
 	/** Select an <code>ActivityType</code> instance by name and <code>ActivitySource</code> */
-	public static final Selector SELECTOR_NAME = Selector.getInstance (ActivityType.class, "name", true, ActivityType.NAME, ActivityType.SOURCE);
+	public static final Selector SELECTOR_NAME;
+
+	/**
+	 * Initialize the <code>MetaData</code>, <code>Property</code> and
+	 * <code>Selector</code> instances for the <code>ActivityType</code>.
+	 */
+
+	static
+	{
+		MetaDataBuilder<ActivityType> builder = new MetaDataBuilder<ActivityType> (ActivityType.class, Element.metadata);
+
+		NAME = builder.addProperty (String.class, ActivityType::getName, ActivityType::setName, "name", false, true);
+		SOURCE = builder.addProperty (ActivitySource.class, ActivityType::getSource, ActivityType::setSource, "source", false, true);
+
+		SELECTOR_NAME = builder.addSelector ("name", true, NAME, SOURCE);
+
+		metadata = builder.build ();
+	}
 
 	/**
 	 * Get the name of the <code>ActivityType</code>.

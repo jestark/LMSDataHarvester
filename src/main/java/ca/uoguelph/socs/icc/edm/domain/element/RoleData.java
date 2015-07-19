@@ -24,8 +24,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Role</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Role</code>
@@ -55,13 +53,7 @@ public class RoleData extends Role implements Serializable
 
 	static
 	{
-		MetaDataBuilder<Role, RoleData> builder = MetaDataBuilder.newInstance (Role.class, RoleData.class);
-		builder.setCreateMethod (RoleData::new);
-
-		builder.addProperty (Role.ID, Role::getId, RoleData::setId);
-		builder.addProperty (Role.NAME, Role::getName, RoleData::setName);
-
-		builder.build ();
+		Role.metadata.addImplementation (RoleData.class, RoleData::new);
 	}
 
 	/**

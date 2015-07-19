@@ -31,8 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-
 /**
  * Generic representation of an <code>Activity</code> which has a name.  This
  * class acts as an abstract base class for all of the <code>Activity</code>
@@ -60,13 +58,13 @@ public abstract class GenericNamedActivity extends ActivityInstance implements S
 	 * @param  type     The name of the <code>ActivityType</code> not null
 	 */
 
-	protected static final <T extends Activity, U extends T> void registerActivity (final MetaData<T, U> metadata, final String source, final String type)
+	protected static final <T extends Activity> void registerActivity (final Class<T> activity, final String source, final String type)
 	{
-		assert metadata != null : "metadata is NULL";
+		assert activity != null : "activity is NULL";
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
 
-		AbstractActivity.registerActivityClass (source, type, metadata.getElementClass ());
+		AbstractActivity.registerActivityClass (source, type, activity);
 	}
 
 	/**

@@ -23,14 +23,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 
 /**
  * Implementation of the <code>Activity</code> interface, for
@@ -56,14 +53,6 @@ public class GenericActivity extends ActivityInstance implements Serializable
 
 	static
 	{
-		MetaDataBuilder<Activity, GenericActivity> builder = MetaDataBuilder.newInstance (Activity.class, GenericActivity.class);
-		builder.setCreateMethod (GenericActivity::new);
-
-		builder.addProperty (Element.ID, Element::getId, ActivityInstance::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, ActivityInstance::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, ActivityInstance::setType);
-
-		builder.build ();
 	}
 
 	/**

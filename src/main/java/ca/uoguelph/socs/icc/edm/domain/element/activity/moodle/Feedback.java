@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/feedback
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -60,15 +58,8 @@ public class Feedback extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Feedback> builder = MetaDataBuilder.newInstance (Activity.class, Feedback.class);
-		builder.setCreateMethod (Feedback::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Feedback::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Feedback::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Feedback::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Feedback::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "feedback");
+		Activity.metadata.addImplementation (Feedback.class, Feedback::new);
+		GenericNamedActivity.registerActivity (Feedback.class, "moodle", "feedback");
 	}
 
 	/**

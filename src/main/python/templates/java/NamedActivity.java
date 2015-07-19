@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -60,15 +58,8 @@ public class ${ClassName} extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, ${ClassName}> builder = MetaDataBuilder.newInstance (Activity.class, ${ClassName}.class);
-		builder.setCreateMethod (${ClassName}::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, ${ClassName}::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, ${ClassName}::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, ${ClassName}::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, ${ClassName}::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "${ActivitySource}", "${ActivityType}");
+		Activity.metadata.addImplementation (${ClassName}.class, ${ClassName}::new);
+		GenericNamedActivity.registerActivity (${ClassName}.class, "${ActivitySource}", "${ActivityType}");
 	}
 
 	/**

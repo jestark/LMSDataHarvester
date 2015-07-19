@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/scheduler
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -60,15 +58,8 @@ public class Scheduler extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Scheduler> builder = MetaDataBuilder.newInstance (Activity.class, Scheduler.class);
-		builder.setCreateMethod (Scheduler::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Scheduler::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Scheduler::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Scheduler::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Scheduler::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "scheduler");
+		Activity.metadata.addImplementation (Scheduler.class, Scheduler::new);
+		GenericNamedActivity.registerActivity (Scheduler.class, "moodle", "scheduler");
 	}
 
 	/**

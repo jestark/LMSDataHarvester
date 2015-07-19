@@ -27,8 +27,6 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -61,15 +59,8 @@ public class Forum extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Forum> builder = MetaDataBuilder.newInstance (Activity.class, Forum.class);
-		builder.setCreateMethod (Forum::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Forum::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Forum::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Forum::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Forum::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "forum");
+		Activity.metadata.addImplementation (Forum.class, Forum::new);
+		GenericNamedActivity.registerActivity (Forum.class, "moodle", "forum");
 	}
 
 	/**

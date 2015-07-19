@@ -24,8 +24,6 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/book
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -59,16 +57,8 @@ public class BookChapter extends GenericSubActivity
 
 	static
 	{
-		MetaDataBuilder<SubActivity, BookChapter> builder = MetaDataBuilder.newInstance (SubActivity.class, BookChapter.class);
-		builder.setCreateMethod (BookChapter::new);
-
-		builder.addProperty (SubActivity.ID, SubActivity::getId, BookChapter::setId);
-		builder.addProperty (SubActivity.COURSE, SubActivity::getCourse, null);
-		builder.addProperty (SubActivity.NAME, SubActivity::getName, BookChapter::setName);
-		builder.addProperty (SubActivity.PARENT, SubActivity::getParent, BookChapter::setParent);
-		builder.addProperty (SubActivity.TYPE, SubActivity::getType, null);
-
-		GenericSubActivity.registerActivity (builder.build (), Book.class);
+		SubActivity.metadata.addImplementation (BookChapter.class, BookChapter::new);
+		GenericSubActivity.registerActivity (BookChapter.class, Book.class);
 	}
 
 	/**

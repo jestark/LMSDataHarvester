@@ -24,12 +24,13 @@ import java.util.HashSet;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * <code>MetaData</code> builder for <code>Element</code> implementation
@@ -37,71 +38,47 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  *
  * @author  James E. Stark
  * @version 1.0
- * @param   <T> The <code>Element</code> interface type
- * @param   <U> The <code>Element</code> implementation type
+ * @param   <T> The <code>Element</code> type
  */
 
-public final class MetaDataBuilder<T extends Element, U extends T>
+public final class MetaDataBuilder<T extends Element>
 {
 	/** The Logger */
 	private final Logger log;
 
-	/** The <code>Definition</code> of the <code>Element</code> */
-	private final Definition<T> definition;
+	/** The <code>Element</code> type */
+	private final Class<T> type;
 
-	/** The <code>Element</code> implementation class */
-	private final Class<U> impl;
+	/** The <code>MetaData</code> for the parent <code>Element</code> */
+	private final MetaData<? super T> parent;
 
 	/** The <code>Set</code> of <code>Property</code> instances */
-	private final Set<Property<?>> properties;
+	private final Map<String, Property<?>> properties;
 
-	/** Reference to the Constructor for the implementation class */
-	private Supplier<U> create;
+	/** The <code>Set</code> of <code>Selector</code> instances */
+	private final Map<String, Selector> selectors;
 
 	/** <code>Property</code> to <code>PropertyReference</code> mapping */
-	private final Map<Property<?>, PropertyReference<T, U, ?>> refs;
-
-	/**
-	 * Create the <code>MetaDataBuilder</code>.
-	 *
-	 * @param  <T>  The interface type of the <code>Element</code>
-	 * @param  <U>  The implementation type of the <code>Element</code>
-	 * @param  type The <code>Element</code> interface class, not null
-	 * @param  impl The <code>Element</code> implementation class, not null
-	 *
-	 * @return      The <code>MetaDataBuilder</code>
-	 */
-
-	public static <T extends Element, U extends T> MetaDataBuilder<T, U> newInstance (final Class<T> type, final Class<U> impl)
-	{
-		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
-
-		return new MetaDataBuilder<T, U> (type, impl);
-	}
+	private final Map<Property<?>, PropertyReference<T, ?>> references;
 
 	/**
 	 * Create the <code>MetaDataBuilder</code>.
 	 *
 	 * @param  type The <code>Element</code> interface class, not null
-	 * @param  impl The <code>Element</code> implementation class, not null
 	 */
 
-	@SuppressWarnings ("unchecked")
-	private MetaDataBuilder (final Class<T> type, final Class<U> impl)
+	public MetaDataBuilder (final Class<T> type, final MetaData<? super T> parent)
 	{
 		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
 
 		this.log = LoggerFactory.getLogger (MetaDataBuilder.class);
 
-		this.definition = (Definition<T>) MetaData.getDefinition (type);
-		this.impl = impl;
+		this.type = type;
+		this.parent = parent;
 
-		assert this.definition != null : "Element Definition is not Registered";
-		this.properties = this.definition.getProperties ();
-
-		this.refs = new HashMap<Property<?>, PropertyReference<T, U, ?>> ();
+		this.properties = new HashMap<String, Property<?>> ();
+		this.selectors = new HashMap<String, Selector> ();
+		this.references = new HashMap<Property<?>, PropertyReference<T, ?>> ();
 	}
 
 	/**
@@ -112,34 +89,7 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 
 	public Class<T> getElementType ()
 	{
-		return this.definition.getElementType ();
-	}
-
-	/**
-	 * Get the Java type of the <code>Element</code> implementation.
-	 *
-	 * @return The <code>Class</code> representing the implementation type
-	 */
-
-	public Class<U> getElementClass ()
-	{
-		return this.impl;
-	}
-
-	/**
-	 * Set a Method reference to the no-argument constructor of the
-	 * <code>Element</code> implementation class.
-	 *
-	 * @param  create Method Reference to the constructor, not null
-	 */
-
-	public void setCreateMethod (final Supplier<U> create)
-	{
-		this.log.trace ("setCreateMethod: create={}", create);
-
-		assert create != null : "create is NULL";
-
-		this.create = create;
+		return this.type;
 	}
 
 	/**
@@ -159,15 +109,101 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 	 * @param  set      Method reference to set the value, may be null
 	 */
 
-	public <V> void addProperty (final Property<V> property, final Function<T, V> get, final BiConsumer<U, V> set)
+	public <V> Property<V> addProperty (final Class<V> type, final Function<T, V> get, final BiConsumer<T, V> set, final String name, final boolean mutable, final boolean required)
 	{
-		this.log.trace ("addProperty: property={}, get={}, set={}", property, get, set);
+		this.log.trace ("addProperty: type={}, get={}, set={}, name={}, mutable={}, required={}", type, get, set, name, mutable, required);
 
-		assert property != null : "property is NULL";
+		assert type != null : "type is NULL";
 		assert get != null : "get is NULL";
-		assert this.properties.contains (property) : "property is not registered for Element";
+		assert name != null : "name is NULL";
+		assert name.length () > 0 : "name can not be empty";
+		assert ! this.properties.containsKey (name) : "Property already exists";
 
-		this.refs.put (property, new PropertyReference<T, U, V> (get, set));
+		Property<V> property = new Property<V> (name, type, this.type, mutable, required);
+
+		this.properties.put (name, property);
+		this.references.put (property, new PropertyReference<T, V> (get, set));
+
+		return property;
+	}
+
+	public <V> Property<V> addProperty (final Class<V> type, final Function<T, V> get, final String name, final boolean mutable, final boolean required)
+	{
+		this.log.trace ("addProperty: type={}, get={}, name={}, mutable={}, required={}", type, get, name, mutable, required);
+
+		return this.addProperty (type, get, null, name, mutable, required);
+	}
+
+	/**
+	 * Create the <code>Selector</code> using multiple <code>Property</code>
+	 * instances.
+	 *
+	 * @param  name                     The name of the <code>Selector</code>,
+	 *                                  not null
+	 * @param  unique                   An indication if the
+	 *                                  <code>Selector</code> uniquely
+	 *                                  identifies an <code>Element</code>
+	 *                                  instance
+	 * @param  properties               The properties to be used to create the
+	 *                                  <code>Selector</code>, not null
+	 *
+	 * @return                          The <code>Selector</code>
+	 * @throws IllegalArgumentException if a different <code>Selector</code>
+	 *                                  already exists in the definition with
+	 *                                  the same name
+	 */
+
+	public Selector addSelector (final String name, final boolean unique, final Property<?>... properties)
+	{
+		if (name == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (name.length () == 0)
+		{
+			throw new IllegalArgumentException ("name is an empty String");
+		}
+
+		Set<Property<?>> props = new HashSet<Property<?>> ();
+
+		for (Property<?> property : properties)
+		{
+			if (this.type != property.getElementType ())
+			{
+				throw new IllegalArgumentException ("Type mismatch, property does not match selector");
+			}
+
+			props.add (property);
+		}
+
+		this.selectors.put (name, new Selector (this.type, name, unique, props));
+
+		return this.selectors.get (name);
+	}
+
+	/**
+	 * Create the <code>Selector</code> using a single <code>Property</code>.
+	 *
+	 * @param  property                 The property to be represented by the
+	 *                                  <code>Selector</code>, not null
+	 * @param  unique                   An indication if the
+	 *                                  <code>Selector</code> uniquely
+	 *                                  identifies an <code>Element</code>
+	 *                                  instance
+	 *
+	 * @return                          The <code>Selector</code>
+	 * @throws IllegalArgumentException if a different <code>Selector</code>
+	 *                                  already exists in the definition with
+	 *                                  the same name
+	 */
+
+	public Selector addSelector (final Property<?> property, final boolean unique)
+	{
+		assert property != null : "property is NULL";
+		assert this.type == property.getElementType () : "Type mismatch, property does not match selector";
+
+		return this.addSelector (property.getName (), unique, property);
 	}
 
 	/**
@@ -177,13 +213,13 @@ public final class MetaDataBuilder<T extends Element, U extends T>
 	 * @return The <code>MetaData</code>
 	 */
 
-	public MetaData<T, U> build ()
+	public MetaData<T> build ()
 	{
 		this.log.trace ("build:");
 
-		assert this.create != null : "create is NULL";
-		assert this.properties.equals (this.refs.keySet ()) : "Missing references from some properties";
+		MetaData<T> metadata = new MetaData<T> (this.type, this.parent, this.properties, this.references, this.selectors);
+		DataStore.registerMetaData (metadata);
 
-		return MetaData.registerMetaData (new MetaData<T, U> (this.definition, this.impl, this.create, this.refs));
+		return metadata;
 	}
 }

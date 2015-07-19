@@ -24,8 +24,6 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -59,16 +57,8 @@ public class ForumPost extends GenericSubActivity
 
 	static
 	{
-		MetaDataBuilder<SubActivity, ForumPost> builder = MetaDataBuilder.newInstance (SubActivity.class, ForumPost.class);
-		builder.setCreateMethod (ForumPost::new);
-
-		builder.addProperty (SubActivity.ID, SubActivity::getId, ForumPost::setId);
-		builder.addProperty (SubActivity.COURSE, SubActivity::getCourse, null);
-		builder.addProperty (SubActivity.NAME, SubActivity::getName, ForumPost::setName);
-		builder.addProperty (SubActivity.PARENT, SubActivity::getParent, ForumPost::setParent);
-		builder.addProperty (SubActivity.TYPE, SubActivity::getType, null);
-
-		GenericSubActivity.registerActivity (builder.build (), ForumDiscussion.class);
+		SubActivity.metadata.addImplementation (ForumPost.class, ForumPost::new);
+		GenericSubActivity.registerActivity (ForumPost.class, ForumDiscussion.class);
 	}
 
 	/**

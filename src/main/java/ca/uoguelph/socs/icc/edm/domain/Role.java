@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -43,11 +45,30 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Role extends Element
 {
+	/** The <code>MetaData</code> definition for the <code>Role</code> */
+	protected static final MetaData<Role> metadata;
+
 	/** The name of the <code>Role</code> */
-	public static final Property<String> NAME = Property.getInstance (Role.class, String.class, "name", false, true);
+	public static final Property<String> NAME;
 
 	/** Select an <code>Role</code> instance by its name */
-	public static final Selector SELECTOR_NAME = Selector.getInstance (Role.class, true, Role.NAME);
+	public static final Selector SELECTOR_NAME;
+
+	/**
+	 * Initialize the <code>MetaData</code>, <code>Property</code> and
+	 * <code>Selector</code> instances for the <code>Role</code>.
+	 */
+
+	static
+	{
+		MetaDataBuilder<Role> builder = new MetaDataBuilder<Role> (Role.class, Element.metadata);
+
+		NAME = builder.addProperty (String.class, Role::getName, Role::setName, "name", false, true);
+
+		SELECTOR_NAME = builder.addSelector (NAME, true);
+
+		metadata = builder.build ();
+	}
 
 	/**
 	 * Get the name of the <code>Role</code>.

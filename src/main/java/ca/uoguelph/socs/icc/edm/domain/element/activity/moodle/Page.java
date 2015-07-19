@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/page
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -60,15 +58,8 @@ public class Page extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Page> builder = MetaDataBuilder.newInstance (Activity.class, Page.class);
-		builder.setCreateMethod (Page::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Page::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Page::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Page::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Page::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "page");
+		Activity.metadata.addImplementation (Page.class, Page::new);
+		GenericNamedActivity.registerActivity (Page.class, "moodle", "page");
 	}
 
 	/**

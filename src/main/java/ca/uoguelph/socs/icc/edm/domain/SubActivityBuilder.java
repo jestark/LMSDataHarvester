@@ -52,7 +52,7 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 		assert parent != null : "parent is NULL";
 		assert datastore.contains (parent) : "parent is not in the datastore";
 
-		return AbstractSubActivityBuilder.getInstance (datastore, parent, SubActivityBuilder::new);
+		return AbstractSubActivityBuilder.getInstance (datastore, SubActivity.class, parent, SubActivityBuilder::new);
 	}
 
 	/**

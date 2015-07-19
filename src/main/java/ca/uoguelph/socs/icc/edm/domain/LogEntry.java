@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -48,29 +50,54 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class LogEntry extends Element
 {
+	/** The <code>MetaData</code> definition for the <code>LogEntry</code> */
+	protected static final MetaData<LogEntry> metadata;
+
 	/** The associated <code>Action</code> */
-	public static final Property<Action> ACTION = Property.getInstance (LogEntry.class, Action.class, "action", false, true);
+	public static final Property<Action> ACTION;
 
 	/** The associated <code>Activity</code> */
-	public static final Property<Activity> ACTIVITY = Property.getInstance (LogEntry.class, Activity.class, "activity", false, true);
+	public static final Property<Activity> ACTIVITY;
 
 	/** The associated <code>Course</code> (read only) */
-	public static final Property<Course> COURSE = Property.getInstance (LogEntry.class, Course.class, "course", false, true);
+	public static final Property<Course> COURSE;
 
 	/** The associated <code>Enrolment</code> */
-	public static final Property<Enrolment> ENROLMENT = Property.getInstance (LogEntry.class, Enrolment.class, "enrolment", false, true);
+	public static final Property<Enrolment> ENROLMENT;
 
 	/** The associated IP Address */
-	public static final Property<String> IPADDRESS = Property.getInstance (LogEntry.class, String.class, "ipaddress", false, true);
+	public static final Property<String> IPADDRESS;
 
 	/** The time that the <code>LogEntry</code> was created */
-	public static final Property<Date> TIME = Property.getInstance (LogEntry.class, Date.class, "time", false, true);
+	public static final Property<Date> TIME;
 
 	/** Select all <code>LogEntry</code> instances by <code>Action</code> */
-	public static final Selector SELECTOR_ACTION = Selector.getInstance (LogEntry.class, false, LogEntry.ACTION);
+	public static final Selector SELECTOR_ACTION;
 
 	/** Select all <code>LogEntry</code> instances by <code>Course</code> */
-	public static final Selector SELECTOR_COURSE = Selector.getInstance (LogEntry.class, false, LogEntry.COURSE);
+	public static final Selector SELECTOR_COURSE;
+
+	/**
+	 * Initialize the <code>MetaData</code>, <code>Property</code> and
+	 * <code>Selector</code> instances for the <code>LogEntry</code>.
+	 */
+
+	static
+	{
+		MetaDataBuilder<LogEntry> builder = new MetaDataBuilder<LogEntry> (LogEntry.class, Element.metadata);
+
+		ACTION = builder.addProperty (Action.class, LogEntry::getAction, LogEntry::setAction, "action", false, true);
+		ACTIVITY = builder.addProperty (Activity.class, LogEntry::getActivity, LogEntry::setActivity, "activity", false, true);
+		COURSE = builder.addProperty (Course.class, LogEntry::getCourse, "course", false, true);
+		ENROLMENT = builder.addProperty (Enrolment.class, LogEntry::getEnrolment, LogEntry::setEnrolment, "enrolment", false, true);
+		IPADDRESS = builder.addProperty (String.class, LogEntry::getIPAddress, LogEntry::setIPAddress, "ipaddress", false, true);
+		TIME = builder.addProperty (Date.class, LogEntry::getTime, LogEntry::setTime, "time", false, true);
+
+		SELECTOR_ACTION = builder.addSelector (ACTION, false);
+		SELECTOR_COURSE = builder.addSelector (COURSE, false);
+
+		metadata = builder.build ();
+	}
 
 	/**
 	 * Get the <code>Action</code> which was performed upon the logged

@@ -39,10 +39,10 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @param   <U> The <code>Element</code> implementation type
  */
 
-public final class Filter<T extends Element, U extends T>
+public final class Filter<T extends Element>
 {
 	/** The <code>MetaData</code> for the <code>Element</code> implementation */
-	private final MetaData<T, U> metadata;
+	private final MetaData<T> metadata;
 
 	/** The <code>Selector</code> from which the <code>Filter</code> is created */
 	private final Selector selector;
@@ -58,7 +58,7 @@ public final class Filter<T extends Element, U extends T>
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
-	public Filter (final MetaData<T, U> metadata, final Selector selector)
+	public Filter (final MetaData<T> metadata, final Selector selector)
 	{
 		assert metadata != null : "metadata is NULL";
 		assert selector != null : "selector is NULL";
@@ -138,7 +138,7 @@ public final class Filter<T extends Element, U extends T>
 	 * @return The <code>MetaData</code>
 	 */
 
-	public MetaData<T, U> getMetaData ()
+	public MetaData<T> getMetaData ()
 	{
 		return this.metadata;
 	}

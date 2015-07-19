@@ -27,8 +27,6 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/workshop
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -61,15 +59,8 @@ public class Workshop extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Workshop> builder = MetaDataBuilder.newInstance (Activity.class, Workshop.class);
-		builder.setCreateMethod (Workshop::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Workshop::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Workshop::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Workshop::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Workshop::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "workshop");
+		Activity.metadata.addImplementation (Workshop.class, Workshop::new);
+		GenericNamedActivity.registerActivity (Workshop.class, "moodle", "workshop");
 	}
 
 	/**

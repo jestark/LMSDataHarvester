@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/url
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -60,15 +58,8 @@ public class URL extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, URL> builder = MetaDataBuilder.newInstance (Activity.class, URL.class);
-		builder.setCreateMethod (URL::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, URL::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, URL::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, URL::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, URL::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "url");
+		Activity.metadata.addImplementation (URL.class, URL::new);
+		GenericNamedActivity.registerActivity (URL.class, "moodle", "url");
 	}
 
 	/**

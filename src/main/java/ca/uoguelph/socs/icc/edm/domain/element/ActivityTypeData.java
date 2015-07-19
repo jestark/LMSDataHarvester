@@ -25,8 +25,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
  * that instances of this class will be accessed though the
@@ -59,15 +57,7 @@ public class ActivityTypeData extends ActivityType implements Serializable
 
 	static
 	{
-		MetaDataBuilder<ActivityType, ActivityTypeData> builder = MetaDataBuilder.newInstance (ActivityType.class, ActivityTypeData.class);
-		builder.setCreateMethod (ActivityTypeData::new);
-
-		builder.addProperty (ActivityType.ID, ActivityType::getId, ActivityTypeData::setId);
-
-		builder.addProperty (ActivityType.NAME, ActivityType::getName, ActivityTypeData::setName);
-		builder.addProperty (ActivityType.SOURCE, ActivityType::getSource, ActivityTypeData::setSource);
-
-		builder.build ();
+		ActivityType.metadata.addImplementation (ActivityTypeData.class, ActivityTypeData::new);
 	}
 
 	/**

@@ -27,8 +27,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Grade</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Grade</code>
@@ -60,15 +58,7 @@ public class GradedActivity extends Grade implements Serializable
 
 	static
 	{
-		MetaDataBuilder<Grade, GradedActivity> builder = MetaDataBuilder.newInstance (Grade.class, GradedActivity.class);
-		builder.setCreateMethod (GradedActivity::new);
-
-		builder.addProperty (Grade.ID, Grade::getId, null);
-		builder.addProperty (Grade.ACTIVITY, Grade::getActivity, GradedActivity::setActivity);
-		builder.addProperty (Grade.ENROLMENT, Grade::getEnrolment, GradedActivity::setEnrolment);
-		builder.addProperty (Grade.GRADE, Grade::getGrade, GradedActivity::setGrade);
-
-		builder.build ();
+		Grade.metadata.addImplementation (GradedActivity.class, GradedActivity::new);
 	}
 
 	/**

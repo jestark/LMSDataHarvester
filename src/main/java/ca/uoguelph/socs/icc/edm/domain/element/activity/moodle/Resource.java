@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/resource
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -60,15 +58,8 @@ public class Resource extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Resource> builder = MetaDataBuilder.newInstance (Activity.class, Resource.class);
-		builder.setCreateMethod (Resource::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Resource::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Resource::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Resource::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Resource::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "resource");
+		Activity.metadata.addImplementation (Resource.class, Resource::new);
+		GenericNamedActivity.registerActivity (Resource.class, "moodle", "resource");
 	}
 
 	/**

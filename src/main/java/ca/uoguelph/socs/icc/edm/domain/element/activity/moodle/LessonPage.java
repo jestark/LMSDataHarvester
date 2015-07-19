@@ -24,8 +24,6 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/lesson
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -59,16 +57,8 @@ public class LessonPage extends GenericSubActivity
 
 	static
 	{
-		MetaDataBuilder<SubActivity, LessonPage> builder = MetaDataBuilder.newInstance (SubActivity.class, LessonPage.class);
-		builder.setCreateMethod (LessonPage::new);
-
-		builder.addProperty (SubActivity.ID, SubActivity::getId, LessonPage::setId);
-		builder.addProperty (SubActivity.COURSE, SubActivity::getCourse, null);
-		builder.addProperty (SubActivity.NAME, SubActivity::getName, LessonPage::setName);
-		builder.addProperty (SubActivity.PARENT, SubActivity::getParent, LessonPage::setParent);
-		builder.addProperty (SubActivity.TYPE, SubActivity::getType, null);
-
-		GenericSubActivity.registerActivity (builder.build (), Lesson.class);
+		SubActivity.metadata.addImplementation (LessonPage.class, LessonPage::new);
+		GenericSubActivity.registerActivity (LessonPage.class, Lesson.class);
 	}
 
 	/**

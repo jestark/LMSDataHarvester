@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -63,17 +65,38 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Activity extends Element
 {
+	/** The <code>MetaData</code> definition for the <code>Activity</code> */
+	protected static final MetaData<Activity> metadata;
+
 	/** The associated <code>Course</code> */
-	public static final Property<Course> COURSE = Property.getInstance (Activity.class, Course.class, "course", false, true);
+	public static final Property<Course> COURSE;
 
 	/** The associated <code>ActivityType</code> */
-	public static final Property<ActivityType> TYPE = Property.getInstance (Activity.class, ActivityType.class, "type", false, true);
+	public static final Property<ActivityType> TYPE;
 
 	/** The name of the <code>Activity</code> */
-	public static final Property<String> NAME = Property.getInstance (Activity.class, String.class, "name", false, true);
+	public static final Property<String> NAME;
 
 	/** Select all <code>Activity</code> instances by <code>ActivityType</code> */
-	public static final Selector SELECTOR_TYPE = Selector.getInstance (Activity.class, false, Activity.TYPE);
+	public static final Selector SELECTOR_TYPE;
+
+	/**
+	 * Initialize the <code>MetaData</code>, <code>Property</code> and
+	 * <code>Selector</code> instances for the <code>Activity</code>.
+	 */
+
+	static
+	{
+		MetaDataBuilder<Activity> builder = new MetaDataBuilder<Activity> (Activity.class, Element.metadata);
+
+		COURSE = builder.addProperty (Course.class, Activity::getCourse, "course", false, true);
+		TYPE = builder.addProperty (ActivityType.class, Activity::getType, "type", false, true);
+		NAME = builder.addProperty (String.class, Activity::getName, "name", false, true);
+
+		SELECTOR_TYPE = builder.addSelector (TYPE, false);
+
+		metadata = builder.build ();
+	}
 
 	/**
 	 * Get the name of the <code>Activity</code>.  Not all

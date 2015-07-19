@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/checklist
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -60,15 +58,8 @@ public class Checklist extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Checklist> builder = MetaDataBuilder.newInstance (Activity.class, Checklist.class);
-		builder.setCreateMethod (Checklist::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Checklist::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Checklist::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Checklist::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Checklist::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "checklist");
+		Activity.metadata.addImplementation (Checklist.class, Checklist::new);
+		GenericNamedActivity.registerActivity (Checklist.class, "moodle", "checklist");
 	}
 
 	/**

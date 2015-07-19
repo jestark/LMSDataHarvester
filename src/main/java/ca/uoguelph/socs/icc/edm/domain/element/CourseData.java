@@ -33,8 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Course</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Course</code>
@@ -75,15 +73,7 @@ public class CourseData extends Course implements Serializable
 
 	static
 	{
-		MetaDataBuilder<Course, CourseData> builder = MetaDataBuilder.newInstance (Course.class, CourseData.class);
-		builder.setCreateMethod (CourseData::new);
-
-		builder.addProperty (Course.ID, Course::getId, CourseData::setId);
-		builder.addProperty (Course.NAME, Course::getName, CourseData::setName);
-		builder.addProperty (Course.SEMESTER, Course::getSemester, CourseData::setSemester);
-		builder.addProperty (Course.YEAR, Course::getYear, CourseData::setYear);
-
-		builder.build ();
+		Course.metadata.addImplementation (CourseData.class, CourseData::new);
 	}
 
 	/**

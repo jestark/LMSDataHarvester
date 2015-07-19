@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/label
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -60,15 +58,8 @@ public class Label extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Label> builder = MetaDataBuilder.newInstance (Activity.class, Label.class);
-		builder.setCreateMethod (Label::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Label::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Label::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Label::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Label::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "label");
+		Activity.metadata.addImplementation (Label.class, Label::new);
+		GenericNamedActivity.registerActivity (Label.class, "moodle", "label");
 	}
 
 	/**

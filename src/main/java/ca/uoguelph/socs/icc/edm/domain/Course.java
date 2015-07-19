@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -50,17 +52,38 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Course extends Element
 {
+	/** The <code>MetaData</code> definition for the <code>Course</code> */
+	protected static final MetaData<Course> metadata;
+
 	/** The name of the <code>Course</code> */
-	public static final Property<String> NAME = Property.getInstance (Course.class, String.class, "name", false, true);
+	public static final Property<String> NAME;
 
 	/** The <code>Semester</code> of offering for the <code>Course</code> */
-	public static final Property<Semester> SEMESTER = Property.getInstance (Course.class, Semester.class, "semester", false, true);
+	public static final Property<Semester> SEMESTER;
 
 	/** The year of offering for the <code>Course</code> */
-	public static final Property<Integer> YEAR = Property.getInstance (Course.class, Integer.class, "year", false, true);
+	public static final Property<Integer> YEAR;
 
 	/** Select an <code>Course</code> instance by its name and date of offering */
-	public static final Selector SELECTOR_OFFERING = Selector.getInstance (Course.class, "offering", true, Course.NAME, Course.SEMESTER, Course.YEAR);
+	public static final Selector SELECTOR_OFFERING;
+
+	/**
+	 * Initialize the <code>MetaData</code>, <code>Property</code> and
+	 * <code>Selector</code> instances for the <code>Course</code>.
+	 */
+
+	static
+	{
+		MetaDataBuilder<Course> builder = new MetaDataBuilder<Course> (Course.class, Element.metadata);
+
+		NAME = builder.addProperty (String.class, Course::getName, Course::setName, "name", false, true);
+		SEMESTER = builder.addProperty (Semester.class, Course::getSemester, Course::setSemester, "semester", false, true);
+		YEAR = builder.addProperty (Integer.class, Course::getYear, Course::setYear, "year", false, true);
+
+		SELECTOR_OFFERING = builder.addSelector ("offering", true, NAME, SEMESTER, YEAR);
+
+		metadata = builder.build ();
+	}
 
 	/**
 	 * Get the name of the <code>Course</code>.

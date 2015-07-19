@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/assign
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -60,15 +58,8 @@ public class Assign extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Assign> builder = MetaDataBuilder.newInstance (Activity.class, Assign.class);
-		builder.setCreateMethod (Assign::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Assign::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Assign::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Assign::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Assign::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "assign");
+		Activity.metadata.addImplementation (Assign.class, Assign::new);
+		GenericNamedActivity.registerActivity (Assign.class, "moodle", "assign");
 	}
 
 	/**

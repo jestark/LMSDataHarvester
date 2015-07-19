@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -46,14 +48,33 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Grade extends Element
 {
+	/** The <code>MetaData</code> definition for the <code>Grade</code> */
+	protected static final MetaData<Grade> metadata;
+
 	/** The associated <code>Activity</code> */
-	public static final Property<Activity> ACTIVITY = Property.getInstance (Grade.class, Activity.class, "activity", false, true);
+	public static final Property<Activity> ACTIVITY;
 
 	/** The associated <code>Enrolment</code> */
-	public static final Property<Enrolment> ENROLMENT = Property.getInstance (Grade.class, Enrolment.class, "enrolment", false, true);
+	public static final Property<Enrolment> ENROLMENT;
 
 	/** The assigned grade */
-	public static final Property<Integer> GRADE = Property.getInstance (Grade.class, Integer.class, "grade", true, true);
+	public static final Property<Integer> GRADE;
+
+	/**
+	 * Initialize the <code>MetaData</code>, <code>Property</code> and
+	 * <code>Selector</code> instances for the <code>Grade</code>.
+	 */
+
+	static
+	{
+		MetaDataBuilder<Grade> builder = new MetaDataBuilder<Grade> (Grade.class, Element.metadata);
+
+		ACTIVITY = builder.addProperty (Activity.class, Grade::getActivity, Grade::setActivity, "activity", false, true);
+		ENROLMENT = builder.addProperty (Enrolment.class, Grade::getEnrolment, Grade::setEnrolment, "enrolment", false, true);
+		GRADE = builder.addProperty (Integer.class, Grade::getGrade, Grade::setGrade, "grade", true, true);
+
+		metadata = builder.build ();
+	}
 
 	/**
 	 * Get the name of the <code>Enrolment</code> to which the

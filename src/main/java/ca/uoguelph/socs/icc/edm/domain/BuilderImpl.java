@@ -42,11 +42,14 @@ final class BuilderImpl<T extends Element, U extends T> implements Builder<T>
 	/** The logger */
 	private final Logger log;
 
+	/** The <code>Element</code> implementation class */
+	private final Class<U> type;
+
 	/** The meta-data definition of the <code>Element</code> */
-	private final MetaData<T, U> definition;
+	private final MetaData<T> definition;
 
 	/** The value associated with each property */
-	private U values;
+	private T values;
 
 	/**
 	 * Create the <code></code>.
@@ -54,14 +57,16 @@ final class BuilderImpl<T extends Element, U extends T> implements Builder<T>
 	 * @param definition The meta-data definition of the <code>Element</code>
 	 */
 
-	protected BuilderImpl (final MetaData<T, U> definition)
+	protected BuilderImpl (final MetaData<T> definition, final Class<U> type)
 	{
 		assert definition != null : "definition is NULL";
+		assert type != null : "type is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
+		this.type = type;
 		this.definition = definition;
-		this.values = this.definition.createElement ();
+		this.values = this.definition.createElement (this.type);
 	}
 
 	/**
@@ -100,13 +105,13 @@ final class BuilderImpl<T extends Element, U extends T> implements Builder<T>
 	{
 		this.log.trace ("build: element={}", element);
 
-		U result = null;
+		T result = null;
 		Set<Property<?>> properties = new HashSet<Property<?>> ();
 
 		// If the provided element is of the implementation type check for changes, ignore it otherwise
-		if ((this.definition.getElementClass ()).isInstance (element))
+		if (this.type.isInstance (element))
 		{
-			result = (this.definition.getElementClass ()).cast (element);
+			result = this.type.cast (element);
 		}
 
 		for (Property<?> property : this.definition.getProperties ())
@@ -135,7 +140,7 @@ final class BuilderImpl<T extends Element, U extends T> implements Builder<T>
 		// If we aren't making changes then we copy everything into a new instance
 		if (result == null)
 		{
-			result = this.definition.createElement ();
+			result = this.definition.createElement (this.type);
 			properties = this.definition.getProperties ();
 		}
 
@@ -155,7 +160,7 @@ final class BuilderImpl<T extends Element, U extends T> implements Builder<T>
 	{
 		this.log.trace ("clear:");
 
-		this.values = this.definition.createElement ();
+		this.values = this.definition.createElement (this.type);
 	}
 
 	/**

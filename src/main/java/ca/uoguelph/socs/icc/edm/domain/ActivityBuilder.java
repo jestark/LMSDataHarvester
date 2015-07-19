@@ -50,7 +50,7 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 		assert type != null : "type is NULL";
 		assert datastore.contains (type) : "type is NULL";
 
-		return AbstractActivityBuilder.getInstance (datastore, type, ActivityBuilder::new);
+		return AbstractActivityBuilder.getInstance (datastore, Activity.class, type, ActivityBuilder::new);
 	}
 
 	/**

@@ -24,8 +24,6 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -59,16 +57,8 @@ public class ${ClassName} extends GenericSubActivity
 
 	static
 	{
-		MetaDataBuilder<SubActivity, ${ClassName}> builder = MetaDataBuilder.newInstance (SubActivity.class, ${ClassName}.class);
-		builder.setCreateMethod (${ClassName}::new);
-
-		builder.addProperty (SubActivity.ID, SubActivity::getId, ${ClassName}::setId);
-		builder.addProperty (SubActivity.COURSE, SubActivity::getCourse, null);
-		builder.addProperty (SubActivity.NAME, SubActivity::getName, ${ClassName}::setName);
-		builder.addProperty (SubActivity.PARENT, SubActivity::getParent, ${ClassName}::setParent);
-		builder.addProperty (SubActivity.TYPE, SubActivity::getType, null);
-
-		GenericSubActivity.registerActivity (builder.build (), ${ParentClass}.class);
+		SubActivity.metadata.addImplementation (${ClassName}.class, ${ClassName}::new);
+		GenericSubActivity.registerActivity (${ClassName}.class, ${ParentClass}.class);
 	}
 
 	/**

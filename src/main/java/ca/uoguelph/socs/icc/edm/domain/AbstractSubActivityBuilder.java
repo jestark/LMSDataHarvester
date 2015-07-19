@@ -62,7 +62,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 *                               the <code>Activity</code>
 	 */
 
-	protected static <T extends SubActivity, U extends AbstractSubActivityBuilder<T>> U getInstance (final DataStore datastore, final Activity parent, final BiFunction<DataStore, Builder<T>, U> create)
+	protected static <T extends SubActivity, U extends AbstractSubActivityBuilder<T>> U getInstance (final DataStore datastore, final Class<T> element, final Activity parent, final BiFunction<DataStore, Builder<T>, U> create)
 	{
 		assert datastore != null : "datastore is NULL";
 		assert parent != null : "parent is NULL";
@@ -81,7 +81,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 			throw new IllegalStateException ("Element is not available for this datastore");
 		}
 
-		U builder = create.apply (datastore, AbstractBuilder.getBuilder (datastore, AbstractActivity.getSubActivityClass (parent.getClass ())));
+		U builder = create.apply (datastore, AbstractBuilder.getBuilder (datastore, element, AbstractActivity.getSubActivityClass (parent.getClass ())));
 		builder.setParent (parent);
 
 		return builder;

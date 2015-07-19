@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>User</code>
@@ -72,16 +70,7 @@ public class UserData extends User implements Serializable
 
 	static
 	{
-		MetaDataBuilder<User, UserData> builder = MetaDataBuilder.newInstance (User.class, UserData.class);
-		builder.setCreateMethod (UserData::new);
-
-		builder.addProperty (User.ID, User::getId, UserData::setId);
-		builder.addProperty (User.IDNUMBER, User::getIdNumber, UserData::setIdNumber);
-		builder.addProperty (User.USERNAME, User::getUsername, UserData::setUsername);
-		builder.addProperty (User.FIRSTNAME, User::getFirstname, UserData::setFirstname);
-		builder.addProperty (User.LASTNAME, User::getLastname, UserData::setLastname);
-
-		builder.build ();
+		User.metadata.addImplementation (UserData.class, UserData::new);
 	}
 
 	/**

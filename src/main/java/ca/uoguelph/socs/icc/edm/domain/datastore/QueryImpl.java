@@ -45,8 +45,11 @@ public final class QueryImpl<T extends Element, U extends T> implements Query<T>
 	/** The logger for this Query instance */
 	private final Logger log;
 
+	/** The implementation type of the <code>Element</code> to fetch */
+	private final Class<U> type;
+
 	/** The <code>MetaData</code> for the <code>Element</code> being queried*/
-	private final MetaData<T, U> metadata;
+	private final MetaData<T> metadata;
 
 	/** The <code>Selector</code> defining the <code>Query</code> */
 	private final Selector selector;
@@ -55,7 +58,7 @@ public final class QueryImpl<T extends Element, U extends T> implements Query<T>
 	private final Backend backend;
 
 	/** <code>Filter</code> to be built by the <code>Query</code> */
-	private final Filter<T, U> values;
+	private final Filter<T> values;
 
 	/**
 	 * Create the <code>QueryImpl</code>.
@@ -65,19 +68,21 @@ public final class QueryImpl<T extends Element, U extends T> implements Query<T>
 	 * @param  backend The <code>Backend</code>, not null
 	 */
 
-	protected QueryImpl (final MetaData<T, U> metadata, final Selector selector, final Backend backend)
+	protected QueryImpl (final MetaData<T> metadata, final Selector selector, final Class<U> type, final Backend backend)
 	{
 		assert metadata != null : "metadata is NULL";
 		assert selector != null : "selector is NULL";
 		assert backend != null : "backend is NULL";
+		assert type != null : "type is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.metadata = metadata;
 		this.selector = selector;
 		this.backend = backend;
+		this.type = type;
 
-		this.values = new Filter<T, U> (this.metadata, this.selector);
+		this.values = new Filter<T> (this.metadata, this.selector);
 	}
 
 	/**
@@ -216,7 +221,7 @@ public final class QueryImpl<T extends Element, U extends T> implements Query<T>
 		}
 		else if (results.size () == 1)
 		{
-			result = results.get (1);
+			result = results.get (0);
 		}
 
 		return result;
@@ -241,6 +246,6 @@ public final class QueryImpl<T extends Element, U extends T> implements Query<T>
 
 		assert this.checkValues () : "Some properties are missing values";
 
-		return this.backend.fetch (this.values);
+		return this.backend.fetch (this.type, this.values);
 	}
 }

@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -48,23 +50,46 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class User extends Element
 {
+	/** The <code>MetaData</code> definition for the <code>User</code> */
+	protected static final MetaData<User> metadata;
+
 	/** The idnumber for the <code>User</code> */
-	public static final Property<Integer> IDNUMBER = Property.getInstance (User.class, Integer.class, "idnumber", false, true);
+	public static final Property<Integer> IDNUMBER;
 
 	/** The first name of the <code>User</code> */
-	public static final Property<String> FIRSTNAME = Property.getInstance (User.class, String.class, "firstname", true, true);
+	public static final Property<String> FIRSTNAME;
 
 	/** The last name of the <code>User</code> */
-	public static final Property<String> LASTNAME = Property.getInstance (User.class, String.class, "lastname", true, true);
+	public static final Property<String> LASTNAME;
 
 	/** The username of the <code>User</code> */
-	public static final Property<String> USERNAME = Property.getInstance (User.class, String.class, "username", false, true);
+	public static final Property<String> USERNAME;
 
 	/** Select an <code>User</code> instance by its id number */
-	public static final Selector SELECTOR_IDNUMBER = Selector.getInstance (User.class, true, User.IDNUMBER);
+	public static final Selector SELECTOR_IDNUMBER;
 
 	/** Select an <code>User</code> instance by its username */
-	public static final Selector SELECTOR_USERNAME = Selector.getInstance (User.class, true, User.USERNAME);
+	public static final Selector SELECTOR_USERNAME;
+
+	/**
+	 * Initialize the <code>MetaData</code>, <code>Property</code> and
+	 * <code>Selector</code> instances for the <code>User</code>.
+	 */
+
+	static
+	{
+		MetaDataBuilder<User> builder = new MetaDataBuilder<User> (User.class, Element.metadata);
+
+		IDNUMBER = builder.addProperty (Integer.class, User::getIdNumber, User::setIdNumber, "idnumber", false, true);
+		FIRSTNAME = builder.addProperty (String.class, User::getFirstname, User::setFirstname, "firstname", true, true);
+		LASTNAME = builder.addProperty (String.class, User::getLastname, User::setLastname, "lastname", true, true);
+		USERNAME = builder.addProperty (String.class, User::getUsername, User::setUsername, "username", false, true);
+
+		SELECTOR_IDNUMBER = builder.addSelector (IDNUMBER, true);
+		SELECTOR_USERNAME = builder.addSelector (USERNAME, true);
+
+		metadata = builder.build ();
+	}
 
 	/**
 	 * Get the (student) ID number of the <code>User</code>.  This will be the

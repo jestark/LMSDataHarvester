@@ -34,8 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Enrolment</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Enrolment</code>
@@ -83,16 +81,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 
 	static
 	{
-		MetaDataBuilder<Enrolment, EnrolmentData> builder = MetaDataBuilder.newInstance (Enrolment.class, EnrolmentData.class);
-		builder.setCreateMethod (EnrolmentData::new);
-
-		builder.addProperty (Enrolment.ID, Enrolment::getId, EnrolmentData::setId);
-		builder.addProperty (Enrolment.COURSE, Enrolment::getCourse, EnrolmentData::setCourse);
-		builder.addProperty (Enrolment.ROLE, Enrolment::getRole, EnrolmentData::setRole);
-		builder.addProperty (Enrolment.FINALGRADE, Enrolment::getFinalGrade, EnrolmentData::setFinalGrade);
-		builder.addProperty (Enrolment.USABLE, Enrolment::isUsable, EnrolmentData::setUsable);
-
-		builder.build ();
+		Enrolment.metadata.addImplementation (EnrolmentData.class, EnrolmentData::new);
 	}
 
 	/**

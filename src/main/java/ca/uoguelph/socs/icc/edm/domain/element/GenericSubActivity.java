@@ -29,9 +29,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 
 /**
  * An generic representation of a <code>SubActivity</code> in the domain model.
@@ -62,12 +59,12 @@ public abstract class GenericSubActivity extends SubActivity implements Serializ
 	 * @param  activity The parent <code>Activity</code> class, not null
 	 */
 
-	protected static final <T extends SubActivity, U extends T> void registerActivity (final MetaData<T, U> metadata, final Class<? extends Activity> activity)
+	protected static final <T extends SubActivity> void registerActivity (final Class<T> subactivity, final Class<? extends Activity> activity)
 	{
-		assert metadata != null : "metadata is NULL";
+		assert subactivity != null : "subactivity is NULL";
 		assert activity != null : "activity is NULL";
 
-		AbstractActivity.registerSubActivityClass (activity, metadata.getElementClass ());
+		AbstractActivity.registerSubActivityClass (activity, subactivity);
 	}
 
 	/**

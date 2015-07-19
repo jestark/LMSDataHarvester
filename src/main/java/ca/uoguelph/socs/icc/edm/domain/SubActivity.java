@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -31,8 +33,25 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class SubActivity extends AbstractActivity
 {
+	/** The <code>MetaData</code> definition for the <code>SubActivity</code> */
+	protected static final MetaData<SubActivity> metadata;
+
 	/** The parent <code>Activity</code> */
-	public static final Property<Activity> PARENT = Property.getInstance (SubActivity.class, Activity.class, "parent", false, true);
+	public static final Property<Activity> PARENT;
+
+	/**
+	 * Initialize the <code>MetaData</code>, <code>Property</code> and
+	 * <code>Selector</code> instances for the <code>SubActivity</code>.
+	 */
+
+	static
+	{
+		MetaDataBuilder<SubActivity> builder = new MetaDataBuilder<SubActivity> (SubActivity.class, Element.metadata);
+
+		PARENT = builder.addProperty (Activity.class, SubActivity::getParent, SubActivity::setParent, "parent", false, true);
+
+		metadata = builder.build ();
+	}
 
 	/**
 	 * Get the parent <code>Activity</code> instance for the

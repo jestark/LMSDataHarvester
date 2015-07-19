@@ -32,203 +32,197 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * Meta-data definition for an <code>Element</code> implementation class.  This
- * class contains the meta-data for an <code>Element</code> implementation
- * along with a reference to the <code>Definition</code> of the
- * <code>Element</code> interface which is being implemented.  Though an
- * instance of this class the referenced <code>Element</code> implementation
- * class can be created and its data can be manipulated.
+ * Meta-data definition for an <code>Element</code> class.  This class contains
+ * the meta-data for an <code>Element</code> Though an instance of this class
+ * the referenced <code>Element</code> implementation class can be created and
+ * its data can be manipulated.
  * <p>
- * This class is intended to be used internally by the
- * <code>ElementBuilder</code> and <code>DataStore</code> implementations.
+ * In addition to containing the mata-data for an <code>Element</code>, this
+ * class acts as a work-around for the lack of Generic type reification in
+ * Java.  All of the operations on the <code>DomainModel</code> are expressed
+ * in terms of the <code>Element</code> interfaces.  Out of necessity, the
+ * operations in the builders and the <code>DataStore</code> are performed in
+ * terms of the <code>Element</code> implementations.  It is necessary to
+ * bridge between the interface and implementation in terms of type parameters,
+ * to avoid a proliferation of <code>Element</code >implementation specific
+ * builder/loader/query classes and/or unchecked casts (both of which are less
+ * than ideal).
+ * <p>
+ * The <code>MetaData</code> instances, by their nature, know the details of
+ * both the <code>Element</code> interfaces and implementations.  To bridge
+ * between the <code>Element</code> interface and implementation, an interface
+ * for the operation is defined in terms of the <code>Element</code> interface,
+ * taking the interface type as its type parameter.  The interface is then
+ * implemented by a class that will know the implementation details of the
+ * <code>Element</code>, usually via a second type parameter.  As a result the
+ * implementation details of the <code>Element</code> only need to be known
+ * when an instance of the operation class is created.
+ * <p>
+ * When on operation is created, the <code>MetaData</code> is used to provide
+ * necessary information about the <code>Element</code> implementation,
+ * including the necessary type parameter, which is not known to the caller.
+ * The type parameter is supplied via a call from the <code>Container</code> to
+ * class which implements the <code>Receiver</code> interface.  Generally,
+ * classes that implement the <code>Receiver</code> interface will a builder
+ * and will call the <code>inject</code> method as final build operation.
+ * <p>
+ * Ideally a functional interface would be used instead of requiring a class
+ * for callback operation, however the functional interfaces do not work with
+ * the unknown type parameters.
  *
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The <code>Element</code> interface type
  * @param   <U> The <code>Element</code> implementation type
- * @see     Definition
  * @see     Property
+ * @see     Selector
  */
 
-public class MetaData<T extends Element, U extends T>
+public class MetaData<T extends Element>
 {
+	/**
+	 * Container for a single <code>MetaData</code> instance.  This interface
+	 * acts to bury the <code>Element</code> implementation class, so that the
+	 * callers can operate based on the interface type only.
+	 *
+	 * @param <T> The <code>Element</code> interface type
+	 */
+
+	private static interface Cell<T extends Element>
+	{
+		/**
+		 * Inject the <code>MetaData</code> instance into the
+		 * <code>Receiver</code>.
+		 *
+		 * @param  <R>      The result type of the <code>Receiver</code>
+		 * @param  metadata The <code>MetaData</code> to inject, not null
+		 * @param  receiver The <code>Receiver</code>, not null
+		 *
+		 * @return          The return value of the receiving method
+		 */
+
+		public abstract <R> R inject (MetaData<T> metadata, Receiver<T, R> reciever);
+
+		/**
+		 * Get a new Instance of the <code>Element</code> implementation class.
+		 *
+		 * @return The new <code>Element</code> instance
+		 */
+
+		public abstract T newInstance ();
+	}
+
+	/**
+	 * Implementation of the <code>Cell</code> interface with the
+	 * <code>Element</code> implementation class specified.
+	 *
+	 * @param <T> The <code>Element</code> interface type
+	 * @param <U> The <code>Element</code> implementation type
+	 */
+
+	private static final class CellImpl<T extends Element, U extends T> implements Cell<T>
+	{
+		/** The <code>Element</code> implementation class */
+		private final Class<U> element;
+
+		/** Method reference to the <code>Element</code> constructor */
+		private final Supplier<U> create;
+
+		/**
+		 *
+		 * @param  element The <code>Element</code> implementation class, not
+		 *                 null
+		 * @param  create  Method reference to the <code>Element</code>
+		 *                 constructor, not null
+		 */
+
+		public CellImpl (final Class<U> element, final Supplier<U> create)
+		{
+			assert element != null : "element is NULL";
+			assert create != null : "create is NULL";
+
+			this.element = element;
+			this.create = create;
+		}
+
+		/**
+		 * Inject the <code>MetaData</code> instance into the
+		 * <code>Receiver</code>.
+		 *
+		 * @param  <R>      The result type of the <code>Receiver</code>
+		 * @param  reciever The <code>Receiver</code>, not null
+		 *
+		 * @return          The return value of the receiving method
+		 */
+
+		public <R> R inject (final MetaData<T> metadata, final Receiver<T, R> receiver)
+		{
+			assert metadata != null : "metadata is NULL";
+			assert receiver != null : "receiver is NULL";
+
+			return receiver.apply (metadata, this.element);
+		}
+
+		/**
+		 * Get a new Instance of the <code>Element</code> implementation class.
+		 *
+		 * @return The new <code>Element</code> instance
+		 */
+
+		public T newInstance ()
+		{
+			return this.create.get ();
+		}
+	}
+
 	/** The Logger */
 	private final Logger log;
 
-	/** Map of <code>Element</code> interface definitions */
-	private static final Map<Class<? extends Element>, Definition<? extends Element>> elements;
+	/** The <code>MetaData</code> for the super class */
+	private final MetaData<? super T> parent;
 
-	/** The <code>MetaData</code> container */
-	private static final Container container;
+	/** The <code>Element</code> class represented by the <code>MetaData</code> */
+	private final Class<T> type;
 
-	/** The interface definition for the <code>Element</code> */
-	private final Definition<T> element;
+	/** The <code>Property</code> instances associated with the interface */
+	private final Map<String, Property<?>> properties;
 
-	/** The implementation class for the <code>Element</code> */
-	private final Class<U> impl;
-
-	/** Method reference for creating new instances */
-	private final Supplier<U> create;
-
-	/** All of the <code>Property</code> instances which are writable */
-	private final Set<Property<?>> properties;
+	/** The <code>Selector</code> instances for the interface */
+	private final Map<String, Selector> selectors;
 
 	/** <code>Property</code> to <code>Reference</code> instance mapping */
-	private final Map<Property<?>, PropertyReference<T, U, ?>> references;
+	private final Map<Property<?>, PropertyReference<T, ?>> references;
 
-	/**
-	 * Static initializer to create the elements <code>Map</code>
-	 */
-
-	static
-	{
-		elements = new HashMap<Class<? extends Element>, Definition<? extends Element>> ();
-		container = new Container ();
-	}
-
-	/**
-	 * Register a <code>MetaData</code> instance and add it to the
-	 * <code>Container</code>.
-	 *
-	 * @param  <T>      The <code>Element</code> interface type
-	 * @param  <U>      The <code>Element</code> implementation type
-	 * @param  metadata The <code>MetaData</code>, not null
-	 *
-	 * @return          The <code>MetaData</code>
-	 */
-
-	protected static <T extends Element, U extends T> MetaData<T, U> registerMetaData (final MetaData<T, U> metadata)
-	{
-		assert metadata != null : "metadata is NULL";
-
-		MetaData.container.put (metadata);
-
-		return metadata;
-	}
-
-	/**
-	 * Register a <code>Property</code> instance and add it to the
-	 * <code>Definition</code>.
-	 *
-	 * @param  element                  The <code>Element</code> class, not null
-	 * @param  property                 The <code>Property</code>, not null
-	 *
-	 * @return                          The <code>Property</code> in the
-	 *                                  <code>Definition</code>
-	 * @throws IllegalArgumentException if a different <code>Property</code>
-	 *                                  already exists in the definition with
-	 *                                  the same name
-	 * @throws IllegalStateException    if <code>Element</code> is assignable
-	 *                                  from more than one super-interface or
-	 *                                  if the parent <code>Element</code> is
-	 *                                  not registered
-	 */
-
-	protected static <T extends Element, V> Property<V> registerProperty (final Class<T> element, final Property<V> property)
-	{
-		assert element != null : "element is NULL";
-		assert property != null : "property is NULL";
-		assert element == property.getElementType () : "property is not of the element type";
-
-		if (! MetaData.elements.containsKey (element))
-		{
-			MetaData.elements.put (element, new Definition<T> (element));
-		}
-
-		return (MetaData.getDefinition (element)).addProperty (property);
-	}
-
-	/**
-	 * Register a <code>Selector</code> instance and add it to the
-	 * <code>Definition</code>.
-	 *
-	 * @param  selector                 The <code>Selector</code>, not null
-	 *
-	 * @return                          The <code>Selector</code> in the
-	 *                                  <code>Definition</code>
-	 * @throws IllegalArgumentException if a different <code>Selector</code>
-	 *                                  already exists in the definition with
-	 *                                  the same name
-	 * @throws IllegalStateException    If the <code>Element</code> associated
-	 *                                  with the <code>Selector</code> has not
-	 *                                  been registered
-	 */
-
-	protected static Selector registerSelector (final Selector selector)
-	{
-		assert selector != null : "selector is NULL";
-
-		if (! MetaData.elements.containsKey (selector.getElementType ()))
-		{
-			throw new IllegalStateException ("No Properties registered for the Selector");
-		}
-
-		return (MetaData.getDefinition (selector.getElementType ())).addSelector (selector);
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Element</code> interfaces which have
-	 * been registered.
-	 *
-	 * @return The <code>Set</code> of <code>Element</code> interfaces
-	 */
-
-	public static Set<Class<? extends Element>> getElements ()
-	{
-		return new HashSet<Class<? extends Element>> (MetaData.elements.keySet ());
-	}
-
-	/**
-	 * Get the <code>Definition</code> for the specified <code>Element</code>
-	 * interface.
-	 *
-	 * @param  element The <code>Element</code> interface class, not null
-	 *
-	 * @return         The <code>Definition</code>
-	 */
-
-	public static Definition<?> getDefinition (final Class<?> element)
-	{
-		assert element != null : "element is NULL";
-
-		return MetaData.elements.get (element);
-	}
+	/** Implementation classes*/
+	private final Map<Class<?>, Cell<T>> implementations;
 
 	/**
 	 * Create the <code>MetaData</code>.
 	 *
-	 * @param  element    The <code>Definition</code>, not null
-	 * @param  impl       The <code>Element</code> implementation class, not
-	 *                    null
-	 * @param  create     Method reference to the no-argument constructor, not
-	 *                    null
+	 * @param  type
+	 * @param  parent
+	 * @param  properties
 	 * @param  references <code>Property</code> to get/set method mapping, not
 	 *                    null
+	 * @param  selectors
 	 */
 
-	protected MetaData (final Definition<T> element, final Class<U> impl, final Supplier<U> create, final Map<Property<?>, PropertyReference<T, U, ?>> references)
+	protected MetaData (final Class<T> type, final MetaData<? super T> parent, final Map<String, Property<?>> properties, final Map<Property<?>, PropertyReference<T, ?>> references, final Map<String, Selector> selectors)
 	{
-		assert element != null : "element is NULL";
-		assert impl != null : "impl is NULL";
-		assert create != null : "create is NULL";
+		assert type != null : "type is NULL";
+		assert properties != null : "properties is NULL";
+		assert selectors != null : "selectors is NULL";
 		assert references != null : "references is NULL";
 
 		this.log = LoggerFactory.getLogger (MetaData.class);
 
-		this.element = element;
-		this.impl = impl;
-
-		this.create = create;
-
+		this.type = type;
+		this.parent = parent;
+		this.selectors = selectors;
+		this.properties = properties;
 		this.references = references;
 
-		assert (this.element.getProperties ()).equals (this.references.keySet ()) : "Mismatch between Property and reference definitions";
-
-		this.properties = this.references.entrySet ()
-			.stream ()
-			.filter ((x) -> x.getValue ().isWritable ())
-			.map ((x) -> x.getKey ())
-			.collect (Collectors.toSet ());
+		this.implementations = new HashMap<> ();
 	}
 
 	/**
@@ -243,12 +237,18 @@ public class MetaData<T extends Element, U extends T>
 	 */
 
 	@SuppressWarnings ("unchecked")
-	private <V> PropertyReference<T, U, V> getReference (final Property<V> property)
+	private <V> PropertyReference<T, V> getReference (final Property<V> property)
 	{
 		assert property != null : "reference is NULL";
-		assert this.references.containsKey (property) : "Property is not registered";
 
-		return (PropertyReference<T, U, V>) this.references.get (property);
+		PropertyReference<?, ?> result = (PropertyReference<T, V>) this.references.get (property);
+
+		if ((result == null) && (this.parent != null))
+		{
+			result = this.parent.getReference (property);
+		}
+
+		return (PropertyReference<T, V>) result;
 	}
 
 	/**
@@ -259,42 +259,137 @@ public class MetaData<T extends Element, U extends T>
 
 	public Class<T> getElementType ()
 	{
-		return this.element.getElementType ();
+		return this.type;
 	}
 
 	/**
-	 * Get the Java type of the <code>Element</code> implementation.
+	 * Get the <code>Property</code> instance with the specified name.
 	 *
-	 * @return The <code>Class</code> representing the implementation type
+	 * @param  name The name of the <code>Property</code> to retrieve, not null
+	 *
+	 * @return      The <code>Property</code>, may be null
 	 */
 
-	public Class<U> getElementClass ()
+	public Property<?> getProperty (final String name)
 	{
-		return this.impl;
+		assert name != null : "name is NULL";
+
+		Property<?> result = this.properties.get (name);
+
+		if ((result == null) && (this.parent != null))
+		{
+			result = this.parent.getProperty (name);
+		}
+
+		return result;
 	}
 
 	/**
-	 * Get the <code>Definition</code>.
+	 * Get the <code>Property</code> instance with the specified name and type.
 	 *
-	 * @return The <code>Definition</code>
+	 * @param  name                     The name, not null
+	 * @param  type                     The type, not null
+	 *
+	 * @return                          The <code>Property</code>, may be null
+	 * @throws IllegalArgumentException if the type specified does not match
+	 *                                  the type of the <code>Property</code>
 	 */
 
-	public Definition<T> getDefinition ()
+	@SuppressWarnings ("unchecked")
+	public <V> Property<V> getProperty (final String name, final Class<V> type)
 	{
-		return this.element;
+		assert name != null : "name is NULL";
+		assert type != null : "type is NULL";
+
+		Property<?> result = this.getProperty (name);
+
+		if ((result != null) && (type != result.getPropertyType ()))
+		{
+			throw new IllegalArgumentException ("The type specified and the Type of the property do not match");
+		}
+
+		return (Property<V>) result;
 	}
 
 	/**
-	 * Get the <code>Set</code> of writable <code>Property</code> instances
-	 * corresponding to the <code>Element</code>.
+	 * Get the <code>Set</code> of <code>Property</code> instances which are
+	 * associated with the <code>Element</code>.
 	 *
-	 * @return A <code>Set</code> containing the writable <code>Property</code>
-	 *         instances for the <code>Element</code>
+	 * @return A <code>Set</code> of <code>Property</code> instances
 	 */
 
 	public Set<Property<?>> getProperties ()
 	{
-		return new HashSet<Property<?>> (this.properties);
+		Set<Property<?>> result = new HashSet<Property<?>> (this.properties.values ());
+
+		if (this.parent != null)
+		{
+			result.addAll (this.parent.getProperties ());
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get the <code>Selector</code> instance with the specified name.
+	 *
+	 * @param  name The name of the <code>Selector</code> to retrieve, not null
+	 *
+	 * @return      The <code>Property</code>, may be null
+	 */
+
+	public Selector getSelector (final String name)
+	{
+		assert name != null : "name is NULL";
+
+		Selector result = this.selectors.get (name);
+
+		if ((result == null) && (this.parent != null))
+		{
+			result = this.parent.getSelector (name);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get the <code>Set</code> of <code>Selector</code> instances which are
+	 * associated with the <code>Element</code>.
+	 *
+	 * @return A <code>Set</code> of <code>Selector</code> instances
+	 */
+
+	public Set<Selector> getSelectors ()
+	{
+		Set<Selector> result = new HashSet<Selector> (this.selectors.values ());
+
+		if (this.parent != null)
+		{
+			result.addAll (this.parent.getSelectors ());
+		}
+
+		return result;
+	}
+
+	/**
+	 * Add an <code>Element</code> implementation class to the
+	 * <code>MetaData</code>.
+	 *
+	 * @param  <U>    The <code>Element</code> implementation type
+	 * @param  impl   The <code>Element</code> implementation class, not null
+	 * @param  create Method reference to the implementation constructor, not
+	 *                null
+	 */
+
+	public <U extends T> void addImplementation (final Class<U> impl, final Supplier<U> create)
+	{
+		this.log.trace ("addImplementation: impl={}, create={}", impl, create);
+
+		assert impl != null : "impl is NULL";
+		assert create != null : "create is NULL";
+		assert ! this.implementations.containsKey (impl) : "Implementation class is already registered";
+
+		this.implementations.put (impl, new CellImpl<T, U> (impl, create));
 	}
 
 	/**
@@ -303,11 +398,38 @@ public class MetaData<T extends Element, U extends T>
 	 * @return The new <code>Element</code> instance
 	 */
 
-	public U createElement ()
+	public T createElement (final Class<? extends T> element)
 	{
-		this.log.trace ("createElement:");
+		this.log.trace ("createElement: element={}", element);
 
-		return this.create.get ();
+		assert element != null : "element is NULL";
+		assert this.implementations.containsKey (element) : "element implementation class is not registered";
+
+		return this.implementations.get (element).newInstance ();
+	}
+
+	/**
+	 * Inject a <code>MetaData</code> instance into the <code>Receiver</code>.
+	 * The <code>MetaData</code> instance will correspond to the specified
+	 * <code>Element</code> implementation class, and must exist in the
+	 * <code>Container</code>.
+	 *
+	 * @param  <R>      The result type of the <code>Receiver</code>
+	 * @param  element  The <code>Element</code> implementation class, not null
+	 * @param  receiver The <code>Receiver</code>, not null
+	 *
+	 * @return          The return value of the receiving method
+	 */
+
+	public <R> R inject (final Class<?> element, final Receiver<T, R> receiver)
+	{
+		this.log.trace ("inject: element={}, reciever={}", element, receiver);
+
+		assert element != null : "element is NULL";
+		assert receiver != null : "Receiver is NULL";
+		assert this.implementations.containsKey (element) : "element not registered";
+
+		return this.implementations.get (element).inject (this, receiver);
 	}
 
 	/**
@@ -327,9 +449,12 @@ public class MetaData<T extends Element, U extends T>
 
 		assert element != null : "element is NULL";
 		assert property != null : "property is NULL";
-		assert this.references.containsKey (property) : "Property is not registered";
 
-		return (this.getReference (property)).getValue (element);
+		PropertyReference<T, V> ref = this.getReference (property);
+
+		assert ref != null : "Property is not registered";
+
+		return ref.getValue (element);
 	}
 
 	/**
@@ -341,16 +466,19 @@ public class MetaData<T extends Element, U extends T>
 	 * @param  value    The value to be set, may be null
 	 */
 
-	public <V> void setValue (final Property<V> property, final U element, final V value)
+	public <V> void setValue (final Property<V> property, final T element, final V value)
 	{
 		this.log.trace ("setValue: property={}, element={}, value={}", property, element, value);
 
 		assert element != null : "element is NULL";
 		assert property != null : "property is NULL";
-		assert this.references.containsKey (property) : "Property is not registered";
-		assert this.properties.contains (property) : "property can not be written";
 
-		(this.getReference (property)).setValue (element, value);
+		PropertyReference<T, V> ref = this.getReference (property);
+
+		assert ref != null : "Property is not registered";
+		assert ref.isWritable () : "property can not be written";
+
+		ref.setValue (element, value);
 	}
 
 	/**
@@ -362,16 +490,19 @@ public class MetaData<T extends Element, U extends T>
 	 * @param  source   The source <code>Element</code>, not null
 	 */
 
-	public void copyValue (final Property<?> property, final U dest, final T source)
+	public void copyValue (final Property<?> property, final T dest, final T source)
 	{
 		this.log.trace ("copyValue: property={}, dest={}, source={}", property, dest, source);
 
 		assert dest != null : "dest is NULL";
 		assert source != null : "source is NULL";
 		assert property != null : "property is NULL";
-		assert this.references.containsKey (property) : "Property is not registered";
-		assert this.properties.contains (property) : "property can not be written";
 
-		(this.references.get (property)).copyValue (dest, source);
+		PropertyReference<T, ?> ref = this.getReference (property);
+
+		assert ref != null : "Property is not registered";
+		assert ref.isWritable () : "property can not be written";
+
+		ref.copyValue (dest, source);
 	}
 }

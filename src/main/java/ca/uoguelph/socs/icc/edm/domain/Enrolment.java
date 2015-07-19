@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -71,20 +73,42 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Enrolment extends Element
 {
+	/** The <code>MetaData</code> definition for the <code>Enrolment</code> */
+	protected static final MetaData<Enrolment> metadata;
+
 	/** The associated <code>Course</code> */
-	public static final Property<Course> COURSE = Property.getInstance (Enrolment.class, Course.class, "course", false, true);
+	public static final Property<Course> COURSE;
 
 	/** The final grade */
-	public static final Property<Integer> FINALGRADE = Property.getInstance (Enrolment.class, Integer.class, "finalgrade", true, false);
+	public static final Property<Integer> FINALGRADE;
 
 	/** The associated <code>Role</code> */
-	public static final Property<Role> ROLE = Property.getInstance (Enrolment.class, Role.class, "role", false, true);
+	public static final Property<Role> ROLE;
 
 	/** Has consent been given to use this data for research */
-	public static final Property<Boolean> USABLE = Property.getInstance (Enrolment.class, Boolean.class, "usable", true, true);
+	public static final Property<Boolean> USABLE;
 
 	/** Select all <code>Enrolment</code> by <code>Role</code>*/
-	public static final Selector SELECTOR_ROLE = Selector.getInstance (Enrolment.class, false, Enrolment.ROLE);
+	public static final Selector SELECTOR_ROLE;
+
+	/**
+	 * Initialize the <code>MetaData</code>, <code>Property</code> and
+	 * <code>Selector</code> instances for the <code>Enrolment</code>.
+	 */
+
+	static
+	{
+		MetaDataBuilder<Enrolment> builder = new MetaDataBuilder<Enrolment> (Enrolment.class, Element.metadata);
+
+		COURSE = builder.addProperty (Course.class, Enrolment::getCourse, Enrolment::setCourse, "course", false, true);
+		FINALGRADE = builder.addProperty (Integer.class, Enrolment::getFinalGrade, Enrolment::setFinalGrade, "finalgrade", true, false);
+		ROLE = builder.addProperty (Role.class, Enrolment::getRole, Enrolment::setRole, "role", false, true);
+		USABLE = builder.addProperty (Boolean.class, Enrolment::isUsable, Enrolment::setUsable, "usable", true, true);
+
+		SELECTOR_ROLE = builder.addSelector (ROLE, false);
+
+		metadata = builder.build ();
+	}
 
 	/**
 	 * Get the name associated with the <code>Enrolment</code>.  The contents

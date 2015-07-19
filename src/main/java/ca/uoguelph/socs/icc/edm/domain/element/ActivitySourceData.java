@@ -28,8 +28,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>ActivitySource</code> interface.  It is expected
  * that instances of this class will be accessed though the
@@ -62,13 +60,7 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 
 	static
 	{
-		MetaDataBuilder<ActivitySource, ActivitySourceData> builder = MetaDataBuilder.newInstance (ActivitySource.class, ActivitySourceData.class);
-		builder.setCreateMethod (ActivitySourceData::new);
-
-		builder.addProperty (ActivitySource.ID, ActivitySource::getId, ActivitySourceData::setId);
-		builder.addProperty (ActivitySource.NAME, ActivitySource::getName, ActivitySourceData::setName);
-
-		builder.build ();
+		ActivitySource.metadata.addImplementation (ActivitySourceData.class, ActivitySourceData::new);
 	}
 
 	/**

@@ -24,8 +24,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Action</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Action</code>
@@ -54,13 +52,7 @@ public class ActionData extends Action implements Serializable
 
 	static
 	{
-		MetaDataBuilder<Action, ActionData> builder = MetaDataBuilder.newInstance (Action.class, ActionData.class);
-		builder.setCreateMethod (ActionData::new);
-
-		builder.addProperty (Action.ID, Action::getId, ActionData::setId);
-		builder.addProperty (Action.NAME, Action::getName, ActionData::setName);
-
-		builder.build ();
+		Action.metadata.addImplementation (ActionData.class, ActionData::new);
 	}
 
 	/**

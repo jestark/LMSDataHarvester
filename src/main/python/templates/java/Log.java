@@ -23,8 +23,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.LogReference;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>LogEntry</code> interface for logs referencing
  * the <code>SubActivity</code> implemented by that
@@ -59,22 +57,6 @@ class ${ClassName} extends LogReference
 
 	static
 	{
-		MetaDataBuilder<LogEntry, ${ClassName}> builder = MetaDataBuilder.newInstance (LogEntry.class, ${ClassName}.class);
-		builder.setCreateMethod (${ClassName}::new);
-
-		builder.addProperty (LogEntry.ID, LogEntry::getId, null);
-		builder.addProperty (LogEntry.ACTION, LogEntry::getAction, null);
-		builder.addProperty (LogEntry.ACTIVITY, LogEntry::getActivity, null);
-		builder.addProperty (LogEntry.COURSE, LogEntry::getCourse, null);
-		builder.addProperty (LogEntry.ENROLMENT, LogEntry::getEnrolment, null);
-//		builder.addProperty (LogEntry.REFERENCE, LogData::getReference, LogData::setReference);
-		builder.addProperty (LogEntry.IPADDRESS, LogEntry::getIPAddress, null);
-		builder.addProperty (LogEntry.TIME, LogEntry::getTime, null);
-
-//		builder.addAttribute (, ${ClassName}::getEntry, ${ClassName}::setEntry);
-//		builder.addAttribute (, ${ClassName}::getSubActivity, ${ClassName}::setSubActivity);
-
-		builder.build ();
 	}
 
 	/**

@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/folder
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -60,15 +58,8 @@ public class Folder extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Folder> builder = MetaDataBuilder.newInstance (Activity.class, Folder.class);
-		builder.setCreateMethod (Folder::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Folder::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Folder::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Folder::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Folder::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "folder");
+		Activity.metadata.addImplementation (Folder.class, Folder::new);
+		GenericNamedActivity.registerActivity (Folder.class, "moodle", "folder");
 	}
 
 	/**

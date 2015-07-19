@@ -27,8 +27,6 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/lesson
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -61,15 +59,8 @@ public class Lesson extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Lesson> builder = MetaDataBuilder.newInstance (Activity.class, Lesson.class);
-		builder.setCreateMethod (Lesson::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Lesson::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Lesson::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Lesson::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Lesson::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "lesson");
+		Activity.metadata.addImplementation (Lesson.class, Lesson::new);
+		GenericNamedActivity.registerActivity (Lesson.class, "moodle", "lesson");
 	}
 
 	/**

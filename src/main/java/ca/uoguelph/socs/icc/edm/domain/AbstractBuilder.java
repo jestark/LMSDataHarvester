@@ -25,9 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Container;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Receiver;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * Create and modify instances of the <code>Element</code> implementations.
@@ -76,23 +78,25 @@ public abstract class AbstractBuilder<T extends Element>
 	 * @param  <T> The <code>Element</code> interface type of the builder
 	 */
 
-	private static final class Factory<T extends Element> implements Container.Receiver<T, Builder<T>>
+	private static final class Factory<T extends Element> implements Receiver<T, Builder<T>>
 	{
 		/**
 		 * Create the <code>Builder</code> using the supplied
 		 * <code>MetaData</code>.
 		 *
 		 * @param  metadata The <code>MetaData</code>, not null
+		 * @param  type     The <code>Element</code> implementation class, not
+		 *                  null
 		 *
 		 * @return          The <code>Builder</code>
 		 */
 
 		@Override
-		public <U extends T> Builder<T> apply (final MetaData<T, U> metadata)
+		public <U extends T> Builder<T> apply (final MetaData<T> metadata, final Class<U> type)
 		{
 			assert metadata != null : "metadata is NULL";
 
-			return new BuilderImpl<T, U> (metadata);
+			return new BuilderImpl<T, U> (metadata, type);
 		}
 	}
 
@@ -118,12 +122,12 @@ public abstract class AbstractBuilder<T extends Element>
 	 * @param  datastore The <code>DataStore</code> instance, not null
 	 */
 
-	protected static <T extends Element> Builder<T> getBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected static <T extends Element> Builder<T> getBuilder (final DataStore datastore, final Class<T> type, final Class<? extends Element> element)
 	{
 		assert datastore != null : "manager is NULL";
 		assert element != null : "element is NULL";
 
-		return datastore.getMetaDataContainer ()
+		return datastore.getMetaData (type)
 			.inject (element, new Factory<T> ());
 	}
 
@@ -131,13 +135,15 @@ public abstract class AbstractBuilder<T extends Element>
 	 * Create an instance of the builder for the specified <code>Element</code>
 	 * on the supplied <code>DataStore</code>.
 	 *
-	 * @param  <T>       The <code>Element</code> interface type
-	 * @param  <U>       The builder type
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> interface class, not null
-	 * @param  create    Method reference to the constructor, not null
+	 * @param  <T>                   The <code>Element</code> interface type
+	 * @param  <U>                   The builder type
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  element               The <code>Element</code> interface class,
+	 *                               not null
+	 * @param  create                Method reference to the constructor, not
+	 *                               null
 	 *
-	 * @return           The builder instance
+	 * @return                       The builder instance
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 * @throws IllegalStateException if the <code>DataStore</code> does not
 	 *                               have a default implementation class for
@@ -164,7 +170,7 @@ public abstract class AbstractBuilder<T extends Element>
 			throw new IllegalStateException ("Element is not available for this datastore");
 		}
 
-		return create.apply (datastore, AbstractBuilder.getBuilder (datastore, element));
+		return create.apply (datastore, AbstractBuilder.getBuilder (datastore, element, impl));
 	}
 
 	/**
@@ -212,15 +218,87 @@ public abstract class AbstractBuilder<T extends Element>
 	}
 
 	/**
+	 * Utility method to check if the specified <code>Element</code> exists in
+	 * the <code>DataStore</code>.
+	 *
+	 * @param  <E>                   The type of the <code>Element</code>
+	 * @param  element               The <code>Element</code> instance to test,
+	 *                               not null
+	 *
+	 * @return                       <code>true</code> if the
+	 *                               <code>Element</code> exists in the
+	 *                               <code>DataStore</code>, <code>false</code>
+	 *                               otherwise
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 */
+
+	protected final <E extends Element> boolean checkContains (final E element)
+	{
+		assert element != null : "element is NULL";
+
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("datastore is closed");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		return this.datastore.contains (element);
+	}
+
+	/**
+	 * Utility method to perform <code>Element</code> substitutions with a
+	 * <code>Query</code>.
+	 *
+	 * @param  <E>      The type of the <code>Element</code> to process
+	 * @param  element  The <code>Element</code> to substitute, not null
+	 * @param  selector The <code>Selector</code> used to perform the
+	 *                  substitution, must return unique results, not null
+	 *
+	 * @return          The matching <code>Element</code> instance from the
+	 *                  <code>DataStore</code>, may be null
+	 */
+
+	protected final <E extends Element> E substitute (final E element, final Selector selector)
+	{
+		assert element != null : "element is NULL";
+		assert selector != null : "selector is NULL";
+
+		E result = element;
+
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("datastore is closed");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		if (! this.datastore.contains (element))
+		{
+			Query<E> query = this.datastore.getQuery (selector, element.getClass ());
+			query.setAllProperties (element);
+
+			result = query.query ();
+		}
+
+		return result;
+	}
+
+	/**
 	 * Create an instance of the <code>Element</code>.
 	 *
 	 * @return                       The new <code>Element</code> instance
 	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
 	 */
 
 	public final T build ()
 	{
 		this.log.trace ("build:");
+
+		if (! this.datastore.getTransaction ().isActive ())
+		{
+			this.log.error ("Attempting to build an Element without an active transaction");
+			throw new IllegalStateException ("no active transaction");
+		}
 
 		this.element = this.builder.build (this.element);
 		this.datastore.insert (this.element);

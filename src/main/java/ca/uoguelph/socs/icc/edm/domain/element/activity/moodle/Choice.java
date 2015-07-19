@@ -26,8 +26,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/choice
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -60,15 +58,8 @@ public class Choice extends GenericNamedActivity
 
 	static
 	{
-		MetaDataBuilder<Activity, Choice> builder = MetaDataBuilder.newInstance (Activity.class, Choice.class);
-		builder.setCreateMethod (Choice::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, Choice::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, Choice::setCourse);
-		builder.addProperty (Activity.TYPE, Activity::getType, Choice::setType);
-		builder.addProperty (Activity.NAME, Activity::getName, Choice::setName);
-
-		GenericNamedActivity.registerActivity (builder.build (), "moodle", "choice");
+		Activity.metadata.addImplementation (Choice.class, Choice::new);
+		GenericNamedActivity.registerActivity (Choice.class, "moodle", "choice");
 	}
 
 	/**
