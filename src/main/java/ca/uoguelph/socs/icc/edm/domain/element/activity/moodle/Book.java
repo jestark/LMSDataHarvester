@@ -25,7 +25,7 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.NamedActivity;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/book
@@ -47,10 +47,13 @@ import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
  * @version 1.3
  */
 
-public class Book extends GenericNamedActivity
+public class Book extends NamedActivity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
+
+	/** The primary key for the <code>Book</code> */
+	private Long id;
 
 	/**
 	 * Register the <code>Book</code> with the factories on
@@ -59,8 +62,8 @@ public class Book extends GenericNamedActivity
 
 	static
 	{
-		Activity.metadata.addImplementation (Book.class, Book::new);
-		GenericNamedActivity.registerActivity (Book.class, "moodle", "book");
+//		Activity.metadata.addImplementation (Book.class, Book::new);
+		Activity.registerImplementation ("moodle", "book", Book.class);
 	}
 
 	/**
@@ -86,7 +89,7 @@ public class Book extends GenericNamedActivity
 	@Override
 	public Long getId ()
 	{
-		return super.getId ();
+		return this.id;
 	}
 
 	/**
@@ -106,7 +109,7 @@ public class Book extends GenericNamedActivity
 	@Override
 	protected void setId (final Long id)
 	{
-		super.setId (id);
+		this.id = id;
 	}
 
 	/**

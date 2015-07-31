@@ -25,7 +25,7 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.NamedActivity;
 
 /**
  * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
@@ -47,10 +47,13 @@ import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
  * @version 1.3
  */
 
-public class ${ClassName} extends GenericNamedActivity
+public class ${ClassName} extends NamedActivity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
+
+	/** The primary key for the <code>${ClassName}</code> */
+	private Long id;
 
 	/**
 	 * Register the <code>${ClassName}</code> with the factories on
@@ -59,8 +62,8 @@ public class ${ClassName} extends GenericNamedActivity
 
 	static
 	{
-		Activity.metadata.addImplementation (${ClassName}.class, ${ClassName}::new);
-		GenericNamedActivity.registerActivity (${ClassName}.class, "${ActivitySource}", "${ActivityType}");
+//		Activity.metadata.addImplementation (${ClassName}.class, ${ClassName}::new);
+		Activity.registerImplementation ("${ActivitySource}", "${ActivityType}", ${ClassName}.class);
 	}
 
 	/**
@@ -86,7 +89,7 @@ public class ${ClassName} extends GenericNamedActivity
 	@Override
 	public Long getId ()
 	{
-		return super.getId ();
+		return this.id;
 	}
 
 	/**
@@ -106,7 +109,7 @@ public class ${ClassName} extends GenericNamedActivity
 	@Override
 	protected void setId (final Long id)
 	{
-		super.setId (id);
+		this.id = id;
 	}
 
 	/**

@@ -53,6 +53,7 @@ public class GenericActivity extends ActivityInstance implements Serializable
 
 	static
 	{
+//		
 	}
 
 	/**

@@ -16,10 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
-import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -28,8 +28,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 
 /**
  * Abstract implementation of the <code>Activity</code> interface.  This class
@@ -44,10 +45,10 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
  * @version 1.0
  */
 
-public abstract class ActivityInstance extends AbstractActivity implements Serializable
+public abstract class ActivityInstance extends Activity
 {
-	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID = 1L;
+	/** The <code>MetaData</code> definition for the <code>ActivityInstance</code> */
+	protected static final Definition<ActivityInstance> metadata;
 
 	/** The course with which the activity is associated */
 	private Course course;
@@ -55,8 +56,16 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	/** The type of the activity*/
 	private ActivityType type;
 
-	/** The set of grades for the activity */
-	private Set<Grade> grades;
+	/** The log entries associated with the activity */
+	private List<LogEntry> log;
+
+	static
+	{
+		metadata = Definition.getBuilder (ActivityInstance.class, Activity.metadata)
+			.addProperty (Activity.COURSE, Activity::getCourse, ActivityInstance::setCourse)
+			.addProperty (Activity.TYPE, Activity::getType, ActivityInstance::setType)
+			.build ();
+	}
 
 	/**
 	 * Create the <code>Activity</code> with null values.
@@ -69,7 +78,7 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 		this.type = null;
 		this.course = null;
 
-		this.grades = new HashSet<Grade> ();
+		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**
@@ -125,43 +134,6 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 		hbuilder.append (this.course);
 
 		return hbuilder.hashCode ();
-	}
-
-	/**
-	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
-	 * instance.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
-	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
-	 */
-
-	@Override
-	public Long getId ()
-	{
-		return super.getId ();
-	}
-
-	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Activity</code>
-	 * instance is loaded, or by the <code>ActivityBuilder</code>
-	 * implementation to set the <code>DataStore</code> identifier, prior to
-	 * storing a new <code>Activity</code> instance.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
-	 *
-	 * @param  id The <code>DataStore</code> identifier, not null
-	 */
-
-	@Override
-	protected void setId (final Long id)
-	{
-		super.setId (id);
 	}
 
 	/**
@@ -222,70 +194,70 @@ public abstract class ActivityInstance extends AbstractActivity implements Seria
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>Grade</code> instances which are
-	 * associated with the <code>Activity</code>.  Not all
-	 * <code>Activity</code> instances are graded.  If the
-	 * <code>Activity</code> does is not graded then the <code>Set</code> will
-	 * be empty.
+	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
+	 * which act upon the <code>Activity</code>.
 	 *
-	 * @return A <code>Set</code> of <code>Grade</code> instances
+	 * @return A <code>List</code> of <code>LogEntry</code> instances
 	 */
 
 	@Override
-	public Set<Grade> getGrades ()
+	public List<LogEntry> getLog ()
 	{
-		return new HashSet<Grade> (this.grades);
+		return new ArrayList<LogEntry> (this.log);
 	}
 
 	/**
-	 * Initialize the <code>Set</code> of <code>Grade</code> instances
+	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
 	 * associated with the <code>Activity</code> instance.  This method is
 	 * intended to be used by a <code>DataStore</code> when the
 	 * <code>Activity</code> instance is loaded.
 	 *
-	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
-	 *                null
+	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
+	 *             not null
 	 */
 
-	protected void setGrades (final Set<Grade> grades)
+	@Override
+	protected void setLog (final List<LogEntry> log)
 	{
-		assert grades != null : "grades is NULL";
+		assert log != null : "log is NULL";
 
-		this.grades = grades;
+		this.log = log;
 	}
 
 	/**
-	 * Add the specified <code>Grade</code> to the
+	 * Add the specified <code>LogEntry</code> to the specified
 	 * <code>Activity</code>.
 	 *
-	 * @param  grade    The <code>Grade</code> to add, not null
+	 * @param  entry    The <code>LogEntry</code> to add, not null
 	 *
-	 * @return          <code>True</code> if the <code>Grade</code> was
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
 	 *                  successfully added, <code>False</code> otherwise
 	 */
 
-	protected boolean addGrade (final Grade grade)
+	@Override
+	protected boolean addLog (final LogEntry entry)
 	{
-		assert grade != null : "grade is NULL";
+		assert entry != null : "entry is NULL";
 
-		return this.grades.add (grade);
+		return this.log.add (entry);
 	}
 
 	/**
-	 * Remove the specified <code>Grade</code> from the
+	 * Remove the specified <code>LogEntry</code> from the specified
 	 * <code>Activity</code>.
 	 *
-	 * @param  grade    The <code>Grade</code> to remove, not null
+	 * @param  entry    The <code>LogEntry</code> to remove, not null
 	 *
-	 * @return          <code>True</code> if the <code>Grade</code> was
-	 *                  successfully removed from, <code>False</code> otherwise
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully removed, <code>False</code> otherwise
 	 */
 
-	protected boolean removeGrade (final Grade grade)
+	@Override
+	protected boolean removeLog (final LogEntry entry)
 	{
-		assert grade != null : "grade is NULL";
+		assert entry != null : "entry is NULL";
 
-		return this.grades.remove (grade);
+		return this.log.remove (entry);
 	}
 
 	/**

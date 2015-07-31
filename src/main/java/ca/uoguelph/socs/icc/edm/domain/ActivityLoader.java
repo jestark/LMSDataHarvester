@@ -21,8 +21,6 @@ import java.util.List;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
-import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
-
 /**
  * Load <code>Activity</code> instances from the <code>DataStore</code>.  This
  * class extends <code>AbstractLoader</code>, adding the functionality
@@ -93,7 +91,7 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 			throw new IllegalStateException ("datastore is closed");
 		}
 
-		Query<Activity> query = this.fetchQuery (Activity.SELECTOR_ALL, AbstractActivity.getActivityClass (type));
+		Query<Activity> query = this.fetchQuery (Activity.SELECTOR_ALL, Activity.getActivityClass (type));
 
 		return query.queryAll ();
 	}

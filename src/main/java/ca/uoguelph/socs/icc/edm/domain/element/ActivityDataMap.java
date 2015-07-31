@@ -36,7 +36,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
  * @version 1.1
  */
 
-final class ActivityDataMap
+public final class ActivityDataMap
 {
 	/** The log */
 	private final Logger log;

@@ -24,7 +24,7 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.NamedActivity;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/choice
@@ -46,10 +46,13 @@ import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
  * @version 1.1
  */
 
-public class Choice extends GenericNamedActivity
+public class Choice extends NamedActivity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
+
+	/** The primary key for the <code>Choice</code> */
+	private Long id;
 
 	/**
 	 * Register the <code>Choice</code> with the factories on
@@ -58,8 +61,8 @@ public class Choice extends GenericNamedActivity
 
 	static
 	{
-		Activity.metadata.addImplementation (Choice.class, Choice::new);
-		GenericNamedActivity.registerActivity (Choice.class, "moodle", "choice");
+//		GenericNamedActivity.metadata.addImplementation (Choice.class, Choice::new);
+		Activity.registerImplementation ("moodle", "choice", Choice.class);
 	}
 
 	/**
@@ -85,7 +88,7 @@ public class Choice extends GenericNamedActivity
 	@Override
 	public Long getId ()
 	{
-		return super.getId ();
+		return this.id;
 	}
 
 	/**
@@ -105,6 +108,6 @@ public class Choice extends GenericNamedActivity
 	@Override
 	protected void setId (final Long id)
 	{
-		super.setId (id);
+		this.id = id;
 	}
 }

@@ -17,12 +17,11 @@
 package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-
-import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/lesson
@@ -45,10 +44,25 @@ import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
  * @version 1.2
  */
 
-public class LessonPage extends GenericSubActivity
+public class LessonPage extends SubActivity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
+
+	/** The primary key for the <code>LessonPage</code> */
+	private Long id;
+
+	/** The name of the <code>SubActivity</code> */
+	private String name;
+
+	/** The parent <code>Activity</code> */
+	private Activity parent;
+
+	/** The <code>List</code> of <code>LogEntry</code> instances */
+	private List<LogEntry> log;
+
+	/** The <code>List</code> of <code>SubActivity</code> instances*/
+//	private List<SubActivity> subactivities;
 
 	/**
 	 * Register the <code>LessonPage</code> with the factories on
@@ -57,8 +71,8 @@ public class LessonPage extends GenericSubActivity
 
 	static
 	{
-		SubActivity.metadata.addImplementation (LessonPage.class, LessonPage::new);
-		GenericSubActivity.registerActivity (LessonPage.class, Lesson.class);
+//		SubActivity.metadata.addImplementation (LessonPage.class, LessonPage::new);
+		Activity.registerImplementation (LessonPage.class, Lesson.class);
 	}
 
 	/**
@@ -68,6 +82,10 @@ public class LessonPage extends GenericSubActivity
 	protected LessonPage ()
 	{
 		super ();
+		this.name = null;
+		this.parent = null;
+
+		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**
@@ -84,7 +102,7 @@ public class LessonPage extends GenericSubActivity
 	@Override
 	public Long getId ()
 	{
-		return super.getId ();
+		return this.id;
 	}
 
 	/**
@@ -104,7 +122,39 @@ public class LessonPage extends GenericSubActivity
 	@Override
 	protected void setId (final Long id)
 	{
-		super.setId (id);
+		this.id = id;
+	}
+
+		/**
+	 * Get the name of the <code>Activity</code>.  Not all
+	 * <code>Activity</code> instances have names.  For those
+	 * <code>Activity</code> instances which do not have names, the name of the
+	 * associated <code>ActivityType</code> will be returned.
+	 *
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Activity</code>
+	 */
+
+	@Override
+	public String getName ()
+	{
+		return this.name;
+	}
+
+	/**
+	 * Set the name of the <code>SubActivity</code>.  This method is intended
+	 * to be used by a <code>DataStore</code> when the <code>SubActivity</code>
+	 * instance is loaded.
+	 *
+	 * @param  name The name of the <code>SubActivity</code>, not null
+	 */
+
+	@Override
+	protected void setName (final String name)
+	{
+		assert name != null : "name is NULL";
+
+		this.name = name;
 	}
 
 	/**
@@ -121,7 +171,7 @@ public class LessonPage extends GenericSubActivity
 	@Override
 	public Activity getParent ()
 	{
-		return super.getParent ();
+		return this.parent;
 	}
 
 	/**
@@ -138,10 +188,148 @@ public class LessonPage extends GenericSubActivity
 	 *                  <code>SubActivity</code> instance
 	 */
 
+	@Override
 	protected void setParent (final Activity activity)
 	{
 		assert activity != null : "activity is NULL";
 
-		super.setParent (activity);
+		this.parent = activity;
+	}
+
+	/**
+	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
+	 * which act upon the <code>Activity</code>.
+	 *
+	 * @return A <code>List</code> of <code>LogEntry</code> instances
+	 */
+
+	@Override
+	public List<LogEntry> getLog ()
+	{
+		return new ArrayList<LogEntry> (this.log);
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
+	 * associated with the <code>Activity</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Activity</code> instance is loaded.
+	 *
+	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
+	 *             not null
+	 */
+
+	@Override
+	protected void setLog (final List<LogEntry> log)
+	{
+		assert log != null : "entry is NULL";
+
+		this.log = log;
+	}
+
+	/**
+	 * Add the specified <code>LogEntry</code> to the specified
+	 * <code>Activity</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to add, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully added, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean addLog (final LogEntry entry)
+	{
+		assert log != null : "entry is NULL";
+
+		return this.log.add (entry);
+	}
+
+	/**
+	 * Remove the specified <code>LogEntry</code> from the specified
+	 * <code>Activity</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to remove, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully removed, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean removeLog (final LogEntry entry)
+	{
+		assert log != null : "entry is NULL";
+
+		return this.log.remove (entry);
+	}
+
+	/**
+	 * Get the <code>List</code> of <code>SubActivity</code> instances
+	 * associated with the <code>Activity</code>.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the child class.
+	 *
+	 * @return The <code>List</code> of <code>SubActivity</code> instances
+	 */
+
+	@Override
+	public List<SubActivity> getSubActivities ()
+	{
+		return new ArrayList<SubActivity> ();
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
+	 * for the <code>Activity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the child class.
+	 *
+	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
+	 *                       instances, not null
+	 */
+
+	@Override
+	protected void setSubActivities (final List<SubActivity> subactivities)
+	{
+		throw new UnsupportedOperationException ();
+	}
+
+	/**
+	 * Add the specified <code>SubActivity</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to add, not null
+	 *
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully added, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean addSubActivity (final SubActivity subactivity)
+	{
+		throw new UnsupportedOperationException ();
+	}
+
+	/**
+	 * Remove the specified <code>SubActivity</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to remove, not null
+	 *
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully removed, <code>False</code>
+	 *                     otherwise
+	 */
+
+	@Override
+	protected boolean removeSubActivity (final SubActivity subactivity)
+	{
+		throw new UnsupportedOperationException ();
 	}
 }

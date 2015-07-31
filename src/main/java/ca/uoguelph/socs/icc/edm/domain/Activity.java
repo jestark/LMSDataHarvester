@@ -19,8 +19,9 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.element.ActivityDataMap;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -65,8 +66,11 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Activity extends Element
 {
+	/** Mapping of <code>ActivityType</code> instances to implementation classes */
+	private static final ActivityDataMap activityImpl;
+
 	/** The <code>MetaData</code> definition for the <code>Activity</code> */
-	protected static final MetaData<Activity> metadata;
+	protected static final Definition<Activity> metadata;
 
 	/** The associated <code>Course</code> */
 	public static final Property<Course> COURSE;
@@ -87,16 +91,98 @@ public abstract class Activity extends Element
 
 	static
 	{
-		MetaDataBuilder<Activity> builder = new MetaDataBuilder<Activity> (Activity.class, Element.metadata);
+		COURSE = Property.getInstance (Activity.class, Course.class, "course", false, true);
+		TYPE = Property.getInstance (Activity.class, ActivityType.class, "type", false, true);
+		NAME = Property.getInstance (Activity.class, String.class, "name", false, true);
 
-		COURSE = builder.addProperty (Course.class, Activity::getCourse, "course", false, true);
-		TYPE = builder.addProperty (ActivityType.class, Activity::getType, "type", false, true);
-		NAME = builder.addProperty (String.class, Activity::getName, "name", false, true);
+		SELECTOR_TYPE = Selector.getInstance (Activity.class, TYPE, false);
 
-		SELECTOR_TYPE = builder.addSelector (TYPE, false);
+		metadata = Definition.getBuilder (Activity.class, Element.metadata)
+			.addProperty (COURSE, Activity::getCourse)
+			.addProperty (TYPE, Activity::getType)
+			.addProperty (NAME, Activity::getName)
+			.addSelector (SELECTOR_TYPE)
+			.build ();
 
-		metadata = builder.build ();
+		activityImpl = new ActivityDataMap ();
 	}
+
+		/**
+	 * Get the <code>Activity</code> implementation class which is associated
+	 * with the specified <code>ActivityType</code>.
+	 *
+	 * @param  type The <code>ActivityType</code>
+	 *
+	 * @return      The <code>Activity </code> data class for the given
+	 *              <code>ActivityType</code>, may be null
+	 */
+
+	public static final Class<? extends Element> getActivityClass (final ActivityType type)
+	{
+		return Activity.activityImpl.getActivityClass (type);
+	}
+
+	/**
+	 * Get the <code>SubActivity</code> implementation class which is
+	 * associated with the specified <code>Activity</code> implementation
+	 * class.
+	 *
+	 * @param  activity The <code>Activity</code> implementation class
+	 *
+	 * @return          The <code>SubActivity</code> implementation class, may be
+	 *                  null
+	 */
+
+	public static final Class<? extends Element> getSubActivityClass (final Class<? extends Element> activity)
+	{
+		return Activity.activityImpl.getSubActivityClass (activity);
+	}
+
+	/**
+	 * Register an association between an <code>ActivityType</code> and the
+	 * class implementing the <code>Activity</code> interface for that
+	 * <code>ActivityType</code>.
+	 *
+	 * @param  source A <code>String</code> representation of the
+	 *                <code>ActivitySource</code>, not null
+	 * @param  type   A <code>String</code> representation of the
+	 *                <code>ActivityType</code>, not null
+	 * @param  impl   The implementation class, not null
+	 */
+
+	protected static final void registerImplementation (final String source, final String type, final Class<? extends Element> impl)
+	{
+		assert source != null : "source is NULL";
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+
+		Activity.activityImpl.registerActivityClass (source, type, impl);
+	}
+
+	/**
+	 * Register an association between an <code>Activity</code> implementation
+	 * class and a <code>SubActivity</code> implementation class.
+	 *
+	 * @param  activity    The <code>Activity</code> implementation, not null
+	 * @param  subactivity The <code>SubActivity</code> implementation, not null
+	 */
+
+	protected static final void registerImplementation (final Class<? extends Element> activity, final Class<? extends Element> subactivity)
+	{
+		assert activity != null : "activity is NULL";
+		assert subactivity != null : "subactivity is NULL";
+
+		Activity.activityImpl.registerSubActivityClass (activity, subactivity);
+	}
+
+	/**
+	 * Get the <code>Course</code> with which the <code>Activity</code> is
+	 * associated.
+	 *
+	 * @return The <code>Course</code> instance
+	 */
+
+	public abstract Course getCourse ();
 
 	/**
 	 * Get the name of the <code>Activity</code>.  Not all
@@ -117,15 +203,6 @@ public abstract class Activity extends Element
 	 */
 
 	public abstract ActivityType getType();
-
-	/**
-	 * Get the <code>Course</code> with which the <code>Activity</code> is
-	 * associated.
-	 *
-	 * @return The <code>Course</code> instance
-	 */
-
-	public abstract Course getCourse ();
 
 	/**
 	 * Get the <code>Set</code> of <code>Grade</code> instances which are
@@ -183,17 +260,6 @@ public abstract class Activity extends Element
 	 */
 
 	protected abstract boolean removeLog (LogEntry entry);
-
-	/**
-	 * Determine if there are <code>SubActivity</code> instances associated
-	 * with the <code>Activity</code> instance.
-	 *
-	 * @return <code>True</code> if the <code>Activity</code> instance has
-	 *         <code>SubActivity</code> instances associated with it.
-	 *         <code>False</code> otherwise
-	 */
-
-	public abstract boolean hasSubActivities ();
 
 	/**
 	 * Get the <code>List</code> of <code>SubActivity</code> instances

@@ -16,10 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
+import java.util.List;
+import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -31,10 +31,10 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.0
  */
 
-public abstract class SubActivity extends AbstractActivity
+public abstract class SubActivity extends Activity
 {
 	/** The <code>MetaData</code> definition for the <code>SubActivity</code> */
-	protected static final MetaData<SubActivity> metadata;
+	protected static final Definition<SubActivity> metadata;
 
 	/** The parent <code>Activity</code> */
 	public static final Property<Activity> PARENT;
@@ -46,11 +46,53 @@ public abstract class SubActivity extends AbstractActivity
 
 	static
 	{
-		MetaDataBuilder<SubActivity> builder = new MetaDataBuilder<SubActivity> (SubActivity.class, Element.metadata);
+		PARENT = Property.getInstance (SubActivity.class, Activity.class, "parent", false, true);
 
-		PARENT = builder.addProperty (Activity.class, SubActivity::getParent, SubActivity::setParent, "parent", false, true);
+		metadata = Definition.getBuilder (SubActivity.class, Element.metadata)
+			.addProperty (PARENT, SubActivity::getParent, SubActivity::setParent)
+			.addProperty (Activity.NAME, Activity::getName, SubActivity::setName)
+			.build ();
+	}
 
-		metadata = builder.build ();
+	/**
+	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
+	 *
+	 * @return The <code>ActivityType</code> instance
+	 */
+
+	@Override
+	public final ActivityType getType()
+	{
+		return this.getParent ().getType ();
+	}
+
+	/**
+	 * Get the <code>Course</code> with which the <code>Activity</code> is
+	 * associated.
+	 *
+	 * @return The <code>Course</code> instance
+	 */
+
+	@Override
+	public final Course getCourse ()
+	{
+		return this.getParent ().getCourse ();
+	}
+
+	/**
+	 * Get the <code>Set</code> of <code>Grade</code> instances which are
+	 * associated with the <code>Activity</code>.  Not all
+	 * <code>Activity</code> instances are graded.  If the
+	 * <code>Activity</code> does is not graded then the <code>Set</code> will
+	 * be empty.
+	 *
+	 * @return A <code>Set</code> of <code>Grade</code> instances
+	 */
+
+	@Override
+	public final Set<Grade> getGrades ()
+	{
+		return this.getParent ().getGrades ();
 	}
 
 	/**
@@ -73,4 +115,51 @@ public abstract class SubActivity extends AbstractActivity
 	 */
 
 	protected abstract void setParent (Activity activity);
+
+	/**
+	 * Set the name of the <code>Activity</code>.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Activity</code>
+	 * instance is loaded.
+	 *
+	 * @param  name The name of the <code>Activity</code>, not null
+	 */
+
+	protected abstract void setName (String name);
+
+	/**
+	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
+	 * for the <code>Activity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
+	 *
+	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
+	 *                       instances, not null
+	 */
+
+	protected abstract void setSubActivities (List<SubActivity> subactivities);
+
+	/**
+	 * Add the specified <code>SubActivity</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to add, not null
+	 *
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully added, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean addSubActivity (SubActivity subactivity);
+
+	/**
+	 * Remove the specified <code>SubActivity</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to remove, not null
+	 *
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully removed, <code>False</code>
+	 *                     otherwise
+	 */
+
+	protected abstract boolean removeSubActivity (SubActivity subactivity);
 }

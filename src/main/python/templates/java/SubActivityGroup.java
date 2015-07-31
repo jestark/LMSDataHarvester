@@ -18,11 +18,11 @@ package ca.uoguelph.socs.icc.edm.domain.element.activity.${ActivitySource};
 
 import java.util.List;
 
+import java.util.ArrayList;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-
-import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
 
 /**
  * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
@@ -42,11 +42,29 @@ import ca.uoguelph.socs.icc.edm.domain.element.GenericSubActivity;
  * </ul>
  *
  * @author  James E. Stark
- * @version 1.2
+ * @version 1.3
  */
 
-public class ${ClassName} extends GenericSubActivity
+public class ${ClassName} extends SubActivity
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
+	/** The primary key for the <code>${ClassName}</code> */
+	private Long id;
+
+	/** The name of the <code>SubActivity</code> */
+	private String name;
+
+	/** The parent <code>Activity</code> */
+	private Activity parent;
+
+	/** The <code>List</code> of <code>LogEntry</code> instances */
+	private List<LogEntry> log;
+
+	/** The <code>List</code> of <code>SubActivity</code> instances*/
+	private List<SubActivity> subactivities;
+
 	/**
 	 * Register the <code>${ClassName}</code> with the factories on
 	 * initialization.
@@ -54,12 +72,9 @@ public class ${ClassName} extends GenericSubActivity
 
 	static
 	{
-		SubActivity.metadata.addImplementation (${ClassName}.class, ${ClassName}::new);
-		GenericSubActivity.registerActivity (${ClassName}.class, ${ParentClass}.class);
+//		SubActivity.metadata.addImplementation (${ClassName}.class, ${ClassName}::new);
+		Activity.registerImplementation (${ClassName}.class, ${ParentClass}.class);
 	}
-
-	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.
@@ -68,6 +83,13 @@ public class ${ClassName} extends GenericSubActivity
 	protected ${ClassName} ()
 	{
 		super ();
+
+		this.id = null;
+		this.name = null;
+		this.parent = null;
+
+		this.log = new ArrayList<LogEntry> ();
+		this.subactivities = new ArrayList<SubActivity> ();
 	}
 
 	/**
@@ -84,7 +106,7 @@ public class ${ClassName} extends GenericSubActivity
 	@Override
 	public Long getId ()
 	{
-		return super.getId ();
+		return this.id;
 	}
 
 	/**
@@ -104,44 +126,39 @@ public class ${ClassName} extends GenericSubActivity
 	@Override
 	protected void setId (final Long id)
 	{
-		super.setId (id);
+		this.id = id;
 	}
 
 	/**
-	 * Get the <code>List</code> of <code>SubActivity</code> instances
-	 * associated with the <code>Activity</code>.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
+	 * Get the name of the <code>Activity</code>.  Not all
+	 * <code>Activity</code> instances have names.  For those
+	 * <code>Activity</code> instances which do not have names, the name of the
+	 * associated <code>ActivityType</code> will be returned.
 	 *
-	 * @return The <code>List</code> of <code>SubActivity</code> instances
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Activity</code>
 	 */
 
-	public List<SubActivity> getSubActivities ()
+	@Override
+	public String getName ()
 	{
-		return super.getSubActivities ();
+		return this.name;
 	}
 
 	/**
-	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
-	 * for the <code>Activity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
+	 * Set the name of the <code>SubActivity</code>.  This method is intended
+	 * to be used by a <code>DataStore</code> when the <code>SubActivity</code>
+	 * instance is loaded.
 	 *
-	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
-	 *                       instances, not null
+	 * @param  name The name of the <code>SubActivity</code>, not null
 	 */
 
-	protected void setSubActivities (final List<SubActivity> subactivities)
+	@Override
+	protected void setName (final String name)
 	{
-		assert subactivities != null : "subactivities is NULL";
+		assert name != null : "name is NULL";
 
-		super.setSubActivities (subactivities);
+		this.name = name;
 	}
 
 	/**
@@ -158,7 +175,7 @@ public class ${ClassName} extends GenericSubActivity
 	@Override
 	public Activity getParent ()
 	{
-		return super.getParent ();
+		return this.parent;
 	}
 
 	/**
@@ -175,10 +192,154 @@ public class ${ClassName} extends GenericSubActivity
 	 *                  <code>SubActivity</code> instance
 	 */
 
+	@Override
 	protected void setParent (final Activity activity)
 	{
 		assert activity != null : "activity is NULL";
 
-		super.setParent (activity);
+		this.parent = activity;
+	}
+
+	/**
+	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
+	 * which act upon the <code>Activity</code>.
+	 *
+	 * @return A <code>List</code> of <code>LogEntry</code> instances
+	 */
+
+	@Override
+	public List<LogEntry> getLog ()
+	{
+		return new ArrayList<LogEntry> (this.log);
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
+	 * associated with the <code>Activity</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Activity</code> instance is loaded.
+	 *
+	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
+	 *             not null
+	 */
+
+	@Override
+	protected void setLog (final List<LogEntry> log)
+	{
+		assert log != null : "entry is NULL";
+
+		this.log = log;
+	}
+
+	/**
+	 * Add the specified <code>LogEntry</code> to the specified
+	 * <code>Activity</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to add, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully added, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean addLog (final LogEntry entry)
+	{
+		assert log != null : "entry is NULL";
+
+		return this.log.add (entry);
+	}
+
+	/**
+	 * Remove the specified <code>LogEntry</code> from the specified
+	 * <code>Activity</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to remove, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully removed, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean removeLog (final LogEntry entry)
+	{
+		assert log != null : "entry is NULL";
+
+		return this.log.remove (entry);
+	}
+
+	/**
+	 * Get the <code>List</code> of <code>SubActivity</code> instances
+	 * associated with the <code>Activity</code>.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the child class.
+	 *
+	 * @return The <code>List</code> of <code>SubActivity</code> instances
+	 */
+
+	@Override
+	public List<SubActivity> getSubActivities ()
+	{
+		return new ArrayList<SubActivity> (this.subactivities);
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
+	 * for the <code>Activity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the child class.
+	 *
+	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
+	 *                       instances, not null
+	 */
+
+	@Override
+	protected void setSubActivities (final List<SubActivity> subactivities)
+	{
+		assert subactivities != null : "subactivities is NULL";
+
+		this.subactivities = subactivities;
+	}
+
+	/**
+	 * Add the specified <code>SubActivity</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to add, not null
+	 *
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully added, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean addSubActivity (final SubActivity subactivity)
+	{
+		assert subactivity != null : "subactivity is NULL";
+
+		return this.subactivities.add (subactivity);
+	}
+
+	/**
+	 * Remove the specified <code>SubActivity</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to remove, not null
+	 *
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully removed, <code>False</code>
+	 *                     otherwise
+	 */
+
+	@Override
+	protected boolean removeSubActivity (final SubActivity subactivity)
+	{
+		assert subactivity != null : "subactivity is NULL";
+
+		return this.subactivities.remove (subactivity);
 	}
 }

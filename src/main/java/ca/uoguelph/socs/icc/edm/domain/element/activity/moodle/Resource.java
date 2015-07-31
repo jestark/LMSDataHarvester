@@ -24,7 +24,7 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.NamedActivity;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/resource
@@ -46,10 +46,13 @@ import ca.uoguelph.socs.icc.edm.domain.element.GenericNamedActivity;
  * @version 1.1
  */
 
-public class Resource extends GenericNamedActivity
+public class Resource extends NamedActivity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
+
+	/** The primary key for the <code>Resource</code> */
+	private Long id;
 
 	/**
 	 * Register the <code>Resource</code> with the factories on
@@ -58,8 +61,8 @@ public class Resource extends GenericNamedActivity
 
 	static
 	{
-		Activity.metadata.addImplementation (Resource.class, Resource::new);
-		GenericNamedActivity.registerActivity (Resource.class, "moodle", "resource");
+//		GenericNamedActivity.metadata.addImplementation (Resource.class, Resource::new);
+		Activity.registerImplementation ("moodle", "resource", Resource.class);
 	}
 
 	/**
@@ -85,7 +88,7 @@ public class Resource extends GenericNamedActivity
 	@Override
 	public Long getId ()
 	{
-		return super.getId ();
+		return this.id;
 	}
 
 	/**
@@ -105,6 +108,6 @@ public class Resource extends GenericNamedActivity
 	@Override
 	protected void setId (final Long id)
 	{
-		super.setId (id);
+		this.id = id;
 	}
 }
