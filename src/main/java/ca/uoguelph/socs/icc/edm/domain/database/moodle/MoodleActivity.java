@@ -17,8 +17,14 @@
 package ca.uoguelph.socs.icc.edm.domain.database.moodle;
 
 import java.util.List;
+import java.util.Set;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
@@ -28,8 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.element.ActivityInstance;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
 
 /**
  * Moodle specific implementation of the core <code>Activity</code> data.
@@ -58,6 +62,18 @@ public class MoodleActivity extends ActivityInstance
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The primary key of the <code>MoodleActivity</code> */
+	private Long id;
+
+	/** The type of the <code>Activity</code> */
+	private ActivityType type;
+
+	/** The associated <code>Course</code> */
+	private Course course;
+
+	/** The associated <code>LogEntry</code> instances */
+	private List<LogEntry> log;
+
 	/** The <code>Activity</code> instance containing the data */
 	private Activity activity;
 
@@ -71,15 +87,7 @@ public class MoodleActivity extends ActivityInstance
 
 	static
 	{
-		MetaDataBuilder<Activity, MoodleActivity> builder = MetaDataBuilder.newInstance (Activity.class, MoodleActivity.class);
-		builder.setCreateMethod (MoodleActivity::new);
-
-		builder.addProperty (Activity.ID, Activity::getId, MoodleActivity::setId);
-		builder.addProperty (Activity.COURSE, Activity::getCourse, MoodleActivity::setCourse);
-		builder.addProperty (Activity.NAME, Activity::getName, null);
-		builder.addProperty (Activity.TYPE, Activity::getType, MoodleActivity::setType);
-
-		builder.build ();
+//		Activity.metadata.addImplementation (MoodleActivity.class, MoodleActivity::new);
 	}
 
 	/**
@@ -88,10 +96,13 @@ public class MoodleActivity extends ActivityInstance
 
 	protected MoodleActivity ()
 	{
-		super ();
-
+		this.id = null;
+		this.type = null;
+		this.course = null;
 		this.activity = null;
 		this.instanceid = null;
+
+		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**
@@ -118,13 +129,36 @@ public class MoodleActivity extends ActivityInstance
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
 
-			ebuilder.appendSuper (super.equals (obj));
-			ebuilder.append (this.instanceid, ((MoodleActivity) obj).instanceid);
+			ebuilder.append (this.type, ((MoodleActivity) obj).getType ());
+			ebuilder.append (this.course, ((MoodleActivity) obj).getCourse ());
+			ebuilder.append (this.instanceid, ((MoodleActivity) obj).getInstanceId ());
 
 			result = ebuilder.isEquals ();
 		}
 
 		return result;
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
+	 * The hash code is computed based upon the <code>ActivityType</code>, the
+	 * <code>Course</code> and the Moodle instance id.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 1013;
+		final int mult = 991;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.getType ());
+		hbuilder.append (this.getCourse ());
+		hbuilder.append (this.getInstanceId ());
+
+		return hbuilder.toHashCode ();
 	}
 
 	/**
@@ -141,7 +175,7 @@ public class MoodleActivity extends ActivityInstance
 	@Override
 	public Long getId ()
 	{
-		return super.getId ();
+		return this.id;
 	}
 
 	/**
@@ -161,7 +195,30 @@ public class MoodleActivity extends ActivityInstance
 	@Override
 	protected void setId (final Long id)
 	{
-		super.setId (id);
+		this.id = id;
+	}
+
+	/**
+	 * Get the name of the <code>Activity</code>.  Not all <code>Activity</code>
+	 * instances have names.  For those <code>Activity</code> instances which do
+	 * not have names, the name of the associated <code>ActivityType</code> will
+	 * be returned.
+	 *
+	 * @return A <code>String</code> containing the name of the
+	 *         <code>Activity</code>
+	 */
+
+	@Override
+	public String getName ()
+	{
+		String name = (this.getType ()).getName ();
+
+		if (this.activity != null)
+		{
+			name = this.activity.getName ();
+		}
+
+		return name;
 	}
 
 	/**
@@ -178,7 +235,7 @@ public class MoodleActivity extends ActivityInstance
 	@Override
 	public Course getCourse ()
 	{
-		return super.getCourse ();
+		return this.course;
 	}
 
 	/**
@@ -198,7 +255,7 @@ public class MoodleActivity extends ActivityInstance
 	{
 		assert course != null : "course is NULL";
 
-		super.setCourse (course);
+		this.course = course;
 	}
 
 	/**
@@ -214,7 +271,7 @@ public class MoodleActivity extends ActivityInstance
 	@Override
 	public ActivityType getType ()
 	{
-		return super.getType ();
+		return this.type;
 	}
 
 	/**
@@ -234,27 +291,95 @@ public class MoodleActivity extends ActivityInstance
 	{
 		assert type != null : "type is NULL";
 
-		super.setType (type);
+		this.type = type;
 	}
 
 	/**
-	 * Determine if there are <code>SubActivity</code> instances associated with
-	 * the <code>Activity</code> instance.
+	 * Get the <code>Set</code> of <code>Grade</code> instances which are
+	 * associated with the <code>Activity</code>.  Not all
+	 * <code>Activity</code> instances are graded.  If the
+	 * <code>Activity</code> does is not graded then the <code>Set</code> will
+	 * be empty.
 	 *
-	 * @return <code>True</code> if the <code>Activity</code> instance has
-	 *         <code>SubActivity</code> instances associated with it.
-	 *         <code>False</code> otherwise
+	 * @return A <code>Set</code> of <code>Grade</code> instances
 	 */
 
 	@Override
-	public boolean hasSubActivities ()
+	public Set<Grade> getGrades ()
 	{
-		return ((this.activity != null) && (this.activity.hasSubActivities ()));
+		return new HashSet<Grade> ();
 	}
 
 	/**
-	 * Get the <code>List</code> of <code>SubActivity</code> instances associated
-	 * with the <code>Actvity</code>.
+	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
+	 * which act upon the <code>Activity</code>.
+	 *
+	 * @return A <code>List</code> of <code>LogEntry</code> instances
+	 */
+
+	@Override
+	public List<LogEntry> getLog ()
+	{
+		return new ArrayList<LogEntry> (this.log);
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
+	 * associated with the <code>Activity</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Activity</code> instance is loaded.
+	 *
+	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
+	 *             not null
+	 */
+
+	@Override
+	protected void setLog (final List<LogEntry> log)
+	{
+		assert log != null : "log is NULL";
+
+		this.log = log;
+	}
+
+	/**
+	 * Add the specified <code>LogEntry</code> to the specified
+	 * <code>Activity</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to add, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully added, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean addLog (final LogEntry entry)
+	{
+		assert entry != null : "entry is NULL";
+
+		return this.log.add (entry);
+	}
+
+	/**
+	 * Remove the specified <code>LogEntry</code> from the specified
+	 * <code>Activity</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to remove, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully removed, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean removeLog (final LogEntry entry)
+	{
+		assert entry != null : "entry is NULL";
+
+		return this.log.remove (entry);
+	}
+
+	/**
+	 * Get the <code>List</code> of <code>SubActivity</code> instances
+	 * associated with the <code>Actvity</code>.
 	 *
 	 * @return The <code>List</code> of <code>SubActivity</code> instances
 	 */
@@ -262,7 +387,7 @@ public class MoodleActivity extends ActivityInstance
 	@Override
 	public List<SubActivity> getSubActivities ()
 	{
-		return (this.activity != null) ? this.activity.getSubActivities () : super.getSubActivities ();
+		return (this.activity != null) ? this.activity.getSubActivities () : new ArrayList<SubActivity> ();
 	}
 
 	/**
@@ -292,29 +417,6 @@ public class MoodleActivity extends ActivityInstance
 	}
 
 	/**
-	 * Get the name of the <code>Activity</code>.  Not all <code>Activity</code>
-	 * instances have names.  For those <code>Activity</code> instances which do
-	 * not have names, the name of the associated <code>ActivityType</code> will
-	 * be returned.
-	 *
-	 * @return A <code>String</code> containing the name of the
-	 *         <code>Activity</code>
-	 */
-
-	@Override
-	public String getName ()
-	{
-		String name = (this.getType ()).getName ();
-
-		if (this.activity != null)
-		{
-			name = this.activity.getName ();
-		}
-
-		return name;
-	}
-
-	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
 	 * containing the instance specific data for the <code>Activity</code>.
 	 *
@@ -340,5 +442,24 @@ public class MoodleActivity extends ActivityInstance
 		assert instanceid != null : "instanceid is NULL";
 
 		this.instanceid = instanceid;
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>Activity</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>Activity</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("type", this.type);
+		builder.append ("course", this.course);
+
+		return builder.toString ();
 	}
 }

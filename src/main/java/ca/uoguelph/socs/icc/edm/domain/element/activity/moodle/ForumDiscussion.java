@@ -16,9 +16,14 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
-import java.util.List;
+import java.io.Serializable;
 
+import java.util.List;
 import java.util.ArrayList;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
@@ -39,13 +44,15 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
  * <li>ActivityType   = forum
  * <li>ClassName      = ForumDiscussion
  * <li>ParentClass    = Forum
+ * <li>HashBase       = 2029
+ * <li>HashMult       = 661
  * </ul>
  *
  * @author  James E. Stark
  * @version 1.3
  */
 
-public class ForumDiscussion extends SubActivity
+public class ForumDiscussion extends SubActivity implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -82,14 +89,67 @@ public class ForumDiscussion extends SubActivity
 
 	protected ForumDiscussion ()
 	{
-		super ();
-
 		this.id = null;
 		this.name = null;
 		this.parent = null;
 
 		this.log = new ArrayList<LogEntry> ();
 		this.subactivities = new ArrayList<SubActivity> ();
+	}
+
+	/**
+	 * Compare two <code>SubActivity</code> instances to determine if they are
+	 * equal.  The <code>SubActivity</code> instances are compared based upon
+	 * their names and the parent <code>Activity</code>.
+	 *
+	 * @param  obj The <code>SubActivity</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>SubActivity</code>
+	 *             instances are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof ForumDiscussion)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.name, ((ForumDiscussion) obj).getName ());
+			ebuilder.append (this.parent, ((ForumDiscussion) obj).getParent ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>SubActivity</code>
+	 * instance.  The hash code is computed based upon the parent
+	 * <code>Activity</code> and the name of the <code>SubActivity</code>
+	 * instance.
+	 *
+	 * @return The hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 2029;
+		final int mult = 661;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.getName ());
+		hbuilder.append (this.getParent ());
+
+		return hbuilder.toHashCode ();
 	}
 
 	/**
@@ -341,5 +401,24 @@ public class ForumDiscussion extends SubActivity
 		assert subactivity != null : "subactivity is NULL";
 
 		return this.subactivities.remove (subactivity);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>SubActivity</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>SubActivity</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("name", this.name);
+		builder.append ("parent", this.parent);
+
+		return builder.toString ();
 	}
 }

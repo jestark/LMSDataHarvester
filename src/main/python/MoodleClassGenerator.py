@@ -25,10 +25,11 @@ def processNode (node, data, template):
             processNode (child, params, template)
 
     else:
-        params ["Builder"] = node.attrib ["builder"]
-        
+        params ["HashBase"] = node.attrib ["base"]
+        params ["HashMult"] = node.attrib ["mult"]
+
         if (node.tag == "activity"):
-            entry = "Named"
+            entry = "Activity"
 
             params ["ClassName"] = node.attrib ["name"]
             params ["ActivityType"] = node.attrib ["type"]
@@ -36,20 +37,14 @@ def processNode (node, data, template):
             for child in node:
                 tag = processNode (child, params, template)
 
-                if (tag == "subactivity"):
-                    entry = "Group"
-
         elif (node.tag == "subactivity"):
-            entry = "Member"
+            entry = "SubActivity"
 
             params ["ParentClass"] = params ["ClassName"]
             params ["ClassName"] = node.attrib ["name"]
 
             for child in node:
                 tag = processNode (child, params, template)
-
-                if (tag == "subactivity"):
-                    entry = "SubGroup"
 
         elif (node.tag == "log"):
             entry = "Log"
@@ -66,10 +61,8 @@ def processNode (node, data, template):
 
 
 template = dict ()
-template ["Named"] = loadTemplate ("templates/java/NamedActivity.java")
-template ["Group"] = loadTemplate ("templates/java/NamedActivityGroup.java")
-template ["Member"] = loadTemplate ("templates/java/SubActivity.java")
-template ["SubGroup"] = loadTemplate ("templates/java/SubActivityGroup.java")
+template ["Activity"] = loadTemplate ("templates/java/Activity.java")
+template ["SubActivity"] = loadTemplate ("templates/java/SubActivity.java")
 template ["Log"] = loadTemplate ("templates/java/Log.java");
 
 config = xml.etree.ElementTree.parse (sys.argv[1]);

@@ -16,22 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
-import java.io.Serializable;
-
 import java.util.List;
 import java.util.Set;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
-import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
@@ -52,100 +40,11 @@ public abstract class NamedActivity extends ActivityInstance
 	/** The <code>MetaData</code> definition for the <code>NamedActivity</code> */
 	protected static final Definition<NamedActivity> metadata;
 
-	/** The name of the activity */
-	private String name;
-
-	/** The <code>Set</code> of <code>Grade</code> instances */
-	private Set<Grade> grades;
-
-	/** The <code>List</code> of <code>SubActivity</code> instances */
-	private List<SubActivity> subactivities;
-
 	static
 	{
 		metadata = Definition.getBuilder (NamedActivity.class, ActivityInstance.metadata)
 			.addProperty (Activity.NAME, Activity::getName, NamedActivity::setName)
 			.build ();
-	}
-
-	/**
-	 * Create the <code>NamedActivity</code> with null values.
-	 */
-
-	protected NamedActivity ()
-	{
-		super ();
-		this.name = null;
-
-		this.grades = new HashSet<> ();
-		this.subactivities = new ArrayList<> ();
-	}
-
-	/**
-	 * Compare two <code>Activity</code> instances to determine if they are
-	 * equal.  The <code>Activity</code> instances are compared based upon
-	 * their names.
-	 *
-	 * @param  obj The <code>Activity</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>Activity</code> instances
-	 *             are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof NamedActivity)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-
-			ebuilder.appendSuper (super.equals (obj));
-			ebuilder.append (this.name, ((NamedActivity) obj).name);
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed based upon the name of the instance.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 1019;
-		final int mult = 983;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-		hbuilder.append (this.name);
-
-		return hbuilder.toHashCode ();
-	}
-
-	/**
-	 * Get the name of the <code>Activity</code>.
-	 *
-	 * @return A <code>String</code> containing the name of the
-	 *         <code>Activity</code>
-	 */
-
-	@Override
-	public String getName ()
-	{
-		return this.name;
 	}
 
 	/**
@@ -156,28 +55,7 @@ public abstract class NamedActivity extends ActivityInstance
 	 * @param  name The name of the <code>Activity</code>, not null
 	 */
 
-	protected void setName (final String name)
-	{
-		assert name != null : "name is NULL";
-
-		this.name = name;
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Grade</code> instances which are
-	 * associated with the <code>Activity</code>.  Not all
-	 * <code>Activity</code> instances are graded.  If the
-	 * <code>Activity</code> does is not graded then the <code>Set</code> will
-	 * be empty.
-	 *
-	 * @return A <code>Set</code> of <code>Grade</code> instances
-	 */
-
-	@Override
-	public Set<Grade> getGrades ()
-	{
-		return new HashSet<Grade> (this.grades);
-	}
+	protected abstract void setName (String name);
 
 	/**
 	 * Initialize the <code>Set</code> of <code>Grade</code> instances
@@ -189,12 +67,7 @@ public abstract class NamedActivity extends ActivityInstance
 	 *                null
 	 */
 
-	protected void setGrades (final Set<Grade> grades)
-	{
-		assert grades != null : "grades is NULL";
-
-		this.grades = grades;
-	}
+	protected abstract void setGrades (Set<Grade> grades);
 
 	/**
 	 * Add the specified <code>Grade</code> to the
@@ -206,12 +79,7 @@ public abstract class NamedActivity extends ActivityInstance
 	 *                  successfully added, <code>False</code> otherwise
 	 */
 
-	protected boolean addGrade (final Grade grade)
-	{
-		assert grade != null : "grade is NULL";
-
-		return this.grades.add (grade);
-	}
+	protected abstract boolean addGrade (Grade grade);
 
 	/**
 	 * Remove the specified <code>Grade</code> from the
@@ -223,25 +91,7 @@ public abstract class NamedActivity extends ActivityInstance
 	 *                  successfully removed from, <code>False</code> otherwise
 	 */
 
-	protected boolean removeGrade (final Grade grade)
-	{
-		assert grade != null : "grade is NULL";
-
-		return this.grades.remove (grade);
-	}
-
-	/**
-	 * Get the <code>List</code> of <code>SubActivity</code> instances
-	 * associated with the <code>Actvity</code>.
-	 *
-	 * @return The <code>List</code> of <code>SubActivity</code> instances
-	 */
-
-	@Override
-	public List<SubActivity> getSubActivities ()
-	{
-		return new ArrayList<SubActivity> (this.subactivities);
-	}
+	protected abstract boolean removeGrade (Grade grade);
 
 	/**
 	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
@@ -253,12 +103,7 @@ public abstract class NamedActivity extends ActivityInstance
 	 *                       instances, not null
 	 */
 
-	protected void setSubActivities (final List<SubActivity> subactivities)
-	{
-		assert subactivities != null : "subactivities is NULL";
-
-		this.subactivities = subactivities;
-	}
+	protected abstract void setSubActivities (List<SubActivity> subactivities);
 
 	/**
 	 * Add the specified <code>SubActivity</code> to the
@@ -270,12 +115,7 @@ public abstract class NamedActivity extends ActivityInstance
 	 *                     was successfully added, <code>False</code> otherwise
 	 */
 
-	protected boolean addSubActivity (final SubActivity subactivity)
-	{
-		assert subactivity != null : "subactivity is NULL";
-
-		return this.subactivities.add (subactivity);
-	}
+	protected abstract boolean addSubActivity (SubActivity subactivity);
 
 	/**
 	 * Remove the specified <code>SubActivity</code> from the
@@ -288,29 +128,5 @@ public abstract class NamedActivity extends ActivityInstance
 	 *                     otherwise
 	 */
 
-	protected boolean removeSubActivity (final SubActivity subactivity)
-	{
-		assert subactivity != null : "subactivity is NULL";
-
-		return this.subactivities.remove (subactivity);
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>Activity</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the
-	 *         <code>Activity</code> instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.appendSuper (super.toString ());
-		builder.append ("name", this.name);
-
-		return builder.toString ();
-	}
+	protected abstract boolean removeSubActivity (SubActivity subactivity);
 }

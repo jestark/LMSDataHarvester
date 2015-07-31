@@ -16,8 +16,14 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
+import java.io.Serializable;
+
 import java.util.List;
 import java.util.ArrayList;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
@@ -26,25 +32,27 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/book
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
- * this class will be accessed though the <code>SubActivity</code>
- * interface, along with the relevant manager, and builder.  See the
- * <code>SubActivity</code> interface documentation for details.
+ * this class will be accessed though the <code>Activity</code> interface,
+ * along with the relevant manager, and builder.  See the <code>Activity</code>
+ * interface documentation for details.
  * <p>
- * This class was generated from the <code>SubActivity</code> template, with
- * the following values:
+ * This class was generated from the <code>SubActivityGroup</code> template,
+ * with the following values:
  * <p>
  * <ul>
  * <li>ActivitySource = moodle
  * <li>ActivityType   = book
  * <li>ClassName      = BookChapter
  * <li>ParentClass    = Book
+ * <li>HashBase       = 2011
+ * <li>HashMult       = 683
  * </ul>
  *
  * @author  James E. Stark
- * @version 1.2
+ * @version 1.3
  */
 
-public class BookChapter extends SubActivity
+public class BookChapter extends SubActivity implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -62,7 +70,7 @@ public class BookChapter extends SubActivity
 	private List<LogEntry> log;
 
 	/** The <code>List</code> of <code>SubActivity</code> instances*/
-//	private List<SubActivity> subactivities;
+	private List<SubActivity> subactivities;
 
 	/**
 	 * Register the <code>BookChapter</code> with the factories on
@@ -81,11 +89,67 @@ public class BookChapter extends SubActivity
 
 	protected BookChapter ()
 	{
-		super ();
+		this.id = null;
 		this.name = null;
 		this.parent = null;
 
 		this.log = new ArrayList<LogEntry> ();
+		this.subactivities = new ArrayList<SubActivity> ();
+	}
+
+	/**
+	 * Compare two <code>SubActivity</code> instances to determine if they are
+	 * equal.  The <code>SubActivity</code> instances are compared based upon
+	 * their names and the parent <code>Activity</code>.
+	 *
+	 * @param  obj The <code>SubActivity</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>SubActivity</code>
+	 *             instances are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof BookChapter)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.name, ((BookChapter) obj).getName ());
+			ebuilder.append (this.parent, ((BookChapter) obj).getParent ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>SubActivity</code>
+	 * instance.  The hash code is computed based upon the parent
+	 * <code>Activity</code> and the name of the <code>SubActivity</code>
+	 * instance.
+	 *
+	 * @return The hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 2011;
+		final int mult = 683;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.getName ());
+		hbuilder.append (this.getParent ());
+
+		return hbuilder.toHashCode ();
 	}
 
 	/**
@@ -125,7 +189,7 @@ public class BookChapter extends SubActivity
 		this.id = id;
 	}
 
-		/**
+	/**
 	 * Get the name of the <code>Activity</code>.  Not all
 	 * <code>Activity</code> instances have names.  For those
 	 * <code>Activity</code> instances which do not have names, the name of the
@@ -277,7 +341,7 @@ public class BookChapter extends SubActivity
 	@Override
 	public List<SubActivity> getSubActivities ()
 	{
-		return new ArrayList<SubActivity> ();
+		return new ArrayList<SubActivity> (this.subactivities);
 	}
 
 	/**
@@ -297,7 +361,9 @@ public class BookChapter extends SubActivity
 	@Override
 	protected void setSubActivities (final List<SubActivity> subactivities)
 	{
-		throw new UnsupportedOperationException ();
+		assert subactivities != null : "subactivities is NULL";
+
+		this.subactivities = subactivities;
 	}
 
 	/**
@@ -313,7 +379,9 @@ public class BookChapter extends SubActivity
 	@Override
 	protected boolean addSubActivity (final SubActivity subactivity)
 	{
-		throw new UnsupportedOperationException ();
+		assert subactivity != null : "subactivity is NULL";
+
+		return this.subactivities.add (subactivity);
 	}
 
 	/**
@@ -330,6 +398,27 @@ public class BookChapter extends SubActivity
 	@Override
 	protected boolean removeSubActivity (final SubActivity subactivity)
 	{
-		throw new UnsupportedOperationException ();
+		assert subactivity != null : "subactivity is NULL";
+
+		return this.subactivities.remove (subactivity);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>SubActivity</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>SubActivity</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("name", this.name);
+		builder.append ("parent", this.parent);
+
+		return builder.toString ();
 	}
 }
