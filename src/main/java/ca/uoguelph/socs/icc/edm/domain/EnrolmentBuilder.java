@@ -136,12 +136,13 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 * Create the <code>EnrolmentBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  builder   The <code>Builder</code>, not null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
 	 */
 
-	protected EnrolmentBuilder (final DataStore datastore, final Builder<Enrolment> builder)
+	protected EnrolmentBuilder (final DataStore datastore, final Class<? extends Element> element)
 	{
-		super (datastore, builder);
+		super (datastore, element);
 	}
 
 	/**

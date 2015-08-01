@@ -136,12 +136,13 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	 * Create the <code>GradeBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  builder   The <code>Builder</code>, not null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
 	 */
 
-	protected GradeBuilder (final DataStore datastore, final Builder<Grade> builder)
+	protected GradeBuilder (final DataStore datastore, final Class<? extends Element> element)
 	{
-		super (datastore, builder);
+		super (datastore, element);
 	}
 
 	/**

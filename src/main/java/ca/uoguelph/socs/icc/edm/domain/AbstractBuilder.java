@@ -72,34 +72,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class AbstractBuilder<T extends Element>
 {
-	/**
-	 * Factory for creating the builders.
-	 *
-	 * @param  <T> The <code>Element</code> interface type of the builder
-	 */
-
-	private static final class Factory<T extends Element> implements Receiver<T, Builder<T>>
-	{
-		/**
-		 * Create the <code>Builder</code> using the supplied
-		 * <code>MetaData</code>.
-		 *
-		 * @param  metadata The <code>MetaData</code>, not null
-		 * @param  type     The <code>Element</code> implementation class, not
-		 *                  null
-		 *
-		 * @return          The <code>Builder</code>
-		 */
-
-		@Override
-		public <U extends T> Builder<T> apply (final MetaData<T> metadata, final Class<U> type)
-		{
-			assert metadata != null : "metadata is NULL";
-
-			return new BuilderImpl<T, U> (metadata, type);
-		}
-	}
-
 	/** The Logger */
 	protected final Logger log;
 
@@ -111,25 +83,6 @@ public abstract class AbstractBuilder<T extends Element>
 
 	/** The reference <code>Element</code> */
 	protected T element;
-
-	/**
-	 * Get an instance of the <code>Builder</code> which corresponds to the
-	 * specified <code>Element</code> implementation class.
-	 *
-	 * @param  <T>       The <code>Element</code> type produced by the builder
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
-	 * @param  datastore The <code>DataStore</code> instance, not null
-	 */
-
-	protected static <T extends Element> Builder<T> getBuilder (final DataStore datastore, final Class<T> type, final Class<? extends Element> element)
-	{
-		assert datastore != null : "manager is NULL";
-		assert element != null : "element is NULL";
-
-		return datastore.getMetaData (type)
-			.inject (element, new Factory<T> ());
-	}
 
 	/**
 	 * Create an instance of the builder for the specified <code>Element</code>
@@ -150,7 +103,7 @@ public abstract class AbstractBuilder<T extends Element>
 	 *                               the <code>Element</code>
 	 */
 
-	protected static <T extends Element, U extends AbstractBuilder<T>> U getInstance (final DataStore datastore, final Class<T> element, BiFunction<DataStore, Builder<T>, U> create)
+	protected static <T extends Element, U extends AbstractBuilder<T>> U getInstance (final DataStore datastore, final Class<T> element, BiFunction<DataStore, Class<? extends Element>, U> create)
 	{
 		assert datastore != null : "datastore is NULL";
 		assert element != null : "element is NULL";
@@ -170,7 +123,7 @@ public abstract class AbstractBuilder<T extends Element>
 			throw new IllegalStateException ("Element is not available for this datastore");
 		}
 
-		return create.apply (datastore, AbstractBuilder.getBuilder (datastore, element, impl));
+		return create.apply (datastore, impl);
 	}
 
 	/**
@@ -203,18 +156,19 @@ public abstract class AbstractBuilder<T extends Element>
 	 * Create the <code>AbstractBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  builder   The <code>Builder</code>, not null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
 	 */
 
-	protected AbstractBuilder (final DataStore datastore, final Builder<T> builder)
+	protected AbstractBuilder (final DataStore datastore, final Class<? extends Element> element)
 	{
 		assert datastore != null : "datastore is NULL";
-		assert builder != null : "builder is NULL";
+		assert element != null : "element is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.datastore = datastore;
-		this.builder = builder;
+		this.builder = new Builder<T> (this.datastore.getMetaData (element));
 	}
 
 	/**

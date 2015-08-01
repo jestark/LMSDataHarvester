@@ -132,12 +132,13 @@ public final class UserBuilder extends AbstractBuilder<User>
 	 * Create an instance of the <code>UserBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  builder   The <code>Builder</code>, not null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
 	 */
 
-	protected UserBuilder (final DataStore datastore, final Builder<User> builder)
+	protected UserBuilder (final DataStore datastore, final Class<? extends Element> element)
 	{
-		super (datastore, builder);
+		super (datastore, element);
 	}
 
 	/**

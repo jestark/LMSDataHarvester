@@ -138,12 +138,13 @@ public final class ActivitySourceBuilder extends AbstractBuilder<ActivitySource>
 	 * Create the <code>ActivitySourceBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  builder   The <code>Builder</code>, not null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
 	 */
 
-	protected ActivitySourceBuilder (final DataStore datastore, final Builder<ActivitySource> builder)
+	protected ActivitySourceBuilder (final DataStore datastore, final Class<? extends Element> element)
 	{
-		super (datastore, builder);
+		super (datastore, element);
 	}
 
 	/**

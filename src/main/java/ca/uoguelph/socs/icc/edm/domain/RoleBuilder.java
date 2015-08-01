@@ -135,12 +135,13 @@ public final class RoleBuilder extends AbstractBuilder<Role>
 	 * Create the <code>RoleBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  builder   The <code>Builder</code>, not null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
 	 */
 
-	protected RoleBuilder (final DataStore datastore, final Builder<Role> builder)
+	protected RoleBuilder (final DataStore datastore, final Class<? extends Element> element)
 	{
-		super (datastore, builder);
+		super (datastore, element);
 	}
 
 	/**

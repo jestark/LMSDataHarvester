@@ -55,7 +55,7 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 		assert type != null : "type is NULL";
 		assert datastore.contains (type) : "type is NULL";
 
-		return AbstractActivityBuilder.getInstance (datastore, Activity.class, type, GenericActivityBuilder::new);
+		return AbstractActivityBuilder.getInstance (datastore, type, GenericActivityBuilder::new);
 	}
 
 	/**
@@ -157,11 +157,12 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 	 * Create the <code>GenericActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  builder   The <code>Builder</code>, not null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
 	 */
 
-	protected GenericActivityBuilder (final DataStore datastore, final Builder<Activity> builder)
+	protected GenericActivityBuilder (final DataStore datastore, final Class<? extends Element> element)
 	{
-		super (datastore, builder);
+		super (datastore, element);
 	}
 }

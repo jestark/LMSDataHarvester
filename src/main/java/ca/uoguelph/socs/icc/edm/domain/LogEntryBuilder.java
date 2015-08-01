@@ -137,12 +137,13 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 	 * Create the <code>LogEntryBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  builder   The <code>Builder</code>, not null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
 	 */
 
-	protected LogEntryBuilder (final DataStore datastore, final Builder<LogEntry> builder)
+	protected LogEntryBuilder (final DataStore datastore, final Class<? extends Element> element)
 	{
-		super (datastore, builder);
+		super (datastore, element);
 	}
 
 	/**

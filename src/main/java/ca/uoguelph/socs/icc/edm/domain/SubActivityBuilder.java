@@ -52,7 +52,7 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 		assert parent != null : "parent is NULL";
 		assert datastore.contains (parent) : "parent is not in the datastore";
 
-		return AbstractSubActivityBuilder.getInstance (datastore, SubActivity.class, parent, SubActivityBuilder::new);
+		return AbstractSubActivityBuilder.getInstance (datastore, parent, SubActivityBuilder::new);
 	}
 
 	/**
@@ -156,11 +156,12 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 * Create the <code>SubActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  builder   The <code>Builder</code>, not null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
 	 */
 
-	protected SubActivityBuilder (final DataStore datastore, final Builder<SubActivity> builder)
+	protected SubActivityBuilder (final DataStore datastore, final Class<? extends Element> element)
 	{
-		super (datastore, builder);
+		super (datastore, element);
 	}
 }

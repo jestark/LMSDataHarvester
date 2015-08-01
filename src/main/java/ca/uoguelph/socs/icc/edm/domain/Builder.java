@@ -16,32 +16,54 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.Map;
 import java.util.Set;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 
 /**
- * <code>MetaData</code> based <code>Element</code> builder.  This interface
- * exists to bury the generics for the <code>Builder</code> implementation
- * which operated in terms of the <code>Element</code> implementation class.
- * <p>
- * <code>Element</code> instances are built by this builder though a
- * <code>MetaData</code> mapping between a <code>Property</code> and the
- * instance methods that control access to its value.  Though this method a
- * single builder implementation can build any <code>Element</code> with a few
- * limitations.
- * <p>
- * The builder is not designed to handle properties that are mapped to
- * collections, unless the collection is static.  Also, value associated with
- * each <code>Property</code> must not contain any type parameters.
+ * Implementation of the <code>Builder</code> interface.
  *
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The type of <code>Element</code>
+ * @param   <U> The implementation type of the <code>Element</code>
  */
 
-interface Builder<T extends Element>
+final class Builder<T extends Element>
 {
+	/** The logger */
+	private final Logger log;
+
+	/** The meta-data definition of the <code>Element</code> */
+	private final MetaData<T> metadata;
+
+	/** The value associated with each property */
+	private T values;
+
+	/**
+	 * Create the <code></code>.
+	 *
+	 * @param metadata The <code>MetaData</code> for the <code>Element</code>
+	 */
+
+	protected Builder (final MetaData<T> metadata)
+	{
+		assert metadata != null : "definition is NULL";
+
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.metadata = metadata;
+		this.values = this.metadata.newInstance ();
+	}
+
 	/**
 	 * Get the <code>Set</code> of <code>Property</code> instances
 	 * corresponding to the <code>Element</code>.
@@ -50,7 +72,10 @@ interface Builder<T extends Element>
 	 *         instances for the <code>Element</code>
 	 */
 
-	public abstract Set<Property<?>> getProperties ();
+	public Set<Property<?>> getProperties ()
+	{
+		return this.metadata.getDefinition ().getProperties ();
+	}
 
 	/**
 	 * Modify an existing <code>Element</code> instance, or create a new
@@ -71,24 +96,87 @@ interface Builder<T extends Element>
 	 * @throws IllegalStateException if a required value is missing
 	 */
 
-	public abstract T build (final T element);
+	public T build (final T element)
+	{
+		this.log.trace ("build: element={}", element);
+
+		T result = null;
+		Set<Property<?>> properties = new HashSet<Property<?>> ();
+
+		// If the provided element is of the implementation type check for changes, ignore it otherwise
+		if (this.metadata.getElementClass ().isInstance (element))
+		{
+			result = element;
+		}
+
+		for (Property<?> property : this.metadata.getDefinition ().getProperties ())
+		{
+			// If any required are missing then bail
+			if ((property.isRequired ()) && (this.metadata.getDefinition ().getValue (property, this.values) == null))
+			{
+				this.log.error ("Required property is NULL: {}", property.getName ());
+				throw new IllegalStateException ("One or more required properties has a NULL value");
+			}
+
+			// Check for changes if appropriate, if a immutable property has been changed then we have to make a new instance
+			if ((result != null) && (this.metadata.getDefinition ().getValue (property, this.values) != this.metadata.getDefinition ().getValue (property, result)))
+			{
+				if (property.isMutable ())
+				{
+					properties.add (property);
+				}
+				else
+				{
+					result = null;
+				}
+			}
+		}
+
+		// If we aren't making changes then we copy everything into a new instance
+		if (result == null)
+		{
+			result = this.metadata.newInstance ();
+			properties = this.metadata.getDefinition ().getProperties ();
+		}
+
+		for (Property<?> property : properties)
+		{
+			this.metadata.getDefinition ().copyValue (property, result, this.values);
+		}
+
+		return result;
+	}
 
 	/**
 	 * Reset all of the stored values to null.
 	 */
 
-	public abstract void clear ();
+	public void clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.values = this.metadata.newInstance ();
+	}
 
 	/**
 	 * Get the value for the specified property.
 	 *
 	 * @param  <V>      The type of the value associated with the property
 	 * @param  property The <code>Property</code>, not null
+	 *                  not null
+	 * @param  type     The type Class of the value to return
 	 *
 	 * @return          The value associated with the specified property
 	 */
 
-	public abstract <V> V getPropertyValue (final Property<V> property);
+	public <V> V getPropertyValue (final Property<V> property)
+	{
+		this.log.trace ("getProperty: property={}", property);
+
+		assert property != null : "property is NULL";
+
+		return this.metadata.getDefinition ().getValue (property, this.values);
+	}
 
 	/**
 	 * Set the specified property to the specified value.
@@ -98,5 +186,12 @@ interface Builder<T extends Element>
 	 * @param  value    The value to set for the property
 	 */
 
-	public abstract <V> void setProperty (final Property<V> property, final V value);
+	public <V> void setProperty (final Property<V> property, final V value)
+	{
+		this.log.trace ("setProperty: property={}, value={}", property, value);
+
+		assert property != null : "property is NULL";
+
+		this.metadata.getDefinition ().setValue (property, this.values, value);
+	}
 }

@@ -20,8 +20,6 @@ import java.util.function.BiFunction;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.element.AbstractActivity;
-
 /**
  * Abstract builder for <code>SubActivity</code> instances.  This class acts as
  * the common base for all of the builders which produce
@@ -62,7 +60,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 *                               the <code>Activity</code>
 	 */
 
-	protected static <T extends SubActivity, U extends AbstractSubActivityBuilder<T>> U getInstance (final DataStore datastore, final Class<T> element, final Activity parent, final BiFunction<DataStore, Builder<T>, U> create)
+	protected static <T extends SubActivity, U extends AbstractSubActivityBuilder<T>> U getInstance (final DataStore datastore, final Activity parent, final BiFunction<DataStore, Class<? extends Element>, U> create)
 	{
 		assert datastore != null : "datastore is NULL";
 		assert parent != null : "parent is NULL";
@@ -81,7 +79,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 			throw new IllegalStateException ("Element is not available for this datastore");
 		}
 
-		U builder = create.apply (datastore, AbstractBuilder.getBuilder (datastore, element, AbstractActivity.getSubActivityClass (parent.getClass ())));
+		U builder = create.apply (datastore, Activity.getSubActivityClass (parent.getClass ()));
 		builder.setParent (parent);
 
 		return builder;
@@ -91,12 +89,14 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 * Create the <code>DefaultSubActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> implementation class, not
+	 *                   null
 	 * @param  builder   The <code>Builder</code>, not null
 	 */
 
-	protected AbstractSubActivityBuilder (final DataStore datastore, final Builder<T> builder)
+	protected AbstractSubActivityBuilder (final DataStore datastore, final Class<? extends Element> element)
 	{
-		super (datastore, builder);
+		super (datastore, element);
 	}
 
 	/**
