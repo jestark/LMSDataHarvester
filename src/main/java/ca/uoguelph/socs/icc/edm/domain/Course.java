@@ -19,8 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -53,7 +52,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public abstract class Course extends Element
 {
 	/** The <code>MetaData</code> definition for the <code>Course</code> */
-	protected static final MetaData<Course> metadata;
+	protected static final Definition<Course> metadata;
 
 	/** The name of the <code>Course</code> */
 	public static final Property<String> NAME;
@@ -74,15 +73,18 @@ public abstract class Course extends Element
 
 	static
 	{
-		MetaDataBuilder<Course> builder = new MetaDataBuilder<Course> (Course.class, Element.metadata);
+		NAME = Property.getInstance (Course.class, String.class, "name", false, true);
+		SEMESTER = Property.getInstance (Course.class, Semester.class, "semester", false, true);
+		YEAR = Property.getInstance (Course.class, Integer.class, "year", false, true);
 
-		NAME = builder.addProperty (String.class, Course::getName, Course::setName, "name", false, true);
-		SEMESTER = builder.addProperty (Semester.class, Course::getSemester, Course::setSemester, "semester", false, true);
-		YEAR = builder.addProperty (Integer.class, Course::getYear, Course::setYear, "year", false, true);
+		SELECTOR_OFFERING = Selector.getInstance (Course.class, "offering", true, NAME, SEMESTER, YEAR);
 
-		SELECTOR_OFFERING = builder.addSelector ("offering", true, NAME, SEMESTER, YEAR);
-
-		metadata = builder.build ();
+		metadata = Definition.getBuilder (Course.class, Element.metadata)
+			.addProperty (NAME, Course::getName, Course::setName)
+			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
+			.addProperty (YEAR, Course::getYear, Course::setYear)
+			.addSelector (SELECTOR_OFFERING)
+			.build ();
 	}
 
 	/**

@@ -18,8 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.HashSet;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -36,7 +35,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public abstract class Element
 {
 	/** The <code>MetaData</code> definition for the <code>Element</code> */
-	protected static final MetaData<Element> metadata;
+	protected static final Definition<Element> metadata;
 
 	/** The <code>DataStore</code> identifier of the <code>Element</code> */
 	public static final Property<Long> ID;
@@ -54,14 +53,15 @@ public abstract class Element
 
 	static
 	{
-		MetaDataBuilder<Element> builder = new MetaDataBuilder<Element> (Element.class, null);
+		ID = Property.getInstance (Element.class, Long.class, "id", false, false);
+		SELECTOR_ID = Selector.getInstance (Element.class, ID, true);
+		SELECTOR_ALL = Selector.getInstance (Element.class, "all", false);
 
-		ID = builder.addProperty (Long.class, Element::getId, Element::setId, "id", false, false);
-
-		SELECTOR_ID = builder.addSelector (ID, true);
-		SELECTOR_ALL = builder.addSelector ("all", false);
-
-		metadata = builder.build ();
+		metadata = Definition.getBuilder (Element.class, null)
+			.addProperty (ID, Element::getId, Element::setId)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
+			.build ();
 	}
 
 	/**

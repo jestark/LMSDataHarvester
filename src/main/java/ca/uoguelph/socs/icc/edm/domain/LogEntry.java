@@ -18,8 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -51,7 +50,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public abstract class LogEntry extends Element
 {
 	/** The <code>MetaData</code> definition for the <code>LogEntry</code> */
-	protected static final MetaData<LogEntry> metadata;
+	protected static final Definition<LogEntry> metadata;
 
 	/** The associated <code>Action</code> */
 	public static final Property<Action> ACTION;
@@ -84,19 +83,26 @@ public abstract class LogEntry extends Element
 
 	static
 	{
-		MetaDataBuilder<LogEntry> builder = new MetaDataBuilder<LogEntry> (LogEntry.class, Element.metadata);
+		ACTION = Property.getInstance (LogEntry.class, Action.class, "action", false, true);
+		ACTIVITY = Property.getInstance (LogEntry.class, Activity.class, "activity", false, true);
+		COURSE = Property.getInstance (LogEntry.class, Course.class, "course", false, true);
+		ENROLMENT = Property.getInstance (LogEntry.class, Enrolment.class, "enrolment", false, true);
+		IPADDRESS = Property.getInstance (LogEntry.class, String.class, "ipaddress", false, true);
+		TIME = Property.getInstance (LogEntry.class, Date.class, "time", false, true);
 
-		ACTION = builder.addProperty (Action.class, LogEntry::getAction, LogEntry::setAction, "action", false, true);
-		ACTIVITY = builder.addProperty (Activity.class, LogEntry::getActivity, LogEntry::setActivity, "activity", false, true);
-		COURSE = builder.addProperty (Course.class, LogEntry::getCourse, "course", false, true);
-		ENROLMENT = builder.addProperty (Enrolment.class, LogEntry::getEnrolment, LogEntry::setEnrolment, "enrolment", false, true);
-		IPADDRESS = builder.addProperty (String.class, LogEntry::getIPAddress, LogEntry::setIPAddress, "ipaddress", false, true);
-		TIME = builder.addProperty (Date.class, LogEntry::getTime, LogEntry::setTime, "time", false, true);
+		SELECTOR_ACTION = Selector.getInstance (LogEntry.class, ACTION, false);
+		SELECTOR_COURSE = Selector.getInstance (LogEntry.class, COURSE, false);
 
-		SELECTOR_ACTION = builder.addSelector (ACTION, false);
-		SELECTOR_COURSE = builder.addSelector (COURSE, false);
-
-		metadata = builder.build ();
+		metadata = Definition.getBuilder (LogEntry.class, Element.metadata)
+			.addProperty (ACTION, LogEntry::getAction, LogEntry::setAction)
+			.addProperty (ACTIVITY, LogEntry::getActivity, LogEntry::setActivity)
+			.addProperty (COURSE, LogEntry::getCourse)
+			.addProperty (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
+			.addProperty (IPADDRESS, LogEntry::getIPAddress, LogEntry::setIPAddress)
+			.addProperty (TIME, LogEntry::getTime, LogEntry::setTime)
+			.addSelector (SELECTOR_ACTION)
+			.addSelector (SELECTOR_COURSE)
+			.build ();
 	}
 
 	/**

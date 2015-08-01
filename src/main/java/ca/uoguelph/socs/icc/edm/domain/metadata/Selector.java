@@ -52,6 +52,59 @@ public final class Selector
 	/** The <code>Property</code> instances */
 	private final Set<Property<?>> properties;
 
+	 /**
+	 * Create the <code>Selector</code> using multiple <code>Property</code>
+	 * instances.
+	 *
+	 * @param  type       The <code>Element</code> interface class, not null
+	 * @param  name       The name of the <code>Selector</code>, not null
+	 * @param  unique     An indication if the <code>Selector</code> uniquely
+	 *                    identifies an <code>Element</code> instance
+	 * @param  properties The properties to be used to create the
+	 *                    <code>Selector</code>, not null
+	 *
+	 * @return            The <code>Selector</code>
+	 */
+
+	public static Selector getInstance (final Class<? extends Element> type, final String name, final boolean unique, final Property<?>... properties)
+	{
+		assert type != null : "type is NULL";
+		assert name != null : "name is NULL";
+		assert name.length () > 0 : "name is empty";
+
+		Set<Property<?>> props = new HashSet<Property<?>> ();
+
+		for (Property<?> property : properties)
+		{
+			assert type == property.getElementType () : "property does not match selector return type";
+
+			props.add (property);
+		}
+
+		return new Selector (type, name, unique, props);
+	}
+
+	/**
+	 * Create the <code>Selector</code> using a single <code>Property</code>.
+	 *
+	 * @param  type     The <code>Element</code> interface class, not null
+	 * @param  unique   An indication if the <code>Selector</code> uniquely
+	 *                  identifies an <code>Element</code> instance
+	 * @param  property The property to be represented by the
+	 *                  <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Selector</code>
+	 */
+
+	public static Selector getInstance (final Class<? extends Element> type, final Property<?> property, final boolean unique)
+	{
+		assert type != null : "type is NULL";
+		assert property != null : "property is NULL";
+		assert type == property.getElementType () : "Type mismatch, property does not match selector";
+
+		return Selector.getInstance (type, property.getName (), unique, property);
+	}
+
 	/**
 	 * Create the <code>Selector</code>.
 	 *

@@ -18,8 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -50,7 +49,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public abstract class Action extends Element
 {
 	/** The <code>MetaData</code> definition for the <code>Action</code> */
-	protected static final MetaData<Action> metadata;
+	protected static final Definition<Action> metadata;
 
 	/** The name of the <code>Action</code> */
 	public static final Property<String> NAME;
@@ -65,13 +64,13 @@ public abstract class Action extends Element
 
 	static
 	{
-		MetaDataBuilder<Action> builder = new MetaDataBuilder<Action> (Action.class, Element.metadata);
+		NAME = Property.getInstance (Action.class, String.class, "name", false, true);
+		SELECTOR_NAME = Selector.getInstance (Action.class, NAME, true);
 
-		NAME = builder.addProperty (String.class, Action::getName, Action::setName, "name", false, true);
-
-		SELECTOR_NAME = builder.addSelector (NAME, true);
-
-		metadata = builder.build ();
+		metadata = Definition.getBuilder (Action.class, Element.metadata)
+			.addProperty (NAME, Action::getName, Action::setName)
+			.addSelector (SELECTOR_NAME)
+			.build ();
 	}
 
 	/**

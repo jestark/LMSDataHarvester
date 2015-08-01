@@ -30,6 +30,8 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>User</code>
@@ -70,7 +72,7 @@ public class UserData extends User implements Serializable
 
 	static
 	{
-		User.metadata.addImplementation (UserData.class, UserData::new);
+		DataStore.registerElement (User.metadata, UserData.class, UserData::new);
 	}
 
 	/**

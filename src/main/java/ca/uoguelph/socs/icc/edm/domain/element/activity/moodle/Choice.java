@@ -35,6 +35,8 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.element.NamedActivity;
 
 /**
@@ -92,7 +94,7 @@ public class Choice extends NamedActivity implements Serializable
 
 	static
 	{
-//		Activity.metadata.addImplementation (Choice.class, Choice::new);
+		DataStore.registerElement (NamedActivity.metadata, Choice.class, Choice::new);
 		Activity.registerImplementation ("moodle", "choice", Choice.class);
 	}
 

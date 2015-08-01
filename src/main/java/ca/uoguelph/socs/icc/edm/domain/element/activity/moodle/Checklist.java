@@ -35,6 +35,8 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.element.NamedActivity;
 
 /**
@@ -92,7 +94,7 @@ public class Checklist extends NamedActivity implements Serializable
 
 	static
 	{
-//		Activity.metadata.addImplementation (Checklist.class, Checklist::new);
+		DataStore.registerElement (NamedActivity.metadata, Checklist.class, Checklist::new);
 		Activity.registerImplementation ("moodle", "checklist", Checklist.class);
 	}
 

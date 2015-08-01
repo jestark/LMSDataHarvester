@@ -30,6 +30,8 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
  * Implementation of the <code>LogEntry</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>LogEntry</code>
@@ -77,7 +79,7 @@ public class LogData extends LogEntry implements Serializable
 
 	static
 	{
-		LogEntry.metadata.addImplementation (LogData.class, LogData::new);
+		DataStore.registerElement (LogData.metadata, LogData.class, LogData::new);
 	}
 
 	/**

@@ -29,6 +29,8 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/lesson
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -79,7 +81,7 @@ public class LessonPage extends SubActivity implements Serializable
 
 	static
 	{
-//		SubActivity.metadata.addImplementation (LessonPage.class, LessonPage::new);
+		DataStore.registerElement (SubActivity.metadata, LessonPage.class, LessonPage::new);
 		Activity.registerImplementation (LessonPage.class, Lesson.class);
 	}
 

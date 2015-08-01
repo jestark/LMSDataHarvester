@@ -16,8 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -33,7 +32,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public abstract class Network extends Element
 {
 	/** The <code>MetaData</code> definition for the <code>Network</code> */
-	protected static final MetaData<Network> metadata;
+	protected static final Definition<Network> metadata;
 
 	/** The name of the <code>Network</code> */
 	public static final Property<String> NAME;
@@ -48,13 +47,13 @@ public abstract class Network extends Element
 
 	static
 	{
-		MetaDataBuilder<Network> builder = new MetaDataBuilder<Network> (Network.class, Element.metadata);
+		NAME = Property.getInstance (Network.class, String.class, "name", false, true);
+		SELECTOR_NAME = Selector.getInstance (Network.class, NAME, true);
 
-		NAME = builder.addProperty (String.class, Network::getName, Network::setName, "name", false, true);
-
-		SELECTOR_NAME = builder.addSelector (NAME, true);
-
-		metadata = builder.build ();
+		metadata = Definition.getBuilder (Network.class, Element.metadata)
+			.addProperty (NAME, Network::getName, Network::setName)
+			.addSelector (SELECTOR_NAME)
+			.build ();
 	}
 
 	/**

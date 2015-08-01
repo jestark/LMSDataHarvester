@@ -35,6 +35,8 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.element.NamedActivity;
 
 /**
@@ -92,7 +94,7 @@ public class Folder extends NamedActivity implements Serializable
 
 	static
 	{
-//		Activity.metadata.addImplementation (Folder.class, Folder::new);
+		DataStore.registerElement (NamedActivity.metadata, Folder.class, Folder::new);
 		Activity.registerImplementation ("moodle", "folder", Folder.class);
 	}
 

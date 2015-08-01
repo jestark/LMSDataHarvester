@@ -29,6 +29,8 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
  * Implementation of the <code>Activity</code> interface for the ${ActivitySource}/${ActivityType}
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -79,7 +81,7 @@ public class ${ClassName} extends SubActivity implements Serializable
 
 	static
 	{
-//		SubActivity.metadata.addImplementation (${ClassName}.class, ${ClassName}::new);
+		DataStore.registerElement (SubActivity.metadata, ${ClassName}.class, ${ClassName}::new);
 		Activity.registerImplementation (${ClassName}.class, ${ParentClass}.class);
 	}
 

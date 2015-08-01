@@ -19,8 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -74,7 +73,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public abstract class Enrolment extends Element
 {
 	/** The <code>MetaData</code> definition for the <code>Enrolment</code> */
-	protected static final MetaData<Enrolment> metadata;
+	protected static final Definition<Enrolment> metadata;
 
 	/** The associated <code>Course</code> */
 	public static final Property<Course> COURSE;
@@ -98,16 +97,20 @@ public abstract class Enrolment extends Element
 
 	static
 	{
-		MetaDataBuilder<Enrolment> builder = new MetaDataBuilder<Enrolment> (Enrolment.class, Element.metadata);
+		COURSE = Property.getInstance (Enrolment.class, Course.class, "course", false, true);
+		FINALGRADE = Property.getInstance (Enrolment.class, Integer.class, "finalgrade", true, false);
+		ROLE = Property.getInstance (Enrolment.class, Role.class, "role", false, true);
+		USABLE = Property.getInstance (Enrolment.class, Boolean.class, "usable", true, true);
 
-		COURSE = builder.addProperty (Course.class, Enrolment::getCourse, Enrolment::setCourse, "course", false, true);
-		FINALGRADE = builder.addProperty (Integer.class, Enrolment::getFinalGrade, Enrolment::setFinalGrade, "finalgrade", true, false);
-		ROLE = builder.addProperty (Role.class, Enrolment::getRole, Enrolment::setRole, "role", false, true);
-		USABLE = builder.addProperty (Boolean.class, Enrolment::isUsable, Enrolment::setUsable, "usable", true, true);
+		SELECTOR_ROLE = Selector.getInstance (Enrolment.class, ROLE, false);
 
-		SELECTOR_ROLE = builder.addSelector (ROLE, false);
-
-		metadata = builder.build ();
+		metadata = Definition.getBuilder (Enrolment.class, Element.metadata)
+			.addProperty (COURSE, Enrolment::getCourse, Enrolment::setCourse)
+			.addProperty (FINALGRADE, Enrolment::getFinalGrade, Enrolment::setFinalGrade)
+			.addProperty (ROLE, Enrolment::getRole, Enrolment::setRole)
+			.addProperty (USABLE, Enrolment::isUsable, Enrolment::setUsable)
+			.addSelector (SELECTOR_ROLE)
+			.build ();
 	}
 
 	/**

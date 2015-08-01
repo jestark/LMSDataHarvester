@@ -27,6 +27,8 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
  * Implementation of the <code>Grade</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Grade</code>
@@ -58,7 +60,7 @@ public class GradedActivity extends Grade implements Serializable
 
 	static
 	{
-		Grade.metadata.addImplementation (GradedActivity.class, GradedActivity::new);
+		DataStore.registerElement (Grade.metadata, GradedActivity.class, GradedActivity::new);
 	}
 
 	/**

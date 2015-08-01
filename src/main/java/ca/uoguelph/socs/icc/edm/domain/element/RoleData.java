@@ -24,6 +24,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
  * Implementation of the <code>Role</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Role</code>
@@ -40,10 +42,10 @@ public class RoleData extends Role implements Serializable
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
-	/** The primary key for the role */
+	/** The primary key for the <code>Role</code> */
 	private Long id;
 
-	/** The name of the role */
+	/** The name of the <code>Role</code> */
 	private String name;
 
 	/**
@@ -53,7 +55,7 @@ public class RoleData extends Role implements Serializable
 
 	static
 	{
-		Role.metadata.addImplementation (RoleData.class, RoleData::new);
+		DataStore.registerElement  (Role.metadata, RoleData.class, RoleData::new);
 	}
 
 	/**

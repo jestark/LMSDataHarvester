@@ -24,6 +24,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
  * Implementation of the <code>Action</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Action</code>
@@ -52,7 +54,7 @@ public class ActionData extends Action implements Serializable
 
 	static
 	{
-		Action.metadata.addImplementation (ActionData.class, ActionData::new);
+		DataStore.registerElement (Action.metadata, ActionData.class, ActionData::new);
 	}
 
 	/**

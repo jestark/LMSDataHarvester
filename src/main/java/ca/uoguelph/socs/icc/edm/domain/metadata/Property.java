@@ -51,6 +51,38 @@ public final class Property<T>
 	private final boolean required;
 
 	/**
+ 	 * Create the <code>Property</code>.
+ 	 *
+	 * @param  element                  The <code>Element</code> interface
+	 *                                  class, not null
+	 * @param  type                     The type of the value associated with
+	 *                                  the<code>Property</code>, not null
+	 * @param  name                     The name of the <code>Property</code>,
+	 *                                  not null
+	 * @param  mutable                  Indication if the <code>Property</code>
+	 *                                  can be changed
+	 * @param  required                 Indication if the <code>Property</code>
+	 *                                  is allowed to be null
+	 *
+	 * @return                          The <code>Property</code>
+	 * @throws IllegalArgumentException if a different <code>Property</code>
+	 *                                  already exists in the definition with
+	 *                                  the same name
+	 * @throws IllegalStateException    if <code>Element</code> is assignable
+	 *                                  from more than one super-interface
+	 */
+
+	public static <T extends Element, V> Property<V> getInstance (final Class<T> element, final Class<V> type, final String name, final boolean mutable, final boolean required)
+	{
+		assert element != null : "element is NULL";
+		assert type != null : "type is NULL";
+		assert name != null : "name is NULL";
+		assert name.length () > 0 : "name is empty";
+
+		return new Property<V> (name, type, element, mutable, required);
+	}
+
+	/**
 	 * Create the <code>Property</code>.
 	 *
 	 * @param  name     The name of the <code>Property</code>, not null

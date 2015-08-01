@@ -35,6 +35,8 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.element.NamedActivity;
 
 /**
@@ -92,7 +94,7 @@ public class Page extends NamedActivity implements Serializable
 
 	static
 	{
-//		Activity.metadata.addImplementation (Page.class, Page::new);
+		DataStore.registerElement (NamedActivity.metadata, Page.class, Page::new);
 		Activity.registerImplementation ("moodle", "page", Page.class);
 	}
 

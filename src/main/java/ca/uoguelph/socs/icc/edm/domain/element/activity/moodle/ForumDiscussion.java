@@ -29,6 +29,8 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -79,7 +81,7 @@ public class ForumDiscussion extends SubActivity implements Serializable
 
 	static
 	{
-//		SubActivity.metadata.addImplementation (ForumDiscussion.class, ForumDiscussion::new);
+		DataStore.registerElement (SubActivity.metadata, ForumDiscussion.class, ForumDiscussion::new);
 		Activity.registerImplementation (ForumDiscussion.class, Forum.class);
 	}
 

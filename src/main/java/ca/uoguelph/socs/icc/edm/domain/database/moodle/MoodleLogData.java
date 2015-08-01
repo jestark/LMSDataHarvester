@@ -30,7 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public class MoodleLogData extends LogEntry
 {
@@ -69,19 +69,7 @@ public class MoodleLogData extends LogEntry
 
 	static
 	{
-		MetaDataBuilder<LogEntry, MoodleLogData> builder = MetaDataBuilder.newInstance (LogEntry.class, MoodleLogData.class);
-		builder.setCreateMethod (MoodleLogData::new);
-
-		builder.addProperty (LogEntry.ACTION, LogEntry::getAction, null);
-		builder.addProperty (LogEntry.ACTIVITY, LogEntry::getActivity, null);
-		builder.addProperty (LogEntry.ENROLMENT, LogEntry::getEnrolment, null);
-
-		builder.addProperty (LogEntry.ID, LogEntry::getId, MoodleLogData::setId);
-		builder.addProperty (LogEntry.COURSE, LogEntry::getCourse, null);
-		builder.addProperty (LogEntry.IPADDRESS, LogEntry::getIPAddress, MoodleLogData::setIPAddress);
-		builder.addProperty (LogEntry.TIME, LogEntry::getTime, MoodleLogData::setTime);
-
-		builder.build ();
+		DataStore.registerElement (LogEntry.metadata, MoodleLogData.class, MoodleLogData::new);
 	}
 
 	protected MoodleLogData ()

@@ -18,8 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaDataBuilder;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -54,7 +53,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public abstract class ActivityType extends Element
 {
 	/** The <code>MetaData</code> definition for the <code>ActivityType</code> */
-	protected static final MetaData<ActivityType> metadata;
+	protected static final Definition<ActivityType> metadata;
 
 	/** The name of the <code>ActivityType</code> */
 	public static final Property<String> NAME;
@@ -72,14 +71,16 @@ public abstract class ActivityType extends Element
 
 	static
 	{
-		MetaDataBuilder<ActivityType> builder = new MetaDataBuilder<ActivityType> (ActivityType.class, Element.metadata);
+		NAME = Property.getInstance (ActivityType.class, String.class, "name", false, true);
+		SOURCE = Property.getInstance (ActivityType.class, ActivitySource.class, "source", false, true);
 
-		NAME = builder.addProperty (String.class, ActivityType::getName, ActivityType::setName, "name", false, true);
-		SOURCE = builder.addProperty (ActivitySource.class, ActivityType::getSource, ActivityType::setSource, "source", false, true);
+		SELECTOR_NAME = Selector.getInstance (ActivityType.class, "name", true, NAME, SOURCE);
 
-		SELECTOR_NAME = builder.addSelector ("name", true, NAME, SOURCE);
-
-		metadata = builder.build ();
+		metadata = Definition.getBuilder (ActivityType.class, Element.metadata)
+			.addProperty (NAME, ActivityType::getName, ActivityType::setName)
+			.addProperty (SOURCE, ActivityType::getSource, ActivityType::setSource)
+			.addSelector (SELECTOR_NAME)
+			.build ();
 	}
 
 	/**
