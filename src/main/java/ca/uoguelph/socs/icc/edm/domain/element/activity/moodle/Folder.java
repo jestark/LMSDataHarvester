@@ -35,9 +35,11 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
 
 import ca.uoguelph.socs.icc.edm.domain.element.NamedActivity;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/folder
@@ -46,7 +48,7 @@ import ca.uoguelph.socs.icc.edm.domain.element.NamedActivity;
  * along with the relevant manager, and builder.  See the <code>Activity</code>
  * interface documentation for details.
  * <p>
- * This class was generated from the <code>NamedActivityGroup</code> template,
+ * This class was generated from the <code>NamedActivity</code> template,
  * with the following values:
  * <p>
  * <ul>
@@ -94,7 +96,7 @@ public class Folder extends NamedActivity implements Serializable
 
 	static
 	{
-		DataStore.registerElement (NamedActivity.metadata, Folder.class, Folder::new);
+		Profile.registerCreator (Implementation.getInstance (NamedActivity.metadata, Folder.class, Folder::new));
 		Activity.registerImplementation ("moodle", "folder", Folder.class);
 	}
 

@@ -1,27 +1,30 @@
 /* Copyright (C) 2015 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General public abstract License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General public abstract License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General public abstract License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
-import java.util.function.Supplier;
+import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * <code>MetaData</code> for an <code>Element</code> implementation class.
+ * Meta-data definition for an <code>Element</code> class.  This class contains
+ * the meta-data for an <code>Element</code> Though an instance of this class
+ * the referenced <code>Element</code> implementation class can be created and
+ * its data can be manipulated.
  * <p>
  * In addition to containing the meta-data for an <code>Element</code>, this
  * class acts as a work-around for the lack of Generic type reification in
@@ -58,151 +61,29 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The <code>Element</code> interface type
+ * @see     Property
+ * @see     Selector
  */
 
-public abstract class MetaData<T extends Element>
+public interface MetaData<T extends Element>
 {
 	/**
-	 * Implementation of the <code>MetaData</code> interface with the
-	 * <code>Element</code> implementation class specified.
-	 *
-	 * @author  James E. Stark
-	 * @version 1.0
-	 * @param   <T> The <code>Element</code> interface type
-	 * @param   <U> The <code>Element</code> implementation type
-	 */
-
-	private static final class MetaDataImpl<T extends Element, U extends T> extends MetaData<T>
-	{
-		/** The <code>Element</code> implementation class */
-		private final Class<U> element;
-
-		/** Method reference to the <code>Element</code> constructor */
-		private final Supplier<U> create;
-
-		/**
-		 * Create the <code>MetaDataImpl</code> instance.
-		 *
-		 * @param  definition The <code>Definition</code>, not null
-		 * @param  element    The <code>Element</code> implementation class, not
-		 *                    null
-		 * @param  create     Method reference to the <code>Element</code>
-		 *                    constructor, not null
-		 */
-
-		public MetaDataImpl (final Definition<T> definition, final Class<U> element, final Supplier<U> create)
-		{
-			super (definition);
-
-			assert element != null : "element is NULL";
-			assert create != null : "create is NULL";
-
-			this.element = element;
-			this.create = create;
-		}
-
-		/**
-		 * Get the Java type of the <code>Element</code> implementation.
-		 *
-		 * @return The <code>Class</code> representing the implementation type
-		 */
-
-		@Override
-		public Class<? extends Element> getElementClass ()
-		{
-			return this.element;
-		}
-
-		/**
-		 * Inject the <code>MetaData</code> instance into the
-		 * <code>Receiver</code>.
-		 *
-		 * @param  <R>      The result type of the <code>Receiver</code>
-		 * @param  reciever The <code>Receiver</code>, not null
-		 *
-		 * @return          The return value of the receiving method
-		 */
-
-		@Override
-		public <R> R inject (final Receiver<T, R> receiver)
-		{
-			assert receiver != null : "receiver is NULL";
-
-			return receiver.apply (this, this.element);
-		}
-
-		/**
-		 * Get a new Instance of the <code>Element</code> implementation class.
-		 *
-		 * @return The new <code>Element</code> instance
-		 */
-
-		@Override
-		public T newInstance ()
-		{
-			return this.create.get ();
-		}
-	}
-
-	/** The <code>Defintiion</code> */
-	private final Definition<T> definition;
-
-	/**
-	 * Create the <code>MetaData</code> instance for an <code>Element</code>
-	 * implementation class.
-	 *
-	 * @param  <T>        The <code>Element</code> interface type
-	 * @param  <U>        The <code>Element</code> implementation type
-	 * @param  definition The <code>Definition</code>, not null
-	 * @param  element    The <code>Element</code> implementation class, not
-	 *                    null
-	 * @param  create     Method reference to the constructor, not null
-	 *
-	 * @return            The <code>MetaData</code> instance
-	 */
-
-	public static <T extends Element, U extends T> MetaData<T> getInstance (final Definition<T> definition, final Class<U> element, final Supplier<U> create)
-	{
-		assert definition != null : "definition is NULL";
-		assert element != null : "element is NULL";
-		assert create != null : "create is NULL";
-		assert definition.getElementType ().isAssignableFrom (element) : "element is not an implementation of the class defined by the definition";
-
-		return new MetaDataImpl<T, U> (definition, element, create);
-	}
-
-	/**
-	 * Create the <code>MeteData</code> instance.
-	 *
-	 * @param  definition The <code>Definition</code>, not null
-	 */
-
-	protected MetaData (final Definition<T> definition)
-	{
-		assert definition != null : "definition is NULL";
-
-		this.definition = definition;
-	}
-
-	/**
-	 * Get the <code>Definition</code> for the <code>Element</code> represented
-	 * by the <code>MetaData</code> instance.
-	 *
-	 * @return The <code>Definition</code> instance
-	 */
-
-	public Definition<T> getDefinition ()
-	{
-		return this.definition;
-	}
-
-	/**
-	 * Get the Java type of the <code>Element</code> iimplementation.
+	 * Get the Java type of the <code>Element</code> represented by the
+	 * <code>MetaData</code>.
 	 *
 	 * @return The <code>Class</code> representing the implementation type
 	 */
 
-	public abstract Class<? extends Element> getElementClass ();
+	public abstract Class<? extends T> getElementClass ();
+
+	/**
+	 * Get the Java type of the parent <code>Element</code> for the class
+	 * represented by the <code>MetaData</code>.
+	 *
+	 * @return The <code>Class</code> representing the parent interface type
+	 */
+
+	public abstract Class<? extends Element> getParentClass ();
 
 	/**
 	 * Inject the <code>MetaData</code> instance into the
@@ -214,13 +95,91 @@ public abstract class MetaData<T extends Element>
 	 * @return          The return value of the receiving method
 	 */
 
-	public abstract <R> R inject (Receiver<T, R> reciever);
+	public abstract <R> R inject (Receiver<T, R> receiver);
 
 	/**
-	 * Get a new Instance of the <code>Element</code> implementation class.
+	 * Get the <code>Property</code> instance with the specified name.
 	 *
-	 * @return The new <code>Element</code> instance
+	 * @param  name The name of the <code>Property</code> to retrieve, not null
+	 *
+	 * @return      The <code>Property</code>, may be null
 	 */
 
-	public abstract T newInstance ();
+	public abstract Property<?> getProperty (String name);
+
+	/**
+	 * Get the <code>Property</code> instance with the specified name and type.
+	 *
+	 * @param  name                     The name, not null
+	 * @param  type                     The type, not null
+	 *
+	 * @return                          The <code>Property</code>, may be null
+	 * @throws IllegalArgumentException if the type specified does not match
+	 *                                  the type of the <code>Property</code>
+	 */
+
+	public abstract <V> Property<V> getProperty (String name, Class<V> type);
+
+	/**
+	 * Get the <code>Set</code> of <code>Property</code> instances which are
+	 * associated with the <code>Element</code>.
+	 *
+	 * @return A <code>Set</code> of <code>Property</code> instances
+	 */
+
+	public abstract Set<Property<?>> getProperties ();
+
+	/**
+	 * Get the <code>Selector</code> instance with the specified name.
+	 *
+	 * @param  name The name of the <code>Selector</code> to retrieve, not null
+	 *
+	 * @return      The <code>Property</code>, may be null
+	 */
+
+	public abstract Selector getSelector (String name);
+
+	/**
+	 * Get the <code>Set</code> of <code>Selector</code> instances which are
+	 * associated with the <code>Element</code>.
+	 *
+	 * @return A <code>Set</code> of <code>Selector</code> instances
+	 */
+
+	public abstract Set<Selector> getSelectors ();
+
+	/**
+	 * Get the value corresponding to the specified <code>Property</code> from
+	 * the specified <code>Element</code> instance.
+	 *
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 *
+	 * @return          The value corresponding to the <code>Property</code> in
+	 *                  the <code>Element</code>
+	 */
+
+	public abstract <V> V getValue (Property<V> property, T element);
+
+	/**
+	 * Set the value corresponding to the specified <code>Property</code> in
+	 * the specified <code>Element</code> instance to the specified value.
+	 *
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 * @param  value    The value to be set, may be null
+	 */
+
+	public abstract <V> void setValue (Property<V> property, T element, V value);
+
+	/**
+	 * Copy the value corresponding to the specified <code>Property</code> from
+	 * the source <code>Element</code> to the destination <code>Element</code>
+	 *
+	 * @param  property The <code>Property</code>, not null
+	 * @param  dest     The destination <code>Element</code>, not null
+	 * @param  source   The source <code>Element</code>, not null
+	 */
+
+	public abstract void copyValue (Property<?> property, T dest, T source);
 }

@@ -24,6 +24,8 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 
 /**
@@ -45,6 +47,8 @@ public abstract class NamedActivity extends ActivityInstance
 		metadata = Definition.getBuilder (NamedActivity.class, ActivityInstance.metadata)
 			.addProperty (Activity.NAME, Activity::getName, NamedActivity::setName)
 			.build ();
+
+		Profile.registerMetaData (metadata);
 	}
 
 	/**

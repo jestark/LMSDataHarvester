@@ -16,15 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
-import java.util.Map;
 import java.util.Set;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
 import java.util.function.Supplier;
-
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,123 +26,83 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * <code>MetaData</code> definition for an <code>Element</code> interface
+ * <code>MetaData</code> definition for an <code>Element</code> implementation
  * class.  This class contains <code>MetaData</code> definition for an
- * <code>Element</code> interface.
+ * <code>Element</code> implementation.
  *
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The <code>Element</code> interface type
- * @see     MetaData
- * @see     Property
- * @see     Selector
+ * @param   <U> The <code>Element</code> implementation type
  */
 
-public class Definition<T extends Element> implements MetaData<T>
+public final class Implementation<T extends Element, U extends T> implements Creator<T>
 {
 	/** The Logger */
 	private final Logger log;
 
-	/** The <code>Definition</code> for the super class */
-	private final Definition<? super T> parent;
+	/** The <code>Defintiion</code> */
+	private final Definition<T> definition;
 
-	/** The <code>Element</code> class represented by the <code>Definition</code> */
-	private final Class<T> type;
+	/** The <code>Element</code> implementation class */
+	private final Class<U> element;
 
-	/** The <code>Property</code> instances associated with the interface */
-	private final Map<String, Property<?>> properties;
-
-	/** The <code>Selector</code> instances for the interface */
-	private final Map<String, Selector> selectors;
-
-	/** <code>Property</code> to <code>Reference</code> instance mapping */
-	private final Map<Property<?>, PropertyReference<T, ?>> references;
+	/** Method reference to the <code>Element</code> constructor */
+	private final Supplier<U> create;
 
 	/**
-	 * Get the <code>DefintionBuilder</code> for the specified
-	 * <code>Element</code> interface class.
+	 * Create the <code>MetaData</code> instance for an <code>Element</code>
+	 * implementation class.
 	 *
-	 * @param  <T>    The <code>Element</code> interface type
-	 * @param  type   The <code>Element</code> interface class, not null
-	 * @param  parent The <code>Definition</code> for the parent
-	 *                <code>Element</code> interface class, must be null for
-	 *                <code>Element</code>, not null otherwise
+	 * @param  <T>        The <code>Element</code> interface type
+	 * @param  <U>        The <code>Element</code> implementation type
+	 * @param  definition The <code>Definition</code>, not null
+	 * @param  element    The <code>Element</code> implementation class, not
+	 *                    null
+	 * @param  create     Method reference to the constructor, not null
 	 *
-	 * @return        The <code>DefinitionBuilder</code> instance
+	 * @return            The <code>MetaData</code> instance
 	 */
 
-	public static <T extends Element> DefinitionBuilder<T> getBuilder (final Class<T> type, final Definition<? super T> parent)
+	public static <T extends Element, U extends T> Implementation<T, U> getInstance (final Definition<T> definition, final Class<U> element, final Supplier<U> create)
 	{
-		assert type != null : "type is NULL";
-		assert (type == Element.class && parent == null) || parent != null: "Parent is NULL, or Parent is not null and type is Element";
+		assert definition != null : "definition is NULL";
+		assert element != null : "element is NULL";
+		assert create != null : "create is NULL";
+		assert definition.getElementClass ().isAssignableFrom (element) : "element is not an implementation of the class defined by the definition";
 
-		return new DefinitionBuilder<T> (type, parent);
+		return new Implementation<T, U> (definition, element, create);
 	}
 
 	/**
-	 * Create the <code>MetaData</code>.
+	 * Create the <code>MeteData</code> instance.
 	 *
-	 * @param  type
-	 * @param  parent
-	 * @param  properties
-	 * @param  references <code>Property</code> to get/set method mapping, not
-	 *                    null
-	 * @param  selectors
+	 * @param  definition The <code>Definition</code>, not null
 	 */
 
-	protected Definition (final Class<T> type, final Definition<? super T> parent, final Map<String, Property<?>> properties, final Map<Property<?>, PropertyReference<T, ?>> references, final Map<String, Selector> selectors)
+	protected Implementation (final Definition<T> definition, final Class<U> element, final Supplier<U> create)
 	{
-		assert type != null : "type is NULL";
-		assert properties != null : "properties is NULL";
-		assert selectors != null : "selectors is NULL";
-		assert references != null : "references is NULL";
+		assert definition != null : "definition is NULL";
+		assert element != null : "element is NULL";
+		assert create != null : "create is NULL";
 
 		this.log = LoggerFactory.getLogger (MetaData.class);
 
-		this.type = type;
-		this.parent = parent;
-		this.selectors = selectors;
-		this.properties = properties;
-		this.references = references;
+		this.definition = definition;
+		this.element = element;
+		this.create = create;
 	}
 
 	/**
-	 * Convenience method to retrieve the <code>Reference</code> associated
-	 * with the specified <code>Property</code>.
-	 *
-	 * @param  <V>      The type of the value for the <code>Property</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Reference</code> associated with the
-	 *                  <code>Property</code>
-	 */
-
-	@SuppressWarnings ("unchecked")
-	private <V> PropertyReference<T, V> getReference (final Property<V> property)
-	{
-		assert property != null : "reference is NULL";
-
-		PropertyReference<?, ?> result = (PropertyReference<T, V>) this.references.get (property);
-
-		if ((result == null) && (this.parent != null))
-		{
-			result = this.parent.getReference (property);
-		}
-
-		return (PropertyReference<T, V>) result;
-	}
-
-	/**
-	 * Get the Java type of the <code>Element</code> represented by the
-	 * <code>MetaData</code>.
+	 * Get the Java type of the <code>Element</code> implementation.
 	 *
 	 * @return The <code>Class</code> representing the implementation type
 	 */
 
 	@Override
-	public Class<T> getElementClass ()
+	public Class<U> getElementClass ()
 	{
-		return this.type;
+		return this.element;
 	}
 
 	/**
@@ -161,7 +115,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	@Override
 	public Class<? extends Element> getParentClass ()
 	{
-		return this.parent.getElementClass ();
+		return this.definition.getElementClass ();
 	}
 
 	/**
@@ -179,7 +133,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	{
 		assert receiver != null : "receiver is NULL";
 
-		return receiver.apply (this, this.type);
+		return receiver.apply (this, this.element);
 	}
 
 	/**
@@ -195,14 +149,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	{
 		assert name != null : "name is NULL";
 
-		Property<?> result = this.properties.get (name);
-
-		if ((result == null) && (this.parent != null))
-		{
-			result = this.parent.getProperty (name);
-		}
-
-		return result;
+		return this.definition.getProperty (name);
 	}
 
 	/**
@@ -217,20 +164,12 @@ public class Definition<T extends Element> implements MetaData<T>
 	 */
 
 	@Override
-	@SuppressWarnings ("unchecked")
 	public <V> Property<V> getProperty (final String name, final Class<V> type)
 	{
 		assert name != null : "name is NULL";
 		assert type != null : "type is NULL";
 
-		Property<?> result = this.getProperty (name);
-
-		if ((result != null) && (type != result.getPropertyType ()))
-		{
-			throw new IllegalArgumentException ("The type specified and the Type of the property do not match");
-		}
-
-		return (Property<V>) result;
+		return this.definition.getProperty (name, type);
 	}
 
 	/**
@@ -243,14 +182,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	@Override
 	public Set<Property<?>> getProperties ()
 	{
-		Set<Property<?>> result = new HashSet<Property<?>> (this.properties.values ());
-
-		if (this.parent != null)
-		{
-			result.addAll (this.parent.getProperties ());
-		}
-
-		return result;
+		return this.definition.getProperties ();
 	}
 
 	/**
@@ -266,14 +198,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	{
 		assert name != null : "name is NULL";
 
-		Selector result = this.selectors.get (name);
-
-		if ((result == null) && (this.parent != null))
-		{
-			result = this.parent.getSelector (name);
-		}
-
-		return result;
+		return this.definition.getSelector (name);
 	}
 
 	/**
@@ -286,14 +211,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	@Override
 	public Set<Selector> getSelectors ()
 	{
-		Set<Selector> result = new HashSet<Selector> (this.selectors.values ());
-
-		if (this.parent != null)
-		{
-			result.addAll (this.parent.getSelectors ());
-		}
-
-		return result;
+		return this.definition.getSelectors ();
 	}
 
 	/**
@@ -315,11 +233,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert element != null : "element is NULL";
 		assert property != null : "property is NULL";
 
-		PropertyReference<T, V> ref = this.getReference (property);
-
-		assert ref != null : "Property is not registered";
-
-		return ref.getValue (element);
+		return this.definition.getValue (property, element);
 	}
 
 	/**
@@ -339,12 +253,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert element != null : "element is NULL";
 		assert property != null : "property is NULL";
 
-		PropertyReference<T, V> ref = this.getReference (property);
-
-		assert ref != null : "Property is not registered";
-		assert ref.isWritable () : "property can not be written";
-
-		ref.setValue (element, value);
+		this.definition.setValue (property, element, value);
 	}
 
 	/**
@@ -365,11 +274,18 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert source != null : "source is NULL";
 		assert property != null : "property is NULL";
 
-		PropertyReference<T, ?> ref = this.getReference (property);
+		this.definition.copyValue (property, dest, source);
+	}
 
-		assert ref != null : "Property is not registered";
-		assert ref.isWritable () : "property can not be written";
+	/**
+	 * Get a new Instance of the <code>Element</code> implementation class.
+	 *
+	 * @return The new <code>Element</code> instance
+	 */
 
-		ref.copyValue (dest, source);
+	@Override
+	public T create ()
+	{
+		return this.create.get ();
 	}
 }

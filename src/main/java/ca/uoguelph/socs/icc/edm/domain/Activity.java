@@ -107,7 +107,7 @@ public abstract class Activity extends Element
 		activityImpl = new ActivityDataMap ();
 	}
 
-		/**
+	/**
 	 * Get the <code>Activity</code> implementation class which is associated
 	 * with the specified <code>ActivityType</code>.
 	 *
@@ -117,7 +117,7 @@ public abstract class Activity extends Element
 	 *              <code>ActivityType</code>, may be null
 	 */
 
-	public static final Class<? extends Element> getActivityClass (final ActivityType type)
+	public static final Class<? extends Activity> getActivityClass (final ActivityType type)
 	{
 		return Activity.activityImpl.getActivityClass (type);
 	}
@@ -133,7 +133,7 @@ public abstract class Activity extends Element
 	 *                  null
 	 */
 
-	public static final Class<? extends Element> getSubActivityClass (final Class<? extends Element> activity)
+	public static final Class<? extends SubActivity> getSubActivityClass (final Class<? extends Activity> activity)
 	{
 		return Activity.activityImpl.getSubActivityClass (activity);
 	}
@@ -150,7 +150,7 @@ public abstract class Activity extends Element
 	 * @param  impl   The implementation class, not null
 	 */
 
-	protected static final void registerImplementation (final String source, final String type, final Class<? extends Element> impl)
+	protected static final void registerImplementation (final String source, final String type, final Class<? extends Activity> impl)
 	{
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
@@ -167,7 +167,7 @@ public abstract class Activity extends Element
 	 * @param  subactivity The <code>SubActivity</code> implementation, not null
 	 */
 
-	protected static final void registerImplementation (final Class<? extends Element> activity, final Class<? extends Element> subactivity)
+	protected static final void registerImplementation (final Class<? extends Activity> activity, final Class<? extends SubActivity> subactivity)
 	{
 		assert activity != null : "activity is NULL";
 		assert subactivity != null : "subactivity is NULL";

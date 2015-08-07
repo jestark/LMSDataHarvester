@@ -34,7 +34,9 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
  * Implementation of the <code>Enrolment</code> interface.  It is expected that
@@ -83,7 +85,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 
 	static
 	{
-		DataStore.registerElement  (Enrolment.metadata, EnrolmentData.class, EnrolmentData::new);
+		Profile.registerCreator (Implementation.getInstance (Enrolment.metadata, EnrolmentData.class, EnrolmentData::new));
 	}
 
 	/**

@@ -24,7 +24,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
  * Implementation of the <code>Role</code> interface.  It is expected that
@@ -55,7 +57,7 @@ public class RoleData extends Role implements Serializable
 
 	static
 	{
-		DataStore.registerElement  (Role.metadata, RoleData.class, RoleData::new);
+		Profile.registerCreator (Implementation.getInstance (Role.metadata, RoleData.class, RoleData::new));
 	}
 
 	/**

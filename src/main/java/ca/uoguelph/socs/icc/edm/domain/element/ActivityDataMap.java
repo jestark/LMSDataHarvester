@@ -24,9 +24,10 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 /**
  * Mapping between <code>ActivityType</code> objects and the classes containing
@@ -45,10 +46,10 @@ public final class ActivityDataMap
 	private final Map<String, ActivitySource> sources;
 
 	/** <code>ActivityType</code> to implementation class map */
-	private final Map<ActivityType, Class<? extends Element>> activities;
+	private final Map<ActivityType, Class<? extends Activity>> activities;
 
 	/** <code>Activity</code> to <code>SubActivity</code> class mapping */
-	private final Map<Class<? extends Element>, Class<? extends Element>> subactivities;
+	private final Map<Class<? extends Activity>, Class<? extends SubActivity>> subactivities;
 
 	/**
 	 * Create the <code>ActivityDataMap</code>.
@@ -58,9 +59,9 @@ public final class ActivityDataMap
 	{
 		this.log = LoggerFactory.getLogger (ActivityDataMap.class);
 
-		this.sources = new HashMap<String, ActivitySource> ();
-		this.activities = new HashMap<ActivityType, Class<? extends Element>> ();
-		this.subactivities = new HashMap<Class<? extends Element>, Class<? extends Element>> ();
+		this.sources = new HashMap<> ();
+		this.activities = new HashMap<> ();
+		this.subactivities = new HashMap<> ();
 	}
 
 	/**
@@ -98,9 +99,9 @@ public final class ActivityDataMap
 	 * @param  impl The implementation class, not null
 	 */
 
-	public void registerActivityClass (final ActivityType type, final Class<? extends Element> impl)
+	public void registerActivityClass (final ActivityType type, final Class<? extends Activity> impl)
 	{
-		this.log.trace ("registerActivityImplClass type={}, impl={}", type, impl);
+		this.log.trace ("registerActivityClass: type={}, impl={}", type, impl);
 
 		assert impl != null : "impl is NULL";
 		assert type != null : "type is NULL";
@@ -121,9 +122,9 @@ public final class ActivityDataMap
 	 * @param  impl   The implementation class, not null
 	 */
 
-	public void registerActivityClass (final String source, final String type, final Class<? extends Element> impl)
+	public void registerActivityClass (final String source, final String type, final Class<? extends Activity> impl)
 	{
-		this.log.trace ("registerElement source={}, type={}, impl={}", type, source, impl);
+		this.log.trace ("registerActivityClass: source={}, type={}, impl={}", type, source, impl);
 
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
@@ -144,9 +145,9 @@ public final class ActivityDataMap
 	 * @param  subactivity The <code>SubActivity</code> implementation, not null
 	 */
 
-	public void registerSubActivityClass (final Class<? extends Element> activity, final Class<? extends Element> subactivity)
+	public void registerSubActivityClass (final Class<? extends Activity> activity, final Class<? extends SubActivity> subactivity)
 	{
-		this.log.trace ("registerSubActivity activity={}, subactivity={}", activity, subactivity);
+		this.log.trace ("registerSubActivityClass: activity={}, subactivity={}", activity, subactivity);
 
 		assert activity != null : "activity is NULL";
 		assert subactivity != null : "subactivity is NULL";
@@ -162,11 +163,16 @@ public final class ActivityDataMap
 	 * @param  type The <code>ActivityType</code>
 	 *
 	 * @return      The <code>Activity </code> data class for the given
-	 *              <code>ActivityType</code>, may be null
+	 *              <code>ActivityType</code>
 	 */
 
-	public Class<? extends Element> getActivityClass (final ActivityType type)
+	public Class<? extends Activity> getActivityClass (final ActivityType type)
 	{
+		this.log.trace ("getActivityClass: type={}", type);
+
+		assert type != null : "type is NULL";
+		assert this.activities.containsKey (type) : "Activity Type is not registered";
+
 		return this.activities.get (type);
 	}
 
@@ -177,12 +183,16 @@ public final class ActivityDataMap
 	 *
 	 * @param  activity The <code>Activity</code> implementation class
 	 *
-	 * @return          The <code>SubActivity</code> implementation class, may
-	 *                  be null
+	 * @return          The <code>SubActivity</code> implementation class
 	 */
 
-	public Class<? extends Element> getSubActivityClass (final Class<? extends Element> activity)
+	public Class<? extends SubActivity> getSubActivityClass (final Class<? extends Activity> activity)
 	{
+		this.log.trace ("getSubActivityClass: activity={}", activity);
+
+		assert activity != null : "activity is NULL";
+		assert this.subactivities.containsKey (activity) : "Activity is not registered";
+
 		return this.subactivities.get (activity);
 	}
 }

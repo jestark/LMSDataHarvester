@@ -23,6 +23,8 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 
 /**
@@ -49,6 +51,8 @@ public abstract class ActivityInstance extends Activity
 			.addProperty (Activity.COURSE, Activity::getCourse, ActivityInstance::setCourse)
 			.addProperty (Activity.TYPE, Activity::getType, ActivityInstance::setType)
 			.build ();
+
+		Profile.registerMetaData (metadata);
 	}
 
 	/**

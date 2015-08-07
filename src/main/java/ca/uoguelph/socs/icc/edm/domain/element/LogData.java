@@ -30,7 +30,9 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
  * Implementation of the <code>LogEntry</code> interface.  It is expected that
@@ -79,7 +81,7 @@ public class LogData extends LogEntry implements Serializable
 
 	static
 	{
-		DataStore.registerElement (LogData.metadata, LogData.class, LogData::new);
+		Profile.registerCreator (Implementation.getInstance (LogData.metadata, LogData.class, LogData::new));
 	}
 
 	/**

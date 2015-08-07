@@ -33,8 +33,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
- * <code>MetaData</code> builder for <code>Element</code> implementation
- * classes.
+ * Builder for the meta-data <code>Definition</code>.
  *
  * @author  James E. Stark
  * @version 1.0

@@ -29,7 +29,9 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
@@ -38,7 +40,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * along with the relevant manager, and builder.  See the <code>Activity</code>
  * interface documentation for details.
  * <p>
- * This class was generated from the <code>SubActivityGroup</code> template,
+ * This class was generated from the <code>SubActivity</code> template,
  * with the following values:
  * <p>
  * <ul>
@@ -81,8 +83,8 @@ public class ForumDiscussion extends SubActivity implements Serializable
 
 	static
 	{
-		DataStore.registerElement (SubActivity.metadata, ForumDiscussion.class, ForumDiscussion::new);
-		Activity.registerImplementation (ForumDiscussion.class, Forum.class);
+		Profile.registerCreator (Implementation.getInstance (SubActivity.metadata, ForumDiscussion.class, ForumDiscussion::new));
+		Activity.registerImplementation (Forum.class, ForumDiscussion.class);
 	}
 
 	/**

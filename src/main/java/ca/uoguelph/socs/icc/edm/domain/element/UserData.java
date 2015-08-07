@@ -30,7 +30,9 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
@@ -72,7 +74,7 @@ public class UserData extends User implements Serializable
 
 	static
 	{
-		DataStore.registerElement (User.metadata, UserData.class, UserData::new);
+		Profile.registerCreator (Implementation.getInstance (User.metadata, UserData.class, UserData::new));
 	}
 
 	/**

@@ -28,7 +28,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
  * Implementation of the <code>ActivitySource</code> interface.  It is expected
@@ -62,7 +64,7 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 
 	static
 	{
-		DataStore.registerElement (ActivitySource.metadata, ActivitySourceData.class, ActivitySourceData::new);
+		Profile.registerCreator (Implementation.getInstance (ActivitySource.metadata, ActivitySourceData.class, ActivitySourceData::new));
 	}
 
 	/**
