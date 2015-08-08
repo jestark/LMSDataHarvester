@@ -13,31 +13,19 @@
 	<!--  Mapped super classes used by activities                            -->
 	<!--*********************************************************************-->
 
-	<!--	<mapped-superclass class="AbstractActivity" metadata-complete="true">
-		<description></description>
+	<mapped-superclass class="ca.uoguelph.socs.icc.edm.domain.Activity" metadata-complete="true">
+		<description>Top-level Activity Mapping</description>
 		<attributes>
-			<transient name="subActivities"/>
 			<transient name="log"/>
-		</attributes>
-	</mapped-superclass>-->
-
-	<!--	<entity name="Activity" class="ActivityInstance" metadata-complete="true">
-		<description>Mapping definition for the instances of the activities</description>
-		<named-query name="Activity:all">
-			<query>SELECT a FROM Activity a</query>
-		</named-query>
-		<attributes>
-			<many-to-one name="course" target-entity="CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
+			<transient name="course"/>
 			<transient name="type"/>
+			<transient name="name"/>
 			<transient name="grades"/>
 			<transient name="subActivities"/>
-			<transient name="log"/>
 		</attributes>
-	</entity>-->
+	</mapped-superclass>
 
-	<mapped-superclass class="GenericSubActivity" metadata-complete="true">
+	<mapped-superclass class="ca.uoguelph.socs.icc.edm.domain.SubActivity" metadata-complete="true">
 		<description></description>
 		<attributes>
 			<basic name="name">
@@ -52,14 +40,20 @@
 		</attributes>
 	</mapped-superclass>
 
-	<mapped-superclass class="GenericNamedActivity" metadata-complete="true">
+	<mapped-superclass class="ActivityInstance" metadata-complete="true">
+		<description></description>
+		<attributes>
+			<transient name="course"/>
+			<transient name="type"/>
+		</attributes>
+	</mapped-superclass>
+
+	<mapped-superclass class="NamedActivity" metadata-complete="true">
 		<description>Mapping For the Generic Activity and the relationship the the instance</description>
 		<attributes>
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="subActivities"/>
-			<transient name="log"/>
 		</attributes>
 	</mapped-superclass>
 
@@ -155,7 +149,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="actions"/>
 			<transient name="source"/>
 		</attributes>
 	</entity>
@@ -176,11 +169,11 @@
 			<many-to-one name="type" target-entity="ActivityTypeData" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<transient name="subActivities"/>
-			<transient name="log"/>
 			<transient name="name"/>
 			<transient name="activity"/>
 			<transient name="grades"/>
+			<transient name="subActivities"/>
+			<transient name="log"/>
 		</attributes>
 	</entity>
 
