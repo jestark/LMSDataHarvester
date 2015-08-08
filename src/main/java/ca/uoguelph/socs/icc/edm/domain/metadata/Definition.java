@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,8 +62,11 @@ public class Definition<T extends Element> implements MetaData<T>
 	/** The <code>Selector</code> instances for the interface */
 	private final Map<String, Selector> selectors;
 
-	/** <code>Property</code> to <code>Reference</code> instance mapping */
-	private final Map<Property<?>, PropertyReference<T, ?>> references;
+	/** <code>Property</code> to <code>PropertyReference</code> instance mapping */
+	private final Map<Property<?>, PropertyReference<T, ?>> values;
+
+	/** <code>Property</code> to <code>RelationshipReference</code> instance mapping*/
+	private final Map<Property<?>, RelationshipReference<?, ?>> collections;
 
 	/**
 	 * Get the <code>DefintionBuilder</code> for the specified
@@ -96,12 +100,13 @@ public class Definition<T extends Element> implements MetaData<T>
 	 * @param  selectors
 	 */
 
-	protected Definition (final Class<T> type, final Definition<? super T> parent, final Map<String, Property<?>> properties, final Map<Property<?>, PropertyReference<T, ?>> references, final Map<String, Selector> selectors)
+	protected Definition (final Class<T> type, final Definition<? super T> parent, final Map<String, Property<?>> properties, final Map<String, Selector> selectors, final Map<Property<?>, PropertyReference<T, ?>> values, final Map<Property<?>, RelationshipReference<T, ?>> collections)
 	{
 		assert type != null : "type is NULL";
 		assert properties != null : "properties is NULL";
 		assert selectors != null : "selectors is NULL";
-		assert references != null : "references is NULL";
+		assert values != null : "values is NULL";
+		assert collections != null : "collections is NULL";
 
 		this.log = LoggerFactory.getLogger (MetaData.class);
 
@@ -109,7 +114,8 @@ public class Definition<T extends Element> implements MetaData<T>
 		this.parent = parent;
 		this.selectors = selectors;
 		this.properties = properties;
-		this.references = references;
+		this.values = new HashMap<> (values);
+		this.collections = new HashMap<> (collections);
 	}
 
 	/**
@@ -124,18 +130,41 @@ public class Definition<T extends Element> implements MetaData<T>
 	 */
 
 	@SuppressWarnings ("unchecked")
-	private <V> PropertyReference<T, V> getReference (final Property<V> property)
+	private <V> PropertyReference<T, V> getPropertyReference (final Property<V> property)
 	{
-		assert property != null : "reference is NULL";
+		assert property != null : "property is NULL";
 
-		PropertyReference<?, ?> result = (PropertyReference<T, V>) this.references.get (property);
+		PropertyReference<T, V> result = null;
 
-		if ((result == null) && (this.parent != null))
+		if (this.values.containsKey (property))
 		{
-			result = this.parent.getReference (property);
+			result = (PropertyReference<T, V>) this.values.get (property);
+		}
+		else if (this.parent != null)
+		{
+			result = (PropertyReference<T, V>) this.parent.getPropertyReference (property);
 		}
 
-		return (PropertyReference<T, V>) result;
+		return result;
+	}
+
+	@SuppressWarnings ("unchecked")
+	private <V> RelationshipReference<T, V> getRelationshipReference (final Property<V> property)
+	{
+		assert property != null : "property is NULL";
+
+		RelationshipReference<T, V> result = null;
+
+		if (this.collections.containsKey (property))
+		{
+			result = (RelationshipReference<T, V>) this.collections.get (property);
+		}
+		else if (this.parent != null)
+		{
+			result = (RelationshipReference<T, V>) this.parent.getRelationshipReference (property);
+		}
+
+		return result;
 	}
 
 	/**
@@ -315,7 +344,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert element != null : "element is NULL";
 		assert property != null : "property is NULL";
 
-		PropertyReference<T, V> ref = this.getReference (property);
+		PropertyReference<T, V> ref = this.getPropertyReference (property);
 
 		assert ref != null : "Property is not registered";
 
@@ -339,7 +368,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert element != null : "element is NULL";
 		assert property != null : "property is NULL";
 
-		PropertyReference<T, V> ref = this.getReference (property);
+		PropertyReference<T, V> ref = this.getPropertyReference (property);
 
 		assert ref != null : "Property is not registered";
 		assert ref.isWritable () : "property can not be written";
@@ -365,11 +394,57 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert source != null : "source is NULL";
 		assert property != null : "property is NULL";
 
-		PropertyReference<T, ?> ref = this.getReference (property);
+		PropertyReference<T, ?> ref = this.getPropertyReference (property);
 
 		assert ref != null : "Property is not registered";
 		assert ref.isWritable () : "property can not be written";
 
 		ref.copyValue (dest, source);
+	}
+
+	public <V> Collection<V> getCollection (final Property<V> property, final T element)
+	{
+		this.log.trace ("getCollection: property={}, element={}", property, element);
+
+		assert element != null : "element is NULL";
+		assert property != null : "property is NULL";
+
+		RelationshipReference<T, V> ref = this.getRelationshipReference (property);
+
+		assert ref != null : "Property is not registered";
+
+		return ref.getValue (element);
+	}
+
+	public <V> boolean add (final Property<V> property, final T element, final V value)
+	{
+		this.log.trace ("add: property={}, element={}, value={}", property, element, value);
+
+		assert element != null : "element is NULL";
+		assert property != null : "property is NULL";
+		assert value != null : "value is NULL";
+
+		RelationshipReference<T, V> ref = this.getRelationshipReference (property);
+
+		assert ref != null : "Property is not registered";
+		assert ref.isWritable () : "property can not be written";
+
+		return ref.addValue (element, value);
+	}
+
+	public <V> boolean remove (final Property<V> property, final T element, final V value)
+	{
+		this.log.trace ("remove: property={}, element={}, value={}", property, element, value);
+
+		assert element != null : "element is NULL";
+		assert property != null : "property is NULL";
+		assert value != null : "value is NULL";
+
+		RelationshipReference<T, V> ref = this.getRelationshipReference (property);
+
+		assert ref != null : "Property is not registered";
+		assert ref.isWritable () : "property can not be written";
+
+		return ref.removeValue (element, value);
 	}
 }

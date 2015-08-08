@@ -100,8 +100,8 @@ public abstract class Activity extends Element
 		SELECTOR_TYPE = Selector.getInstance (Activity.class, TYPE, false);
 
 		metadata = Definition.getBuilder (Activity.class, Element.metadata)
-			.addProperty (COURSE, Activity::getCourse)
-			.addProperty (TYPE, Activity::getType)
+			.addRelationship (COURSE, Activity::getCourse)
+			.addRelationship (TYPE, Activity::getType)
 			.addProperty (NAME, Activity::getName)
 			.addSelector (SELECTOR_TYPE)
 			.build ();

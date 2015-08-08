@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -61,7 +63,10 @@ public final class DefinitionBuilder<T extends Element>
 	private final Map<String, Selector> selectors;
 
 	/** <code>Property</code> to <code>PropertyReference</code> mapping */
-	private final Map<Property<?>, PropertyReference<T, ?>> references;
+	private final Map<Property<?>, PropertyReference<T, ?>> values;
+
+	/** <code>Property</code> to <code>RelationshipReference</code> mapping */
+	private final Map<Property<?>, RelationshipReference<T, ?>> collections;
 
 	/**
 	 * Create the <code>MetaDataBuilder</code>.
@@ -78,9 +83,10 @@ public final class DefinitionBuilder<T extends Element>
 		this.type = type;
 		this.parent = parent;
 
-		this.properties = new HashMap<String, Property<?>> ();
-		this.selectors = new HashMap<String, Selector> ();
-		this.references = new HashMap<Property<?>, PropertyReference<T, ?>> ();
+		this.properties = new HashMap<> ();
+		this.selectors = new HashMap<> ();
+		this.values = new HashMap<> ();
+		this.collections = new HashMap<> ();
 
 		this.allprops = (this.parent != null) ? this.parent.getProperties () : new HashSet<Property<?>> ();
 	}
@@ -112,7 +118,7 @@ public final class DefinitionBuilder<T extends Element>
 
 		this.allprops.add (property);
 		this.properties.put (property.getName (), property);
-		this.references.put (property, new PropertyReference<T, V> (get, set));
+		this.values.put (property, new PropertyReference<T, V> (get, set));
 
 		return this;
 	}
@@ -136,6 +142,42 @@ public final class DefinitionBuilder<T extends Element>
 		this.log.trace ("addProperty: property={} get={}", property, get);
 
 		return this.addProperty (property, get, null);
+	}
+
+	public <V extends Element> DefinitionBuilder<T> addRelationship (final Property<V> property, final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
+	{
+		this.log.trace ("addCollection: property={}, get={}, add={}, remove={}", property, get, add, remove);
+
+		assert property != null : "property is NULL";
+		assert get != null : "get is NULL";
+		assert ! this.properties.containsKey (property.getName ()) : "property is already registered";
+
+		this.allprops.add (property);
+		this.properties.put (property.getName (), property);
+		this.collections.put (property, new RelationshipReference<T, V> (get, add, remove));
+
+		return this;
+	}
+
+	public <V extends Element> DefinitionBuilder<T> addRelationship (final Property<V> property, final Function<T, Collection<V>> get)
+	{
+		this.log.trace ("addCollection: property={}, get={}", property, get);
+
+		assert property != null : "property is NULL";
+		assert get != null : "get is NULL";
+		assert ! this.properties.containsKey (property.getName ()) : "property is already registered";
+
+		return this.addRelationship (property, get, null, null);
+	}
+
+	public <V extends Element> DefinitionBuilder<T> addRelationship (final Property<V> property, final Function<T, V> get, final BiConsumer<T, V> set)
+	{
+		return this;
+	}
+
+	public DefinitionBuilder<T> addRelationship (final Selector selector)
+	{
+		return this;
 	}
 
 	/**
@@ -171,6 +213,6 @@ public final class DefinitionBuilder<T extends Element>
 	{
 		this.log.trace ("build:");
 
-		return new Definition<T> (this.type, this.parent, this.properties, this.references, this.selectors);
+		return new Definition<T> (this.type, this.parent, this.properties, this.selectors, this.values, this.collections);
 	}
 }
