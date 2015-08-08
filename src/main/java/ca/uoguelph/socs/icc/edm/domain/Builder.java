@@ -25,7 +25,7 @@ import java.util.HashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 
 /**
@@ -43,7 +43,7 @@ final class Builder<T extends Element>
 	private final Logger log;
 
 	/** The meta-data definition of the <code>Element</code> */
-	private final MetaData<T> metadata;
+	private final Creator<T> metadata;
 
 	/** The value associated with each property */
 	private T values;
@@ -54,14 +54,14 @@ final class Builder<T extends Element>
 	 * @param metadata The <code>MetaData</code> for the <code>Element</code>
 	 */
 
-	protected Builder (final MetaData<T> metadata)
+	protected Builder (final Creator<T> metadata)
 	{
 		assert metadata != null : "definition is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.metadata = metadata;
-		this.values = this.metadata.newInstance ();
+		this.values = this.metadata.create ();
 	}
 
 	/**
@@ -74,7 +74,7 @@ final class Builder<T extends Element>
 
 	public Set<Property<?>> getProperties ()
 	{
-		return this.metadata.getDefinition ().getProperties ();
+		return this.metadata.getProperties ();
 	}
 
 	/**
@@ -109,17 +109,17 @@ final class Builder<T extends Element>
 			result = element;
 		}
 
-		for (Property<?> property : this.metadata.getDefinition ().getProperties ())
+		for (Property<?> property : this.metadata.getProperties ())
 		{
 			// If any required are missing then bail
-			if ((property.isRequired ()) && (this.metadata.getDefinition ().getValue (property, this.values) == null))
+			if ((property.isRequired ()) && (this.metadata.getValue (property, this.values) == null))
 			{
 				this.log.error ("Required property is NULL: {}", property.getName ());
 				throw new IllegalStateException ("One or more required properties has a NULL value");
 			}
 
 			// Check for changes if appropriate, if a immutable property has been changed then we have to make a new instance
-			if ((result != null) && (this.metadata.getDefinition ().getValue (property, this.values) != this.metadata.getDefinition ().getValue (property, result)))
+			if ((result != null) && (this.metadata.getValue (property, this.values) != this.metadata.getValue (property, result)))
 			{
 				if (property.isMutable ())
 				{
@@ -135,13 +135,13 @@ final class Builder<T extends Element>
 		// If we aren't making changes then we copy everything into a new instance
 		if (result == null)
 		{
-			result = this.metadata.newInstance ();
-			properties = this.metadata.getDefinition ().getProperties ();
+			result = this.metadata.create ();
+			properties = this.metadata.getProperties ();
 		}
 
 		for (Property<?> property : properties)
 		{
-			this.metadata.getDefinition ().copyValue (property, result, this.values);
+			this.metadata.copyValue (property, result, this.values);
 		}
 
 		return result;
@@ -155,7 +155,7 @@ final class Builder<T extends Element>
 	{
 		this.log.trace ("clear:");
 
-		this.values = this.metadata.newInstance ();
+		this.values = this.metadata.create ();
 	}
 
 	/**
@@ -175,7 +175,7 @@ final class Builder<T extends Element>
 
 		assert property != null : "property is NULL";
 
-		return this.metadata.getDefinition ().getValue (property, this.values);
+		return this.metadata.getValue (property, this.values);
 	}
 
 	/**
@@ -192,6 +192,6 @@ final class Builder<T extends Element>
 
 		assert property != null : "property is NULL";
 
-		this.metadata.getDefinition ().setValue (property, this.values, value);
+		this.metadata.setValue (property, this.values, value);
 	}
 }

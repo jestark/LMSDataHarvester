@@ -27,8 +27,7 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Receiver;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
@@ -75,6 +74,9 @@ public abstract class AbstractBuilder<T extends Element>
 	/** The Logger */
 	protected final Logger log;
 
+	/** The MetaData <code>Creator</code> */
+	protected final Creator<T> metadata;
+
 	/** The builder */
 	protected final Builder<T> builder;
 
@@ -103,10 +105,41 @@ public abstract class AbstractBuilder<T extends Element>
 	 *                               the <code>Element</code>
 	 */
 
-	protected static <T extends Element, U extends AbstractBuilder<T>> U getInstance (final DataStore datastore, final Class<T> element, BiFunction<DataStore, Class<? extends Element>, U> create)
+	protected static <T extends Element, U extends AbstractBuilder<T>> U getInstance (final DataStore datastore, final Class<T> element, BiFunction<DataStore, Creator<T>, U> create)
 	{
 		assert datastore != null : "datastore is NULL";
 		assert element != null : "element is NULL";
+		assert create != null : "create is null";
+
+		if (datastore.getProfile ().getElementClass (element) == null)
+		{
+			throw new IllegalStateException ("Element is not available for this datastore");
+		}
+
+		return AbstractBuilder.getInstance (datastore, datastore.getProfile ().getCreator (element), create);
+	}
+
+	/**
+	 * Create an instance of the builder for the specified <code>Element</code>
+	 * on the supplied <code>DataStore</code>.
+	 *
+	 * @param  <T>                   The <code>Element</code> interface type
+	 * @param  <U>                   The builder type
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  metadata              The meta-data <code>Creator</code>
+	 *                               instance, not null
+	 * @param  create                Method reference to the constructor, not
+	 *                               null
+	 *
+	 * @return                       The builder instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 */
+
+	protected static <T extends Element, U extends AbstractBuilder<T>> U getInstance (final DataStore datastore, final Creator<T> metadata, BiFunction<DataStore, Creator<T>, U> create)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert metadata != null : "metadata is NULL";
+		assert create != null : "create is null";
 
 		// Exception here because this is the fist time that it is checked
 		if (! datastore.isOpen ())
@@ -114,16 +147,7 @@ public abstract class AbstractBuilder<T extends Element>
 			throw new IllegalStateException ("datastore is closed");
 		}
 
-		Class<? extends Element> impl = datastore.getProfile ()
-			.getElementClass (element);
-
-		// Exception here because this is the fist time that it is checked
-		if (impl == null)
-		{
-			throw new IllegalStateException ("Element is not available for this datastore");
-		}
-
-		return create.apply (datastore, impl);
+		return create.apply (datastore, metadata);
 	}
 
 	/**
@@ -156,19 +180,20 @@ public abstract class AbstractBuilder<T extends Element>
 	 * Create the <code>AbstractBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
+	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected AbstractBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected AbstractBuilder (final DataStore datastore, final Creator<T> metadata)
 	{
 		assert datastore != null : "datastore is NULL";
-		assert element != null : "element is NULL";
+		assert metadata != null : "metadata is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.datastore = datastore;
-		this.builder = new Builder<T> (this.datastore.getMetaData (element));
+		this.metadata = metadata;
+
+		this.builder = new Builder<T> (metadata);
 	}
 
 	/**
@@ -227,8 +252,7 @@ public abstract class AbstractBuilder<T extends Element>
 
 		if (! this.datastore.contains (element))
 		{
-			Query<E> query = this.datastore.getQuery (selector, element.getClass ());
-			query.setAllProperties (element);
+			Query<E> query = this.datastore.getQuery (selector, element);
 
 			result = query.query ();
 		}
@@ -255,7 +279,7 @@ public abstract class AbstractBuilder<T extends Element>
 		}
 
 		this.element = this.builder.build (this.element);
-		this.datastore.insert (this.element);
+		this.datastore.insert (this.metadata, this.element);
 
 		return this.element;
 	}

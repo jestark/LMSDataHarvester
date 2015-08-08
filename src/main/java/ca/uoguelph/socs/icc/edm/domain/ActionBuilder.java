@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+
 /**
  * Create new <code>Action</code> instances.  This class extends
  * <code>AbstractBuilder</code>, adding the functionality required to
@@ -134,13 +136,12 @@ public final class ActionBuilder extends AbstractBuilder<Action>
 	 * Create the <code>ActionBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
+	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected ActionBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected ActionBuilder (final DataStore datastore, final Creator<Action> metadata)
 	{
-		super (datastore, element);
+		super (datastore, metadata);
 	}
 
 	/**

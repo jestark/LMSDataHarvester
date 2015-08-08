@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -73,6 +75,8 @@ public abstract class ActivitySource extends Element
 			.addProperty (NAME, ActivitySource::getName, ActivitySource::setName)
 			.addSelector (SELECTOR_NAME)
 			.build ();
+
+		Profile.registerMetaData (metadata);
 	}
 
 	/**

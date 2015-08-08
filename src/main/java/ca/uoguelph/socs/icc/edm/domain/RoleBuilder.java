@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+
 /**
  * Create new <code>Role</code> instances.  This class extends
  * <code>AbstractBuilder</code>, adding the functionality required to
@@ -135,13 +137,12 @@ public final class RoleBuilder extends AbstractBuilder<Role>
 	 * Create the <code>RoleBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
+	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected RoleBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected RoleBuilder (final DataStore datastore, final Creator<Role> metadata)
 	{
-		super (datastore, element);
+		super (datastore, metadata);
 	}
 
 	/**

@@ -22,6 +22,8 @@ import java.util.HashSet;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+
 /**
  * Create new <code>ActivityType</code> instances.  This class extends
  * <code>AbstractBuilder</code>, adding the functionality required to
@@ -143,13 +145,14 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 	 * Create the <code>ActivityTypeBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
+	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
+	 * @param  metadata  The <code>MetaData</code> for the
+	 *                   <code>Element</code>, not null
 	 */
 
-	protected ActivityTypeBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected ActivityTypeBuilder (final DataStore datastore, final Creator<ActivityType> metadata)
 	{
-		super (datastore, element);
+		super (datastore, metadata);
 	}
 
 	/**

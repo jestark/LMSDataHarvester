@@ -20,6 +20,8 @@ import java.util.function.BiFunction;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+
 /**
  * Abstract builder for <code>Activity</code> instances.  This class acts as
  * the common base for all of the builders which produce <code>Activity</code>
@@ -47,10 +49,12 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	 * Get an instance of the <code>ActivityBuilder</code> which corresponds to
 	 * the specified <code>ActivityType</code>.
 	 *
-	 * @param  <T>                   The <code>Element</code> type of the 
+	 * @param  <T>                   The <code>Element</code> type of the
 	 *                               builder
 	 * @param  <U>                   The type of the builder
 	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  metadata              The meta-data <code>Creator</code>
+	 *                               instance, not null
 	 * @param  type                  The <code>ActivityType</code>, not null
 	 * @param  create                Method reference to the constructor for
 	 *                               the builder
@@ -61,7 +65,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	 *                               the <code>Activity</code>
 	 */
 
-	public static <T extends Activity, U extends AbstractActivityBuilder<T>> U getInstance (final DataStore datastore, final ActivityType type, final BiFunction<DataStore, Class<? extends Element>, U> create)
+	public static <T extends Activity, U extends AbstractActivityBuilder<T>> U getInstance (final DataStore datastore, final Creator<T> metadata, final ActivityType type, final BiFunction<DataStore, Creator<T>, U> create)
 	{
 		assert datastore != null : "datastore is NULL";
 		assert type != null : "type is NULL";
@@ -69,18 +73,12 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 		assert datastore.contains (type) : "type is not in the datastore";
 
 		// Exception here because this is the fist time that it is checked
-		if (! datastore.isOpen ())
-		{
-			throw new IllegalStateException ("datastore is closed");
-		}
-
-		// Exception here because this is the fist time that it is checked
 		if (datastore.getProfile ().getElementClass (Activity.class) == null)
 		{
 			throw new IllegalStateException ("Element is not available for this datastore");
 		}
 
-		U builder = create.apply (datastore, Activity.getActivityClass (type));
+		U builder = AbstractBuilder.getInstance (datastore, metadata, create);
 		builder.setActivityType (type);
 
 		return builder;
@@ -90,13 +88,12 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	 * Create the <code>AbstractActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
+	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected AbstractActivityBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected AbstractActivityBuilder (final DataStore datastore, final Creator<T> metadata)
 	{
-		super (datastore, element);
+		super (datastore, metadata);
 	}
 
 	/**

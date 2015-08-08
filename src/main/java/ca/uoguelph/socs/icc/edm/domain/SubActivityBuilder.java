@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+
 /**
  * Create <code>SubActivity</code> instances.  This class provides a default
  * implementation of the <code>AbstractSubActivityBuilder</code> without adding
@@ -42,8 +44,9 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 * @throws IllegalStateException if the <code>DataStore</code> does not
 	 *                               have a default implementation class for
 	 *                               the <code>SubActivity</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
+	 * @throws IllegalStateException if there is no <code>SubActivity</code>
+	 *                               class registered for the specified parent
+	 *                               <code>Activity</code>
 	 */
 
 	public static SubActivityBuilder getInstance (final DataStore datastore, Activity parent)
@@ -52,7 +55,14 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 		assert parent != null : "parent is NULL";
 		assert datastore.contains (parent) : "parent is not in the datastore";
 
-		return AbstractSubActivityBuilder.getInstance (datastore, parent, SubActivityBuilder::new);
+		Class<? extends SubActivity> sclass = Activity.getSubActivityClass (parent.getClass ());
+
+		if (sclass == null)
+		{
+			throw new IllegalStateException ("No registered Subactivity classes corresponding to the specified parent");
+		}
+
+		return AbstractSubActivityBuilder.getInstance (datastore, datastore.getProfile ().getCreator (SubActivity.class, sclass), parent, SubActivityBuilder::new);
 	}
 
 	/**
@@ -69,8 +79,9 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 * @throws IllegalStateException if the <code>DataStore</code> does not
 	 *                               have a default implementation class for
 	 *                               the <code>SubActivity</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
+	 * @throws IllegalStateException if there is no <code>SubActivity</code>
+	 *                               class registered for the specified parent
+	 *                               <code>Activity</code>
 	 */
 
 	public static SubActivityBuilder getInstance (final DataStore datastore, SubActivity subactivity)
@@ -96,6 +107,9 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 * @throws IllegalStateException if the <code>DataStore</code> does not
 	 *                               have a default implementation class for
 	 *                               the <code>SubActivity</code>
+	 * @throws IllegalStateException if there is no <code>SubActivity</code>
+	 *                               class registered for the specified parent
+	 *                               <code>Activity</code>
 	 * @throws IllegalStateException if the <code>DomainModel</code> is
 	 *                               immutable
 	 */
@@ -135,6 +149,9 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 * @throws IllegalStateException if the <code>DataStore</code> does not
 	 *                               have a default implementation class for
 	 *                               the <code>SubActivity</code>
+	 * @throws IllegalStateException if there is no <code>SubActivity</code>
+	 *                               class registered for the specified parent
+	 *                               <code>Activity</code>
 	 * @throws IllegalStateException if the <code>DomainModel</code> is
 	 *                               immutable
 	 */
@@ -156,12 +173,11 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 * Create the <code>SubActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
+	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected SubActivityBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected SubActivityBuilder (final DataStore datastore, final Creator<SubActivity> metadata)
 	{
-		super (datastore, element);
+		super (datastore, metadata);
 	}
 }

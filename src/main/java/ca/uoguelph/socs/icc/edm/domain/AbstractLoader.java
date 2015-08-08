@@ -130,15 +130,14 @@ public abstract class AbstractLoader<T extends Element>
 	 * @return          The <code>Query</code> instance
 	 */
 
-	protected final Query<T> fetchQuery (final Selector selector, final Class<? extends Element> impl)
+	protected final Query<T> fetchQuery (final Selector selector, final Class<? extends T> impl)
 	{
 		this.log.trace ("fetchQuery: selector={}, impl={}", selector, impl);
 
 		assert selector != null : "selector is NULL";
 		assert impl != null : "impl is NULL";
-		assert this.type.isAssignableFrom (impl) : "impl does not extend " + this.type.getSimpleName ();
 
-		return this.datastore.getQuery (selector, impl);
+		return this.datastore.getQuery (selector, this.type, impl);
 	}
 
 	/**
@@ -157,8 +156,7 @@ public abstract class AbstractLoader<T extends Element>
 
 		assert selector != null : "name is NULL";
 
-		return this.fetchQuery (selector, this.datastore.getProfile ()
-				.getElementClass (this.type));
+		return this.datastore.getQuery (selector, this.type);
 	}
 
 	/**

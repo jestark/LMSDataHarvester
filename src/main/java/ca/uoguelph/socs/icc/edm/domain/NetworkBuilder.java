@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+
 /**
  * Create new <code>Network</code> instances.  This class extends
  * <code>AbstractBuilder</code>, adding the functionality required to
@@ -135,13 +137,12 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 	 * Create the <code>NetworkBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
+	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected NetworkBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected NetworkBuilder (final DataStore datastore, final Creator<Network> metadata)
 	{
-		super (datastore, element);
+		super (datastore, metadata);
 	}
 
 	/**

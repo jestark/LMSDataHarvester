@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+
 /**
  * Create new <code>Enrolment</code> instances.  This class extends
  * <code>AbstractBuilder</code>, adding the functionality required to
@@ -136,13 +138,12 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 * Create the <code>EnrolmentBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
+	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected EnrolmentBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected EnrolmentBuilder (final DataStore datastore, final Creator<Enrolment> metadata)
 	{
-		super (datastore, element);
+		super (datastore, metadata);
 	}
 
 	/**

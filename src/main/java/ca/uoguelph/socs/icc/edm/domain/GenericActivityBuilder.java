@@ -21,6 +21,10 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+
 /**
  * Create <code>Activity</code> instances.  This class provides a default
  * implementation of the <code>AbstractActivityBuilder</code>, without adding
@@ -55,7 +59,12 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 		assert type != null : "type is NULL";
 		assert datastore.contains (type) : "type is NULL";
 
-		return AbstractActivityBuilder.getInstance (datastore, type, GenericActivityBuilder::new);
+		if (Activity.getActivityClass (type) != null)
+		{
+			throw new IllegalStateException ("Wrong Builder: The specified ActivityType an associated Activity class.");
+		}
+
+		return AbstractActivityBuilder.getInstance (datastore, datastore.getProfile ().getCreator (Activity.class, GenericActivity.class), type, GenericActivityBuilder::new);
 	}
 
 	/**
@@ -157,12 +166,11 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 	 * Create the <code>GenericActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
+	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected GenericActivityBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected GenericActivityBuilder (final DataStore datastore, final Creator<Activity> metadata)
 	{
-		super (datastore, element);
+		super (datastore, metadata);
 	}
 }

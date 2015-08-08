@@ -20,6 +20,8 @@ import java.util.function.BiFunction;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+
 /**
  * Abstract builder for <code>SubActivity</code> instances.  This class acts as
  * the common base for all of the builders which produce
@@ -52,15 +54,20 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 *                               builder
 	 * @param  <U>                   The <code>SubActivityBuilder</code> type
 	 *                               to be returned
-	 * @param  parent                The parent <code>Activity</code>, not null
 	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  metadata              The meta-data <code>Creator</code>
+	 *                               instance, not null
+	 * @param  parent                The parent <code>Activity</code>, not null
+	 * @param  create                Method reference to the constructor for
+	 *                               the builder
+	 *
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 * @throws IllegalStateException if the <code>DataStore</code> does not
 	 *                               have a default implementation class for
 	 *                               the <code>Activity</code>
 	 */
 
-	protected static <T extends SubActivity, U extends AbstractSubActivityBuilder<T>> U getInstance (final DataStore datastore, final Activity parent, final BiFunction<DataStore, Class<? extends Element>, U> create)
+	protected static <T extends SubActivity, U extends AbstractSubActivityBuilder<T>> U getInstance (final DataStore datastore, final Creator<T> metadata, final Activity parent, final BiFunction<DataStore, Creator<T>, U> create)
 	{
 		assert datastore != null : "datastore is NULL";
 		assert parent != null : "parent is NULL";
@@ -68,18 +75,12 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 		assert datastore.contains (parent) : "parent is not in the datastore";
 
 		// Exception here because this is the fist time that it is checked
-		if (! datastore.isOpen ())
-		{
-			throw new IllegalStateException ("datastore is closed");
-		}
-
-		// Exception here because this is the fist time that it is checked
 		if (datastore.getProfile ().getElementClass (Activity.class) == null)
 		{
 			throw new IllegalStateException ("Element is not available for this datastore");
 		}
 
-		U builder = create.apply (datastore, Activity.getSubActivityClass (parent.getClass ()));
+		U builder = AbstractBuilder.getInstance (datastore, metadata, create);
 		builder.setParent (parent);
 
 		return builder;
@@ -89,14 +90,12 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 * Create the <code>DefaultSubActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
-	 * @param  builder   The <code>Builder</code>, not null
+	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected AbstractSubActivityBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected AbstractSubActivityBuilder (final DataStore datastore, final Creator<T> metadata)
 	{
-		super (datastore, element);
+		super (datastore, metadata);
 	}
 
 	/**

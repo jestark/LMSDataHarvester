@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+
 /**
  * Create <code>Activity</code> instances.  This class extends
  * <code>AbstractActivityBuilder</code>, adding the necessary functionality to
@@ -42,6 +44,9 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 	 * @throws IllegalStateException if the <code>DataStore</code> does not
 	 *                               have a default implementation class for
 	 *                               the <code>Activity</code>
+	 * @throws IllegalStateException if there is no <code>Activity</code> class
+	 *                               registered for the specified
+	 *                               <code>ActivityType</code>
 	 */
 
 	public static ActivityBuilder getInstance (final DataStore datastore, ActivityType type)
@@ -50,7 +55,14 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 		assert type != null : "type is NULL";
 		assert datastore.contains (type) : "type is NULL";
 
-		return AbstractActivityBuilder.getInstance (datastore, type, ActivityBuilder::new);
+		Class<? extends Activity> aclass = Activity.getActivityClass (type);
+
+		if (aclass == null)
+		{
+			throw new IllegalStateException ("No registered Activity class for to specified ActivityType");
+		}
+
+		return AbstractActivityBuilder.getInstance (datastore, datastore.getProfile ().getCreator (Activity.class, aclass), type, ActivityBuilder::new);
 	}
 
 	/**
@@ -66,6 +78,9 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 	 * @throws IllegalStateException if the <code>DataStore</code> does not
 	 *                               have a default implementation class for
 	 *                               the <code>Activity</code>
+	 * @throws IllegalStateException if there is no <code>Activity</code> class
+	 *                               registered for the specified
+	 *                               <code>ActivityType</code>
 	 */
 
 	public static ActivityBuilder getInstance (final DataStore datastore, Activity activity)
@@ -91,6 +106,9 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 	 * @throws IllegalStateException if the <code>DataStore</code> does not
 	 *                               have a default implementation class for
 	 *                               the <code>Activity</code>
+	 * @throws IllegalStateException if there is no <code>Activity</code> class
+	 *                               registered for the specified
+	 *                               <code>ActivityType</code>
 	 * @throws IllegalStateException if the <code>DomainModel</code> is
 	 *                               immutable
 	 */
@@ -128,6 +146,9 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 	 * @throws IllegalStateException if the <code>DataStore</code> does not
 	 *                               have a default implementation class for
 	 *                               the <code>Activity</code>
+	 * @throws IllegalStateException if there is no <code>Activity</code> class
+	 *                               registered for the specified
+	 *                               <code>ActivityType</code>
 	 * @throws IllegalStateException if the <code>DomainModel</code> is
 	 *                               immutable
 	 */
@@ -149,13 +170,12 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 	 * Create the <code>NamedActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> implementation class, not
-	 *                   null
+	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected ActivityBuilder (final DataStore datastore, final Class<? extends Element> element)
+	protected ActivityBuilder (final DataStore datastore, final Creator<Activity> metadata)
 	{
-		super (datastore, element);
+		super (datastore, metadata);
 	}
 
 	/**
