@@ -17,154 +17,85 @@
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.Map;
-import java.util.Set;
 
 import java.util.HashMap;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.AbstractLoader;
-import ca.uoguelph.socs.icc.edm.domain.Grade;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+
 /**
- * Meta-data describing the capabilities of a <code>DataStore</code>.  This
- * class describes a profile containing the implementation details of
- * particular instances of a <code>DataStore</code>.  It includes an
- * indication if the <code>DataStore</code> is mutable (writable), and for
- * each of the domain model interfaces the profile includes the following
- * information:
- * <ul>
- * <li>The class that implements the interface for the <code>DataStore</code>
- * <li>The class used to generate ID numbers for the interface in the
- *     <code>DataStore</code>
- * </ul>
- * <p>
- * All of the per-interface fields are required, for all of the
- * <code>DomainModel</code> interfaces.  If a <code>DataStore</code> does not
- * internally represent a given interface, an implementation must be specified,
- * along with an ID generator.
+ * Profile data for the <code>DataStore</code>.
  *
  * @author  James E. Stark
- * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder
+ * @version 2.0
  */
 
 public final class Profile
 {
-	/**
-	 * <code>DataStore</code> profile data for a single domain model interface.
-	 * This class is intended to be used internally in
-	 * <code>Profile</code> to hold the profile data for a single
-	 * domain model interface.  All access to this class should come though the
-	 * enclosing class.
-	 */
+	/** The <code>MetaData<code> implementations */
+	private static final Map<Class<? extends Element>, MetaData<?>> creators;
 
-	private final class Entry
-	{
-		/** <code>DataStore</code> generator for this interface */
-		private final Class<? extends IdGenerator> generator;
+	/** The <code>MetaData</code> definitions and implementations */
+	private static final Map<Class<? extends Element>, MetaData<?>> metadata;
 
-		/** Class implementing the interface */
-		private final Class<? extends Element> implementation;
+	/** The default implementation classes for each <code>Element</code> */
+	private final Map<Class<? extends Element>, Class<? extends Element>> implementations;
 
-		/**
-		 * Create the <code>Entry</code>.
-		 *
-		 * @param  generator      The ID generator class used by with the
-		 *                        interface represented by this entry, not null
-		 * @param  implementation The class implementing the interface
-		 *                        represented by this entry, not null
-		 */
-
-		protected Entry (Class<? extends IdGenerator> generator, Class<? extends Element> implementation)
-		{
-			this.generator = generator;
-			this.implementation = implementation;
-		}
-
-		/**
-		 * Override the equals method to determine if this <code>Entry</code>
-		 * is equal to another based on its attributes.
-		 *
-		 * @param  obj The object to compare to this <code>Entry</code>
-		 * @return     <code>true</code> if the two entries are the same,
-		 *             <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean equals (Object obj)
-		{
-			boolean result = false;
-
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj instanceof Profile)
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.generator, ((Entry) obj).generator);
-				ebuilder.append (this.implementation, ((Entry) obj).implementation);
-
-				result = ebuilder.isEquals ();
-			}
-
-			return result;
-		}
-
-		/**
-		 * Compute a unique <code>hashCode</code> for an <code>Entry</code>
-		 * based on its attributes.
-		 *
-		 * @return The hash code
-		 */
-
-		@Override
-		public int hashCode ()
-		{
-			final int base = 911;
-			final int mult = 3;
-
-			HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-			hbuilder.append (this.generator);
-			hbuilder.append (this.implementation);
-
-			return hbuilder.toHashCode ();
-		}
-
-		/**
-		 * Get the ID generator class to be used with the
-		 * <code>DataStore</code>.
-		 *
-		 * @return The associated ID generator class
-		 */
-
-		public Class<? extends IdGenerator> getGenerator ()
-		{
-			return this.generator;
-		}
-
-		/**
-		 * Get the implementation class.
-		 *
-		 * @return The class used to represent the interface in the
-		 *         <code>DataStore</code>
-		 */
-
-		public Class<? extends Element> getImplClass ()
-		{
-			return this.implementation;
-		}
-	}
+	/** The <code>IdGenerator</code> to be used with each <code>Element</code> */
+	private final Map<Class<? extends Element>, Class<? extends IdGenerator>> generators;
 
 	/** Is the <code>DataStore</code> mutable? */
 	private final boolean mutable;
 
-	/** Interface class to Implementation class mapping */
-	private final Map<Class<? extends Element>, Entry> entries;
+	/**
+	 * Static initializer to create the static maps.
+	 */
+
+	static
+	{
+		creators = new HashMap<> ();
+		metadata = new HashMap<> ();
+	}
+
+	/**
+	 * Register a <code>Creator</code>.  This method is intended to be used by
+	 * the <code>Element</code> implementation classes to register their
+	 * <code>MetaData</code> instance with the <code>Profile</code>.  The
+	 * supplied <code>MetaData</code> instance will be registered as both a
+	 * <code>Creator</code> (implementation) and <code>MetaData</code>
+	 * (definition).
+	 *
+	 * @param  creator The <code>Creator</code>, not null
+	 */
+
+	public static <T extends Element> void registerCreator (final Creator<T> creator)
+	{
+		assert creator != null : "creator is NULL";
+		assert ! Profile.creators.containsKey (creator.getElementClass ()) : "creator is already registered";
+
+		Profile.creators.put (creator.getElementClass (), creator);
+		Profile.registerMetaData (creator);
+	}
+
+	/**
+	 * Register a <code>MetaData</code> instance. This method is intended to be
+	 * used by the <code>Element</code> interface classes to register their
+	 * <code>MetaData</code> definition with the <code>Profile</code>.
+	 *
+	 * @param  metadata The <code>MetaData</code>, not null
+	 */
+
+	public static <T extends Element> void registerMetaData (final MetaData<T> metadata)
+	{
+		assert metadata != null : "metadata is NULL";
+		assert ! Profile.metadata.containsKey (metadata.getElementClass ()) : "metadata is already registered";
+
+		Profile.metadata.put (metadata.getElementClass (), metadata);
+	}
 
 	/**
 	 * Create the <code>Profile</code>.  This constructor is not intended
@@ -172,107 +103,22 @@ public final class Profile
 	 *
 	 * @param  mutable The designed mutability of the <code>DataStore</code>,
 	 *                 not null
+	 * @param  implementations The <code>Map</code> of default
+	 *                         <code>Element</code> implementation classes for
+	 *                         the <code>DataStore</code> instance, not null
+	 * @param  generators      The <code>Map</code> of <code>IdGenerator</code>
+	 *                         classes to be used for each
+	 *                         <code>Element</code>, not null
 	 */
 
-	public Profile (final boolean mutable)
+	protected Profile (final boolean mutable, final Map<Class<? extends Element>, Class<? extends Element>> implementations, final Map<Class<? extends Element>, Class<? extends IdGenerator>> generators)
 	{
+		assert implementations != null : "implementations is NULL";
+		assert generators != null : "generators is NULL";
+
 		this.mutable = mutable;
-		this.entries = new HashMap<Class<? extends Element>, Entry> ();
-	}
-
-	/**
-	 * Create the <code>Profile</code>, from another profile.  This
-	 * method is intended to be used by the builder to copy the profile.
-	 *
-	 * @param  profile The profile to copy, not null
-	 */
-
-	public Profile (Profile profile)
-	{
-		this (profile.mutable);
-
-		if (profile == null)
-		{
-			throw new NullPointerException ("The specified profile is NULL");
-		}
-
-		this.entries.putAll (profile.entries);
-	}
-
-	/**
-	 *  Create the <code>Profile</code>, from another profile, but
-	 *  overriding the mutability.  This method is intended to be used by the
-	 *  builder to copy the profile.
-	 *
-	 *  @param  mutable The designed mutability of the <code>DataStore</code>,
-	 *                  not null
-	 *  @param  profile The profile to copy, not null
-	 */
-
-	public Profile (boolean mutable, Profile profile)
-	{
-		this (mutable);
-
-		if (profile == null)
-		{
-			throw new NullPointerException ("The specified profile is NULL");
-		}
-
-		this.entries.putAll (profile.entries);
-	}
-
-	/**
-	 * Override the equals method to determine if this
-	 * <code>Profile</code> is equal to another based on its
-	 * attributes.
-	 *
-	 * @param  obj The object to compare to this <code>Profile</code>
-	 * @return     <code>true</code> if the two profiles are the same,
-	 *             <code>false</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (Object obj)
-	{
-		boolean result = false;
-
-		if (obj != null)
-		{
-			if (obj == this)
-			{
-				result = true;
-			}
-			else if (obj.getClass () == this.getClass ())
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.mutable, ((Profile) obj).mutable);
-				ebuilder.append (this.entries, ((Profile) obj).entries);
-
-				result = ebuilder.isEquals ();
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a unique <code>hashCode</code> for a
-	 * <code>Profile</code> based on its attributes.
-	 *
-	 * @return The hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 907;
-		final int mult = 5;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.mutable);
-		hbuilder.append (this.entries);
-
-		return hbuilder.toHashCode ();
+		this.implementations = new HashMap<> (implementations);
+		this.generators = new HashMap<> (generators);
 	}
 
 	/**
@@ -282,111 +128,165 @@ public final class Profile
 	 *         <code>false</code> otherwise
 	 */
 
-	public Boolean isMutable ()
+	public boolean isMutable ()
 	{
 		return this.mutable;
 	}
 
 	/**
-	 * Get the set of elements contained in this profile.
+	 * Determine if there is an implementation class registered for the
+	 * specified <code>Element</code> interface class.
 	 *
-	 * @return A <code>Set</code> containing the domain model interface classes
-	 *         of all of the elements in the profile
+	 * @param  type The <code>Element</code> interface class, not null
+	 *
+	 * @return      <code>true</code> if the <code>Element</code> has a
+	 *              registered implementation class, <code>false</code>
+	 *              otherwise
 	 */
 
-	public Set<Class<? extends Element>> getElements ()
+	public boolean hasElementClass (final Class<? extends Element> type)
 	{
-		return this.entries.keySet ();
+		assert type != null : "type is NULL";
+
+		return this.implementations.containsKey (type);
 	}
 
 	/**
-	 * Get the <code>DataStore</code> ID generation class for the specified
-	 * domain model interface.
+	 * Get the default implementation class for the specified
+	 * <code>Element</code>.
 	 *
-	 * @param  element                  Domain model interface class, not null
-	 * @return                          The associated ID generator class
-	 * @throws IllegalArgumentException if the element is not in the profile
-	 */
-
-	public Class<? extends IdGenerator> getGenerator (Class<? extends Element> element)
-	{
-		if (element == null)
-		{
-			throw new NullPointerException ();
-		}
-
-		if (! this.entries.containsKey (element))
-		{
-			throw new IllegalArgumentException ("Element is not in the profile: " + element.getName ());
-		}
-
-		return (this.entries.get (element)).getGenerator ();
-	}
-
-	/**
-	 * Get the implementation class to be used for the specified domain model
-	 * interface.
+	 * @param  element The <code>Element</code> interface class, not null
 	 *
-	 * @param  element                  Domain model interface class, not null
-	 * @return                          The class used to represent the
-	 *                                  interface in the <code>DataStore</code>
-	 * @throws IllegalArgumentException if the element is not in the profile
+	 * @return         The <code>Element</code> default implementation class
 	 */
 
 	public Class<? extends Element> getElementClass (Class<? extends Element> element)
 	{
-		if (element == null)
-		{
-			throw new NullPointerException ();
-		}
+		assert element != null : "element is NULL";
+		assert this.hasElementClass (element) : "No implementation class registered for element";
 
-		if (! this.entries.containsKey (element))
-		{
-			throw new IllegalArgumentException ("Element is not in the profile: " + element.getName ());
-		}
-
-		return (this.entries.get (element)).getImplClass ();
+		return this.implementations.get (element);
 	}
 
 	/**
-	 * Add an entry to the profile from the specified element type.  This
-	 * method is intended to be used by the builder while is constructs the
-	 * profile.
+	 * Get the <code>MetaData</code> instance for the specified
+	 * <code>Element</code> implementation.
 	 *
-	 * @param  element                  The domain model interface class of the
-	 *                                  element which is being added, not null
-	 * @param  impl                     The implementation class to be used
-	 *                                  with the element, not null
-	 * @param  generator                The <code>IdGenerator</code> to be used
-	 *                                  for the element, not null
-	 * @throws IllegalArgumentException if the implementation class does not
-	 *                                  implement the interface associated with
-	 *                                  element
-	 * @see    ca.uoguelph.socs.icc.edm.domain.DomainModelBuilder#setEntry
+	 * @param  <T>  The <code>Element</code> interface type
+	 * @param  type The <code>Element</code> interface class, not null
+	 * @param  impl The <code>Element</code> implementation class, not null
+	 *
+	 * @return      The associated <code>MetaData</code> instance
 	 */
 
-	public void addEntry (Class<? extends Element> element, Class<? extends Element> impl, Class<? extends IdGenerator> generator)
+	@SuppressWarnings ("unchecked")
+	public <T extends Element> MetaData<T> getMetaData (final Class<T> type, final Class<? extends T> impl)
 	{
-		if (element == null)
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+		assert Profile.metadata.containsKey (impl) : "element is not registered";
+		assert type == Profile.metadata.get (impl).getParentClass () : "Mismatch between type and the element interface";
+
+		return (MetaData<T>) Profile.metadata.get (impl);
+	}
+
+	/**
+	 * Get the <code>MetaData</code> instance for the specified
+	 * <code>Element</code>.  This method will look up the default
+	 * implementation class for the specified <code>Element</code> and return
+	 * the associated <code>MetaData</code> instance.
+	 *
+	 * @param  <T>  The <code>Element</code> interface type
+	 * @param  type The <code>Element</code> interface class, not null
+	 *
+	 * @return      The associated <code>MetaData</code> instance
+	 */
+
+	@SuppressWarnings ("unchecked")
+	public <T extends Element> MetaData<T> getMetaData (final Class<T> type)
+	{
+		assert type != null : "type is NULL";
+		assert this.implementations.containsKey (type) : "No implementation class for specified type";
+		assert Profile.metadata.containsKey (this.implementations.get (type)) : "No MetaData for specified type";
+
+		return (MetaData<T>) Profile.metadata.get (this.implementations.get (type));
+	}
+
+	/**
+	 * Get the <code>Creator</code> instance for the specified
+	 * <code>Element</code> implementation.
+	 *
+	 * @param  <T>  The <code>Element</code> interface type
+	 * @param  type The <code>Element</code> interface class, not null
+	 * @param  impl The <code>Element</code> implementation class, not null
+	 *
+	 * @return      The associated <code>Creator</code> instance
+	 */
+
+	@SuppressWarnings ("unchecked")
+	public <T extends Element> Creator<T> getCreator (final Class<T> type, Class<? extends T> impl)
+	{
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+		assert Profile.creators.containsKey (impl) : "element is not registered";
+		assert type == Profile.creators.get (impl).getParentClass () : "Mismatch between type and the element interface";
+
+		return (Creator<T>) Profile.creators.get (impl);
+	}
+
+	/**
+	 * Get the <code>Creator</code> instance for the specified
+	 * <code>Element</code>.  This method will look up the default
+	 * implementation class for the specified <code>Element</code> and return
+	 * the associated <code>Creator</code> instance.
+	 *
+	 * @param  <T>  The <code>Element</code> interface type
+	 * @param  type The <code>Element</code> interface class, not null
+	 *
+	 * @return      The associated <code>Creator</code> instance
+	 */
+
+	@SuppressWarnings ("unchecked")
+	public <T extends Element> Creator<T> getCreator (final Class<T> type)
+	{
+		assert type != null : "type is NULL";
+		assert this.implementations.containsKey (type) : "No implementation class for specified type";
+		assert Profile.creators.containsKey (this.implementations.get (type)) : "No Creator for specified type";
+
+		return (Creator<T>) Profile.creators.get (this.implementations.get (type));
+	}
+
+	/**
+	 * Get the <code>IdGenerator</code> associated with the specified
+	 * <code>Element</code> class, for the <code>DataStore</code>.  This method
+	 * searches for the appropriate <code>IdGenerator</code> for the specified
+	 * <code>Element</code> class.
+	 *
+	 * @param  element               The <code>Element</code> class, not null
+	 *
+	 * @return                       The associated <code>IdGenerator</code>
+	 * @throws IllegalStateException if there id no <code>MetaData</code>
+	 *                               registered for the specified
+	 *                               <code>Element</code> class or one of its
+	 *                               parents
+	 */
+
+	public Class<? extends IdGenerator> getGenerator (Class<? extends Element> element)
+	{
+		assert element != null : "element is NULL";
+
+		while (! this.generators.containsKey (element))
 		{
-			throw new NullPointerException ("The specified element is NULL");
+			if (Profile.metadata.containsKey (element))
+			{
+				element = Profile.metadata.get (element).getParentClass ();
+			}
+			else
+			{
+				throw new IllegalStateException ("No MetaData registered for Element Class: " + element.getSimpleName ());
+			}
 		}
 
-		if (impl == null)
-		{
-			throw new NullPointerException ("The specified implementation class is NULL");
-		}
-
-		if (generator == null)
-		{
-			throw new NullPointerException ("The specified generator is NULL");
-		}
-
-		if (! element.isAssignableFrom (impl))
-		{
-			throw new IllegalArgumentException (impl.getName () + " does not implement " + element.getName ());
-		}
-
-		this.entries.put (element, new Entry (generator, impl));
+		return this.generators.get (element);
 	}
 }

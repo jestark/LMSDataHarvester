@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
 import ca.uoguelph.socs.icc.edm.domain.element.ActivityDataMap;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
@@ -103,6 +105,8 @@ public abstract class Activity extends Element
 			.addProperty (NAME, Activity::getName)
 			.addSelector (SELECTOR_TYPE)
 			.build ();
+
+		Profile.registerMetaData (metadata);
 
 		activityImpl = new ActivityDataMap ();
 	}

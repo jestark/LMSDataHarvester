@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -103,6 +105,8 @@ public abstract class LogEntry extends Element
 			.addSelector (SELECTOR_ACTION)
 			.addSelector (SELECTOR_COURSE)
 			.build ();
+
+		Profile.registerMetaData (metadata);
 	}
 
 	/**

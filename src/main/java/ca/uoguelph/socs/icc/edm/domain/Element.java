@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.HashSet;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -62,6 +64,8 @@ public abstract class Element
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.build ();
+
+		Profile.registerMetaData (metadata);
 	}
 
 	/**

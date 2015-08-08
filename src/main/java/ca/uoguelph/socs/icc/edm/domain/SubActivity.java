@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -52,6 +54,8 @@ public abstract class SubActivity extends Activity
 			.addProperty (PARENT, SubActivity::getParent, SubActivity::setParent)
 			.addProperty (Activity.NAME, Activity::getName, SubActivity::setName)
 			.build ();
+
+		Profile.registerMetaData (metadata);
 	}
 
 	/**
