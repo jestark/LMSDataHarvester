@@ -16,8 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.List;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Load <code>ActivityType</code> instances from the <code>DataStore</code>.
@@ -57,7 +58,47 @@ public final class ActivityTypeLoader extends AbstractLoader<ActivityType>
 
 	public ActivityTypeLoader (final DataStore datastore)
 	{
-		super (ActivityType.class, datastore);
+		super (datastore);
+	}
+
+	/**
+	 * Retrieve an <code>Element</code> instance from the
+	 * <code>DataStore</code> based on its <code>DataStore</code> identifier.
+	 *
+	 * @param  id The <code>DataStore</code> identifier of the
+	 *            <code>Element</code> to retrieve, not null
+	 *
+	 * @return    The requested <code>Element</code>
+	 */
+
+	public ActivityType fetchById (final Long id)
+	{
+		this.log.trace ("fetchById: id={}", id);
+
+		if (id == null)
+		{
+			this.log.error ("Attempting to fetch an element with a NULL id");
+			throw new NullPointerException ();
+		}
+
+		return this.getQuery (ActivityType.SELECTOR_ID)
+			.setProperty (ActivityType.ID, id)
+			.query ();
+	}
+
+	/**
+	 * Retrieve a <code>List</code> of all of the <code>Element</code>
+	 * instances from the <code>DataStore</code>.
+	 *
+	 * @return A <code>List</code> of <code>Element</code> instances
+	 */
+
+	public List<ActivityType> fetchAll ()
+	{
+		this.log.trace ("fetchAll:");
+
+		return this.getQuery (ActivityType.SELECTOR_ALL)
+			.queryAll ();
 	}
 
 	/**
@@ -89,16 +130,9 @@ public final class ActivityTypeLoader extends AbstractLoader<ActivityType>
 			throw new NullPointerException ();
 		}
 
-		if (! this.datastore.isOpen ())
-		{
-			this.log.error ("Attempting to Query a closed datastore");
-			throw new IllegalStateException ("datastore is closed");
-		}
-
-		Query<ActivityType> query = this.fetchQuery (ActivityType.SELECTOR_NAME);
-		query.setProperty (ActivityType.SOURCE, source);
-		query.setProperty (ActivityType.NAME, name);
-
-		return query.query ();
+		return this.getQuery (ActivityType.SELECTOR_NAME)
+			.setProperty (ActivityType.SOURCE, source)
+			.setProperty (ActivityType.NAME, name)
+			.query ();
 	}
 }

@@ -66,11 +66,17 @@ public abstract class User extends Element
 	/** The username of the <code>User</code> */
 	public static final Property<String> USERNAME;
 
+	/** Select the <code>User</code> instance by its id */
+	public static final Selector<User> SELECTOR_ID;
+
+	/** Select all of the <code>User</code> instances */
+	public static final Selector<User> SELECTOR_ALL;
+
 	/** Select an <code>User</code> instance by its id number */
-	public static final Selector SELECTOR_IDNUMBER;
+	public static final Selector<User> SELECTOR_IDNUMBER;
 
 	/** Select an <code>User</code> instance by its username */
-	public static final Selector SELECTOR_USERNAME;
+	public static final Selector<User> SELECTOR_USERNAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -84,6 +90,8 @@ public abstract class User extends Element
 		LASTNAME = Property.getInstance (User.class, String.class, "lastname", true, true);
 		USERNAME = Property.getInstance (User.class, String.class, "username", false, true);
 
+		SELECTOR_ID = Selector.getInstance (User.class, ID, true);
+		SELECTOR_ALL = Selector.getInstance (User.class, "all", false);
 		SELECTOR_IDNUMBER = Selector.getInstance (User.class, IDNUMBER, true);
 		SELECTOR_USERNAME = Selector.getInstance (User.class, USERNAME, true);
 
@@ -92,6 +100,8 @@ public abstract class User extends Element
 			.addProperty (FIRSTNAME, User::getFirstname, User::setFirstname)
 			.addProperty (LASTNAME, User::getLastname, User::setLastname)
 			.addProperty (USERNAME, User::getUsername, User::setUsername)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_IDNUMBER)
 			.addSelector (SELECTOR_USERNAME)
 			.build ();

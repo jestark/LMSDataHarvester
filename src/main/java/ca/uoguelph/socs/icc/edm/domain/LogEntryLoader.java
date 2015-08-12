@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Load <code>LogEntry</code> instances from the <code>DataStore</code>.  This
@@ -60,7 +59,47 @@ public final class LogEntryLoader extends AbstractLoader<LogEntry>
 
 	public LogEntryLoader (final DataStore datastore)
 	{
-		super (LogEntry.class, datastore);
+		super (datastore);
+	}
+
+	/**
+	 * Retrieve an <code>Element</code> instance from the
+	 * <code>DataStore</code> based on its <code>DataStore</code> identifier.
+	 *
+	 * @param  id The <code>DataStore</code> identifier of the
+	 *            <code>Element</code> to retrieve, not null
+	 *
+	 * @return    The requested <code>Element</code>
+	 */
+
+	public LogEntry fetchById (final Long id)
+	{
+		this.log.trace ("fetchById: id={}", id);
+
+		if (id == null)
+		{
+			this.log.error ("Attempting to fetch an element with a NULL id");
+			throw new NullPointerException ();
+		}
+
+		return this.getQuery (LogEntry.SELECTOR_ID)
+			.setProperty (LogEntry.ID, id)
+			.query ();
+	}
+
+	/**
+	 * Retrieve a <code>List</code> of all of the <code>Element</code>
+	 * instances from the <code>DataStore</code>.
+	 *
+	 * @return A <code>List</code> of <code>Element</code> instances
+	 */
+
+	public List<LogEntry> fetchAll ()
+	{
+		this.log.trace ("fetchAll:");
+
+		return this.getQuery (LogEntry.SELECTOR_ALL)
+			.queryAll ();
 	}
 
 	/**
@@ -84,15 +123,8 @@ public final class LogEntryLoader extends AbstractLoader<LogEntry>
 			throw new NullPointerException ();
 		}
 
-		if (! this.datastore.isOpen ())
-		{
-			this.log.error ("Attempting to Query a closed datastore");
-			throw new IllegalStateException ("datastore is closed");
-		}
-
-		Query<LogEntry> query = this.fetchQuery (LogEntry.SELECTOR_COURSE);
-		query.setProperty (LogEntry.COURSE, course);
-
-		return query.queryAll ();
+		return this.getQuery (LogEntry.SELECTOR_COURSE)
+			.setProperty (LogEntry.COURSE, course)
+			.queryAll ();
 	}
 }

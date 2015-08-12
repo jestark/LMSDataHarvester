@@ -60,13 +60,13 @@ public class Definition<T extends Element> implements MetaData<T>
 	private final Map<String, Property<?>> properties;
 
 	/** The <code>Selector</code> instances for the interface */
-	private final Map<String, Selector> selectors;
+	private final Map<String, Selector<T>> selectors;
 
 	/** <code>Property</code> to <code>PropertyReference</code> instance mapping */
-	private final Map<Property<?>, PropertyReference<T, ?>> values;
+	private final Map<Property<?>, PropertyReference<T, ?>> prefs;
 
 	/** <code>Property</code> to <code>RelationshipReference</code> instance mapping*/
-	private final Map<Property<?>, RelationshipReference<?, ?>> collections;
+	private final Map<Property<?>, RelationshipReference<?, ?>> rrefs;
 
 	/**
 	 * Get the <code>DefintionBuilder</code> for the specified
@@ -100,13 +100,13 @@ public class Definition<T extends Element> implements MetaData<T>
 	 * @param  selectors
 	 */
 
-	protected Definition (final Class<T> type, final Definition<? super T> parent, final Map<String, Property<?>> properties, final Map<String, Selector> selectors, final Map<Property<?>, PropertyReference<T, ?>> values, final Map<Property<?>, RelationshipReference<T, ?>> collections)
+	protected Definition (final Class<T> type, final Definition<? super T> parent, final Map<String, Property<?>> properties, final Map<String, Selector<T>> selectors, final Map<Property<?>, PropertyReference<T, ?>> prefs, final Map<Property<?>, RelationshipReference<T, ?>> rrefs)
 	{
 		assert type != null : "type is NULL";
 		assert properties != null : "properties is NULL";
 		assert selectors != null : "selectors is NULL";
-		assert values != null : "values is NULL";
-		assert collections != null : "collections is NULL";
+		assert prefs != null : "prefs is NULL";
+		assert rrefs != null : "rrefs is NULL";
 
 		this.log = LoggerFactory.getLogger (MetaData.class);
 
@@ -114,8 +114,8 @@ public class Definition<T extends Element> implements MetaData<T>
 		this.parent = parent;
 		this.selectors = selectors;
 		this.properties = properties;
-		this.values = new HashMap<> (values);
-		this.collections = new HashMap<> (collections);
+		this.prefs = new HashMap<> (prefs);
+		this.rrefs = new HashMap<> (rrefs);
 	}
 
 	/**
@@ -136,9 +136,9 @@ public class Definition<T extends Element> implements MetaData<T>
 
 		PropertyReference<T, V> result = null;
 
-		if (this.values.containsKey (property))
+		if (this.prefs.containsKey (property))
 		{
-			result = (PropertyReference<T, V>) this.values.get (property);
+			result = (PropertyReference<T, V>) this.prefs.get (property);
 		}
 		else if (this.parent != null)
 		{
@@ -155,9 +155,9 @@ public class Definition<T extends Element> implements MetaData<T>
 
 		RelationshipReference<T, V> result = null;
 
-		if (this.collections.containsKey (property))
+		if (this.rrefs.containsKey (property))
 		{
-			result = (RelationshipReference<T, V>) this.collections.get (property);
+			result = (RelationshipReference<T, V>) this.rrefs.get (property);
 		}
 		else if (this.parent != null)
 		{
@@ -291,11 +291,11 @@ public class Definition<T extends Element> implements MetaData<T>
 	 */
 
 	@Override
-	public Selector getSelector (final String name)
+	public Selector<?> getSelector (final String name)
 	{
 		assert name != null : "name is NULL";
 
-		Selector result = this.selectors.get (name);
+		Selector<?> result = this.selectors.get (name);
 
 		if ((result == null) && (this.parent != null))
 		{
@@ -313,9 +313,9 @@ public class Definition<T extends Element> implements MetaData<T>
 	 */
 
 	@Override
-	public Set<Selector> getSelectors ()
+	public Set<Selector<?>> getSelectors ()
 	{
-		Set<Selector> result = new HashSet<Selector> (this.selectors.values ());
+		Set<Selector<?>> result = new HashSet<Selector<?>> (this.selectors.values ());
 
 		if (this.parent != null)
 		{

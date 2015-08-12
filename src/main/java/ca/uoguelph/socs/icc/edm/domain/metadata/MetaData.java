@@ -137,7 +137,7 @@ public interface MetaData<T extends Element>
 	 * @return      The <code>Property</code>, may be null
 	 */
 
-	public abstract Selector getSelector (String name);
+	public abstract Selector<?> getSelector (String name);
 
 	/**
 	 * Get the <code>Set</code> of <code>Selector</code> instances which are
@@ -146,7 +146,7 @@ public interface MetaData<T extends Element>
 	 * @return A <code>Set</code> of <code>Selector</code> instances
 	 */
 
-	public abstract Set<Selector> getSelectors ();
+	public abstract Set<Selector<?>> getSelectors ();
 
 	/**
 	 * Get the value corresponding to the specified <code>Property</code> from

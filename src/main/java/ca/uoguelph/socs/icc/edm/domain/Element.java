@@ -42,12 +42,6 @@ public abstract class Element
 	/** The <code>DataStore</code> identifier of the <code>Element</code> */
 	public static final Property<Long> ID;
 
-	/** Select the <code>Element</code> instance by its id */
-	public static final Selector SELECTOR_ID;
-
-	/** Select all of the <code>Element</code> instances */
-	public static final Selector SELECTOR_ALL;
-
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
 	 * <code>Selector</code> instances for the <code>Element</code>.
@@ -56,13 +50,9 @@ public abstract class Element
 	static
 	{
 		ID = Property.getInstance (Element.class, Long.class, "id", false, false);
-		SELECTOR_ID = Selector.getInstance (Element.class, ID, true);
-		SELECTOR_ALL = Selector.getInstance (Element.class, "all", false);
 
 		metadata = Definition.getBuilder (Element.class, null)
 			.addProperty (ID, Element::getId, Element::setId)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.build ();
 
 		Profile.registerMetaData (metadata);

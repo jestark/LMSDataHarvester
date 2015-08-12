@@ -19,8 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Map;
 
-import java.util.HashMap;
-
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -58,11 +56,8 @@ public abstract class AbstractLoader<T extends Element>
 	/** The logger */
 	protected final Logger log;
 
-	/** The type of <code>Element</code> which is being managed */
-	private final Class<T> type;
-
 	/** The <code>DomainModel</code> instance which owns this Loader. */
-	protected final DataStore datastore;
+	private final DataStore datastore;
 
 	/**
 	 * Create the loader for the specified <code>DomainModel</code>.
@@ -111,11 +106,10 @@ public abstract class AbstractLoader<T extends Element>
 	 * @param  datastore The <code>DataStore</code>, not null
 	 */
 
-	protected AbstractLoader (final Class<T> type, final DataStore datastore)
+	protected AbstractLoader (final DataStore datastore)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.type = type;
 		this.datastore = datastore;
 	}
 
@@ -130,14 +124,20 @@ public abstract class AbstractLoader<T extends Element>
 	 * @return          The <code>Query</code> instance
 	 */
 
-	protected final Query<T> fetchQuery (final Selector selector, final Class<? extends T> impl)
+	protected final Query<T> getQuery (final Selector<T> selector, final Class<? extends T> impl)
 	{
 		this.log.trace ("fetchQuery: selector={}, impl={}", selector, impl);
 
 		assert selector != null : "selector is NULL";
 		assert impl != null : "impl is NULL";
 
-		return this.datastore.getQuery (selector, this.type, impl);
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		return this.datastore.getQuery (selector, impl);
 	}
 
 	/**
@@ -150,13 +150,19 @@ public abstract class AbstractLoader<T extends Element>
 	 * @return          The <code>Query</code> instance
 	 */
 
-	protected final Query<T> fetchQuery (final Selector selector)
+	protected final Query<T> getQuery (final Selector<T> selector)
 	{
 		this.log.trace ("fetchQuery: selector={}", selector);
 
-		assert selector != null : "name is NULL";
+		assert selector != null : "selector is NULL";
 
-		return this.datastore.getQuery (selector, this.type);
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		return this.datastore.getQuery (selector);
 	}
 
 	/**
@@ -169,21 +175,7 @@ public abstract class AbstractLoader<T extends Element>
 	 * @return    The requested <code>Element</code>
 	 */
 
-	public T fetchById (final Long id)
-	{
-		this.log.trace ("fetchById: id={}", id);
-
-		if (id == null)
-		{
-			this.log.error ("Attempting to fetch an element with a NULL id");
-			throw new NullPointerException ();
-		}
-
-		Query<T> query = this.fetchQuery (Element.SELECTOR_ID);
-		query.setProperty (Element.ID, id);
-
-		return query.query ();
-	}
+	public abstract T fetchById (final Long id);
 
 	/**
 	 * Retrieve a <code>List</code> of all of the <code>Element</code>
@@ -192,10 +184,5 @@ public abstract class AbstractLoader<T extends Element>
 	 * @return A <code>List</code> of <code>Element</code> instances
 	 */
 
-	public List<T> fetchAll ()
-	{
-		this.log.trace ("fetchAll:");
-
-		return (this.fetchQuery (Element.SELECTOR_ALL)).queryAll ();
-	}
+	public abstract List<T> fetchAll ();
 }

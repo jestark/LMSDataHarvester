@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Load <code>Enrolment</code> instances from the <code>DataStore</code>.  This
@@ -59,7 +58,47 @@ public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 
 	public EnrolmentLoader (final DataStore datastore)
 	{
-		super (Enrolment.class, datastore);
+		super (datastore);
+	}
+
+	/**
+	 * Retrieve an <code>Element</code> instance from the
+	 * <code>DataStore</code> based on its <code>DataStore</code> identifier.
+	 *
+	 * @param  id The <code>DataStore</code> identifier of the
+	 *            <code>Element</code> to retrieve, not null
+	 *
+	 * @return    The requested <code>Element</code>
+	 */
+
+	public Enrolment fetchById (final Long id)
+	{
+		this.log.trace ("fetchById: id={}", id);
+
+		if (id == null)
+		{
+			this.log.error ("Attempting to fetch an element with a NULL id");
+			throw new NullPointerException ();
+		}
+
+		return this.getQuery (Enrolment.SELECTOR_ID)
+			.setProperty (Enrolment.ID, id)
+			.query ();
+	}
+
+	/**
+	 * Retrieve a <code>List</code> of all of the <code>Element</code>
+	 * instances from the <code>DataStore</code>.
+	 *
+	 * @return A <code>List</code> of <code>Element</code> instances
+	 */
+
+	public List<Enrolment> fetchAll ()
+	{
+		this.log.trace ("fetchAll:");
+
+		return this.getQuery (Enrolment.SELECTOR_ALL)
+			.queryAll ();
 	}
 
 	/**
@@ -83,15 +122,8 @@ public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 			throw new NullPointerException ();
 		}
 
-		if (! this.datastore.isOpen ())
-		{
-			this.log.error ("Attempting to Query a closed datastore");
-			throw new IllegalStateException ("datastore is closed");
-		}
-
-		Query<Enrolment> query = this.fetchQuery (Enrolment.SELECTOR_ROLE);
-		query.setProperty (Enrolment.ROLE, role);
-
-		return query.queryAll ();
+		return this.getQuery (Enrolment.SELECTOR_ROLE)
+			.setProperty (Enrolment.ROLE, role)
+			.queryAll ();
 	}
 }

@@ -52,8 +52,14 @@ public abstract class Role extends Element
 	/** The name of the <code>Role</code> */
 	public static final Property<String> NAME;
 
+	/** Select the <code>Role</code> instance by its id */
+	public static final Selector<Role> SELECTOR_ID;
+
+	/** Select all of the <code>Role</code> instances */
+	public static final Selector<Role> SELECTOR_ALL;
+
 	/** Select an <code>Role</code> instance by its name */
-	public static final Selector SELECTOR_NAME;
+	public static final Selector<Role> SELECTOR_NAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -63,10 +69,15 @@ public abstract class Role extends Element
 	static
 	{
 		NAME = Property.getInstance (Role.class, String.class, "name", false, true);
+
+		SELECTOR_ID = Selector.getInstance (Role.class, ID, true);
+		SELECTOR_ALL = Selector.getInstance (Role.class, "all", false);
 		SELECTOR_NAME = Selector.getInstance (Role.class, NAME, true);
 
 		metadata = Definition.getBuilder (Role.class, Element.metadata)
 			.addProperty (NAME, Role::getName, Role::setName)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
 			.build ();
 

@@ -34,14 +34,15 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  *
  * @author  James E. Stark
  * @version 1.0
+ * @param   <T> The <code>Element</code> type to be returned
  * @see     Definition
  * @see     Property
  */
 
-public final class Selector
+public final class Selector<T extends Element>
 {
-	/** The implementation class for the <code>Element</code> */
-	private final Class<? extends Element> type;
+	/** The <code>Element</code> interface class to be returned */
+	private final Class<T> type;
 
 	/** The name of the <code>Selector</code> */
 	private final String name;
@@ -56,6 +57,7 @@ public final class Selector
 	 * Create the <code>Selector</code> using multiple <code>Property</code>
 	 * instances.
 	 *
+	 * @param  <T>
 	 * @param  type       The <code>Element</code> interface class, not null
 	 * @param  name       The name of the <code>Selector</code>, not null
 	 * @param  unique     An indication if the <code>Selector</code> uniquely
@@ -66,7 +68,7 @@ public final class Selector
 	 * @return            The <code>Selector</code>
 	 */
 
-	public static Selector getInstance (final Class<? extends Element> type, final String name, final boolean unique, final Property<?>... properties)
+	public static <T extends Element> Selector<T> getInstance (final Class<T> type, final String name, final boolean unique, final Property<?>... properties)
 	{
 		assert type != null : "type is NULL";
 		assert name != null : "name is NULL";
@@ -81,12 +83,13 @@ public final class Selector
 			props.add (property);
 		}
 
-		return new Selector (type, name, unique, props);
+		return new Selector<T> (type, name, unique, props);
 	}
 
 	/**
 	 * Create the <code>Selector</code> using a single <code>Property</code>.
 	 *
+	 * @param  <T>
 	 * @param  type     The <code>Element</code> interface class, not null
 	 * @param  unique   An indication if the <code>Selector</code> uniquely
 	 *                  identifies an <code>Element</code> instance
@@ -96,7 +99,7 @@ public final class Selector
 	 * @return          The <code>Selector</code>
 	 */
 
-	public static Selector getInstance (final Class<? extends Element> type, final Property<?> property, final boolean unique)
+	public static <T extends Element> Selector<T> getInstance (final Class<T> type, final Property<?> property, final boolean unique)
 	{
 		assert type != null : "type is NULL";
 		assert property != null : "property is NULL";
@@ -116,7 +119,7 @@ public final class Selector
 	 *                    instances represented by the <code>Selector</code>
 	 */
 
-	protected Selector (final Class<? extends Element> type, final String name, final boolean unique, final Set<Property<?>> properties)
+	protected Selector (final Class<T> type, final String name, final boolean unique, final Set<Property<?>> properties)
 	{
 		this.type = type;
 		this.name = name;
@@ -185,7 +188,7 @@ public final class Selector
 	 * @return The <code>Class</code> representing the implementation type
 	 */
 
-	public Class<? extends Element> getElementType ()
+	public Class<T> getElementType ()
 	{
 		return this.type;
 	}

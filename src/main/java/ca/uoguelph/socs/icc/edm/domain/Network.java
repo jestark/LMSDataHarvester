@@ -39,8 +39,14 @@ public abstract class Network extends Element
 	/** The name of the <code>Network</code> */
 	public static final Property<String> NAME;
 
+	/** Select the <code>Network</code> instance by its id */
+	public static final Selector<Network> SELECTOR_ID;
+
+	/** Select all of the <code>Network</code> instances */
+	public static final Selector<Network> SELECTOR_ALL;
+
 	/** Select an <code>Network</code> instance by its name */
-	public static final Selector SELECTOR_NAME;
+	public static final Selector<Network> SELECTOR_NAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -50,10 +56,15 @@ public abstract class Network extends Element
 	static
 	{
 		NAME = Property.getInstance (Network.class, String.class, "name", false, true);
+
+		SELECTOR_ID = Selector.getInstance (Network.class, ID, true);
+		SELECTOR_ALL = Selector.getInstance (Network.class, "all", false);
 		SELECTOR_NAME = Selector.getInstance (Network.class, NAME, true);
 
 		metadata = Definition.getBuilder (Network.class, Element.metadata)
 			.addProperty (NAME, Network::getName, Network::setName)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
 			.build ();
 

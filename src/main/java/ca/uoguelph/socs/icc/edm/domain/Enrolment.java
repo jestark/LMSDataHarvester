@@ -89,8 +89,14 @@ public abstract class Enrolment extends Element
 	/** Has consent been given to use this data for research */
 	public static final Property<Boolean> USABLE;
 
+	/** Select the <code>Enrolment</code> instance by its id */
+	public static final Selector<Enrolment> SELECTOR_ID;
+
+	/** Select all of the <code>Enrolment</code> instances */
+	public static final Selector<Enrolment> SELECTOR_ALL;
+
 	/** Select all <code>Enrolment</code> by <code>Role</code>*/
-	public static final Selector SELECTOR_ROLE;
+	public static final Selector<Enrolment> SELECTOR_ROLE;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -104,13 +110,17 @@ public abstract class Enrolment extends Element
 		ROLE = Property.getInstance (Enrolment.class, Role.class, "role", false, true);
 		USABLE = Property.getInstance (Enrolment.class, Boolean.class, "usable", true, true);
 
+		SELECTOR_ID = Selector.getInstance (Enrolment.class, ID, true);
+		SELECTOR_ALL = Selector.getInstance (Enrolment.class, "all", false);
 		SELECTOR_ROLE = Selector.getInstance (Enrolment.class, ROLE, false);
 
 		metadata = Definition.getBuilder (Enrolment.class, Element.metadata)
-			.addProperty (COURSE, Enrolment::getCourse, Enrolment::setCourse)
+			.addRelationship (COURSE, Enrolment::getCourse, Enrolment::setCourse)
+			.addRelationship (ROLE, Enrolment::getRole, Enrolment::setRole)
 			.addProperty (FINALGRADE, Enrolment::getFinalGrade, Enrolment::setFinalGrade)
-			.addProperty (ROLE, Enrolment::getRole, Enrolment::setRole)
 			.addProperty (USABLE, Enrolment::isUsable, Enrolment::setUsable)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_ROLE)
 			.build ();
 

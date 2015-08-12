@@ -65,8 +65,14 @@ public abstract class Course extends Element
 	/** The year of offering for the <code>Course</code> */
 	public static final Property<Integer> YEAR;
 
+	/** Select the <code>Course</code> instance by its id */
+	public static final Selector<Course> SELECTOR_ID;
+
+	/** Select all of the <code>Course</code> instances */
+	public static final Selector<Course> SELECTOR_ALL;
+
 	/** Select an <code>Course</code> instance by its name and date of offering */
-	public static final Selector SELECTOR_OFFERING;
+	public static final Selector<Course> SELECTOR_OFFERING;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -79,12 +85,16 @@ public abstract class Course extends Element
 		SEMESTER = Property.getInstance (Course.class, Semester.class, "semester", false, true);
 		YEAR = Property.getInstance (Course.class, Integer.class, "year", false, true);
 
+		SELECTOR_ID = Selector.getInstance (Course.class, ID, true);
+		SELECTOR_ALL = Selector.getInstance (Course.class, "all", false);
 		SELECTOR_OFFERING = Selector.getInstance (Course.class, "offering", true, NAME, SEMESTER, YEAR);
 
 		metadata = Definition.getBuilder (Course.class, Element.metadata)
 			.addProperty (NAME, Course::getName, Course::setName)
 			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
 			.addProperty (YEAR, Course::getYear, Course::setYear)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_OFFERING)
 			.build ();
 

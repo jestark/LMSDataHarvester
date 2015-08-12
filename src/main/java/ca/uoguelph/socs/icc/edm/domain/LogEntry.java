@@ -72,11 +72,17 @@ public abstract class LogEntry extends Element
 	/** The time that the <code>LogEntry</code> was created */
 	public static final Property<Date> TIME;
 
+	/** Select the <code>LogEntry</code> instance by its id */
+	public static final Selector<LogEntry> SELECTOR_ID;
+
+	/** Select all of the <code>LogEntry</code> instances */
+	public static final Selector<LogEntry> SELECTOR_ALL;
+
 	/** Select all <code>LogEntry</code> instances by <code>Action</code> */
-	public static final Selector SELECTOR_ACTION;
+	public static final Selector<LogEntry> SELECTOR_ACTION;
 
 	/** Select all <code>LogEntry</code> instances by <code>Course</code> */
-	public static final Selector SELECTOR_COURSE;
+	public static final Selector<LogEntry> SELECTOR_COURSE;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -92,16 +98,20 @@ public abstract class LogEntry extends Element
 		IPADDRESS = Property.getInstance (LogEntry.class, String.class, "ipaddress", false, true);
 		TIME = Property.getInstance (LogEntry.class, Date.class, "time", false, true);
 
+		SELECTOR_ID = Selector.getInstance (LogEntry.class, ID, true);
+		SELECTOR_ALL = Selector.getInstance (LogEntry.class, "all", false);
 		SELECTOR_ACTION = Selector.getInstance (LogEntry.class, ACTION, false);
 		SELECTOR_COURSE = Selector.getInstance (LogEntry.class, COURSE, false);
 
 		metadata = Definition.getBuilder (LogEntry.class, Element.metadata)
-			.addProperty (ACTION, LogEntry::getAction, LogEntry::setAction)
-			.addProperty (ACTIVITY, LogEntry::getActivity, LogEntry::setActivity)
+			.addRelationship (ACTION, LogEntry::getAction, LogEntry::setAction)
+			.addRelationship (ACTIVITY, LogEntry::getActivity, LogEntry::setActivity)
+			.addRelationship (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
 			.addProperty (COURSE, LogEntry::getCourse)
-			.addProperty (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
 			.addProperty (IPADDRESS, LogEntry::getIPAddress, LogEntry::setIPAddress)
 			.addProperty (TIME, LogEntry::getTime, LogEntry::setTime)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_ACTION)
 			.addSelector (SELECTOR_COURSE)
 			.build ();

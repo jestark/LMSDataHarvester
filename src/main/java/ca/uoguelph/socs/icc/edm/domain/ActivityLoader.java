@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Load <code>Activity</code> instances from the <code>DataStore</code>.  This
@@ -61,7 +60,47 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 
 	protected ActivityLoader (final DataStore datastore)
 	{
-		super (Activity.class, datastore);
+		super (datastore);
+	}
+
+	/**
+	 * Retrieve an <code>Element</code> instance from the
+	 * <code>DataStore</code> based on its <code>DataStore</code> identifier.
+	 *
+	 * @param  id The <code>DataStore</code> identifier of the
+	 *            <code>Element</code> to retrieve, not null
+	 *
+	 * @return    The requested <code>Element</code>
+	 */
+
+	public Activity fetchById (final Long id)
+	{
+		this.log.trace ("fetchById: id={}", id);
+
+		if (id == null)
+		{
+			this.log.error ("Attempting to fetch an element with a NULL id");
+			throw new NullPointerException ();
+		}
+
+		return this.getQuery (Activity.SELECTOR_ID)
+			.setProperty (Activity.ID, id)
+			.query ();
+	}
+
+	/**
+	 * Retrieve a <code>List</code> of all of the <code>Element</code>
+	 * instances from the <code>DataStore</code>.
+	 *
+	 * @return A <code>List</code> of <code>Element</code> instances
+	 */
+
+	public List<Activity> fetchAll ()
+	{
+		this.log.trace ("fetchAll:");
+
+		return this.getQuery (Activity.SELECTOR_ALL)
+			.queryAll ();
 	}
 
 	/**
@@ -85,14 +124,7 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 			throw new NullPointerException ();
 		}
 
-		if (! this.datastore.isOpen ())
-		{
-			this.log.error ("Attempting to Query a closed datastore");
-			throw new IllegalStateException ("datastore is closed");
-		}
-
-		Query<Activity> query = this.fetchQuery (Activity.SELECTOR_ALL, Activity.getActivityClass (type));
-
-		return query.queryAll ();
+		return this.getQuery (Activity.SELECTOR_ALL, Activity.getActivityClass (type))
+			.queryAll ();
 	}
 }

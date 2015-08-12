@@ -83,8 +83,14 @@ public abstract class Activity extends Element
 	/** The name of the <code>Activity</code> */
 	public static final Property<String> NAME;
 
+	/** Select the <code>Activity</code> instance by its id */
+	public static final Selector<Activity> SELECTOR_ID;
+
+	/** Select all of the <code>Activity</code> instances */
+	public static final Selector<Activity> SELECTOR_ALL;
+
 	/** Select all <code>Activity</code> instances by <code>ActivityType</code> */
-	public static final Selector SELECTOR_TYPE;
+	public static final Selector<Activity> SELECTOR_TYPE;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -97,12 +103,16 @@ public abstract class Activity extends Element
 		TYPE = Property.getInstance (Activity.class, ActivityType.class, "type", false, true);
 		NAME = Property.getInstance (Activity.class, String.class, "name", false, true);
 
+		SELECTOR_ID = Selector.getInstance (Activity.class, Element.ID, true);
+		SELECTOR_ALL = Selector.getInstance (Activity.class, "all", false);
 		SELECTOR_TYPE = Selector.getInstance (Activity.class, TYPE, false);
 
 		metadata = Definition.getBuilder (Activity.class, Element.metadata)
-			.addRelationship (COURSE, Activity::getCourse)
-			.addRelationship (TYPE, Activity::getType)
+//			.addRelationship (COURSE, Activity::getCourse)
+//			.addRelationship (TYPE, Activity::getType)
 			.addProperty (NAME, Activity::getName)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_TYPE)
 			.build ();
 
