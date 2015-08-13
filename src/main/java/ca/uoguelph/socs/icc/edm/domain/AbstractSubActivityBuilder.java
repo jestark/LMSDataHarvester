@@ -67,7 +67,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 *                               the <code>Activity</code>
 	 */
 
-	protected static <T extends SubActivity, U extends AbstractSubActivityBuilder<T>> U getInstance (final DataStore datastore, final Creator<T> metadata, final Activity parent, final BiFunction<DataStore, Creator<T>, U> create)
+	protected static <T extends SubActivity, U extends AbstractSubActivityBuilder<T>> U getInstance (final DataStore datastore, final Creator<T> metadata, final ParentActivity parent, final BiFunction<DataStore, Creator<T>, U> create)
 	{
 		assert datastore != null : "datastore is NULL";
 		assert parent != null : "parent is NULL";
@@ -181,7 +181,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 * @return The parent <code>Activity</code>
 	 */
 
-	public final Activity getParent ()
+	public final ParentActivity getParent ()
 	{
 		return this.builder.getPropertyValue (SubActivity.PARENT);
 	}
@@ -193,7 +193,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 * @param  parent The parent <code>Activity</code>
 	 */
 
-	protected void setParent (final Activity parent)
+	protected void setParent (final ParentActivity parent)
 	{
 		this.log.trace ("setParent: parent={}", parent);
 

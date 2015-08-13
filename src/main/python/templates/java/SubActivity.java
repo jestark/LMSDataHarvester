@@ -27,6 +27,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
@@ -68,7 +69,7 @@ public class ${ClassName} extends SubActivity implements Serializable
 	private String name;
 
 	/** The parent <code>Activity</code> */
-	private Activity parent;
+	private ParentActivity parent;
 
 	/** The <code>List</code> of <code>LogEntry</code> instances */
 	private List<LogEntry> log;
@@ -84,7 +85,7 @@ public class ${ClassName} extends SubActivity implements Serializable
 	static
 	{
 		Profile.registerCreator (Implementation.getInstance (SubActivity.metadata, ${ClassName}.class, ${ClassName}::new));
-		Activity.registerImplementation (${ParentClass}.class, ${ClassName}.class);
+		SubActivity.registerImplementation (${ParentClass}.class, ${ClassName}.class);
 	}
 
 	/**
@@ -237,7 +238,7 @@ public class ${ClassName} extends SubActivity implements Serializable
 	 */
 
 	@Override
-	public Activity getParent ()
+	public ParentActivity getParent ()
 	{
 		return this.parent;
 	}
@@ -257,7 +258,7 @@ public class ${ClassName} extends SubActivity implements Serializable
 	 */
 
 	@Override
-	protected void setParent (final Activity activity)
+	protected void setParent (final ParentActivity activity)
 	{
 		assert activity != null : "activity is NULL";
 

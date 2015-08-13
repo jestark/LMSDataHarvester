@@ -17,7 +17,10 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
 
@@ -33,16 +36,22 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.0
  */
 
-public abstract class SubActivity extends Activity
+public abstract class SubActivity extends ParentActivity
 {
+	/** <code>Activity</code> to <code>SubActivity</code> class mapping */
+	private static final Map<Class<? extends ParentActivity>, Class<? extends SubActivity>> subactivities;
+
 	/** The <code>MetaData</code> definition for the <code>SubActivity</code> */
 	protected static final Definition<SubActivity> metadata;
 
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	/** The <code>DataStore</code> identifier of the <code>SubActivity</code> */
 	public static final Property<Long> ID;
 
+	/** The name of the <code>SubActivity</code> */
+	public static final Property<String> NAME;
+
 	/** The parent <code>Activity</code> */
-	public static final Property<Activity> PARENT;
+	public static final Property<ParentActivity> PARENT;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -51,16 +60,55 @@ public abstract class SubActivity extends Activity
 
 	static
 	{
-		ID = Property.getInstance (SubActivity.class, Long.class, "id", false, false);
-		PARENT = Property.getInstance (SubActivity.class, Activity.class, "parent", false, true);
+		subactivities = new HashMap<> ();
 
-		metadata = Definition.getBuilder (SubActivity.class, Activity.class)
-			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
+		ID = Property.getInstance (SubActivity.class, Long.class, "id", false, false);
+		NAME = Property.getInstance (SubActivity.class, String.class, "name", false, true);
+		PARENT = Property.getInstance (SubActivity.class, ParentActivity.class, "parent", false, true);
+
+		metadata = Definition.getBuilder (SubActivity.class, Element.class)
+//			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
 			.addProperty (ID, SubActivity::getId, SubActivity::setId)
-			.addProperty (Activity.NAME, SubActivity::getName, SubActivity::setName)
+			.addProperty (NAME, SubActivity::getName, SubActivity::setName)
 			.build ();
 
 		Profile.registerMetaData (metadata);
+	}
+
+	/**
+	 * Get the <code>SubActivity</code> implementation class which is
+	 * associated with the specified <code>Activity</code> implementation
+	 * class.
+	 *
+	 * @param  activity The <code>Activity</code> implementation class
+	 *
+	 * @return          The <code>SubActivity</code> implementation class, may be
+	 *                  null
+	 */
+
+	public static final Class<? extends SubActivity> getSubActivityClass (final Class<? extends ParentActivity> activity)
+	{
+		assert activity != null : "activity is NULL";
+		assert SubActivity.subactivities.containsKey (activity) : "Activity is not registered";
+
+		return SubActivity.subactivities.get (activity);
+	}
+
+	/**
+	 * Register an association between an <code>Activity</code> implementation
+	 * class and a <code>SubActivity</code> implementation class.
+	 *
+	 * @param  activity    The <code>Activity</code> implementation, not null
+	 * @param  subactivity The <code>SubActivity</code> implementation, not null
+	 */
+
+	protected static final void registerImplementation (final Class<? extends ParentActivity> activity, final Class<? extends SubActivity> subactivity)
+	{
+		assert activity != null : "activity is NULL";
+		assert subactivity != null : "subactivity is NULL";
+		assert (! SubActivity.subactivities.containsKey (activity)) : "activity is already registered";
+
+		SubActivity.subactivities.put (activity, subactivity);
 	}
 
 	/**
@@ -111,7 +159,7 @@ public abstract class SubActivity extends Activity
 	 * @return The parent <code>Activity</code>
 	 */
 
-	public abstract Activity getParent ();
+	public abstract ParentActivity getParent ();
 
 	/**
 	 * Set the <code>Activity</code> instance which contains the
@@ -123,7 +171,7 @@ public abstract class SubActivity extends Activity
 	 *                  <code>SubActivity</code> instance
 	 */
 
-	protected abstract void setParent (Activity activity);
+	protected abstract void setParent (ParentActivity activity);
 
 	/**
 	 * Set the name of the <code>Activity</code>.  This method is intended to

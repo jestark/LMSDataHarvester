@@ -49,13 +49,13 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 *                               <code>Activity</code>
 	 */
 
-	public static SubActivityBuilder getInstance (final DataStore datastore, Activity parent)
+	public static SubActivityBuilder getInstance (final DataStore datastore, ParentActivity parent)
 	{
 		assert datastore != null : "datastore is NULL";
 		assert parent != null : "parent is NULL";
 		assert datastore.contains (parent) : "parent is not in the datastore";
 
-		Class<? extends SubActivity> sclass = Activity.getSubActivityClass (parent.getClass ());
+		Class<? extends SubActivity> sclass = SubActivity.getSubActivityClass (parent.getClass ());
 
 		if (sclass == null)
 		{
@@ -115,7 +115,7 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 */
 
 
-	public static SubActivityBuilder getInstance (final DomainModel model, Activity parent)
+	public static SubActivityBuilder getInstance (final DomainModel model, ParentActivity parent)
 	{
 		if (model == null)
 		{

@@ -51,7 +51,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  */
 
 
-public class GenericActivity extends ActivityInstance implements Serializable
+public class GenericActivity extends Activity implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -75,7 +75,7 @@ public class GenericActivity extends ActivityInstance implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (ActivityInstance.metadata, GenericActivity.class, GenericActivity::new));
+		Profile.registerCreator (Implementation.getInstance (Activity.metadata, GenericActivity.class, GenericActivity::new));
 	}
 
 	/**

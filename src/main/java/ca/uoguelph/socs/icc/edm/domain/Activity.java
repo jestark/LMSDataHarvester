@@ -66,7 +66,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     ActivityLoader
  */
 
-public abstract class Activity extends Element
+public abstract class Activity extends ParentActivity
 {
 	/** Mapping of <code>ActivityType</code> instances to implementation classes */
 	private static final ActivityDataMap activityImpl;
@@ -112,8 +112,8 @@ public abstract class Activity extends Element
 		SELECTOR_TYPE = Selector.getInstance (Activity.class, TYPE, false);
 
 		metadata = Definition.getBuilder (Activity.class, Element.class)
-//			.addRelationship (COURSE, Activity::getCourse)
-//			.addRelationship (TYPE, Activity::getType)
+			.addRelationship (COURSE, Activity::getCourse, Activity::setCourse)
+			.addRelationship (TYPE, Activity::getType, Activity::setType)
 			.addProperty (ID, Activity::getId, Activity::setId)
 			.addProperty (NAME, Activity::getName)
 			.addSelector (SELECTOR_ID)
@@ -142,22 +142,6 @@ public abstract class Activity extends Element
 	}
 
 	/**
-	 * Get the <code>SubActivity</code> implementation class which is
-	 * associated with the specified <code>Activity</code> implementation
-	 * class.
-	 *
-	 * @param  activity The <code>Activity</code> implementation class
-	 *
-	 * @return          The <code>SubActivity</code> implementation class, may be
-	 *                  null
-	 */
-
-	public static final Class<? extends SubActivity> getSubActivityClass (final Class<? extends Activity> activity)
-	{
-		return Activity.activityImpl.getSubActivityClass (activity);
-	}
-
-	/**
 	 * Register an association between an <code>ActivityType</code> and the
 	 * class implementing the <code>Activity</code> interface for that
 	 * <code>ActivityType</code>.
@@ -179,113 +163,24 @@ public abstract class Activity extends Element
 	}
 
 	/**
-	 * Register an association between an <code>Activity</code> implementation
-	 * class and a <code>SubActivity</code> implementation class.
+	 * Set the <code>Course</code> with which the <code>Activity</code> is
+	 * associated.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
 	 *
-	 * @param  activity    The <code>Activity</code> implementation, not null
-	 * @param  subactivity The <code>SubActivity</code> implementation, not null
+	 * @param  course The <code>Course</code>, not null
 	 */
 
-	protected static final void registerImplementation (final Class<? extends Activity> activity, final Class<? extends SubActivity> subactivity)
-	{
-		assert activity != null : "activity is NULL";
-		assert subactivity != null : "subactivity is NULL";
-
-		Activity.activityImpl.registerSubActivityClass (activity, subactivity);
-	}
+	protected abstract void setCourse (Course course);
 
 	/**
-	 * Get the <code>Course</code> with which the <code>Activity</code> is
-	 * associated.
+	 * Set the <code>ActvityType</code> with which the <code>Activity</code> is
+	 * associated.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
 	 *
-	 * @return The <code>Course</code> instance
+	 * @param  type The <code>ActivityType</code>, not null
 	 */
 
-	public abstract Course getCourse ();
-
-	/**
-	 * Get the name of the <code>Activity</code>.  Not all
-	 * <code>Activity</code> instances have names.  For those
-	 * <code>Activity</code> instances which do not have names, the name of the
-	 * associated <code>ActivityType</code> will be returned.
-	 *
-	 * @return A <code>String</code> containing the name of the
-	 *         <code>Activity</code>
-	 */
-
-	public abstract String getName();
-
-	/**
-	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
-	 *
-	 * @return The <code>ActivityType</code> instance
-	 */
-
-	public abstract ActivityType getType();
-
-	/**
-	 * Get the <code>Set</code> of <code>Grade</code> instances which are
-	 * associated with the <code>Activity</code>.  Not all
-	 * <code>Activity</code> instances are graded.  If the
-	 * <code>Activity</code> does is not graded then the <code>Set</code> will
-	 * be empty.
-	 *
-	 * @return A <code>Set</code> of <code>Grade</code> instances
-	 */
-
-	public abstract Set<Grade> getGrades ();
-
-	/**
-	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
-	 * which act upon the <code>Activity</code>.
-	 *
-	 * @return A <code>List</code> of <code>LogEntry</code> instances
-	 */
-
-	public abstract List<LogEntry> getLog ();
-
-	/**
-	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
-	 * associated with the <code>Activity</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Activity</code> instance is loaded.
-	 *
-	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
-	 *             not null
-	 */
-
-	protected abstract void setLog (List<LogEntry> log);
-
-	/**
-	 * Add the specified <code>LogEntry</code> to the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to add, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully added, <code>False</code> otherwise
-	 */
-
-	protected abstract boolean addLog (LogEntry entry);
-
-	/**
-	 * Remove the specified <code>LogEntry</code> from the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to remove, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully removed, <code>False</code> otherwise
-	 */
-
-	protected abstract boolean removeLog (LogEntry entry);
-
-	/**
-	 * Get the <code>List</code> of <code>SubActivity</code> instances
-	 * associated with the <code>Actvity</code>.
-	 *
-	 * @return The <code>List</code> of <code>SubActivity</code> instances
-	 */
-
-	public abstract List<SubActivity> getSubActivities ();
+	protected abstract void setType (ActivityType type);
 }

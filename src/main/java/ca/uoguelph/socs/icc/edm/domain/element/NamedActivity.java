@@ -22,6 +22,7 @@ import java.util.Set;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
@@ -37,14 +38,14 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
  * @version 1.0
  */
 
-public abstract class NamedActivity extends ActivityInstance
+public abstract class NamedActivity extends Activity
 {
 	/** The <code>MetaData</code> definition for the <code>NamedActivity</code> */
 	protected static final Definition<NamedActivity> metadata;
 
 	static
 	{
-		metadata = Definition.getBuilder (NamedActivity.class, ActivityInstance.class)
+		metadata = Definition.getBuilder (NamedActivity.class, Activity.class)
 			.addProperty (Activity.NAME, Activity::getName, NamedActivity::setName)
 			.build ();
 

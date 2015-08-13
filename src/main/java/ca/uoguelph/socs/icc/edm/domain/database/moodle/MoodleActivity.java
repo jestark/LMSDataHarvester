@@ -37,8 +37,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
-import ca.uoguelph.socs.icc.edm.domain.element.ActivityInstance;
-
 /**
  * Moodle specific implementation of the core <code>Activity</code> data.
  * Rather than have the primary key of the tables containing the module
@@ -61,7 +59,7 @@ import ca.uoguelph.socs.icc.edm.domain.element.ActivityInstance;
  * @version 1.1
  */
 
-public class MoodleActivity extends ActivityInstance
+public class MoodleActivity extends Activity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -91,7 +89,7 @@ public class MoodleActivity extends ActivityInstance
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (ActivityInstance.metadata, MoodleActivity.class, MoodleActivity::new));
+		Profile.registerCreator (Implementation.getInstance (Activity.metadata, MoodleActivity.class, MoodleActivity::new));
 	}
 
 	/**
