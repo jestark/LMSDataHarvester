@@ -57,6 +57,9 @@ public abstract class ActivityType extends Element
 	/** The <code>MetaData</code> definition for the <code>ActivityType</code> */
 	protected static final Definition<ActivityType> metadata;
 
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID;
+
 	/** The name of the <code>ActivityType</code> */
 	public static final Property<String> NAME;
 
@@ -79,6 +82,7 @@ public abstract class ActivityType extends Element
 
 	static
 	{
+		ID = Property.getInstance (ActivityType.class, Long.class, "id", false, false);
 		NAME = Property.getInstance (ActivityType.class, String.class, "name", false, true);
 		SOURCE = Property.getInstance (ActivityType.class, ActivitySource.class, "source", false, true);
 
@@ -86,8 +90,9 @@ public abstract class ActivityType extends Element
 		SELECTOR_ALL = Selector.getInstance (ActivityType.class, "all", false);
 		SELECTOR_NAME = Selector.getInstance (ActivityType.class, "name", true, NAME, SOURCE);
 
-		metadata = Definition.getBuilder (ActivityType.class, Element.metadata)
+		metadata = Definition.getBuilder (ActivityType.class, Element.class)
 			.addRelationship (SOURCE, ActivityType::getSource, ActivityType::setSource)
+			.addProperty (ID, ActivityType::getId, ActivityType::setId)
 			.addProperty (NAME, ActivityType::getName, ActivityType::setName)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)

@@ -74,6 +74,9 @@ public abstract class Activity extends Element
 	/** The <code>MetaData</code> definition for the <code>Activity</code> */
 	protected static final Definition<Activity> metadata;
 
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID;
+
 	/** The associated <code>Course</code> */
 	public static final Property<Course> COURSE;
 
@@ -99,17 +102,19 @@ public abstract class Activity extends Element
 
 	static
 	{
+		ID = Property.getInstance (Activity.class, Long.class, "id", false, false);
 		COURSE = Property.getInstance (Activity.class, Course.class, "course", false, true);
 		TYPE = Property.getInstance (Activity.class, ActivityType.class, "type", false, true);
 		NAME = Property.getInstance (Activity.class, String.class, "name", false, true);
 
-		SELECTOR_ID = Selector.getInstance (Activity.class, Element.ID, true);
+		SELECTOR_ID = Selector.getInstance (Activity.class, ID, true);
 		SELECTOR_ALL = Selector.getInstance (Activity.class, "all", false);
 		SELECTOR_TYPE = Selector.getInstance (Activity.class, TYPE, false);
 
-		metadata = Definition.getBuilder (Activity.class, Element.metadata)
+		metadata = Definition.getBuilder (Activity.class, Element.class)
 //			.addRelationship (COURSE, Activity::getCourse)
 //			.addRelationship (TYPE, Activity::getType)
+			.addProperty (ID, Activity::getId, Activity::setId)
 			.addProperty (NAME, Activity::getName)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)

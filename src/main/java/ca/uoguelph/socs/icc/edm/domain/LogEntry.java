@@ -54,6 +54,9 @@ public abstract class LogEntry extends Element
 	/** The <code>MetaData</code> definition for the <code>LogEntry</code> */
 	protected static final Definition<LogEntry> metadata;
 
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID;
+
 	/** The associated <code>Action</code> */
 	public static final Property<Action> ACTION;
 
@@ -91,6 +94,7 @@ public abstract class LogEntry extends Element
 
 	static
 	{
+		ID = Property.getInstance (LogEntry.class, Long.class, "id", false, false);
 		ACTION = Property.getInstance (LogEntry.class, Action.class, "action", false, true);
 		ACTIVITY = Property.getInstance (LogEntry.class, Activity.class, "activity", false, true);
 		COURSE = Property.getInstance (LogEntry.class, Course.class, "course", false, true);
@@ -103,10 +107,11 @@ public abstract class LogEntry extends Element
 		SELECTOR_ACTION = Selector.getInstance (LogEntry.class, ACTION, false);
 		SELECTOR_COURSE = Selector.getInstance (LogEntry.class, COURSE, false);
 
-		metadata = Definition.getBuilder (LogEntry.class, Element.metadata)
+		metadata = Definition.getBuilder (LogEntry.class, Element.class)
 			.addRelationship (ACTION, LogEntry::getAction, LogEntry::setAction)
 			.addRelationship (ACTIVITY, LogEntry::getActivity, LogEntry::setActivity)
 			.addRelationship (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
+			.addProperty (ID, LogEntry::getId, LogEntry::setId)
 			.addProperty (COURSE, LogEntry::getCourse)
 			.addProperty (IPADDRESS, LogEntry::getIPAddress, LogEntry::setIPAddress)
 			.addProperty (TIME, LogEntry::getTime, LogEntry::setTime)

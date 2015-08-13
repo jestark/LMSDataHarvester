@@ -36,28 +36,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Element
 {
-	/** The <code>MetaData</code> definition for the <code>Element</code> */
-	protected static final Definition<Element> metadata;
-
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
-	public static final Property<Long> ID;
-
-	/**
-	 * Initialize the <code>MetaData</code>, <code>Property</code> and
-	 * <code>Selector</code> instances for the <code>Element</code>.
-	 */
-
-	static
-	{
-		ID = Property.getInstance (Element.class, Long.class, "id", false, false);
-
-		metadata = Definition.getBuilder (Element.class, null)
-			.addProperty (ID, Element::getId, Element::setId)
-			.build ();
-
-		Profile.registerMetaData (metadata);
-	}
-
 	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
 	 * instance.  Some <code>Element</code> interfaces are dependent on other

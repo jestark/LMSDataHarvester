@@ -244,6 +244,6 @@ public final class DomainModel
 			throw new IllegalArgumentException ("Element does not exist in the DataStore");
 		}
 
-		this.datastore.remove (element);
+//		this.datastore.remove (element);
 	}
 }

@@ -36,6 +36,9 @@ public abstract class Network extends Element
 	/** The <code>MetaData</code> definition for the <code>Network</code> */
 	protected static final Definition<Network> metadata;
 
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID;
+
 	/** The name of the <code>Network</code> */
 	public static final Property<String> NAME;
 
@@ -55,13 +58,15 @@ public abstract class Network extends Element
 
 	static
 	{
+		ID = Property.getInstance (Network.class, Long.class, "id", false, false);
 		NAME = Property.getInstance (Network.class, String.class, "name", false, true);
 
 		SELECTOR_ID = Selector.getInstance (Network.class, ID, true);
 		SELECTOR_ALL = Selector.getInstance (Network.class, "all", false);
 		SELECTOR_NAME = Selector.getInstance (Network.class, NAME, true);
 
-		metadata = Definition.getBuilder (Network.class, Element.metadata)
+		metadata = Definition.getBuilder (Network.class, Element.class)
+			.addProperty (ID, Network::getId, Network::setId)
 			.addProperty (NAME, Network::getName, Network::setName)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)

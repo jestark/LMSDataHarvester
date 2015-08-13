@@ -38,6 +38,9 @@ public abstract class SubActivity extends Activity
 	/** The <code>MetaData</code> definition for the <code>SubActivity</code> */
 	protected static final Definition<SubActivity> metadata;
 
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID;
+
 	/** The parent <code>Activity</code> */
 	public static final Property<Activity> PARENT;
 
@@ -48,11 +51,13 @@ public abstract class SubActivity extends Activity
 
 	static
 	{
+		ID = Property.getInstance (SubActivity.class, Long.class, "id", false, false);
 		PARENT = Property.getInstance (SubActivity.class, Activity.class, "parent", false, true);
 
-		metadata = Definition.getBuilder (SubActivity.class, Element.metadata)
-			.addProperty (PARENT, SubActivity::getParent, SubActivity::setParent)
-			.addProperty (Activity.NAME, Activity::getName, SubActivity::setName)
+		metadata = Definition.getBuilder (SubActivity.class, Activity.class)
+			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
+			.addProperty (ID, SubActivity::getId, SubActivity::setId)
+			.addProperty (Activity.NAME, SubActivity::getName, SubActivity::setName)
 			.build ();
 
 		Profile.registerMetaData (metadata);

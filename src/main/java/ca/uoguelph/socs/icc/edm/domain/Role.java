@@ -49,6 +49,9 @@ public abstract class Role extends Element
 	/** The <code>MetaData</code> definition for the <code>Role</code> */
 	protected static final Definition<Role> metadata;
 
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID;
+
 	/** The name of the <code>Role</code> */
 	public static final Property<String> NAME;
 
@@ -68,13 +71,15 @@ public abstract class Role extends Element
 
 	static
 	{
+		ID = Property.getInstance (Role.class, Long.class, "id", false, false);
 		NAME = Property.getInstance (Role.class, String.class, "name", false, true);
 
 		SELECTOR_ID = Selector.getInstance (Role.class, ID, true);
 		SELECTOR_ALL = Selector.getInstance (Role.class, "all", false);
 		SELECTOR_NAME = Selector.getInstance (Role.class, NAME, true);
 
-		metadata = Definition.getBuilder (Role.class, Element.metadata)
+		metadata = Definition.getBuilder (Role.class, Element.class)
+			.addProperty (ID, Role::getId, Role::setId)
 			.addProperty (NAME, Role::getName, Role::setName)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)

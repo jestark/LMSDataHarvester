@@ -44,7 +44,7 @@ public abstract class NamedActivity extends ActivityInstance
 
 	static
 	{
-		metadata = Definition.getBuilder (NamedActivity.class, ActivityInstance.metadata)
+		metadata = Definition.getBuilder (NamedActivity.class, ActivityInstance.class)
 			.addProperty (Activity.NAME, Activity::getName, NamedActivity::setName)
 			.build ();
 

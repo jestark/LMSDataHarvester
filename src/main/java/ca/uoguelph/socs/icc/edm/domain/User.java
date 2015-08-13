@@ -54,8 +54,14 @@ public abstract class User extends Element
 	/** The <code>MetaData</code> definition for the <code>User</code> */
 	protected static final Definition<User> metadata;
 
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID;
+
 	/** The idnumber for the <code>User</code> */
 	public static final Property<Integer> IDNUMBER;
+
+	/** The <code>Enrolment</code> instances for the <code>User</code> */
+	public static final Property<Enrolment> ENROLMENT;
 
 	/** The first name of the <code>User</code> */
 	public static final Property<String> FIRSTNAME;
@@ -75,6 +81,9 @@ public abstract class User extends Element
 	/** Select an <code>User</code> instance by its id number */
 	public static final Selector<User> SELECTOR_IDNUMBER;
 
+	/** Select the <code>User</code> instance for a <code>Enrolment</code> */
+	public static final Selector<User> SELECTOR_ENROLMENT;
+
 	/** Select an <code>User</code> instance by its username */
 	public static final Selector<User> SELECTOR_USERNAME;
 
@@ -85,7 +94,9 @@ public abstract class User extends Element
 
 	static
 	{
+		ID = Property.getInstance (User.class, Long.class, "id", false, false);
 		IDNUMBER = Property.getInstance (User.class, Integer.class, "idnumber", false, true);
+		ENROLMENT = Property.getInstance (User.class, Enrolment.class, "enrolment", true, false);
 		FIRSTNAME = Property.getInstance (User.class, String.class, "firstname", true, true);
 		LASTNAME = Property.getInstance (User.class, String.class, "lastname", true, true);
 		USERNAME = Property.getInstance (User.class, String.class, "username", false, true);
@@ -93,9 +104,11 @@ public abstract class User extends Element
 		SELECTOR_ID = Selector.getInstance (User.class, ID, true);
 		SELECTOR_ALL = Selector.getInstance (User.class, "all", false);
 		SELECTOR_IDNUMBER = Selector.getInstance (User.class, IDNUMBER, true);
+		SELECTOR_ENROLMENT = Selector.getInstance (User.class, ENROLMENT, true);
 		SELECTOR_USERNAME = Selector.getInstance (User.class, USERNAME, true);
 
-		metadata = Definition.getBuilder (User.class, Element.metadata)
+		metadata = Definition.getBuilder (User.class, Element.class)
+			.addProperty (ID, User::getId, User::setId)
 			.addProperty (IDNUMBER, User::getIdNumber, User::setIdNumber)
 			.addProperty (FIRSTNAME, User::getFirstname, User::setFirstname)
 			.addProperty (LASTNAME, User::getLastname, User::setLastname)

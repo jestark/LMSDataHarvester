@@ -72,9 +72,9 @@ public abstract class Grade extends Element
 		ENROLMENT = Property.getInstance (Grade.class, Enrolment.class, "enrolment", false, true);
 		GRADE = Property.getInstance (Grade.class, Integer.class, "grade", true, true);
 
-		metadata = Definition.getBuilder (Grade.class, Element.metadata)
-			.addProperty (ACTIVITY, Grade::getActivity, Grade::setActivity)
-			.addProperty (ENROLMENT, Grade::getEnrolment, Grade::setEnrolment)
+		metadata = Definition.getBuilder (Grade.class, Element.class)
+			.addRelationship (ACTIVITY, Grade::getActivity, Grade::setActivity)
+			.addRelationship (ENROLMENT, Grade::getEnrolment, Grade::setEnrolment)
 			.addProperty (GRADE, Grade::getGrade, Grade::setGrade)
 			.build ();
 

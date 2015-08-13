@@ -77,6 +77,9 @@ public abstract class Enrolment extends Element
 	/** The <code>MetaData</code> definition for the <code>Enrolment</code> */
 	protected static final Definition<Enrolment> metadata;
 
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID;
+
 	/** The associated <code>Course</code> */
 	public static final Property<Course> COURSE;
 
@@ -105,6 +108,7 @@ public abstract class Enrolment extends Element
 
 	static
 	{
+		ID = Property.getInstance (Enrolment.class, Long.class, "id", false, false);
 		COURSE = Property.getInstance (Enrolment.class, Course.class, "course", false, true);
 		FINALGRADE = Property.getInstance (Enrolment.class, Integer.class, "finalgrade", true, false);
 		ROLE = Property.getInstance (Enrolment.class, Role.class, "role", false, true);
@@ -114,9 +118,10 @@ public abstract class Enrolment extends Element
 		SELECTOR_ALL = Selector.getInstance (Enrolment.class, "all", false);
 		SELECTOR_ROLE = Selector.getInstance (Enrolment.class, ROLE, false);
 
-		metadata = Definition.getBuilder (Enrolment.class, Element.metadata)
+		metadata = Definition.getBuilder (Enrolment.class, Element.class)
 			.addRelationship (COURSE, Enrolment::getCourse, Enrolment::setCourse)
 			.addRelationship (ROLE, Enrolment::getRole, Enrolment::setRole)
+			.addProperty (ID, Enrolment::getId, Enrolment::setId)
 			.addProperty (FINALGRADE, Enrolment::getFinalGrade, Enrolment::setFinalGrade)
 			.addProperty (USABLE, Enrolment::isUsable, Enrolment::setUsable)
 			.addSelector (SELECTOR_ID)

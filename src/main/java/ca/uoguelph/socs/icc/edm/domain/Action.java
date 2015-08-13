@@ -53,6 +53,9 @@ public abstract class Action extends Element
 	/** The <code>MetaData</code> definition for the <code>Action</code> */
 	protected static final Definition<Action> metadata;
 
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID;
+
 	/** The name of the <code>Action</code> */
 	public static final Property<String> NAME;
 
@@ -72,13 +75,15 @@ public abstract class Action extends Element
 
 	static
 	{
+		ID = Property.getInstance (Action.class, Long.class, "id", false, false);
 		NAME = Property.getInstance (Action.class, String.class, "name", false, true);
 
-		SELECTOR_ID = Selector.getInstance (Action.class, Element.ID, true);
+		SELECTOR_ID = Selector.getInstance (Action.class, ID, true);
 		SELECTOR_ALL = Selector.getInstance (Action.class, "all", false);
 		SELECTOR_NAME = Selector.getInstance (Action.class, NAME, true);
 
-		metadata = Definition.getBuilder (Action.class, Element.metadata)
+		metadata = Definition.getBuilder (Action.class, Element.class)
+			.addProperty (ID, Action::getId, Action::setId)
 			.addProperty (NAME, Action::getName, Action::setName)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)

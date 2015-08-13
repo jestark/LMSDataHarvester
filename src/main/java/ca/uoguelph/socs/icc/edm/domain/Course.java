@@ -56,6 +56,9 @@ public abstract class Course extends Element
 	/** The <code>MetaData</code> definition for the <code>Course</code> */
 	protected static final Definition<Course> metadata;
 
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID;
+
 	/** The name of the <code>Course</code> */
 	public static final Property<String> NAME;
 
@@ -81,6 +84,7 @@ public abstract class Course extends Element
 
 	static
 	{
+		ID = Property.getInstance (Course.class, Long.class, "id", false, false);
 		NAME = Property.getInstance (Course.class, String.class, "name", false, true);
 		SEMESTER = Property.getInstance (Course.class, Semester.class, "semester", false, true);
 		YEAR = Property.getInstance (Course.class, Integer.class, "year", false, true);
@@ -89,7 +93,8 @@ public abstract class Course extends Element
 		SELECTOR_ALL = Selector.getInstance (Course.class, "all", false);
 		SELECTOR_OFFERING = Selector.getInstance (Course.class, "offering", true, NAME, SEMESTER, YEAR);
 
-		metadata = Definition.getBuilder (Course.class, Element.metadata)
+		metadata = Definition.getBuilder (Course.class, Element.class)
+			.addProperty (ID, Course::getId, Course::setId)
 			.addProperty (NAME, Course::getName, Course::setName)
 			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
 			.addProperty (YEAR, Course::getYear, Course::setYear)

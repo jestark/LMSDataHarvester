@@ -47,9 +47,9 @@ public abstract class ActivityInstance extends Activity
 
 	static
 	{
-		metadata = Definition.getBuilder (ActivityInstance.class, Activity.metadata)
-			.addProperty (Activity.COURSE, Activity::getCourse, ActivityInstance::setCourse)
-			.addProperty (Activity.TYPE, Activity::getType, ActivityInstance::setType)
+		metadata = Definition.getBuilder (ActivityInstance.class, Activity.class)
+			.addRelationship (Activity.COURSE, Activity::getCourse, ActivityInstance::setCourse)
+			.addRelationship (Activity.TYPE, Activity::getType, ActivityInstance::setType)
 			.build ();
 
 		Profile.registerMetaData (metadata);
