@@ -41,7 +41,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  * @version 1.0
  */
 
-public class GradedActivity extends Grade implements Serializable
+public class GradeData extends Grade implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -62,14 +62,14 @@ public class GradedActivity extends Grade implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (Grade.metadata, GradedActivity.class, GradedActivity::new));
+		Profile.registerCreator (Implementation.getInstance (Grade.metadata, GradeData.class, GradeData::new));
 	}
 
 	/**
 	 * Create the <code>Grade</code> with null values.
 	 */
 
-	protected GradedActivity ()
+	protected GradeData ()
 	{
 		this.grade = null;
 		this.activity = null;
