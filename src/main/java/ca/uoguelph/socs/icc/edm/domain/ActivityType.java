@@ -91,9 +91,9 @@ public abstract class ActivityType extends Element
 		SELECTOR_NAME = Selector.getInstance (ActivityType.class, "name", true, NAME, SOURCE);
 
 		metadata = Definition.getBuilder (ActivityType.class, Element.class)
-			.addRelationship (SOURCE, ActivityType::getSource, ActivityType::setSource)
 			.addProperty (ID, ActivityType::getId, ActivityType::setId)
 			.addProperty (NAME, ActivityType::getName, ActivityType::setName)
+			.addRelationship (SOURCE, ActivityType::getSource, ActivityType::setSource)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)

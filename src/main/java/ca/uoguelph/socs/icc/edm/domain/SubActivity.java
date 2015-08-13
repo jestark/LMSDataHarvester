@@ -53,6 +53,12 @@ public abstract class SubActivity extends ParentActivity
 	/** The parent <code>Activity</code> */
 	public static final Property<ParentActivity> PARENT;
 
+	/** The <code>LogEntry</code> instances associated with the <code>SubActivity</code> */
+	public static final Property<LogEntry> LOGENTRIES;
+
+	/** The <code>SubActivity</code> instances for the <code>SubActivity</code> */
+	public static final Property<SubActivity> SUBACTIVITIES;
+
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
 	 * <code>Selector</code> instances for the <code>SubActivity</code>.
@@ -66,10 +72,15 @@ public abstract class SubActivity extends ParentActivity
 		NAME = Property.getInstance (SubActivity.class, String.class, "name", false, true);
 		PARENT = Property.getInstance (SubActivity.class, ParentActivity.class, "parent", false, true);
 
+		LOGENTRIES = Property.getInstance (SubActivity.class, LogEntry.class, "logentries", true, false);
+		SUBACTIVITIES = Property.getInstance (SubActivity.class, SubActivity.class, "subactivities", true, false);
+
 		metadata = Definition.getBuilder (SubActivity.class, Element.class)
-//			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
 			.addProperty (ID, SubActivity::getId, SubActivity::setId)
 			.addProperty (NAME, SubActivity::getName, SubActivity::setName)
+			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
+			.addRelationship (LOGENTRIES, SubActivity::getLog, SubActivity::addLog, SubActivity::removeLog)
+			.addRelationship (SUBACTIVITIES, SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity)
 			.build ();
 
 		Profile.registerMetaData (metadata);

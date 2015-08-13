@@ -92,6 +92,12 @@ public abstract class Enrolment extends Element
 	/** Has consent been given to use this data for research */
 	public static final Property<Boolean> USABLE;
 
+	/** The <code>Grade</code> instances assigned to the <code>Enrolment</code> */
+	public static final Property<Grade> GRADES;
+
+	/** The <code>LogEntry</code> instances associated with the <code>Enrolment</code> */
+	public static final Property<LogEntry> LOGENTRIES;
+
 	/** Select the <code>Enrolment</code> instance by its id */
 	public static final Selector<Enrolment> SELECTOR_ID;
 
@@ -114,19 +120,24 @@ public abstract class Enrolment extends Element
 		ROLE = Property.getInstance (Enrolment.class, Role.class, "role", false, true);
 		USABLE = Property.getInstance (Enrolment.class, Boolean.class, "usable", true, true);
 
+		GRADES = Property.getInstance (Enrolment.class, Grade.class, "grades", true, false);
+		LOGENTRIES = Property.getInstance (Enrolment.class, LogEntry.class, "usable", true, false);
+
 		SELECTOR_ID = Selector.getInstance (Enrolment.class, ID, true);
 		SELECTOR_ALL = Selector.getInstance (Enrolment.class, "all", false);
 		SELECTOR_ROLE = Selector.getInstance (Enrolment.class, ROLE, false);
 
 		metadata = Definition.getBuilder (Enrolment.class, Element.class)
-			.addRelationship (COURSE, Enrolment::getCourse, Enrolment::setCourse)
-			.addRelationship (ROLE, Enrolment::getRole, Enrolment::setRole)
 			.addProperty (ID, Enrolment::getId, Enrolment::setId)
 			.addProperty (FINALGRADE, Enrolment::getFinalGrade, Enrolment::setFinalGrade)
 			.addProperty (USABLE, Enrolment::isUsable, Enrolment::setUsable)
+			.addRelationship (COURSE, Enrolment::getCourse, Enrolment::setCourse)
+			.addRelationship (ROLE, Enrolment::getRole, Enrolment::setRole)
+			.addRelationship (GRADES, Enrolment::getGrades, Enrolment::addGrade, Enrolment::removeGrade)
+			.addRelationship (LOGENTRIES, Enrolment::getLog, Enrolment::addLog, Enrolment::removeLog)
+			.addRelationship (ROLE, SELECTOR_ROLE)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
-			.addSelector (SELECTOR_ROLE)
 			.build ();
 
 		Profile.registerMetaData (metadata);

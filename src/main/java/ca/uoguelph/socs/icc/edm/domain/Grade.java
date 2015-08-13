@@ -73,9 +73,9 @@ public abstract class Grade extends Element
 		GRADE = Property.getInstance (Grade.class, Integer.class, "grade", true, true);
 
 		metadata = Definition.getBuilder (Grade.class, Element.class)
+			.addProperty (GRADE, Grade::getGrade, Grade::setGrade)
 			.addRelationship (ACTIVITY, Grade::getActivity, Grade::setActivity)
 			.addRelationship (ENROLMENT, Grade::getEnrolment, Grade::setEnrolment)
-			.addProperty (GRADE, Grade::getGrade, Grade::setGrade)
 			.build ();
 
 		Profile.registerMetaData (metadata);

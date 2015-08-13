@@ -108,16 +108,16 @@ public abstract class LogEntry extends Element
 		SELECTOR_COURSE = Selector.getInstance (LogEntry.class, COURSE, false);
 
 		metadata = Definition.getBuilder (LogEntry.class, Element.class)
-			.addRelationship (ACTION, LogEntry::getAction, LogEntry::setAction)
-			.addRelationship (ACTIVITY, LogEntry::getActivity, LogEntry::setActivity)
-			.addRelationship (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
 			.addProperty (ID, LogEntry::getId, LogEntry::setId)
 			.addProperty (COURSE, LogEntry::getCourse)
 			.addProperty (IPADDRESS, LogEntry::getIPAddress, LogEntry::setIPAddress)
 			.addProperty (TIME, LogEntry::getTime, LogEntry::setTime)
+			.addRelationship (ACTION, LogEntry::getAction, LogEntry::setAction)
+			.addRelationship (ACTIVITY, LogEntry::getActivity, LogEntry::setActivity)
+			.addRelationship (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
+			.addRelationship (ACTION, SELECTOR_ACTION)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
-			.addSelector (SELECTOR_ACTION)
 			.addSelector (SELECTOR_COURSE)
 			.build ();
 

@@ -61,6 +61,8 @@ public abstract class ActivitySource extends Element
 	/** The name of the <code>ActivitySource</code> */
 	public static final Property<String> NAME;
 
+	public static final Property<ActivityType> TYPES;
+
 	/** Select the <code>ActivitySource</code> instance by its id */
 	public static final Selector<ActivitySource> SELECTOR_ID;
 
@@ -79,6 +81,7 @@ public abstract class ActivitySource extends Element
 	{
 		ID = Property.getInstance (ActivitySource.class, Long.class, "id", false, false);
 		NAME = Property.getInstance (ActivitySource.class, String.class, "name", false, true);
+		TYPES = Property.getInstance (ActivitySource.class, ActivityType.class, "types", true, false);
 
 		SELECTOR_ID = Selector.getInstance (ActivitySource.class, ID, true);
 		SELECTOR_ALL = Selector.getInstance (ActivitySource.class, "all", false);
@@ -87,6 +90,7 @@ public abstract class ActivitySource extends Element
 		metadata = Definition.getBuilder (ActivitySource.class, Element.class)
 			.addProperty (ID, ActivitySource::getId, ActivitySource::setId)
 			.addProperty (NAME, ActivitySource::getName, ActivitySource::setName)
+			.addRelationship (TYPES, ActivitySource::getTypes, ActivitySource::addType, ActivitySource::removeType)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)

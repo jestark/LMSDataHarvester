@@ -68,6 +68,12 @@ public abstract class Course extends Element
 	/** The year of offering for the <code>Course</code> */
 	public static final Property<Integer> YEAR;
 
+	/** The <code>Activity</code> instances associated with the <code>Course</code> */
+	public static final Property<Activity> ACTIVITIES;
+
+	/** The <code>Enrolment</code> instances associated with the <code>Course</code> */
+	public static final Property<Enrolment> ENROLMENTS;
+
 	/** Select the <code>Course</code> instance by its id */
 	public static final Selector<Course> SELECTOR_ID;
 
@@ -89,6 +95,9 @@ public abstract class Course extends Element
 		SEMESTER = Property.getInstance (Course.class, Semester.class, "semester", false, true);
 		YEAR = Property.getInstance (Course.class, Integer.class, "year", false, true);
 
+		ACTIVITIES = Property.getInstance (Course.class, Activity.class, "activities", true, false);
+		ENROLMENTS = Property.getInstance (Course.class, Enrolment.class, "enrolments", true, false);
+
 		SELECTOR_ID = Selector.getInstance (Course.class, ID, true);
 		SELECTOR_ALL = Selector.getInstance (Course.class, "all", false);
 		SELECTOR_OFFERING = Selector.getInstance (Course.class, "offering", true, NAME, SEMESTER, YEAR);
@@ -98,6 +107,8 @@ public abstract class Course extends Element
 			.addProperty (NAME, Course::getName, Course::setName)
 			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
 			.addProperty (YEAR, Course::getYear, Course::setYear)
+			.addRelationship (ACTIVITIES, Course::getActivities, Course::addActivity, Course::removeActivity)
+			.addRelationship (ENROLMENTS, Course::getEnrolments, Course::addEnrolment, Course::removeEnrolment)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_OFFERING)

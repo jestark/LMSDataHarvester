@@ -60,9 +60,6 @@ public abstract class User extends Element
 	/** The idnumber for the <code>User</code> */
 	public static final Property<Integer> IDNUMBER;
 
-	/** The <code>Enrolment</code> instances for the <code>User</code> */
-	public static final Property<Enrolment> ENROLMENT;
-
 	/** The first name of the <code>User</code> */
 	public static final Property<String> FIRSTNAME;
 
@@ -71,6 +68,9 @@ public abstract class User extends Element
 
 	/** The username of the <code>User</code> */
 	public static final Property<String> USERNAME;
+
+	/** The <code>Enrolment</code> instances associated with the <code>User</code> */
+	public static final Property<Enrolment> ENROLMENTS;
 
 	/** Select the <code>User</code> instance by its id */
 	public static final Selector<User> SELECTOR_ID;
@@ -82,7 +82,7 @@ public abstract class User extends Element
 	public static final Selector<User> SELECTOR_IDNUMBER;
 
 	/** Select the <code>User</code> instance for a <code>Enrolment</code> */
-	public static final Selector<User> SELECTOR_ENROLMENT;
+	public static final Selector<User> SELECTOR_ENROLMENTS;
 
 	/** Select an <code>User</code> instance by its username */
 	public static final Selector<User> SELECTOR_USERNAME;
@@ -96,15 +96,16 @@ public abstract class User extends Element
 	{
 		ID = Property.getInstance (User.class, Long.class, "id", false, false);
 		IDNUMBER = Property.getInstance (User.class, Integer.class, "idnumber", false, true);
-		ENROLMENT = Property.getInstance (User.class, Enrolment.class, "enrolment", true, false);
 		FIRSTNAME = Property.getInstance (User.class, String.class, "firstname", true, true);
 		LASTNAME = Property.getInstance (User.class, String.class, "lastname", true, true);
 		USERNAME = Property.getInstance (User.class, String.class, "username", false, true);
 
+		ENROLMENTS = Property.getInstance (User.class, Enrolment.class, "enrolments", true, false);
+
 		SELECTOR_ID = Selector.getInstance (User.class, ID, true);
 		SELECTOR_ALL = Selector.getInstance (User.class, "all", false);
 		SELECTOR_IDNUMBER = Selector.getInstance (User.class, IDNUMBER, true);
-		SELECTOR_ENROLMENT = Selector.getInstance (User.class, ENROLMENT, true);
+		SELECTOR_ENROLMENTS = Selector.getInstance (User.class, ENROLMENTS, true);
 		SELECTOR_USERNAME = Selector.getInstance (User.class, USERNAME, true);
 
 		metadata = Definition.getBuilder (User.class, Element.class)
@@ -113,6 +114,8 @@ public abstract class User extends Element
 			.addProperty (FIRSTNAME, User::getFirstname, User::setFirstname)
 			.addProperty (LASTNAME, User::getLastname, User::setLastname)
 			.addProperty (USERNAME, User::getUsername, User::setUsername)
+			.addRelationship (ENROLMENTS, User::getEnrolments, User::addEnrolment, User::removeEnrolment)
+			.addRelationship (ENROLMENTS, SELECTOR_ENROLMENTS)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_IDNUMBER)

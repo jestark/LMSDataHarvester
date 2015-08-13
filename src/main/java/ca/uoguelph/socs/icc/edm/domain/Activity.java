@@ -86,6 +86,15 @@ public abstract class Activity extends ParentActivity
 	/** The name of the <code>Activity</code> */
 	public static final Property<String> NAME;
 
+	/** The <code>Grade</code> instances associated with the <code>Activity</code> */
+	public static final Property<Grade> GRADES;
+
+	/** The <code>LogEntry</code> instances associated with the <code>Activity</code> */
+	public static final Property<LogEntry> LOGENTRIES;
+
+	/** The <code>SubActivity</code> instances for the <code>Activity</code> */
+	public static final Property<SubActivity> SUBACTIVITIES;
+
 	/** Select the <code>Activity</code> instance by its id */
 	public static final Selector<Activity> SELECTOR_ID;
 
@@ -107,18 +116,23 @@ public abstract class Activity extends ParentActivity
 		TYPE = Property.getInstance (Activity.class, ActivityType.class, "type", false, true);
 		NAME = Property.getInstance (Activity.class, String.class, "name", false, true);
 
+		GRADES = Property.getInstance (Activity.class, Grade.class, "grade", true, false);
+		LOGENTRIES = Property.getInstance (Activity.class, LogEntry.class, "logentries", true, false);
+		SUBACTIVITIES = Property.getInstance (Activity.class, SubActivity.class, "subactivities", true, false);
+
 		SELECTOR_ID = Selector.getInstance (Activity.class, ID, true);
 		SELECTOR_ALL = Selector.getInstance (Activity.class, "all", false);
 		SELECTOR_TYPE = Selector.getInstance (Activity.class, TYPE, false);
 
 		metadata = Definition.getBuilder (Activity.class, Element.class)
-			.addRelationship (COURSE, Activity::getCourse, Activity::setCourse)
-			.addRelationship (TYPE, Activity::getType, Activity::setType)
 			.addProperty (ID, Activity::getId, Activity::setId)
 			.addProperty (NAME, Activity::getName)
+			.addRelationship (COURSE, Activity::getCourse, Activity::setCourse)
+			.addRelationship (TYPE, Activity::getType, Activity::setType)
+			.addRelationship (LOGENTRIES, Activity::getLog, Activity::addLog, Activity::removeLog)
+			.addRelationship (TYPE, SELECTOR_TYPE)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
-			.addSelector (SELECTOR_TYPE)
 			.build ();
 
 		Profile.registerMetaData (metadata);
