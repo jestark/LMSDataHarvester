@@ -50,30 +50,22 @@ final class RelationshipReference<T extends Element, V>
 	final BiPredicate<T, V> remove;
 
 	/**
-	 * Create the <code>Reference</code>.
+	 * Create the <code>RelationshipReference</code>.
 	 *
-	 * @param  get Method reference to get the value, not null
+	 * @param  get    Method reference to get the values, not null
+	 * @param  add    Method reference to add a value, not null
+	 * @param  remove Method reference to remove a value, not null
 	 */
 
 	public RelationshipReference (final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
 	{
 		assert get != null : "get method reference is NULL";
+		assert add != null : "add method reference is NULL";
+		assert remove != null : "remove method reference is NULL";
 
 		this.get = get;
 		this.add = add;
 		this.remove = remove;
-	}
-
-	/**
-	 * Determine if the value for the reference can be written.
-	 *
-	 * @return <code>true</code> if the value can be written, <code>false</code>
-	 *         otherwise
-	 */
-
-	public boolean isWritable ()
-	{
-		return this.add != null;
 	}
 
 	/**
