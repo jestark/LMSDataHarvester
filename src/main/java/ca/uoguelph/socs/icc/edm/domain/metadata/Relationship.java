@@ -53,15 +53,14 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * instance is removed.
  * <p>
  * An instance of this class models one side of the relationship between two
- * <code>Element</code> classes.  Two instances of this class, each
- * representing opposite sides of the same relationship, are joined together
- * to represent the full relationship.  While each instance of this class knows
- * the cardinality and navigability of the side of the relationship that it
+ * <code>Element</code> classes.  While each instance of this class knows the
+ * cardinality and navigability of the side of the relationship that it
  * represents it does not know those characteristics for the other side.  When
  * an operation is to be performed on a relationship the request is made to the
  * owning side (via the public interface).  The owning side will perform its
- * own safety checks, then pass on the request to the other side (via the
- * protected interface) to perform the actual operation.
+ * own safety checks, retrieve the <code>Relationship</code> instance for the
+ * other side and pass on the request (via the protected interface) to perform
+ * the actual operation.
  * <p>
  * All of the possible relationships can be represented through a combination
  * of any two of the <code>Relationship</code> implementations:
@@ -90,43 +89,55 @@ public abstract class Relationship<T extends Element, V extends Element>
 	/** The logger */
 	protected final Logger log;
 
-	/** The other side of the <code>RelationShip</code> */
-	protected Relationship<V, T> inverse;
+	/** The owning <code>Element</code> interface class */
+	private final Class<T> type;
+
+	/** The associated <code>Element</code> interface class */
+	private final Class<V> value;
 
 	/**
 	 * Get a <code>Relationship</code> instance with a cardinality of one.
 	 *
 	 * @param  <T>       The type of the owning <code>Element</code>
 	 * @param  <V>       The type of the associated <code>Element</code>
+	 * @param  type      The owning <code>Element</code> interface class, not
+	 *                   null
 	 * @param  property  The <code>Property</code>, not null
 	 * @param  reference The <code>PropertyReference</code>, not null
 	 *
 	 * @return           The <code>Relationship</code>
 	 */
 
-	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Property<V> property, final PropertyReference<T, V> reference)
+	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Class<T> type, final Property<V> property, final PropertyReference<T, V> reference)
 	{
+		assert type != null : "type is NULL";
 		assert property != null : "property is null";
 		assert reference != null : "reference is NULL";
 
-		return new SingleRelationship<T, V> (property, reference);
+		return new SingleRelationship<T, V> (type, property, reference);
 	}
 
 	/**
-	 * Get a <code>Relationship</code> instance with a cardinality of one.
+	 * Get a <code>Relationship</code> instance with a cardinality greater than
+	 * one.
 	 *
 	 * @param  <T>       The type of the owning <code>Element</code>
 	 * @param  <V>       The type of the associated <code>Element</code>
+	 * @param  type      The owning <code>Element</code> interface class, not
+	 *                   null
+	 * @param  property  The <code>Property</code>, not null
 	 * @param  reference The <code>RelationshipReference</code>, not null
 	 *
 	 * @return           The <code>Relationship</code>
 	 */
 
-	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final RelationshipReference<T, V> reference)
+	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Class<T> type, final Property<V> property, final RelationshipReference<T, V> reference)
 	{
+		assert type != null : "type is NULL";
+		assert property != null : "property is NULL";
 		assert reference != null : "reference is NULL";
 
-		return new MultiRelationship<T, V> (reference);
+		return new MultiRelationship<T, V> (type, property, reference);
 	}
 
 	/**
@@ -153,35 +164,58 @@ public abstract class Relationship<T extends Element, V extends Element>
 	}
 
 	/**
-	 * Create the linkage between the two <code>Relationship</code> instances.
-	 * This method takes the two halves of a relationship representation (order
-	 * does not matter) and cross connects them so that they can perform their
-	 * operations.
-	 *
-	 * @param  <T>   The first <code>Element</code> type
-	 * @param  <V>   The second <code>Element</code> type
-	 * @param  left  The first <code>Relationship</code> instance, not null
-	 * @param  right The second <code>Relationship</code> instance, not null
-	 */
-
-	protected static final <T extends Element, V extends Element> void join (final Relationship<T, V> left, final Relationship<V, T> right)
-	{
-		assert left.inverse == null : "";
-		assert right.inverse == null : "";
-
-		left.inverse = right;
-		right.inverse = left;
-	}
-
-	/**
 	 * Create the <code>Relationship</code>
+	 *
+	 * @param  type  The owning <code>Element</code> interface class, not null
+	 * @param  value The associated <code>Element</code> interface class, not
+	 *               null
 	 */
 
-	protected Relationship ()
+	protected Relationship (final Class<T> type, final Class<V> value)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.inverse = null;
+		this.type = type;
+		this.value = value;
+	}
+
+	/**
+	 * Get the inverse <code>Relationship</code> instance.  This method finds
+	 * and returns the <code>Relationship</code> instance corresponding to the
+	 * other side of the relationship for the specified <code>Element</code>
+	 * implementation class.
+	 *
+	 * @param  impl The <code>Element</code> implementation class, not null
+	 *
+	 * @return      The inverse <code>Relationship</code>
+	 */
+
+	protected final Relationship<V, T> getInverse (final Class<? extends Element> impl)
+	{
+		this.log.trace ("getInverse: impl={}", impl);
+
+		assert impl != null : "impl is NULL";
+		assert this.value.isAssignableFrom (impl) : "impl is not an implementation class for this relationship";
+
+		Relationship<V, T> inverse = null;
+
+		if (Container.getInstance ().containsMetaData (impl))
+		{
+			inverse = Container.getInstance ().getMetaData (this.value, impl).getRelationship (this.type);
+
+			if (inverse == null)
+			{
+				this.log.error ("Failed to retrieve Relationship for {} from {}", this.type.getSimpleName (), impl.getSimpleName ());
+				throw new IllegalStateException ("No inverse relationship for element");
+			}
+		}
+		else
+		{
+			this.log.error ("Element does not have a regitered MetaData instance: {}", impl.getSimpleName ());
+			throw new IllegalStateException ("No MetaData registered for element");
+		}
+
+		return inverse;
 	}
 
 	/**

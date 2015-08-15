@@ -34,19 +34,27 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 final class MultiRelationship<T extends Element, V extends Element> extends Relationship<T, V>
 {
+	/** The <code>Property</code> for the relationship that id being manipulated */
+	private final Property<V> property;
+
 	/** The <code>RelationshipReference</code> used to manipulate the element */
 	private final RelationshipReference<T, V> reference;
 
 	/**
 	 * Create the <code>MultiRelationship</code>.
 	 *
+	 * @param  type      The <code>Element</code> interface class, not null
+	 * @param  property  The <code>Property</code>, not null
 	 * @param  reference The <code>RelationshipReference</code>, not null
 	 */
 
-	protected MultiRelationship (final RelationshipReference<T, V> reference)
+	protected MultiRelationship (final Class<T> type, final Property<V> property, final RelationshipReference<T, V> reference)
 	{
+		super (type, property.getPropertyType ());
+
 		assert reference != null : "reference is NULL";
 
+		this.property = property;
 		this.reference = reference;
 	}
 
@@ -150,7 +158,6 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
-		assert this.inverse != null : "No inverse relationship";
 
 		return this.reference.removeValue (element, value);
 	}
@@ -174,10 +181,10 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
 
-		return this.reference.getValue (element).stream ()
-			.allMatch (x -> this.inverse.canInsert (datastore, x));
+		return this.reference.getValue (element)
+			.stream ()
+			.allMatch (x -> this.getInverse (x.getClass ()).canInsert (datastore, x));
 	}
 
 	/**
@@ -199,9 +206,11 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
+		assert datastore.contains (element) : "element is not in the datastore";
 
-		return (this.inverse.canRemove () || this.reference.getValue (element).isEmpty ());
+		return datastore.contains (element) && this.reference.getValue (element)
+			.stream ()
+			.allMatch (x -> this.getInverse (x.getClass ()).canRemove ());
 	}
 
 	/**
@@ -225,11 +234,11 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
 		assert datastore.contains (element) : "element is not in the datastore";
 
-		return datastore.contains (element) && this.reference.getValue (element).stream ()
-			.allMatch (x -> this.inverse.insert (datastore, x, element));
+		return datastore.contains (element) && this.reference.getValue (element)
+			.stream ()
+			.allMatch (x -> this.getInverse (x.getClass ()).insert (datastore, x, element));
 	}
 
 	/**
@@ -253,10 +262,10 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
 		assert datastore.contains (element) : "element is not in the datastore";
 
-		return datastore.contains (element) && this.reference.getValue (element).stream ()
-			.allMatch (x -> this.inverse.remove (x, element));
+		return datastore.contains (element) && this.reference.getValue (element)
+			.stream ()
+			.allMatch (x -> this.getInverse (x.getClass ()).remove (x, element));
 	}
 }

@@ -50,8 +50,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 
 	protected SelectorRelationship (final Property<T> property, final Selector<V> selector)
 	{
-		assert property != null : "property is NULL";
-		assert selector != null : "selector is NULL";
+		super (property.getPropertyType (), selector.getElementType ());
 
 		this.property = property;
 		this.selector = selector;
@@ -186,7 +185,6 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
 
 		return true;
 	}
@@ -214,12 +212,13 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
+		assert datastore.contains (element) : "element is not in the datastore";
 
-		return this.inverse.canRemove () || datastore.getQuery (this.selector)
+		return datastore.contains (element) && datastore.getQuery (this.selector)
 			.setProperty (this.property, element)
 			.queryAll ()
-			.isEmpty ();
+			.stream ()
+			.allMatch (x -> this.getInverse (x.getClass ()).canRemove ());
 	}
 
 	/**
@@ -243,7 +242,6 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
 		assert datastore.contains (element) : "element is not in the datastore";
 
 		return datastore.contains (element);
@@ -270,13 +268,12 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
 		assert datastore.contains (element) : "element is not in the datastore";
 
 		return datastore.contains (element) && datastore.getQuery (this.selector)
 			.setProperty (this.property, element)
 			.queryAll ()
 			.stream ()
-			.allMatch (x -> this.inverse.remove (x, element));
+			.allMatch (x -> this.getInverse (x.getClass ()).remove (x, element));
 	}
 }

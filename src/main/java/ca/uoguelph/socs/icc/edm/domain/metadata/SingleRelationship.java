@@ -41,13 +41,15 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	/**
 	 * Create the <code>SingleRelationShip</code>.
 	 *
+	 * @param  type      The <code>Element</code> interface class, not null
 	 * @param  property  The <code>Property</code>, not null
 	 * @param  reference The <code>PropertyReference</code>, not null
 	 */
 
-	protected SingleRelationship (final Property<V> property, final PropertyReference<T, V> reference)
+	protected SingleRelationship (final Class<T> type, final Property<V> property, final PropertyReference<T, V> reference)
 	{
-		assert property != null : "property is NULL";
+		super (type, property.getPropertyType ());
+
 		assert reference != null : "reference is NULL";
 
 		this.property = property;
@@ -199,9 +201,10 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
 
-		return this.inverse.canInsert (datastore, this.reference.getValue (element));
+		V value = this.reference.getValue (element);
+
+		return this.getInverse (value.getClass ()).canInsert (datastore, value);
 	}
 
 	/**
@@ -223,9 +226,8 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
 
-		return this.inverse.canRemove ();
+		return this.getInverse (this.reference.getValue (element).getClass ()).canRemove ();
 	}
 
 	/**
@@ -249,10 +251,11 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
 		assert datastore.contains (element) : "element is not in the datastore";
 
-		return datastore.contains (element) && this.inverse.insert (datastore, this.reference.getValue (element), element);
+		V value = this.reference.getValue (element);
+
+		return datastore.contains (element) && this.getInverse (value.getClass ()).insert (datastore, this.reference.getValue (element), element);
 	}
 
 	/**
@@ -276,9 +279,10 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
-		assert this.inverse != null : "No inverse relationship";
 		assert datastore.contains (element) : "element is not in the datastore";
 
-		return datastore.contains (element) && this.inverse.remove (this.reference.getValue (element), element);
+		V value = this.reference.getValue (element);
+
+		return datastore.contains (element) && this.getInverse (value.getClass ()).remove (value, element);
 	}
 }
