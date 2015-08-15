@@ -28,8 +28,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -64,14 +62,15 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (ActivitySource.metadata, ActivitySourceData.class, ActivitySourceData::new));
+		Implementation.getInstance (ActivitySource.class, ActivitySourceData.class, ActivitySourceData::new);
 	}
 
 	/**
 	 * Create the <code>ActivitySource</code> with null values.
 	 */
 
-	protected ActivitySourceData ()
+	public ActivitySourceData ()
+//	protected ActivitySourceData ()
 	{
 		this.id = null;
 		this.name = null;

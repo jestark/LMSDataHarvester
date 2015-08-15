@@ -33,11 +33,8 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.NamedActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
-import ca.uoguelph.socs.icc.edm.domain.element.NamedActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
@@ -96,8 +93,8 @@ public class Quiz extends NamedActivity implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (NamedActivity.metadata, Quiz.class, Quiz::new));
-		Activity.registerImplementation ("moodle", "quiz", Quiz.class);
+		Implementation.getInstance (NamedActivity.class, Quiz.class, Quiz::new);
+		NamedActivity.registerImplementation ("moodle", "quiz", Quiz.class);
 	}
 
 	/**

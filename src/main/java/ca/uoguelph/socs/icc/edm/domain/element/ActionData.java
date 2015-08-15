@@ -24,8 +24,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -56,7 +54,7 @@ public class ActionData extends Action implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (Action.metadata, ActionData.class, ActionData::new));
+		Implementation.getInstance (Action.class, ActionData.class, ActionData::new);
 	}
 
 	/**

@@ -14,20 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.element;
+package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.Map;
 import java.util.List;
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.Grade;
-import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
-import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
+
+import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
+import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
 
 /**
  * Generic representation of an <code>Activity</code> which has a name.  This
@@ -40,16 +39,92 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 
 public abstract class NamedActivity extends Activity
 {
-	/** The <code>MetaData</code> definition for the <code>NamedActivity</code> */
-	protected static final Definition<NamedActivity> metadata;
+	/** <code>ActivitySource</code> name to class map */
+	private static final Map<String, ActivitySource> sources;
+
+	/** <code>ActivityType</code> to implementation class map */
+	private static final Map<ActivityType, Class<? extends NamedActivity>> activities;
+
+	/** The <code>Grade</code> instances associated with the <code>Activity</code> */
+	public static final Property<Grade> GRADES;
+
+	/** The <code>SubActivity</code> instances for the <code>Activity</code> */
+	public static final Property<SubActivity> SUBACTIVITIES;
+
+	/**
+	 *
+	 */
 
 	static
 	{
-		metadata = Definition.getBuilder (NamedActivity.class, Activity.class)
-			.addProperty (Activity.NAME, Activity::getName, NamedActivity::setName)
-			.build ();
+		sources = new HashMap<> ();
+		activities = new HashMap<> ();
 
-		Profile.registerMetaData (metadata);
+		GRADES = Property.getInstance (NamedActivity.class, Grade.class, "grade", true, false);
+		SUBACTIVITIES = Property.getInstance (NamedActivity.class, SubActivity.class, "subactivities", true, false);
+
+		Definition.getBuilder (NamedActivity.class, Activity.class)
+			.addProperty (Activity.NAME, Activity::getName, NamedActivity::setName)
+			.addRelationship (GRADES, NamedActivity::getGrades, NamedActivity::addGrade, NamedActivity::removeGrade)
+			.addRelationship (SUBACTIVITIES, NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity)
+			.build ();
+	}
+
+	/**
+	 * Get the <code>Activity</code> implementation class which is associated
+	 * with the specified <code>ActivityType</code>.
+	 *
+	 * @param  type The <code>ActivityType</code>
+	 *
+	 * @return      The <code>Activity </code> data class for the given
+	 *              <code>ActivityType</code>, may be null
+	 */
+
+	public static final Class<? extends NamedActivity> getActivityClass (final ActivityType type)
+	{
+		assert type != null : "type is NULL";
+		assert NamedActivity.activities.containsKey (type) : "Activity Type is not registered";
+
+		return NamedActivity.activities.get (type);
+	}
+
+	/**
+	 * Register an association between an <code>ActivityType</code> and the
+	 * class implementing the <code>Activity</code> interface for that
+	 * <code>ActivityType</code>.
+	 *
+	 * @param  source A <code>String</code> representation of the
+	 *                <code>ActivitySource</code>, not null
+	 * @param  type   A <code>String</code> representation of the
+	 *                <code>ActivityType</code>, not null
+	 * @param  impl   The implementation class, not null
+	 */
+
+	protected static final void registerImplementation (final String source, final String type, final Class<? extends NamedActivity> impl)
+	{
+		assert source != null : "source is NULL";
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+		assert source.length () > 0 : "source is empty";
+
+		ActivityType atype = new ActivityTypeData ();
+
+		if (! NamedActivity.sources.containsKey (type))
+		{
+			ActivitySource asource = new ActivitySourceData ();
+			asource.setName (type);
+
+			NamedActivity.sources.put (source, asource);
+			atype.setSource (asource);
+		}
+		else
+		{
+			atype.setSource (NamedActivity.sources.get (source));
+		}
+
+		atype.setName (type);
+
+		NamedActivity.activities.put (atype, impl);
 	}
 
 	/**

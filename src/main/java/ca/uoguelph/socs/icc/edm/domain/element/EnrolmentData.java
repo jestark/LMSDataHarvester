@@ -34,8 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -85,7 +83,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (Enrolment.metadata, EnrolmentData.class, EnrolmentData::new));
+		Implementation.getInstance (Enrolment.class, EnrolmentData.class, EnrolmentData::new);
 	}
 
 	/**

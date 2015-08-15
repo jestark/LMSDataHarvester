@@ -16,8 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -49,9 +47,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Grade extends Element
 {
-	/** The <code>MetaData</code> definition for the <code>Grade</code> */
-	protected static final Definition<Grade> metadata;
-
 	/** The associated <code>Activity</code> */
 	public static final Property<Activity> ACTIVITY;
 
@@ -72,13 +67,11 @@ public abstract class Grade extends Element
 		ENROLMENT = Property.getInstance (Grade.class, Enrolment.class, "enrolment", false, true);
 		GRADE = Property.getInstance (Grade.class, Integer.class, "grade", true, true);
 
-		metadata = Definition.getBuilder (Grade.class, Element.class)
+		Definition.getBuilder (Grade.class, Element.class)
 			.addProperty (GRADE, Grade::getGrade, Grade::setGrade)
 			.addRelationship (ACTIVITY, Grade::getActivity, Grade::setActivity)
 			.addRelationship (ENROLMENT, Grade::getEnrolment, Grade::setEnrolment)
 			.build ();
-
-		Profile.registerMetaData (metadata);
 	}
 
 	/**

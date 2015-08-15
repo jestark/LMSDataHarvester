@@ -24,8 +24,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Network;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -57,7 +55,7 @@ public class NetworkData extends Network implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (Network.metadata, NetworkData.class, NetworkData::new));
+		Implementation.getInstance (Network.class, NetworkData.class, NetworkData::new);
 	}
 
 	/**

@@ -19,8 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -74,9 +72,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Enrolment extends Element
 {
-	/** The <code>MetaData</code> definition for the <code>Enrolment</code> */
-	protected static final Definition<Enrolment> metadata;
-
 	/** The <code>DataStore</code> identifier of the <code>Element</code> */
 	public static final Property<Long> ID;
 
@@ -127,7 +122,7 @@ public abstract class Enrolment extends Element
 		SELECTOR_ALL = Selector.getInstance (Enrolment.class, "all", false);
 		SELECTOR_ROLE = Selector.getInstance (Enrolment.class, ROLE, false);
 
-		metadata = Definition.getBuilder (Enrolment.class, Element.class)
+		Definition.getBuilder (Enrolment.class, Element.class)
 			.addProperty (ID, Enrolment::getId, Enrolment::setId)
 			.addProperty (FINALGRADE, Enrolment::getFinalGrade, Enrolment::setFinalGrade)
 			.addProperty (USABLE, Enrolment::isUsable, Enrolment::setUsable)
@@ -135,12 +130,11 @@ public abstract class Enrolment extends Element
 			.addRelationship (ROLE, Enrolment::getRole, Enrolment::setRole)
 			.addRelationship (GRADES, Enrolment::getGrades, Enrolment::addGrade, Enrolment::removeGrade)
 			.addRelationship (LOGENTRIES, Enrolment::getLog, Enrolment::addLog, Enrolment::removeLog)
-			.addRelationship (ROLE, SELECTOR_ROLE)
+			.addRelationship (User.ENROLMENTS, User.SELECTOR_ENROLMENTS)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
+			.addSelector (SELECTOR_ROLE)
 			.build ();
-
-		Profile.registerMetaData (metadata);
 	}
 
 	/**

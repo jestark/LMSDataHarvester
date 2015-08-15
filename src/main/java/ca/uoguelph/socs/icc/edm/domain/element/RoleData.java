@@ -24,8 +24,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -57,7 +55,7 @@ public class RoleData extends Role implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (Role.metadata, RoleData.class, RoleData::new));
+		Implementation.getInstance (Role.class, RoleData.class, RoleData::new);
 	}
 
 	/**

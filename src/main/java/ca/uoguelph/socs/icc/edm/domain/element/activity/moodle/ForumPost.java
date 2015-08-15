@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -84,7 +82,7 @@ public class ForumPost extends SubActivity implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (SubActivity.metadata, ForumPost.class, ForumPost::new));
+		Implementation.getInstance (SubActivity.class, ForumPost.class, ForumPost::new);
 		SubActivity.registerImplementation (ForumDiscussion.class, ForumPost.class);
 	}
 

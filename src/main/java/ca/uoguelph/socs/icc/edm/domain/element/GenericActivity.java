@@ -35,8 +35,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -75,7 +73,7 @@ public class GenericActivity extends Activity implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (Activity.metadata, GenericActivity.class, GenericActivity::new));
+		Implementation.getInstance (Activity.class, GenericActivity.class, GenericActivity::new);
 	}
 
 	/**

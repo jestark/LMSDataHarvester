@@ -33,8 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -89,7 +87,7 @@ public class MoodleActivity extends Activity
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (Activity.metadata, MoodleActivity.class, MoodleActivity::new));
+		Implementation.getInstance (Activity.class, MoodleActivity.class, MoodleActivity::new);
 	}
 
 	/**

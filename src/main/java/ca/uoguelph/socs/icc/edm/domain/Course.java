@@ -19,8 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -53,9 +51,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Course extends Element
 {
-	/** The <code>MetaData</code> definition for the <code>Course</code> */
-	protected static final Definition<Course> metadata;
-
 	/** The <code>DataStore</code> identifier of the <code>Element</code> */
 	public static final Property<Long> ID;
 
@@ -102,7 +97,7 @@ public abstract class Course extends Element
 		SELECTOR_ALL = Selector.getInstance (Course.class, "all", false);
 		SELECTOR_OFFERING = Selector.getInstance (Course.class, "offering", true, NAME, SEMESTER, YEAR);
 
-		metadata = Definition.getBuilder (Course.class, Element.class)
+		Definition.getBuilder (Course.class, Element.class)
 			.addProperty (ID, Course::getId, Course::setId)
 			.addProperty (NAME, Course::getName, Course::setName)
 			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
@@ -113,8 +108,6 @@ public abstract class Course extends Element
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_OFFERING)
 			.build ();
-
-		Profile.registerMetaData (metadata);
 	}
 
 	/**

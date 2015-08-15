@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -84,7 +82,7 @@ public class LessonPage extends SubActivity implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (SubActivity.metadata, LessonPage.class, LessonPage::new));
+		Implementation.getInstance (SubActivity.class, LessonPage.class, LessonPage::new);
 		SubActivity.registerImplementation (Lesson.class, LessonPage.class);
 	}
 

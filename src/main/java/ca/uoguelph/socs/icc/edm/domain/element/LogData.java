@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -81,7 +79,7 @@ public class LogData extends LogEntry implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (LogData.metadata, LogData.class, LogData::new));
+		Implementation.getInstance (LogData.class, LogData.class, LogData::new);
 	}
 
 	/**

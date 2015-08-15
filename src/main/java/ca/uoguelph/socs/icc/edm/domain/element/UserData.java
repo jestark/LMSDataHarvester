@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -74,7 +72,7 @@ public class UserData extends User implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (User.metadata, UserData.class, UserData::new));
+		Implementation.getInstance (User.class, UserData.class, UserData::new);
 	}
 
 	/**

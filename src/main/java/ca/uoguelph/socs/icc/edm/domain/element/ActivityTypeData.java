@@ -61,14 +61,15 @@ public class ActivityTypeData extends ActivityType implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (ActivityType.metadata, ActivityTypeData.class, ActivityTypeData::new));
+		Implementation.getInstance (ActivityType.class, ActivityTypeData.class, ActivityTypeData::new);
 	}
 
 	/**
 	 * Create the <code>ActivityType</code> with null values.
 	 */
 
-	protected ActivityTypeData ()
+	public ActivityTypeData ()
+//	protected ActivityTypeData ()
 	{
 		this.id = null;
 		this.name = null;

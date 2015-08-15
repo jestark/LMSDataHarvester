@@ -18,8 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -51,9 +49,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class LogEntry extends Element
 {
-	/** The <code>MetaData</code> definition for the <code>LogEntry</code> */
-	protected static final Definition<LogEntry> metadata;
-
 	/** The <code>DataStore</code> identifier of the <code>Element</code> */
 	public static final Property<Long> ID;
 
@@ -107,7 +102,7 @@ public abstract class LogEntry extends Element
 		SELECTOR_ACTION = Selector.getInstance (LogEntry.class, ACTION, false);
 		SELECTOR_COURSE = Selector.getInstance (LogEntry.class, COURSE, false);
 
-		metadata = Definition.getBuilder (LogEntry.class, Element.class)
+		Definition.getBuilder (LogEntry.class, Element.class)
 			.addProperty (ID, LogEntry::getId, LogEntry::setId)
 			.addProperty (COURSE, LogEntry::getCourse)
 			.addProperty (IPADDRESS, LogEntry::getIPAddress, LogEntry::setIPAddress)
@@ -115,13 +110,11 @@ public abstract class LogEntry extends Element
 			.addRelationship (ACTION, LogEntry::getAction, LogEntry::setAction)
 			.addRelationship (ACTIVITY, LogEntry::getActivity, LogEntry::setActivity)
 			.addRelationship (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
-			.addRelationship (ACTION, SELECTOR_ACTION)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
+			.addSelector (SELECTOR_ACTION)
 			.addSelector (SELECTOR_COURSE)
 			.build ();
-
-		Profile.registerMetaData (metadata);
 	}
 
 	/**

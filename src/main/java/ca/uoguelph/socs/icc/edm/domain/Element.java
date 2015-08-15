@@ -16,14 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.HashSet;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
-
 /**
  * Root level interface for all of the elements of the domain model.  The
  * primary purpose of the <code>Element</code> interface is to allow instances

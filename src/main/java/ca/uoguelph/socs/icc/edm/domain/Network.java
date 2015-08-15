@@ -16,8 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -33,9 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Network extends Element
 {
-	/** The <code>MetaData</code> definition for the <code>Network</code> */
-	protected static final Definition<Network> metadata;
-
 	/** The <code>DataStore</code> identifier of the <code>Element</code> */
 	public static final Property<Long> ID;
 
@@ -65,15 +60,13 @@ public abstract class Network extends Element
 		SELECTOR_ALL = Selector.getInstance (Network.class, "all", false);
 		SELECTOR_NAME = Selector.getInstance (Network.class, NAME, true);
 
-		metadata = Definition.getBuilder (Network.class, Element.class)
+		Definition.getBuilder (Network.class, Element.class)
 			.addProperty (ID, Network::getId, Network::setId)
 			.addProperty (NAME, Network::getName, Network::setName)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
 			.build ();
-
-		Profile.registerMetaData (metadata);
 	}
 
 	/**

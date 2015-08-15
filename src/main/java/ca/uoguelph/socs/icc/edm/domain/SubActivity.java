@@ -22,8 +22,6 @@ import java.util.Set;
 
 import java.util.HashMap;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -38,11 +36,8 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class SubActivity extends ParentActivity
 {
-	/** <code>Activity</code> to <code>SubActivity</code> class mapping */
+	/** Parent to Child <code>SubActivity</code> class mapping*/
 	private static final Map<Class<? extends ParentActivity>, Class<? extends SubActivity>> subactivities;
-
-	/** The <code>MetaData</code> definition for the <code>SubActivity</code> */
-	protected static final Definition<SubActivity> metadata;
 
 	/** The <code>DataStore</code> identifier of the <code>SubActivity</code> */
 	public static final Property<Long> ID;
@@ -75,15 +70,13 @@ public abstract class SubActivity extends ParentActivity
 		LOGENTRIES = Property.getInstance (SubActivity.class, LogEntry.class, "logentries", true, false);
 		SUBACTIVITIES = Property.getInstance (SubActivity.class, SubActivity.class, "subactivities", true, false);
 
-		metadata = Definition.getBuilder (SubActivity.class, Element.class)
+		Definition.getBuilder (SubActivity.class, Element.class)
 			.addProperty (ID, SubActivity::getId, SubActivity::setId)
 			.addProperty (NAME, SubActivity::getName, SubActivity::setName)
 			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
 			.addRelationship (LOGENTRIES, SubActivity::getLog, SubActivity::addLog, SubActivity::removeLog)
 			.addRelationship (SUBACTIVITIES, SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity)
 			.build ();
-
-		Profile.registerMetaData (metadata);
 	}
 
 	/**

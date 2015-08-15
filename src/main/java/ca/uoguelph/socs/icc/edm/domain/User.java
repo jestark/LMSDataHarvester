@@ -18,8 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -51,9 +49,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class User extends Element
 {
-	/** The <code>MetaData</code> definition for the <code>User</code> */
-	protected static final Definition<User> metadata;
-
 	/** The <code>DataStore</code> identifier of the <code>Element</code> */
 	public static final Property<Long> ID;
 
@@ -108,21 +103,19 @@ public abstract class User extends Element
 		SELECTOR_ENROLMENTS = Selector.getInstance (User.class, ENROLMENTS, true);
 		SELECTOR_USERNAME = Selector.getInstance (User.class, USERNAME, true);
 
-		metadata = Definition.getBuilder (User.class, Element.class)
+		Definition.getBuilder (User.class, Element.class)
 			.addProperty (ID, User::getId, User::setId)
 			.addProperty (IDNUMBER, User::getIdNumber, User::setIdNumber)
 			.addProperty (FIRSTNAME, User::getFirstname, User::setFirstname)
 			.addProperty (LASTNAME, User::getLastname, User::setLastname)
 			.addProperty (USERNAME, User::getUsername, User::setUsername)
 			.addRelationship (ENROLMENTS, User::getEnrolments, User::addEnrolment, User::removeEnrolment)
-			.addRelationship (ENROLMENTS, SELECTOR_ENROLMENTS)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_IDNUMBER)
 			.addSelector (SELECTOR_USERNAME)
+			.addSelector (SELECTOR_ENROLMENTS)
 			.build ();
-
-		Profile.registerMetaData (metadata);
 	}
 
 	/**

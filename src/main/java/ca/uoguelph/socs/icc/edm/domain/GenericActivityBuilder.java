@@ -59,7 +59,7 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 		assert type != null : "type is NULL";
 		assert datastore.contains (type) : "type is NULL";
 
-		if (Activity.getActivityClass (type) != null)
+		if (NamedActivity.getActivityClass (type) != null)
 		{
 			throw new IllegalStateException ("Wrong Builder: The specified ActivityType an associated Activity class.");
 		}

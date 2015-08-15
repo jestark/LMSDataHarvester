@@ -55,7 +55,7 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 		assert type != null : "type is NULL";
 		assert datastore.contains (type) : "type is NULL";
 
-		Class<? extends Activity> aclass = Activity.getActivityClass (type);
+		Class<? extends Activity> aclass = NamedActivity.getActivityClass (type);
 
 		if (aclass == null)
 		{

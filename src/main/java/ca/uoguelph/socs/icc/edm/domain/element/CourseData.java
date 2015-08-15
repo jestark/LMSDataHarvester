@@ -33,8 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -77,7 +75,7 @@ public class CourseData extends Course implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (Course.metadata, CourseData.class, CourseData::new));
+		Implementation.getInstance (Course.class, CourseData.class, CourseData::new);
 	}
 
 	/**

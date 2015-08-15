@@ -27,8 +27,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -62,7 +60,7 @@ public class GradeData extends Grade implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (Grade.metadata, GradeData.class, GradeData::new));
+		Implementation.getInstance (Grade.class, GradeData.class, GradeData::new);
 	}
 
 	/**

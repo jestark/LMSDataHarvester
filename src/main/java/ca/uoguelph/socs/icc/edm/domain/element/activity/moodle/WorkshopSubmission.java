@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -84,7 +82,7 @@ public class WorkshopSubmission extends SubActivity implements Serializable
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (SubActivity.metadata, WorkshopSubmission.class, WorkshopSubmission::new));
+		Implementation.getInstance (SubActivity.class, WorkshopSubmission.class, WorkshopSubmission::new);
 		SubActivity.registerImplementation (Workshop.class, WorkshopSubmission.class);
 	}
 

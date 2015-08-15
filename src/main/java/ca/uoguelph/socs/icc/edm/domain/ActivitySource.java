@@ -18,8 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -52,9 +50,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class ActivitySource extends Element
 {
-	/** The <code>MetaData</code> definition for the <code>ActivitySource</code> */
-	protected static final Definition<ActivitySource> metadata;
-
 	/** The <code>DataStore</code> identifier of the <code>Element</code> */
 	public static final Property<Long> ID;
 
@@ -87,7 +82,7 @@ public abstract class ActivitySource extends Element
 		SELECTOR_ALL = Selector.getInstance (ActivitySource.class, "all", false);
 		SELECTOR_NAME = Selector.getInstance (ActivitySource.class, NAME, true);
 
-		metadata = Definition.getBuilder (ActivitySource.class, Element.class)
+		Definition.getBuilder (ActivitySource.class, Element.class)
 			.addProperty (ID, ActivitySource::getId, ActivitySource::setId)
 			.addProperty (NAME, ActivitySource::getName, ActivitySource::setName)
 			.addRelationship (TYPES, ActivitySource::getTypes, ActivitySource::addType, ActivitySource::removeType)
@@ -95,8 +90,6 @@ public abstract class ActivitySource extends Element
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
 			.build ();
-
-		Profile.registerMetaData (metadata);
 	}
 
 	/**

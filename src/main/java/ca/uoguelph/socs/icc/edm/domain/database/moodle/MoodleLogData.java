@@ -71,7 +71,7 @@ public class MoodleLogData extends LogEntry
 
 	static
 	{
-		Profile.registerCreator (Implementation.getInstance (LogEntry.metadata, MoodleLogData.class, MoodleLogData::new));
+		Implementation.getInstance (LogEntry.class, MoodleLogData.class, MoodleLogData::new);
 	}
 
 	protected MoodleLogData ()

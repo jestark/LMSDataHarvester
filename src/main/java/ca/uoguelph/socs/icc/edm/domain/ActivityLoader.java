@@ -124,7 +124,7 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 			throw new NullPointerException ();
 		}
 
-		return this.getQuery (Activity.SELECTOR_ALL, Activity.getActivityClass (type))
+		return this.getQuery (Activity.SELECTOR_ALL, NamedActivity.getActivityClass (type))
 			.queryAll ();
 	}
 }
