@@ -25,8 +25,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**

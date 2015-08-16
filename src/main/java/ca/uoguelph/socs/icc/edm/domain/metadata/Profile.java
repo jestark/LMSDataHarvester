@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore;
+package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Map;
 
@@ -23,9 +23,6 @@ import java.util.HashMap;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 
 /**
  * Profile data for the <code>DataStore</code>.
@@ -36,12 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 
 public final class Profile
 {
-	/** The <code>MetaData<code> implementations */
-	private static final Map<Class<? extends Element>, MetaData<?>> creators;
-
-	/** The <code>MetaData</code> definitions and implementations */
-	private static final Map<Class<? extends Element>, MetaData<?>> metadata;
-
 	/** The default implementation classes for each <code>Element</code> */
 	private final Map<Class<? extends Element>, Class<? extends Element>> implementations;
 
@@ -50,52 +41,6 @@ public final class Profile
 
 	/** Is the <code>DataStore</code> mutable? */
 	private final boolean mutable;
-
-	/**
-	 * Static initializer to create the static maps.
-	 */
-
-	static
-	{
-		creators = new HashMap<> ();
-		metadata = new HashMap<> ();
-	}
-
-	/**
-	 * Register a <code>Creator</code>.  This method is intended to be used by
-	 * the <code>Element</code> implementation classes to register their
-	 * <code>MetaData</code> instance with the <code>Profile</code>.  The
-	 * supplied <code>MetaData</code> instance will be registered as both a
-	 * <code>Creator</code> (implementation) and <code>MetaData</code>
-	 * (definition).
-	 *
-	 * @param  creator The <code>Creator</code>, not null
-	 */
-
-	public static <T extends Element> void registerCreator (final Creator<T> creator)
-	{
-		assert creator != null : "creator is NULL";
-		assert ! Profile.creators.containsKey (creator.getElementClass ()) : "creator is already registered";
-
-		Profile.creators.put (creator.getElementClass (), creator);
-		Profile.registerMetaData (creator);
-	}
-
-	/**
-	 * Register a <code>MetaData</code> instance. This method is intended to be
-	 * used by the <code>Element</code> interface classes to register their
-	 * <code>MetaData</code> definition with the <code>Profile</code>.
-	 *
-	 * @param  metadata The <code>MetaData</code>, not null
-	 */
-
-	public static <T extends Element> void registerMetaData (final MetaData<T> metadata)
-	{
-		assert metadata != null : "metadata is NULL";
-		assert ! Profile.metadata.containsKey (metadata.getElementClass ()) : "metadata is already registered";
-
-		Profile.metadata.put (metadata.getElementClass (), metadata);
-	}
 
 	/**
 	 * Create the <code>Profile</code>.  This constructor is not intended
@@ -179,15 +124,14 @@ public final class Profile
 	 * @return      The associated <code>MetaData</code> instance
 	 */
 
-	@SuppressWarnings ("unchecked")
 	public <T extends Element> MetaData<T> getMetaData (final Class<T> type, final Class<? extends T> impl)
 	{
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
-		assert Profile.metadata.containsKey (impl) : "element is not registered";
-		assert type == Profile.metadata.get (impl).getParentClass () : "Mismatch between type and the element interface";
+		assert Container.getInstance ().containsMetaData (impl) : "element is not registered";
+		assert type == Container.getInstance ().getMetaData (type, impl).getParentClass () : "Mismatch between type and the element interface";
 
-		return (MetaData<T>) Profile.metadata.get (impl);
+		return Container.getInstance ().getMetaData (type, impl);
 	}
 
 	/**
@@ -202,14 +146,13 @@ public final class Profile
 	 * @return      The associated <code>MetaData</code> instance
 	 */
 
-	@SuppressWarnings ("unchecked")
 	public <T extends Element> MetaData<T> getMetaData (final Class<T> type)
 	{
 		assert type != null : "type is NULL";
 		assert this.implementations.containsKey (type) : "No implementation class for specified type";
-		assert Profile.metadata.containsKey (this.implementations.get (type)) : "No MetaData for specified type";
+		assert Container.getInstance ().containsMetaData (this.implementations.get (type)) : "No MetaData for specified type";
 
-		return (MetaData<T>) Profile.metadata.get (this.implementations.get (type));
+		return Container.getInstance ().getMetaData (type, this.implementations.get (type));
 	}
 
 	/**
@@ -223,15 +166,14 @@ public final class Profile
 	 * @return      The associated <code>Creator</code> instance
 	 */
 
-	@SuppressWarnings ("unchecked")
 	public <T extends Element> Creator<T> getCreator (final Class<T> type, Class<? extends T> impl)
 	{
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
-		assert Profile.creators.containsKey (impl) : "element is not registered";
-		assert type == Profile.creators.get (impl).getParentClass () : "Mismatch between type and the element interface";
+		assert Container.getInstance ().containsCreator (impl) : "element is not registered";
+		assert type == Container.getInstance ().getCreator (type, impl).getParentClass () : "Mismatch between type and the element interface";
 
-		return (Creator<T>) Profile.creators.get (impl);
+		return Container.getInstance ().getCreator (type, impl);
 	}
 
 	/**
@@ -246,14 +188,13 @@ public final class Profile
 	 * @return      The associated <code>Creator</code> instance
 	 */
 
-	@SuppressWarnings ("unchecked")
 	public <T extends Element> Creator<T> getCreator (final Class<T> type)
 	{
 		assert type != null : "type is NULL";
 		assert this.implementations.containsKey (type) : "No implementation class for specified type";
-		assert Profile.creators.containsKey (this.implementations.get (type)) : "No Creator for specified type";
+		assert Container.getInstance ().containsCreator (this.implementations.get (type)) : "No Creator for specified type";
 
-		return (Creator<T>) Profile.creators.get (this.implementations.get (type));
+		return  Container.getInstance ().getCreator (type, this.implementations.get (type));
 	}
 
 	/**
@@ -277,9 +218,9 @@ public final class Profile
 
 		while (! this.generators.containsKey (element))
 		{
-			if (Profile.metadata.containsKey (element))
+			if (Container.getInstance ().containsMetaData (element))
 			{
-				element = Profile.metadata.get (element).getParentClass ();
+				element = Container.getInstance ().getMetaData (element).getParentClass ();
 			}
 			else
 			{
