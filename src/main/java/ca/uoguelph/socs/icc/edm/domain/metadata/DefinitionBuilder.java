@@ -51,7 +51,7 @@ public final class DefinitionBuilder<T extends Element>
 	private final Class<T> type;
 
 	/** The <code>MetaData</code> definition for the parent <code>Element</code> */
-	private final Definition<? super T> parent;
+	private final Class<? extends Element> parent;
 
 	/** Set of all of the associated <code>Property</code> instances */
 	private final Set<Property<?>> allprops;
@@ -59,14 +59,17 @@ public final class DefinitionBuilder<T extends Element>
 	/** The <code>Set</code> of <code>Property</code> instances */
 	private final Map<String, Property<?>> properties;
 
+	/** The <code>Relationship</code> instances for the interface */
+	private final Map<Class<?>, Relationship<T, ?>> relationships;
+
 	/** The <code>Set</code> of <code>Selector</code> instances */
-	private final Map<String, Selector> selectors;
+	private final Map<String, Selector<T>> selectors;
 
 	/** <code>Property</code> to <code>PropertyReference</code> mapping */
-	private final Map<Property<?>, PropertyReference<T, ?>> values;
+	private final Map<Property<?>, PropertyReference<T, ?>> prefs;
 
 	/** <code>Property</code> to <code>RelationshipReference</code> mapping */
-	private final Map<Property<?>, RelationshipReference<T, ?>> collections;
+	private final Map<Property<?>, RelationshipReference<T, ?>> rrefs;
 
 	/**
 	 * Create the <code>MetaDataBuilder</code>.
@@ -74,21 +77,23 @@ public final class DefinitionBuilder<T extends Element>
 	 * @param  type The <code>Element</code> interface class, not null
 	 */
 
-	protected DefinitionBuilder (final Class<T> type, final Definition<? super T> parent)
+	protected DefinitionBuilder (final Class<T> type, final Class<? extends Element> parent)
 	{
 		assert type != null : "type is NULL";
+		assert parent != null : "parent is NULL";
+		assert parent.isAssignableFrom (type) : "type is not derived from parent";
 
 		this.log = LoggerFactory.getLogger (DefinitionBuilder.class);
 
 		this.type = type;
 		this.parent = parent;
 
+		this.allprops = new HashSet<> ();
 		this.properties = new HashMap<> ();
+		this.relationships = new HashMap<> ();
 		this.selectors = new HashMap<> ();
-		this.values = new HashMap<> ();
-		this.collections = new HashMap<> ();
-
-		this.allprops = (this.parent != null) ? this.parent.getProperties () : new HashSet<Property<?>> ();
+		this.prefs = new HashMap<> ();
+		this.rrefs = new HashMap<> ();
 	}
 
 	/**
@@ -118,7 +123,7 @@ public final class DefinitionBuilder<T extends Element>
 
 		this.allprops.add (property);
 		this.properties.put (property.getName (), property);
-		this.values.put (property, new PropertyReference<T, V> (get, set));
+		this.prefs.put (property, new PropertyReference<T, V> (get, set));
 
 		return this;
 	}
@@ -144,39 +149,95 @@ public final class DefinitionBuilder<T extends Element>
 		return this.addProperty (property, get, null);
 	}
 
-	public <V extends Element> DefinitionBuilder<T> addRelationship (final Property<V> property, final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
-	{
-		this.log.trace ("addCollection: property={}, get={}, add={}, remove={}", property, get, add, remove);
-
-		assert property != null : "property is NULL";
-		assert get != null : "get is NULL";
-		assert ! this.properties.containsKey (property.getName ()) : "property is already registered";
-
-		this.allprops.add (property);
-		this.properties.put (property.getName (), property);
-		this.collections.put (property, new RelationshipReference<T, V> (get, add, remove));
-
-		return this;
-	}
-
-	public <V extends Element> DefinitionBuilder<T> addRelationship (final Property<V> property, final Function<T, Collection<V>> get)
-	{
-		this.log.trace ("addCollection: property={}, get={}", property, get);
-
-		assert property != null : "property is NULL";
-		assert get != null : "get is NULL";
-		assert ! this.properties.containsKey (property.getName ()) : "property is already registered";
-
-		return this.addRelationship (property, get, null, null);
-	}
+	/**
+	 * Add a <code>Relationship</code> for the specified <code>Property</code>.
+	 * This method creates the references for the <code>Property</code> in the
+	 * <code>Definition</code> (replacing the <code>addProperty</code> method)
+	 * add adds a <code>Relationship</code> instance for the
+	 * <code>Property</code>.
+	 *
+	 * @param  <V>      The <code>Element</code> type of the property
+	 * @param  property The <code>Property</code>, not null
+	 * @param  get      Method reference to get the value, not null
+	 * @param  set      Method reference to set the value, may be null
+	 *
+	 * @return          This <code>DefinitionBuilder</code>
+	 */
 
 	public <V extends Element> DefinitionBuilder<T> addRelationship (final Property<V> property, final Function<T, V> get, final BiConsumer<T, V> set)
 	{
+		this.log.trace ("addRelationship: property={}, get={}, set={}", property, get, set);
+
+		assert property != null : "property is NULL";
+		assert get != null : "get is NULL";
+		assert set != null : "set is NULL";
+		assert ! this.properties.containsKey (property.getName ()) : "property is already registered";
+
+		PropertyReference<T, V> pref = new PropertyReference<T, V> (get, set);
+
+		this.allprops.add (property);
+		this.properties.put (property.getName (), property);
+		this.relationships.put (property.getPropertyType (), Relationship.getInstance (this.type, property, pref));
+		this.prefs.put (property, pref);
+
 		return this;
 	}
 
-	public DefinitionBuilder<T> addRelationship (final Selector selector)
+	/**
+	 * Add a <code>Relationship</code> instance for the <code>Collection</code>
+	 * of values, which are associated with the specified
+	 * <code>Property</code>.
+	 *
+	 * @param  <V>      The <code>Element</code> type of the property
+	 * @param  property The <code>Property</code>, not null
+	 * @param  get      Method reference to get the collection, not null
+	 * @param  add      Method reference to add a value to the
+	 *                  <code>Collection</code>, not null
+	 * @param  remove   Method reference to remove a value from the
+	 *                  <code>Collection</code>, not null
+	 *
+	 * @return          This <code>DefinitionBuilder</code>
+	 */
+
+	public <V extends Element> DefinitionBuilder<T> addRelationship (final Property<V> property, final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
 	{
+		this.log.trace ("addRelationship: property={}, get={}, add={}, remove={}", property, get, add, remove);
+
+		assert property != null : "property is NULL";
+		assert get != null : "get is NULL";
+		assert ! this.properties.containsKey (property.getName ()) : "property is already registered";
+
+		RelationshipReference<T, V> rref = new RelationshipReference<T, V> (get, add, remove);
+
+		this.allprops.add (property);
+		this.relationships.put (property.getPropertyType (), Relationship.getInstance (this.type, property, rref));
+		this.rrefs.put (property, rref);
+
+		return this;
+	}
+
+	/**
+	 * Add a uni-directional <code>Relationship</code> instance for the
+	 * specified <code>Property</code> based on the specified
+	 * <code>Selector</code>.
+	 *
+	 * @param  <V>      The <code>Element</code> type of the property
+	 * @param  property The <code>Property</code>, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          This <code>DefinitionBuilder</code>
+	 */
+
+	public <V extends Element> DefinitionBuilder<T> addRelationship (final Property<T> property, final Selector<V> selector)
+	{
+		this.log.trace ("addRelationship: property={}, selector={}", property, selector);
+
+		assert property != null : "property is NULL";
+		assert selector != null : "selector is NULL";
+
+		Relationship<T, V> rel = Relationship.getInstance (property, selector);
+		this.relationships.put (selector.getElementType (), rel);
+
 		return this;
 	}
 
@@ -188,7 +249,7 @@ public final class DefinitionBuilder<T extends Element>
 	 * @return          This <code>DefinitionBuilder</code>
 	 */
 
-	public DefinitionBuilder<T> addSelector (final Selector selector)
+	public DefinitionBuilder<T> addSelector (final Selector<T> selector)
 	{
 		this.log.trace ("addSelector: selector={}", selector);
 
@@ -213,6 +274,9 @@ public final class DefinitionBuilder<T extends Element>
 	{
 		this.log.trace ("build:");
 
-		return new Definition<T> (this.type, this.parent, this.properties, this.selectors, this.values, this.collections);
+		Definition<T> defn = new Definition<T> (this.type, this.parent, this.properties, this.relationships, this.selectors, this.prefs, this.rrefs);
+		Container.getInstance ().registerMetaData (defn);
+
+		return defn;
 	}
 }

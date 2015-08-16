@@ -75,6 +75,31 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	}
 
 	/**
+	 * Create the <code>MetaData</code> instance for an <code>Element</code>
+	 * implementation class.
+	 *
+	 * @param  <T>        The <code>Element</code> interface type
+	 * @param  <U>        The <code>Element</code> implementation type
+	 * @param  thyp       The <code>Element</code> interface class, not null
+	 * @param  element    The <code>Element</code> implementation class, not
+	 *                    null
+	 * @param  create     Method reference to the constructor, not null
+	 *
+	 * @return            The <code>MetaData</code> instance
+	 */
+
+	public static <T extends Element, U extends T> Implementation<T, U> getInstance (final Class<T> type, final Class<U> element, final Supplier<U> create)
+	{
+		assert type != null : "type is NULL";
+		assert element != null : "element is NULL";
+		assert create != null : "create is NULL";
+		assert Container.getInstance ().containsMetaData (type) : "type does not have MetaData";
+		assert Container.getInstance ().getMetaData (type) instanceof Definition : "Type is not a Definition";
+
+		return Implementation.getInstance ((Definition<T>) Container.getInstance ().getMetaData (type), element, create);
+	}
+
+	/**
 	 * Create the <code>MeteData</code> instance.
 	 *
 	 * @param  definition The <code>Definition</code>, not null
@@ -186,6 +211,24 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	}
 
 	/**
+	 * Get the <code>Relationship</code> instance for the specified
+	 * <code>Element</code> interface class.
+	 *
+	 * @param  type The <code>Element</code> interface class of the
+	 *              relationship target, not null
+	 *
+	 * @return      The <code>Relationship</code>, may be null
+	 */
+
+	@Override
+	public <V extends Element> Relationship<T, V> getRelationship (final Class<V> type)
+	{
+		assert type != null : "type is NULL";
+
+		return this.definition.getRelationship (type);
+	}
+
+	/**
 	 * Get the <code>Selector</code> instance with the specified name.
 	 *
 	 * @param  name The name of the <code>Selector</code> to retrieve, not null
@@ -194,7 +237,7 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	 */
 
 	@Override
-	public Selector<?> getSelector (final String name)
+	public Selector<T> getSelector (final String name)
 	{
 		assert name != null : "name is NULL";
 
@@ -209,7 +252,7 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	 */
 
 	@Override
-	public Set<Selector<?>> getSelectors ()
+	public Set<Selector<T>> getSelectors ()
 	{
 		return this.definition.getSelectors ();
 	}

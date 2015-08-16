@@ -22,6 +22,9 @@ import java.util.HashMap;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
+ * Container for <code>MetaData</code> instances.  This class holds all of the
+ * <code>Definition</code> and <code>Implementation</code> instances for the
+ * <code>Element</code> classes.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -38,7 +41,7 @@ final class Container
 	private final Map<Class<? extends Element>, MetaData<?>> metadata;
 
 	/**
-	 *
+	 * Static initializer to create the instance of the <code>Container</code>.
 	 */
 
 	static
@@ -47,7 +50,7 @@ final class Container
 	}
 
 	/**
-	 *
+	 * Get an instance of the <code>Container</code>.
 	 */
 
 	public static Container getInstance ()
@@ -172,7 +175,6 @@ final class Container
 		assert impl != null : "impl is NULL";
 		assert type.isAssignableFrom (impl) : "impl is not derived from type";
 		assert this.metadata.containsKey (impl) : "element is not registered";
-		assert type == this.metadata.get (impl).getParentClass () : "Mismatch between type and the element interface";
 
 		return (MetaData<T>) this.metadata.get (impl);
 	}
@@ -195,7 +197,6 @@ final class Container
 		assert impl != null : "impl is NULL";
 		assert type.isAssignableFrom (impl) : "impl is not derived from type";
 		assert this.creators.containsKey (impl) : "element is not registered";
-		assert type == this.creators.get (impl).getParentClass () : "Mismatch between type and the element interface";
 
 		return (Creator<T>) this.creators.get (impl);
 	}

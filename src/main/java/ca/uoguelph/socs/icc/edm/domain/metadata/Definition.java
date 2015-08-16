@@ -62,7 +62,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	/** The <code>Selector</code> instances for the interface */
 	private final Map<String, Selector<T>> selectors;
 
-	/**  */
+	/** The <code>Relationship</code> instances for the interface */
 	private final Map<Class<?>, Relationship<T, ?>> relationships;
 
 	/** <code>Property</code> to <code>PropertyReference</code> instance mapping */
