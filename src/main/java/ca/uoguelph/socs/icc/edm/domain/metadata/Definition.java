@@ -50,8 +50,8 @@ public class Definition<T extends Element> implements MetaData<T>
 	/** The Logger */
 	private final Logger log;
 
-	/** The <code>Definition</code> for the super class */
-	private final Definition<? super T> parent;
+	/** The parent <code>Element</code> class */
+	private final Class<? extends Element> parent;
 
 	/** The <code>Element</code> class represented by the <code>Definition</code> */
 	private final Class<T> type;
@@ -61,6 +61,9 @@ public class Definition<T extends Element> implements MetaData<T>
 
 	/** The <code>Selector</code> instances for the interface */
 	private final Map<String, Selector<T>> selectors;
+
+	/**  */
+	private final Map<Class<?>, Relationship<T, ?>> relationships;
 
 	/** <code>Property</code> to <code>PropertyReference</code> instance mapping */
 	private final Map<Property<?>, PropertyReference<T, ?>> prefs;
@@ -74,17 +77,16 @@ public class Definition<T extends Element> implements MetaData<T>
 	 *
 	 * @param  <T>    The <code>Element</code> interface type
 	 * @param  type   The <code>Element</code> interface class, not null
-	 * @param  parent The <code>Definition</code> for the parent
-	 *                <code>Element</code> interface class, must be null for
-	 *                <code>Element</code>, not null otherwise
+	 * @param  parent The parent <code>Element</code> class, not null
 	 *
 	 * @return        The <code>DefinitionBuilder</code> instance
 	 */
 
-	public static <T extends Element> DefinitionBuilder<T> getBuilder (final Class<T> type, final Definition<? super T> parent)
+	public static <T extends Element> DefinitionBuilder<T> getBuilder (final Class<T> type, final Class<? extends Element> parent)
 	{
 		assert type != null : "type is NULL";
-		assert (type == Element.class && parent == null) || parent != null: "Parent is NULL, or Parent is not null and type is Element";
+		assert parent != null : "parent is NULL";
+		assert parent.isAssignableFrom (type) : "type is not derived from parent";
 
 		return new DefinitionBuilder<T> (type, parent);
 	}
@@ -100,11 +102,20 @@ public class Definition<T extends Element> implements MetaData<T>
 	 * @param  selectors
 	 */
 
-	protected Definition (final Class<T> type, final Definition<? super T> parent, final Map<String, Property<?>> properties, final Map<String, Selector<T>> selectors, final Map<Property<?>, PropertyReference<T, ?>> prefs, final Map<Property<?>, RelationshipReference<T, ?>> rrefs)
+	protected Definition (final Class<T> type,
+			final Class<? extends Element> parent,
+			final Map<String, Property<?>> properties,
+			final Map<Class<?>, Relationship<T, ?>> relationships,
+			final Map<String, Selector<T>> selectors,
+			final Map<Property<?>, PropertyReference<T, ?>> prefs,
+			final Map<Property<?>, RelationshipReference<T, ?>> rrefs)
 	{
 		assert type != null : "type is NULL";
+		assert parent != null : "parent is NULL";
+		assert parent.isAssignableFrom (type) : "type is not derived from parent";
 		assert properties != null : "properties is NULL";
 		assert selectors != null : "selectors is NULL";
+		assert relationships != null : "relationships is NULL";
 		assert prefs != null : "prefs is NULL";
 		assert rrefs != null : "rrefs is NULL";
 
@@ -112,8 +123,9 @@ public class Definition<T extends Element> implements MetaData<T>
 
 		this.type = type;
 		this.parent = parent;
-		this.selectors = selectors;
-		this.properties = properties;
+		this.selectors = new HashMap<> (selectors);
+		this.properties = new HashMap<> (properties);
+		this.relationships = new HashMap<> (relationships);
 		this.prefs = new HashMap<> (prefs);
 		this.rrefs = new HashMap<> (rrefs);
 	}
@@ -134,18 +146,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	{
 		assert property != null : "property is NULL";
 
-		PropertyReference<T, V> result = null;
-
-		if (this.prefs.containsKey (property))
-		{
-			result = (PropertyReference<T, V>) this.prefs.get (property);
-		}
-		else if (this.parent != null)
-		{
-			result = (PropertyReference<T, V>) this.parent.getPropertyReference (property);
-		}
-
-		return result;
+		return (PropertyReference<T, V>) this.prefs.get (property);
 	}
 
 	@SuppressWarnings ("unchecked")
@@ -153,18 +154,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	{
 		assert property != null : "property is NULL";
 
-		RelationshipReference<T, V> result = null;
-
-		if (this.rrefs.containsKey (property))
-		{
-			result = (RelationshipReference<T, V>) this.rrefs.get (property);
-		}
-		else if (this.parent != null)
-		{
-			result = (RelationshipReference<T, V>) this.parent.getRelationshipReference (property);
-		}
-
-		return result;
+		return (RelationshipReference<T, V>) this.rrefs.get (property);
 	}
 
 	/**
@@ -190,25 +180,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	@Override
 	public Class<? extends Element> getParentClass ()
 	{
-		return this.parent.getElementClass ();
-	}
-
-	/**
-	 * Inject the <code>MetaData</code> instance into the
-	 * <code>Receiver</code>.
-	 *
-	 * @param  <R>      The result type of the <code>Receiver</code>
-	 * @param  receiver The <code>Receiver</code>, not null
-	 *
-	 * @return          The return value of the receiving method
-	 */
-
-	@Override
-	public <R> R inject (final Receiver<T, R> receiver)
-	{
-		assert receiver != null : "receiver is NULL";
-
-		return receiver.apply (this, this.type);
+		return this.parent;
 	}
 
 	/**
@@ -224,14 +196,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	{
 		assert name != null : "name is NULL";
 
-		Property<?> result = this.properties.get (name);
-
-		if ((result == null) && (this.parent != null))
-		{
-			result = this.parent.getProperty (name);
-		}
-
-		return result;
+		return this.properties.get (name);
 	}
 
 	/**
@@ -252,7 +217,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert name != null : "name is NULL";
 		assert type != null : "type is NULL";
 
-		Property<?> result = this.getProperty (name);
+		Property<?> result = this.properties.get (name);
 
 		if ((result != null) && (type != result.getPropertyType ()))
 		{
@@ -272,14 +237,26 @@ public class Definition<T extends Element> implements MetaData<T>
 	@Override
 	public Set<Property<?>> getProperties ()
 	{
-		Set<Property<?>> result = new HashSet<Property<?>> (this.properties.values ());
+		return new HashSet<Property<?>> (this.properties.values ());
+	}
 
-		if (this.parent != null)
-		{
-			result.addAll (this.parent.getProperties ());
-		}
+	/**
+	 * Get the <code>Relationship</code> instance for the specified
+	 * <code>Element</code> interface class.
+	 *
+	 * @param  type The <code>Element</code> interface class of the
+	 *              relationship target, not null
+	 *
+	 * @return      The <code>Relationship</code>, may be null
+	 */
 
-		return result;
+	@Override
+	@SuppressWarnings ("unchecked")
+	public <V extends Element> Relationship<T, V> getRelationship (final Class<V> type)
+	{
+		assert type != null : "type is NULL";
+
+		return (Relationship<T, V>) this.relationships.get (type);
 	}
 
 	/**
@@ -291,18 +268,11 @@ public class Definition<T extends Element> implements MetaData<T>
 	 */
 
 	@Override
-	public Selector<?> getSelector (final String name)
+	public Selector<T> getSelector (final String name)
 	{
 		assert name != null : "name is NULL";
 
-		Selector<?> result = this.selectors.get (name);
-
-		if ((result == null) && (this.parent != null))
-		{
-			result = this.parent.getSelector (name);
-		}
-
-		return result;
+		return this.selectors.get (name);
 	}
 
 	/**
@@ -313,16 +283,9 @@ public class Definition<T extends Element> implements MetaData<T>
 	 */
 
 	@Override
-	public Set<Selector<?>> getSelectors ()
+	public Set<Selector<T>> getSelectors ()
 	{
-		Set<Selector<?>> result = new HashSet<Selector<?>> (this.selectors.values ());
-
-		if (this.parent != null)
-		{
-			result.addAll (this.parent.getSelectors ());
-		}
-
-		return result;
+		return new HashSet<Selector<T>> (this.selectors.values ());
 	}
 
 	/**
@@ -427,7 +390,6 @@ public class Definition<T extends Element> implements MetaData<T>
 		RelationshipReference<T, V> ref = this.getRelationshipReference (property);
 
 		assert ref != null : "Property is not registered";
-		assert ref.isWritable () : "property can not be written";
 
 		return ref.addValue (element, value);
 	}
@@ -443,7 +405,6 @@ public class Definition<T extends Element> implements MetaData<T>
 		RelationshipReference<T, V> ref = this.getRelationshipReference (property);
 
 		assert ref != null : "Property is not registered";
-		assert ref.isWritable () : "property can not be written";
 
 		return ref.removeValue (element, value);
 	}

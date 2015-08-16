@@ -21,42 +21,8 @@ import java.util.Set;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * Meta-data definition for an <code>Element</code> class.  This class contains
- * the meta-data for an <code>Element</code> Though an instance of this class
- * the referenced <code>Element</code> implementation class can be created and
- * its data can be manipulated.
- * <p>
- * In addition to containing the meta-data for an <code>Element</code>, this
- * class acts as a work-around for the lack of Generic type reification in
- * Java.  All of the operations on the <code>DomainModel</code> are expressed
- * in terms of the <code>Element</code> interfaces.  Out of necessity, the
- * operations in the <code>DataStore</code> are performed in terms of the
- * <code>Element</code> implementations.  It is necessary to bridge between the
- * interface and implementation in terms of type parameters, to avoid a
- * proliferation of <code>Element</code >implementation specific loader/query
- * classes and/or unchecked casts (both of which are less than ideal).
- * <p>
- * The <code>MetaData</code> instances, by their nature, know the details of
- * both the <code>Element</code> interfaces and implementations.  To bridge
- * between the <code>Element</code> interface and implementation, an interface
- * for the operation is defined in terms of the <code>Element</code> interface,
- * taking the interface type as its type parameter.  The interface is then
- * implemented by a class that will know the implementation details of the
- * <code>Element</code>, usually via a second type parameter.  As a result the
- * implementation details of the <code>Element</code> only need to be known
- * when an instance of the operation class is created.
- * <p>
- * When on operation is created, the <code>MetaData</code> is used to provide
- * necessary information about the <code>Element</code> implementation,
- * including the necessary type parameter, which is not known to the caller.
- * The type parameter is supplied via a call from the <code>Container</code> to
- * class which implements the <code>Receiver</code> interface.  Generally,
- * classes that implement the <code>Receiver</code> interface will a builder
- * and will call the <code>inject</code> method as final build operation.
- * <p>
- * Ideally a functional interface would be used instead of requiring a class
- * for callback operation, however the functional interfaces do not work with
- * the unknown type parameters.
+ * Meta-data definition for an <code>Element</code> class.  This interface
+ * contains the meta-data for an <code>Element</code>.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -84,18 +50,6 @@ public interface MetaData<T extends Element>
 	 */
 
 	public abstract Class<? extends Element> getParentClass ();
-
-	/**
-	 * Inject the <code>MetaData</code> instance into the
-	 * <code>Receiver</code>.
-	 *
-	 * @param  <R>      The result type of the <code>Receiver</code>
-	 * @param  receiver The <code>Receiver</code>, not null
-	 *
-	 * @return          The return value of the receiving method
-	 */
-
-	public abstract <R> R inject (Receiver<T, R> receiver);
 
 	/**
 	 * Get the <code>Property</code> instance with the specified name.
@@ -130,6 +84,18 @@ public interface MetaData<T extends Element>
 	public abstract Set<Property<?>> getProperties ();
 
 	/**
+	 * Get the <code>Relationship</code> instance for the specified
+	 * <code>Element</code> interface class.
+	 *
+	 * @param  type The <code>Element</code> interface class of the
+	 *              relationship target, not null
+	 *
+	 * @return      The <code>Relationship</code>, may be null
+	 */
+
+	public abstract <V extends Element> Relationship<T, V> getRelationship (Class<V> type);
+
+	/**
 	 * Get the <code>Selector</code> instance with the specified name.
 	 *
 	 * @param  name The name of the <code>Selector</code> to retrieve, not null
@@ -137,7 +103,7 @@ public interface MetaData<T extends Element>
 	 * @return      The <code>Property</code>, may be null
 	 */
 
-	public abstract Selector<?> getSelector (String name);
+	public abstract Selector<T> getSelector (String name);
 
 	/**
 	 * Get the <code>Set</code> of <code>Selector</code> instances which are
@@ -146,7 +112,7 @@ public interface MetaData<T extends Element>
 	 * @return A <code>Set</code> of <code>Selector</code> instances
 	 */
 
-	public abstract Set<Selector<?>> getSelectors ();
+	public abstract Set<Selector<T>> getSelectors ();
 
 	/**
 	 * Get the value corresponding to the specified <code>Property</code> from
