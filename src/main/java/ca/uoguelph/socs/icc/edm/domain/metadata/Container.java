@@ -19,6 +19,9 @@ package ca.uoguelph.socs.icc.edm.domain.metadata;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
@@ -32,7 +35,11 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 final class Container
 {
+	/** The <code>Container</code> singleton instance */
 	private static final Container INSTANCE;
+
+	/** The Logger */
+	private final Logger log;
 
 	/** The <code>MetaData<code> implementations */
 	private final Map<Class<? extends Element>, MetaData<?>> creators;
@@ -64,6 +71,8 @@ final class Container
 
 	private Container ()
 	{
+		this.log = LoggerFactory.getLogger (Container.class);
+
 		this.creators = new HashMap<> ();
 		this.metadata = new HashMap<> ();
 	}
@@ -81,6 +90,8 @@ final class Container
 
 	public <T extends Element> void registerCreator (final Creator<T> creator)
 	{
+		this.log.trace ("registerCreator: creator={}", creator);
+
 		assert creator != null : "creator is NULL";
 		assert ! this.creators.containsKey (creator.getElementClass ()) : "creator is already registered";
 
@@ -98,6 +109,8 @@ final class Container
 
 	public <T extends Element> void registerMetaData (final MetaData<T> metadata)
 	{
+		this.log.trace ("registerMetaData: metadata={}", metadata);
+
 		assert metadata != null : "metadata is NULL";
 		assert ! this.metadata.containsKey (metadata.getElementClass ()) : "metadata is already registered";
 
@@ -116,6 +129,8 @@ final class Container
 
 	public boolean containsMetaData (final Class<? extends Element> cls)
 	{
+		this.log.trace ("containsMetaData: cls={}", cls);
+
 		assert cls != null : "cls is NULL";
 
 		return this.metadata.containsKey (cls);
@@ -133,6 +148,8 @@ final class Container
 
 	public boolean containsCreator (final Class<? extends Element> cls)
 	{
+		this.log.trace ("containsCreator: cls={}", cls);
+
 		assert cls != null : "cls is NULL";
 
 		return this.creators.containsKey (cls);
@@ -151,6 +168,8 @@ final class Container
 	@SuppressWarnings ("unchecked")
 	public <T extends Element> MetaData<T> getMetaData (final Class<T> type)
 	{
+		this.log.trace ("getMetaData: type={}", type);
+
 		assert type != null : "type is NULL";
 		assert this.metadata.containsKey (type) : "No MetaData for specified type";
 
@@ -171,6 +190,8 @@ final class Container
 	@SuppressWarnings ("unchecked")
 	public <T extends Element> MetaData<T> getMetaData (final Class<T> type, final Class<? extends Element> impl)
 	{
+		this.log.trace ("getMetaData: type={}, impl={}", type, impl);
+
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 		assert type.isAssignableFrom (impl) : "impl is not derived from type";
@@ -193,6 +214,8 @@ final class Container
 	@SuppressWarnings ("unchecked")
 	public <T extends Element> Creator<T> getCreator (final Class<T> type, Class<? extends Element> impl)
 	{
+		this.log.trace ("getCreator: type={}, impl={}", type, impl);
+
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 		assert type.isAssignableFrom (impl) : "impl is not derived from type";

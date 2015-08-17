@@ -119,7 +119,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert prefs != null : "prefs is NULL";
 		assert rrefs != null : "rrefs is NULL";
 
-		this.log = LoggerFactory.getLogger (MetaData.class);
+		this.log = LoggerFactory.getLogger (Definition.class);
 
 		this.type = type;
 		this.parent = parent;

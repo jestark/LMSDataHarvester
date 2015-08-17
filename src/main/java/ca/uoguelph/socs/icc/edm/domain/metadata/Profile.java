@@ -17,8 +17,10 @@
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Map;
-
 import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -33,6 +35,9 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 public final class Profile
 {
+	/** The Logger */
+	private final Logger log;
+
 	/** The default implementation classes for each <code>Element</code> */
 	private final Map<Class<? extends Element>, Class<? extends Element>> implementations;
 
@@ -60,6 +65,8 @@ public final class Profile
 	{
 		assert implementations != null : "implementations is NULL";
 		assert generators != null : "generators is NULL";
+
+		this.log = LoggerFactory.getLogger (Profile.class);
 
 		this.mutable = mutable;
 		this.implementations = new HashMap<> (implementations);
@@ -91,6 +98,8 @@ public final class Profile
 
 	public boolean hasElementClass (final Class<? extends Element> type)
 	{
+		this.log.trace ("hasElementClass: type={}", type);
+
 		assert type != null : "type is NULL";
 
 		return this.implementations.containsKey (type);
@@ -107,6 +116,8 @@ public final class Profile
 
 	public Class<? extends Element> getElementClass (Class<? extends Element> element)
 	{
+		this.log.trace ("getElementClass: element={}", element);
+
 		assert element != null : "element is NULL";
 		assert this.hasElementClass (element) : "No implementation class registered for element";
 
@@ -126,10 +137,12 @@ public final class Profile
 
 	public <T extends Element> MetaData<T> getMetaData (final Class<T> type, final Class<? extends T> impl)
 	{
+		this.log.trace ("getMetaData: type={}, impl={}", type, impl);
+
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
+		assert type.isAssignableFrom (impl) : "impl is not derived from type";
 		assert Container.getInstance ().containsMetaData (impl) : "element is not registered";
-		assert type == Container.getInstance ().getMetaData (type, impl).getParentClass () : "Mismatch between type and the element interface";
 
 		return Container.getInstance ().getMetaData (type, impl);
 	}
@@ -148,6 +161,8 @@ public final class Profile
 
 	public <T extends Element> MetaData<T> getMetaData (final Class<T> type)
 	{
+		this.log.trace ("getMetadata: type={}", type);
+
 		assert type != null : "type is NULL";
 		assert this.implementations.containsKey (type) : "No implementation class for specified type";
 		assert Container.getInstance ().containsMetaData (this.implementations.get (type)) : "No MetaData for specified type";
@@ -168,10 +183,11 @@ public final class Profile
 
 	public <T extends Element> Creator<T> getCreator (final Class<T> type, Class<? extends T> impl)
 	{
+		this.log.trace ("getCreator: type={}, impl={}", type, impl);
+
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
 		assert Container.getInstance ().containsCreator (impl) : "element is not registered";
-		assert type == Container.getInstance ().getCreator (type, impl).getParentClass () : "Mismatch between type and the element interface";
 
 		return Container.getInstance ().getCreator (type, impl);
 	}
@@ -190,6 +206,8 @@ public final class Profile
 
 	public <T extends Element> Creator<T> getCreator (final Class<T> type)
 	{
+		this.log.trace ("getCreator: type={}", type);
+
 		assert type != null : "type is NULL";
 		assert this.implementations.containsKey (type) : "No implementation class for specified type";
 		assert Container.getInstance ().containsCreator (this.implementations.get (type)) : "No Creator for specified type";
@@ -214,6 +232,8 @@ public final class Profile
 
 	public Class<? extends IdGenerator> getGenerator (Class<? extends Element> element)
 	{
+		this.log.trace ("getGenerator: element={}", element);
+
 		assert element != null : "element is NULL";
 
 		while (! this.generators.containsKey (element))

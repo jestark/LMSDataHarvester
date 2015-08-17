@@ -79,7 +79,7 @@ public class LogData extends LogEntry implements Serializable
 
 	static
 	{
-		Implementation.getInstance (LogData.class, LogData.class, LogData::new);
+		Implementation.getInstance (LogEntry.class, LogData.class, LogData::new);
 	}
 
 	/**

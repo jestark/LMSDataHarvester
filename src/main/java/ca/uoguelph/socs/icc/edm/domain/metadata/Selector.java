@@ -78,7 +78,7 @@ public final class Selector<T extends Element>
 
 		for (Property<?> property : properties)
 		{
-			assert type == property.getElementType () : "property does not match selector return type";
+			assert property.getElementType ().isAssignableFrom (type) : "property does not match selector return type";
 
 			props.add (property);
 		}
@@ -103,7 +103,7 @@ public final class Selector<T extends Element>
 	{
 		assert type != null : "type is NULL";
 		assert property != null : "property is NULL";
-		assert type == property.getElementType () : "Type mismatch, property does not match selector";
+		assert property.getElementType ().isAssignableFrom (type) : "Type mismatch, property does not match selector";
 
 		return Selector.getInstance (type, property.getName (), unique, property);
 	}

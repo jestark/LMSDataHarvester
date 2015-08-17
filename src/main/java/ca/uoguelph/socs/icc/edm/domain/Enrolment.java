@@ -116,7 +116,7 @@ public abstract class Enrolment extends Element
 		USABLE = Property.getInstance (Enrolment.class, Boolean.class, "usable", true, true);
 
 		GRADES = Property.getInstance (Enrolment.class, Grade.class, "grades", true, false);
-		LOGENTRIES = Property.getInstance (Enrolment.class, LogEntry.class, "usable", true, false);
+		LOGENTRIES = Property.getInstance (Enrolment.class, LogEntry.class, "logentries", true, false);
 
 		SELECTOR_ID = Selector.getInstance (Enrolment.class, ID, true);
 		SELECTOR_ALL = Selector.getInstance (Enrolment.class, "all", false);

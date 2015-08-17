@@ -131,20 +131,18 @@ public abstract class NamedActivity extends Activity
 
 		ActivityType atype = new ActivityTypeData ();
 
-		if (! NamedActivity.sources.containsKey (type))
+		if (! NamedActivity.sources.containsKey (source))
 		{
 			ActivitySource asource = new ActivitySourceData ();
-			asource.setName (type);
+			asource.setName (source);
 
 			NamedActivity.sources.put (source, asource);
-			atype.setSource (asource);
-		}
-		else
-		{
-			atype.setSource (NamedActivity.sources.get (source));
 		}
 
+		atype.setSource (NamedActivity.sources.get (source));
 		atype.setName (type);
+
+		assert ! NamedActivity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
 
 		NamedActivity.activities.put (atype, impl);
 	}

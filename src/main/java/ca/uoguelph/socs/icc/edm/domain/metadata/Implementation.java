@@ -71,7 +71,10 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 		assert create != null : "create is NULL";
 		assert definition.getElementClass ().isAssignableFrom (element) : "element is not an implementation of the class defined by the definition";
 
-		return new Implementation<T, U> (definition, element, create);
+		Implementation<T, U> impl = new Implementation<T, U> (definition, element, create);
+		Container.getInstance ().registerCreator (impl);
+
+		return impl;
 	}
 
 	/**
@@ -111,7 +114,7 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 		assert element != null : "element is NULL";
 		assert create != null : "create is NULL";
 
-		this.log = LoggerFactory.getLogger (MetaData.class);
+		this.log = LoggerFactory.getLogger (Implementation.class);
 
 		this.definition = definition;
 		this.element = element;
