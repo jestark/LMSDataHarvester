@@ -57,34 +57,6 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 
 	/**
 	 * Get an instance of the <code>GradeBuilder</code> for the specified
-	 * <code>DataStore</code>, loaded with the data from the specified
-	 * <code>Grade</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  grade                 The <code>Grade</code>, not null
-	 *
-	 * @return                       The <code>GradeBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Grade</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static GradeBuilder getInstance (final DataStore datastore, Grade grade)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert grade != null : "grade is NULL";
-
-		GradeBuilder builder = GradeBuilder.getInstance (datastore);
-		builder.load (grade);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>GradeBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -102,36 +74,6 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	public static GradeBuilder getInstance (final DomainModel model)
 	{
 		return GradeBuilder.getInstance (AbstractBuilder.getDataStore (model));
-	}
-
-	/**
-	 * Get an instance of the <code>GradeBuilder</code> for the specified
-	 * <code>DomainModel</code>, loaded with the data from the specified
-	 * <code>Grade</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  grade                 The <code>Grade</code>, not null
-	 *
-	 * @return                       The <code>GradeBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Grade</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static GradeBuilder getInstance (final DomainModel model, Grade grade)
-	{
-		if (grade == null)
-		{
-			throw new NullPointerException ("grade is NULL");
-		}
-
-		GradeBuilder builder = GradeBuilder.getInstance (model);
-		builder.load (grade);
-
-		return builder;
 	}
 
 	/**

@@ -69,33 +69,6 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 
 	/**
 	 * Get an instance of the <code>GenericActivityBuilder</code> for the specified
-	 * <code>DataStore</code>, loaded with the data from the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  activity              The <code>Activity</code>, not null
-	 *
-	 * @return                       The <code>GenericActivityBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Activity</code>
-	 */
-
-	public static GenericActivityBuilder getInstance (final DataStore datastore, Activity activity)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert activity != null : "activity is NULL";
-
-		GenericActivityBuilder builder = GenericActivityBuilder.getInstance (datastore, activity.getType ());
-		builder.load (activity);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>GenericActivityBuilder</code> for the specified
 	 * <code>DomainModel</code> and <code>ActivityType</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -129,37 +102,6 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 		}
 
 		return GenericActivityBuilder.getInstance (AbstractBuilder.getDataStore (model), type);
-	}
-
-	/**
-	 * Get an instance of the <code>GenericActivityBuilder</code> for the specified
-	 * <code>DomainModel</code>, loaded with the data from the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  activity              The <code>Activity</code>, not null
-	 *
-	 * @return                       The <code>GenericActivityBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Activity</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static GenericActivityBuilder getInstance (final DomainModel model, Activity activity)
-	{
-		if (activity == null)
-		{
-			throw new NullPointerException ("activity is NULL");
-		}
-
-		GenericActivityBuilder builder = GenericActivityBuilder.getInstance (model, activity.getType ());
-		builder.load (activity);
-
-		return builder;
 	}
 
 	/**

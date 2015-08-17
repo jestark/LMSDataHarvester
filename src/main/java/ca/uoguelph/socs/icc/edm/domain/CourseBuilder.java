@@ -56,34 +56,6 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 
 	/**
 	 * Get an instance of the <code>CourseBuilder</code> for the specified
-	 * <code>DataStore</code>, loaded with the data from the specified
-	 * <code>Course</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  course                The <code>Course</code>, not null
-	 *
-	 * @return                       The <code>CourseBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Course</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static CourseBuilder getInstance (final DataStore datastore, Course course)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert course != null : "course is NULL";
-
-		CourseBuilder builder = CourseBuilder.getInstance (datastore);
-		builder.load (course);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>CourseBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -101,36 +73,6 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 	public static CourseBuilder getInstance (final DomainModel model)
 	{
 		return CourseBuilder.getInstance (AbstractBuilder.getDataStore (model));
-	}
-
-	/**
-	 * Get an instance of the <code>CourseBuilder</code> for the specified
-	 * <code>DomainModel</code>, loaded with the data from the specified
-	 * <code>Course</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  course                The <code>Course</code>, not null
-	 *
-	 * @return                       The <code>CourseBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Course</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static CourseBuilder getInstance (final DomainModel model, Course course)
-	{
-		if (course == null)
-		{
-			throw new NullPointerException ("course is NULL");
-		}
-
-		CourseBuilder builder = CourseBuilder.getInstance (model);
-		builder.load (course);
-
-		return builder;
 	}
 
 	/**

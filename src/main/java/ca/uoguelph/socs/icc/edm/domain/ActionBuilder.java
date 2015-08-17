@@ -57,32 +57,6 @@ public final class ActionBuilder extends AbstractBuilder<Action>
 
 	/**
 	 * Get an instance of the <code>ActionBuilder</code> for the specified
-	 * <code>DataStore</code>, loaded with the data from the specified
-	 * <code>Action</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  action                The <code>Action</code>, not null
-	 *
-	 * @return                       The <code>ActionBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Action</code>
-	 */
-
-	public static ActionBuilder getInstance (final DataStore datastore, Action action)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert action != null : "action is NULL";
-
-		ActionBuilder builder = ActionBuilder.getInstance (datastore);
-		builder.load (action);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>ActionBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -100,36 +74,6 @@ public final class ActionBuilder extends AbstractBuilder<Action>
 	public static ActionBuilder getInstance (final DomainModel model)
 	{
 		return ActionBuilder.getInstance (AbstractBuilder.getDataStore (model));
-	}
-
-	/**
-	 * Get an instance of the <code>ActionBuilder</code> for the specified
-	 * <code>DomainModel</code>, loaded with the data from the specified
-	 * <code>Action</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  action                The <code>Action</code>, not null
-	 *
-	 * @return                       The <code>ActionBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Action</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static ActionBuilder getInstance (final DomainModel model, Action action)
-	{
-		if (action == null)
-		{
-			throw new NullPointerException ("action is NULL");
-		}
-
-		ActionBuilder builder = ActionBuilder.getInstance (model);
-		builder.load (action);
-
-		return builder;
 	}
 
 	/**

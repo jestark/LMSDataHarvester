@@ -67,36 +67,6 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 
 	/**
 	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
-	 * <code>DataStore</code>, loaded with the data from the specified
-	 * <code>SubActivity</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  subactivity           The <code>SubActivity</code>, not null
-	 *
-	 * @return                       The <code>SubActivityBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>SubActivity</code>
-	 * @throws IllegalStateException if there is no <code>SubActivity</code>
-	 *                               class registered for the specified parent
-	 *                               <code>Activity</code>
-	 */
-
-	public static SubActivityBuilder getInstance (final DataStore datastore, SubActivity subactivity)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert subactivity != null : "subactivity is NULL";
-
-		SubActivityBuilder builder = SubActivityBuilder.getInstance (datastore, subactivity.getParent ());
-		builder.load (subactivity);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -133,40 +103,6 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 		}
 
 		return SubActivityBuilder.getInstance (AbstractBuilder.getDataStore (model), parent);
-	}
-
-	/**
-	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
-	 * <code>DomainModel</code>, loaded with the data from the specified
-	 * <code>SubActivity</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  subactivity           The <code>SubActivity</code>, not null
-	 *
-	 * @return                       The <code>SubActivityBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>SubActivity</code>
-	 * @throws IllegalStateException if there is no <code>SubActivity</code>
-	 *                               class registered for the specified parent
-	 *                               <code>Activity</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static SubActivityBuilder getInstance (final DomainModel model, SubActivity subactivity)
-	{
-		if (subactivity == null)
-		{
-			throw new NullPointerException ("subactivity is NULL");
-		}
-
-		SubActivityBuilder builder = SubActivityBuilder.getInstance (model, subactivity.getParent ());
-		builder.load (subactivity);
-
-		return builder;
 	}
 
 	/**

@@ -56,34 +56,6 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 
 	/**
 	 * Get an instance of the <code>NetworkBuilder</code> for the specified
-	 * <code>DataStore</code>, loaded with the data from the specified
-	 * <code>Network</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  network               The <code>Network</code>, not null
-	 *
-	 * @return                       The <code>NetworkBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Network</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static NetworkBuilder getInstance (final DataStore datastore, Network network)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert network != null : "network is NULL";
-
-		NetworkBuilder builder = NetworkBuilder.getInstance (datastore);
-		builder.load (network);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>NetworkBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -101,36 +73,6 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 	public static NetworkBuilder getInstance (final DomainModel model)
 	{
 		return NetworkBuilder.getInstance (AbstractBuilder.getDataStore (model));
-	}
-
-	/**
-	 * Get an instance of the <code>NetworkBuilder</code> for the specified
-	 * <code>DomainModel</code>, loaded with the data from the specified
-	 * <code>Network</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  network               The <code>Network</code>, not null
-	 *
-	 * @return                       The <code>NetworkBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Network</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static NetworkBuilder getInstance (final DomainModel model, Network network)
-	{
-		if (network == null)
-		{
-			throw new NullPointerException ("network is NULL");
-		}
-
-		NetworkBuilder builder = NetworkBuilder.getInstance (model);
-		builder.load (network);
-
-		return builder;
 	}
 
 	/**

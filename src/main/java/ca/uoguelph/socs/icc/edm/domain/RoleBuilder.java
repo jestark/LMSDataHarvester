@@ -56,34 +56,6 @@ public final class RoleBuilder extends AbstractBuilder<Role>
 
 	/**
 	 * Get an instance of the <code>RoleBuilder</code> for the specified
-	 * <code>DataStore</code>, loaded with the data from the specified
-	 * <code>Role</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  role                  The <code>Role</code>, not null
-	 *
-	 * @return                       The <code>RoleBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Role</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static RoleBuilder getInstance (final DataStore datastore, Role role)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert role != null : "role is NULL";
-
-		RoleBuilder builder = RoleBuilder.getInstance (datastore);
-		builder.load (role);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>RoleBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -101,36 +73,6 @@ public final class RoleBuilder extends AbstractBuilder<Role>
 	public static RoleBuilder getInstance (final DomainModel model)
 	{
 		return RoleBuilder.getInstance (AbstractBuilder.getDataStore (model));
-	}
-
-	/**
-	 * Get an instance of the <code>RoleBuilder</code> for the specified
-	 * <code>DomainModel</code>, loaded with the data from the specified
-	 * <code>Role</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  role                  The <code>Role</code>, not null
-	 *
-	 * @return                       The <code>RoleBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Role</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static RoleBuilder getInstance (final DomainModel model, Role role)
-	{
-		if (role == null)
-		{
-			throw new NullPointerException ("role is NULL");
-		}
-
-		RoleBuilder builder = RoleBuilder.getInstance (model);
-		builder.load (role);
-
-		return builder;
 	}
 
 	/**

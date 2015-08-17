@@ -55,32 +55,6 @@ public final class UserBuilder extends AbstractBuilder<User>
 
 	/**
 	 * Get an instance of the <code>UserBuilder</code> for the specified
-	 * <code>DataStore</code>, loaded with the data from the specified
-	 * <code>User</code>.
-	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  user   The <code>User</code>, not null
-	 *
-	 * @return           The <code>UserBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>User</code>
-	 */
-
-	public static UserBuilder getInstance (final DataStore datastore, User user)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert user != null : "user is NULL";
-
-		UserBuilder builder = UserBuilder.getInstance (datastore);
-		builder.load (user);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>UserBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model   The <code>DomainModel</code>, not null
@@ -98,36 +72,6 @@ public final class UserBuilder extends AbstractBuilder<User>
 	public static UserBuilder getInstance (final DomainModel model)
 	{
 		return UserBuilder.getInstance (AbstractBuilder.getDataStore (model));
-	}
-
-	/**
-	 * Get an instance of the <code>UserBuilder</code> for the specified
-	 * <code>DomainModel</code>, loaded with the data from the specified
-	 * <code>User</code>.
-	 *
-	 * @param  model The <code>DomainModel</code>, not null
-	 * @param  user  The <code>User</code>, not null
-	 *
-	 * @return       The <code>UserBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>User</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static UserBuilder getInstance (final DomainModel model, User user)
-	{
-		if (user == null)
-		{
-			throw new NullPointerException ("user is NULL");
-		}
-
-		UserBuilder builder = UserBuilder.getInstance (model);
-		builder.load (user);
-
-		return builder;
 	}
 
 	/**

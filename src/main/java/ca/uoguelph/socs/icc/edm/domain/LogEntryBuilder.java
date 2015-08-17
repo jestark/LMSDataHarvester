@@ -58,34 +58,6 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 
 	/**
 	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
-	 * <code>DataStore</code>, loaded with the data from the specified
-	 * <code>LogEntry</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  entry                 The <code>LogEntry</code>, not null
-	 *
-	 * @return                       The <code>LogEntryBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>LogEntry</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static LogEntryBuilder getInstance (final DataStore datastore, LogEntry entry)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert entry != null : "entry is NULL";
-
-		LogEntryBuilder builder = LogEntryBuilder.getInstance (datastore);
-		builder.load (entry);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -103,36 +75,6 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 	public static LogEntryBuilder getInstance (final DomainModel model)
 	{
 		return LogEntryBuilder.getInstance (AbstractBuilder.getDataStore (model));
-	}
-
-	/**
-	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
-	 * <code>DomainModel</code>, loaded with the data from the specified
-	 * <code>LogEntry</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  entry                 The <code>LogEntry</code>, not null
-	 *
-	 * @return                       The <code>LogEntryBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>LogEntry</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static LogEntryBuilder getInstance (final DomainModel model, LogEntry entry)
-	{
-		if (entry == null)
-		{
-			throw new NullPointerException ("entry is NULL");
-		}
-
-		LogEntryBuilder builder = LogEntryBuilder.getInstance (model);
-		builder.load (entry);
-
-		return builder;
 	}
 
 	/**

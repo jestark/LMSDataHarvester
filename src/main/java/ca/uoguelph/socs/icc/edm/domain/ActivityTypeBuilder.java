@@ -61,35 +61,6 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 
 	/**
 	 * Get an instance of the <code>ActivityTypeBuilder</code> for the specified
-	 * <code>DataStore</code>, loaded with the data from the specified
-	 * <code>ActivityType</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  type                  The <code>ActivityType</code>, not null
-	 *
-	 * @return                       The <code>ActivityTypeBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>ActivityType</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static ActivityTypeBuilder getInstance (final DataStore datastore, ActivityType type)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert type != null : "type is NULL";
-
-		ActivityTypeBuilder builder = ActivityTypeBuilder.getInstance (datastore);
-		builder.load (type);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>ActivityTypeBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -108,37 +79,6 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 	public static ActivityTypeBuilder getInstance (final DomainModel model)
 	{
 		return ActivityTypeBuilder.getInstance (AbstractBuilder.getDataStore (model));
-	}
-
-	/**
-	 * Get an instance of the <code>ActivityTypeBuilder</code> for the specified
-	 * <code>DomainModel</code>, loaded with the data from the specified
-	 * <code>ActivityType</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  type                  The <code>ActivityType</code>, not null
-	 *
-	 * @return                       The <code>ActivityTypeBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>ActivityType</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static ActivityTypeBuilder getInstance (final DomainModel model, ActivityType type)
-	{
-		if (type == null)
-		{
-			throw new NullPointerException ("type is NULL");
-		}
-
-		ActivityTypeBuilder builder = ActivityTypeBuilder.getInstance (model);
-		builder.load (type);
-
-		return builder;
 	}
 
 	/**

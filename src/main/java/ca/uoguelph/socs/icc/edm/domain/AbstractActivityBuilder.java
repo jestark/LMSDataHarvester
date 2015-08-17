@@ -73,12 +73,18 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 		assert datastore.contains (type) : "type is not in the datastore";
 
 		// Exception here because this is the fist time that it is checked
-		if (datastore.getProfile ().getElementClass (Activity.class) == null)
+		if (! datastore.getProfile ().hasElementClass (Activity.class))
 		{
 			throw new IllegalStateException ("Element is not available for this datastore");
 		}
 
-		U builder = AbstractBuilder.getInstance (datastore, metadata, create);
+		// Exception here because this is the fist time that it is checked
+		if (! datastore.isOpen ())
+		{
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		U builder = create.apply (datastore, metadata);
 		builder.setActivityType (type);
 
 		return builder;

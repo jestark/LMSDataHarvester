@@ -57,34 +57,6 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 
 	/**
 	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
-	 * <code>DataStore</code>, loaded with the data from the specified
-	 * <code>Enrolment</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  enrolment             The <code>Enrolment</code>, not null
-	 *
-	 * @return                       The <code>EnrolmentBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Enrolment</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static EnrolmentBuilder getInstance (final DataStore datastore, Enrolment enrolment)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert enrolment != null : "enrolment is NULL";
-
-		EnrolmentBuilder builder = EnrolmentBuilder.getInstance (datastore);
-		builder.load (enrolment);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -102,36 +74,6 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	public static EnrolmentBuilder getInstance (final DomainModel model)
 	{
 		return EnrolmentBuilder.getInstance (AbstractBuilder.getDataStore (model));
-	}
-
-	/**
-	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
-	 * <code>DomainModel</code>, loaded with the data from the specified
-	 * <code>Enrolment</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  enrolment             The <code>Enrolment</code>, not null
-	 *
-	 * @return                       The <code>EnrolmentBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Enrolment</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static EnrolmentBuilder getInstance (final DomainModel model, Enrolment enrolment)
-	{
-		if (enrolment == null)
-		{
-			throw new NullPointerException ("enrolment is NULL");
-		}
-
-		EnrolmentBuilder builder = EnrolmentBuilder.getInstance (model);
-		builder.load (enrolment);
-
-		return builder;
 	}
 
 	/**

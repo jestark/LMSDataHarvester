@@ -58,33 +58,6 @@ public final class ActivitySourceBuilder extends AbstractBuilder<ActivitySource>
 
 	/**
 	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
-	 * specified <code>DataStore</code>, loaded with the data from the
-	 * specified <code>ActivitySource</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  source                The <code>ActivitySource</code>, not null
-	 *
-	 * @return                       The <code>ActivitySourceBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>ActivitySource</code>
-	 */
-
-	public static ActivitySourceBuilder getInstance (final DataStore datastore, ActivitySource source)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert source != null : "source is NULL";
-
-		ActivitySourceBuilder builder = ActivitySourceBuilder.getInstance (datastore);
-		builder.load (source);
-
-		return builder;
-	}
-
-	/**
-	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
 	 * specified <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -103,37 +76,6 @@ public final class ActivitySourceBuilder extends AbstractBuilder<ActivitySource>
 	public static ActivitySourceBuilder getInstance (final DomainModel model)
 	{
 		return ActivitySourceBuilder.getInstance (AbstractBuilder.getDataStore (model));
-	}
-
-	/**
-	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
-	 * specified <code>DomainModel</code>, loaded with the data from the
-	 * specified <code>ActivitySource</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  source                The <code>ActivitySource</code>, not null
-	 *
-	 * @return                       The <code>ActivitySourceBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>ActivitySource</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static ActivitySourceBuilder getInstance (final DomainModel model, ActivitySource source)
-	{
-		if (source == null)
-		{
-			throw new NullPointerException ("source is NULL");
-		}
-
-		ActivitySourceBuilder builder = ActivitySourceBuilder.getInstance (model);
-		builder.load (source);
-
-		return builder;
 	}
 
 	/**
