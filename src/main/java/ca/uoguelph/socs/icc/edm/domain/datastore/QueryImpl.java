@@ -48,14 +48,11 @@ public final class QueryImpl<T extends Element, U extends T> implements Query<T>
 	/** The implementation type of the <code>Element</code> to fetch */
 	private final Class<U> type;
 
-	/** The <code>MetaData</code> for the <code>Element</code> being queried*/
-	private final MetaData<T> metadata;
-
 	/** The <code>Selector</code> defining the <code>Query</code> */
-	private final Selector selector;
+	private final Selector<T> selector;
 
-	/** The <code>DataStore</code> <code>Backend</code> to query */
-	private final Backend backend;
+	/** The <code>DataStore</code> to query */
+	private final DataStore datastore;
 
 	/** <code>Filter</code> to be built by the <code>Query</code> */
 	private final Filter<T> values;
@@ -68,21 +65,20 @@ public final class QueryImpl<T extends Element, U extends T> implements Query<T>
 	 * @param  backend The <code>Backend</code>, not null
 	 */
 
-	protected QueryImpl (final MetaData<T> metadata, final Selector selector, final Class<U> type, final Backend backend)
+	protected QueryImpl (final MetaData<T> metadata, final Selector<T> selector, final Class<U> type, final DataStore datastore)
 	{
 		assert metadata != null : "metadata is NULL";
 		assert selector != null : "selector is NULL";
-		assert backend != null : "backend is NULL";
+		assert datastore != null : "datastore is NULL";
 		assert type != null : "type is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.metadata = metadata;
 		this.selector = selector;
-		this.backend = backend;
+		this.datastore = datastore;
 		this.type = type;
 
-		this.values = new Filter<T> (this.metadata, this.selector);
+		this.values = new Filter<T> (metadata, this.selector);
 	}
 
 	/**
@@ -246,6 +242,6 @@ public final class QueryImpl<T extends Element, U extends T> implements Query<T>
 
 		assert this.checkValues () : "Some properties are missing values";
 
-		return this.backend.fetch (this.type, this.values);
+		return this.datastore.fetch (this.type, this.values);
 	}
 }

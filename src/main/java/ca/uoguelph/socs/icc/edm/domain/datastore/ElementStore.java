@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore.mem;
+package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.List;
 import java.util.Map;
@@ -34,8 +34,6 @@ import org.apache.commons.collections4.keyvalue.MultiKey;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Filter;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -48,92 +46,25 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  *
  * @author  James E. Stark
  * @version 1.0
- * @param   <T> The <code>Element</code> interface type
- * @param   <U> The <code>Element</code> implementation type
+ * @param   <T> The <code>Element</code> type
  */
 
-final class ElementStore<T extends Element, U extends T>
+final class ElementStore<T extends Element>
 {
-	/**
-	 * Wrapper class to override the <code>equals</code> and
-	 * <code>hashcode</code> methods of the stored <code>Element</code>
-	 * instances.  We need the stored <code>Element</code> instances to be
-	 * accessed in terms of their references, rather than their data.
-	 *
-	 * @param <T> The implementation type of the <code>Element</code>
-	 */
-
-	private static final class Wrapper<T extends Element>
-	{
-		/** The <code>Element</code> instance which is being wrapped */
-		private final T element;
-
-		/**
-		 * Create the <code>Wrapper</code>.
-		 *
-		 * @param  element The <code>Element</code>, not null
-		 */
-
-		public Wrapper (final T element)
-		{
-			this.element = element;
-		}
-
-		/**
-		 * Compare the wrapped <code>Element</code> reference to the supplied
-		 * <code>Object</code>.
-		 *
-		 * @param  obj The <code>Object</code>
-		 *
-		 * @return <code>true</code> is the references are the same,
-		 *         <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean equals (final Object obj)
-		{
-			return this.element == obj;
-		}
-
-		/**
-		 * Generate the hash code for the wrapped <code>Element</code>
-		 * instance.
-		 *
-		 * @return The hash code.
-		 */
-
-		@Override
-		public int hashCode ()
-		{
-			return System.identityHashCode (this.element);
-		}
-
-		/**
-		 * Get the wrapped <code>Element</code> instance.
-		 *
-		 * @return The <code>Element</code> instance
-		 */
-
-		public T unwrap ()
-		{
-			return this.element;
-		}
-	}
-
 	/** The logger */
 	private final Logger log;
 
 	/** The <code>MetaData</code> for the <code>Element</code> being stored */
-	private final MetaData<T, U> metadata;
+	private final MetaData<T> metadata;
 
 	/** The set of <code>Selector</code> instances used to index the <code>Element</code> */
-	private final Set<Selector> selectors;
+	private final Set<Selector<?>> selectors;
 
 	/** The <code>Set</code> of stored <code>Element</code> instances */
-	private final Set<Wrapper<U>> elements;
+	private final Set<Wrapper<T>> elements;
 
 	/** Indexed <code>Element</code> instances */
-	private final Map<MultiKey<Object>, U> index;
+	private final Map<MultiKey<Object>, T> index;
 
 	/**
 	 * Create the <code>ElementStore</code>.
@@ -142,18 +73,17 @@ final class ElementStore<T extends Element, U extends T>
 	 *                  which is being stored, not null
 	 */
 
-	public ElementStore (final MetaData<T, U> metadata)
+	public ElementStore (final MetaData<T> metadata)
 	{
 		assert metadata != null : "metadata is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.elements = new HashSet<Wrapper<U>> ();
-		this.index = new HashMap<MultiKey<Object>, U> ();
+		this.elements = new HashSet<Wrapper<T>> ();
+		this.index = new HashMap<MultiKey<Object>, T> ();
 
 		this.metadata = metadata;
-		this.selectors = this.metadata.getDefinition ()
-			.getSelectors ()
+		this.selectors = this.metadata.getSelectors ()
 			.stream ()
 			.filter ((x) -> x.isUnique ())
 			.collect (Collectors.toSet ());
@@ -168,7 +98,7 @@ final class ElementStore<T extends Element, U extends T>
 	 * @return The key for the index <code>Map</code>
 	 */
 
-	private MultiKey<Object> buildIndex (final Filter<T, U> filter)
+	private MultiKey<Object> buildIndex (final Filter<T> filter)
 	{
 		assert filter != null : "filter is NULL";
 
@@ -193,7 +123,7 @@ final class ElementStore<T extends Element, U extends T>
 	 * @return          The key for the index <code>Map</code>
 	 */
 
-	private MultiKey<Object> buildIndex (final Selector selector, final U element)
+	private MultiKey<Object> buildIndex (final Selector<?> selector, final T element)
 	{
 		assert selector != null : "selector is NULL";
 		assert element != null : "element is NULL";
@@ -231,7 +161,7 @@ final class ElementStore<T extends Element, U extends T>
 	 *                 otherwise
 	 */
 
-	public boolean contains (final T element)
+	public boolean contains (final Element element)
 	{
 		this.log.trace ("contains: element={}", element);
 
@@ -250,7 +180,7 @@ final class ElementStore<T extends Element, U extends T>
 	 *                may be empty
 	 */
 
-	public List<T> fetch (final Filter<T, U> filter)
+	public List<T> fetch (final Filter<T> filter)
 	{
 		this.log.trace ("fetchAll: filter={}", filter);
 
@@ -281,14 +211,14 @@ final class ElementStore<T extends Element, U extends T>
 	 * @param  element The <code>Element</code> instance to insert, not null
 	 */
 
-	public void insert (final U element)
+	public void insert (final T element)
 	{
 		this.log.trace ("insert: element={}", element);
 
 		assert element != null : "element is NULL";
 		assert ! this.contains (element) : "element is already in the DataStore";
 
-		this.elements.add (new Wrapper<U> (element));
+		this.elements.add (new Wrapper<T> (element));
 
 		this.selectors.forEach ((x) -> this.index.put (this.buildIndex (x, element), element));
 	}
@@ -300,14 +230,14 @@ final class ElementStore<T extends Element, U extends T>
 	 * @param  element The <code>Element</code> instance to remove, not null
 	 */
 
-	public void remove (final U element)
+	public void remove (final T element)
 	{
 		this.log.trace ("remove: element={}", element);
 
 		assert element != null : "element is NULL";
 		assert this.contains (element) : "element is not in the DataStore";
 
-		this.elements.remove (new Wrapper<U> (element));
+		this.elements.remove (new Wrapper<T> (element));
 
 		this.selectors.forEach ((x) -> this.index.remove (this.buildIndex (x, element), element));
 	}

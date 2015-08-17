@@ -16,97 +16,32 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
-import java.util.Map;
-
-import java.util.HashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Container;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
- * Representation of a <code>DataStore</code>.  This class provides the
- * front-end interfaces to the <code>DataStore</code>.  It uses a back-end to
- * actually store the <code>Element</code> instances.
+ * Representation of a <code>DataStore</code>.
  *
  * @author  James E. Stark
  * @version 2.0
  * @see     Transaction
  */
 
-public final class DataStore
+public abstract class DataStore
 {
-	/**
-	 * Factory to produce <code>Query</code> instances.
-	 *
-	 * @param <T> The <code>Element</code> interface type of the <code>Query</code>
-	 */
-
-	private static final class QueryFactory<T extends Element> implements Container.Receiver<T, Query<T>>
-	{
-		/** The Backend to be used by the <code>Query</code> */
-		private final Backend backend;
-
-		/** The <code>Selector</code> which defines the <code>Query</code> */
-		private final Selector selector;
-
-		/**
-		 * Create the <code>QueryFactory</code>, for the specified
-		 * <code>Selector</code> on the specified <code>Backend</code>.
-		 *
-		 * @param  backend The <code>Backend</code>
-		 * @param  selector The <code>Selector</code>
-		 */
-
-		public QueryFactory (final Backend backend, final Selector selector)
-		{
-			assert backend != null : "backend is NULL";
-			assert selector != null : "selector is NULL";
-
-			this.backend = backend;
-			this.selector = selector;
-		}
-
-		/**
-		 * Create the <code>Query</code> using the supplied
-		 * <code>MetaData</code>.
-		 *
-		 * @param  metadata The <code>MetaData</code>, not null
-		 *
-		 * @return          The <code>Query</code>
-		 */
-
-		@Override
-		public <U extends T> Query<T> apply (final MetaData<T, U> metadata)
-		{
-			assert metadata != null : "metadata is NULL";
-
-			return new QueryImpl<T, U> (metadata, selector, backend);
-		}
-	}
-
-	/** <code>MetaData</code> for the <code>Element</code> implementations */
-	private static Container metadata;
-
 	/** The logger */
-	private final Logger log;
-
-	/** The implementation specific <code>Backend</code> */
-	private final Backend backend;
+	protected final Logger log;
 
 	/** The profile */
-	private final Profile profile;
-
-	/** The <code>Transaction</code> */
-	private final Transaction transaction;
-
-	/** Flag indicating if the <code>DataStore</code> is accepting operations */
-	private boolean open;
+	protected final Profile profile;
 
 	/**
 	 * Create the <code>DataStore</code>.
@@ -114,27 +49,12 @@ public final class DataStore
 	 * @param  profile The <code>Profile</code> data, not null
 	 */
 
-	protected DataStore (final Profile profile)
+	public DataStore (final Profile profile)
 	{
 		assert profile != null : "profile is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 		this.profile = profile;
-
-		this.open = true;
-		this.backend = null;
-		this.transaction = Transaction.getInstance (this);
-	}
-
-	/**
-	 * Get the <code>Container</code> for the <code>MetaData</code>.
-	 *
-	 * @return The meta-data <code>Container</code>
-	 */
-
-	public Container getMetaDataContainer ()
-	{
-		return DataStore.metadata;
 	}
 
 	/**
@@ -142,17 +62,43 @@ public final class DataStore
 	 * <code>Element</code> implementation class.
 	 *
 	 * @param  selector The <code>Selector</code>, not null
-	 * @param  element  The <code>Element</code> implementation class, not null
+	 * @param  type     The <code>Element</code> interface class, not null
 	 *
 	 * @return          The <code>Query</code>
 	 */
 
-	public <T extends Element> Query<T> getQuery (final Selector selector, final Class<? extends Element> element)
+	public final <T extends Element> Query<T> getQuery (final Selector<T> selector)
+	{
+		assert selector != null : "selector is NULL";
+
+		return this.profile.getCreator (selector.getElementType ()).inject (new QueryFactory<T> (this, selector));
+	}
+
+	/**
+	 * Get the <code>Query</code> for the specified <code>Selector</code> and
+	 * <code>Element</code> implementation class.
+	 *
+	 * @param  selector The <code>Selector</code>, not null
+	 * @param  type     The <code>Element</code> interface class, not null
+	 * @param  impl     The <code>Element</code> implementation class, not null
+	 *
+	 * @return          The <code>Query</code>
+	 */
+
+	public final <T extends Element> Query<T> getQuery (final Selector<T> selector, final Class<? extends T> impl)
+	{
+		assert selector != null : "selector is NULL";
+		assert impl != null : "impl is NULL";
+
+		return this.profile.getCreator (selector.getElementType (), impl).inject (new QueryFactory<T> (this, selector));
+	}
+
+	public final <T extends Element> Query<T> getQuery (final Selector<T> selector, final T element)
 	{
 		assert selector != null : "selector is NULL";
 		assert element != null : "element is NULL";
 
-		return DataStore.metadata.inject (element, new QueryFactory<T> (this.backend, selector));
+		return null;
 	}
 
 	/**
@@ -162,10 +108,35 @@ public final class DataStore
 	 * @return The <code>Profile</code>
 	 */
 
-	public Profile getProfile ()
+	public final Profile getProfile ()
 	{
 		return this.profile;
 	}
+
+	/**
+	 * Retrieve a <code>List</code> of <code>Element</code> instances which
+	 * match the specified <code>Filter</code>.
+	 *
+	 * @param  <T>    The <code>Element</code> interface type
+	 * @param  <U>    The <code>Element</code> implementation type
+	 * @param  filter The <code>Filter</code>, not null
+	 *
+	 * @return        A <code>List</code> of <code>Element</code> instances
+	 */
+
+	protected abstract <T extends Element, U extends T> List<T> fetch (Class<U> type, Filter<T> filter);
+
+	/**
+	 * Get a <code>List</code> containing all of the ID numbers in the
+	 * <code>DataStore</code> for instances of the specified
+	 * <code>Element</code> class.
+	 *
+	 * @param  element The <code>Element</code> class, not null
+	 *
+	 * @return         A <code>List</code> of ID numbers, may be empty
+	 */
+
+	protected abstract List<Long> getAllIds (Class<? extends Element> element);
 
 	/**
 	 * Get an instance of the transaction manager for the
@@ -174,10 +145,7 @@ public final class DataStore
 	 * @return An instance of the transaction manager
 	 */
 
-	public Transaction getTransaction ()
-	{
-		return this.transaction;
-	}
+	public abstract Transaction getTransaction ();
 
 	/**
 	 * Determine if the <code>DataStore</code> is open.
@@ -186,10 +154,7 @@ public final class DataStore
 	 *         <code>false</code> otherwise
 	 */
 
-	public boolean isOpen ()
-	{
-		return this.open || this.transaction.isActive ();
-	}
+	public abstract boolean isOpen ();
 
 	/**
 	 * Close the <code>DataStore</code>.  If there is an active transaction
@@ -197,15 +162,7 @@ public final class DataStore
 	 * completes.
 	 */
 
-	public void close ()
-	{
-		this.open = false;
-
-		if (! this.transaction.isActive ())
-		{
-			this.backend.close ();
-		}
-	}
+	public abstract void close ();
 
 	/**
 	 * Determine if the specified <code>Element</code> instance exists in the
@@ -218,53 +175,25 @@ public final class DataStore
 	 *                 otherwise
 	 */
 
-	public <T extends Element, U extends T> boolean contains (final U element)
-	{
-		this.log.trace ("contains: element={}", element);
-
-		assert element != null : "element is NULL";
-		assert this.isOpen () : "datastore is closed";
-
-		return this.backend.contains (element);
-	}
+	public abstract boolean contains (Element element);
 
 	/**
 	 * Insert the specified <code>Element</code> instance into the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  element The <code>Element</code> instance to insert, not null
+	 * @param  metadata The <code>MetaData</code>, not null
+	 * @param  element  The <code>Element</code> instance to insert, not null
 	 */
 
-	public <T extends Element, U extends T> void insert (final U element)
-	{
-		this.log.trace ("insert: element={}", element);
-
-		assert element != null : "element is NULL";
-		assert this.transaction.isActive () : "No active transactions";
-
-		// Set Id
-
-		this.backend.insert (element);
-
-		// insert relationships
-	}
+	public abstract <T extends Element> void insert (MetaData<T> metadata, T element);
 
 	/**
 	 * Remove the specified <code>Element</code> instance from the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  element The <code>Element</code> instance to remove, not null
+	 * @param  metadata The <code>MetaData</code>, not null
+	 * @param  element  The <code>Element</code> instance to remove, not null
 	 */
 
-	public <T extends Element, U extends T> void remove (final U element)
-	{
-		this.log.trace ("remove: element={}", element);
-
-		assert element != null : "element is NULL";
-		assert this.transaction.isActive () : "No active transactions";
-
-		// Remove relationships
-
-		this.backend.remove (element);
-	}
+	public abstract <T extends Element> void remove (MetaData<T> metadata, T element);
 }

@@ -32,26 +32,26 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Receiver;
 
 final class QueryFactory<T extends Element> implements Receiver<T, Query<T>>
 {
-	/** The Backend to be used by the <code>Query</code> */
-	private final Backend backend;
+	/** The <code>DataStore</code> to be used by the <code>Query</code> */
+	private final DataStore datastore;
 
 	/** The <code>Selector</code> which defines the <code>Query</code> */
-	private final Selector selector;
+	private final Selector<T> selector;
 
 	/**
 	 * Create the <code>QueryFactory</code>, for the specified
-	 * <code>Selector</code> on the specified <code>Backend</code>.
+	 * <code>Selector</code> on the specified <code>DataStore</code>.
 	 *
-	 * @param  backend The <code>Backend</code>
-	 * @param  selector The <code>Selector</code>
+	 * @param  datastore The <code>DataStore</code>
+	 * @param  selector  The <code>Selector</code>
 	 */
 
-	public QueryFactory (final Backend backend, final Selector selector)
+	public QueryFactory (final DataStore datastore, final Selector<T> selector)
 	{
-		assert backend != null : "backend is NULL";
+		assert datastore != null : "datastore is NULL";
 		assert selector != null : "selector is NULL";
 
-		this.backend = backend;
+		this.datastore = datastore;
 		this.selector = selector;
 	}
 
@@ -71,6 +71,6 @@ final class QueryFactory<T extends Element> implements Receiver<T, Query<T>>
 		assert metadata != null : "metadata is NULL";
 		assert type != null : "type is NULL";
 
-		return new QueryImpl<T, U> (metadata, selector, type, backend);
+		return new QueryImpl<T, U> (metadata, selector, type, datastore);
 	}
 }

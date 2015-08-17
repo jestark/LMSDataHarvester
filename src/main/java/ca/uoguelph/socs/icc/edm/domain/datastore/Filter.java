@@ -45,7 +45,7 @@ public final class Filter<T extends Element>
 	private final MetaData<T> metadata;
 
 	/** The <code>Selector</code> from which the <code>Filter</code> is created */
-	private final Selector selector;
+	private final Selector<T> selector;
 
 	/** <code>Filter</code> parameters */
 	private final Map<Property<?>, Object> values;
@@ -58,7 +58,7 @@ public final class Filter<T extends Element>
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
-	public Filter (final MetaData<T> metadata, final Selector selector)
+	public Filter (final MetaData<T> metadata, final Selector<T> selector)
 	{
 		assert metadata != null : "metadata is NULL";
 		assert selector != null : "selector is NULL";
@@ -149,7 +149,7 @@ public final class Filter<T extends Element>
 	 * @return The <code>Selector</code>
 	 */
 
-	public Selector getSelector ()
+	public Selector<T> getSelector ()
 	{
 		return this.selector;
 	}

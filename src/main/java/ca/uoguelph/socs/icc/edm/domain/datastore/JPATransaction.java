@@ -14,16 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore.jpa;
+package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import javax.persistence.EntityTransaction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
-
 /**
+ * JPA implementation of the <code>Transaction</code> interface.  This class
+ * wraps the JPA <code>EntityTransaction</code> and adapts it to the
+ * <code>Transaction</code> interface.
  *
  * @author James E. Stark
  * @version 1.0
@@ -38,14 +39,16 @@ public final class JPATransaction implements Transaction
 	private final EntityTransaction transaction;
 
 	/**
-	 * Create the <code>JPADataStoreTransaction</code>.
+	 * Create the <code>JPADataStoreTransaction</code>, encapsulating the
+	 * specified <code>EntityTransaction</code>.
 	 *
-	 * @param datastore
+	 * @param transaction The <code>EntityTransaction</code>, not null
 	 */
 
 	protected JPATransaction (final EntityTransaction transaction)
 	{
 		this.log = LoggerFactory.getLogger (JPATransaction.class);
+
 		this.transaction = transaction;
 	}
 

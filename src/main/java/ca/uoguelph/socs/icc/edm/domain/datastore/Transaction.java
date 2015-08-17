@@ -28,11 +28,6 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 public interface Transaction
 {
-	public static Transaction getInstance (final DataStore datastore)
-	{
-		return null;
-	}
-
 	/**
 	 * Determine if the current <code>Transaction</code> is active.
 	 *

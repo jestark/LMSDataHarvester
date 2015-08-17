@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore.jpa;
+package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -25,9 +25,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStoreBuilder;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
 
 /**
  * A profile for any <code>DataStore</code> which used the Java Persistence
@@ -45,7 +43,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
  * @version 1.0
  */
 
-public final class JPADataStoreBuilder implements DataStoreBuilder
+public final class JPADataStoreBuilder
 {
 	private final class Key
 	{
@@ -362,7 +360,6 @@ public final class JPADataStoreBuilder implements DataStoreBuilder
 	 * Create the <code>DataStore</code>
 	 */
 
-	@Override
 	public DataStore createDataStore (Profile profile)
 	{
 		this.log.trace ("Create the datastore using profile: {}", profile);
