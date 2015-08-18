@@ -41,9 +41,6 @@ public final class Property<T>
 	/** The Java type of the <code>Property</code> */
 	private final Class<T> type;
 
-	/** The <code>Element</code> class for the <code>Property</code> */
-	private final Class<? extends Element> element;
-
 	/** Indication if the value in the <code>Element</code> may be changed */
 	private final boolean mutable;
 
@@ -53,33 +50,23 @@ public final class Property<T>
 	/**
  	 * Create the <code>Property</code>.
  	 *
-	 * @param  element                  The <code>Element</code> interface
-	 *                                  class, not null
-	 * @param  type                     The type of the value associated with
-	 *                                  the<code>Property</code>, not null
-	 * @param  name                     The name of the <code>Property</code>,
-	 *                                  not null
-	 * @param  mutable                  Indication if the <code>Property</code>
-	 *                                  can be changed
-	 * @param  required                 Indication if the <code>Property</code>
-	 *                                  is allowed to be null
+	 * @param  type     The type of the value associated with the
+	 *                  <code>Property</code>, not null
+	 * @param  name     The name of the <code>Property</code>, not null
+	 * @param  mutable  Indication if the <code>Property</code> can be changed
+	 * @param  required Indication if the <code>Property</code> is allowed to
+	 *                  be null
 	 *
-	 * @return                          The <code>Property</code>
-	 * @throws IllegalArgumentException if a different <code>Property</code>
-	 *                                  already exists in the definition with
-	 *                                  the same name
-	 * @throws IllegalStateException    if <code>Element</code> is assignable
-	 *                                  from more than one super-interface
+	 * @return          The <code>Property</code>
 	 */
 
-	public static <T extends Element, V> Property<V> getInstance (final Class<T> element, final Class<V> type, final String name, final boolean mutable, final boolean required)
+	public static <V> Property<V> getInstance (final Class<V> type, final String name, final boolean mutable, final boolean required)
 	{
-		assert element != null : "element is NULL";
 		assert type != null : "type is NULL";
 		assert name != null : "name is NULL";
 		assert name.length () > 0 : "name is empty";
 
-		return new Property<V> (name, type, element, mutable, required);
+		return new Property<V> (name, type, mutable, required);
 	}
 
 	/**
@@ -87,22 +74,19 @@ public final class Property<T>
 	 *
 	 * @param  name     The name of the <code>Property</code>, not null
 	 * @param  type     The Java type of the <code>Property</code>, not null
-	 * @param  element  The Java type of the <code>Element</code>, not null
 	 * @param  mutable  Indication if the <code>Attribute</code> can be changed
 	 * @param  required Indication if the <code>Attribute</code> is allowed to
 	 *                  be null
 	 */
 
-	protected Property (final String name, final Class<T> type, final Class<? extends Element> element, final boolean mutable, final boolean required)
+	protected Property (final String name, final Class<T> type, final boolean mutable, final boolean required)
 	{
 		assert name != null : "name is NULL";
 		assert name.length () > 0 : "name is an empty String";
 		assert type != null : "type is NULL";
-		assert element != null : "element is NULL";
 
 		this.name = name;
 		this.type = type;
-		this.element = element;
 		this.mutable = mutable;
 		this.required = required;
 	}
@@ -132,7 +116,6 @@ public final class Property<T>
 			EqualsBuilder ebuilder = new EqualsBuilder ();
 			ebuilder.append (this.name, ((Property) property).getName ());
 			ebuilder.append (this.type, ((Property) property).getPropertyType ());
-			ebuilder.append (this.element, ((Property) property).getElementType ());
 
 			result = ebuilder.isEquals ();
 		}
@@ -155,7 +138,6 @@ public final class Property<T>
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
 		hbuilder.append (this.name);
 		hbuilder.append (this.type);
-		hbuilder.append (this.element);
 
 		return hbuilder.toHashCode ();
 	}
@@ -182,19 +164,6 @@ public final class Property<T>
 	public Class<T> getPropertyType ()
 	{
 		return this.type;
-	}
-
-	/**
-	 * Get the Java type of the <code>Element</code> to which the
-	 * <code>Property</code> belongs.
-	 *
-	 * @return The <code>Class</code> representing the type of the
-	 *         <code>Element</code>
-	 */
-
-	public Class<?> getElementType ()
-	{
-		return this.element;
 	}
 
 	/**
@@ -240,7 +209,6 @@ public final class Property<T>
 
 		builder.append ("name", this.name);
 		builder.append ("type", this.type);
-		builder.append ("element", this.element);
 		builder.append ("mutable", this.mutable);
 		builder.append ("required", this.required);
 

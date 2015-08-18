@@ -17,7 +17,11 @@
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Set;
+
+import java.util.Arrays;
 import java.util.HashSet;
+
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -39,11 +43,8 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @see     Property
  */
 
-public final class Selector<T extends Element>
+public final class Selector
 {
-	/** The <code>Element</code> interface class to be returned */
-	private final Class<T> type;
-
 	/** The name of the <code>Selector</code> */
 	private final String name;
 
@@ -58,7 +59,6 @@ public final class Selector<T extends Element>
 	 * instances.
 	 *
 	 * @param  <T>
-	 * @param  type       The <code>Element</code> interface class, not null
 	 * @param  name       The name of the <code>Selector</code>, not null
 	 * @param  unique     An indication if the <code>Selector</code> uniquely
 	 *                    identifies an <code>Element</code> instance
@@ -68,29 +68,18 @@ public final class Selector<T extends Element>
 	 * @return            The <code>Selector</code>
 	 */
 
-	public static <T extends Element> Selector<T> getInstance (final Class<T> type, final String name, final boolean unique, final Property<?>... properties)
+	public static Selector getInstance (final String name, final boolean unique, final Property<?>... properties)
 	{
-		assert type != null : "type is NULL";
 		assert name != null : "name is NULL";
 		assert name.length () > 0 : "name is empty";
 
-		Set<Property<?>> props = new HashSet<Property<?>> ();
-
-		for (Property<?> property : properties)
-		{
-			assert property.getElementType ().isAssignableFrom (type) : "property does not match selector return type";
-
-			props.add (property);
-		}
-
-		return new Selector<T> (type, name, unique, props);
+		return new Selector (name, unique, Arrays.stream (properties).collect (Collectors.toSet ()));
 	}
 
 	/**
 	 * Create the <code>Selector</code> using a single <code>Property</code>.
 	 *
 	 * @param  <T>
-	 * @param  type     The <code>Element</code> interface class, not null
 	 * @param  unique   An indication if the <code>Selector</code> uniquely
 	 *                  identifies an <code>Element</code> instance
 	 * @param  property The property to be represented by the
@@ -99,19 +88,16 @@ public final class Selector<T extends Element>
 	 * @return          The <code>Selector</code>
 	 */
 
-	public static <T extends Element> Selector<T> getInstance (final Class<T> type, final Property<?> property, final boolean unique)
+	public static Selector getInstance (final Property<?> property, final boolean unique)
 	{
-		assert type != null : "type is NULL";
 		assert property != null : "property is NULL";
-		assert property.getElementType ().isAssignableFrom (type) : "Type mismatch, property does not match selector";
 
-		return Selector.getInstance (type, property.getName (), unique, property);
+		return Selector.getInstance (property.getName (), unique, property);
 	}
 
 	/**
 	 * Create the <code>Selector</code>.
 	 *
-	 * @param  type       The <code>Element</code> interface class
 	 * @param  name       The name of the <code>Selector</code>
 	 * @param  unique     An indication if the <code>Selector</code> uniquely
 	 *                    identifies an <code>Element</code> instance
@@ -119,9 +105,8 @@ public final class Selector<T extends Element>
 	 *                    instances represented by the <code>Selector</code>
 	 */
 
-	protected Selector (final Class<T> type, final String name, final boolean unique, final Set<Property<?>> properties)
+	protected Selector (final String name, final boolean unique, final Set<Property<?>> properties)
 	{
-		this.type = type;
 		this.name = name;
 		this.unique = unique;
 		this.properties = properties;
@@ -150,7 +135,6 @@ public final class Selector<T extends Element>
 		else if (obj instanceof Selector)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.type, ((Selector) obj).type);
 			ebuilder.append (this.name, ((Selector) obj).name);
 			ebuilder.append (this.unique, ((Selector) obj).unique);
 			ebuilder.append (this.properties, ((Selector) obj).properties);
@@ -174,23 +158,11 @@ public final class Selector<T extends Element>
 		final int mult = 7;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.type);
 		hbuilder.append (this.name);
 		hbuilder.append (this.unique);
 		hbuilder.append (this.properties);
 
 		return hbuilder.toHashCode ();
-	}
-
-	/**
-	 * Get the Java type of the <code>Element</code> implementation.
-	 *
-	 * @return The <code>Class</code> representing the implementation type
-	 */
-
-	public Class<T> getElementType ()
-	{
-		return this.type;
 	}
 
 	/**
@@ -244,7 +216,6 @@ public final class Selector<T extends Element>
 	{
 		ToStringBuilder builder = new ToStringBuilder (this);
 
-		builder.append ("type", this.type);
 		builder.append ("name", this.name);
 		builder.append ("unique", this.unique);
 		builder.append ("properties", this.properties);
