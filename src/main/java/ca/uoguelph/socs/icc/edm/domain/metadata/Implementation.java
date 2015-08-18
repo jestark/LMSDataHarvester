@@ -240,7 +240,7 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	 */
 
 	@Override
-	public Selector<T> getSelector (final String name)
+	public Selector getSelector (final String name)
 	{
 		assert name != null : "name is NULL";
 
@@ -255,7 +255,7 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	 */
 
 	@Override
-	public Set<Selector<T>> getSelectors ()
+	public Set<Selector> getSelectors ()
 	{
 		return this.definition.getSelectors ();
 	}

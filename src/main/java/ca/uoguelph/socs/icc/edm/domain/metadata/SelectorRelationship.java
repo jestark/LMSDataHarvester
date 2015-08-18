@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.metadata;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * A representation of a uni-directional relationship.  Specifically, instances
@@ -39,21 +40,27 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	private final Property<T> property;
 
 	/** The <code>Selector</code> for the associated <code>Element</code> */
-	private final Selector<V> selector;
+	private final Selector selector;
 
 	/**
 	 * Create the <code>SingleRelationship</code>.
 	 *
+	 * @param  value    The <code>Element</code> interface class, not null
 	 * @param  property The <code>Property</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
-	protected SelectorRelationship (final Property<T> property, final Selector<V> selector)
+	protected SelectorRelationship (final Class<V> value, final Property<T> property, final Selector selector)
 	{
-		super (property.getPropertyType (), selector.getElementType ());
+		super (property.getPropertyType (), value);
 
 		this.property = property;
 		this.selector = selector;
+	}
+
+	private Query<V> getQuery (final DataStore datastore)
+	{
+		return null;
 	}
 
 	/**
@@ -83,7 +90,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 		assert element != null : "element is NULL";
 		assert datastore.contains (element) : "element is not in the datastore";
 
-		return datastore.contains (element) && ((! this.selector.isUnique ()) || datastore.getQuery (this.selector)
+		return datastore.contains (element) && ((! this.selector.isUnique ()) || this.getQuery (datastore)
 			.setProperty (this.property, element)
 			.queryAll ()
 			.isEmpty ());
@@ -214,7 +221,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 		assert element != null : "element is NULL";
 		assert datastore.contains (element) : "element is not in the datastore";
 
-		return datastore.contains (element) && datastore.getQuery (this.selector)
+		return datastore.contains (element) && this.getQuery (datastore)
 			.setProperty (this.property, element)
 			.queryAll ()
 			.stream ()
@@ -270,10 +277,11 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 		assert element != null : "element is NULL";
 		assert datastore.contains (element) : "element is not in the datastore";
 
-		return datastore.contains (element) && datastore.getQuery (this.selector)
+		return datastore.contains (element) && this.getQuery (datastore)
 			.setProperty (this.property, element)
 			.queryAll ()
 			.stream ()
-			.allMatch (x -> this.getInverse (x.getClass ()).remove (x, element));
+			.allMatch (x -> this.getInverse (x.getClass ())
+					.remove (x, element));
 	}
 }

@@ -60,7 +60,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	private final Map<String, Property<?>> properties;
 
 	/** The <code>Selector</code> instances for the interface */
-	private final Map<String, Selector<T>> selectors;
+	private final Map<String, Selector> selectors;
 
 	/** The <code>Relationship</code> instances for the interface */
 	private final Map<Class<?>, Relationship<T, ?>> relationships;
@@ -106,7 +106,7 @@ public class Definition<T extends Element> implements MetaData<T>
 			final Class<? extends Element> parent,
 			final Map<String, Property<?>> properties,
 			final Map<Class<?>, Relationship<T, ?>> relationships,
-			final Map<String, Selector<T>> selectors,
+			final Map<String, Selector> selectors,
 			final Map<Property<?>, PropertyReference<T, ?>> prefs,
 			final Map<Property<?>, RelationshipReference<T, ?>> rrefs)
 	{
@@ -268,7 +268,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 */
 
 	@Override
-	public Selector<T> getSelector (final String name)
+	public Selector getSelector (final String name)
 	{
 		assert name != null : "name is NULL";
 
@@ -283,9 +283,9 @@ public class Definition<T extends Element> implements MetaData<T>
 	 */
 
 	@Override
-	public Set<Selector<T>> getSelectors ()
+	public Set<Selector> getSelectors ()
 	{
-		return new HashSet<Selector<T>> (this.selectors.values ());
+		return new HashSet<Selector> (this.selectors.values ());
 	}
 
 	/**

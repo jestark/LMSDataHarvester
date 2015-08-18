@@ -149,18 +149,20 @@ public abstract class Relationship<T extends Element, V extends Element>
 	 *
 	 * @param  <T>      The type of the owning <code>Element</code>
 	 * @param  <V>      The type of the associated <code>Element</code>
+	 * @param  value    The <code>Element</code> interface class, not null
 	 * @param  property The <code>Property</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 *
 	 * @return          The <code>Relationship</code>
 	 */
 
-	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Property<T> property, final Selector<V> selector)
+	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Class<V> value, final Property<T> property, final Selector selector)
 	{
+		assert value != null : "value is NULL";
 		assert property != null : "property is NULL";
 		assert selector != null : "selector is NULL";
 
-		return new SelectorRelationship<T, V> (property, selector);
+		return new SelectorRelationship<T, V> (value, property, selector);
 	}
 
 	/**

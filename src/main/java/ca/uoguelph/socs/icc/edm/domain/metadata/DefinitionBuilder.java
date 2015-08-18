@@ -63,7 +63,7 @@ public final class DefinitionBuilder<T extends Element>
 	private final Map<Class<?>, Relationship<T, ?>> relationships;
 
 	/** The <code>Set</code> of <code>Selector</code> instances */
-	private final Map<String, Selector<T>> selectors;
+	private final Map<String, Selector> selectors;
 
 	/** <code>Property</code> to <code>PropertyReference</code> mapping */
 	private final Map<Property<?>, PropertyReference<T, ?>> prefs;
@@ -222,21 +222,23 @@ public final class DefinitionBuilder<T extends Element>
 	 * <code>Selector</code>.
 	 *
 	 * @param  <V>      The <code>Element</code> type of the property
+	 * @param  value    The <code>Element</code> interface class, not null
 	 * @param  property The <code>Property</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 *
 	 * @return          This <code>DefinitionBuilder</code>
 	 */
 
-	public <V extends Element> DefinitionBuilder<T> addRelationship (final Property<T> property, final Selector<V> selector)
+	public <V extends Element> DefinitionBuilder<T> addRelationship (final Class<V> value, final Property<T> property, final Selector selector)
 	{
 		this.log.trace ("addRelationship: property={}, selector={}", property, selector);
 
+		assert value != null : "value is NULL";
 		assert property != null : "property is NULL";
 		assert selector != null : "selector is NULL";
 
-		Relationship<T, V> rel = Relationship.getInstance (property, selector);
-		this.relationships.put (selector.getElementType (), rel);
+		Relationship<T, V> rel = Relationship.getInstance (value, property, selector);
+		this.relationships.put (value, rel);
 
 		return this;
 	}
@@ -249,12 +251,11 @@ public final class DefinitionBuilder<T extends Element>
 	 * @return          This <code>DefinitionBuilder</code>
 	 */
 
-	public DefinitionBuilder<T> addSelector (final Selector<T> selector)
+	public DefinitionBuilder<T> addSelector (final Selector selector)
 	{
 		this.log.trace ("addSelector: selector={}", selector);
 
 		assert selector != null : "selector is NULL";
-		assert selector.getElementType () == this.type : "Type mismatch, property does not match selector";
 		assert ! this.selectors.containsKey (selector.getName ()) : "selector is already registered";
 		assert this.allprops.containsAll (selector.getProperties ()) : "Properties in selector missing from definition";
 
