@@ -126,29 +126,6 @@ public final class Profile
 
 	/**
 	 * Get the <code>MetaData</code> instance for the specified
-	 * <code>Element</code> implementation.
-	 *
-	 * @param  <T>  The <code>Element</code> interface type
-	 * @param  type The <code>Element</code> interface class, not null
-	 * @param  impl The <code>Element</code> implementation class, not null
-	 *
-	 * @return      The associated <code>MetaData</code> instance
-	 */
-
-	public <T extends Element> MetaData<T> getMetaData (final Class<T> type, final Class<? extends T> impl)
-	{
-		this.log.trace ("getMetaData: type={}, impl={}", type, impl);
-
-		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
-		assert type.isAssignableFrom (impl) : "impl is not derived from type";
-		assert Container.getInstance ().containsMetaData (impl) : "element is not registered";
-
-		return Container.getInstance ().getMetaData (type, impl);
-	}
-
-	/**
-	 * Get the <code>MetaData</code> instance for the specified
 	 * <code>Element</code>.  This method will look up the default
 	 * implementation class for the specified <code>Element</code> and return
 	 * the associated <code>MetaData</code> instance.
@@ -164,10 +141,9 @@ public final class Profile
 		this.log.trace ("getMetadata: type={}", type);
 
 		assert type != null : "type is NULL";
-		assert this.implementations.containsKey (type) : "No implementation class for specified type";
-		assert Container.getInstance ().containsMetaData (this.implementations.get (type)) : "No MetaData for specified type";
+		assert Container.getInstance ().containsMetaData (type) : "No MetaData for specified type";
 
-		return Container.getInstance ().getMetaData (type, this.implementations.get (type));
+		return Container.getInstance ().getMetaData (type);
 	}
 
 	/**
