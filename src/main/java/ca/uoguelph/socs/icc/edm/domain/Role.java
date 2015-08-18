@@ -44,20 +44,11 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Role extends Element
 {
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
-	public static final Property<Long> ID;
-
 	/** The name of the <code>Role</code> */
 	public static final Property<String> NAME;
 
-	/** Select the <code>Role</code> instance by its id */
-	public static final Selector<Role> SELECTOR_ID;
-
-	/** Select all of the <code>Role</code> instances */
-	public static final Selector<Role> SELECTOR_ALL;
-
 	/** Select an <code>Role</code> instance by its name */
-	public static final Selector<Role> SELECTOR_NAME;
+	public static final Selector SELECTOR_NAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -66,17 +57,14 @@ public abstract class Role extends Element
 
 	static
 	{
-		ID = Property.getInstance (Role.class, Long.class, "id", false, false);
-		NAME = Property.getInstance (Role.class, String.class, "name", false, true);
+		NAME = Property.getInstance (String.class, "name", false, true);
 
-		SELECTOR_ID = Selector.getInstance (Role.class, ID, true);
-		SELECTOR_ALL = Selector.getInstance (Role.class, "all", false);
-		SELECTOR_NAME = Selector.getInstance (Role.class, NAME, true);
+		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
 		Definition.getBuilder (Role.class, Element.class)
 			.addProperty (ID, Role::getId, Role::setId)
 			.addProperty (NAME, Role::getName, Role::setName)
-			.addRelationship (Enrolment.ROLE, Enrolment.SELECTOR_ROLE)
+			.addRelationship (Enrolment.class, Enrolment.ROLE, Enrolment.SELECTOR_ROLE)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)

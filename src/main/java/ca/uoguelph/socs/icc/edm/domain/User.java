@@ -49,9 +49,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class User extends Element
 {
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
-	public static final Property<Long> ID;
-
 	/** The idnumber for the <code>User</code> */
 	public static final Property<Integer> IDNUMBER;
 
@@ -67,20 +64,14 @@ public abstract class User extends Element
 	/** The <code>Enrolment</code> instances associated with the <code>User</code> */
 	public static final Property<Enrolment> ENROLMENTS;
 
-	/** Select the <code>User</code> instance by its id */
-	public static final Selector<User> SELECTOR_ID;
-
-	/** Select all of the <code>User</code> instances */
-	public static final Selector<User> SELECTOR_ALL;
-
 	/** Select an <code>User</code> instance by its id number */
-	public static final Selector<User> SELECTOR_IDNUMBER;
+	public static final Selector SELECTOR_IDNUMBER;
 
 	/** Select the <code>User</code> instance for a <code>Enrolment</code> */
-	public static final Selector<User> SELECTOR_ENROLMENTS;
+	public static final Selector SELECTOR_ENROLMENTS;
 
 	/** Select an <code>User</code> instance by its username */
-	public static final Selector<User> SELECTOR_USERNAME;
+	public static final Selector SELECTOR_USERNAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -89,19 +80,16 @@ public abstract class User extends Element
 
 	static
 	{
-		ID = Property.getInstance (User.class, Long.class, "id", false, false);
-		IDNUMBER = Property.getInstance (User.class, Integer.class, "idnumber", false, true);
-		FIRSTNAME = Property.getInstance (User.class, String.class, "firstname", true, true);
-		LASTNAME = Property.getInstance (User.class, String.class, "lastname", true, true);
-		USERNAME = Property.getInstance (User.class, String.class, "username", false, true);
+		IDNUMBER = Property.getInstance (Integer.class, "idnumber", false, true);
+		FIRSTNAME = Property.getInstance (String.class, "firstname", true, true);
+		LASTNAME = Property.getInstance (String.class, "lastname", true, true);
+		USERNAME = Property.getInstance (String.class, "username", false, true);
 
-		ENROLMENTS = Property.getInstance (User.class, Enrolment.class, "enrolments", true, false);
+		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", true, false);
 
-		SELECTOR_ID = Selector.getInstance (User.class, ID, true);
-		SELECTOR_ALL = Selector.getInstance (User.class, "all", false);
-		SELECTOR_IDNUMBER = Selector.getInstance (User.class, IDNUMBER, true);
-		SELECTOR_ENROLMENTS = Selector.getInstance (User.class, ENROLMENTS, true);
-		SELECTOR_USERNAME = Selector.getInstance (User.class, USERNAME, true);
+		SELECTOR_IDNUMBER = Selector.getInstance (IDNUMBER, true);
+		SELECTOR_ENROLMENTS = Selector.getInstance (ENROLMENTS, true);
+		SELECTOR_USERNAME = Selector.getInstance (USERNAME, true);
 
 		Definition.getBuilder (User.class, Element.class)
 			.addProperty (ID, User::getId, User::setId)

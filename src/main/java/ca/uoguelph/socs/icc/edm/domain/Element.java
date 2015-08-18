@@ -16,6 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
+
 /**
  * Root level interface for all of the elements of the domain model.  The
  * primary purpose of the <code>Element</code> interface is to allow instances
@@ -28,6 +31,28 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 public abstract class Element
 {
+	/** The <code>DataStore</code> identifier of the <code>Element</code> */
+	public static final Property<Long> ID;
+
+	/** Select the <code>Activity</code> instance by its id */
+	public static final Selector SELECTOR_ID;
+
+	/** Select all of the <code>Activity</code> instances */
+	public static final Selector SELECTOR_ALL;
+
+	/**
+	 * Initialize the <code>MetaData</code>, <code>Property</code> and
+	 * <code>Selector</code> instances for the <code>Element</code>.
+	 */
+
+	static
+	{
+		ID = Property.getInstance (Long.class, "id", false, false);
+
+		SELECTOR_ID = Selector.getInstance (ID, true);
+		SELECTOR_ALL = Selector.getInstance ("all", false);
+	}
+
 	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
 	 * instance.  Some <code>Element</code> interfaces are dependent on other

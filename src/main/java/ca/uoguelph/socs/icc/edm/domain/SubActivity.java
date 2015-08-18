@@ -39,9 +39,6 @@ public abstract class SubActivity extends ParentActivity
 	/** Parent to Child <code>SubActivity</code> class mapping*/
 	private static final Map<Class<? extends ParentActivity>, Class<? extends SubActivity>> subactivities;
 
-	/** The <code>DataStore</code> identifier of the <code>SubActivity</code> */
-	public static final Property<Long> ID;
-
 	/** The name of the <code>SubActivity</code> */
 	public static final Property<String> NAME;
 
@@ -63,12 +60,11 @@ public abstract class SubActivity extends ParentActivity
 	{
 		subactivities = new HashMap<> ();
 
-		ID = Property.getInstance (SubActivity.class, Long.class, "id", false, false);
-		NAME = Property.getInstance (SubActivity.class, String.class, "name", false, true);
-		PARENT = Property.getInstance (SubActivity.class, ParentActivity.class, "parent", false, true);
+		NAME = Property.getInstance (String.class, "name", false, true);
+		PARENT = Property.getInstance (ParentActivity.class, "parent", false, true);
 
-		LOGENTRIES = Property.getInstance (SubActivity.class, LogEntry.class, "logentries", true, false);
-		SUBACTIVITIES = Property.getInstance (SubActivity.class, SubActivity.class, "subactivities", true, false);
+		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", true, false);
+		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", true, false);
 
 		Definition.getBuilder (SubActivity.class, Element.class)
 			.addProperty (ID, SubActivity::getId, SubActivity::setId)
@@ -76,6 +72,8 @@ public abstract class SubActivity extends ParentActivity
 			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
 			.addRelationship (LOGENTRIES, SubActivity::getLog, SubActivity::addLog, SubActivity::removeLog)
 			.addRelationship (SUBACTIVITIES, SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.build ();
 	}
 

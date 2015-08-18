@@ -63,9 +63,9 @@ public abstract class Grade extends Element
 
 	static
 	{
-		ACTIVITY = Property.getInstance (Grade.class, Activity.class, "activity", false, true);
-		ENROLMENT = Property.getInstance (Grade.class, Enrolment.class, "enrolment", false, true);
-		GRADE = Property.getInstance (Grade.class, Integer.class, "grade", true, true);
+		ACTIVITY = Property.getInstance (Activity.class, "activity", false, true);
+		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", false, true);
+		GRADE = Property.getInstance (Integer.class, "grade", true, true);
 
 		Definition.getBuilder (Grade.class, Element.class)
 			.addProperty (GRADE, Grade::getGrade, Grade::setGrade)

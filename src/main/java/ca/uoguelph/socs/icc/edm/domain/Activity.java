@@ -64,9 +64,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Activity extends ParentActivity
 {
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
-	public static final Property<Long> ID;
-
 	/** The associated <code>Course</code> */
 	public static final Property<Course> COURSE;
 
@@ -79,14 +76,8 @@ public abstract class Activity extends ParentActivity
 	/** The <code>LogEntry</code> instances associated with the <code>Activity</code> */
 	public static final Property<LogEntry> LOGENTRIES;
 
-	/** Select the <code>Activity</code> instance by its id */
-	public static final Selector<Activity> SELECTOR_ID;
-
-	/** Select all of the <code>Activity</code> instances */
-	public static final Selector<Activity> SELECTOR_ALL;
-
 	/** Select all <code>Activity</code> instances by <code>ActivityType</code> */
-	public static final Selector<Activity> SELECTOR_TYPE;
+	public static final Selector SELECTOR_TYPE;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -95,16 +86,13 @@ public abstract class Activity extends ParentActivity
 
 	static
 	{
-		ID = Property.getInstance (Activity.class, Long.class, "id", false, false);
-		COURSE = Property.getInstance (Activity.class, Course.class, "course", false, true);
-		TYPE = Property.getInstance (Activity.class, ActivityType.class, "type", false, true);
-		NAME = Property.getInstance (Activity.class, String.class, "name", false, true);
+		COURSE = Property.getInstance (Course.class, "course", false, true);
+		TYPE = Property.getInstance (ActivityType.class, "type", false, true);
+		NAME = Property.getInstance (String.class, "name", false, true);
 
-		LOGENTRIES = Property.getInstance (Activity.class, LogEntry.class, "logentries", true, false);
+		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", true, false);
 
-		SELECTOR_ID = Selector.getInstance (Activity.class, ID, true);
-		SELECTOR_ALL = Selector.getInstance (Activity.class, "all", false);
-		SELECTOR_TYPE = Selector.getInstance (Activity.class, TYPE, false);
+		SELECTOR_TYPE = Selector.getInstance (TYPE, false);
 
 		Definition.getBuilder (Activity.class, Element.class)
 			.addProperty (ID, Activity::getId, Activity::setId)

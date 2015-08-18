@@ -52,15 +52,6 @@ public abstract class NamedActivity extends Activity
 	/** The <code>SubActivity</code> instances for the <code>Activity</code> */
 	public static final Property<SubActivity> SUBACTIVITIES;
 
-	/** Select the <code>Activity</code> instance by its id */
-	public static final Selector<NamedActivity> SELECTOR_ID;
-
-	/** Select all of the <code>Activity</code> instances */
-	public static final Selector<NamedActivity> SELECTOR_ALL;
-
-	/** Select all <code>Activity</code> instances by <code>ActivityType</code> */
-	public static final Selector<NamedActivity> SELECTOR_TYPE;
-
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
 	 * <code>Selector</code> instances for the <code>NamedActivity</code>.
@@ -71,12 +62,8 @@ public abstract class NamedActivity extends Activity
 		sources = new HashMap<> ();
 		activities = new HashMap<> ();
 
-		GRADES = Property.getInstance (NamedActivity.class, Grade.class, "grade", true, false);
-		SUBACTIVITIES = Property.getInstance (NamedActivity.class, SubActivity.class, "subactivities", true, false);
-
-		SELECTOR_ID = Selector.getInstance (NamedActivity.class, ID, true);
-		SELECTOR_ALL = Selector.getInstance (NamedActivity.class, "all", false);
-		SELECTOR_TYPE = Selector.getInstance (NamedActivity.class, TYPE, false);
+		GRADES = Property.getInstance (Grade.class, "grade", true, false);
+		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", true, false);
 
 		Definition.getBuilder (NamedActivity.class, Activity.class)
 			.addProperty (Activity.ID, NamedActivity::getId, NamedActivity::setId)
@@ -86,9 +73,9 @@ public abstract class NamedActivity extends Activity
 			.addRelationship (Activity.LOGENTRIES, NamedActivity::getLog, NamedActivity::addLog, NamedActivity::removeLog)
 			.addRelationship (GRADES, NamedActivity::getGrades, NamedActivity::addGrade, NamedActivity::removeGrade)
 			.addRelationship (SUBACTIVITIES, NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
-			.addSelector (SELECTOR_TYPE)
+			.addSelector (Element.SELECTOR_ID)
+			.addSelector (Element.SELECTOR_ALL)
+			.addSelector (Activity.SELECTOR_TYPE)
 			.build ();
 	}
 

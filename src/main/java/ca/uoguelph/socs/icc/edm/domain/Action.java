@@ -48,20 +48,11 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Action extends Element
 {
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
-	public static final Property<Long> ID;
-
 	/** The name of the <code>Action</code> */
 	public static final Property<String> NAME;
 
-	/** Select the <code>Action</code> instance by its id */
-	public static final Selector<Action> SELECTOR_ID;
-
-	/** Select all of the <code>Action</code> instances */
-	public static final Selector<Action> SELECTOR_ALL;
-
 	/** Select an <code>Action</code> instance by its name */
-	public static final Selector<Action> SELECTOR_NAME;
+	public static final Selector SELECTOR_NAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -70,17 +61,14 @@ public abstract class Action extends Element
 
 	static
 	{
-		ID = Property.getInstance (Action.class, Long.class, "id", false, false);
-		NAME = Property.getInstance (Action.class, String.class, "name", false, true);
+		NAME = Property.getInstance (String.class, "name", false, true);
 
-		SELECTOR_ID = Selector.getInstance (Action.class, ID, true);
-		SELECTOR_ALL = Selector.getInstance (Action.class, "all", false);
-		SELECTOR_NAME = Selector.getInstance (Action.class, NAME, true);
+		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
 		Definition.getBuilder (Action.class, Element.class)
 			.addProperty (ID, Action::getId, Action::setId)
 			.addProperty (NAME, Action::getName, Action::setName)
-			.addRelationship (LogEntry.ACTION, LogEntry.SELECTOR_ACTION)
+			.addRelationship (LogEntry.class, LogEntry.ACTION, LogEntry.SELECTOR_ACTION)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)

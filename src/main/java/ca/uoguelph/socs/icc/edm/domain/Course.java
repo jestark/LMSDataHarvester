@@ -51,9 +51,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Course extends Element
 {
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
-	public static final Property<Long> ID;
-
 	/** The name of the <code>Course</code> */
 	public static final Property<String> NAME;
 
@@ -69,14 +66,8 @@ public abstract class Course extends Element
 	/** The <code>Enrolment</code> instances associated with the <code>Course</code> */
 	public static final Property<Enrolment> ENROLMENTS;
 
-	/** Select the <code>Course</code> instance by its id */
-	public static final Selector<Course> SELECTOR_ID;
-
-	/** Select all of the <code>Course</code> instances */
-	public static final Selector<Course> SELECTOR_ALL;
-
 	/** Select an <code>Course</code> instance by its name and date of offering */
-	public static final Selector<Course> SELECTOR_OFFERING;
+	public static final Selector SELECTOR_OFFERING;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -85,17 +76,14 @@ public abstract class Course extends Element
 
 	static
 	{
-		ID = Property.getInstance (Course.class, Long.class, "id", false, false);
-		NAME = Property.getInstance (Course.class, String.class, "name", false, true);
-		SEMESTER = Property.getInstance (Course.class, Semester.class, "semester", false, true);
-		YEAR = Property.getInstance (Course.class, Integer.class, "year", false, true);
+		NAME = Property.getInstance (String.class, "name", false, true);
+		SEMESTER = Property.getInstance (Semester.class, "semester", false, true);
+		YEAR = Property.getInstance (Integer.class, "year", false, true);
 
-		ACTIVITIES = Property.getInstance (Course.class, Activity.class, "activities", true, false);
-		ENROLMENTS = Property.getInstance (Course.class, Enrolment.class, "enrolments", true, false);
+		ACTIVITIES = Property.getInstance (Activity.class, "activities", true, false);
+		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", true, false);
 
-		SELECTOR_ID = Selector.getInstance (Course.class, ID, true);
-		SELECTOR_ALL = Selector.getInstance (Course.class, "all", false);
-		SELECTOR_OFFERING = Selector.getInstance (Course.class, "offering", true, NAME, SEMESTER, YEAR);
+		SELECTOR_OFFERING = Selector.getInstance ("offering", true, NAME, SEMESTER, YEAR);
 
 		Definition.getBuilder (Course.class, Element.class)
 			.addProperty (ID, Course::getId, Course::setId)

@@ -72,9 +72,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Enrolment extends Element
 {
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
-	public static final Property<Long> ID;
-
 	/** The associated <code>Course</code> */
 	public static final Property<Course> COURSE;
 
@@ -93,14 +90,8 @@ public abstract class Enrolment extends Element
 	/** The <code>LogEntry</code> instances associated with the <code>Enrolment</code> */
 	public static final Property<LogEntry> LOGENTRIES;
 
-	/** Select the <code>Enrolment</code> instance by its id */
-	public static final Selector<Enrolment> SELECTOR_ID;
-
-	/** Select all of the <code>Enrolment</code> instances */
-	public static final Selector<Enrolment> SELECTOR_ALL;
-
 	/** Select all <code>Enrolment</code> by <code>Role</code>*/
-	public static final Selector<Enrolment> SELECTOR_ROLE;
+	public static final Selector SELECTOR_ROLE;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -109,18 +100,15 @@ public abstract class Enrolment extends Element
 
 	static
 	{
-		ID = Property.getInstance (Enrolment.class, Long.class, "id", false, false);
-		COURSE = Property.getInstance (Enrolment.class, Course.class, "course", false, true);
-		FINALGRADE = Property.getInstance (Enrolment.class, Integer.class, "finalgrade", true, false);
-		ROLE = Property.getInstance (Enrolment.class, Role.class, "role", false, true);
-		USABLE = Property.getInstance (Enrolment.class, Boolean.class, "usable", true, true);
+		COURSE = Property.getInstance (Course.class, "course", false, true);
+		FINALGRADE = Property.getInstance (Integer.class, "finalgrade", true, false);
+		ROLE = Property.getInstance (Role.class, "role", false, true);
+		USABLE = Property.getInstance (Boolean.class, "usable", true, true);
 
-		GRADES = Property.getInstance (Enrolment.class, Grade.class, "grades", true, false);
-		LOGENTRIES = Property.getInstance (Enrolment.class, LogEntry.class, "logentries", true, false);
+		GRADES = Property.getInstance (Grade.class, "grades", true, false);
+		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", true, false);
 
-		SELECTOR_ID = Selector.getInstance (Enrolment.class, ID, true);
-		SELECTOR_ALL = Selector.getInstance (Enrolment.class, "all", false);
-		SELECTOR_ROLE = Selector.getInstance (Enrolment.class, ROLE, false);
+		SELECTOR_ROLE = Selector.getInstance (ROLE, false);
 
 		Definition.getBuilder (Enrolment.class, Element.class)
 			.addProperty (ID, Enrolment::getId, Enrolment::setId)
@@ -130,7 +118,7 @@ public abstract class Enrolment extends Element
 			.addRelationship (ROLE, Enrolment::getRole, Enrolment::setRole)
 			.addRelationship (GRADES, Enrolment::getGrades, Enrolment::addGrade, Enrolment::removeGrade)
 			.addRelationship (LOGENTRIES, Enrolment::getLog, Enrolment::addLog, Enrolment::removeLog)
-			.addRelationship (User.ENROLMENTS, User.SELECTOR_ENROLMENTS)
+			.addRelationship (User.class, User.ENROLMENTS, User.SELECTOR_ENROLMENTS)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_ROLE)

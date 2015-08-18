@@ -49,9 +49,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class LogEntry extends Element
 {
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
-	public static final Property<Long> ID;
-
 	/** The associated <code>Action</code> */
 	public static final Property<Action> ACTION;
 
@@ -70,17 +67,11 @@ public abstract class LogEntry extends Element
 	/** The time that the <code>LogEntry</code> was created */
 	public static final Property<Date> TIME;
 
-	/** Select the <code>LogEntry</code> instance by its id */
-	public static final Selector<LogEntry> SELECTOR_ID;
-
-	/** Select all of the <code>LogEntry</code> instances */
-	public static final Selector<LogEntry> SELECTOR_ALL;
-
 	/** Select all <code>LogEntry</code> instances by <code>Action</code> */
-	public static final Selector<LogEntry> SELECTOR_ACTION;
+	public static final Selector SELECTOR_ACTION;
 
 	/** Select all <code>LogEntry</code> instances by <code>Course</code> */
-	public static final Selector<LogEntry> SELECTOR_COURSE;
+	public static final Selector SELECTOR_COURSE;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -89,18 +80,15 @@ public abstract class LogEntry extends Element
 
 	static
 	{
-		ID = Property.getInstance (LogEntry.class, Long.class, "id", false, false);
-		ACTION = Property.getInstance (LogEntry.class, Action.class, "action", false, true);
-		ACTIVITY = Property.getInstance (LogEntry.class, Activity.class, "activity", false, true);
-		COURSE = Property.getInstance (LogEntry.class, Course.class, "course", false, true);
-		ENROLMENT = Property.getInstance (LogEntry.class, Enrolment.class, "enrolment", false, true);
-		IPADDRESS = Property.getInstance (LogEntry.class, String.class, "ipaddress", false, true);
-		TIME = Property.getInstance (LogEntry.class, Date.class, "time", false, true);
+		ACTION = Property.getInstance (Action.class, "action", false, true);
+		ACTIVITY = Property.getInstance (Activity.class, "activity", false, true);
+		COURSE = Property.getInstance (Course.class, "course", false, true);
+		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", false, true);
+		IPADDRESS = Property.getInstance (String.class, "ipaddress", false, true);
+		TIME = Property.getInstance (Date.class, "time", false, true);
 
-		SELECTOR_ID = Selector.getInstance (LogEntry.class, ID, true);
-		SELECTOR_ALL = Selector.getInstance (LogEntry.class, "all", false);
-		SELECTOR_ACTION = Selector.getInstance (LogEntry.class, ACTION, false);
-		SELECTOR_COURSE = Selector.getInstance (LogEntry.class, COURSE, false);
+		SELECTOR_ACTION = Selector.getInstance (ACTION, false);
+		SELECTOR_COURSE = Selector.getInstance (COURSE, false);
 
 		Definition.getBuilder (LogEntry.class, Element.class)
 			.addProperty (ID, LogEntry::getId, LogEntry::setId)

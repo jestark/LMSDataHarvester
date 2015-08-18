@@ -50,22 +50,14 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class ActivitySource extends Element
 {
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
-	public static final Property<Long> ID;
-
 	/** The name of the <code>ActivitySource</code> */
 	public static final Property<String> NAME;
 
+	/** The <code>ActivityType</code> instances associated with the <code>ActivitySource</code> */
 	public static final Property<ActivityType> TYPES;
 
-	/** Select the <code>ActivitySource</code> instance by its id */
-	public static final Selector<ActivitySource> SELECTOR_ID;
-
-	/** Select all of the <code>ActivitySource</code> instances */
-	public static final Selector<ActivitySource> SELECTOR_ALL;
-
 	/** Select an <code>ActivitySource</code> instance by its name */
-	public static final Selector<ActivitySource> SELECTOR_NAME;
+	public static final Selector SELECTOR_NAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -74,13 +66,10 @@ public abstract class ActivitySource extends Element
 
 	static
 	{
-		ID = Property.getInstance (ActivitySource.class, Long.class, "id", false, false);
-		NAME = Property.getInstance (ActivitySource.class, String.class, "name", false, true);
-		TYPES = Property.getInstance (ActivitySource.class, ActivityType.class, "types", true, false);
+		NAME = Property.getInstance (String.class, "name", false, true);
+		TYPES = Property.getInstance (ActivityType.class, "types", true, false);
 
-		SELECTOR_ID = Selector.getInstance (ActivitySource.class, ID, true);
-		SELECTOR_ALL = Selector.getInstance (ActivitySource.class, "all", false);
-		SELECTOR_NAME = Selector.getInstance (ActivitySource.class, NAME, true);
+		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
 		Definition.getBuilder (ActivitySource.class, Element.class)
 			.addProperty (ID, ActivitySource::getId, ActivitySource::setId)

@@ -52,23 +52,14 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class ActivityType extends Element
 {
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
-	public static final Property<Long> ID;
-
 	/** The name of the <code>ActivityType</code> */
 	public static final Property<String> NAME;
 
 	/** The associated <code>ActivitySource</code> */
 	public static final Property<ActivitySource> SOURCE;
 
-	/** Select the <code>ActivityType</code> instance by its id */
-	public static final Selector<ActivityType> SELECTOR_ID;
-
-	/** Select all of the <code>ActivityType</code> instances */
-	public static final Selector<ActivityType> SELECTOR_ALL;
-
 	/** Select an <code>ActivityType</code> instance by name and <code>ActivitySource</code> */
-	public static final Selector<ActivityType> SELECTOR_NAME;
+	public static final Selector SELECTOR_NAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -77,19 +68,16 @@ public abstract class ActivityType extends Element
 
 	static
 	{
-		ID = Property.getInstance (ActivityType.class, Long.class, "id", false, false);
-		NAME = Property.getInstance (ActivityType.class, String.class, "name", false, true);
-		SOURCE = Property.getInstance (ActivityType.class, ActivitySource.class, "source", false, true);
+		NAME = Property.getInstance (String.class, "name", false, true);
+		SOURCE = Property.getInstance (ActivitySource.class, "source", false, true);
 
-		SELECTOR_ID = Selector.getInstance (ActivityType.class, ID, true);
-		SELECTOR_ALL = Selector.getInstance (ActivityType.class, "all", false);
-		SELECTOR_NAME = Selector.getInstance (ActivityType.class, "name", true, NAME, SOURCE);
+		SELECTOR_NAME = Selector.getInstance ("name", true, NAME, SOURCE);
 
 		Definition.getBuilder (ActivityType.class, Element.class)
 			.addProperty (ID, ActivityType::getId, ActivityType::setId)
 			.addProperty (NAME, ActivityType::getName, ActivityType::setName)
 			.addRelationship (SOURCE, ActivityType::getSource, ActivityType::setSource)
-			.addRelationship (Activity.TYPE, Activity.SELECTOR_TYPE)
+			.addRelationship (Activity.class, Activity.TYPE, Activity.SELECTOR_TYPE)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
