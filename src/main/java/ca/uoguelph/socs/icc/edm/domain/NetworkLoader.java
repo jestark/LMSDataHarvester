@@ -58,7 +58,7 @@ public final class NetworkLoader extends AbstractLoader<Network>
 
 	public NetworkLoader (final DataStore datastore)
 	{
-		super (datastore);
+		super (Network.class, datastore);
 	}
 
 	/**

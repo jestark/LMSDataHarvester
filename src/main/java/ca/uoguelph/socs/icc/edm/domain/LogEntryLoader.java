@@ -59,7 +59,7 @@ public final class LogEntryLoader extends AbstractLoader<LogEntry>
 
 	public LogEntryLoader (final DataStore datastore)
 	{
-		super (datastore);
+		super (LogEntry.class, datastore);
 	}
 
 	/**

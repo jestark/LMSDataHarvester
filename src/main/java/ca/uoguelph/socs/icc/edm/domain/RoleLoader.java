@@ -58,7 +58,7 @@ public final class RoleLoader extends AbstractLoader<Role>
 
 	public RoleLoader (final DataStore datastore)
 	{
-		super (datastore);
+		super (Role.class, datastore);
 	}
 
 	/**

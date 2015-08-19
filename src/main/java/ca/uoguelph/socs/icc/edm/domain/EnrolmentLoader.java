@@ -58,7 +58,7 @@ public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 
 	public EnrolmentLoader (final DataStore datastore)
 	{
-		super (datastore);
+		super (Enrolment.class, datastore);
 	}
 
 	/**

@@ -60,7 +60,7 @@ public final class ActivitySourceLoader extends AbstractLoader<ActivitySource>
 
 	public ActivitySourceLoader (final DataStore datastore)
 	{
-		super (datastore);
+		super (ActivitySource.class, datastore);
 	}
 
 	/**

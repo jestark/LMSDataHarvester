@@ -56,6 +56,9 @@ public abstract class AbstractLoader<T extends Element>
 	/** The logger */
 	protected final Logger log;
 
+	/** The return type */
+	private final Class<T> type;
+
 	/** The <code>DomainModel</code> instance which owns this Loader. */
 	private final DataStore datastore;
 
@@ -106,10 +109,14 @@ public abstract class AbstractLoader<T extends Element>
 	 * @param  datastore The <code>DataStore</code>, not null
 	 */
 
-	protected AbstractLoader (final DataStore datastore)
+	protected AbstractLoader (final Class<T> type, final DataStore datastore)
 	{
+		assert type != null : "type is NULL";
+		assert datastore != null : "datastore is NULL";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
+		this.type = type;
 		this.datastore = datastore;
 	}
 
@@ -124,7 +131,7 @@ public abstract class AbstractLoader<T extends Element>
 	 * @return          The <code>Query</code> instance
 	 */
 
-	protected final Query<T> getQuery (final Selector<T> selector, final Class<? extends T> impl)
+	protected final Query<T> getQuery (final Selector selector, final Class<? extends T> impl)
 	{
 		this.log.trace ("fetchQuery: selector={}, impl={}", selector, impl);
 
@@ -137,7 +144,7 @@ public abstract class AbstractLoader<T extends Element>
 			throw new IllegalStateException ("datastore is closed");
 		}
 
-		return this.datastore.getQuery (selector, impl);
+		return Query.getInstance (this.datastore.getProfile ().getCreator (this.type, impl), selector, datastore);
 	}
 
 	/**
@@ -150,7 +157,7 @@ public abstract class AbstractLoader<T extends Element>
 	 * @return          The <code>Query</code> instance
 	 */
 
-	protected final Query<T> getQuery (final Selector<T> selector)
+	protected final Query<T> getQuery (final Selector selector)
 	{
 		this.log.trace ("fetchQuery: selector={}", selector);
 
@@ -162,7 +169,32 @@ public abstract class AbstractLoader<T extends Element>
 			throw new IllegalStateException ("datastore is closed");
 		}
 
-		return this.datastore.getQuery (selector);
+		return Query.getInstance (this.datastore.getProfile ().getCreator (this.type), selector, datastore);
+	}
+
+	/**
+	 * Get an instance of the <code>Query</code>.  This method will
+	 * get a <code>Query</code> for the <code>Element</code> using the
+	 * <code>MetaData</code> definition.
+	 *
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Query</code> instance
+	 */
+
+	protected final Query<T> getDefinitionQuery (final Selector selector)
+	{
+		this.log.trace ("selector={}", selector);
+
+		assert selector != null : "selector is NULL";
+
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("Attempting to Query a closed datastore");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		return Query.getInstance (this.datastore.getProfile ().getMetaData (this.type), selector, datastore);
 	}
 
 	/**

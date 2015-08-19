@@ -59,7 +59,7 @@ public final class ActionLoader extends AbstractLoader<Action>
 
 	public ActionLoader (final DataStore datastore)
 	{
-		super (datastore);
+		super (Action.class, datastore);
 	}
 
 	/**

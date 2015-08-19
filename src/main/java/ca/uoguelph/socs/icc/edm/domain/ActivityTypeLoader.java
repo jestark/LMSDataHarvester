@@ -58,7 +58,7 @@ public final class ActivityTypeLoader extends AbstractLoader<ActivityType>
 
 	public ActivityTypeLoader (final DataStore datastore)
 	{
-		super (datastore);
+		super (ActivityType.class, datastore);
 	}
 
 	/**

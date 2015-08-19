@@ -58,7 +58,7 @@ public final class UserLoader extends AbstractLoader<User>
 
 	public UserLoader (final DataStore datastore)
 	{
-		super (datastore);
+		super (User.class, datastore);
 	}
 
 	/**

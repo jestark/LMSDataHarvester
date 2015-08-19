@@ -60,7 +60,7 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 
 	protected ActivityLoader (final DataStore datastore)
 	{
-		super (datastore);
+		super (Activity.class, datastore);
 	}
 
 	/**
@@ -83,7 +83,7 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 			throw new NullPointerException ();
 		}
 
-		return this.getQuery (Activity.SELECTOR_ID)
+		return this.getDefinitionQuery (Activity.SELECTOR_ID)
 			.setProperty (Activity.ID, id)
 			.query ();
 	}
@@ -99,7 +99,7 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 	{
 		this.log.trace ("fetchAll:");
 
-		return this.getQuery (Activity.SELECTOR_ALL)
+		return this.getDefinitionQuery (Activity.SELECTOR_ALL)
 			.queryAll ();
 	}
 
@@ -124,7 +124,21 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 			throw new NullPointerException ();
 		}
 
-		return this.getQuery (Activity.SELECTOR_ALL, NamedActivity.getActivityClass (type))
-			.queryAll ();
+		List<Activity> result = null;
+
+		Class<? extends Activity> acls = NamedActivity.getActivityClass (type);
+
+		if (acls != null)
+		{
+			result = this.getQuery (Activity.SELECTOR_ALL, acls)
+				.queryAll ();
+		}
+		else
+		{
+			result = this.getDefinitionQuery (Activity.SELECTOR_TYPE)
+				.queryAll ();
+		}
+
+		return result;
 	}
 }
