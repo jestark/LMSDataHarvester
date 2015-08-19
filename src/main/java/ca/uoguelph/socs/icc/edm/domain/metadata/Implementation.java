@@ -17,6 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Set;
+import java.util.Collection;
 
 import java.util.function.Supplier;
 
@@ -24,6 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * <code>MetaData</code> definition for an <code>Element</code> implementation
@@ -157,24 +160,6 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	public Class<? extends Element> getParentClass ()
 	{
 		return this.definition.getElementClass ();
-	}
-
-	/**
-	 * Inject the <code>MetaData</code> instance into the
-	 * <code>Receiver</code>.
-	 *
-	 * @param  <R>      The result type of the <code>Receiver</code>
-	 * @param  receiver The <code>Receiver</code>, not null
-	 *
-	 * @return          The return value of the receiving method
-	 */
-
-	@Override
-	public <R> R inject (final Receiver<T, R> receiver)
-	{
-		assert receiver != null : "receiver is NULL";
-
-		return receiver.apply (this, this.element);
 	}
 
 	/**
@@ -365,6 +350,183 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 		assert property != null : "property is NULL";
 
 		this.definition.copyValue (property, dest, source);
+	}
+
+	/**
+	 * Get a <code>Collection</code> containing the values that are associated
+	 * with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 *
+	 * @return          The <code>Collection</code> of values associated with
+	 *                  the <code>Property</code>
+	 */
+
+	@Override
+	public <V> Collection<V> getValues (final Property<V> property, final T element)
+	{
+		this.log.trace ("getCollection: property={}, element={}", property, element);
+
+		assert element != null : "element is NULL";
+		assert property != null : "property is NULL";
+
+		return this.definition.getValues (property, element);
+	}
+
+	/**
+	 * Add a value to the <code>Collection</code> of values which are
+	 * associated with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 * @param  value    The value to add, not null
+	 *
+	 * @return          <code>true</code> if the value was successfully added
+	 *                  to the element, <code>false</code> otherwise
+	 */
+
+	@Override
+	public <V> boolean addValue (final Property<V> property, final T element, final V value)
+	{
+		this.log.trace ("add: property={}, element={}, value={}", property, element, value);
+
+		assert element != null : "element is NULL";
+		assert property != null : "property is NULL";
+		assert value != null : "value is NULL";
+
+		return this.definition.addValue (property, element, value);
+	}
+
+	/**
+	 * Remove a value from the <code>Collection</code> of values which are
+	 * associated with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 * @param  value    The value to remove, not null
+	 *
+	 * @return          <code>true</code> if the value was successfully removed
+	 *                  from the element, <code>false</code> otherwise
+	 */
+
+	@Override
+	public <V> boolean removeValue (final Property<V> property, final T element, final V value)
+	{
+		this.log.trace ("remove: property={}, element={}, value={}", property, element, value);
+
+		assert element != null : "element is NULL";
+		assert property != null : "property is NULL";
+		assert value != null : "value is NULL";
+
+		return this.definition.removeValue (property, element, value);
+	}
+
+	/**
+	 * Determine if the relationships for the specified <code>Element</code>
+	 * instance can be safely connected.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean canConnect (final DataStore datastore, final T element)
+	{
+		this.log.trace ("canConnect: datastore={}, element={}", datastore, element);
+
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		return this.definition.canConnect (datastore, element);
+	}
+
+	/**
+	 * Determine if the relationships for the specified <code>Element</code>
+	 * instance can be safely disconnected.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean canDisconnect (final DataStore datastore, final T element)
+	{
+		this.log.trace ("canDisconnect: datastore={}, element={}", datastore, element);
+
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		return this.definition.canDisconnect (datastore, element);
+	}
+
+	/**
+	 * Connect the relationships for the specified <code>Element</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean connect (final DataStore datastore, final T element)
+	{
+		this.log.trace ("connect: datastore={}, element={}", datastore, element);
+
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		return this.definition.connect (datastore, element);
+	}
+
+	/**
+	 * Disconnect the relationships for the specified <code>Element</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean disconnect (final DataStore datastore, final T element)
+	{
+		this.log.trace ("disconnect: datastore={}, element={}", datastore, element);
+
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		return this.definition.disconnect (datastore, element);
+	}
+
+	/**
+	 * Inject the <code>MetaData</code> instance into the
+	 * <code>Receiver</code>.
+	 *
+	 * @param  <R>      The result type of the <code>Receiver</code>
+	 * @param  receiver The <code>Receiver</code>, not null
+	 *
+	 * @return          The return value of the receiving method
+	 */
+
+	@Override
+	public <R> R inject (final Receiver<T, R> receiver)
+	{
+		assert receiver != null : "receiver is NULL";
+
+		return receiver.apply (this, this.element);
 	}
 
 	/**

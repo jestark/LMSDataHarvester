@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 /**
  * <code>MetaData</code> definition for an <code>Element</code> interface
  * class.  This class contains <code>MetaData</code> definition for an
@@ -345,6 +347,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 * Get the value corresponding to the specified <code>Property</code> from
 	 * the specified <code>Element</code> instance.
 	 *
+	 * @param  <V>      The type of the value
 	 * @param  property The <code>Property</code>, not null
 	 * @param  element  The <code>Element</code>, not null
 	 *
@@ -371,6 +374,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 * Set the value corresponding to the specified <code>Property</code> in
 	 * the specified <code>Element</code> instance to the specified value.
 	 *
+	 * @param  <V>      The type of the value
 	 * @param  property The <code>Property</code>, not null
 	 * @param  element  The <code>Element</code>, not null
 	 * @param  value    The value to be set, may be null
@@ -418,7 +422,19 @@ public class Definition<T extends Element> implements MetaData<T>
 		ref.copyValue (dest, source);
 	}
 
-	public <V> Collection<V> getCollection (final Property<V> property, final T element)
+	/**
+	 * Get a <code>Collection</code> containing the values that are associated
+	 * with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 *
+	 * @return          The <code>Collection</code> of values associated with
+	 *                  the <code>Property</code>
+	 */
+
+	public <V> Collection<V> getValues (final Property<V> property, final T element)
 	{
 		this.log.trace ("getCollection: property={}, element={}", property, element);
 
@@ -432,7 +448,20 @@ public class Definition<T extends Element> implements MetaData<T>
 		return ref.getValue (element);
 	}
 
-	public <V> boolean add (final Property<V> property, final T element, final V value)
+	/**
+	 * Add a value to the <code>Collection</code> of values which are
+	 * associated with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 * @param  value    The value to add, not null
+	 *
+	 * @return          <code>true</code> if the value was successfully added
+	 *                  to the element, <code>false</code> otherwise
+	 */
+
+	public <V> boolean addValue (final Property<V> property, final T element, final V value)
 	{
 		this.log.trace ("add: property={}, element={}, value={}", property, element, value);
 
@@ -447,7 +476,20 @@ public class Definition<T extends Element> implements MetaData<T>
 		return ref.addValue (element, value);
 	}
 
-	public <V> boolean remove (final Property<V> property, final T element, final V value)
+	/**
+	 * Remove a value from the <code>Collection</code> of values which are
+	 * associated with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 * @param  value    The value to remove, not null
+	 *
+	 * @return          <code>true</code> if the value was successfully removed
+	 *                  from the element, <code>false</code> otherwise
+	 */
+
+	public <V> boolean removeValue (final Property<V> property, final T element, final V value)
 	{
 		this.log.trace ("remove: property={}, element={}, value={}", property, element, value);
 
@@ -460,5 +502,99 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert ref != null : "Property is not registered";
 
 		return ref.removeValue (element, value);
+	}
+
+	/**
+	 * Determine if the relationships for the specified <code>Element</code>
+	 * instance can be safely connected.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	public boolean canConnect (final DataStore datastore, final T element)
+	{
+		this.log.trace ("canConnect: datastore={}, element={}", datastore, element);
+
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		return this.relationships.entrySet ()
+			.stream ()
+			.map (Map.Entry::getValue)
+			.allMatch (x -> x.canConnect (datastore, element));
+	}
+
+	/**
+	 * Determine if the relationships for the specified <code>Element</code>
+	 * instance can be safely disconnected.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	public boolean canDisconnect (final DataStore datastore, final T element)
+	{
+		this.log.trace ("canDisconnect: datastore={}, element={}", datastore, element);
+
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		return this.relationships.entrySet ()
+			.stream ()
+			.map (Map.Entry::getValue)
+			.allMatch (x -> x.canDisconnect (datastore, element));
+	}
+
+	/**
+	 * Connect the relationships for the specified <code>Element</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	public boolean connect (final DataStore datastore, final T element)
+	{
+		this.log.trace ("connect: datastore={}, element={}", datastore, element);
+
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		return this.relationships.entrySet ()
+			.stream ()
+			.map (Map.Entry::getValue)
+			.allMatch (x -> x.connect (datastore, element));
+	}
+
+	/**
+	 * Disconnect the relationships for the specified <code>Element</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	public boolean disconnect (final DataStore datastore, final T element)
+	{
+		this.log.trace ("disconnect: datastore={}, element={}", datastore, element);
+
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		return this.relationships.entrySet ()
+			.stream ()
+			.map (Map.Entry::getValue)
+			.allMatch (x -> x.disconnect (datastore, element));
 	}
 }

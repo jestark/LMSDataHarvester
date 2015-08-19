@@ -16,9 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import java.util.Collection;
 import java.util.Set;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Meta-data definition for an <code>Element</code> class.  This interface
@@ -179,4 +182,98 @@ public interface MetaData<T extends Element>
 	 */
 
 	public abstract void copyValue (Property<?> property, T dest, T source);
+
+	/**
+	 * Get a <code>Collection</code> containing the values that are associated
+	 * with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 *
+	 * @return          The <code>Collection</code> of values associated with
+	 *                  the <code>Property</code>
+	 */
+
+	public abstract <V> Collection<V> getValues (Property<V> property, T element);
+
+	/**
+	 * Add a value to the <code>Collection</code> of values which are
+	 * associated with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 * @param  value    The value to add, not null
+	 *
+	 * @return          <code>true</code> if the value was successfully added
+	 *                  to the element, <code>false</code> otherwise
+	 */
+
+	public abstract <V> boolean addValue (Property<V> property, T element, V value);
+
+	/**
+	 * Remove a value from the <code>Collection</code> of values which are
+	 * associated with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 * @param  value    The value to remove, not null
+	 *
+	 * @return          <code>true</code> if the value was successfully removed
+	 *                  from the element, <code>false</code> otherwise
+	 */
+
+	public abstract <V> boolean removeValue (Property<V> property, T element, V value);
+
+	/**
+	 * Determine if the relationships for the specified <code>Element</code>
+	 * instance can be safely connected.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	public abstract boolean canConnect (DataStore datastore, T element);
+
+	/**
+	 * Determine if the relationships for the specified <code>Element</code>
+	 * instance can be safely disconnected.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	public abstract boolean canDisconnect (DataStore datastore, T element);
+
+	/**
+	 * Connect the relationships for the specified <code>Element</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	public abstract boolean connect (DataStore datastore, T element);
+
+	/**
+	 * Disconnect the relationships for the specified <code>Element</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code> to process, not null
+	 *
+	 * @return           <code>true</code> if the relationship can be created,
+	 *                   <code>false</code> otherwise
+	 */
+
+	public abstract boolean disconnect (DataStore datastore, T element);
 }
