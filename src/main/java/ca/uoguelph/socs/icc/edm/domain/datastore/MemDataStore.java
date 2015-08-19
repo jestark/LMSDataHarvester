@@ -18,10 +18,11 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import java.util.HashMap;
 
-import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +66,11 @@ public final class MemDataStore extends DataStore
 	}
 
 	@SuppressWarnings ("unchecked")
-	private <T extends Element> ElementStore<T> getElementStore (final Class<?> element)
+	private <T extends Element> ElementStore<T> getElementStore (final MetaData<T> metadata, final Class<?> element)
 	{
+		assert metadata != null : "metadata is null";
 		assert element != null : "element is NULL";
+		assert metadata.getElementClass ().isAssignableFrom (element) : "element is not represented by metadata";
 		assert this.elements.containsKey (element) : "no elements of that type";
 
 		return (ElementStore<T>) this.elements.get (element);
@@ -96,17 +99,17 @@ public final class MemDataStore extends DataStore
 
 		if (this.elements.containsKey (type))
 		{
-			result = ((ElementStore<T>) this.elements.get (type)).fetch (filter);
+			result = this.getElementStore (filter.getMetaData (), type).fetch (filter);
 		}
-/*		else
+		else
 		{
 			result = this.elements.keySet ()
 				.stream ()
 				.filter (x -> type.isAssignableFrom (x))
-				.flatmap (x -> ((ElementStore<T>) this.elements.get (x)).fetch (filter).stream ())
-				.collect (Collector::toList);
+				.flatMap (x -> this.getElementStore (filter.getMetaData (), x).fetch (filter).stream ())
+				.collect (Collectors.toList ());
 		}
-*/
+
 		return result;
 	}
 
@@ -205,7 +208,7 @@ public final class MemDataStore extends DataStore
 
 		if (this.elements.containsKey (element.getClass ()))
 		{
-			result = this.getElementStore (element.getClass ())
+			result = this.elements.get (element.getClass ())
 				.contains (element);
 		}
 
@@ -227,17 +230,17 @@ public final class MemDataStore extends DataStore
 
 		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
+		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
+		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
 
 		if (! this.elements.containsKey (element.getClass ()))
 		{
 			this.elements.put (element.getClass (), new ElementStore<T> (metadata));
 		}
-		else
-		{
-			this.getElementStore (element.getClass ())
-				.insert (element);
-		}
+
+		this.getElementStore (metadata, element.getClass ())
+			.insert (element);
 	}
 
 	/**
@@ -255,11 +258,13 @@ public final class MemDataStore extends DataStore
 
 		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
+		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
+		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
 
 		if (this.elements.containsKey (element.getClass ()))
 		{
-			this.getElementStore (element.getClass ())
+			this.getElementStore (metadata, element.getClass ())
 				.remove (element);
 		}
 		else

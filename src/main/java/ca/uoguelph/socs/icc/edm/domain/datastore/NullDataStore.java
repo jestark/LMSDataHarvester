@@ -141,10 +141,7 @@ public final class NullDataStore extends DataStore
 	}
 
 	/**
-	 * Determine if the <code>DataStore</code> is open.
-	 *
-	 * @return <code>true</code> if the <code>DataStore</code> is open,
-	 *         <code>false</code> otherwise
+	 * Close the <code>NullDataStore</code>.
 	 */
 
 	@Override
@@ -160,7 +157,7 @@ public final class NullDataStore extends DataStore
 	 * <code>DataStore</code>.  For the <code>NullDataStore</code> this will
 	 * always return true (even though it would actually be false).
 	 *
-	 * @param  entity  The <code>Element</code> instance to check, not null
+	 * @param  element The <code>Element</code> instance to check, not null
 	 *
 	 * @return         <code>true</code> if the <code>Element</code> instance
 	 *                 exists in the <code>DataStore</code>, <code>false</code>
@@ -194,6 +191,7 @@ public final class NullDataStore extends DataStore
 
 		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
+		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
 	}
 
@@ -213,6 +211,7 @@ public final class NullDataStore extends DataStore
 
 		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
+		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
 	}
 }

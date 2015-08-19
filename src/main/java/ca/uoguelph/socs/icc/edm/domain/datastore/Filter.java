@@ -36,7 +36,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @author  James E. Stark
  * @version 1.0
  * @param   <T> The <code>Element</code> interface type
- * @param   <U> The <code>Element</code> implementation type
  */
 
 public final class Filter<T extends Element>
@@ -45,7 +44,7 @@ public final class Filter<T extends Element>
 	private final MetaData<T> metadata;
 
 	/** The <code>Selector</code> from which the <code>Filter</code> is created */
-	private final Selector<T> selector;
+	private final Selector selector;
 
 	/** <code>Filter</code> parameters */
 	private final Map<Property<?>, Object> values;
@@ -58,7 +57,7 @@ public final class Filter<T extends Element>
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
-	public Filter (final MetaData<T> metadata, final Selector<T> selector)
+	public Filter (final MetaData<T> metadata, final Selector selector)
 	{
 		assert metadata != null : "metadata is NULL";
 		assert selector != null : "selector is NULL";
@@ -132,8 +131,7 @@ public final class Filter<T extends Element>
 	}
 
 	/**
-	 * Get the <code>MetaData</code>, for the class processed by the
-	 * <code>Filter</code>.
+	 * Get the <code>MetaData</code>, used to create the <code>Filter</code>
 	 *
 	 * @return The <code>MetaData</code>
 	 */
@@ -149,7 +147,7 @@ public final class Filter<T extends Element>
 	 * @return The <code>Selector</code>
 	 */
 
-	public Selector<T> getSelector ()
+	public Selector getSelector ()
 	{
 		return this.selector;
 	}

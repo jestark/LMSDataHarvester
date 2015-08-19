@@ -58,50 +58,6 @@ public abstract class DataStore
 	}
 
 	/**
-	 * Get the <code>Query</code> for the specified <code>Selector</code> and
-	 * <code>Element</code> implementation class.
-	 *
-	 * @param  selector The <code>Selector</code>, not null
-	 * @param  type     The <code>Element</code> interface class, not null
-	 *
-	 * @return          The <code>Query</code>
-	 */
-
-	public final <T extends Element> Query<T> getQuery (final Selector<T> selector)
-	{
-		assert selector != null : "selector is NULL";
-
-		return this.profile.getCreator (selector.getElementType ()).inject (new QueryFactory<T> (this, selector));
-	}
-
-	/**
-	 * Get the <code>Query</code> for the specified <code>Selector</code> and
-	 * <code>Element</code> implementation class.
-	 *
-	 * @param  selector The <code>Selector</code>, not null
-	 * @param  type     The <code>Element</code> interface class, not null
-	 * @param  impl     The <code>Element</code> implementation class, not null
-	 *
-	 * @return          The <code>Query</code>
-	 */
-
-	public final <T extends Element> Query<T> getQuery (final Selector<T> selector, final Class<? extends T> impl)
-	{
-		assert selector != null : "selector is NULL";
-		assert impl != null : "impl is NULL";
-
-		return this.profile.getCreator (selector.getElementType (), impl).inject (new QueryFactory<T> (this, selector));
-	}
-
-	public final <T extends Element> Query<T> getQuery (final Selector<T> selector, final T element)
-	{
-		assert selector != null : "selector is NULL";
-		assert element != null : "element is NULL";
-
-		return null;
-	}
-
-	/**
 	 * Get a reference to the <code>Profile</code> data for the
 	 * <code>DataStore</code>.
 	 *

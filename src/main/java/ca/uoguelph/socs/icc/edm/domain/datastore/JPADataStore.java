@@ -31,13 +31,14 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     JPADataStoreTransaction
+ * @see     JPATransaction
  */
 
 public final class JPADataStore extends DataStore
@@ -57,9 +58,8 @@ public final class JPADataStore extends DataStore
 	 * that the relevant components are closed down before re-throwing the
 	 * exception from JPA.
 	 *
-	 * @param  unitname   The JPA unit name for the database.
-	 * @param  properties Map of properties to be passed to JPA to create the
-	 *                    database connection.
+	 * @param  unit    The JPA unit name, not null
+	 * @param  profile The <code>Profile</code>, not null
 	 */
 
 	public JPADataStore (final Profile profile, final String unit)
@@ -118,11 +118,11 @@ public final class JPADataStore extends DataStore
 
 		List<T> result = new ArrayList<T> ();
 
-		if (filter.getSelector ().getName ().equals ("id"))
+		if (Element.SELECTOR_ID.equals (filter.getSelector ()))
 		{
-//			this.log.debug ("Fetching by ID for: class={}, id={}", type.getSimpleName (), filter.getValue (Element.ID));
+			this.log.debug ("Fetching by ID for: class={}, id={}", type.getSimpleName (), filter.getValue (Element.ID));
 
-//			result.add (this.em.find (type, filter.getValue (Element.ID)));
+			result.add (this.em.find (type, filter.getValue (Element.ID)));
 		}
 		else
 		{
@@ -215,7 +215,7 @@ public final class JPADataStore extends DataStore
 	 * Determine if the specifed <code>Element</code> instance exists in the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  entity  The <code>Element</code> instance to check, not null
+	 * @param  element The <code>Element</code> instance to check, not null
 	 *
 	 * @return         <code>true</code> if the <code>Element</code> instance
 	 *                 exists in the <code>DataStore</code>, <code>false</code>
@@ -248,6 +248,7 @@ public final class JPADataStore extends DataStore
 
 		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
+		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
 
 		this.em.persist (element);
@@ -268,6 +269,7 @@ public final class JPADataStore extends DataStore
 
 		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
+		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
 
 		this.em.remove (element);

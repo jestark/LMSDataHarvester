@@ -58,7 +58,7 @@ final class ElementStore<T extends Element>
 	private final MetaData<T> metadata;
 
 	/** The set of <code>Selector</code> instances used to index the <code>Element</code> */
-	private final Set<Selector<?>> selectors;
+	private final Set<Selector> selectors;
 
 	/** The <code>Set</code> of stored <code>Element</code> instances */
 	private final Set<Wrapper<T>> elements;
@@ -123,7 +123,7 @@ final class ElementStore<T extends Element>
 	 * @return          The key for the index <code>Map</code>
 	 */
 
-	private MultiKey<Object> buildIndex (final Selector<?> selector, final T element)
+	private MultiKey<Object> buildIndex (final Selector selector, final T element)
 	{
 		assert selector != null : "selector is NULL";
 		assert element != null : "element is NULL";
