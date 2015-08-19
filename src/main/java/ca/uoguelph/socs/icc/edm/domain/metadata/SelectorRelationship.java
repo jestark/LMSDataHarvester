@@ -60,7 +60,9 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 
 	private Query<V> getQuery (final DataStore datastore)
 	{
-		return null;
+		assert datastore != null : "datastore is NULL";
+
+		return Query.getInstance (datastore.getProfile ().getMetaData (this.value), this.selector, datastore);
 	}
 
 	/**

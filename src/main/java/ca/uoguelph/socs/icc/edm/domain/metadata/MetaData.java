@@ -34,8 +34,17 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 public interface MetaData<T extends Element>
 {
 	/**
-	 * Get the Java type of the <code>Element</code> represented by the
+	 * Get the interface type of the <code>Element</code> represented by the
 	 * <code>MetaData</code>.
+	 *
+	 * @return The <code>Class</code> representing the interface type
+	 */
+
+	public abstract Class<T> getElementType ();
+
+	/**
+	 * Get the implementation type of the <code>Element</code> represented by
+	 * the <code>MetaData</code> instance.
 	 *
 	 * @return The <code>Class</code> representing the implementation type
 	 */
@@ -87,6 +96,7 @@ public interface MetaData<T extends Element>
 	 * Get the <code>Relationship</code> instance for the specified
 	 * <code>Element</code> interface class.
 	 *
+	 * @param  <V>  The <code>Element</code> type of the relationship target
 	 * @param  type The <code>Element</code> interface class of the
 	 *              relationship target, not null
 	 *
@@ -94,6 +104,27 @@ public interface MetaData<T extends Element>
 	 */
 
 	public abstract <V extends Element> Relationship<T, V> getRelationship (Class<V> type);
+
+	/**
+	 * Get the <code>Relationship</code> for the specified
+	 * <code>Property</code>.
+	 *
+	 * @param  <V>      The <code>Element</code> type of the relationship target
+	 * @param  property The <code>Property</code>, not null
+	 *
+	 * @return          The <code>Relationship</code> instance
+	 */
+
+	public abstract <V extends Element> Relationship<T, V> getRelationship (Property<V> property);
+
+	/**
+	 * Get the <code>Set</code> for <code>Relationship</code> instances for the
+	 * <code>Element</code>.
+	 *
+	 * @return A <code>Set</code> of <code>Relationship</code> instances
+	 */
+
+	public abstract Set<Relationship<T, ?>> getRelationships ();
 
 	/**
 	 * Get the <code>Selector</code> instance with the specified name.

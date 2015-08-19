@@ -94,12 +94,19 @@ public class Definition<T extends Element> implements MetaData<T>
 	/**
 	 * Create the <code>MetaData</code>.
 	 *
-	 * @param  type
-	 * @param  parent
-	 * @param  properties
-	 * @param  references <code>Property</code> to get/set method mapping, not
-	 *                    null
-	 * @param  selectors
+	 * @param  type          The <code>Element</code> interface class, not null
+	 * @param  parent        The parent </code>Element</code> class, not null
+	 * @param  properties    The <code>Map</code> of <code>Property</code>
+	 *                       instances, not null
+	 * @param  relationships The <code>Map</code> of <code>Relationship</code>
+	 *                       instances, not null
+	 * @param  selectors     The <code>Map</code> of <code>Selector</code>
+	 *                       instances, not null
+	 * @param  prefs         The <code>Map</code> of
+	 *                       <code>PropertyReference</code> instances, not null
+	 * @param  rrefs         The <code>Map</code> of
+	 *                       <code>RelationshipReference</code> instances, not
+	 *                       null
 	 */
 
 	protected Definition (final Class<T> type,
@@ -158,8 +165,21 @@ public class Definition<T extends Element> implements MetaData<T>
 	}
 
 	/**
-	 * Get the Java type of the <code>Element</code> represented by the
+	 * Get the interface type of the <code>Element</code> represented by the
 	 * <code>MetaData</code>.
+	 *
+	 * @return The <code>Class</code> representing the interface type
+	 */
+
+	@Override
+	public Class<T> getElementType ()
+	{
+		return this.type;
+	}
+
+	/**
+	 * Get the implementation type of the <code>Element</code> represented by
+	 * the <code>MetaData</code>.
 	 *
 	 * @return The <code>Class</code> representing the implementation type
 	 */
@@ -257,6 +277,39 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert type != null : "type is NULL";
 
 		return (Relationship<T, V>) this.relationships.get (type);
+	}
+
+	/**
+	 * Get the <code>Relationship</code> for the specified
+	 * <code>Property</code>.
+	 *
+	 * @param  <V>      The <code>Element</code> type of the relationship target
+	 * @param  property The <code>Property</code>, not null
+	 *
+	 * @return          The <code>Relationship</code> instance
+	 */
+
+	@Override
+	public <V extends Element> Relationship<T, V> getRelationship (final Property<V> property)
+	{
+		assert property != null : "property is NULL";
+
+		return this.getRelationship (property.getPropertyType ());
+	}
+
+	/**
+	 * Get the <code>Set</code> for <code>Relationship</code> instances for the
+	 * <code>Element</code>.
+	 *
+	 * @return A <code>Set</code> of <code>Relationship</code> instances
+	 */
+
+	@Override
+	public Set<Relationship<T, ?>> getRelationships ()
+	{
+		return this.relationships.entrySet ().stream ()
+			.map (Map.Entry::getValue)
+			.collect (Collectors.toSet ());
 	}
 
 	/**

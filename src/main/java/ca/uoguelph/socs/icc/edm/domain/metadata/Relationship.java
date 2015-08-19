@@ -90,10 +90,10 @@ public abstract class Relationship<T extends Element, V extends Element>
 	protected final Logger log;
 
 	/** The owning <code>Element</code> interface class */
-	private final Class<T> type;
+	protected final Class<T> type;
 
 	/** The associated <code>Element</code> interface class */
-	private final Class<V> value;
+	protected final Class<V> value;
 
 	/**
 	 * Get a <code>Relationship</code> instance with a cardinality of one.

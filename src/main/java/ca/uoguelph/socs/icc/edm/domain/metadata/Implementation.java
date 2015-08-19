@@ -83,7 +83,7 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	 *
 	 * @param  <T>        The <code>Element</code> interface type
 	 * @param  <U>        The <code>Element</code> implementation type
-	 * @param  thyp       The <code>Element</code> interface class, not null
+	 * @param  type       The <code>Element</code> interface class, not null
 	 * @param  element    The <code>Element</code> implementation class, not
 	 *                    null
 	 * @param  create     Method reference to the constructor, not null
@@ -122,7 +122,20 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	}
 
 	/**
-	 * Get the Java type of the <code>Element</code> implementation.
+	 * Get the interface type of the <code>Element</code> represented by the
+	 * <code>MetaData</code>.
+	 *
+	 * @return The <code>Class</code> representing the interface type
+	 */
+
+	@Override
+	public Class<T> getElementType ()
+	{
+		return this.definition.getElementType ();
+	}
+
+	/**
+	 * Get the implementation type of the <code>Element</code>.
 	 *
 	 * @return The <code>Class</code> representing the implementation type
 	 */
@@ -229,6 +242,37 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 		assert type != null : "type is NULL";
 
 		return this.definition.getRelationship (type);
+	}
+
+	/**
+	 * Get the <code>Relationship</code> for the specified
+	 * <code>Property</code>.
+	 *
+	 * @param  <V>      The <code>Element</code> type of the relationship target
+	 * @param  property The <code>Property</code>, not null
+	 *
+	 * @return          The <code>Relationship</code> instance
+	 */
+
+	@Override
+	public <V extends Element> Relationship<T, V> getRelationship (final Property<V> property)
+	{
+		assert property != null : "property is NULL";
+
+		return this.definition.getRelationship (property);
+	}
+
+	/**
+	 * Get the <code>Set</code> for <code>Relationship</code> instances for the
+	 * <code>Element</code>.
+	 *
+	 * @return A <code>Set</code> of <code>Relationship</code> instances
+	 */
+
+	@Override
+	public Set<Relationship<T, ?>> getRelationships ()
+	{
+		return this.definition.getRelationships ();
 	}
 
 	/**

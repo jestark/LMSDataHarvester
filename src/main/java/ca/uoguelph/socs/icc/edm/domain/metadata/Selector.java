@@ -38,7 +38,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  *
  * @author  James E. Stark
  * @version 1.0
- * @param   <T> The <code>Element</code> type to be returned
  * @see     Definition
  * @see     Property
  */
@@ -58,7 +57,6 @@ public final class Selector
 	 * Create the <code>Selector</code> using multiple <code>Property</code>
 	 * instances.
 	 *
-	 * @param  <T>
 	 * @param  name       The name of the <code>Selector</code>, not null
 	 * @param  unique     An indication if the <code>Selector</code> uniquely
 	 *                    identifies an <code>Element</code> instance
@@ -79,7 +77,6 @@ public final class Selector
 	/**
 	 * Create the <code>Selector</code> using a single <code>Property</code>.
 	 *
-	 * @param  <T>
 	 * @param  unique   An indication if the <code>Selector</code> uniquely
 	 *                  identifies an <code>Element</code> instance
 	 * @param  property The property to be represented by the
