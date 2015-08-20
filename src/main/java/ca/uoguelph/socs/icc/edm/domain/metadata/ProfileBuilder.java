@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,14 +41,17 @@ public final class ProfileBuilder
 	/** The logger */
 	private final Logger log;
 
+	/** Can the <code>DataStore</code> be modified */
+	private boolean mutable;
+
+	/** The name of the <code>Profile</code> */
+	private String name;
+
 	/** Map of <code>Element</code> implementation classes */
 	private final Map<Class<? extends Element>, Class<? extends Element>> implementations;
 
 	/** Map of <code>IdGenerator</code> classes to <code>Element</code> classes */
 	private final Map<Class<? extends Element>, Class<? extends IdGenerator>> generators;
-
-	/** Can the <code>DataStore</code> be modified */
-	private boolean mutable;
 
 	/**
 	 * Create the <code>DomainModelBuilder</code>.
@@ -58,8 +62,9 @@ public final class ProfileBuilder
 		this.log = LoggerFactory.getLogger (ProfileBuilder.class);
 
 		this.mutable = false;
-		this.implementations = new HashMap<> ();
+		this.name = "";
 		this.generators = new HashMap<> ();
+		this.implementations = new HashMap<> ();
 	}
 
 	/**
@@ -110,6 +115,60 @@ public final class ProfileBuilder
 	}
 
 	/**
+	 * Get the name of the <code>Profile</code>.  This is also the name of any
+	 * associated <code>DataStore</code> instances.
+	 *
+	 * @return The name of the <code>Profile</code>.
+	 */
+
+	public String getName ()
+	{
+		return this.name;
+	}
+
+	/**
+	 * Set the name of the <code>Profile</code>.
+	 *
+	 * @param  name                     The name of the <code>Profile</code>,
+	 *                                  not null and must not be empty
+	 *
+	 * @return                          This <code>ProfileBuilder</code>
+	 * @throws IllegalArgumentException if the name is empty
+	 */
+
+	public ProfileBuilder setName (final String name)
+	{
+		this.log.trace ("setName: name={}", name);
+
+		if (name == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (name.length () < 1)
+		{
+			this.log.error ("The supplied name is Empty");
+			throw new IllegalArgumentException ("name is Empty");
+		}
+
+		this.name = name;
+
+		return this;
+	}
+
+	/**
+	 * Get the <code>Set</code> of <code>Element</code> interfaces for which a
+	 * default implementation is set.
+	 *
+	 * @return A <code>Set</code> of <code>Element</code> classes
+	 */
+
+	public Set<Class<? extends Element>> getElements ()
+	{
+		return new HashSet<> (this.implementations.keySet ());
+	}
+
+	/**
 	 * Determine if there is an implementation class registered for the
 	 * specified <code>Element</code> interface class.
 	 *
@@ -122,7 +181,10 @@ public final class ProfileBuilder
 
 	public boolean hasElementClass (final Class<? extends Element> type)
 	{
-		assert type != null : "type is NULL";
+		if (type != null)
+		{
+			throw new NullPointerException ();
+		}
 
 		return this.implementations.containsKey (type);
 	}
@@ -188,6 +250,40 @@ public final class ProfileBuilder
 	}
 
 	/**
+	 * Remove the entry for the specified <code>Element</code> class.
+	 *
+	 * @param  element The <code>Element</code> class, not null
+	 *
+	 * @return         This <code>ProfileBuilder</code>
+	 */
+
+	public ProfileBuilder removeElementClass (Class<? extends Element> element)
+	{
+		this.log.trace ("removeElementClass: element={}", element);
+
+		if (element == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		this.implementations.remove (element);
+
+		return this;
+	}
+
+	/**
+	 * Get the <code>Set</code> of <code>Element</code> classes for which an
+	 * <code>IdGenerator</code> has been assigned.
+	 *
+	 * @return A <code>Set</code> of <code>Element</code> classes
+	 */
+
+	public Set<Class<? extends Element>> getGenerators ()
+	{
+		return new HashSet<> (this.generators.keySet ());
+	}
+
+	/**
 	 * Get the <code>IdGenerator</code> associated with the specified
 	 * <code>Element</code> class, for the <code>DataStore</code>.
 	 *
@@ -243,24 +339,62 @@ public final class ProfileBuilder
 	}
 
 	/**
+	 * Remove the <code>IdGenerator</code> for the specified
+	 * <code>Element</code> class.  The <code>IdGenerator</code> implementation
+	 * assigned the <code>Element</code> is the default <code>IdGnerator</code>
+	 * for the <code>DataStore</code> and can not be removed.
+	 *
+	 * @param  element                  The <code>Element</code> class, not
+	 *                                  null
+	 *
+	 * @return                          The <code>ProfileBuilder</code>
+	 * @throws IllegalArgumentException if the <code>IdGenerator</code> for
+	 *                                  <code>Element</code> is to be removed
+	 */
+
+	public ProfileBuilder removeGenerator (final Class<? extends Element> element)
+	{
+		this.log.trace ("removeGenerator: element={}", element);
+
+		if (element == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (element == Element.class)
+		{
+			this.log.error ("Can not remove the IdGenerator for Element");
+			throw new IllegalArgumentException ("Cann not remove the IdGenerator for Element");
+		}
+
+		return this;
+	}
+
+	/**
 	 * Create the <code>Profile</code>.
 	 *
 	 * @return                       The <code>Profile</code>
-	 * @throws IllegalStateException if the <code>DataStore</code> is mutable
-	 *                               and there is not <code>IdGenerator</code>
+	 * @throws IllegalStateException if there is not <code>IdGenerator</code>
 	 *                               set for <code>Element</code>
+	 * @throws IllegalStateException if the name is empty
 	 */
 
 	public Profile build ()
 	{
 		this.log.trace ("build:");
 
-		if (this.mutable && ! this.generators.containsKey (Element.class))
+		if (this.name.length () < 0)
+		{
+			this.log.error ("name is Empty");
+			throw new IllegalStateException ("name is Empty");
+		}
+
+		if (! this.generators.containsKey (Element.class))
 		{
 			this.log.error ("Missing IDGenerator for Element");
 			throw new IllegalStateException ("Missing IDGenerator for Element");
 		}
 
-		return new Profile (this.mutable, this.implementations, this.generators);
+		return new Profile (this.name, this.mutable, this.implementations, this.generators);
 	}
 }

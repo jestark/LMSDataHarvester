@@ -38,21 +38,25 @@ public final class Profile
 	/** The Logger */
 	private final Logger log;
 
+	/** Is the <code>DataStore</code> mutable? */
+	private final boolean mutable;
+
+	/** The name of the <code>Profile</code> */
+	private final String name;
+
 	/** The default implementation classes for each <code>Element</code> */
 	private final Map<Class<? extends Element>, Class<? extends Element>> implementations;
 
 	/** The <code>IdGenerator</code> to be used with each <code>Element</code> */
 	private final Map<Class<? extends Element>, Class<? extends IdGenerator>> generators;
 
-	/** Is the <code>DataStore</code> mutable? */
-	private final boolean mutable;
-
 	/**
 	 * Create the <code>Profile</code>.  This constructor is not intended
 	 * to be called directly, the profile should be created though its builder.
 	 *
-	 * @param  mutable The designed mutability of the <code>DataStore</code>,
-	 *                 not null
+	 * @param  name            The name of the <code>Profile</code>, not null
+	 * @param  mutable         The designed mutability of the
+	 *                         <code>DataStore</code>, not null
 	 * @param  implementations The <code>Map</code> of default
 	 *                         <code>Element</code> implementation classes for
 	 *                         the <code>DataStore</code> instance, not null
@@ -61,16 +65,29 @@ public final class Profile
 	 *                         <code>Element</code>, not null
 	 */
 
-	protected Profile (final boolean mutable, final Map<Class<? extends Element>, Class<? extends Element>> implementations, final Map<Class<? extends Element>, Class<? extends IdGenerator>> generators)
+	protected Profile (final String name, final boolean mutable, final Map<Class<? extends Element>, Class<? extends Element>> implementations, final Map<Class<? extends Element>, Class<? extends IdGenerator>> generators)
 	{
+		assert name != null : "name is NULL";
 		assert implementations != null : "implementations is NULL";
 		assert generators != null : "generators is NULL";
 
 		this.log = LoggerFactory.getLogger (Profile.class);
 
+		this.name = name;
 		this.mutable = mutable;
 		this.implementations = new HashMap<> (implementations);
 		this.generators = new HashMap<> (generators);
+	}
+
+	/**
+	 * Get the name of the <code>Profile</code>.
+	 *
+	 * @return The name of the <code>Profile</code>
+	 */
+
+	public String getName ()
+	{
+		return this.name;
 	}
 
 	/**
