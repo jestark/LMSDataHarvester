@@ -67,13 +67,10 @@ public abstract class SubActivity extends ParentActivity
 		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", true, false);
 
 		Definition.getBuilder (SubActivity.class, Element.class)
-			.addProperty (ID, SubActivity::getId, SubActivity::setId)
 			.addProperty (NAME, SubActivity::getName, SubActivity::setName)
 			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
 			.addRelationship (LOGENTRIES, SubActivity::getLog, SubActivity::addLog, SubActivity::removeLog)
 			.addRelationship (SUBACTIVITIES, SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.build ();
 	}
 

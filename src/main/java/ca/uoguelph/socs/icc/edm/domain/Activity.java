@@ -95,13 +95,10 @@ public abstract class Activity extends ParentActivity
 		SELECTOR_TYPE = Selector.getInstance (TYPE, false);
 
 		Definition.getBuilder (Activity.class, Element.class)
-			.addProperty (ID, Activity::getId, Activity::setId)
 			.addProperty (NAME, Activity::getName)
 			.addRelationship (COURSE, Activity::getCourse, Activity::setCourse)
 			.addRelationship (TYPE, Activity::getType, Activity::setType)
 			.addRelationship (LOGENTRIES, Activity::getLog, Activity::addLog, Activity::removeLog)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_TYPE)
 			.build ();
 	}

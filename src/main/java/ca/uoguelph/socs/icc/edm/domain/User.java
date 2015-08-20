@@ -92,14 +92,11 @@ public abstract class User extends Element
 		SELECTOR_USERNAME = Selector.getInstance (USERNAME, true);
 
 		Definition.getBuilder (User.class, Element.class)
-			.addProperty (ID, User::getId, User::setId)
 			.addProperty (IDNUMBER, User::getIdNumber, User::setIdNumber)
 			.addProperty (FIRSTNAME, User::getFirstname, User::setFirstname)
 			.addProperty (LASTNAME, User::getLastname, User::setLastname)
 			.addProperty (USERNAME, User::getUsername, User::setUsername)
 			.addRelationship (ENROLMENTS, User::getEnrolments, User::addEnrolment, User::removeEnrolment)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_IDNUMBER)
 			.addSelector (SELECTOR_USERNAME)
 			.addSelector (SELECTOR_ENROLMENTS)

@@ -111,7 +111,6 @@ public abstract class Enrolment extends Element
 		SELECTOR_ROLE = Selector.getInstance (ROLE, false);
 
 		Definition.getBuilder (Enrolment.class, Element.class)
-			.addProperty (ID, Enrolment::getId, Enrolment::setId)
 			.addProperty (FINALGRADE, Enrolment::getFinalGrade, Enrolment::setFinalGrade)
 			.addProperty (USABLE, Enrolment::isUsable, Enrolment::setUsable)
 			.addRelationship (COURSE, Enrolment::getCourse, Enrolment::setCourse)
@@ -119,8 +118,6 @@ public abstract class Enrolment extends Element
 			.addRelationship (GRADES, Enrolment::getGrades, Enrolment::addGrade, Enrolment::removeGrade)
 			.addRelationship (LOGENTRIES, Enrolment::getLog, Enrolment::addLog, Enrolment::removeLog)
 			.addRelationship (User.class, User.ENROLMENTS, User.SELECTOR_ENROLMENTS)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_ROLE)
 			.build ();
 	}

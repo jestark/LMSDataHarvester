@@ -49,10 +49,7 @@ public abstract class Network extends Element
 		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
 		Definition.getBuilder (Network.class, Element.class)
-			.addProperty (ID, Network::getId, Network::setId)
 			.addProperty (NAME, Network::getName, Network::setName)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
 			.build ();
 	}

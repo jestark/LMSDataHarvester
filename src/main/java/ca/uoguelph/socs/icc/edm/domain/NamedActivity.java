@@ -66,16 +66,9 @@ public abstract class NamedActivity extends Activity
 		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", true, false);
 
 		Definition.getBuilder (NamedActivity.class, Activity.class)
-			.addProperty (Activity.ID, NamedActivity::getId, NamedActivity::setId)
 			.addProperty (Activity.NAME, NamedActivity::getName, NamedActivity::setName)
-			.addRelationship (Activity.COURSE, NamedActivity::getCourse, NamedActivity::setCourse)
-			.addRelationship (Activity.TYPE, NamedActivity::getType, NamedActivity::setType)
-			.addRelationship (Activity.LOGENTRIES, NamedActivity::getLog, NamedActivity::addLog, NamedActivity::removeLog)
 			.addRelationship (GRADES, NamedActivity::getGrades, NamedActivity::addGrade, NamedActivity::removeGrade)
 			.addRelationship (SUBACTIVITIES, NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity)
-			.addSelector (Element.SELECTOR_ID)
-			.addSelector (Element.SELECTOR_ALL)
-			.addSelector (Activity.SELECTOR_TYPE)
 			.build ();
 	}
 

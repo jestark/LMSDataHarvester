@@ -72,11 +72,8 @@ public abstract class ActivitySource extends Element
 		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
 		Definition.getBuilder (ActivitySource.class, Element.class)
-			.addProperty (ID, ActivitySource::getId, ActivitySource::setId)
 			.addProperty (NAME, ActivitySource::getName, ActivitySource::setName)
 			.addRelationship (TYPES, ActivitySource::getTypes, ActivitySource::addType, ActivitySource::removeType)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
 			.build ();
 	}

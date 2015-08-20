@@ -62,11 +62,8 @@ public abstract class Role extends Element
 		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
 		Definition.getBuilder (Role.class, Element.class)
-			.addProperty (ID, Role::getId, Role::setId)
 			.addProperty (NAME, Role::getName, Role::setName)
 			.addRelationship (Enrolment.class, Enrolment.ROLE, Enrolment.SELECTOR_ROLE)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
 			.build ();
 	}

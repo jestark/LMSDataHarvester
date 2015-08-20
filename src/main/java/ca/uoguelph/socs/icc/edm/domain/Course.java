@@ -86,14 +86,11 @@ public abstract class Course extends Element
 		SELECTOR_OFFERING = Selector.getInstance ("offering", true, NAME, SEMESTER, YEAR);
 
 		Definition.getBuilder (Course.class, Element.class)
-			.addProperty (ID, Course::getId, Course::setId)
 			.addProperty (NAME, Course::getName, Course::setName)
 			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
 			.addProperty (YEAR, Course::getYear, Course::setYear)
 			.addRelationship (ACTIVITIES, Course::getActivities, Course::addActivity, Course::removeActivity)
 			.addRelationship (ENROLMENTS, Course::getEnrolments, Course::addEnrolment, Course::removeEnrolment)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_OFFERING)
 			.build ();
 	}

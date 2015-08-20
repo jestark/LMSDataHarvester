@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -51,6 +52,12 @@ public abstract class Element
 
 		SELECTOR_ID = Selector.getInstance (ID, true);
 		SELECTOR_ALL = Selector.getInstance ("all", false);
+
+		Definition.getBuilder (Element.class, null)
+			.addProperty (ID, Element::getId, Element::setId)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
+			.build ();
 	}
 
 	/**

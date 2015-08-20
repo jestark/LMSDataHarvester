@@ -66,11 +66,8 @@ public abstract class Action extends Element
 		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
 		Definition.getBuilder (Action.class, Element.class)
-			.addProperty (ID, Action::getId, Action::setId)
 			.addProperty (NAME, Action::getName, Action::setName)
 			.addRelationship (LogEntry.class, LogEntry.ACTION, LogEntry.SELECTOR_ACTION)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
 			.build ();
 	}
