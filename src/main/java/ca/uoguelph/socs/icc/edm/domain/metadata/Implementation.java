@@ -222,42 +222,11 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	 */
 
 	@Override
-	public <V extends Element> Relationship<T, V> getRelationship (final Class<V> type)
+	public <V extends Element> Relationship<? super T, V> getRelationship (final Class<V> type)
 	{
 		assert type != null : "type is NULL";
 
 		return this.definition.getRelationship (type);
-	}
-
-	/**
-	 * Get the <code>Relationship</code> for the specified
-	 * <code>Property</code>.
-	 *
-	 * @param  <V>      The <code>Element</code> type of the relationship target
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Relationship</code> instance
-	 */
-
-	@Override
-	public <V extends Element> Relationship<T, V> getRelationship (final Property<V> property)
-	{
-		assert property != null : "property is NULL";
-
-		return this.definition.getRelationship (property);
-	}
-
-	/**
-	 * Get the <code>Set</code> for <code>Relationship</code> instances for the
-	 * <code>Element</code>.
-	 *
-	 * @return A <code>Set</code> of <code>Relationship</code> instances
-	 */
-
-	@Override
-	public Set<Relationship<T, ?>> getRelationships ()
-	{
-		return this.definition.getRelationships ();
 	}
 
 	/**

@@ -23,9 +23,11 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +55,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	private final Logger log;
 
 	/** The parent <code>Element</code> class */
-	private final Class<? extends Element> parent;
+	private final Definition<? super T> parent;
 
 	/** The <code>Element</code> class represented by the <code>Definition</code> */
 	private final Class<T> type;
@@ -77,6 +79,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 * Get the <code>DefintionBuilder</code> for the specified
 	 * <code>Element</code> interface class.
 	 *
+	 * @param  <P>    The <code>Element</code> interface type of the parent
 	 * @param  <T>    The <code>Element</code> interface type
 	 * @param  type   The <code>Element</code> interface class, not null
 	 * @param  parent The parent <code>Element</code> class, not null
@@ -84,13 +87,15 @@ public class Definition<T extends Element> implements MetaData<T>
 	 * @return        The <code>DefinitionBuilder</code> instance
 	 */
 
-	public static <T extends Element> DefinitionBuilder<T> getBuilder (final Class<T> type, final Class<? extends Element> parent)
+	public static <P extends Element, T extends P> DefinitionBuilder<T> getBuilder (final Class<T> type, final Class<P> parent)
 	{
 		assert type != null : "type is NULL";
-		assert parent != null : "parent is NULL";
-		assert parent.isAssignableFrom (type) : "type is not derived from parent";
+		assert ! ((type == Element.class) ^ (parent == null));
+		assert (parent == null) || (parent.isAssignableFrom (type)) : "type is not derived from parent";
 
-		return new DefinitionBuilder<T> (type, parent);
+		Definition<P> pdef = (parent != null) ? (Definition<P>) Container.getInstance ().getMetaData (parent) : null;
+
+		return new DefinitionBuilder<T> (type, pdef);
 	}
 
 	/**
@@ -112,7 +117,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 */
 
 	protected Definition (final Class<T> type,
-			final Class<? extends Element> parent,
+			final Definition<? super T> parent,
 			final Map<String, Property<?>> properties,
 			final Map<Class<?>, Relationship<T, ?>> relationships,
 			final Map<String, Selector> selectors,
@@ -120,8 +125,7 @@ public class Definition<T extends Element> implements MetaData<T>
 			final Map<Property<?>, RelationshipReference<T, ?>> rrefs)
 	{
 		assert type != null : "type is NULL";
-		assert parent != null : "parent is NULL";
-		assert parent.isAssignableFrom (type) : "type is not derived from parent";
+		assert ! ((type == Element.class) ^ (parent == null));
 		assert properties != null : "properties is NULL";
 		assert selectors != null : "selectors is NULL";
 		assert relationships != null : "relationships is NULL";
@@ -137,33 +141,6 @@ public class Definition<T extends Element> implements MetaData<T>
 		this.relationships = new HashMap<> (relationships);
 		this.prefs = new HashMap<> (prefs);
 		this.rrefs = new HashMap<> (rrefs);
-	}
-
-	/**
-	 * Convenience method to retrieve the <code>Reference</code> associated
-	 * with the specified <code>Property</code>.
-	 *
-	 * @param  <V>      The type of the value for the <code>Property</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Reference</code> associated with the
-	 *                  <code>Property</code>
-	 */
-
-	@SuppressWarnings ("unchecked")
-	private <V> PropertyReference<T, V> getPropertyReference (final Property<V> property)
-	{
-		assert property != null : "property is NULL";
-
-		return (PropertyReference<T, V>) this.prefs.get (property);
-	}
-
-	@SuppressWarnings ("unchecked")
-	private <V> RelationshipReference<T, V> getRelationshipReference (final Property<V> property)
-	{
-		assert property != null : "property is NULL";
-
-		return (RelationshipReference<T, V>) this.rrefs.get (property);
 	}
 
 	/**
@@ -202,7 +179,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	@Override
 	public Class<? extends Element> getParentClass ()
 	{
-		return this.parent;
+		return (this.parent != null) ? this.parent.getElementType () : null;
 	}
 
 	/**
@@ -218,7 +195,14 @@ public class Definition<T extends Element> implements MetaData<T>
 	{
 		assert name != null : "name is NULL";
 
-		return this.properties.get (name);
+		Property<?> property = this.properties.get (name);
+
+		if ((property == null) && (this.parent != null))
+		{
+			property = this.parent.getProperty (name);
+		}
+
+		return property;
 	}
 
 	/**
@@ -259,7 +243,10 @@ public class Definition<T extends Element> implements MetaData<T>
 	@Override
 	public Set<Property<?>> getProperties ()
 	{
-		return new HashSet<Property<?>> (this.properties.values ());
+		Set<Property<?>> properties = (this.parent != null) ? this.parent.getProperties () : new HashSet<> ();
+		properties.addAll (this.properties.values ());
+
+		return properties;
 	}
 
 	/**
@@ -274,44 +261,18 @@ public class Definition<T extends Element> implements MetaData<T>
 
 	@Override
 	@SuppressWarnings ("unchecked")
-	public <V extends Element> Relationship<T, V> getRelationship (final Class<V> type)
+	public <V extends Element> Relationship<? super T, V> getRelationship (final Class<V> type)
 	{
 		assert type != null : "type is NULL";
 
-		return (Relationship<T, V>) this.relationships.get (type);
-	}
+		Relationship<? super T, V> relationship = (Relationship<T, V>) this.relationships.get (type);
 
-	/**
-	 * Get the <code>Relationship</code> for the specified
-	 * <code>Property</code>.
-	 *
-	 * @param  <V>      The <code>Element</code> type of the relationship target
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Relationship</code> instance
-	 */
+		if ((relationship == null) && (this.parent != null))
+		{
+			relationship = (Relationship<? super T, V>) this.parent.getRelationship (type);
+		}
 
-	@Override
-	public <V extends Element> Relationship<T, V> getRelationship (final Property<V> property)
-	{
-		assert property != null : "property is NULL";
-
-		return this.getRelationship (property.getPropertyType ());
-	}
-
-	/**
-	 * Get the <code>Set</code> for <code>Relationship</code> instances for the
-	 * <code>Element</code>.
-	 *
-	 * @return A <code>Set</code> of <code>Relationship</code> instances
-	 */
-
-	@Override
-	public Set<Relationship<T, ?>> getRelationships ()
-	{
-		return this.relationships.entrySet ().stream ()
-			.map (Map.Entry::getValue)
-			.collect (Collectors.toSet ());
+		return relationship;
 	}
 
 	/**
@@ -327,7 +288,14 @@ public class Definition<T extends Element> implements MetaData<T>
 	{
 		assert name != null : "name is NULL";
 
-		return this.selectors.get (name);
+		Selector selector = this.selectors.get (name);
+
+		if ((selector == null) && (this.parent != null))
+		{
+			selector = this.parent.getSelector (name);
+		}
+
+		return selector;
 	}
 
 	/**
@@ -340,7 +308,36 @@ public class Definition<T extends Element> implements MetaData<T>
 	@Override
 	public Set<Selector> getSelectors ()
 	{
-		return new HashSet<Selector> (this.selectors.values ());
+		Set<Selector> selectors = (this.parent != null) ? this.parent.getSelectors () : new HashSet<> ();
+		selectors.addAll (this.selectors.values ());
+
+		return selectors;
+	}
+
+	/**
+	 * Convenience method to retrieve the <code>Reference</code> associated
+	 * with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value for the <code>Property</code>
+	 * @param  property The <code>Property</code>, not null
+	 *
+	 * @return          The <code>Reference</code> associated with the
+	 *                  <code>Property</code>
+	 */
+
+	@SuppressWarnings ("unchecked")
+	private <V> PropertyReference<? super T, V> getPropertyReference (final Property<V> property)
+	{
+		assert property != null : "property is NULL";
+
+		PropertyReference<? super T, V> ref = (PropertyReference<T, V>) this.prefs.get (property);
+
+		if ((ref == null) && (this.parent != null))
+		{
+			ref = (PropertyReference<? super T, V>) this.parent.getPropertyReference (property);
+		}
+
+		return ref;
 	}
 
 	/**
@@ -363,7 +360,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert element != null : "element is NULL";
 		assert property != null : "property is NULL";
 
-		PropertyReference<T, V> ref = this.getPropertyReference (property);
+		PropertyReference<? super T, V> ref = this.getPropertyReference (property);
 
 		assert ref != null : "Property is not registered";
 
@@ -388,7 +385,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert element != null : "element is NULL";
 		assert property != null : "property is NULL";
 
-		PropertyReference<T, V> ref = this.getPropertyReference (property);
+		PropertyReference<? super T, V> ref = this.getPropertyReference (property);
 
 		assert ref != null : "Property is not registered";
 		assert ref.isWritable () : "property can not be written";
@@ -414,12 +411,38 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert source != null : "source is NULL";
 		assert property != null : "property is NULL";
 
-		PropertyReference<T, ?> ref = this.getPropertyReference (property);
+		PropertyReference<? super T, ?> ref = this.getPropertyReference (property);
 
 		assert ref != null : "Property is not registered";
 		assert ref.isWritable () : "property can not be written";
 
 		ref.copyValue (dest, source);
+	}
+
+	/**
+	 * Convenience method to retrieve the <code>Reference</code> associated
+	 * with the specified <code>Property</code>.
+	 *
+	 * @param  <V>      The type of the value for the <code>Property</code>
+	 * @param  property The <code>Property</code>, not null
+	 *
+	 * @return          The <code>Reference</code> associated with the
+	 *                  <code>Property</code>
+	 */
+
+	@SuppressWarnings ("unchecked")
+	private <V> RelationshipReference<? super T, V> getRelationshipReference (final Property<V> property)
+	{
+		assert property != null : "property is NULL";
+
+		RelationshipReference<? super T, V> ref = (RelationshipReference<T, V>) this.rrefs.get (property);
+
+		if ((ref == null) && (this.parent != null))
+		{
+			ref = (RelationshipReference<? super T, V>) this.parent.getRelationshipReference (property);
+		}
+
+		return ref;
 	}
 
 	/**
@@ -434,6 +457,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 *                  the <code>Property</code>
 	 */
 
+	@Override
 	public <V> Collection<V> getValues (final Property<V> property, final T element)
 	{
 		this.log.trace ("getCollection: property={}, element={}", property, element);
@@ -441,7 +465,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert element != null : "element is NULL";
 		assert property != null : "property is NULL";
 
-		RelationshipReference<T, V> ref = this.getRelationshipReference (property);
+		RelationshipReference<? super T, V> ref = this.getRelationshipReference (property);
 
 		assert ref != null : "Property is not registered";
 
@@ -461,6 +485,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 *                  to the element, <code>false</code> otherwise
 	 */
 
+	@Override
 	public <V> boolean addValue (final Property<V> property, final T element, final V value)
 	{
 		this.log.trace ("add: property={}, element={}, value={}", property, element, value);
@@ -469,7 +494,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert property != null : "property is NULL";
 		assert value != null : "value is NULL";
 
-		RelationshipReference<T, V> ref = this.getRelationshipReference (property);
+		RelationshipReference<? super T, V> ref = this.getRelationshipReference (property);
 
 		assert ref != null : "Property is not registered";
 
@@ -489,6 +514,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 *                  from the element, <code>false</code> otherwise
 	 */
 
+	@Override
 	public <V> boolean removeValue (final Property<V> property, final T element, final V value)
 	{
 		this.log.trace ("remove: property={}, element={}, value={}", property, element, value);
@@ -497,11 +523,44 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert property != null : "property is NULL";
 		assert value != null : "value is NULL";
 
-		RelationshipReference<T, V> ref = this.getRelationshipReference (property);
+		RelationshipReference<? super T, V> ref = this.getRelationshipReference (property);
 
 		assert ref != null : "Property is not registered";
 
 		return ref.removeValue (element, value);
+	}
+
+	/**
+	 * Perform the specified operation on all of the <code>Relationship</code>
+	 * instances for the <code>Element</code>.  This method performs the
+	 * specified operation on all of the <code>Relationship</code> instances
+	 * stored in this <code>Definition</code> instance and the linked
+	 * <code>Definition</code> instances for the ancestor classes.
+	 *
+	 * @param  operation The operation to perform, not null
+	 *
+	 * @return           <code>true</code> if operation completed successfully,
+	 *                   <code>false</code> otherwise
+	 */
+
+	private boolean processRelationships (final Predicate<? super Relationship<? super T, ?>> operation)
+	{
+		assert operation != null : "predicate is NULL";
+
+		boolean result = true;
+		Definition<? super T> def = this;
+
+		while ((result == true) && (def != null))
+		{
+			result = def.relationships.entrySet ()
+				.stream ()
+				.map (Map.Entry::getValue)
+				.allMatch (operation);
+
+			def = def.parent;
+		}
+
+		return result;
 	}
 
 	/**
@@ -515,6 +574,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 *                   <code>false</code> otherwise
 	 */
 
+	@Override
 	public boolean canConnect (final DataStore datastore, final T element)
 	{
 		this.log.trace ("canConnect: datastore={}, element={}", datastore, element);
@@ -522,10 +582,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert datastore != null : "datastore is NULL";
 		assert element != null : "element is NULL";
 
-		return this.relationships.entrySet ()
-			.stream ()
-			.map (Map.Entry::getValue)
-			.allMatch (x -> x.canConnect (datastore, element));
+		return this.processRelationships (x -> x.canConnect (datastore, element));
 	}
 
 	/**
@@ -539,6 +596,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 *                   <code>false</code> otherwise
 	 */
 
+	@Override
 	public boolean canDisconnect (final DataStore datastore, final T element)
 	{
 		this.log.trace ("canDisconnect: datastore={}, element={}", datastore, element);
@@ -546,10 +604,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert datastore != null : "datastore is NULL";
 		assert element != null : "element is NULL";
 
-		return this.relationships.entrySet ()
-			.stream ()
-			.map (Map.Entry::getValue)
-			.allMatch (x -> x.canDisconnect (datastore, element));
+		return this.processRelationships (x -> x.canDisconnect (datastore, element));
 	}
 
 	/**
@@ -562,6 +617,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 *                   <code>false</code> otherwise
 	 */
 
+	@Override
 	public boolean connect (final DataStore datastore, final T element)
 	{
 		this.log.trace ("connect: datastore={}, element={}", datastore, element);
@@ -569,10 +625,7 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert datastore != null : "datastore is NULL";
 		assert element != null : "element is NULL";
 
-		return this.relationships.entrySet ()
-			.stream ()
-			.map (Map.Entry::getValue)
-			.allMatch (x -> x.connect (datastore, element));
+		return this.processRelationships (x -> x.connect (datastore, element));
 	}
 
 	/**
@@ -585,6 +638,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	 *                   <code>false</code> otherwise
 	 */
 
+	@Override
 	public boolean disconnect (final DataStore datastore, final T element)
 	{
 		this.log.trace ("disconnect: datastore={}, element={}", datastore, element);
@@ -592,9 +646,6 @@ public class Definition<T extends Element> implements MetaData<T>
 		assert datastore != null : "datastore is NULL";
 		assert element != null : "element is NULL";
 
-		return this.relationships.entrySet ()
-			.stream ()
-			.map (Map.Entry::getValue)
-			.allMatch (x -> x.disconnect (datastore, element));
+		return this.processRelationships (x -> x.disconnect (datastore, element));
 	}
 }

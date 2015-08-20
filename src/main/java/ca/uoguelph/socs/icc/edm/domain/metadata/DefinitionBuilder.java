@@ -51,7 +51,7 @@ public final class DefinitionBuilder<T extends Element>
 	private final Class<T> type;
 
 	/** The <code>MetaData</code> definition for the parent <code>Element</code> */
-	private final Class<? extends Element> parent;
+	private final Definition<? super T> parent;
 
 	/** Set of all of the associated <code>Property</code> instances */
 	private final Set<Property<?>> allprops;
@@ -77,11 +77,10 @@ public final class DefinitionBuilder<T extends Element>
 	 * @param  type The <code>Element</code> interface class, not null
 	 */
 
-	protected DefinitionBuilder (final Class<T> type, final Class<? extends Element> parent)
+	protected DefinitionBuilder (final Class<T> type, final Definition<? super T> parent)
 	{
 		assert type != null : "type is NULL";
-		assert parent != null : "parent is NULL";
-		assert parent.isAssignableFrom (type) : "type is not derived from parent";
+		assert ! ((type == Element.class) ^ (parent == null));
 
 		this.log = LoggerFactory.getLogger (DefinitionBuilder.class);
 

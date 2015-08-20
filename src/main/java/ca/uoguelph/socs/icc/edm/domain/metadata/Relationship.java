@@ -192,18 +192,18 @@ public abstract class Relationship<T extends Element, V extends Element>
 	 * @return      The inverse <code>Relationship</code>
 	 */
 
-	protected final Relationship<V, T> getInverse (final Class<? extends Element> impl)
+	protected final Relationship<? super V, T> getInverse (final Class<? extends Element> impl)
 	{
 		this.log.trace ("getInverse: impl={}", impl);
 
 		assert impl != null : "impl is NULL";
 		assert this.value.isAssignableFrom (impl) : "impl is not an implementation class for this relationship";
 
-		Relationship<V, T> inverse = null;
+		Relationship<? super V, T> inverse = null;
 
 		if (Container.getInstance ().containsMetaData (impl))
 		{
-			inverse = Container.getInstance ().getMetaData (this.value, impl).getRelationship (this.type);
+			inverse = Container.getInstance ().getCreator (this.value, impl).getRelationship (this.type);
 
 			if (inverse == null)
 			{

@@ -106,28 +106,7 @@ public interface MetaData<T extends Element>
 	 * @return      The <code>Relationship</code>, may be null
 	 */
 
-	public abstract <V extends Element> Relationship<T, V> getRelationship (Class<V> type);
-
-	/**
-	 * Get the <code>Relationship</code> for the specified
-	 * <code>Property</code>.
-	 *
-	 * @param  <V>      The <code>Element</code> type of the relationship target
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Relationship</code> instance
-	 */
-
-	public abstract <V extends Element> Relationship<T, V> getRelationship (Property<V> property);
-
-	/**
-	 * Get the <code>Set</code> for <code>Relationship</code> instances for the
-	 * <code>Element</code>.
-	 *
-	 * @return A <code>Set</code> of <code>Relationship</code> instances
-	 */
-
-	public abstract Set<Relationship<T, ?>> getRelationships ();
+	public abstract <V extends Element> Relationship<? super T, V> getRelationship (Class<V> type);
 
 	/**
 	 * Get the <code>Selector</code> instance with the specified name.
