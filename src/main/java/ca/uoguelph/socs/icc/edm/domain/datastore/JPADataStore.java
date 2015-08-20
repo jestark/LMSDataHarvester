@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -34,7 +35,12 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
+
 /**
+ * Implementation of the <code>DataStore</code> using the Java Persistence API.
+ * This class implements the <code>DataStore</code> using a relational database
+ * though JPA.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -52,6 +58,9 @@ public final class JPADataStore extends DataStore
 	/** The <code>Transaction</code> instance */
 	private final Transaction transaction;
 
+	/** The <code>IdGenerator</code> instances */
+	private final Map<Class<?>, IdGenerator> generators;
+
 	/**
 	 * Create the JPA data store.  This method will setup a connection to the
 	 * specified database.  If JPA fails to create the connection it will see
@@ -65,6 +74,8 @@ public final class JPADataStore extends DataStore
 	public JPADataStore (final Profile profile, final String unit)
 	{
 		super (profile);
+
+		this.generators = new HashMap<> ();
 
 		this.log.debug ("Creating the JPA EntityManagerFactory");
 		this.emf = Persistence.createEntityManagerFactory (unit);
@@ -152,7 +163,7 @@ public final class JPADataStore extends DataStore
 	 */
 
 	@Override
-	protected List<Long> getAllIds (final Class<? extends Element> element)
+	public List<Long> getAllIds (final Class<? extends Element> element)
 	{
 		assert element != null : "element is NULL";
 
@@ -248,10 +259,34 @@ public final class JPADataStore extends DataStore
 
 		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
+		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
 		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
+		assert metadata.canConnect (this, element) : "element can not be disconnected";
 
+		IdGenerator generator = this.generators.get (metadata.getElementClass ());
+
+		if (generator == null)
+		{
+			generator = IdGenerator.getInstance (this, metadata.getElementClass ());
+			this.generators.put (metadata.getElementClass (), generator);
+		}
+
+		this.log.debug ("Setting ID");
+		generator.setId (metadata, element);
+
+		this.log.debug ("Connecting Relationships");
+		if (! metadata.connect (this, element))
+		{
+			this.log.error ("Failed to connect relationships");
+			throw new RuntimeException ("Failed to connect relationships");
+		}
+
+		this.log.debug ("Persisting the Element");
 		this.em.persist (element);
+
+		this.log.debug ("Connecting the Element's relationships");
+		metadata.connect (this, element);
 	}
 
 	/**
@@ -269,9 +304,15 @@ public final class JPADataStore extends DataStore
 
 		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
+		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
 		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
+		assert metadata.canDisconnect (this, element) : "element can not be disconnected";
 
+		this.log.debug ("Disconnecting the Element's relationships");
+		metadata.disconnect (this, element);
+
+		this.log.debug ("Removing the element from the database");
 		this.em.remove (element);
 	}
 }

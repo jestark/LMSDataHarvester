@@ -92,7 +92,7 @@ public abstract class DataStore
 	 * @return         A <code>List</code> of ID numbers, may be empty
 	 */
 
-	protected abstract List<Long> getAllIds (Class<? extends Element> element);
+	public abstract List<Long> getAllIds (Class<? extends Element> element);
 
 	/**
 	 * Get an instance of the transaction manager for the

@@ -16,8 +16,11 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
+import java.util.Map;
 import java.util.List;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +29,8 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * A <code>DataStore</code> implementation that does nothing.  This
@@ -45,6 +50,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
 
 public final class NullDataStore extends DataStore
 {
+	/** The <code>IdGenerator</code> instances */
+	private final Map<Class<?>, IdGenerator> generators;
+
 	/** The transaction manager for the <code>NullDataDtore</code> */
 	private Transaction transaction;
 
@@ -63,6 +71,8 @@ public final class NullDataStore extends DataStore
 
 		this.open = true;
 		this.transaction = null;
+
+		this.generators = new HashMap<> ();
 	}
 
 	/**
@@ -99,7 +109,7 @@ public final class NullDataStore extends DataStore
 	 */
 
 	@Override
-	protected List<Long> getAllIds (final Class<? extends Element> element)
+	public List<Long> getAllIds (final Class<? extends Element> element)
 	{
 		this.log.trace ("getAllIds: element={}", element);
 
@@ -191,8 +201,28 @@ public final class NullDataStore extends DataStore
 
 		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
+		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
 		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
+		assert metadata.canConnect (this, element) : "element can not be connected";
+
+		IdGenerator generator = this.generators.get (metadata.getElementClass ());
+
+		if (generator == null)
+		{
+			generator = IdGenerator.getInstance (this, metadata.getElementClass ());
+			this.generators.put (metadata.getElementClass (), generator);
+		}
+
+		this.log.debug ("Setting ID");
+		generator.setId (metadata, element);
+
+		this.log.debug ("Connecting Relationships");
+		if (! metadata.connect (this, element))
+		{
+			this.log.error ("Failed to connect relationships");
+			throw new RuntimeException ("Failed to connect relationships");
+		}
 	}
 
 	/**
@@ -211,7 +241,11 @@ public final class NullDataStore extends DataStore
 
 		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
+		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
 		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
+		assert metadata.canDisconnect (this, element) : "element can not be disconnected";
+
+		metadata.disconnect (this, element);
 	}
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import java.util.stream.Collectors;
@@ -124,14 +125,21 @@ public final class MemDataStore extends DataStore
 	 */
 
 	@Override
-	protected List<Long> getAllIds (final Class<? extends Element> element)
+	public List<Long> getAllIds (final Class<? extends Element> element)
 	{
 		this.log.trace ("getAllIds: element={}", element);
 
 		assert element != null : "element is NULL";
 		assert this.isOpen () : "datastore is clased";
 
-		return null;
+		List<Long> result = new ArrayList<Long> ();
+
+		if (this.elements.containsKey (element))
+		{
+			result.addAll (this.elements.get (element).getAllIds ());
+		}
+
+		return result;
 	}
 
 	/**
@@ -236,7 +244,7 @@ public final class MemDataStore extends DataStore
 
 		if (! this.elements.containsKey (element.getClass ()))
 		{
-			this.elements.put (element.getClass (), new ElementStore<T> (metadata));
+			this.elements.put (element.getClass (), new ElementStore<T> (metadata, this));
 		}
 
 		this.getElementStore (metadata, element.getClass ())

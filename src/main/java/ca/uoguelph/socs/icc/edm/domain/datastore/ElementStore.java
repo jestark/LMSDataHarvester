@@ -34,6 +34,8 @@ import org.apache.commons.collections4.keyvalue.MultiKey;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -54,6 +56,9 @@ final class ElementStore<T extends Element>
 	/** The logger */
 	private final Logger log;
 
+	/** The <code>IdGenerator</code> */
+	private final IdGenerator generator;
+
 	/** The <code>MetaData</code> for the <code>Element</code> being stored */
 	private final MetaData<T> metadata;
 
@@ -73,9 +78,10 @@ final class ElementStore<T extends Element>
 	 *                  which is being stored, not null
 	 */
 
-	public ElementStore (final MetaData<T> metadata)
+	public ElementStore (final MetaData<T> metadata, final DataStore datastore)
 	{
 		assert metadata != null : "metadata is NULL";
+		assert datastore != null : "datastore is null";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
@@ -87,6 +93,8 @@ final class ElementStore<T extends Element>
 			.stream ()
 			.filter ((x) -> x.isUnique ())
 			.collect (Collectors.toSet ());
+
+		this.generator = IdGenerator.getInstance (datastore, metadata.getElementClass ());
 	}
 
 	/**
@@ -205,6 +213,22 @@ final class ElementStore<T extends Element>
 	}
 
 	/**
+	 * Get a <code>List</code> containing all of the ID numbers in the
+	 * <code>DataStore</code> for instances of the specified
+	 * <code>Element</code> class.
+	 *
+	 * @return A <code>List</code> of ID numbers, may be empty
+	 */
+
+	public List<Long> getAllIds ()
+	{
+		return this.elements.parallelStream ()
+			.map (Wrapper::unwrap)
+			.map (Element::getId)
+			.collect (Collectors.toList ());
+	}
+
+	/**
 	 * Insert the specified <code>Element</code> instance into the
 	 * <code>DataStore</code>.
 	 *
@@ -217,6 +241,8 @@ final class ElementStore<T extends Element>
 
 		assert element != null : "element is NULL";
 		assert ! this.contains (element) : "element is already in the DataStore";
+
+		this.generator.setId (this.metadata, element);
 
 		this.elements.add (new Wrapper<T> (element));
 
