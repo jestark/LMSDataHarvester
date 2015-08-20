@@ -62,23 +62,29 @@ public final class JPADataStore extends DataStore
 	private final Map<Class<?>, IdGenerator> generators;
 
 	/**
-	 * Create the JPA data store.  This method will setup a connection to the
-	 * specified database.  If JPA fails to create the connection it will see
-	 * that the relevant components are closed down before re-throwing the
-	 * exception from JPA.
+	 * static initializer to register the <code>JPADataStore</code> with the
+	 * factory.
+	 */
+
+	static
+	{
+		DataStore.registerDataStore (JPADataStore.class, JPADataStore::new);
+	}
+
+	/**
+	 * Create the <code>JPADataStore</code>.
 	 *
-	 * @param  unit    The JPA unit name, not null
 	 * @param  profile The <code>Profile</code>, not null
 	 */
 
-	public JPADataStore (final Profile profile, final String unit)
+	protected JPADataStore (final Profile profile)
 	{
 		super (profile);
 
 		this.generators = new HashMap<> ();
 
 		this.log.debug ("Creating the JPA EntityManagerFactory");
-		this.emf = Persistence.createEntityManagerFactory (unit);
+		this.emf = Persistence.createEntityManagerFactory (profile.getName ());
 
 		try
 		{

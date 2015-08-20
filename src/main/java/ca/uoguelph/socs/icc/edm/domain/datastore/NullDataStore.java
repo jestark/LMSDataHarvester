@@ -60,12 +60,22 @@ public final class NullDataStore extends DataStore
 	private boolean open;
 
 	/**
+	 * static initializer to register the <code>NullDataStore</code> with the
+	 * factory.
+	 */
+
+	static
+	{
+		DataStore.registerDataStore (NullDataStore.class, NullDataStore::new);
+	}
+
+	/**
 	 * Create the <code>NullDataStore</code>.
 	 *
 	 * @param  profile The <code>Profile</code> data, not null
 	 */
 
-	public NullDataStore (final Profile profile)
+	protected NullDataStore (final Profile profile)
 	{
 		super (profile);
 

@@ -52,12 +52,22 @@ public final class MemDataStore extends DataStore
 	private boolean open;
 
 	/**
+	 * static initializer to register the <code>MemDataStore</code> with the
+	 * factory.
+	 */
+
+	static
+	{
+		DataStore.registerDataStore (MemDataStore.class, MemDataStore::new);
+	}
+
+	/**
 	 * Create the <code>MemDataStore</code>.
 	 *
 	 * @param  profile The <code>Profile</code> data, not null
 	 */
 
-	public MemDataStore (final Profile profile)
+	protected MemDataStore (final Profile profile)
 	{
 		super (profile);
 

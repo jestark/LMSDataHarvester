@@ -16,7 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
+import java.util.Map;
 import java.util.List;
+
+import java.util.HashMap;
+
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * Representation of a <code>DataStore</code>.
@@ -37,6 +41,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class DataStore
 {
+	/** <code>DataStore</code> factories */
+	private static Map<Class<? extends DataStore>, Function<Profile, DataStore>> factories;
+
 	/** The logger */
 	protected final Logger log;
 
@@ -44,12 +51,55 @@ public abstract class DataStore
 	protected final Profile profile;
 
 	/**
+	 * static initializer to create the factory
+	 */
+
+	static
+	{
+		factories = new HashMap<> ();
+	}
+
+	/**
+	 * Register a <code>DataStore</code> implementation with the factory.
+	 *
+	 * @param  impl    The <code>DataStore</code> implementation class, not null
+	 * @param  factory Method reference to the constructor, not null
+	 */
+
+	protected static final void registerDataStore (final Class<? extends DataStore> impl, final Function<Profile, DataStore> factory)
+	{
+		assert impl != null : "impl is NULL";
+		assert factory != null : "factory is NULL";
+		assert ! DataStore.factories.containsKey (impl) : "DataStore is already registered";
+
+		DataStore.factories.put (impl, factory);
+	}
+
+	/**
+	 * Get an instance of the <code>DataStore</code>.
+	 *
+	 * @param  impl    The <code>DataStore</code> implementation class, not null
+	 * @param  profile The <code>Profile</code>, not null
+	 *
+	 * @return         The <code>DataStore</code>
+	 */
+
+	public static final DataStore getInstance (final Class<? extends DataStore> impl, final Profile profile)
+	{
+		assert impl != null : "impl is NULL";
+		assert profile != null : "profile is NULL";
+		assert DataStore.factories.containsKey (impl) : "DataStore is not registered";
+
+		return DataStore.factories.get (impl).apply (profile);
+	}
+
+	/**
 	 * Create the <code>DataStore</code>.
 	 *
 	 * @param  profile The <code>Profile</code> data, not null
 	 */
 
-	public DataStore (final Profile profile)
+	protected DataStore (final Profile profile)
 	{
 		assert profile != null : "profile is NULL";
 
