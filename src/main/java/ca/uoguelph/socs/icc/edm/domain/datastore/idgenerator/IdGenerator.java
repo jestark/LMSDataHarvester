@@ -21,7 +21,13 @@ import java.util.Map;
 
 import java.util.HashMap;
 
-import java.util.function.Function;
+import java.util.function.BiFunction;
+
+import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 
 /**
  * An ID number generator.  This class and its subclasses provide ID numbers
@@ -37,7 +43,7 @@ import java.util.function.Function;
 public abstract class IdGenerator
 {
 	/** Factories for the <code>IdGenerator</code> implementations */
-	private static final Map<Class<? extends IdGenerator>, Function<List<Long>, ? extends IdGenerator>> factories;
+	private static final Map<Class<? extends IdGenerator>, BiFunction<DataStore, Class<? extends Element>, ? extends IdGenerator>> factories;
 
 	/**
 	 * static initializer to create the factory.
@@ -61,7 +67,7 @@ public abstract class IdGenerator
 	 *                   class, not null
 	 */
 
-	protected static <T extends IdGenerator> void registerGenerator (final Class<T> generator, final Function<List<Long> ,T> factory)
+	protected static <T extends IdGenerator> void registerGenerator (final Class<T> generator, final BiFunction<DataStore, Class<? extends Element>, T> factory)
 	{
 		assert generator != null : "generator is NULL";
 		assert factory != null : "factory is NULL";
@@ -73,21 +79,66 @@ public abstract class IdGenerator
 	/**
 	 * Get an <code>IdGenerator</code> instance.
 	 *
-	 * @param  generator The <code>IdGenerator</code> implementation class,
-	 *                   not null
-	 * @param  ids       The <code>List</code> of previously used Id numbers,
-	 *                   not null
+	 * @param  datastore The <code>DataStore</code> for which the ID's will be
+	 *                   generated, not null
+	 * @param  element   The <code>Element</code> class for which the ID's will
+	 *                   be generated, not null
 	 *
-	 * @return The <code>IdGenerator</code>
+	 * @return           The <code>IdGenerator</code>
 	 */
 
-	public static IdGenerator getInstance (final Class<?> generator, List<Long> ids)
+	public static IdGenerator getInstance (final DataStore datastore, final Class<? extends Element> element)
 	{
-		assert generator != null : "generator is NULL";
-		assert ids != null : "ids is NULL";
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		Class<? extends IdGenerator> generator = datastore.getProfile ().getGenerator (element);
+
 		assert IdGenerator.factories.containsKey (generator) : "Generator class is not registered";
 
-		return IdGenerator.factories.get (generator).apply (ids);
+		return IdGenerator.factories.get (generator).apply (datastore, element);
+	}
+
+	/**
+	 * Get an <code>IdGenerator</code> instance.
+	 *
+	 * @param  generator The <code>IdGenerator</code> implementation class,
+	 *                   not null
+	 * @param  datastore The <code>DataStore</code> for which the ID's will be
+	 *                   generated, not null
+	 * @param  element   The <code>Element</code> class for which the ID's will
+	 *                   be generated, not null
+	 *
+	 * @return           The <code>IdGenerator</code>
+	 */
+
+	public static IdGenerator getInstance (final Class<?> generator, final DataStore datastore, final Class<? extends Element> element)
+	{
+		assert generator != null : "generator is NULL";
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+		assert IdGenerator.factories.containsKey (generator) : "Generator class is not registered";
+
+		return IdGenerator.factories.get (generator).apply (datastore, element);
+	}
+
+	/**
+	 * Assign an ID number to the specified <code>Element</code> instance.
+	 * This method writes the next available ID number into the specified
+	 * <code>Element</code> instance using the supplied <code>MetaData</code>
+	 * instance.
+	 *
+	 * @param  <T>      The type of the <code>Element</code>
+	 * @param  metadata The <code>MetaData</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 */
+
+	public <T extends Element> void setId (final MetaData<T> metadata, final T element)
+	{
+		assert metadata != null : "metadata is NULL";
+		assert element != null : "element is NULL";
+
+		metadata.setValue (Element.ID, element, this.nextId ());
 	}
 
 	/**

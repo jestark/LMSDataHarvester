@@ -16,7 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
-import java.util.List;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * An <code>IdGenerator</code> which return ID numbers from a sequence.  ID
@@ -39,22 +40,7 @@ public class SequentialIdGenerator extends IdGenerator
 
 	static
 	{
-		IdGenerator.registerGenerator (SequentialIdGenerator.class, SequentialIdGenerator::getInstance);
-	}
-
-	/**
-	 * Get an instance of the <code>SequentialIdGenerator</code>.
-	 *
-	 * @param  ids The <code>List</code> of previously used id numbers, not null
-	 *
-	 * @return     The <code>SequentialIdGenerator</code> instance
-	 */
-
-	public static SequentialIdGenerator getInstance (final List<Long> ids)
-	{
-		assert ids != null : "ids is NULL";
-
-		return new SequentialIdGenerator (ids);
+		IdGenerator.registerGenerator (SequentialIdGenerator.class, SequentialIdGenerator::new);
 	}
 
 	/**
@@ -63,12 +49,17 @@ public class SequentialIdGenerator extends IdGenerator
 	 * <code>IdGenerator</code> will be one greater than the specified starting
 	 * value.
 	 *
-	 * @param  ids The starting value of the sequence, not null
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code>, not null
 	 */
 
-	private SequentialIdGenerator (final List<Long> ids)
+	private SequentialIdGenerator (final DataStore datastore, final Class<? extends Element> element)
 	{
-		this.currentid = ids.parallelStream ()
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		this.currentid = datastore.getAllIds (element)
+			.parallelStream ()
 			.reduce (0L, Long::max)
 			.longValue () + 1;
 	}
@@ -80,6 +71,7 @@ public class SequentialIdGenerator extends IdGenerator
 	 * @return A <code>Long</code> containing the next id number
 	 */
 
+	@Override
 	public Long nextId ()
 	{
 		Long result = new Long (this.currentid);

@@ -18,10 +18,11 @@ package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 import java.security.SecureRandom;
 
-import java.util.List;
 import java.util.Set;
-
 import java.util.HashSet;
+
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * An <code>IdGenerator</code> which returns unique random ID numbers.  The ID
@@ -50,34 +51,23 @@ public class RandomIdGenerator extends IdGenerator
 
 	static
 	{
-		IdGenerator.registerGenerator (RandomIdGenerator.class, RandomIdGenerator::getInstance);
-	}
-
-	/**
-	 * Get an instance of the <code>RandomIdGenerator</code>.
-	 *
-	 * @param  ids The <code>List</code> of previously used id numbers, not null
-	 *
-	 * @return     The <code>RandomIdGenerator</code> instance
-	 */
-
-	public static RandomIdGenerator getInstance (final List<Long> ids)
-	{
-		assert ids != null : "ids is NULL";
-
-		return new RandomIdGenerator (ids);
+		IdGenerator.registerGenerator (RandomIdGenerator.class, RandomIdGenerator::new);
 	}
 
 	/**
 	 * Create a new <code>RandomIdGenerator</code>, with a <code>List</code> of
 	 * previously used Ids.
 	 *
-	 * @param  usedids The <code>List</code> of used ID numbers, not null
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code>, not null
 	 */
 
-	private RandomIdGenerator (List<Long> usedids)
+	private RandomIdGenerator (final DataStore datastore, final Class<? extends Element> element)
 	{
-		this.usedids = new HashSet<Long> (usedids);
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
+
+		this.usedids = new HashSet<Long> (datastore.getAllIds (element));
 		this.generator = new SecureRandom ();
 	}
 

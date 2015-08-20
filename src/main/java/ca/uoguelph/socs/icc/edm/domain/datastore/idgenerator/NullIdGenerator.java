@@ -16,7 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
-import java.util.List;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * An <code>IdGenerator</code> which always returns a null reference.  This
@@ -48,14 +50,16 @@ public class NullIdGenerator extends IdGenerator
 	/**
 	 * Get an instance of the <code>NullIdGenerator</code>.
 	 *
-	 * @param  ids The <code>List</code> of previously used id numbers, not null
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code>, not null
 	 *
-	 * @return     The <code>NullIdGenerator</code> instance
+	 * @return           The <code>NullIdGenerator</code> instance
 	 */
 
-	public static NullIdGenerator getInstance (final List<Long> ids)
+	public static NullIdGenerator getInstance (final DataStore datastore, final Class<? extends Element> element)
 	{
-		assert ids != null : "ids is NULL";
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
 
 		return NullIdGenerator.INSTANCE;
 	}
@@ -76,6 +80,7 @@ public class NullIdGenerator extends IdGenerator
 	 * @return A <code>Long</code> containing the next id number
 	 */
 
+	@Override
 	public Long nextId ()
 	{
 		return null;
