@@ -22,7 +22,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<one-to-many name="subActivities" target-entity="BookChapter" mapped-by="parent"/>
@@ -40,7 +40,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<one-to-many name="subActivities" target-entity="ForumDiscussion" mapped-by="parent"/>
@@ -58,7 +58,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<one-to-many name="subActivities" target-entity="LessonPage" mapped-by="parent"/>
@@ -76,7 +76,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<one-to-many name="subActivities" target-entity="WorkshopSubmission" mapped-by="parent"/>
@@ -188,7 +188,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="grades"/>
@@ -206,7 +206,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="grades"/>
@@ -224,7 +224,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="grades"/>
@@ -242,7 +242,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="grades"/>
@@ -260,7 +260,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="grades"/>
@@ -278,7 +278,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="grades"/>
@@ -296,7 +296,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="grades"/>
@@ -314,7 +314,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="grades"/>
@@ -332,7 +332,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="grades"/>
@@ -350,7 +350,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="grades"/>
@@ -368,7 +368,7 @@
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="grades"/>

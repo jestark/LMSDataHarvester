@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.database.moodle;
+package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.util.List;
 import java.util.Set;

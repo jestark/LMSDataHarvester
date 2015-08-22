@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.database.moodle.converter;
+package ca.uoguelph.socs.icc.edm.domain.element.converter;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

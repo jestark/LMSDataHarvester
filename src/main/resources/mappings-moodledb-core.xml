@@ -40,15 +40,7 @@
 		</attributes>
 	</mapped-superclass>
 
-	<mapped-superclass class="ActivityInstance" metadata-complete="true">
-		<description></description>
-		<attributes>
-			<transient name="course"/>
-			<transient name="type"/>
-		</attributes>
-	</mapped-superclass>
-
-	<mapped-superclass class="NamedActivity" metadata-complete="true">
+	<mapped-superclass class="ca.uoguelph.socs.icc.edm.domain.NamedActivity" metadata-complete="true">
 		<description>Mapping For the Generic Activity and the relationship the the instance</description>
 		<attributes>
 			<basic name="name">
@@ -82,7 +74,7 @@
 			</id>
 			<basic name="idNumber">
 				<column name="idnumber" insertable="false" updatable="false"/>
-				<convert converter="ca.uoguelph.socs.icc.edm.domain.database.moodle.converter.IdNumberConverter"/>
+				<convert converter="ca.uoguelph.socs.icc.edm.domain.element.converter.IdNumberConverter"/>
 			</basic>
 			<basic name="username">
 				<column name="username" nullable="false" insertable="false" updatable="false"/>
@@ -117,13 +109,13 @@
 			</basic>
 			<basic name="semester">
 				<column name="startdate" insertable="false" updatable="false"/>
-				<convert converter="ca.uoguelph.socs.icc.edm.domain.database.moodle.converter.SemesterConverter"/>
+				<convert converter="ca.uoguelph.socs.icc.edm.domain.element.converter.SemesterConverter"/>
 			</basic>
 			<basic name="year">
 				<column name="startdate" insertable="false" updatable="false"/>
-				<convert converter="ca.uoguelph.socs.icc.edm.domain.database.moodle.converter.DateYearConverter"/>
+				<convert converter="ca.uoguelph.socs.icc.edm.domain.element.converter.DateYearConverter"/>
 			</basic>
-			<one-to-many name="activities" target-entity="ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleActivity" mapped-by="course"/>
+			<one-to-many name="activities" target-entity="MoodleActivity" mapped-by="course"/>
 			<!--			<one-to-many name="enrolments" mapped-by="course"/>
 			<one-to-many name="log" target-entity="MoodleDBLogEntry" mapped-by="course">
 			<order-by>id</order-by>
@@ -136,7 +128,7 @@
 	<!--  Core data mapping: Activities                                      -->
 	<!--*********************************************************************-->
 
-	<entity name="ActivityType" class="ActivityTypeData" metadata-complete="true">
+	<entity name="ActivityType" class="MoodleActivityType" metadata-complete="true">
 		<description>Mapping definition for the Activity Types (Moodle modules)</description>
 		<table name="mdl_modules"/>
 		<named-query name="ActivityTypeData:all">
@@ -153,7 +145,7 @@
 		</attributes>
 	</entity>
 
-	<entity name="MoodleActivity" class="ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleActivity" metadata-complete="true">
+	<entity name="MoodleActivity" class="MoodleActivity" metadata-complete="true">
 		<description>Activity mapping with moodle instance data</description>
 		<table name="mdl_course_modules"/>
 		<attributes>
@@ -166,7 +158,7 @@
 			<many-to-one name="course" target-entity="CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<many-to-one name="type" target-entity="ActivityTypeData" optional="false">
+			<many-to-one name="type" target-entity="MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="name"/>
@@ -181,7 +173,7 @@
 	<!-- Core data mapping: Log entries                                      -->
 	<!--*********************************************************************-->
 
-	<entity name="LogEntry" class="ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleLogData" metadata-complete="true">
+	<entity name="LogEntry" class="MoodleLogData" metadata-complete="true">
 		<description>The course activity log</description>
 		<table name="mdl_log"/>
 		<named-query name="MoodleLogData:allid">
@@ -199,7 +191,7 @@
 			</id>
 			<basic name="time" optional="false">
 				<column name="time" nullable="false"/>
-				<convert converter="ca.uoguelph.socs.icc.edm.domain.database.moodle.converter.IntDateConverter"/>
+				<convert converter="ca.uoguelph.socs.icc.edm.domain.element.converter.IntDateConverter"/>
 			</basic>
 			<basic name="actionName" optional="false">
 				<column name="action" nullable="false"/>

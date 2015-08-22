@@ -13,7 +13,7 @@
 	<!--  Mapped super classes used by activities                            -->
 	<!--*********************************************************************-->
 
-	<mapped-superclass class="GenericNamedActivity" metadata-complete="true">
+	<mapped-superclass class="NamedActivity" metadata-complete="true">
 		<description>Mapping for the common componets of named activities</description>
 		<attributes>
 			<basic name="name">
@@ -22,7 +22,7 @@
 		</attributes>
 	</mapped-superclass>
 
-	<mapped-superclass class="GenericSubActivity" metadata-complete="true">
+	<mapped-superclass class="ca.uoguelph.socs.icc.edm.domain.SubActivity" metadata-complete="true">
 		<description>Mapping for the common components of sub-activities</description>
 		<attributes>
 			<basic name="name">
