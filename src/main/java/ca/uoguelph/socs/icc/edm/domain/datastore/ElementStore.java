@@ -91,7 +91,10 @@ final class ElementStore<T extends Element>
 		this.metadata = metadata;
 		this.selectors = this.metadata.getSelectors ()
 			.stream ()
-			.filter ((x) -> x.isUnique ())
+			.filter (x -> x.isUnique ())
+			.filter (x -> x.getProperties ()
+					.stream ()
+					.allMatch (y -> ! y.isMutable ()))
 			.collect (Collectors.toSet ());
 
 		this.generator = IdGenerator.getInstance (datastore, metadata.getElementClass ());
@@ -133,6 +136,8 @@ final class ElementStore<T extends Element>
 
 	private MultiKey<Object> buildIndex (final Selector selector, final T element)
 	{
+		this.log.trace ("buildIndex: selector={}, element={}", selector, element);
+
 		assert selector != null : "selector is NULL";
 		assert element != null : "element is NULL";
 
@@ -175,7 +180,7 @@ final class ElementStore<T extends Element>
 
 		assert element != null : "element is NULL";
 
-		return this.elements.contains (element);
+		return this.elements.contains (new Wrapper<Element> (element));
 	}
 
 	/**
@@ -242,10 +247,15 @@ final class ElementStore<T extends Element>
 		assert element != null : "element is NULL";
 		assert ! this.contains (element) : "element is already in the DataStore";
 
+		this.log.debug ("Setting the ID Number");
 		this.generator.setId (this.metadata, element);
 
+		this.log.debug ("Inserting the Element");
 		this.elements.add (new Wrapper<T> (element));
 
+		this.log.debug ("Post insert check: {}", this.elements.contains (new Wrapper<T> (element)));
+
+		this.log.debug ("building indexes");
 		this.selectors.forEach ((x) -> this.index.put (this.buildIndex (x, element), element));
 	}
 
@@ -263,8 +273,10 @@ final class ElementStore<T extends Element>
 		assert element != null : "element is NULL";
 		assert this.contains (element) : "element is not in the DataStore";
 
+		this.log.debug ("removing element");
 		this.elements.remove (new Wrapper<T> (element));
 
+		this.log.debug ("removing indexes");
 		this.selectors.forEach ((x) -> this.index.remove (this.buildIndex (x, element), element));
 	}
 }

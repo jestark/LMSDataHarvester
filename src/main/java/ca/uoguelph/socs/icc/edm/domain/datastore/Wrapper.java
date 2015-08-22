@@ -58,7 +58,7 @@ final class Wrapper<T extends Element>
 	@Override
 	public boolean equals (final Object obj)
 	{
-		return this.element == obj;
+		return ((obj == this) || ((obj instanceof Wrapper) && (this.element == ((Wrapper) obj).unwrap ())));
 	}
 
 	/**

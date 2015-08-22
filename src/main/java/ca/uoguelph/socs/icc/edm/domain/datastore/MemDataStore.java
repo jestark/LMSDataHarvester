@@ -254,11 +254,16 @@ public final class MemDataStore extends DataStore
 
 		if (! this.elements.containsKey (element.getClass ()))
 		{
+			this.log.debug ("Creating the IdGenerator");
 			this.elements.put (element.getClass (), new ElementStore<T> (metadata, this));
 		}
 
+		this.log.debug ("Inserting the Element into the ElementStore");
 		this.getElementStore (metadata, element.getClass ())
 			.insert (element);
+
+		this.log.debug ("Connecting the relationships");
+		metadata.connect (this, element);
 	}
 
 	/**
@@ -282,8 +287,12 @@ public final class MemDataStore extends DataStore
 
 		if (this.elements.containsKey (element.getClass ()))
 		{
+			this.log.debug ("Removing the Element from the ElementStore");
 			this.getElementStore (metadata, element.getClass ())
 				.remove (element);
+
+			this.log.debug ("Disconnecting relationships");
+			metadata.disconnect (this, element);
 		}
 		else
 		{
