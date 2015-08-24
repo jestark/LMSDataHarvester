@@ -28,6 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.Network;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
@@ -63,11 +64,11 @@ public class LogData extends LogEntry implements Serializable
 	/** The logged action, which was performed on the associated activity */
 	private Action action;
 
+	/** The originating <code>Network</code> for the logged action */
+	private Network network;
+
 	/** The time at which the action was performed */
 	private Date time;
-
-	/** The originating IP Address for the logged action */
-	private String ip;
 
 	/** The <code>SubActivity</code> which is associated with the log entry */
 	private LogReference reference;
@@ -89,10 +90,10 @@ public class LogData extends LogEntry implements Serializable
 	protected LogData ()
 	{
 		this.id = null;
-		this.ip = null;
 		this.action = null;
 		this.activity = null;
 		this.enrolment = null;
+		this.network = null;
 		this.reference = null;
 		this.time = new Date ();
 	}
@@ -105,7 +106,7 @@ public class LogData extends LogEntry implements Serializable
 	 * <li>The <code>Action</code>
 	 * <li>The <code>Activity</code>
 	 * <li>The <code>Enrolment</code>
-	 * <li>The logged IP Address
+	 * <li>The <code>Network</code>
 	 * <li>The time
 	 * <ul>
 	 *
@@ -137,7 +138,7 @@ public class LogData extends LogEntry implements Serializable
 				ebuilder.append (this.action, ((LogData) obj).action);
 				ebuilder.append (this.activity, ((LogData) obj).activity);
 				ebuilder.append (this.enrolment, ((LogData) obj).enrolment);
-				ebuilder.append (this.ip, ((LogData) obj).ip);
+				ebuilder.append (this.network, ((LogData) obj).network);
 				ebuilder.append (this.time, ((LogData) obj).time);
 				ebuilder.append (this.reference, ((LogData) obj).reference);
 
@@ -156,7 +157,7 @@ public class LogData extends LogEntry implements Serializable
 	 * <li>The <code>Action</code>
 	 * <li>The <code>Activity</code>
 	 * <li>The <code>Enrolment</code>
-	 * <li>The logged IP Address
+	 * <li>The <code>Network</code>
 	 * <li>The time
 	 * <ul>
 	 *
@@ -181,7 +182,7 @@ public class LogData extends LogEntry implements Serializable
 			hbuilder.append (this.action);
 			hbuilder.append (this.activity);
 			hbuilder.append (this.enrolment);
-			hbuilder.append (this.ip);
+			hbuilder.append (this.network);
 			hbuilder.append (this.time);
 			hbuilder.append (this.reference);
 
@@ -337,31 +338,33 @@ public class LogData extends LogEntry implements Serializable
 	}
 
 	/**
-	 * Get the Internet Protocol address which is associated with the logged
-	 * action.
+	 * Get the <code>Network</code> from which the logged <code>Action</code>
+	 * originated.
 	 *
-	 * @return A <code>String</code> containing the IP address, may be null
+	 * @return The <code>Network</code>
 	 */
 
 	@Override
-	public String getIPAddress ()
+	public Network getNetwork ()
 	{
-		return this.ip;
+		return this.network;
 	}
 
 	/**
-	 * Set the Internet Protocol Address which is associated with the logged
-	 * <code>Action</code>.  This method is intended to be used by a
+	 * Set the <code>Network</code> from which the logged <code>Action</code>
+	 * originated.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
 	 * loaded.
 	 *
-	 * @param  ip A <code>String</code> containing the IP Address
+	 * @param  network The <code>Network</code>, not null
 	 */
 
 	@Override
-	protected void setIPAddress (final String ip)
+	protected void setNetwork (final Network network)
 	{
-		this.ip = ip;
+		assert network != null : "network is NULL";
+
+		this.network = network;
 	}
 
 	/**
@@ -449,8 +452,8 @@ public class LogData extends LogEntry implements Serializable
 			builder.append ("enrolment", this.enrolment);
 			builder.append ("action", this.action);
 			builder.append ("activity", this.activity);
+			builder.append ("network", this.network);
 			builder.append ("time", this.time);
-			builder.append ("ipaddress", this.ip);
 			builder.append ("subactivity", this.reference);
 
 			result = builder.toString ();

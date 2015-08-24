@@ -28,6 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.Network;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
@@ -266,7 +267,6 @@ public class MoodleLogData extends LogEntry
 	 * @return A <code>String</code> containing the IP address, may be null
 	 */
 
-	@Override
 	public String getIPAddress ()
 	{
 		return this.ip;
@@ -277,6 +277,33 @@ public class MoodleLogData extends LogEntry
 		this.ip = ip;
 	}
 
+	/**
+	 * Get the <code>Network</code> from which the logged <code>Action</code>
+	 * originated.
+	 *
+	 * @return The <code>Network</code>
+	 */
+
+	@Override
+	public Network getNetwork ()
+	{
+		return null;
+	}
+
+	/**
+	 * Set the <code>Network</code> from which the logged <code>Action</code>
+	 * originated.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded.
+	 *
+	 * @param  network The <code>Network</code>, not null
+	 */
+
+	@Override
+	protected void setNetwork (final Network network)
+	{
+		throw new UnsupportedOperationException ();
+	}
 
 	public String getInfo ()
 	{

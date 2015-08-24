@@ -50,6 +50,7 @@ public abstract class Network extends Element
 
 		Definition.getBuilder (Network.class, Element.class)
 			.addProperty (NAME, Network::getName, Network::setName)
+			.addRelationship (LogEntry.class, LogEntry.NETWORK, LogEntry.SELECTOR_NETWORK)
 			.addSelector (SELECTOR_NAME)
 			.build ();
 	}

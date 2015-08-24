@@ -117,7 +117,7 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 		this.setAction (entry.getAction ());
 		this.setActivity (entry.getActivity ());
 		this.setEnrolment (entry.getEnrolment ());
-		this.setIPAddress (entry.getIPAddress ());
+		this.setNetwork (entry.getNetwork ());
 		this.setTime (entry.getTime ());
 
 		// reference ??
@@ -280,28 +280,43 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 	}
 
 	/**
-	 * Get the Internet Protocol address which is associated with the logged
-	 * action.
+	 * Get the <code>Network</code> from which the logged <code>Action</code>
+	 * originated.
 	 *
-	 * @return A <code>String</code> containing the IP address, may be null
+	 * @return The <code>Network</code>
 	 */
 
-	public String getIPAddress ()
+	public Network getNetwork ()
 	{
-		return this.builder.getPropertyValue (LogEntry.IPADDRESS);
+		return this.builder.getPropertyValue (LogEntry.NETWORK);
 	}
 
 	/**
-	 * Set the Internet Protocol Address which is associated with the logged
-	 * <code>Action</code>.
+	 * Set the <code>Network</code> from which the logged <code>Action</code>
+	 * originated.
 	 *
-	 * @param  ipaddress A <code>String</code> containing the IP Address
+	 * @param  network The <code>Network</code>, not null
+	 *
+	 * @throws IllegalArgumentException if the specified <code>Network</code>
+	 *                                  does not exist in the
+	 *                                  <code>Datastore</code>
 	 */
 
-	public void setIPAddress (final String ipaddress)
+	public void setNetwork (final Network network)
 	{
-		this.log.trace ("setIPAddress: ipaddress={}", ipaddress);
+		this.log.trace ("setNetwork: network={}", network);
 
-		this.builder.setProperty (LogEntry.IPADDRESS, ipaddress);
+		if (network == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (! this.datastore.contains (network))
+		{
+			this.log.error ("The specified Network does not exist in the DataStore");
+			throw new IllegalArgumentException ("Network is not in the DataStore");
+		}
+
+		this.builder.setProperty (LogEntry.NETWORK, network);
 	}
 }

@@ -61,8 +61,8 @@ public abstract class LogEntry extends Element
 	/** The associated <code>Enrolment</code> */
 	public static final Property<Enrolment> ENROLMENT;
 
-	/** The associated IP Address */
-	public static final Property<String> IPADDRESS;
+	/** The associated <code>Network</code> */
+	public static final Property<Network> NETWORK;
 
 	/** The time that the <code>LogEntry</code> was created */
 	public static final Property<Date> TIME;
@@ -72,6 +72,9 @@ public abstract class LogEntry extends Element
 
 	/** Select all <code>LogEntry</code> instances by <code>Course</code> */
 	public static final Selector SELECTOR_COURSE;
+
+	/** Select all <code>LogEntry</code> instances by <code>Network</code> */
+	public static final Selector SELECTOR_NETWORK;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -84,21 +87,23 @@ public abstract class LogEntry extends Element
 		ACTIVITY = Property.getInstance (Activity.class, "activity", false, true);
 		COURSE = Property.getInstance (Course.class, "course", false, true);
 		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", false, true);
-		IPADDRESS = Property.getInstance (String.class, "ipaddress", false, true);
+		NETWORK = Property.getInstance (Network.class, "network", false, true);
 		TIME = Property.getInstance (Date.class, "time", false, true);
 
 		SELECTOR_ACTION = Selector.getInstance (ACTION, false);
 		SELECTOR_COURSE = Selector.getInstance (COURSE, false);
+		SELECTOR_NETWORK = Selector.getInstance (NETWORK, false);
 
 		Definition.getBuilder (LogEntry.class, Element.class)
 			.addProperty (COURSE, LogEntry::getCourse)
-			.addProperty (IPADDRESS, LogEntry::getIPAddress, LogEntry::setIPAddress)
 			.addProperty (TIME, LogEntry::getTime, LogEntry::setTime)
 			.addRelationship (ACTION, LogEntry::getAction, LogEntry::setAction)
 			.addRelationship (ACTIVITY, LogEntry::getActivity, LogEntry::setActivity)
 			.addRelationship (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
+			.addRelationship (NETWORK, LogEntry::getNetwork, LogEntry::setNetwork)
 			.addSelector (SELECTOR_ACTION)
 			.addSelector (SELECTOR_COURSE)
+			.addSelector (SELECTOR_NETWORK)
 			.build ();
 	}
 
@@ -172,6 +177,26 @@ public abstract class LogEntry extends Element
 	protected abstract void setEnrolment (Enrolment enrolment);
 
 	/**
+	 * Get the <code>Network</code> from which the logged <code>Action</code>
+	 * originated.
+	 *
+	 * @return The <code>Network</code>
+	 */
+
+	public abstract Network getNetwork ();
+
+	/**
+	 * Set the <code>Network</code> from which the logged <code>Action</code>
+	 * originated.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded.
+	 *
+	 * @param  network The <code>Network</code>, not null
+	 */
+
+	protected abstract void setNetwork (Network network);
+
+	/**
 	 * Get the <code>SubActivity</code> upon which the logged
 	 * <code>Action</code> was performed.
 	 *
@@ -198,24 +223,4 @@ public abstract class LogEntry extends Element
 	 */
 
 	protected abstract void setTime (Date time);
-
-	/**
-	 * Get the Internet Protocol address which is associated with the logged
-	 * <code>Action</code>.
-	 *
-	 * @return A <code>String</code> containing the IP address, may be null
-	 */
-
-	public abstract String getIPAddress ();
-
-	/**
-	 * Set the Internet Protocol Address which is associated with the logged
-	 * <code>Action</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded.
-	 *
-	 * @param  ip A <code>String</code> containing the IP Address
-	 */
-
-	protected abstract void setIPAddress (String ip);
 }

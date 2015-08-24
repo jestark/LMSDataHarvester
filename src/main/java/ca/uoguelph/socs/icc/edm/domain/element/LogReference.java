@@ -30,6 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.Network;
 
 /**
  * An abstract representation of the relationship between a
@@ -122,7 +123,7 @@ public abstract class LogReference extends LogEntry implements Serializable
 			ebuilder.append (this.entry.getAction (), ((LogReference) obj).getAction ());
 			ebuilder.append (this.entry.getActivity (), ((LogReference) obj).getActivity ());
 			ebuilder.append (this.entry.getEnrolment (), ((LogReference) obj).getEnrolment ());
-			ebuilder.append (this.entry.getIPAddress (), ((LogReference) obj).getIPAddress ());
+			ebuilder.append (this.entry.getNetwork (), ((LogReference) obj).getNetwork ());
 			ebuilder.append (this.entry.getTime (), ((LogReference) obj).getTime ());
 			ebuilder.append (this.subactivity, ((LogReference) obj).subactivity);
 
@@ -152,7 +153,7 @@ public abstract class LogReference extends LogEntry implements Serializable
 		hbuilder.append (this.entry.getAction ());
 		hbuilder.append (this.entry.getActivity ());
 		hbuilder.append (this.entry.getEnrolment ());
-		hbuilder.append (this.entry.getIPAddress ());
+		hbuilder.append (this.entry.getNetwork ());
 		hbuilder.append (this.entry.getTime ());
 		hbuilder.append (this.subactivity);
 
@@ -335,21 +336,14 @@ public abstract class LogReference extends LogEntry implements Serializable
 		throw new UnsupportedOperationException ();
 	}
 
-	/**
-	 * Get the Internet Protocol address which is associated with the logged
-	 * activity.
-	 *
-	 * @return A <code>String</code> containing the IP address, may be null
-	 */
-
 	@Override
-	public String getIPAddress ()
+	public Network getNetwork ()
 	{
-		return this.entry.getIPAddress ();
+		return this.entry.getNetwork ();
 	}
 
 	@Override
-	protected void setIPAddress (final String ip)
+	protected void setNetwork (final Network network)
 	{
 		throw new UnsupportedOperationException ();
 	}
@@ -371,7 +365,7 @@ public abstract class LogReference extends LogEntry implements Serializable
 		builder.append ("action", this.entry.getAction ());
 		builder.append ("activity", this.entry.getActivity ());
 		builder.append ("time", this.entry.getTime ());
-		builder.append ("ipaddress", this.entry.getIPAddress ());
+		builder.append ("network", this.entry.getNetwork ());
 		builder.append ("subactivity", this.entry.getActivity ());
 
 		return builder.toString ();
