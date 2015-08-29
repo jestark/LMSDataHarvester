@@ -16,25 +16,57 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
+import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
+
 /**
- * Create <code>Activity</code> instances.  This class extends
- * <code>AbstractActivityBuilder</code>, adding the necessary functionality to
- * handle named <code>Activity</code> instances.
+ * Create <code>Activity</code> instances. This class creates instances for the
+ * generic <code>Activity</code> implementations which only contain the
+ * associated <code>ActivityType</code> and <code>Course</code>, and acts as
+ * the common base for all of the builders which produce <code>Activity</code>
+ * instances with additional parameters.
+ * <p>
+ * To create builders for <code>Activity</code> instances, the
+ * <code>ActivityType</code> must be supplied when the builder is created.  The
+ * <code>ActivityType</code> is needed to determine which <code>Activity</code>
+ * implementation class is to be created by the builder.  It is possible to
+ * specify an <code>ActivityType</code> which does not match the selected
+ * builder.  In this case the builder will be created successfully, but an
+ * exception will occur when a field is set in the builder that does not exist
+ * in the implementation, or when the implementation is built and a required
+ * field is determined to be missing.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     NamedActivity
+ * @see     Activity
  */
 
-public final class ActivityBuilder extends AbstractActivityBuilder<NamedActivity>
+public class ActivityBuilder implements Builder<Activity>
 {
-	/** Helper to operate on <code>SubActivity</code> instances*/
-	private final DataStoreRWProxy<NamedActivity> activityProxy;
+	/** The Logger */
+	protected final Logger log;
 
-	/** The name of the <code>Activity</code> */
-	private String name;
+	/** Helper to operate on <code>SubActivity</code> instances*/
+	protected final DataStoreRWProxy<Activity> activityProxy;
+
+	/** Helper to substitute <code>Course</code> instances */
+	protected final DataStoreProxy<Course> courseProxy;
+
+	/** The associated <code>ActivityType</code> */
+	protected final ActivityType type;
+
+	/** The loaded or previously built <code>SubActivity</code> instance */
+	protected Activity oldActivity;
+
+	/** The <code>DataStore</code> id number for the <code>Activity</code> */
+	protected Long id;
+
+	/** The associated <code>Course</code> */
+	protected Course course;
 
 	/**
 	 * Get an instance of the <code>ActivityBuilder</code> for the specified
@@ -43,14 +75,12 @@ public final class ActivityBuilder extends AbstractActivityBuilder<NamedActivity
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 * @param  type                  The <code>ActivityType</code>, not null
 	 *
-	 * @return                       The <code>ActivityBuilder</code> instance
+	 * @return                       The <code>ActivityBuilder</code>
+	 *                               instance
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 * @throws IllegalStateException if the <code>DataStore</code> does not
 	 *                               have a default implementation class for
 	 *                               the <code>Activity</code>
-	 * @throws IllegalStateException if there is no <code>Activity</code> class
-	 *                               registered for the specified
-	 *                               <code>ActivityType</code>
 	 * @throws IllegalStateException if the <code>DomainModel</code> is
 	 *                               immutable
 	 */
@@ -71,29 +101,50 @@ public final class ActivityBuilder extends AbstractActivityBuilder<NamedActivity
 	}
 
 	/**
-	 * Create the <code>NamedActivityBuilder</code>.
+	 * Create the <code>AbstractActivityBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
+	 * @param  datastore                The <code>DataStore</code>, not null
+	 * @param  metadata                 The meta-data <code>Creator</code>
+	 *                                  instance, not null
+	 *
+	 * @throws IllegalArgumentException If the <code>ActivityType</code> does
+	 *                                  not exist in the <code>DataStore</code>
 	 */
 
 	protected ActivityBuilder (final DataStore datastore, final ActivityType type)
 	{
-		super (datastore, type);
+		assert datastore != null : "datastore is NULL";
+		assert type != null : "type is NULL";
 
-		Class<? extends NamedActivity> aclass = NamedActivity.getActivityClass (this.type);
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.courseProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Course.class), Course.SELECTOR_OFFERING, datastore);
+
+		this.type = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (ActivityType.class), ActivityType.SELECTOR_NAME, datastore)
+			.fetch (type);
+
+		if (this.type == null)
+		{
+			this.log.error ("This specified ActivityType does not exist in the DataStore");
+			throw new IllegalArgumentException ("ActivityType is not in the DataStore");
+		}
+
+		Class<? extends Activity> aclass = NamedActivity.getActivityClass (this.type);
 
 		if (aclass == null)
 		{
-			this.log.error ("There is no activity implementation class corresponding to {}", this.type);
-			throw new IllegalStateException ("No Activity class for the ActivityType");
+			aclass = GenericActivity.class;
 		}
 
-		this.activityProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (NamedActivity.class, aclass), Activity.SELECTOR_ID, datastore);
+		this.activityProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Activity.class, aclass), Activity.SELECTOR_ID, datastore);
+
+		this.id = null;
+		this.course = null;
+		this.oldActivity = null;
 	}
 
 	/**
-	 * Create an instance of the <code>NamedActivity</code>.
+	 * Create an instance of the <code>Activity</code>.
 	 *
 	 * @return                       The new <code>Activity</code> instance
 	 * @throws IllegalStateException If any if the fields is missing
@@ -101,7 +152,7 @@ public final class ActivityBuilder extends AbstractActivityBuilder<NamedActivity
 	 */
 
 	@Override
-	public NamedActivity build ()
+	public Activity build ()
 	{
 		this.log.trace ("build:");
 
@@ -111,21 +162,32 @@ public final class ActivityBuilder extends AbstractActivityBuilder<NamedActivity
 			throw new IllegalStateException ("course is NULL");
 		}
 
-		if (this.name == null)
-		{
-			this.log.error ("name is NULL");
-			throw new IllegalStateException ("name is NULL");
-		}
-
-		NamedActivity result = this.activityProxy.create ();
+		Activity result = this.activityProxy.create ();
 		result.setId (this.id);
 		result.setType (this.type);
 		result.setCourse (this.course);
-		result.setName (this.name);
 
 		this.oldActivity = this.activityProxy.insert (this.oldActivity, result);
 
 		return this.oldActivity;
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Activity</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>ActionBuilder</code>
+	 */
+
+	public ActivityBuilder clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.course = null;
+		this.oldActivity = null;
+
+		return this;
 	}
 
 	/**
@@ -141,8 +203,7 @@ public final class ActivityBuilder extends AbstractActivityBuilder<NamedActivity
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public ActivityBuilder load (final NamedActivity activity)
+	public ActivityBuilder load (final Activity activity)
 	{
 		this.log.trace ("load: activity={}", activity);
 
@@ -152,48 +213,70 @@ public final class ActivityBuilder extends AbstractActivityBuilder<NamedActivity
 			throw new NullPointerException ();
 		}
 
-		super.load (activity);
-		this.setName (activity.getName ());
+		if (! (this.getActivityType ()).equals (activity.getType ()))
+		{
+			this.log.error ("Invalid ActivityType:  required {}, received {}", this.getActivityType (), activity.getType ());
+			throw new IllegalArgumentException ("Invalid ActivityType");
+		}
+
+		this.id = activity.getId ();
+		this.setCourse (activity.getCourse ());
+		this.oldActivity = activity;
 
 		return this;
 	}
 
 	/**
-	 * Get the name of the <code>Activity</code>.
+	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
 	 *
-	 * @return The name of the <code>Activity</code>
+	 * @return The <code>ActivityType</code> instance
 	 */
 
-	public String getName ()
+	public final ActivityType getActivityType ()
 	{
-		return this.name;
+		return this.type;
 	}
 
 	/**
-	 * Set the name of the <code>Activity</code>.
+	 * Get the <code>Course</code> with which the <code>Activity</code> is
+	 * associated.
 	 *
-	 * @param  name                     The name of the <code>Activity</code>,
-	 *                                  not null
-	 *
-	 * @throws IllegalArgumentException if the name is empty
+	 * @return The <code>Course</code> instance
 	 */
 
-	public void setName (final String name)
+	public final Course getCourse ()
 	{
-		this.log.trace ("setName: name={}", name);
+		return this.course;
+	}
 
-		if (name == null)
+	/**
+	 * Set the <code>Course</code> with which the <code>Activity</code> is
+	 * associated.
+	 *
+	 * @param  course                   The <code>Course</code>, not null
+	 *
+	 * @throws IllegalArgumentException If the <code>Course</code> does not
+	 *                                  exist in the <code>DataStore</code>
+	 */
+
+	public final ActivityBuilder setCourse (final Course course)
+	{
+		this.log.trace ("setCourse: course={}", course);
+
+		if (course == null)
 		{
-			this.log.error ("Attempting to set a NULL name");
-			throw new NullPointerException ();
+			this.log.error ("Course is NULL");
+			throw new NullPointerException ("Course is NULL");
 		}
 
-		if (name.length () == 0)
+		this.course = this.courseProxy.fetch (course);
+
+		if (this.course == null)
 		{
-			this.log.error ("name is an empty string");
-			throw new IllegalArgumentException ("name is empty");
+			this.log.error ("This specified Course does not exist in the DataStore");
+			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
 
-		this.name = name;
+		return this;
 	}
 }
