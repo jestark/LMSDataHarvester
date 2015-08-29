@@ -394,32 +394,6 @@ public class Definition<T extends Element> implements MetaData<T>
 	}
 
 	/**
-	 * Copy the value corresponding to the specified <code>Property</code> from
-	 * the source <code>Element</code> to the destination <code>Element</code>
-	 *
-	 * @param  property The <code>Property</code>, not null
-	 * @param  dest     The destination <code>Element</code>, not null
-	 * @param  source   The source <code>Element</code>, not null
-	 */
-
-	@Override
-	public void copyValue (final Property<?> property, final T dest, final T source)
-	{
-		this.log.trace ("copyValue: property={}, dest={}, source={}", property, dest, source);
-
-		assert dest != null : "dest is NULL";
-		assert source != null : "source is NULL";
-		assert property != null : "property is NULL";
-
-		PropertyReference<? super T, ?> ref = this.getPropertyReference (property);
-
-		assert ref != null : "Property is not registered";
-		assert ref.isWritable () : "property can not be written";
-
-		ref.copyValue (dest, source);
-	}
-
-	/**
 	 * Convenience method to retrieve the <code>Reference</code> associated
 	 * with the specified <code>Property</code>.
 	 *

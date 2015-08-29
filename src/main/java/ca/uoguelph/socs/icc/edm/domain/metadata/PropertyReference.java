@@ -102,21 +102,4 @@ final class PropertyReference<T extends Element, V>
 
 		this.set.accept (element, value);
 	}
-
-	/**
-	 * Copy a value from the source <code>Element</code> to the destination
-	 * <code>Element</code>
-	 *
-	 * @param  dest     The destination <code>Element</code>, not null
-	 * @param  source   The source <code>Element</code>, not null
-	 */
-
-	public void copyValue (final T dest, final T source)
-	{
-		assert dest != null : "dest is NULL";
-		assert source != null : "source is NULL";
-		assert this.isWritable () : "element is Read-Only";
-
-		this.set.accept (dest, this.get.apply (source));
-	}
 }

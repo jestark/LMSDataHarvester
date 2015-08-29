@@ -152,17 +152,6 @@ public interface MetaData<T extends Element>
 	public abstract <V> void setValue (Property<V> property, T element, V value);
 
 	/**
-	 * Copy the value corresponding to the specified <code>Property</code> from
-	 * the source <code>Element</code> to the destination <code>Element</code>
-	 *
-	 * @param  property The <code>Property</code>, not null
-	 * @param  dest     The destination <code>Element</code>, not null
-	 * @param  source   The source <code>Element</code>, not null
-	 */
-
-	public abstract void copyValue (Property<?> property, T dest, T source);
-
-	/**
 	 * Get a <code>Collection</code> containing the values that are associated
 	 * with the specified <code>Property</code>.
 	 *
