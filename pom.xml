@@ -31,13 +31,6 @@
 			<version>LATEST</version>
 		</dependency>
 
-		<!-- Apache commons configuration library -->
-		<dependency>
-			<groupId>commons-configuration</groupId>
-			<artifactId>commons-configuration</artifactId>
-			<version>LATEST</version>
-		</dependency>
-
 		<!-- Apache commons CSV library -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
