@@ -21,8 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
-
 /**
  * Create new <code>Action</code> instances.  This class extends
  * <code>AbstractBuilder</code>, adding the functionality required to
@@ -33,27 +31,19 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     Action
  */
 
-public final class ActionBuilder extends AbstractBuilder<Action>
+public final class ActionBuilder implements Builder<Action>
 {
-	/**
-	 * Get an instance of the <code>ActionBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>ActionBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Action</code>
-	 */
+	/** The Logger */
+	private final Logger log;
 
-	public static ActionBuilder getInstance (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
+	/** Helper to operate on <code>Action</code> instances*/
+	private final DataStoreRWProxy<Action> actionProxy;
 
-		return AbstractBuilder.getInstance (datastore, Action.class, ActionBuilder::new);
-	}
+	/** The <code>DataStore</code> id number for the <code>Action</code> */
+	private Long id;
+
+	/** The name of the <code>Action</code> */
+	private String name;
 
 	/**
 	 * Get an instance of the <code>ActionBuilder</code> for the specified
@@ -70,39 +60,90 @@ public final class ActionBuilder extends AbstractBuilder<Action>
 	 *                               immutable
 	 */
 
-
 	public static ActionBuilder getInstance (final DomainModel model)
 	{
-		return ActionBuilder.getInstance (AbstractBuilder.getDataStore (model));
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new ActionBuilder (model.getDataStore ());
 	}
 
 	/**
 	 * Create the <code>ActionBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected ActionBuilder (final DataStore datastore, final Creator<Action> metadata)
+	protected ActionBuilder (final DataStore datastore)
 	{
-		super (datastore, metadata);
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.actionProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Action.class), Action.SELECTOR_NAME, datastore);
+
+		this.id = null;
+		this.name = null;
 	}
 
 	/**
-	 * Load a <code>Action</code> instance into the builder.  This method
+	 * Create an instance of the <code>Action</code>.
+	 *
+	 * @return                       The new <code>Action</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public Action build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.name == null)
+		{
+			this.log.error ("Attempting to create an Action without a name");
+			throw new IllegalStateException ("name is NULL");
+		}
+
+		Action result = this.actionProxy.create ();
+		result.setId (this.id);
+		result.setName (this.name);
+
+		return this.actionProxy.insert (null, result);
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>ActionBuilder</code>
+	 */
+
+	public ActionBuilder clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.name = null;
+
+		return this;
+	}
+
+	/**
+	 * Load an <code>Action</code> instance into the builder.  This method
 	 * resets the builder and initializes all of its parameters from
 	 * the specified <code>Action</code> instance.  The  parameters are
 	 * validated as they are set.
 	 *
 	 * @param  action                   The <code>Action</code>, not null
 	 *
+	 * @return                          This <code>ActionBuilder</code>
 	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>Action</code> instance to be
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public void load (final Action action)
+	public ActionBuilder load (final Action action)
 	{
 		this.log.trace ("load: action={}", action);
 
@@ -112,10 +153,10 @@ public final class ActionBuilder extends AbstractBuilder<Action>
 			throw new NullPointerException ();
 		}
 
-		super.load (action);
+		this.id = action.getId ();
 		this.setName (action.getName ());
 
-		this.builder.setProperty (Action.ID, action.getId ());
+		return this;
 	}
 
 	/**
@@ -126,7 +167,7 @@ public final class ActionBuilder extends AbstractBuilder<Action>
 
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (Action.NAME);
+		return this.name;
 	}
 
 	/**
@@ -135,10 +176,11 @@ public final class ActionBuilder extends AbstractBuilder<Action>
 	 * @param  name                     The name of the <code>Action</code>,
 	 *                                  not null
 	 *
+	 * @return                          This <code>ActionBuilder</code>
 	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public void setName (final String name)
+	public ActionBuilder setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -154,6 +196,8 @@ public final class ActionBuilder extends AbstractBuilder<Action>
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (Action.NAME, name);
+		this.name = name;
+
+		return this;
 	}
 }

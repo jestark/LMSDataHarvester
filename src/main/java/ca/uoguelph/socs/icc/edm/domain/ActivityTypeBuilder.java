@@ -16,13 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.Set;
-
-import java.util.HashSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 
 /**
  * Create new <code>ActivityType</code> instances.  This class extends
@@ -34,30 +31,25 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     ActivityType
  */
 
-public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
+public final class ActivityTypeBuilder implements Builder<ActivityType>
 {
-	/**
-	 * Get an instance of the <code>ActivityTypeBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>ActivityTypeBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>ActivityType</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
+	/** The Logger */
+	private final Logger log;
 
-	public static ActivityTypeBuilder getInstance (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
+	/** Helper to substitute <code>ActivitySource</code> instances */
+	private final DataStoreProxy<ActivitySource> sourceProxy;
 
-		return AbstractBuilder.getInstance (datastore, ActivityType.class, ActivityTypeBuilder::new);
-	}
+	/** Helper to operate on <code>ActivityType</code> instances*/
+	private final DataStoreRWProxy<ActivityType> typeProxy;
+
+	/** The <code>DataStore</code> id number for the <code>ActivityType</code> */
+	private Long id;
+
+	/** The name of the <code>ActivityType</code> */
+	private String name;
+
+	/** The <code>ActivitySource</code> */
+	private ActivitySource source;
 
 	/**
 	 * Get an instance of the <code>ActivityTypeBuilder</code> for the specified
@@ -75,24 +67,83 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 	 *                               immutable
 	 */
 
-
 	public static ActivityTypeBuilder getInstance (final DomainModel model)
 	{
-		return ActivityTypeBuilder.getInstance (AbstractBuilder.getDataStore (model));
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new ActivityTypeBuilder (model.getDataStore ());
 	}
 
 	/**
 	 * Create the <code>ActivityTypeBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
-	 * @param  metadata  The <code>MetaData</code> for the
-	 *                   <code>Element</code>, not null
 	 */
 
-	protected ActivityTypeBuilder (final DataStore datastore, final Creator<ActivityType> metadata)
+	protected ActivityTypeBuilder (final DataStore datastore)
 	{
-		super (datastore, metadata);
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.sourceProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (ActivitySource.class), ActivitySource.SELECTOR_NAME, datastore);
+		this.typeProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (ActivityType.class), ActivityType.SELECTOR_NAME, datastore);
+
+		this.id = null;
+		this.name = null;
+		this.source = null;
+	}
+
+	/**
+	 * Create an instance of the <code>ActivityType</code>.
+	 *
+	 * @return                       The new <code>ActivityType</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public ActivityType build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.name == null)
+		{
+			this.log.error ("Attempting to create an ActivityType without a name");
+			throw new IllegalStateException ("name is NULL");
+		}
+
+		if (this.source == null)
+		{
+			this.log.error ("Attempting to create an ActivityType without an ActivitySource");
+			throw new IllegalStateException ("source is NULL");
+		}
+
+		ActivityType result = this.typeProxy.create ();
+		result.setId (this.id);
+		result.setName (this.name);
+		result.setSource (this.source);
+
+		return this.typeProxy.insert (null, result);
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>ActivityTypeBuilder</code>
+	 */
+
+	public ActivityTypeBuilder clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.name = null;
+		this.source = null;
+
+		return this;
 	}
 
 	/**
@@ -103,13 +154,13 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 	 *
 	 * @param  type                     The <code>ActivityType</code>, not null
 	 *
+	 * @return                          This <code>ActivityTypeBuilder</code>
 	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>ActivityType</code> instance to be
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public void load (final ActivityType type)
+	public ActivityTypeBuilder load (final ActivityType type)
 	{
 		this.log.trace ("load: type={}", type);
 
@@ -119,11 +170,11 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 			throw new NullPointerException ();
 		}
 
-		super.load (type);
+		this.id = type.getId ();
 		this.setName (type.getName ());
 		this.setActivitySource (type.getSource ());
 
-		this.builder.setProperty (ActivityType.ID, type.getId ());
+		return this;
 	}
 
 	/**
@@ -135,7 +186,7 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (ActivityType.NAME);
+		return this.name;
 	}
 
 	/**
@@ -144,10 +195,11 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 	 * @param  name                     The name of the
 	 *                                  <code>ActivityType</code>, not null
 	 *
+	 * @return                          This <code>ActivityTypeBuilder</code>
 	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public void setName (final String name)
+	public ActivityTypeBuilder setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -163,7 +215,9 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (ActivityType.NAME, name);
+		this.name = name;
+
+		return this;
 	}
 
 	/**
@@ -174,7 +228,7 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 
 	public ActivitySource getActivitySource ()
 	{
-		return this.builder.getPropertyValue (ActivityType.SOURCE);
+		return this.source;
 	}
 
 	/**
@@ -183,11 +237,12 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 	 * @param  source                   The <code>ActivitySource</code> for the
 	 *                                  <code>ActivityType</code>
 	 *
+	 * @return                          This <code>ActivityTypeBuilder</code>
 	 * @throws IllegalArgumentException If the <code>AcivitySourse</code> does
 	 *                                  not exist in the <code>DataStore</code>
 	 */
 
-	public void setActivitySource (final ActivitySource source)
+	public ActivityTypeBuilder setActivitySource (final ActivitySource source)
 	{
 		this.log.trace ("setSource: source={}", source);
 
@@ -197,12 +252,14 @@ public final class ActivityTypeBuilder extends AbstractBuilder<ActivityType>
 			throw new NullPointerException ("source is NULL");
 		}
 
-		if (! this.datastore.contains (source))
+		this.source = this.sourceProxy.fetch (source);
+
+		if (this.source == null)
 		{
 			this.log.error ("The specified ActivitySource does not exist in the DataStore: {}", source);
 			throw new IllegalArgumentException ("ActivitySource is not in the DataStore");
 		}
 
-		this.builder.setProperty (ActivityType.SOURCE, source);
+		return this;
 	}
 }

@@ -16,9 +16,13 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import java.util.Set;
+import java.util.HashSet;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Create and modify <code>User</code> instances.  This class extends
@@ -31,27 +35,37 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     User
  */
 
-public final class UserBuilder extends AbstractBuilder<User>
+public final class UserBuilder implements Builder<User>
 {
-	/**
-	 * Get an instance of the <code>UserBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The <code>UserBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>User</code>
-	 */
+	/** The Logger */
+	private final Logger log;
 
-	public static UserBuilder getInstance (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
+	/** Helper to substitute <code>Enrolment</code> instances */
+	private final DataStoreProxy<Enrolment> enrolmentProxy;
 
-		return AbstractBuilder.getInstance (datastore, User.class, UserBuilder::new);
-	}
+	/** Helper to operate on <code>User</code> instances */
+	private final DataStoreRWProxy<User> userProxy;
+
+	/** The loaded or previously built <code>User</code> instance */
+	private User oldUser;
+
+	/** The <code>DataStore</code> id number for the <code>User</code> */
+	private Long id;
+
+	/** The student id number of the <code>User</code> */
+	private Integer idNumber;
+
+	/** The firstname of the <code>User</code> */
+	private String firstname;
+
+	/** The last name of the <code>User</code> */
+	private String lastname;
+
+	/** The username of the <code>User</code> */
+	private String username;
+
+	/** The associates <code>Enrolment</code> instances */
+	private final Set<Enrolment> enrolments;
 
 	/**
 	 * Get an instance of the <code>UserBuilder</code> for the specified
@@ -68,22 +82,145 @@ public final class UserBuilder extends AbstractBuilder<User>
 	 *                               immutable
 	 */
 
-
 	public static UserBuilder getInstance (final DomainModel model)
 	{
-		return UserBuilder.getInstance (AbstractBuilder.getDataStore (model));
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new UserBuilder (model.getDataStore ());
 	}
 
 	/**
 	 * Create an instance of the <code>UserBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected UserBuilder (final DataStore datastore, final Creator<User> metadata)
+	protected UserBuilder (final DataStore datastore)
 	{
-		super (datastore, metadata);
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.enrolmentProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Enrolment.class), Enrolment.SELECTOR_ID, datastore);
+		this.userProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (User.class), User.SELECTOR_USERNAME, datastore);
+
+		this.id = null;
+		this.idNumber = null;
+		this.firstname = null;
+		this.lastname = null;
+		this.username = null;
+		this.oldUser = null;
+
+		this.enrolments = new HashSet<Enrolment> ();
+	}
+
+	/**
+	 * Create an instance of the <code>User</code>.
+	 *
+	 * @return                       The new <code>User</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public User build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.idNumber == null)
+		{
+			this.log.error ("Attempting to create an User without an ID number");
+			throw new IllegalStateException ("idNumber is NULL");
+		}
+
+		if (this.firstname == null)
+		{
+			this.log.error ("Attempting to create an User without a First name");
+			throw new IllegalStateException ("firstname is NULL");
+		}
+
+		if (this.lastname == null)
+		{
+			this.log.error ("Attempting to create an User without an Last name");
+			throw new IllegalStateException ("lastname is NULL");
+		}
+
+		if (this.username == null)
+		{
+			this.log.error ("Attempting to create an User without a username");
+			throw new IllegalStateException ("username is NULL");
+		}
+
+		if ((this.oldUser == null)
+				|| (! this.userProxy.contains (this.oldUser))
+				|| ((this.oldUser.getIdNumber () != this.idNumber)
+					&& (this.oldUser.getUsername () != this.username)))
+		{
+			User result = this.userProxy.create ();
+			result.setId (this.id);
+			result.setIdNumber (this.idNumber);
+			result.setFirstname (this.firstname);
+			result.setLastname (this.lastname);
+			result.setUsername (this.username);
+
+			this.enrolments.forEach (x -> result.addEnrolment (x));
+
+			this.oldUser = this.userProxy.insert (this.oldUser, result);
+
+			if (! this.oldUser.getFirstname ().equals (this.firstname))
+			{
+				this.log.error ("User is already in the datastore with a first name of: {}, vs. the specified value: {}", this.oldUser.getFirstname (), this.firstname);
+				throw new IllegalArgumentException ("User is already in the datastore with a different first name");
+			}
+
+			if (! this.oldUser.getLastname ().equals (this.lastname))
+			{
+				this.log.error ("User is already in the datastore with a last name of: {}, vs. the specified value: {}", this.oldUser.getLastname (), this.lastname);
+				throw new IllegalArgumentException ("User is already in the datastore with a different last name");
+			}
+		}
+		else if ((this.oldUser.getIdNumber () != this.idNumber)
+					&& (this.oldUser.getUsername () != this.username))
+		{
+			this.oldUser.setFirstname (this.firstname);
+			this.oldUser.setLastname (this.lastname);
+
+			this.enrolments.stream ()
+				.filter (x -> ! this.oldUser.getEnrolments ().contains (x))
+				.forEach (x -> this.oldUser.addEnrolment (x));
+		}
+		else
+		{
+			this.log.error ("Only one of the User's User name and ID number was assigned a new value");
+			throw new IllegalStateException ("Both the user name and the ID number must be changed");
+		}
+
+		return this.oldUser;
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>UserBuilder</code>
+	 */
+
+	public UserBuilder clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.idNumber = null;
+		this.firstname = null;
+		this.lastname = null;
+		this.username = null;
+		this.oldUser = null;
+
+		this.enrolments.clear ();
+
+		return this;
 	}
 
 	/**
@@ -94,13 +231,13 @@ public final class UserBuilder extends AbstractBuilder<User>
 	 *
 	 * @param  user                     The <code>User</code>, not null
 	 *
+	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>User</code> instance to be
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public void load (final User user)
+	public UserBuilder load (final User user)
 	{
 		this.log.trace ("load: user={}", user);
 
@@ -110,13 +247,18 @@ public final class UserBuilder extends AbstractBuilder<User>
 			throw new NullPointerException ();
 		}
 
-		super.load (user);
+		this.clear ();
+
+		this.id = user.getId ();
 		this.setIdNumber (user.getIdNumber ());
 		this.setUsername (user.getUsername ());
 		this.setLastname (user.getLastname ());
 		this.setFirstname (user.getFirstname ());
+		this.oldUser = user;
 
-		this.builder.setProperty (User.ID, user.getId ());
+		user.getEnrolments ().forEach (x -> this.addEnrolment (x));
+
+		return this;
 	}
 
 	/**
@@ -131,7 +273,7 @@ public final class UserBuilder extends AbstractBuilder<User>
 
 	public Integer getIdNumber()
 	{
-		return this.builder.getPropertyValue (User.IDNUMBER);
+		return this.idNumber;
 	}
 
 	/**
@@ -139,10 +281,11 @@ public final class UserBuilder extends AbstractBuilder<User>
 	 *
 	 * @param  idnumber                 The ID Number, not null
 	 *
+	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If the ID number is negative
 	 */
 
-	public void setIdNumber (final Integer idnumber)
+	public UserBuilder setIdNumber (final Integer idnumber)
 	{
 		this.log.trace ("setIdNumber: idnumber={}", idnumber);
 
@@ -158,7 +301,9 @@ public final class UserBuilder extends AbstractBuilder<User>
 			throw new IllegalArgumentException ("idnumber is negative");
 		}
 
-		this.builder.setProperty (User.IDNUMBER, idnumber);
+		this.idNumber = idnumber;
+
+		return this;
 	}
 
 	/**
@@ -170,19 +315,20 @@ public final class UserBuilder extends AbstractBuilder<User>
 
 	public String getFirstname ()
 	{
-		return this.builder.getPropertyValue (User.FIRSTNAME);
+		return this.firstname;
 	}
 
 	/**
 	 * Set the first name of the <code>User</code>.
 	 *
-	 * @param  firstname                The firstname of the <code>User</code>,
+	 * @param  firstname                The first name of the <code>User</code>,
 	 *                                  not null
 	 *
-	 * @throws IllegalArgumentException If the firstname is empty
+	 * @return                          This <code>UserBuilder</code>
+	 * @throws IllegalArgumentException If the first name is empty
 	 */
 
-	public void setFirstname (final String firstname)
+	public UserBuilder setFirstname (final String firstname)
 	{
 		this.log.trace ("setFirstname: firstname={}", firstname);
 
@@ -198,7 +344,9 @@ public final class UserBuilder extends AbstractBuilder<User>
 			throw new IllegalArgumentException ("firstname is empty");
 		}
 
-		this.builder.setProperty (User.FIRSTNAME, firstname);
+		this.firstname = firstname;
+
+		return this;
 	}
 
 	/**
@@ -209,19 +357,20 @@ public final class UserBuilder extends AbstractBuilder<User>
 
 	public String getLastname ()
 	{
-		return this.builder.getPropertyValue (User.LASTNAME);
+		return this.lastname = lastname;
 	}
 
 	/**
 	 * Set the last name of the <code>User</code>.
 	 *
-	 * @param  lastname                 The lastname of the <code>User</code>,
+	 * @param  lastname                 The last name of the <code>User</code>,
 	 *                                  not null
 	 *
-	 * @throws IllegalArgumentException If the lastname is empty
+	 * @return                          This <code>UserBuilder</code>
+	 * @throws IllegalArgumentException If the last name is empty
 	 */
 
-	public void setLastname (final String lastname)
+	public UserBuilder setLastname (final String lastname)
 	{
 		this.log.trace ("setLastname: lastname={}", lastname);
 
@@ -237,7 +386,9 @@ public final class UserBuilder extends AbstractBuilder<User>
 			throw new IllegalArgumentException ("lastname is empty");
 		}
 
-		this.builder.setProperty (User.LASTNAME, lastname);
+		this.lastname = lastname;
+
+		return this;
 	}
 
 	/**
@@ -252,19 +403,20 @@ public final class UserBuilder extends AbstractBuilder<User>
 
 	public String getUsername ()
 	{
-		return this.builder.getPropertyValue (User.USERNAME);
+		return this.username;
 	}
 
 	/**
 	 * Set the username of the <code>User</code>.
 	 *
-	 * @param  username                 The username of the <code>User</code>,
+	 * @param  username                 The user name of the <code>User</code>,
 	 *                                  not null
 	 *
-	 * @throws IllegalArgumentException If the username is empty
+	 * @return                          This <code>UserBuilder</code>
+	 * @throws IllegalArgumentException If the user name is empty
 	 */
 
-	public void setUsername (final String username)
+	public UserBuilder setUsername (final String username)
 	{
 		this.log.trace ("setUsername: username={}", username);
 
@@ -280,7 +432,9 @@ public final class UserBuilder extends AbstractBuilder<User>
 			throw new IllegalArgumentException ("Username is empty");
 		}
 
-		this.builder.setProperty (User.USERNAME, username);
+		this.username = username;
+
+		return this;
 	}
 
 	/**
@@ -292,12 +446,13 @@ public final class UserBuilder extends AbstractBuilder<User>
 	 *                                  associated with the <code>User</code>,
 	 *                                  not null
 	 *
+	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If there is already a <code>User</code>
 	 *                                  associated with the
 	 *                                  <code>Enrolment</code>
 	 */
 
-	public void addEnrolment (final Enrolment enrolment)
+	public UserBuilder addEnrolment (final Enrolment enrolment)
 	{
 		this.log.trace ("addEnrolment: enrolment={}", enrolment);
 
@@ -307,11 +462,17 @@ public final class UserBuilder extends AbstractBuilder<User>
 			throw new NullPointerException ();
 		}
 
-		if (! this.datastore.contains (enrolment))
+		Enrolment add = this.enrolmentProxy.fetch (enrolment);
+
+		if (add == null)
 		{
 			this.log.error ("Specified Enrolment does not exist in the DataStore");
 			throw new IllegalArgumentException ("Enrolment not in DataStore");
 		}
+
+		this.enrolments.add (add);
+
+		return this;
 	}
 
 	/**
@@ -327,12 +488,13 @@ public final class UserBuilder extends AbstractBuilder<User>
 	 * @param  enrolment                The <code>Enrolment</code> to remove
 	 *                                  from the <code>User</code>, not null
 	 *
+	 * @return                          This <code>UserBuilder</code>
 	 * @throws IllegalArgumentException If there is no association between the
 	 *                                  <code>User</code> and the
 	 *                                  <code>Enrolment</code>
 	 */
 
-	public void removeEnrolment (final Enrolment enrolment)
+	public UserBuilder removeEnrolment (final Enrolment enrolment)
 	{
 		this.log.trace ("removeEnrolment: enrolment={}", enrolment);
 
@@ -342,10 +504,16 @@ public final class UserBuilder extends AbstractBuilder<User>
 			throw new NullPointerException ();
 		}
 
-		if (! this.datastore.contains (enrolment))
+		Enrolment del = this.enrolmentProxy.fetch (enrolment);
+
+		if (del == null)
 		{
 			this.log.error ("Specified Enrolment does not exist in the DataStore");
 			throw new IllegalArgumentException ("Enrolment not in DataStore");
 		}
+
+		this.enrolments.remove (del);
+
+		return this;
 	}
 }

@@ -16,9 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Create new <code>Grade</code> instances.  This class extends
@@ -31,29 +32,31 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     Grade
  */
 
-public final class GradeBuilder extends AbstractBuilder<Grade>
+public final class GradeBuilder implements Builder<Grade>
 {
-	/**
-	 * Get an instance of the <code>GradeBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>GradeBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Grade</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
+	/** The Logger */
+	private final Logger log;
 
-	public static GradeBuilder getInstance (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
+	/** Helper to substitute <code>Activity</code> instances */
+	private final DataStoreProxy<Activity> activityProxy;
 
-		return AbstractBuilder.getInstance (datastore, Grade.class, GradeBuilder::new);
-	}
+	/** Helper to substitute <code>Enrolment</code> instances */
+	private final DataStoreProxy<Enrolment> enrolmentProxy;
+
+	/** Helper to operate on <code>Grade</code> instances */
+	private final DataStoreRWProxy<Grade> gradeProxy;
+
+	/** The loaded or previously built <code>Grade</code> instance */
+	private Grade oldGrade;
+
+	/** The associated <code>Activity</code> */
+	private Activity activity;
+
+	/** The associated <code>Enrolment</code> */
+	private Enrolment enrolment;
+
+	/** The value of the <code>Grade</code> */
+	private Integer grade;
 
 	/**
 	 * Get an instance of the <code>GradeBuilder</code> for the specified
@@ -70,22 +73,109 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	 *                               immutable
 	 */
 
-
 	public static GradeBuilder getInstance (final DomainModel model)
 	{
-		return GradeBuilder.getInstance (AbstractBuilder.getDataStore (model));
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new GradeBuilder (model.getDataStore ());
 	}
 
 	/**
 	 * Create the <code>GradeBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected GradeBuilder (final DataStore datastore, final Creator<Grade> metadata)
+	protected GradeBuilder (final DataStore datastore)
 	{
-		super (datastore, metadata);
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.activityProxy = DataStoreProxy.getInstance (datastore.getProfile ().getMetaData (Activity.class), Activity.SELECTOR_ID, datastore);
+		this.enrolmentProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Enrolment.class), Enrolment.SELECTOR_ID, datastore);
+		this.gradeProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Grade.class), Grade.SELECTOR_PKEY, datastore);
+
+		this.activity = null;
+		this.enrolment = null;
+		this.grade = null;
+		this.oldGrade = null;
+	}
+
+	/**
+	 * Create an instance of the <code>Grade</code>.
+	 *
+	 * @return                       The new <code>Grade</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public Grade build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.activity == null)
+		{
+			this.log.error ("Attempting to create an Grade without an Activity");
+			throw new IllegalStateException ("activity is NULL");
+		}
+
+		if (this.enrolment == null)
+		{
+			this.log.error ("Attempting to create an Grade without an Enrolment");
+			throw new IllegalStateException ("enrolment is NULL");
+		}
+
+		if (this.grade == null)
+		{
+			this.log.error ("Attempting to create an Grade without a Grade");
+			throw new IllegalStateException ("grade is NULL");
+		}
+
+		if ((this.oldGrade == null)
+				|| (this.oldGrade.getActivity () != this.activity)
+				|| (this.oldGrade.getEnrolment () != this.enrolment))
+		{
+			Grade result = this.gradeProxy.create ();
+			result.setActivity (this.activity);
+			result.setEnrolment (this.enrolment);
+			result.setGrade (this.grade);
+
+			this.oldGrade = this.gradeProxy.insert (this.oldGrade, result);
+
+			if (! this.oldGrade.getGrade ().equals (this.grade))
+			{
+				this.log.error ("Grade is already in the datastore with a value of: {} vs. the specified value: {}", this.oldGrade.getGrade (), this.grade);
+				throw new IllegalStateException ("Grade already exists but with a different value");
+			}
+		}
+		else
+		{
+			this.oldGrade.setGrade (this.grade);
+		}
+
+		return oldGrade;
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>GradeBuilder</code>
+	 */
+
+	public GradeBuilder clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.activity = null;
+		this.enrolment = null;
+		this.grade = null;
+		this.oldGrade = null;
+
+		return this;
 	}
 
 	/**
@@ -96,13 +186,13 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	 *
 	 * @param  grade                    The <code>Grade</code>, not null
 	 *
+	 * @return                          This <code>GradeBuilder</code>
 	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>Grade</code> instance to be
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public void load (final Grade grade)
+	public GradeBuilder load (final Grade grade)
 	{
 		this.log.trace ("load: grade={}", grade);
 
@@ -112,10 +202,13 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 			throw new NullPointerException ();
 		}
 
-		super.load (grade);
 		this.setActivity (grade.getActivity ());
 		this.setEnrolment (grade.getEnrolment ());
 		this.setGrade (grade.getGrade ());
+
+		this.oldGrade = grade;
+
+		return this;
 	}
 
 	/**
@@ -127,7 +220,7 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 
 	public Activity getActivity ()
 	{
-		return this.builder.getPropertyValue (Grade.ACTIVITY);
+		return this.activity;
 	}
 
 	/**
@@ -136,11 +229,12 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	 *
 	 * @param  activity                 The <code>Activity</code>, not null
 	 *
+	 * @return                          This <code>GradeBuilder</code>
 	 * @throws IllegalArgumentException if the <code>Activity</code> is not in
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public void setActivity (final Activity activity)
+	public GradeBuilder setActivity (final Activity activity)
 	{
 		this.log.trace ("setActivity: activity={}", activity);
 
@@ -150,7 +244,15 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 			throw new NullPointerException ("The specified activity is NULL");
 		}
 
-		this.builder.setProperty (Grade.ACTIVITY, activity);
+		this.activity = this.activityProxy.fetch (activity);
+
+		if (this.activity == null)
+		{
+			this.log.error ("The specified Activity does not exist in the DataStore");
+			throw new IllegalArgumentException ("Activity is not in the DataStore");
+		}
+
+		return this;
 	}
 
 	/**
@@ -162,7 +264,7 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 
 	public Enrolment getEnrolment ()
 	{
-		return this.builder.getPropertyValue (Grade.ENROLMENT);
+		return this.enrolment;
 	}
 
 	/**
@@ -171,11 +273,12 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	 *
 	 * @param  enrolment                The <code>Enrolment</code>, not null
 	 *
+	 * @return                          This <code>GradeBuilder</code>
 	 * @throws IllegalArgumentException if the <code>Activity</code> is not in
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public void setEnrolment (final Enrolment enrolment)
+	public GradeBuilder setEnrolment (final Enrolment enrolment)
 	{
 		this.log.trace ("setEnrolment: enrolment={}", enrolment);
 
@@ -185,7 +288,15 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 			throw new NullPointerException ("The specified Enrolment is NULL");
 		}
 
-		this.builder.setProperty (Grade.ENROLMENT, enrolment);
+		this.enrolment = this.enrolmentProxy.fetch (enrolment);
+
+		if (this.enrolment == null)
+		{
+			this.log.error ("The specified Enrolment does not exist in the DataStore");
+			throw new IllegalArgumentException ("Enrolment is not in the DataStore");
+		}
+
+		return this;
 	}
 
 	/**
@@ -199,7 +310,7 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 
 	public Integer getGrade ()
 	{
-		return this.builder.getPropertyValue (Grade.GRADE);
+		return this.grade;
 	}
 
 	/**
@@ -208,11 +319,12 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 	 * @param  grade                    The value of the <code>Grade</code>,
 	 *                                  not null
 	 *
+	 * @return                          This <code>GradeBuilder</code>
 	 * @throws IllegalArgumentException If the value is less than zero or
 	 *                                  greater than 100
 	 */
 
-	public void setGrade (final Integer grade)
+	public GradeBuilder setGrade (final Integer grade)
 	{
 		this.log.trace ("setGrade: grade={}", grade);
 
@@ -234,6 +346,8 @@ public final class GradeBuilder extends AbstractBuilder<Grade>
 			throw new IllegalArgumentException ("Grade is greater than 100%");
 		}
 
-		this.builder.setProperty (Grade.GRADE, grade);
+		this.grade = grade;
+
+		return this;
 	}
 }

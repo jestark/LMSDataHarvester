@@ -16,11 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.function.BiFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 
 /**
  * Abstract builder for <code>Activity</code> instances.  This class acts as
@@ -43,63 +42,76 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     Activity
  */
 
-public abstract class AbstractActivityBuilder<T extends Activity> extends AbstractBuilder<T>
+public abstract class AbstractActivityBuilder<T extends Activity> implements Builder<T>
 {
-	/**
-	 * Get an instance of the <code>ActivityBuilder</code> which corresponds to
-	 * the specified <code>ActivityType</code>.
-	 *
-	 * @param  <T>                   The <code>Element</code> type of the
-	 *                               builder
-	 * @param  <U>                   The type of the builder
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  metadata              The meta-data <code>Creator</code>
-	 *                               instance, not null
-	 * @param  type                  The <code>ActivityType</code>, not null
-	 * @param  create                Method reference to the constructor for
-	 *                               the builder
-	 *
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Activity</code>
-	 */
+	/** The Logger */
+	protected final Logger log;
 
-	public static <T extends Activity, U extends AbstractActivityBuilder<T>> U getInstance (final DataStore datastore, final Creator<T> metadata, final ActivityType type, final BiFunction<DataStore, Creator<T>, U> create)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert type != null : "type is NULL";
-		assert create != null : "create is NULL";
-		assert datastore.contains (type) : "type is not in the datastore";
+	/** Helper to substitute <code>Course</code> instances */
+	protected final DataStoreProxy<Course> courseProxy;
 
-		// Exception here because this is the fist time that it is checked
-		if (! datastore.getProfile ().hasElementClass (Activity.class))
-		{
-			throw new IllegalStateException ("Element is not available for this datastore");
-		}
+	/** The loaded or previously built <code>SubActivity</code> instance */
+	protected T oldActivity;
 
-		// Exception here because this is the fist time that it is checked
-		if (! datastore.isOpen ())
-		{
-			throw new IllegalStateException ("datastore is closed");
-		}
+	/** The associated <code>ActivityType</code> */
+	protected final ActivityType type;
 
-		U builder = create.apply (datastore, metadata);
-		builder.setActivityType (type);
+	/** The <code>DataStore</code> id number for the <code>Activity</code> */
+	protected Long id;
 
-		return builder;
-	}
+	/** The associated <code>Course</code> */
+	protected Course course;
 
 	/**
 	 * Create the <code>AbstractActivityBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
+	 * @param  datastore                The <code>DataStore</code>, not null
+	 * @param  metadata                 The meta-data <code>Creator</code>
+	 *                                  instance, not null
+	 *
+	 * @throws IllegalArgumentException If the <code>ActivityType</code> does
+	 *                                  not exist in the <code>DataStore</code>
 	 */
 
-	protected AbstractActivityBuilder (final DataStore datastore, final Creator<T> metadata)
+	protected AbstractActivityBuilder (final DataStore datastore, final ActivityType type)
 	{
-		super (datastore, metadata);
+		assert datastore != null : "datastore is NULL";
+		assert type != null : "type is NULL";
+
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.courseProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Course.class), Course.SELECTOR_OFFERING, datastore);
+
+		this.type = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (ActivityType.class), ActivityType.SELECTOR_NAME, datastore)
+			.fetch (type);
+
+		if (this.type == null)
+		{
+			this.log.error ("This specified ActivityType does not exist in the DataStore");
+			throw new IllegalArgumentException ("ActivityType is not in the DataStore");
+		}
+
+		this.id = null;
+		this.course = null;
+		this.oldActivity = null;
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Activity</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>ActionBuilder</code>
+	 */
+
+	public AbstractActivityBuilder<T> clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.course = null;
+		this.oldActivity = null;
+
+		return this;
 	}
 
 	/**
@@ -115,8 +127,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public void load (final T activity)
+	public AbstractActivityBuilder<T> load (final T activity)
 	{
 		this.log.trace ("load: activity={}", activity);
 
@@ -132,10 +143,11 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 			throw new IllegalArgumentException ("Invalid ActivityType");
 		}
 
-		super.load (activity);
+		this.id = activity.getId ();
 		this.setCourse (activity.getCourse ());
+		this.oldActivity = activity;
 
-		this.builder.setProperty (Activity.ID, activity.getId ());
+		return this;
 	}
 
 	/**
@@ -146,23 +158,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 
 	public final ActivityType getActivityType ()
 	{
-		return this.builder.getPropertyValue (Activity.TYPE);
-	}
-
-	/**
-	 * Set the <code>ActivityType</code> for the <code>Activity</code>.
-	 *
-	 * @param  type The <code>Course</code>, not null
-	 */
-
-	protected void setActivityType (final ActivityType type)
-	{
-		this.log.trace ("setActivityType: type={}", type);
-
-		assert type != null : "type is NULL";
-		assert this.datastore.contains (type) : "ActivityType is not in the DataStore";
-
-		this.builder.setProperty (Activity.TYPE, type);
+		return this.type;
 	}
 
 	/**
@@ -174,7 +170,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 
 	public final Course getCourse ()
 	{
-		return this.builder.getPropertyValue (Activity.COURSE);
+		return this.course;
 	}
 
 	/**
@@ -187,7 +183,7 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 	 *                                  exist in the <code>DataStore</code>
 	 */
 
-	public final void setCourse (final Course course)
+	public final AbstractActivityBuilder<T> setCourse (final Course course)
 	{
 		this.log.trace ("setCourse: course={}", course);
 
@@ -197,12 +193,14 @@ public abstract class AbstractActivityBuilder<T extends Activity> extends Abstra
 			throw new NullPointerException ("Course is NULL");
 		}
 
-		if (! this.datastore.contains (course))
+		this.course = this.courseProxy.fetch (course);
+
+		if (this.course == null)
 		{
 			this.log.error ("This specified Course does not exist in the DataStore");
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
 
-		this.builder.setProperty (Activity.COURSE, course);
+		return this;
 	}
 }

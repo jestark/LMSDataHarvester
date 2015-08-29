@@ -23,8 +23,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
-
 /**
  * Create <code>Activity</code> instances.  This class provides a default
  * implementation of the <code>AbstractActivityBuilder</code>, without adding
@@ -38,34 +36,8 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 
 public final class GenericActivityBuilder extends AbstractActivityBuilder<Activity>
 {
-	/**
-	 * Get an instance of the <code>GenericActivityBuilder</code> for the specified
-	 * <code>DataStore</code> and <code>ActivityType</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  type                  The <code>ActivityType</code>, not null
-	 *
-	 * @return                       The <code>GenericActivityBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Activity</code>
-	 */
-
-	public static GenericActivityBuilder getInstance (final DataStore datastore, ActivityType type)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert type != null : "type is NULL";
-		assert datastore.contains (type) : "type is NULL";
-
-		if (NamedActivity.getActivityClass (type) != null)
-		{
-			throw new IllegalStateException ("Wrong Builder: The specified ActivityType an associated Activity class.");
-		}
-
-		return AbstractActivityBuilder.getInstance (datastore, datastore.getProfile ().getCreator (Activity.class, GenericActivity.class), type, GenericActivityBuilder::new);
-	}
+	/** Helper to operate on <code>SubActivity</code> instances*/
+	private final DataStoreRWProxy<Activity> activityProxy;
 
 	/**
 	 * Get an instance of the <code>GenericActivityBuilder</code> for the specified
@@ -96,23 +68,54 @@ public final class GenericActivityBuilder extends AbstractActivityBuilder<Activi
 			throw new NullPointerException ("type is NULL");
 		}
 
-		if (! model.contains (type))
-		{
-			throw new IllegalArgumentException ("type is not in the datastore");
-		}
-
-		return GenericActivityBuilder.getInstance (AbstractBuilder.getDataStore (model), type);
+		return new GenericActivityBuilder (model.getDataStore (), type);
 	}
 
 	/**
 	 * Create the <code>GenericActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected GenericActivityBuilder (final DataStore datastore, final Creator<Activity> metadata)
+	protected GenericActivityBuilder (final DataStore datastore, final ActivityType type)
 	{
-		super (datastore, metadata);
+		super (datastore, type);
+
+		if (NamedActivity.getActivityClass (this.type) != null)
+		{
+			this.log.error ("WrongBuilder: There is a NamedActivity implementation for {}", this.type);
+			throw new IllegalStateException ("Wrong Builder: The specified ActivityType an associated Activity class.");
+		}
+
+		this.activityProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Activity.class, GenericActivity.class), Activity.SELECTOR_ID, datastore);
+	}
+
+	/**
+	 * Create an instance of the <code>Activity</code>.
+	 *
+	 * @return                       The new <code>Activity</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public Activity build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.course == null)
+		{
+			this.log.error ("course is NULL");
+			throw new IllegalStateException ("course is NULL");
+		}
+
+		Activity result = this.activityProxy.create ();
+		result.setId (this.id);
+		result.setType (this.type);
+		result.setCourse (this.course);
+
+		this.oldActivity = this.activityProxy.insert (this.oldActivity, result);
+
+		return this.oldActivity;
 	}
 }

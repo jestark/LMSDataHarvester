@@ -16,9 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Create new <code>Course</code> instances.  This class extends
@@ -30,29 +31,25 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     Course
  */
 
-public final class CourseBuilder extends AbstractBuilder<Course>
+public final class CourseBuilder implements Builder<Course>
 {
-	/**
-	 * Get an instance of the <code>CourseBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>CourseBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Course</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
+	/** The Logger */
+	private final Logger log;
 
-	public static CourseBuilder getInstance (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
+	/** Helper to operate on <code>Course</code> instances*/
+	private final DataStoreRWProxy<Course> courseProxy;
 
-		return AbstractBuilder.getInstance (datastore, Course.class, CourseBuilder::new);
-	}
+	/** The <code>DataStore</code> id number for the <code>Course</code> */
+	private Long id;
+
+	/** The name of the <code>Course</code> */
+	private String name;
+
+	/** The <code>Semester</code> of offering */
+	private Semester semester;
+
+	/** The year of offering */
+	private Integer year;
 
 	/**
 	 * Get an instance of the <code>CourseBuilder</code> for the specified
@@ -69,22 +66,91 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 	 *                               immutable
 	 */
 
-
 	public static CourseBuilder getInstance (final DomainModel model)
 	{
-		return CourseBuilder.getInstance (AbstractBuilder.getDataStore (model));
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new CourseBuilder (model.getDataStore ());
 	}
 
 	/**
 	 * Create the <code>CourseBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected CourseBuilder (final DataStore datastore, final Creator<Course> metadata)
+	protected CourseBuilder (final DataStore datastore)
 	{
-		super (datastore, metadata);
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.courseProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Course.class), Course.SELECTOR_OFFERING, datastore);
+
+		this.id = null;
+		this.name = null;
+		this.semester = null;
+		this.year = null;
+	}
+
+	/**
+	 * Create an instance of the <code>Course</code>.
+	 *
+	 * @return                       The new <code>Course</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public Course build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.name == null)
+		{
+			this.log.error ("Attempting to create an Course without a name");
+			throw new IllegalStateException ("name is NULL");
+		}
+
+		if (this.semester == null)
+		{
+			this.log.error ("Attempting to create an Course without a semester");
+			throw new IllegalStateException ("semester is NULL");
+		}
+
+		if (this.year == null)
+		{
+			this.log.error ("Attempting to create an Course without a year");
+			throw new IllegalStateException ("year is NULL");
+		}
+
+		Course result = this.courseProxy.create ();
+		result.setId (this.id);
+		result.setName (this.name);
+		result.setSemester (this.semester);
+		result.setYear (this.year);
+
+		return this.courseProxy.insert (null, result);
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>CourseBuilder</code>
+	 */
+
+	public CourseBuilder clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.name = null;
+		this.semester = null;
+		this.year = null;
+
+		return this;
 	}
 
 	/**
@@ -95,13 +161,13 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 	 *
 	 * @param  course                   The <code>Course</code>, not null
 	 *
+	 * @return                          This <code>CourseBuilder</code>
 	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>Course</code> instance to be
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public void load (final Course course)
+	public CourseBuilder load (final Course course)
 	{
 		this.log.trace ("load course={}", course);
 
@@ -111,12 +177,12 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 			throw new NullPointerException ();
 		}
 
-		super.load (course);
+		this.id = course.getId ();
 		this.setName (course.getName ());
 		this.setSemester (course.getSemester ());
 		this.setYear (course.getYear ());
 
-		this.builder.setProperty (Course.ID, course.getId ());
+		return this;
 	}
 
 	/**
@@ -128,7 +194,7 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (Course.NAME);
+		return this.name;
 	}
 
 	/**
@@ -137,10 +203,11 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 	 * @param  name                     The name of the <code>Course</code>,
 	 *                                  not null
 	 *
+	 * @return                          This <code>CourseBuilder</code>
 	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public void setName (final String name)
+	public CourseBuilder setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -156,7 +223,9 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (Course.NAME, name);
+		this.name = name;
+
+		return this;
 	}
 
 	/**
@@ -168,7 +237,7 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 
 	public Semester getSemester ()
 	{
-		return this.builder.getPropertyValue (Course.SEMESTER);
+		return this.semester;
 	}
 
 	/**
@@ -176,9 +245,11 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 	 * offered.
 	 *
 	 * @param  semester The <code>Semester</code> of offering, not null
+	 *
+	 * @return          This <code>CourseBuilder</code>
 	 */
 
-	public void setSemester (final Semester semester)
+	public CourseBuilder setSemester (final Semester semester)
 	{
 		this.log.trace ("setSemester: semester={}", semester);
 
@@ -188,7 +259,9 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 			throw new NullPointerException ("semester is NULL");
 		}
 
-		this.builder.setProperty (Course.SEMESTER, semester);
+		this.semester = semester;
+
+		return this;
 	}
 
 	/**
@@ -199,7 +272,7 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 
 	public Integer getYear ()
 	{
-		return this.builder.getPropertyValue (Course.YEAR);
+		return this.year;
 	}
 
 	/**
@@ -207,10 +280,11 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 	 *
 	 * @param  year                     The year of offering, not null
 	 *
+	 * @return                          This <code>CourseBuilder</code>
 	 * @throws IllegalArgumentException If the year is negative
 	 */
 
-	public void setYear (final Integer year)
+	public CourseBuilder setYear (final Integer year)
 	{
 		this.log.trace ("setYear: year={}", year);
 
@@ -226,6 +300,8 @@ public final class CourseBuilder extends AbstractBuilder<Course>
 			throw new IllegalArgumentException ("Year is negative");
 		}
 
-		this.builder.setProperty (Course.YEAR, year);
+		this.year = year;
+
+		return this;
 	}
 }

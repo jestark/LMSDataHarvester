@@ -16,9 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Create new <code>Network</code> instances.  This class extends
@@ -30,29 +31,19 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     Network
  */
 
-public final class NetworkBuilder extends AbstractBuilder<Network>
+public final class NetworkBuilder implements Builder<Network>
 {
-	/**
-	 * Get an instance of the <code>NetworkBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>NetworkBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Network</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
+	/** The Logger */
+	private final Logger log;
 
-	public static NetworkBuilder getInstance (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
+	/** Helper to operate on <code>Network</code> instances*/
+	private final DataStoreRWProxy<Network> networkProxy;
 
-		return AbstractBuilder.getInstance (datastore, Network.class, NetworkBuilder::new);
-	}
+	/** The <code>DataStore</code> id number for the <code>Network</code> */
+	private Long id;
+
+	/** The name of the <code>Network</code> */
+	private String name;
 
 	/**
 	 * Get an instance of the <code>NetworkBuilder</code> for the specified
@@ -69,22 +60,73 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 	 *                               immutable
 	 */
 
-
 	public static NetworkBuilder getInstance (final DomainModel model)
 	{
-		return NetworkBuilder.getInstance (AbstractBuilder.getDataStore (model));
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new NetworkBuilder (model.getDataStore ());
 	}
 
 	/**
 	 * Create the <code>NetworkBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected NetworkBuilder (final DataStore datastore, final Creator<Network> metadata)
+	protected NetworkBuilder (final DataStore datastore)
 	{
-		super (datastore, metadata);
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.networkProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Network.class), Network.SELECTOR_NAME, datastore);
+
+		this.id = null;
+		this.name = null;
+	}
+
+	/**
+	 * Create an instance of the <code>Network</code>.
+	 *
+	 * @return                       The new <code>Network</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public Network build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.name == null)
+		{
+			this.log.error ("Attempting to create an Network without a name");
+			throw new IllegalStateException ("name is NULL");
+		}
+
+		Network result = this.networkProxy.create ();
+		result.setId (this.id);
+		result.setName (this.name);
+
+		return this.networkProxy.insert (null, result);
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>NetworkBuilder</code>
+	 */
+
+	public NetworkBuilder clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.name = null;
+
+		return this;
 	}
 
 	/**
@@ -100,8 +142,7 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public void load (final Network network)
+	public NetworkBuilder load (final Network network)
 	{
 		this.log.trace ("load: network={}", network);
 
@@ -111,10 +152,10 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 			throw new NullPointerException ();
 		}
 
-		super.load (network);
+		this.id = network.getId ();
 		this.setName (network.getName ());
 
-		this.builder.setProperty (Network.ID, network.getId ());
+		return this;
 	}
 
 	/**
@@ -126,19 +167,19 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (Network.NAME);
+		return this.name;
 	}
 
 	/**
 	 * Set the name of the <code>Network</code>.
 	 *
-	 * @param  name                     The name of the <code>Network</code>, not
-	 *                                  null
+	 * @param  name                     The name of the <code>Network</code>,
+	 *                                  not null
 	 *
 	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public void setName (final String name)
+	public NetworkBuilder setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -154,6 +195,8 @@ public final class NetworkBuilder extends AbstractBuilder<Network>
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (Network.NAME, name);
+		this.name = name;
+
+		return this;
 	}
 }

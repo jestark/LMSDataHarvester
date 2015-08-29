@@ -18,9 +18,10 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Create new <code>LogEntry</code> instances.  This class extends
@@ -32,29 +33,52 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     LogEntry
  */
 
-public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
+public final class LogEntryBuilder implements Builder<LogEntry>
 {
-	/**
-	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>LogEntryBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>LogEntry</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
+	/** The Logger */
+	private final Logger log;
 
-	public static LogEntryBuilder getInstance (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
+	/** Helper to substitute <code>Action</code> instances */
+	private final DataStoreProxy<Action> actionProxy;
 
-		return AbstractBuilder.getInstance (datastore, LogEntry.class, LogEntryBuilder::new);
-	}
+	/** Helper to substitute <code>Activity</code> instances */
+	private final DataStoreProxy<Activity> activityProxy;
+
+	/** Helper to substitute <code>Enrolment</code> instances */
+	private final DataStoreProxy<Enrolment> enrolmentProxy;
+
+	/** Helper to operate on <code>LogEntry</code> instances*/
+	private final DataStoreRWProxy<LogEntry> entryProxy;
+
+	/** Helper to substitute <code>Network</code> instances */
+	private final DataStoreProxy<Network> networkProxy;
+
+	/** Helper to substitute <code>SubActivity</code> instances */
+	private final DataStoreProxy<SubActivity> subActivityProxy;
+
+	/** The loaded or previously built <code>LogEntry</code> instance */
+	private LogEntry oldEntry;
+
+	/** The <code>DataStore</code> ID number for the <code>LogEntry</code> */
+	private Long id;
+
+	/** The associated <code>Action</code>*/
+	private Action action;
+
+	/** The associated <code>Activity</code>*/
+	private Activity activity;
+
+	/** The associated <code>Enrolment</code>*/
+	private Enrolment enrolment;
+
+	/** The associated <code>Network</code>*/
+	private Network network;
+
+	/** The associated <code>SubActivity</code>*/
+	private SubActivity subActivity;
+
+	/** The time that the entry was logged */
+	private Date time;
 
 	/**
 	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
@@ -74,19 +98,124 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 
 	public static LogEntryBuilder getInstance (final DomainModel model)
 	{
-		return LogEntryBuilder.getInstance (AbstractBuilder.getDataStore (model));
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new LogEntryBuilder (model.getDataStore ());
 	}
 
 	/**
 	 * Create the <code>LogEntryBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected LogEntryBuilder (final DataStore datastore, final Creator<LogEntry> metadata)
+	protected LogEntryBuilder (final DataStore datastore)
 	{
-		super (datastore, metadata);
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.actionProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Action.class), Action.SELECTOR_NAME, datastore);
+		this.activityProxy = DataStoreProxy.getInstance (datastore.getProfile ().getMetaData (Activity.class), Activity.SELECTOR_ID, datastore);
+		this.enrolmentProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Enrolment.class), Enrolment.SELECTOR_ID, datastore);
+		this.entryProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (LogEntry.class), LogEntry.SELECTOR_ID, datastore);
+		this.networkProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Network.class), Network.SELECTOR_NAME, datastore);
+		this.subActivityProxy = DataStoreProxy.getInstance (datastore.getProfile ().getMetaData (SubActivity.class), SubActivity.SELECTOR_ID, datastore);
+
+		this.id = null;
+		this.action = null;
+		this.activity = null;
+		this.enrolment = null;
+		this.network = null;
+		this.subActivity = null;
+		this.time = null;
+		this.oldEntry = null;
+	}
+
+	/**
+	 * Create an instance of the <code>LogEntry</code>.
+	 *
+	 * @return                       The new <code>LogEntry</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public LogEntry build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.action == null)
+		{
+			this.log.error ("Attempting to create an LogEntry without an Action");
+			throw new IllegalStateException ("action is NULL");
+		}
+
+		if (this.activity == null)
+		{
+			this.log.error ("Attempting to create an LogEntry without an Activity");
+			throw new IllegalStateException ("activity is NULL");
+		}
+
+		if (this.enrolment == null)
+		{
+			this.log.error ("Attempting to create an LogEntry without an Enrolment");
+			throw new IllegalStateException ("enrolment is NULL");
+		}
+
+		if (this.time == null)
+		{
+			this.log.error ("Attempting to create an LogEntry without a time");
+			throw new IllegalStateException ("time is NULL");
+		}
+
+		if ((this.oldEntry == null)
+				|| (! this.entryProxy.contains (this.oldEntry))
+				|| (this.oldEntry.getAction () != this.action)
+				|| (this.oldEntry.getActivity () != this.activity)
+				|| (this.oldEntry.getEnrolment () != this.enrolment)
+				|| (this.oldEntry.getNetwork () != this.network))
+		{
+			LogEntry result = this.entryProxy.create ();
+			result.setId (this.id);
+			result.setAction (this.action);
+			result.setActivity (this.activity);
+			result.setEnrolment (this.enrolment);
+			result.setNetwork (this.network);
+			result.setTime (this.time);
+
+			this.oldEntry = this.entryProxy.insert (this.oldEntry, result);
+		}
+		else
+		{
+			this.oldEntry.setTime (this.time);
+		}
+
+		return this.oldEntry;
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>LogEntryBuilder</code>
+	 */
+
+	public LogEntryBuilder clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.action = null;
+		this.activity = null;
+		this.enrolment = null;
+		this.network = null;
+		this.subActivity = null;
+		this.time = null;
+		this.oldEntry = null;
+
+		return this;
 	}
 
 	/**
@@ -97,13 +226,13 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 	 *
 	 * @param  entry                    The <code>LogEntry</code>, not null
 	 *
+	 * @return                          This <code>LogEntryBuilder</code>
 	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>LogEntry</code> instance to be
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public void load (final LogEntry entry)
+	public LogEntryBuilder load (final LogEntry entry)
 	{
 		this.log.trace ("load: entry={}", entry);
 
@@ -113,16 +242,16 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 			throw new NullPointerException ();
 		}
 
-		super.load (entry);
+		this.id = entry.getId ();
 		this.setAction (entry.getAction ());
 		this.setActivity (entry.getActivity ());
 		this.setEnrolment (entry.getEnrolment ());
 		this.setNetwork (entry.getNetwork ());
+		this.setSubActivity (entry.getSubActivity ());
 		this.setTime (entry.getTime ());
+		this.oldEntry = entry;
 
-		// reference ??
-
-		this.builder.setProperty (LogEntry.ID, entry.getId ());
+		return this;
 	}
 
 	/**
@@ -134,7 +263,7 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 
 	public Action getAction ()
 	{
-		return this.builder.getPropertyValue (LogEntry.ACTION);
+		return this.action;
 	}
 
 	/**
@@ -143,11 +272,12 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 	 *
 	 * @param  action                   The <code>Action</code>, not null
 	 *
+	 * @return                          This <code>LogEntryBuilder</code>
 	 * @throws IllegalArgumentException if the <code>Action</code> is not in
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public void setAction (final Action action)
+	public LogEntryBuilder setAction (final Action action)
 	{
 		this.log.trace ("setAction: action={}", action);
 
@@ -157,38 +287,41 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 			throw new NullPointerException ("Action is NULL");
 		}
 
-		if (! this.datastore.contains (action))
+		this.action = this.actionProxy.fetch (action);
+
+		if (this.action == null)
 		{
 			this.log.error ("The specified Action does not exist in the DataStore");
 			throw new IllegalArgumentException ("Action is not in the DataStore");
 		}
 
-		this.builder.setProperty (LogEntry.ACTION, action);
+		return this;
 	}
 
 	/**
-	 * Get the <code>Activity</code> upon which the logged action was
-	 * performed.
+	 * Get the <code>Activity</code> upon which the logged <code>Action</code>
+	 * was performed.
 	 *
-	 * @return A reference to the associated <code>Activity</code> object.
+	 * @return The associated <code>Activity</code>
 	 */
 
 	public Activity getActivity ()
 	{
-		return this.builder.getPropertyValue (LogEntry.ACTIVITY);
+		return this.activity;
 	}
 
 	/**
-	 * Set the <code>Activity</code> upon which the logged action was
-	 * performed.
+	 * Set the <code>Activity</code> upon which the logged <code>Action</code>
+	 * was performed.
 	 *
 	 * @param  activity                 The <code>Activity</code>, not null
 	 *
+	 * @return                          This <code>LogEntryBuilder</code>
 	 * @throws IllegalArgumentException if the <code>Activity</code> is not in
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public void setActivity (final Activity activity)
+	public LogEntryBuilder setActivity (final Activity activity)
 	{
 		this.log.trace ("setActivity: activity={}", activity);
 
@@ -198,25 +331,27 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 			throw new NullPointerException ("Activity is NULL");
 		}
 
-		if (! this.datastore.contains (activity))
+		this.activity = this.activityProxy.fetch (activity);
+
+		if (this.activity == null)
 		{
 			this.log.error ("The specified Activity does not exist in the DataStore");
 			throw new IllegalArgumentException ("Activity is not in the DataStore");
 		}
 
-		this.builder.setProperty (LogEntry.ACTIVITY, activity);
+		return this;
 	}
 
 	/**
 	 * Get the <code>Enrolment</code> instance for the user which performed the
 	 * logged action.
 	 *
-	 * @return A reference to the associated <code>Enrolment</code>
+	 * @return The associated <code>Enrolment</code>
 	 */
 
 	public Enrolment getEnrolment ()
 	{
-		return this.builder.getPropertyValue (LogEntry.ENROLMENT);
+		return this.enrolment;
 	}
 
 	/**
@@ -225,11 +360,12 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 	 *
 	 * @param  enrolment                The <code>Enrolment</code>, not null
 	 *
+	 * @return                          This <code>LogEntryBuilder</code>
 	 * @throws IllegalArgumentException if the <code>Enrolment</code> is not in
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public void setEnrolment (final Enrolment enrolment)
+	public LogEntryBuilder setEnrolment (final Enrolment enrolment)
 	{
 		this.log.trace ("setEnrolment: enrolment={}", enrolment);
 
@@ -239,70 +375,42 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 			throw new NullPointerException ("Enrolment is NULL");
 		}
 
-		if (! this.datastore.contains (enrolment))
+		this.enrolment = this.enrolmentProxy.fetch (enrolment);
+
+		if (this.enrolment == null)
 		{
 			this.log.error ("The specified Enrolment does not exist in the DataStore");
 			throw new IllegalArgumentException ("Enrolment is not in the DataStore");
 		}
 
-		this.builder.setProperty (LogEntry.ENROLMENT, enrolment);
-	}
-
-	/**
-	 * Get the time of the logged action.
-	 *
-	 * @return A <code>Date</code> object containing the logged time
-	 */
-
-	public Date getTime ()
-	{
-		return this.builder.getPropertyValue (LogEntry.TIME);
-	}
-
-	/**
-	 * Set the time of the logged <code>Action</code>.
-	 *
-	 * @param  time The time
-	 */
-
-	public void setTime (final Date time)
-	{
-		this.log.trace ("setTime: time={}", time);
-
-		if (time == null)
-		{
-			this.builder.setProperty (LogEntry.TIME, new Date ());
-		}
-		else
-		{
-			this.builder.setProperty (LogEntry.TIME, time);
-		}
+		return this;
 	}
 
 	/**
 	 * Get the <code>Network</code> from which the logged <code>Action</code>
 	 * originated.
 	 *
-	 * @return The <code>Network</code>
+	 * @return The associated <code>Network</code>
 	 */
 
 	public Network getNetwork ()
 	{
-		return this.builder.getPropertyValue (LogEntry.NETWORK);
+		return this.network;
 	}
 
 	/**
 	 * Set the <code>Network</code> from which the logged <code>Action</code>
 	 * originated.
 	 *
-	 * @param  network The <code>Network</code>, not null
+	 * @param  network                  The <code>Network</code>, not null
 	 *
+	 * @return                          This <code>LogEntryBuilder</code>
 	 * @throws IllegalArgumentException if the specified <code>Network</code>
 	 *                                  does not exist in the
 	 *                                  <code>Datastore</code>
 	 */
 
-	public void setNetwork (final Network network)
+	public LogEntryBuilder setNetwork (final Network network)
 	{
 		this.log.trace ("setNetwork: network={}", network);
 
@@ -311,12 +419,95 @@ public final class LogEntryBuilder extends AbstractBuilder<LogEntry>
 			throw new NullPointerException ();
 		}
 
-		if (! this.datastore.contains (network))
+		this.network = this.networkProxy.fetch (network);
+
+		if (this.network == null)
 		{
 			this.log.error ("The specified Network does not exist in the DataStore");
 			throw new IllegalArgumentException ("Network is not in the DataStore");
 		}
 
-		this.builder.setProperty (LogEntry.NETWORK, network);
+		return this;
+	}
+
+	/**
+	 * Get the <code>SubActivity</code> upon which the logged
+	 * <code>Action</code> was performed.
+	 *
+	 * @return The associated <code>SubActivity</code>, may be null
+	 */
+
+	public SubActivity getSubActivity ()
+	{
+		return this.subActivity;
+	}
+
+	/**
+	 * Set the <code>SubActivity</code> upon which the logged
+	 * <code>Action</code> was performed.  The <code>Subactivity</code> is
+	 * optional, so it may be null.
+	 *
+	 * @param  activity                 The <code>SubActivity</code>
+	 *
+	 * @return                          This <code>LogEntryBuilder</code>
+	 * @throws IllegalArgumentException if the <code>SubActivity</code> is not
+	 *                                  in the <code>DataStore</code>
+	 */
+
+	public LogEntryBuilder setSubActivity (final SubActivity subActivity)
+	{
+		this.log.trace ("setSubActivity: subActivity={}", subActivity);
+
+		if (subActivity != null)
+		{
+			this.subActivity = this.subActivityProxy.fetch (subActivity);
+
+			if (this.subActivity == null)
+			{
+				this.log.error ("The specified SubActivity does not exist in the DataStore");
+				throw new IllegalArgumentException ("SubActivity is not in the DataStore");
+			}
+		}
+		else
+		{
+			this.subActivity = null;
+		}
+
+		return this;
+	}
+
+	/**
+	 * Get the time of the logged <code>Action</code>.
+	 *
+	 * @return The associated time
+	 */
+
+	public Date getTime ()
+	{
+		return this.time;
+	}
+
+	/**
+	 * Set the time of the logged <code>Action</code>.
+	 *
+	 * @param  time The time
+	 *
+	 * @return      This <code>LogEntryBuilder</code>
+	 */
+
+	public LogEntryBuilder setTime (final Date time)
+	{
+		this.log.trace ("setTime: time={}", time);
+
+		if (time == null)
+		{
+			this.time = new Date ();
+		}
+		else
+		{
+			this.time = time;
+		}
+
+		return this;
 	}
 }

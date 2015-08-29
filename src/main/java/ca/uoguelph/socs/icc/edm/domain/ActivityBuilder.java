@@ -18,8 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
-
 /**
  * Create <code>Activity</code> instances.  This class extends
  * <code>AbstractActivityBuilder</code>, adding the necessary functionality to
@@ -27,43 +25,16 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Activity
+ * @see     NamedActivity
  */
 
-public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
+public final class ActivityBuilder extends AbstractActivityBuilder<NamedActivity>
 {
-	/**
-	 * Get an instance of the <code>ActivityBuilder</code> for the specified
-	 * <code>DataStore</code> and <code>ActivityType</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  type                  The <code>ActivityType</code>, not null
-	 *
-	 * @return                       The <code>ActivityBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Activity</code>
-	 * @throws IllegalStateException if there is no <code>Activity</code> class
-	 *                               registered for the specified
-	 *                               <code>ActivityType</code>
-	 */
+	/** Helper to operate on <code>SubActivity</code> instances*/
+	private final DataStoreRWProxy<NamedActivity> activityProxy;
 
-	public static ActivityBuilder getInstance (final DataStore datastore, ActivityType type)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert type != null : "type is NULL";
-		assert datastore.contains (type) : "type is NULL";
-
-		Class<? extends Activity> aclass = NamedActivity.getActivityClass (type);
-
-		if (aclass == null)
-		{
-			throw new IllegalStateException ("No registered Activity class for to specified ActivityType");
-		}
-
-		return AbstractActivityBuilder.getInstance (datastore, datastore.getProfile ().getCreator (Activity.class, aclass), type, ActivityBuilder::new);
-	}
+	/** The name of the <code>Activity</code> */
+	private String name;
 
 	/**
 	 * Get an instance of the <code>ActivityBuilder</code> for the specified
@@ -96,12 +67,7 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 			throw new NullPointerException ("type is NULL");
 		}
 
-		if (! model.contains (type))
-		{
-			throw new IllegalArgumentException ("type is not in the datastore");
-		}
-
-		return ActivityBuilder.getInstance (AbstractBuilder.getDataStore (model), type);
+		return new ActivityBuilder (model.getDataStore (), type);
 	}
 
 	/**
@@ -111,9 +77,55 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected ActivityBuilder (final DataStore datastore, final Creator<Activity> metadata)
+	protected ActivityBuilder (final DataStore datastore, final ActivityType type)
 	{
-		super (datastore, metadata);
+		super (datastore, type);
+
+		Class<? extends NamedActivity> aclass = NamedActivity.getActivityClass (this.type);
+
+		if (aclass == null)
+		{
+			this.log.error ("There is no activity implementation class corresponding to {}", this.type);
+			throw new IllegalStateException ("No Activity class for the ActivityType");
+		}
+
+		this.activityProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (NamedActivity.class, aclass), Activity.SELECTOR_ID, datastore);
+	}
+
+	/**
+	 * Create an instance of the <code>NamedActivity</code>.
+	 *
+	 * @return                       The new <code>Activity</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public NamedActivity build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.course == null)
+		{
+			this.log.error ("course is NULL");
+			throw new IllegalStateException ("course is NULL");
+		}
+
+		if (this.name == null)
+		{
+			this.log.error ("name is NULL");
+			throw new IllegalStateException ("name is NULL");
+		}
+
+		NamedActivity result = this.activityProxy.create ();
+		result.setId (this.id);
+		result.setType (this.type);
+		result.setCourse (this.course);
+		result.setName (this.name);
+
+		this.oldActivity = this.activityProxy.insert (this.oldActivity, result);
+
+		return this.oldActivity;
 	}
 
 	/**
@@ -130,7 +142,7 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 	 */
 
 	@Override
-	public void load (final Activity activity)
+	public ActivityBuilder load (final NamedActivity activity)
 	{
 		this.log.trace ("load: activity={}", activity);
 
@@ -142,6 +154,8 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 
 		super.load (activity);
 		this.setName (activity.getName ());
+
+		return this;
 	}
 
 	/**
@@ -152,7 +166,7 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (Activity.NAME);
+		return this.name;
 	}
 
 	/**
@@ -180,6 +194,6 @@ public final class ActivityBuilder extends AbstractActivityBuilder<Activity>
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (Activity.NAME, name);
+		this.name = name;
 	}
 }

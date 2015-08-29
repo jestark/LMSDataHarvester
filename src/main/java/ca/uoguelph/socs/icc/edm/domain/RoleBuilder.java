@@ -16,9 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Create new <code>Role</code> instances.  This class extends
@@ -30,29 +31,19 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     Role
  */
 
-public final class RoleBuilder extends AbstractBuilder<Role>
+public final class RoleBuilder implements Builder<Role>
 {
-	/**
-	 * Get an instance of the <code>RoleBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>RoleBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Role</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
+	/** The Logger */
+	private final Logger log;
 
-	public static RoleBuilder getInstance (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
+	/** Helper to operate on <code>Role</code> instances*/
+	private final DataStoreRWProxy<Role> roleProxy;
 
-		return AbstractBuilder.getInstance (datastore, Role.class, RoleBuilder::new);
-	}
+	/** The <code>DataStore</code> id number for the <code>Role</code> */
+	private Long id;
+
+	/** The name of the <code>Role</code> */
+	private String name;
 
 	/**
 	 * Get an instance of the <code>RoleBuilder</code> for the specified
@@ -69,22 +60,73 @@ public final class RoleBuilder extends AbstractBuilder<Role>
 	 *                               immutable
 	 */
 
-
 	public static RoleBuilder getInstance (final DomainModel model)
 	{
-		return RoleBuilder.getInstance (AbstractBuilder.getDataStore (model));
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new RoleBuilder (model.getDataStore ());
 	}
 
 	/**
 	 * Create the <code>RoleBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected RoleBuilder (final DataStore datastore, final Creator<Role> metadata)
+	protected RoleBuilder (final DataStore datastore)
 	{
-		super (datastore, metadata);
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.roleProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Role.class), Role.SELECTOR_NAME, datastore);
+
+		this.id = null;
+		this.name = null;
+	}
+
+	/**
+	 * Create an instance of the <code>Role</code>.
+	 *
+	 * @return                       The new <code>Role</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public Role build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.name == null)
+		{
+			this.log.error ("Attempting to create an Role without a name");
+			throw new IllegalStateException ("name is NULL");
+		}
+
+		Role result = this.roleProxy.create ();
+		result.setId (this.id);
+		result.setName (this.name);
+
+		return this.roleProxy.insert (null, result);
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>RoleBuilder</code>
+	 */
+
+	public RoleBuilder clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.name = null;
+
+		return this;
 	}
 
 	/**
@@ -95,13 +137,13 @@ public final class RoleBuilder extends AbstractBuilder<Role>
 	 *
 	 * @param  role                     The <code>Role</code>, not null
 	 *
+	 * @return                          This <code>RoleBuilder</code>
 	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>Role</code> instance to be
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public void load (final Role role)
+	public RoleBuilder load (final Role role)
 	{
 		this.log.trace ("load: role={}", role);
 
@@ -111,10 +153,10 @@ public final class RoleBuilder extends AbstractBuilder<Role>
 			throw new NullPointerException ();
 		}
 
-		super.load (role);
+		this.id = role.getId ();
 		this.setName (role.getName ());
 
-		this.builder.setProperty (Role.ID, role.getId ());
+		return this;
 	}
 
 	/**
@@ -126,7 +168,7 @@ public final class RoleBuilder extends AbstractBuilder<Role>
 
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (Role.NAME);
+		return this.name;
 	}
 
 	/**
@@ -135,10 +177,11 @@ public final class RoleBuilder extends AbstractBuilder<Role>
 	 * @param  name                     The name of the <code>Role</code>, not
 	 *                                  null
 	 *
+	 * @return                          This <code>RoleBuilder</code>
 	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public void setName (final String name)
+	public RoleBuilder setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -154,6 +197,8 @@ public final class RoleBuilder extends AbstractBuilder<Role>
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (Role.NAME, name);
+		this.name = name;
+
+		return this;
 	}
 }

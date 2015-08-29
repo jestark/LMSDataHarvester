@@ -21,8 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
-
 /**
  * Create new <code>ActivitySource</code> instances.  This class extends
  * <code>AbstractBuilder</code>, adding the functionality required
@@ -33,28 +31,19 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     ActivitySource
  */
 
-public final class ActivitySourceBuilder extends AbstractBuilder<ActivitySource>
+public final class ActivitySourceBuilder implements Builder<ActivitySource>
 {
-	/**
-	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
-	 * specified <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>ActivitySourceBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>ActivitySource</code>
-	 */
+	/** The Logger */
+	private final Logger log;
 
-	public static ActivitySourceBuilder getInstance (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
+	/** Helper to operate on <code>ActivitySource</code> instances*/
+	private final DataStoreRWProxy<ActivitySource> sourceProxy;
 
-		return AbstractBuilder.getInstance (datastore, ActivitySource.class, ActivitySourceBuilder::new);
-	}
+	/** The <code>DataStore</code> id number for the <code>ActivitySource</code> */
+	private Long id;
+
+	/** The name of the <code>ActivitySource</code> */
+	private String name;
 
 	/**
 	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
@@ -72,22 +61,73 @@ public final class ActivitySourceBuilder extends AbstractBuilder<ActivitySource>
 	 *                               immutable
 	 */
 
-
 	public static ActivitySourceBuilder getInstance (final DomainModel model)
 	{
-		return ActivitySourceBuilder.getInstance (AbstractBuilder.getDataStore (model));
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new ActivitySourceBuilder (model.getDataStore ());
 	}
 
 	/**
 	 * Create the <code>ActivitySourceBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected ActivitySourceBuilder (final DataStore datastore, final Creator<ActivitySource> metadata)
+	protected ActivitySourceBuilder (final DataStore datastore)
 	{
-		super (datastore, metadata);
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.sourceProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (ActivitySource.class), ActivitySource.SELECTOR_NAME, datastore);
+
+		this.id = null;
+		this.name = null;
+	}
+
+	/**
+	 * Create an instance of the <code>ActivitySource</code>.
+	 *
+	 * @return                       The new <code>ActivitySource</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public ActivitySource build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.name == null)
+		{
+			this.log.error ("Attempting to create an ActivitySource without a name");
+			throw new IllegalStateException ("name is NULL");
+		}
+
+		ActivitySource result = this.sourceProxy.create ();
+		result.setId (this.id);
+		result.setName (this.name);
+
+		return this.sourceProxy.insert (null, result);
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>ActivitySourceBuilder</code>
+	 */
+
+	public ActivitySourceBuilder clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.name = null;
+
+		return this;
 	}
 
 	/**
@@ -99,13 +139,13 @@ public final class ActivitySourceBuilder extends AbstractBuilder<ActivitySource>
 	 * @param  source                   The <code>ActivitySource</code>, not
 	 *                                  null
 	 *
+	 * @return                          This <code>ActivitySourceBuilder</code>
 	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>ActivitySource</code> instance to
 	 *                                  be loaded are not valid
 	 */
 
-	@Override
-	public void load (final ActivitySource source)
+	public ActivitySourceBuilder load (final ActivitySource source)
 	{
 		this.log.trace ("load: source={}", source);
 
@@ -115,10 +155,10 @@ public final class ActivitySourceBuilder extends AbstractBuilder<ActivitySource>
 			throw new NullPointerException ();
 		}
 
-		super.load (source);
+		this.id = source.getId ();
 		this.setName (source.getName ());
 
-		this.builder.setProperty (ActivitySource.ID, source.getId ());
+		return this;
 	}
 
 	/**
@@ -130,7 +170,7 @@ public final class ActivitySourceBuilder extends AbstractBuilder<ActivitySource>
 
 	public String getName ()
 	{
-		return this.builder.getPropertyValue (ActivitySource.NAME);
+		return this.name;
 	}
 
 	/**
@@ -139,10 +179,11 @@ public final class ActivitySourceBuilder extends AbstractBuilder<ActivitySource>
 	 * @param  name                     The name of the
 	 *                                  <code>ActivitySource</code>, not null
 	 *
+	 * @return                          This <code>ActivitySourceBuilder</code>
 	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public void setName (final String name)
+	public ActivitySourceBuilder setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -158,6 +199,8 @@ public final class ActivitySourceBuilder extends AbstractBuilder<ActivitySource>
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (ActivitySource.NAME, name);
+		this.name = name;
+
+		return this;
 	}
 }

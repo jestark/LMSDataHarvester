@@ -16,9 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Create new <code>Enrolment</code> instances.  This class extends
@@ -31,29 +32,37 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     Enrolment
  */
 
-public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
+public final class EnrolmentBuilder implements Builder<Enrolment>
 {
-	/**
-	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>EnrolmentBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Enrolment</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
+	/** The Logger */
+	private final Logger log;
 
-	public static EnrolmentBuilder getInstance (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
+	/** Helper to substitute <code>Course</code> instances */
+	private DataStoreProxy<Course> courseProxy;
 
-		return AbstractBuilder.getInstance (datastore, Enrolment.class, EnrolmentBuilder::new);
-	}
+	/** Helper to operate on <code>Enrolment</code> instances */
+	private DataStoreRWProxy<Enrolment> enrolmentProxy;
+
+	/** Helper to substitute <code>Activity</code> instances */
+	private DataStoreProxy<Role> roleProxy;
+
+	/** The loaded or previously built <code>Enrolment</code> instance */
+	private Enrolment oldEnrolment;
+
+	/** The <code>DataStore</code> ID number for the <code>Enrolment</code> */
+	private Long id;
+
+	/** The associated <code>Course</code> */
+	private Course course;
+
+	/** The associated <code>Role</code> */
+	private Role role;
+
+	/** The final grade */
+	private Integer finalGrade;
+
+	/** Indication if the data is usable for research */
+	private Boolean usable;
 
 	/**
 	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
@@ -70,22 +79,123 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 *                               immutable
 	 */
 
-
 	public static EnrolmentBuilder getInstance (final DomainModel model)
 	{
-		return EnrolmentBuilder.getInstance (AbstractBuilder.getDataStore (model));
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return new EnrolmentBuilder (model.getDataStore ());
 	}
 
 	/**
 	 * Create the <code>EnrolmentBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
 	 */
 
-	protected EnrolmentBuilder (final DataStore datastore, final Creator<Enrolment> metadata)
+	protected EnrolmentBuilder (final DataStore datastore)
 	{
-		super (datastore, metadata);
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.courseProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Course.class), Course.SELECTOR_OFFERING, datastore);
+		this.enrolmentProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Enrolment.class), Enrolment.SELECTOR_ID, datastore);
+		this.roleProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Role.class), Role.SELECTOR_NAME, datastore);
+
+		this.id = null;
+		this.course = null;
+		this.role = null;
+		this.finalGrade = null;
+		this.usable = null;
+		this.oldEnrolment = null;
+	}
+
+	/**
+	 * Create an instance of the <code>Enrolment</code>.
+	 *
+	 * @return                       The new <code>Enrolment</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public Enrolment build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.course == null)
+		{
+			this.log.error ("Attempting to create an Enrolment without a Course");
+			throw new IllegalStateException ("course is NULL");
+		}
+
+		if (this.role == null)
+		{
+			this.log.error ("Attempting to create an Enrolment without a Role");
+			throw new IllegalStateException ("course is NULL");
+		}
+
+		if (this.usable == null)
+		{
+			this.log.error ("Attempting to create an Enrolment without setting the usability");
+			throw new IllegalStateException ("usable is NULL");
+		}
+
+		if ((this.oldEnrolment == null)
+				|| (! this.enrolmentProxy.contains (this.oldEnrolment))
+				|| (this.oldEnrolment.getCourse () == this.course)
+				|| (this.oldEnrolment.getRole () != this.role))
+		{
+			Enrolment result = this.enrolmentProxy.create ();
+			result.setId (this.id);
+			result.setCourse (this.course);
+			result.setRole (this.role);
+			result.setFinalGrade (this.finalGrade);
+			result.setUsable (this.usable);
+
+			this.oldEnrolment = this.enrolmentProxy.insert (this.oldEnrolment, result);
+
+			if (! this.oldEnrolment.getFinalGrade ().equals (this.finalGrade))
+			{
+				this.log.error ("Enrolment already exists in the datastore with a final grade of {}, vs. the specified value: {}", this.oldEnrolment.getFinalGrade (), this.finalGrade);
+				throw new IllegalStateException ("Enrolment already exists but with a different final grade");
+			}
+
+			if (! this.oldEnrolment.isUsable ().equals (this.usable))
+			{
+				this.log.error ("Enrolment already exists in the datastore with a usability of {}, vs the specified value: {}", this.oldEnrolment.isUsable (), this.usable);
+				throw new IllegalStateException ("Enrolment already exists but with different usability");
+			}
+		}
+		else
+		{
+			this.oldEnrolment.setFinalGrade (this.finalGrade);
+			this.oldEnrolment.setUsable (this.usable);
+		}
+
+		return this.oldEnrolment;
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>EnrolmentBuilder</code>
+	 */
+
+	public EnrolmentBuilder clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.course = null;
+		this.role = null;
+		this.finalGrade = null;
+		this.usable = null;
+		this.oldEnrolment = null;
+
+		return this;
 	}
 
 	/**
@@ -101,8 +211,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public void load (final Enrolment enrolment)
+	public EnrolmentBuilder load (final Enrolment enrolment)
 	{
 		this.log.trace ("load: enrolment={}", enrolment);
 
@@ -112,12 +221,14 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 			throw new NullPointerException ();
 		}
 
-		super.load (enrolment);
+		this.id = enrolment.getId ();
 		this.setCourse (enrolment.getCourse ());
 		this.setFinalGrade (enrolment.getFinalGrade ());
 		this.setRole (enrolment.getRole ());
+		this.setUsable (enrolment.isUsable ());
+		this.oldEnrolment = enrolment;
 
-		this.builder.setProperty (Enrolment.ID, enrolment.getId ());
+		return this;
 	}
 
 	/**
@@ -129,7 +240,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 
 	public Course getCourse ()
 	{
-		return this.builder.getPropertyValue (Enrolment.COURSE);
+		return this.course;
 	}
 
 	/**
@@ -141,7 +252,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public void setCourse (final Course course)
+	public EnrolmentBuilder setCourse (final Course course)
 	{
 		this.log.trace ("setCourse: course={}", course);
 
@@ -151,13 +262,15 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 			throw new NullPointerException ("Course is NULL");
 		}
 
-		if (! this.datastore.contains (course))
+		this.course = this.courseProxy.fetch (course);
+
+		if (this.course == null)
 		{
 			this.log.error ("This specified Course does not exist in the DataStore");
 			throw new IllegalArgumentException ("Course is not in the DataStore");
 		}
 
-		this.builder.setProperty (Enrolment.COURSE, course);
+		return this;
 	}
 
 	/**
@@ -169,7 +282,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 
 	public Role getRole ()
 	{
-		return this.builder.getPropertyValue (Enrolment.ROLE);
+		return this.role;
 	}
 
 	/**
@@ -182,7 +295,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 *                                  the <code>DataStore</code>
 	 */
 
-	public void setRole (final Role role)
+	public EnrolmentBuilder setRole (final Role role)
 	{
 		this.log.trace ("setRole: role={}", role);
 
@@ -192,13 +305,15 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 			throw new NullPointerException ("Role is NULL");
 		}
 
-		if (! this.datastore.contains (role))
+		this.role = this.roleProxy.fetch (role);
+
+		if (this.role == null)
 		{
 			this.log.error ("This specified Role does not exist in the DataStore");
 			throw new IllegalArgumentException ("Role is not in the DataStore");
 		}
 
-		this.builder.setProperty (Enrolment.ROLE, role);
+		return this;
 	}
 
 	/**
@@ -213,7 +328,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 
 	public Integer getFinalGrade ()
 	{
-		return this.builder.getPropertyValue (Enrolment.FINALGRADE);
+		return this.finalGrade;
 	}
 
 	/**
@@ -227,7 +342,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 *                                  greater than 100
 	 */
 
-	public void setFinalGrade (final Integer finalgrade)
+	public EnrolmentBuilder setFinalGrade (final Integer finalgrade)
 	{
 		this.log.trace ("setFinalGrade: finalgrade={}", finalgrade);
 
@@ -237,7 +352,9 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 			throw new IllegalArgumentException ("Grade must be between 0 and 100");
 		}
 
-		this.builder.setProperty (Enrolment.FINALGRADE, finalgrade);
+		this.finalGrade = finalgrade;
+
+		return this;
 	}
 
 	/**
@@ -250,7 +367,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 
 	public Boolean isUsable ()
 	{
-		return this.builder.getPropertyValue (Enrolment.USABLE);
+		return this.usable;
 	}
 
 	/**
@@ -262,7 +379,7 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 	 * @param  usable Indication if the data may be used for research, not null
 	 */
 
-	public void setUsable (final Boolean usable)
+	public EnrolmentBuilder setUsable (final Boolean usable)
 	{
 		this.log.trace ("setUsable: usable={}", usable);
 
@@ -272,6 +389,8 @@ public final class EnrolmentBuilder extends AbstractBuilder<Enrolment>
 			throw new NullPointerException ("usable is NULL");
 		}
 
-		this.builder.setProperty (Enrolment.USABLE, usable);
+		this.usable = usable;
+
+		return this;
 	}
 }

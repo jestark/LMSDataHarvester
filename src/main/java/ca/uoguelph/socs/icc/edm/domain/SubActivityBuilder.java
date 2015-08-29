@@ -18,8 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
-
 /**
  * Create <code>SubActivity</code> instances.  This class provides a default
  * implementation of the <code>AbstractSubActivityBuilder</code> without adding
@@ -32,39 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 
 public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActivity>
 {
-	/**
-	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>SubActivityBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>SubActivity</code>
-	 * @throws IllegalStateException if there is no <code>SubActivity</code>
-	 *                               class registered for the specified parent
-	 *                               <code>Activity</code>
-	 */
-
-	public static SubActivityBuilder getInstance (final DataStore datastore, ParentActivity parent)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert parent != null : "parent is NULL";
-		assert datastore.contains (parent) : "parent is not in the datastore";
-
-		Class<? extends SubActivity> sclass = SubActivity.getSubActivityClass (parent.getClass ());
-
-		if (sclass == null)
-		{
-			throw new IllegalStateException ("No registered Subactivity classes corresponding to the specified parent");
-		}
-
-		return AbstractSubActivityBuilder.getInstance (datastore, datastore.getProfile ().getCreator (SubActivity.class, sclass), parent, SubActivityBuilder::new);
-	}
-
 	/**
 	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
 	 * <code>DomainModel</code>.
@@ -84,7 +49,6 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 	 *                               immutable
 	 */
 
-
 	public static SubActivityBuilder getInstance (final DomainModel model, ParentActivity parent)
 	{
 		if (model == null)
@@ -97,23 +61,47 @@ public final class SubActivityBuilder extends AbstractSubActivityBuilder<SubActi
 			throw new NullPointerException ("parent is NULL");
 		}
 
-		if (! model.contains (parent))
-		{
-			throw new IllegalArgumentException ("parent is not in the datastore");
-		}
-
-		return SubActivityBuilder.getInstance (AbstractBuilder.getDataStore (model), parent);
+		return new SubActivityBuilder (model.getDataStore (), parent);
 	}
 
 	/**
 	 * Create the <code>SubActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
+	 * @param  parent    The <code>ParentActivity</code>, not null
 	 */
 
-	protected SubActivityBuilder (final DataStore datastore, final Creator<SubActivity> metadata)
+	protected SubActivityBuilder (final DataStore datastore, final ParentActivity parent)
 	{
-		super (datastore, metadata);
+		super (datastore, parent);
+	}
+
+	/**
+	 * Create an instance of the <code>SubActivity</code>.
+	 *
+	 * @return                       The new <code>SubActivity</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public SubActivity build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.name == null)
+		{
+			this.log.error ("name is NULL");
+			throw new IllegalStateException ("name is NULL");
+		}
+
+		SubActivity result = this.subActivityProxy.create ();
+		result.setId (this.id);
+		result.setParent (this.parent);
+		result.setName (this.name);
+
+		this.oldSubActivity = this.subActivityProxy.insert (this.oldSubActivity, result);
+
+		return this.oldSubActivity;
 	}
 }

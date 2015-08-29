@@ -16,11 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.function.BiFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 
 /**
  * Abstract builder for <code>SubActivity</code> instances.  This class acts as
@@ -44,64 +43,90 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
  * @see     SubActivity
  */
 
-public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends AbstractBuilder<T>
+public abstract class AbstractSubActivityBuilder<T extends SubActivity> implements Builder<T>
 {
-	/**
-	 * Get an instance of the <code>SubActivityBuilder</code> which corresponds
-	 * to the specified parent <code>Activity</code>.
-	 *
-	 * @param  <T>                   The <code>SubActivity</code> type of the
-	 *                               builder
-	 * @param  <U>                   The <code>SubActivityBuilder</code> type
-	 *                               to be returned
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  metadata              The meta-data <code>Creator</code>
-	 *                               instance, not null
-	 * @param  parent                The parent <code>Activity</code>, not null
-	 * @param  create                Method reference to the constructor for
-	 *                               the builder
-	 *
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Activity</code>
-	 */
+	/** The Logger */
+	protected final Logger log;
 
-	protected static <T extends SubActivity, U extends AbstractSubActivityBuilder<T>> U getInstance (final DataStore datastore, final Creator<T> metadata, final ParentActivity parent, final BiFunction<DataStore, Creator<T>, U> create)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert parent != null : "parent is NULL";
-		assert create != null : "create is NULL";
-		assert datastore.contains (parent) : "parent is not in the datastore";
+	/** Helper to operate on <code>SubActivity</code> instances*/
+	protected final DataStoreRWProxy<SubActivity> subActivityProxy;
 
-		// Exception here because this is the fist time that it is checked
-		if (! datastore.getProfile ().hasElementClass (Activity.class))
-		{
-			throw new IllegalStateException ("Element is not available for this datastore");
-		}
+	/** The parent */
+	protected final ParentActivity parent;
 
-		// Exception here because this is the fist time that it is checked
-		if (! datastore.isOpen ())
-		{
-			throw new IllegalStateException ("datastore is closed");
-		}
+	/** The loaded or previously built <code>SubActivity</code> instance */
+	protected SubActivity oldSubActivity;
 
-		U builder = create.apply (datastore, metadata);
-		builder.setParent (parent);
+	/** The <code>DataStore</code> id number for the <code>SubActivity</code> */
+	protected Long id;
 
-		return builder;
-	}
+	/** The name of the <code>SubActivity</code> */
+	protected String name;
 
 	/**
 	 * Create the <code>DefaultSubActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
+	 * @param  parent    The code <code>ParentActivity</code>, not null
 	 */
 
-	protected AbstractSubActivityBuilder (final DataStore datastore, final Creator<T> metadata)
+	protected AbstractSubActivityBuilder (final DataStore datastore, final ParentActivity parent)
 	{
-		super (datastore, metadata);
+		assert datastore != null : "datastore is NULL";
+		assert parent != null : "parent is NULL";
+
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		// The ParentActivity class exists as compromise for JPA.  As such it
+		// does not have metadata, so we have to use instance of here instead
+		// of a proper OO method.
+		if (parent instanceof Activity)
+		{
+			this.parent = DataStoreProxy.getInstance (datastore.getProfile ().getMetaData (Activity.class), Activity.SELECTOR_ID, datastore)
+				.fetch ((Activity) parent);
+		}
+		else
+		{
+			this.parent = DataStoreProxy.getInstance (datastore.getProfile ().getMetaData (SubActivity.class), SubActivity.SELECTOR_ID, datastore)
+				.fetch ((SubActivity) parent);
+		}
+
+		if (this.parent == null)
+		{
+			this.log.error ("The Parent Activity does not exist in the DataStore");
+			throw new IllegalStateException ("Parent is not in the DataStore");
+		}
+
+		Class<? extends SubActivity> sclass = SubActivity.getSubActivityClass (this.parent.getClass ());
+
+		if (sclass == null)
+		{
+			throw new IllegalStateException ("No registered Subactivity classes corresponding to the specified parent");
+		}
+
+		this.subActivityProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (SubActivity.class, sclass), SubActivity.SELECTOR_ID, datastore);
+
+		this.id = null;
+		this.name = null;
+		this.oldSubActivity = null;
+	}
+
+	/**
+	 * Reset the builder.  This method will set all of the fields for the
+	 * <code>Element</code> to be built to <code>null</code>.
+	 *
+	 * @return This <code>ActionBuilder</code>
+	 */
+
+	public AbstractSubActivityBuilder<T> clear ()
+	{
+		this.log.trace ("clear:");
+
+		this.id = null;
+		this.name = null;
+		this.oldSubActivity = null;
+
+		return this;
 	}
 
 	/**
@@ -117,8 +142,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 *                                  loaded are not valid
 	 */
 
-	@Override
-	public void load (final T subactivity)
+	public AbstractSubActivityBuilder<T> load (final T subactivity)
 	{
 		this.log.trace ("load: activity={}", subactivity);
 
@@ -134,10 +158,11 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 			throw new IllegalArgumentException ("Parent activity instances are different");
 		}
 
-		super.load (subactivity);
+		this.id = subactivity.getId ();
 		this.setName (subactivity.getName ());
+		this.oldSubActivity = subactivity;
 
-		this.builder.setProperty (SubActivity.ID, subactivity.getId ());
+		return this;
 	}
 
 	/**
@@ -149,7 +174,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 
 	public final String getName ()
 	{
-		return this.builder.getPropertyValue (SubActivity.NAME);
+		return this.name;
 	}
 
 	/**
@@ -161,7 +186,7 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 	 * @throws IllegalArgumentException If the name is empty
 	 */
 
-	public final void setName (final String name)
+	public final AbstractSubActivityBuilder<T> setName (final String name)
 	{
 		this.log.trace ("setName: name={}", name);
 
@@ -177,7 +202,9 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 			throw new IllegalArgumentException ("name is empty");
 		}
 
-		this.builder.setProperty (SubActivity.NAME, name);
+		this.name = name;
+
+		return this;
 	}
 
 	/**
@@ -189,23 +216,6 @@ public abstract class AbstractSubActivityBuilder<T extends SubActivity> extends 
 
 	public final ParentActivity getParent ()
 	{
-		return this.builder.getPropertyValue (SubActivity.PARENT);
-	}
-
-	/**
-	 * Set the parent <code>Activity</code> instance for the
-	 * <code>SubActivity</code> instance.
-	 *
-	 * @param  parent The parent <code>Activity</code>
-	 */
-
-	protected void setParent (final ParentActivity parent)
-	{
-		this.log.trace ("setParent: parent={}", parent);
-
-		assert parent != null : "parent is NULL";
-		assert this.datastore.contains (parent) : "parent is not in the DataStore";
-
-		this.builder.setProperty (SubActivity.PARENT, parent);
+		return this.parent;
 	}
 }
