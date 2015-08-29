@@ -94,7 +94,7 @@ public class Quiz extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Quiz.class, Quiz::new);
-		NamedActivity.registerImplementation ("moodle", "quiz", Quiz.class);
+		Activity.registerImplementation ("moodle", "quiz", Quiz.class);
 	}
 
 	/**

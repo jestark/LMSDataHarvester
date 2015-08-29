@@ -94,7 +94,7 @@ public class Assign extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Assign.class, Assign::new);
-		NamedActivity.registerImplementation ("moodle", "assign", Assign.class);
+		Activity.registerImplementation ("moodle", "assign", Assign.class);
 	}
 
 	/**

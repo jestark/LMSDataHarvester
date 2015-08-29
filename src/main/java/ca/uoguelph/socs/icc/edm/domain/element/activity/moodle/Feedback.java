@@ -94,7 +94,7 @@ public class Feedback extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Feedback.class, Feedback::new);
-		NamedActivity.registerImplementation ("moodle", "feedback", Feedback.class);
+		Activity.registerImplementation ("moodle", "feedback", Feedback.class);
 	}
 
 	/**

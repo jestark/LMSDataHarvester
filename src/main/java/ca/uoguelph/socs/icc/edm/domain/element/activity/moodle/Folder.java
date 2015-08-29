@@ -94,7 +94,7 @@ public class Folder extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Folder.class, Folder::new);
-		NamedActivity.registerImplementation ("moodle", "folder", Folder.class);
+		Activity.registerImplementation ("moodle", "folder", Folder.class);
 	}
 
 	/**

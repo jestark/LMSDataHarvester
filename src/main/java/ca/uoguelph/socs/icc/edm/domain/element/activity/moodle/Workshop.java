@@ -94,7 +94,7 @@ public class Workshop extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Workshop.class, Workshop::new);
-		NamedActivity.registerImplementation ("moodle", "workshop", Workshop.class);
+		Activity.registerImplementation ("moodle", "workshop", Workshop.class);
 	}
 
 	/**

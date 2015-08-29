@@ -94,7 +94,7 @@ public class Lesson extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Lesson.class, Lesson::new);
-		NamedActivity.registerImplementation ("moodle", "lesson", Lesson.class);
+		Activity.registerImplementation ("moodle", "lesson", Lesson.class);
 	}
 
 	/**

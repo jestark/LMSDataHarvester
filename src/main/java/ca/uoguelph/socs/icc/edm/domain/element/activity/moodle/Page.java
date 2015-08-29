@@ -94,7 +94,7 @@ public class Page extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Page.class, Page::new);
-		NamedActivity.registerImplementation ("moodle", "page", Page.class);
+		Activity.registerImplementation ("moodle", "page", Page.class);
 	}
 
 	/**

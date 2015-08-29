@@ -94,7 +94,7 @@ public class Choice extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Choice.class, Choice::new);
-		NamedActivity.registerImplementation ("moodle", "choice", Choice.class);
+		Activity.registerImplementation ("moodle", "choice", Choice.class);
 	}
 
 	/**

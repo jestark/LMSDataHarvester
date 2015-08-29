@@ -94,7 +94,7 @@ public class Checklist extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Checklist.class, Checklist::new);
-		NamedActivity.registerImplementation ("moodle", "checklist", Checklist.class);
+		Activity.registerImplementation ("moodle", "checklist", Checklist.class);
 	}
 
 	/**

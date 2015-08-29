@@ -94,7 +94,7 @@ public class Forum extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Forum.class, Forum::new);
-		NamedActivity.registerImplementation ("moodle", "forum", Forum.class);
+		Activity.registerImplementation ("moodle", "forum", Forum.class);
 	}
 
 	/**

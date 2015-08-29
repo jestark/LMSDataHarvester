@@ -94,7 +94,7 @@ public class ${ClassName} extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, ${ClassName}.class, ${ClassName}::new);
-		NamedActivity.registerImplementation ("${ActivitySource}", "${ActivityType}", ${ClassName}.class);
+		Activity.registerImplementation ("${ActivitySource}", "${ActivityType}", ${ClassName}.class);
 	}
 
 	/**

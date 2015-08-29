@@ -94,7 +94,7 @@ public class Book extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Book.class, Book::new);
-		NamedActivity.registerImplementation ("moodle", "book", Book.class);
+		Activity.registerImplementation ("moodle", "book", Book.class);
 	}
 
 	/**

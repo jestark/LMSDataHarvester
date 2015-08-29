@@ -94,7 +94,7 @@ public class URL extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, URL.class, URL::new);
-		NamedActivity.registerImplementation ("moodle", "url", URL.class);
+		Activity.registerImplementation ("moodle", "url", URL.class);
 	}
 
 	/**

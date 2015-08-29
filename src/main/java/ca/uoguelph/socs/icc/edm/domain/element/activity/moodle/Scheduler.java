@@ -94,7 +94,7 @@ public class Scheduler extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Scheduler.class, Scheduler::new);
-		NamedActivity.registerImplementation ("moodle", "scheduler", Scheduler.class);
+		Activity.registerImplementation ("moodle", "scheduler", Scheduler.class);
 	}
 
 	/**

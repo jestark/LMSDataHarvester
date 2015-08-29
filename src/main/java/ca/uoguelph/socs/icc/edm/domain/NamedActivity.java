@@ -16,20 +16,14 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.Map;
 import java.util.List;
 import java.util.Set;
-
-import java.util.HashMap;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
-
-import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
-import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
 
 /**
  * Generic representation of an <code>Activity</code> which has a name.  This
@@ -42,12 +36,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
 
 public abstract class NamedActivity extends Activity
 {
-	/** <code>ActivitySource</code> name to class map */
-	private static final Map<String, ActivitySource> sources;
-
-	/** <code>ActivityType</code> to implementation class map */
-	private static final Map<ActivityType, Class<? extends NamedActivity>> activities;
-
 	/** The <code>Grade</code> instances associated with the <code>Activity</code> */
 	public static final Property<Grade> GRADES;
 
@@ -61,9 +49,6 @@ public abstract class NamedActivity extends Activity
 
 	static
 	{
-		sources = new HashMap<> ();
-		activities = new HashMap<> ();
-
 		GRADES = Property.getInstance (Grade.class, "grade", true, false);
 		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", true, false);
 
@@ -98,61 +83,6 @@ public abstract class NamedActivity extends Activity
 		builder.load (this);
 
 		return builder;
-	}
-
-	/**
-	 * Get the <code>Activity</code> implementation class which is associated
-	 * with the specified <code>ActivityType</code>.
-	 *
-	 * @param  type The <code>ActivityType</code>
-	 *
-	 * @return      The <code>Activity </code> data class for the given
-	 *              <code>ActivityType</code>, may be null
-	 */
-
-	public static final Class<? extends NamedActivity> getActivityClass (final ActivityType type)
-	{
-		assert type != null : "type is NULL";
-		assert NamedActivity.activities.containsKey (type) : "Activity Type is not registered";
-
-		return NamedActivity.activities.get (type);
-	}
-
-	/**
-	 * Register an association between an <code>ActivityType</code> and the
-	 * class implementing the <code>Activity</code> interface for that
-	 * <code>ActivityType</code>.
-	 *
-	 * @param  source A <code>String</code> representation of the
-	 *                <code>ActivitySource</code>, not null
-	 * @param  type   A <code>String</code> representation of the
-	 *                <code>ActivityType</code>, not null
-	 * @param  impl   The implementation class, not null
-	 */
-
-	protected static final void registerImplementation (final String source, final String type, final Class<? extends NamedActivity> impl)
-	{
-		assert source != null : "source is NULL";
-		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
-		assert source.length () > 0 : "source is empty";
-
-		ActivityType atype = new ActivityTypeData ();
-
-		if (! NamedActivity.sources.containsKey (source))
-		{
-			ActivitySource asource = new ActivitySourceData ();
-			asource.setName (source);
-
-			NamedActivity.sources.put (source, asource);
-		}
-
-		atype.setSource (NamedActivity.sources.get (source));
-		atype.setName (type);
-
-		assert ! NamedActivity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
-
-		NamedActivity.activities.put (atype, impl);
 	}
 
 	/**

@@ -94,7 +94,7 @@ public class Resource extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Resource.class, Resource::new);
-		NamedActivity.registerImplementation ("moodle", "resource", Resource.class);
+		Activity.registerImplementation ("moodle", "resource", Resource.class);
 	}
 
 	/**

@@ -94,7 +94,7 @@ public class Label extends NamedActivity implements Serializable
 	static
 	{
 		Implementation.getInstance (NamedActivity.class, Label.class, Label::new);
-		NamedActivity.registerImplementation ("moodle", "label", Label.class);
+		Activity.registerImplementation ("moodle", "label", Label.class);
 	}
 
 	/**
