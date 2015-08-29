@@ -38,23 +38,20 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 	/** The Logger */
 	private final Logger log;
 
+	/** The <code>DataStore</code> */
+	private final DataStore datastore;
+
 	/** Helper to substitute <code>Action</code> instances */
 	private final DataStoreProxy<Action> actionProxy;
-
-	/** Helper to substitute <code>Activity</code> instances */
-	private final DataStoreProxy<Activity> activityProxy;
 
 	/** Helper to substitute <code>Enrolment</code> instances */
 	private final DataStoreProxy<Enrolment> enrolmentProxy;
 
 	/** Helper to operate on <code>LogEntry</code> instances*/
-	private final DataStoreRWProxy<LogEntry> entryProxy;
+	private final DataStoreProxy<LogEntry> entryProxy;
 
 	/** Helper to substitute <code>Network</code> instances */
 	private final DataStoreProxy<Network> networkProxy;
-
-	/** Helper to substitute <code>SubActivity</code> instances */
-	private final DataStoreProxy<SubActivity> subActivityProxy;
 
 	/** The loaded or previously built <code>LogEntry</code> instance */
 	private LogEntry oldEntry;
@@ -116,12 +113,12 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.actionProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Action.class), Action.SELECTOR_NAME, datastore);
-		this.activityProxy = DataStoreProxy.getInstance (datastore.getProfile ().getMetaData (Activity.class), Activity.SELECTOR_ID, datastore);
-		this.enrolmentProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Enrolment.class), Enrolment.SELECTOR_ID, datastore);
-		this.entryProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (LogEntry.class), LogEntry.SELECTOR_ID, datastore);
-		this.networkProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Network.class), Network.SELECTOR_NAME, datastore);
-		this.subActivityProxy = DataStoreProxy.getInstance (datastore.getProfile ().getMetaData (SubActivity.class), SubActivity.SELECTOR_ID, datastore);
+		this.datastore = datastore;
+
+		this.actionProxy = DataStoreProxy.getInstance (Action.class, Action.SELECTOR_NAME, datastore);
+		this.enrolmentProxy = DataStoreProxy.getInstance (Enrolment.class, Enrolment.SELECTOR_ID, datastore);
+		this.entryProxy = DataStoreProxy.getInstance (LogEntry.class, LogEntry.SELECTOR_ID, datastore);
+		this.networkProxy = DataStoreProxy.getInstance (Network.class, Network.SELECTOR_NAME, datastore);
 
 		this.id = null;
 		this.action = null;
@@ -331,7 +328,11 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 			throw new NullPointerException ("Activity is NULL");
 		}
 
-		this.activity = this.activityProxy.fetch (activity);
+		this.activity = DataStoreProxy.getInstance (Activity.class,
+				Activity.getActivityClass (activity.getType ()),
+				Activity.SELECTOR_ID,
+				datastore)
+			.fetch (activity);
 
 		if (this.activity == null)
 		{
@@ -460,7 +461,11 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 
 		if (subActivity != null)
 		{
-			this.subActivity = this.subActivityProxy.fetch (subActivity);
+			this.subActivity = DataStoreProxy.getInstance (SubActivity.class,
+					subActivity.getClass (),
+					SubActivity.SELECTOR_ID,
+					datastore)
+				.fetch (subActivity);
 
 			if (this.subActivity == null)
 			{

@@ -48,7 +48,7 @@ public class SubActivityBuilder implements Builder<SubActivity>
 	protected final Logger log;
 
 	/** Helper to operate on <code>SubActivity</code> instances*/
-	protected final DataStoreRWProxy<SubActivity> subActivityProxy;
+	protected final DataStoreProxy<SubActivity> subActivityProxy;
 
 	/** The parent */
 	protected final ParentActivity parent;
@@ -115,12 +115,24 @@ public class SubActivityBuilder implements Builder<SubActivity>
 		// of a proper OO method.
 		if (parent instanceof Activity)
 		{
-			this.parent = DataStoreProxy.getInstance (datastore.getProfile ().getMetaData (Activity.class), Activity.SELECTOR_ID, datastore)
+			this.parent = DataStoreProxy.getInstance (Activity.class,
+					Activity.getActivityClass (parent.getType ()),
+					Activity.SELECTOR_ID,
+					datastore)
 				.fetch ((Activity) parent);
+
+			if (! (this.parent instanceof NamedActivity))
+			{
+				this.log.error ("Only NamedActivity instances can have sub-activities");
+				throw new IllegalArgumentException ("Not a NamedActivity");
+			}
 		}
 		else
 		{
-			this.parent = DataStoreProxy.getInstance (datastore.getProfile ().getMetaData (SubActivity.class), SubActivity.SELECTOR_ID, datastore)
+			this.parent = DataStoreProxy.getInstance (SubActivity.class,
+					((SubActivity) parent).getClass (),
+					SubActivity.SELECTOR_ID,
+					datastore)
 				.fetch ((SubActivity) parent);
 		}
 
@@ -137,7 +149,7 @@ public class SubActivityBuilder implements Builder<SubActivity>
 			throw new IllegalStateException ("No registered Subactivity classes corresponding to the specified parent");
 		}
 
-		this.subActivityProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (SubActivity.class, sclass), SubActivity.SELECTOR_ID, datastore);
+		this.subActivityProxy = DataStoreProxy.getInstance (SubActivity.class, sclass, SubActivity.SELECTOR_ID, datastore);
 
 		this.id = null;
 		this.name = null;

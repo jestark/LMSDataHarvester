@@ -37,7 +37,7 @@ public final class ActionBuilder implements Builder<Action>
 	private final Logger log;
 
 	/** Helper to operate on <code>Action</code> instances*/
-	private final DataStoreRWProxy<Action> actionProxy;
+	private final DataStoreProxy<Action> actionProxy;
 
 	/** The <code>DataStore</code> id number for the <code>Action</code> */
 	private Long id;
@@ -80,7 +80,7 @@ public final class ActionBuilder implements Builder<Action>
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.actionProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Action.class), Action.SELECTOR_NAME, datastore);
+		this.actionProxy = DataStoreProxy.getInstance (Action.class, Action.SELECTOR_NAME, datastore);
 
 		this.id = null;
 		this.name = null;

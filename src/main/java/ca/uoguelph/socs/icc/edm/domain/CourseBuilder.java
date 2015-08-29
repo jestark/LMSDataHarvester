@@ -37,7 +37,7 @@ public final class CourseBuilder implements Builder<Course>
 	private final Logger log;
 
 	/** Helper to operate on <code>Course</code> instances*/
-	private final DataStoreRWProxy<Course> courseProxy;
+	private final DataStoreProxy<Course> courseProxy;
 
 	/** The <code>DataStore</code> id number for the <code>Course</code> */
 	private Long id;
@@ -86,7 +86,7 @@ public final class CourseBuilder implements Builder<Course>
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.courseProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Course.class), Course.SELECTOR_OFFERING, datastore);
+		this.courseProxy = DataStoreProxy.getInstance (Course.class, Course.SELECTOR_OFFERING, datastore);
 
 		this.id = null;
 		this.name = null;

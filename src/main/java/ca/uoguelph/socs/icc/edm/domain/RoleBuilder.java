@@ -37,7 +37,7 @@ public final class RoleBuilder implements Builder<Role>
 	private final Logger log;
 
 	/** Helper to operate on <code>Role</code> instances*/
-	private final DataStoreRWProxy<Role> roleProxy;
+	private final DataStoreProxy<Role> roleProxy;
 
 	/** The <code>DataStore</code> id number for the <code>Role</code> */
 	private Long id;
@@ -80,7 +80,7 @@ public final class RoleBuilder implements Builder<Role>
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.roleProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Role.class), Role.SELECTOR_NAME, datastore);
+		this.roleProxy = DataStoreProxy.getInstance (Role.class, Role.SELECTOR_NAME, datastore);
 
 		this.id = null;
 		this.name = null;

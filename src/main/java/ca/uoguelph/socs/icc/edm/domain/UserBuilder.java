@@ -44,7 +44,7 @@ public final class UserBuilder implements Builder<User>
 	private final DataStoreProxy<Enrolment> enrolmentProxy;
 
 	/** Helper to operate on <code>User</code> instances */
-	private final DataStoreRWProxy<User> userProxy;
+	private final DataStoreProxy<User> userProxy;
 
 	/** The loaded or previously built <code>User</code> instance */
 	private User oldUser;
@@ -102,8 +102,8 @@ public final class UserBuilder implements Builder<User>
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.enrolmentProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Enrolment.class), Enrolment.SELECTOR_ID, datastore);
-		this.userProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (User.class), User.SELECTOR_USERNAME, datastore);
+		this.enrolmentProxy = DataStoreProxy.getInstance (Enrolment.class, Enrolment.SELECTOR_ID, datastore);
+		this.userProxy = DataStoreProxy.getInstance (User.class, User.SELECTOR_USERNAME, datastore);
 
 		this.id = null;
 		this.idNumber = null;

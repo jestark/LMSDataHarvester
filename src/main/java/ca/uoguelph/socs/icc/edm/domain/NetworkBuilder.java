@@ -37,7 +37,7 @@ public final class NetworkBuilder implements Builder<Network>
 	private final Logger log;
 
 	/** Helper to operate on <code>Network</code> instances*/
-	private final DataStoreRWProxy<Network> networkProxy;
+	private final DataStoreProxy<Network> networkProxy;
 
 	/** The <code>DataStore</code> id number for the <code>Network</code> */
 	private Long id;
@@ -80,7 +80,7 @@ public final class NetworkBuilder implements Builder<Network>
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.networkProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Network.class), Network.SELECTOR_NAME, datastore);
+		this.networkProxy = DataStoreProxy.getInstance (Network.class, Network.SELECTOR_NAME, datastore);
 
 		this.id = null;
 		this.name = null;

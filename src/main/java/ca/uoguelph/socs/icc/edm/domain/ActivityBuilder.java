@@ -51,7 +51,7 @@ public class ActivityBuilder implements Builder<Activity>
 	protected final Logger log;
 
 	/** Helper to operate on <code>SubActivity</code> instances*/
-	protected final DataStoreRWProxy<Activity> activityProxy;
+	protected final DataStoreProxy<Activity> activityProxy;
 
 	/** Helper to substitute <code>Course</code> instances */
 	protected final DataStoreProxy<Course> courseProxy;
@@ -118,9 +118,9 @@ public class ActivityBuilder implements Builder<Activity>
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.courseProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Course.class), Course.SELECTOR_OFFERING, datastore);
+		this.courseProxy = DataStoreProxy.getInstance (Course.class, Course.SELECTOR_OFFERING, datastore);
 
-		this.type = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (ActivityType.class), ActivityType.SELECTOR_NAME, datastore)
+		this.type = DataStoreProxy.getInstance (ActivityType.class, ActivityType.SELECTOR_NAME, datastore)
 			.fetch (type);
 
 		if (this.type == null)
@@ -129,14 +129,7 @@ public class ActivityBuilder implements Builder<Activity>
 			throw new IllegalArgumentException ("ActivityType is not in the DataStore");
 		}
 
-		Class<? extends Activity> aclass = NamedActivity.getActivityClass (this.type);
-
-		if (aclass == null)
-		{
-			aclass = GenericActivity.class;
-		}
-
-		this.activityProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Activity.class, aclass), Activity.SELECTOR_ID, datastore);
+		this.activityProxy = DataStoreProxy.getInstance (Activity.class, Activity.getActivityClass (this.type), Activity.SELECTOR_ID, datastore);
 
 		this.id = null;
 		this.course = null;

@@ -40,7 +40,7 @@ public final class ActivityTypeBuilder implements Builder<ActivityType>
 	private final DataStoreProxy<ActivitySource> sourceProxy;
 
 	/** Helper to operate on <code>ActivityType</code> instances*/
-	private final DataStoreRWProxy<ActivityType> typeProxy;
+	private final DataStoreProxy<ActivityType> typeProxy;
 
 	/** The <code>DataStore</code> id number for the <code>ActivityType</code> */
 	private Long id;
@@ -87,8 +87,8 @@ public final class ActivityTypeBuilder implements Builder<ActivityType>
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.sourceProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (ActivitySource.class), ActivitySource.SELECTOR_NAME, datastore);
-		this.typeProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (ActivityType.class), ActivityType.SELECTOR_NAME, datastore);
+		this.sourceProxy = DataStoreProxy.getInstance (ActivitySource.class, ActivitySource.SELECTOR_NAME, datastore);
+		this.typeProxy = DataStoreProxy.getInstance (ActivityType.class, ActivityType.SELECTOR_NAME, datastore);
 
 		this.id = null;
 		this.name = null;

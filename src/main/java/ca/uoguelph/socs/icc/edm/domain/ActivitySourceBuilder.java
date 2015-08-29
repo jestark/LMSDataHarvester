@@ -37,7 +37,7 @@ public final class ActivitySourceBuilder implements Builder<ActivitySource>
 	private final Logger log;
 
 	/** Helper to operate on <code>ActivitySource</code> instances*/
-	private final DataStoreRWProxy<ActivitySource> sourceProxy;
+	private final DataStoreProxy<ActivitySource> sourceProxy;
 
 	/** The <code>DataStore</code> id number for the <code>ActivitySource</code> */
 	private Long id;
@@ -81,7 +81,7 @@ public final class ActivitySourceBuilder implements Builder<ActivitySource>
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.sourceProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (ActivitySource.class), ActivitySource.SELECTOR_NAME, datastore);
+		this.sourceProxy = DataStoreProxy.getInstance (ActivitySource.class, ActivitySource.SELECTOR_NAME, datastore);
 
 		this.id = null;
 		this.name = null;

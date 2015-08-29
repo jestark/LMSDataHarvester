@@ -41,7 +41,7 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 	private DataStoreProxy<Course> courseProxy;
 
 	/** Helper to operate on <code>Enrolment</code> instances */
-	private DataStoreRWProxy<Enrolment> enrolmentProxy;
+	private DataStoreProxy<Enrolment> enrolmentProxy;
 
 	/** Helper to substitute <code>Activity</code> instances */
 	private DataStoreProxy<Role> roleProxy;
@@ -99,9 +99,9 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.courseProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Course.class), Course.SELECTOR_OFFERING, datastore);
-		this.enrolmentProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Enrolment.class), Enrolment.SELECTOR_ID, datastore);
-		this.roleProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Role.class), Role.SELECTOR_NAME, datastore);
+		this.courseProxy = DataStoreProxy.getInstance (Course.class, Course.SELECTOR_OFFERING, datastore);
+		this.enrolmentProxy = DataStoreProxy.getInstance (Enrolment.class, Enrolment.SELECTOR_ID, datastore);
+		this.roleProxy = DataStoreProxy.getInstance (Role.class, Role.SELECTOR_NAME, datastore);
 
 		this.id = null;
 		this.course = null;

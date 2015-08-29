@@ -37,14 +37,14 @@ public final class GradeBuilder implements Builder<Grade>
 	/** The Logger */
 	private final Logger log;
 
-	/** Helper to substitute <code>Activity</code> instances */
-	private final DataStoreProxy<Activity> activityProxy;
+	/** The <code>DataStore</code> */
+	private final DataStore datastore;
 
 	/** Helper to substitute <code>Enrolment</code> instances */
 	private final DataStoreProxy<Enrolment> enrolmentProxy;
 
 	/** Helper to operate on <code>Grade</code> instances */
-	private final DataStoreRWProxy<Grade> gradeProxy;
+	private final DataStoreProxy<Grade> gradeProxy;
 
 	/** The loaded or previously built <code>Grade</code> instance */
 	private Grade oldGrade;
@@ -93,9 +93,10 @@ public final class GradeBuilder implements Builder<Grade>
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.activityProxy = DataStoreProxy.getInstance (datastore.getProfile ().getMetaData (Activity.class), Activity.SELECTOR_ID, datastore);
-		this.enrolmentProxy = DataStoreProxy.getInstance (datastore.getProfile ().getCreator (Enrolment.class), Enrolment.SELECTOR_ID, datastore);
-		this.gradeProxy = DataStoreRWProxy.getInstance (datastore.getProfile ().getCreator (Grade.class), Grade.SELECTOR_PKEY, datastore);
+		this.datastore = datastore;
+
+		this.enrolmentProxy = DataStoreProxy.getInstance (Enrolment.class, Enrolment.SELECTOR_ID, datastore);
+		this.gradeProxy = DataStoreProxy.getInstance (Grade.class, Grade.SELECTOR_PKEY, datastore);
 
 		this.activity = null;
 		this.enrolment = null;
@@ -232,6 +233,8 @@ public final class GradeBuilder implements Builder<Grade>
 	 * @return                          This <code>GradeBuilder</code>
 	 * @throws IllegalArgumentException if the <code>Activity</code> is not in
 	 *                                  the <code>DataStore</code>
+	 * @throws IllegalArgumentException if the <code>Activity</code> is not a
+	 *                                  <code>NamedActivity</code>
 	 */
 
 	public GradeBuilder setActivity (final Activity activity)
@@ -244,12 +247,22 @@ public final class GradeBuilder implements Builder<Grade>
 			throw new NullPointerException ("The specified activity is NULL");
 		}
 
-		this.activity = this.activityProxy.fetch (activity);
+		this.activity = DataStoreProxy.getInstance (Activity.class,
+				Activity.getActivityClass (activity.getType ()),
+				Activity.SELECTOR_ID,
+				this.datastore)
+			.fetch (activity);
 
 		if (this.activity == null)
 		{
 			this.log.error ("The specified Activity does not exist in the DataStore");
 			throw new IllegalArgumentException ("Activity is not in the DataStore");
+		}
+
+		if (! (this.activity instanceof NamedActivity))
+		{
+			this.log.error ("Only NamedActivity instances can be assigned Grades");
+			throw new IllegalArgumentException ("Not a NamedActivity");
 		}
 
 		return this;
