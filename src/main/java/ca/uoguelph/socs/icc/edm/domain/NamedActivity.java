@@ -22,6 +22,8 @@ import java.util.Set;
 
 import java.util.HashMap;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -70,6 +72,32 @@ public abstract class NamedActivity extends Activity
 			.addRelationship (GRADES, NamedActivity::getGrades, NamedActivity::addGrade, NamedActivity::removeGrade)
 			.addRelationship (SUBACTIVITIES, NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity)
 			.build ();
+	}
+
+	/**
+	 * Get an <code>NamedActivityBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates a
+	 * <code>NamedActivityBuilder</code> on the specified
+	 * <code>DataStore</code> and initializes it with the contents of this
+	 * <code>NamedActivity</code> instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>NamedActivityBuilder</code>
+	 */
+
+	@Override
+	public NamedActivityBuilder getBuilder (final DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		NamedActivityBuilder builder = new NamedActivityBuilder (datastore, this.getType ());
+		builder.load (this);
+
+		return builder;
 	}
 
 	/**

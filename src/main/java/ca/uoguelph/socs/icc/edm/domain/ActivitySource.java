@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -76,6 +78,30 @@ public abstract class ActivitySource extends Element
 			.addRelationship (TYPES, ActivitySource::getTypes, ActivitySource::addType, ActivitySource::removeType)
 			.addSelector (SELECTOR_NAME)
 			.build ();
+	}
+
+	/**
+	 * Get an <code>ActivitySourceBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates an
+	 * <code>ActivitySourceBuilder</code> on the specified
+	 * <code>DataStore</code> and initializes it with the contents of this
+	 * <code>ActivitySource</code> instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>ActivitySourceBuilder</code>
+	 */
+
+	@Override
+	public ActivitySourceBuilder getBuilder (final DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		return new ActivitySourceBuilder (datastore)
+			.load (this);
 	}
 
 	/**

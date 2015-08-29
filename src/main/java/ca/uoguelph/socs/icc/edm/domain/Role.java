@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -66,6 +68,29 @@ public abstract class Role extends Element
 			.addRelationship (Enrolment.class, Enrolment.ROLE, Enrolment.SELECTOR_ROLE)
 			.addSelector (SELECTOR_NAME)
 			.build ();
+	}
+
+	/**
+	 * Get an <code>RoleBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates an
+	 * <code>RoleBuilder</code> on the specified <code>DataStore</code> and
+	 * initializes it with the contents of this <code>Role</code> instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>RoleBuilder</code>
+	 */
+
+	@Override
+	public RoleBuilder getBuilder (final DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		return new RoleBuilder (datastore)
+			.load (this);
 	}
 
 	/**

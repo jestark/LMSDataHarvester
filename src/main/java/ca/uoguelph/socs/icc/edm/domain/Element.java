@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -58,6 +60,29 @@ public abstract class Element
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.build ();
+	}
+
+	/**
+	 * Get an <code>Builder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates a <code>Builder</code> on
+	 * the specified <code>DataStore</code> and initializes it with the
+	 * contents of this <code>Element</code> instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>Builder</code>
+	 */
+
+	public abstract Builder<? extends Element> getBuilder (DataStore datastore);
+
+	public final Builder<? extends Element> getBuilder (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		return this.getBuilder (model.getDataStore ());
 	}
 
 	/**

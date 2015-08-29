@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -105,6 +107,29 @@ public abstract class LogEntry extends Element
 			.addSelector (SELECTOR_COURSE)
 			.addSelector (SELECTOR_NETWORK)
 			.build ();
+	}
+
+	/**
+	 * Get an <code>LogEntryBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates an
+	 * <code>LogEntryBuilder</code> on the specified <code>DataStore</code> and
+	 * initializes it with the contents of this <code>LogEntry</code> instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>LogEntryBuilder</code>
+	 */
+
+	@Override
+	public LogEntryBuilder getBuilder (final DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		return new LogEntryBuilder (datastore)
+			.load (this);
 	}
 
 	/**

@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -101,6 +103,31 @@ public abstract class Activity extends ParentActivity
 			.addRelationship (LOGENTRIES, Activity::getLog, Activity::addLog, Activity::removeLog)
 			.addSelector (SELECTOR_TYPE)
 			.build ();
+	}
+
+	/**
+	 * Get an <code>ActivityBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates a <code>ActivityBuilder</code>
+	 * on the specified <code>DataStore</code> and initializes it with the
+	 * contents of this <code>Activity</code> instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>ActivityBuilder</code>
+	 */
+
+	@Override
+	public ActivityBuilder getBuilder (final DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		ActivityBuilder builder = new ActivityBuilder (datastore, this.getType ());
+		builder.load (this);
+
+		return builder;
 	}
 
 	/**

@@ -22,6 +22,8 @@ import java.util.Set;
 
 import java.util.HashMap;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -72,6 +74,32 @@ public abstract class SubActivity extends ParentActivity
 			.addRelationship (LOGENTRIES, SubActivity::getLog, SubActivity::addLog, SubActivity::removeLog)
 			.addRelationship (SUBACTIVITIES, SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity)
 			.build ();
+	}
+
+	/**
+	 * Get an <code>SubActivityBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates an
+	 * <code>SubActivityBuilder</code> on the specified <code>DataStore</code>
+	 * and initializes it with the contents of this <code>SubActivity</code>
+	 * instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>SubActivityBuilder</code>
+	 */
+
+	@Override
+	public SubActivityBuilder getBuilder (final DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		SubActivityBuilder builder = new SubActivityBuilder (datastore, this.getParent ());
+		builder.load (this);
+
+		return builder;
 	}
 
 	/**

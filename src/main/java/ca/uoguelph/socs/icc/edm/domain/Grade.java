@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -56,6 +58,9 @@ public abstract class Grade extends Element
 	/** The assigned grade */
 	public static final Property<Integer> GRADE;
 
+	/** Select a <code>Grade</code> based the <code>Activity</code> and <code>Enrolment</code> */
+	public static final Selector SELECTOR_PKEY;
+
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
 	 * <code>Selector</code> instances for the <code>Grade</code>.
@@ -67,11 +72,37 @@ public abstract class Grade extends Element
 		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", false, true);
 		GRADE = Property.getInstance (Integer.class, "grade", true, true);
 
+		SELECTOR_PKEY = Selector.getInstance ("pkey", true, Grade.ACTIVITY, Grade.ENROLMENT);
+
 		Definition.getBuilder (Grade.class, Element.class)
 			.addProperty (GRADE, Grade::getGrade, Grade::setGrade)
 			.addRelationship (ACTIVITY, Grade::getActivity, Grade::setActivity)
 			.addRelationship (ENROLMENT, Grade::getEnrolment, Grade::setEnrolment)
+			.addSelector (SELECTOR_PKEY)
 			.build ();
+	}
+
+	/**
+	 * Get an <code>GradeBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates an
+	 * <code>GradeBuilder</code> on the specified <code>DataStore</code> and
+	 * initializes it with the contents of this <code>Grade</code> instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>GradeBuilder</code>
+	 */
+
+	@Override
+	public GradeBuilder getBuilder (final DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		return new GradeBuilder (datastore)
+			.load (this);
 	}
 
 	/**

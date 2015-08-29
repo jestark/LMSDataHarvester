@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -70,6 +72,29 @@ public abstract class Action extends Element
 			.addRelationship (LogEntry.class, LogEntry.ACTION, LogEntry.SELECTOR_ACTION)
 			.addSelector (SELECTOR_NAME)
 			.build ();
+	}
+
+	/**
+	 * Get an <code>ActionBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates an
+	 * <code>ActionBuilder</code> on the specified <code>DataStore</code> and
+	 * initializes it with the contents of this <code>Action</code> instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>ActionBuilder</code>
+	 */
+
+	@Override
+	public ActionBuilder getBuilder (final DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		return new ActionBuilder (datastore)
+			.load (this);
 	}
 
 	/**

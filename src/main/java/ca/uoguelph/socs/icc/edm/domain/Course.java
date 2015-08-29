@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -93,6 +95,29 @@ public abstract class Course extends Element
 			.addRelationship (ENROLMENTS, Course::getEnrolments, Course::addEnrolment, Course::removeEnrolment)
 			.addSelector (SELECTOR_OFFERING)
 			.build ();
+	}
+
+	/**
+	 * Get an <code>CourseBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates an
+	 * <code>CourseBuilder</code> on the specified <code>DataStore</code> and
+	 * initializes it with the contents of this <code>Course</code> instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>CourseBuilder</code>
+	 */
+
+	@Override
+	public CourseBuilder getBuilder (final DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		return new CourseBuilder (datastore)
+			.load (this);
 	}
 
 	/**

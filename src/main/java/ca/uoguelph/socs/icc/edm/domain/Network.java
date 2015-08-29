@@ -16,12 +16,15 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
- * A representation the network from which logged <code>Action</code> originated.
+ * A representation the network from which logged <code>Action</code>
+ * originated.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -53,6 +56,29 @@ public abstract class Network extends Element
 			.addRelationship (LogEntry.class, LogEntry.NETWORK, LogEntry.SELECTOR_NETWORK)
 			.addSelector (SELECTOR_NAME)
 			.build ();
+	}
+
+	/**
+	 * Get an <code>NetworkBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates an
+	 * <code>NetworkBuilder</code> on the specified <code>DataStore</code> and
+	 * initializes it with the contents of this <code>Network</code> instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>NetworkBuilder</code>
+	 */
+
+	@Override
+	public NetworkBuilder getBuilder (final DataStore datastore)
+	{
+		if (datastore == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		return new NetworkBuilder (datastore)
+			.load (this);
 	}
 
 	/**
