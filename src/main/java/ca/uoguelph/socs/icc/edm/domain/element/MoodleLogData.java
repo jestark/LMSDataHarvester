@@ -28,6 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.Network;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
@@ -313,6 +314,41 @@ public class MoodleLogData extends LogEntry
 	protected void setInfo (final String info)
 	{
 		this.info = info;
+	}
+
+	/**
+	 * Get the reference to the <code>SubActivity</code> for the
+	 * <code>LogEntry</code>.  Some <code>LogEntry</code> instances will record
+	 * an <code>Action</code> upon a <code>SubActivity</code>, rather than the
+	 * <code>Activity</code> itself.  This method gets the
+	 * <code>LogReference</code> instance containing the
+	 * </code>SubActivity</code>.
+	 *
+	 * @return The <code>LogReference</code> instance
+	 */
+
+	@Override
+	public LogReference getReference ()
+	{
+		return null;
+	}
+
+	/**
+	 * Set the reference to the <code>SubActivity</code> to the
+	 * <code>LogEntry</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded, or by the <code>LogEntryBuilder</code> when the
+	 * <code>LogEntry</code> is created.
+	 *
+	 * @param  reference The <code>LogReference</code> instance, not null
+	 */
+
+	@Override
+	protected void setReference (final LogReference reference)
+	{
+		assert reference != null : "reference is NULL";
+
+		throw new UnsupportedOperationException ();
 	}
 
 	/**

@@ -24,9 +24,9 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
- * Create new <code>LogEntry</code> instances.  This class extends
- * <code>AbstractBuilder</code>, adding the functionality required to
- * create <code>LogEntry</code> instances.
+ * Create new <code>LogEntry</code> instances.  This class implements
+ * <code>Builder</code>, adding the functionality required to create
+ * <code>LogEntry</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -41,13 +41,16 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 	/** The <code>DataStore</code> */
 	private final DataStore datastore;
 
+	/** The <code>LogReferenceBuilder</code> */
+	private final LogReferenceBuilder refBuilder;
+
 	/** Helper to substitute <code>Action</code> instances */
 	private final DataStoreProxy<Action> actionProxy;
 
 	/** Helper to substitute <code>Enrolment</code> instances */
 	private final DataStoreProxy<Enrolment> enrolmentProxy;
 
-	/** Helper to operate on <code>LogEntry</code> instances*/
+	/** Helper to operate on <code>LogEntry</code> instances */
 	private final DataStoreProxy<LogEntry> entryProxy;
 
 	/** Helper to substitute <code>Network</code> instances */
@@ -59,19 +62,19 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 	/** The <code>DataStore</code> ID number for the <code>LogEntry</code> */
 	private Long id;
 
-	/** The associated <code>Action</code>*/
+	/** The associated <code>Action</code> */
 	private Action action;
 
-	/** The associated <code>Activity</code>*/
+	/** The associated <code>Activity</code> */
 	private Activity activity;
 
-	/** The associated <code>Enrolment</code>*/
+	/** The associated <code>Enrolment</code> */
 	private Enrolment enrolment;
 
-	/** The associated <code>Network</code>*/
+	/** The associated <code>Network</code> */
 	private Network network;
 
-	/** The associated <code>SubActivity</code>*/
+	/** The associated <code>SubActivity</code> */
 	private SubActivity subActivity;
 
 	/** The time that the entry was logged */
@@ -114,6 +117,8 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.datastore = datastore;
+
+		this.refBuilder = new LogReferenceBuilder (datastore);
 
 		this.actionProxy = DataStoreProxy.getInstance (Action.class, Action.SELECTOR_NAME, datastore);
 		this.enrolmentProxy = DataStoreProxy.getInstance (Enrolment.class, Enrolment.SELECTOR_ID, datastore);
@@ -172,7 +177,8 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 				|| (this.oldEntry.getAction () != this.action)
 				|| (this.oldEntry.getActivity () != this.activity)
 				|| (this.oldEntry.getEnrolment () != this.enrolment)
-				|| (this.oldEntry.getNetwork () != this.network))
+				|| (this.oldEntry.getNetwork () != this.network)
+				|| (this.oldEntry.getSubActivity () != this.subActivity))
 		{
 			LogEntry result = this.entryProxy.create ();
 			result.setId (this.id);
@@ -183,6 +189,14 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 			result.setTime (this.time);
 
 			this.oldEntry = this.entryProxy.insert (this.oldEntry, result);
+
+			// Create the reference
+			if (this.subActivity != null)
+			{
+				this.refBuilder.setSubActivity (this.subActivity)
+					.setEntry (this.oldEntry)
+					.build ();
+			}
 		}
 		else
 		{

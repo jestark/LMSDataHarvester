@@ -49,7 +49,7 @@ def processNode (node, data, template):
         elif (node.tag == "log"):
             entry = "Log"
 
-            params ["ActivityClass"] = params ["ClassName"]
+            params ["SubActivityClass"] = params ["ClassName"]
             params ["ClassName"] = node.attrib ["name"]
 
         else:

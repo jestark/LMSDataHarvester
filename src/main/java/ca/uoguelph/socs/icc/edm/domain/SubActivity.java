@@ -49,7 +49,7 @@ public abstract class SubActivity extends ParentActivity
 	public static final Property<ParentActivity> PARENT;
 
 	/** The <code>LogEntry</code> instances associated with the <code>SubActivity</code> */
-	public static final Property<LogEntry> LOGENTRIES;
+	public static final Property<LogReference> REFERENCES;
 
 	/** The <code>SubActivity</code> instances for the <code>SubActivity</code> */
 	public static final Property<SubActivity> SUBACTIVITIES;
@@ -66,15 +66,51 @@ public abstract class SubActivity extends ParentActivity
 		NAME = Property.getInstance (String.class, "name", false, true);
 		PARENT = Property.getInstance (ParentActivity.class, "parent", false, true);
 
-		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", true, false);
+		REFERENCES = Property.getInstance (LogReference.class, "references", true, false);
 		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", true, false);
 
 		Definition.getBuilder (SubActivity.class, Element.class)
 			.addProperty (NAME, SubActivity::getName, SubActivity::setName)
 			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
-			.addRelationship (LOGENTRIES, SubActivity::getLog, SubActivity::addLog, SubActivity::removeLog)
+			.addRelationship (REFERENCES, SubActivity::getReferences, SubActivity::addReference, SubActivity::removeReference)
 			.addRelationship (SUBACTIVITIES, SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity)
 			.build ();
+	}
+
+	/**
+	 * Get the <code>SubActivity</code> implementation class which is
+	 * associated with the specified <code>Activity</code> implementation
+	 * class.
+	 *
+	 * @param  activity The <code>Activity</code> implementation class
+	 *
+	 * @return          The <code>SubActivity</code> implementation class, may be
+	 *                  null
+	 */
+
+	public static final Class<? extends SubActivity> getSubActivityClass (final Class<? extends ParentActivity> activity)
+	{
+		assert activity != null : "activity is NULL";
+		assert SubActivity.subactivities.containsKey (activity) : "Activity is not registered";
+
+		return SubActivity.subactivities.get (activity);
+	}
+
+	/**
+	 * Register an association between an <code>Activity</code> implementation
+	 * class and a <code>SubActivity</code> implementation class.
+	 *
+	 * @param  activity    The <code>Activity</code> implementation, not null
+	 * @param  subactivity The <code>SubActivity</code> implementation, not null
+	 */
+
+	protected static final void registerImplementation (final Class<? extends ParentActivity> activity, final Class<? extends SubActivity> subactivity)
+	{
+		assert activity != null : "activity is NULL";
+		assert subactivity != null : "subactivity is NULL";
+		assert (! SubActivity.subactivities.containsKey (activity)) : "activity is already registered";
+
+		SubActivity.subactivities.put (activity, subactivity);
 	}
 
 	/**
@@ -114,42 +150,6 @@ public abstract class SubActivity extends ParentActivity
 
 		return datastore.getProfile ()
 			.getCreator (SubActivity.class, this.getClass ());
-	}
-
-	/**
-	 * Get the <code>SubActivity</code> implementation class which is
-	 * associated with the specified <code>Activity</code> implementation
-	 * class.
-	 *
-	 * @param  activity The <code>Activity</code> implementation class
-	 *
-	 * @return          The <code>SubActivity</code> implementation class, may be
-	 *                  null
-	 */
-
-	public static final Class<? extends SubActivity> getSubActivityClass (final Class<? extends ParentActivity> activity)
-	{
-		assert activity != null : "activity is NULL";
-		assert SubActivity.subactivities.containsKey (activity) : "Activity is not registered";
-
-		return SubActivity.subactivities.get (activity);
-	}
-
-	/**
-	 * Register an association between an <code>Activity</code> implementation
-	 * class and a <code>SubActivity</code> implementation class.
-	 *
-	 * @param  activity    The <code>Activity</code> implementation, not null
-	 * @param  subactivity The <code>SubActivity</code> implementation, not null
-	 */
-
-	protected static final void registerImplementation (final Class<? extends ParentActivity> activity, final Class<? extends SubActivity> subactivity)
-	{
-		assert activity != null : "activity is NULL";
-		assert subactivity != null : "subactivity is NULL";
-		assert (! SubActivity.subactivities.containsKey (activity)) : "activity is already registered";
-
-		SubActivity.subactivities.put (activity, subactivity);
 	}
 
 	/**
@@ -225,9 +225,56 @@ public abstract class SubActivity extends ParentActivity
 	protected abstract void setName (String name);
 
 	/**
+	 * Get a <code>List</code> of all of the <code>LogReference</code>
+	 * instances for the <code>SubActivity</code>.
+	 *
+	 * @return A <code>List</code> of <code>LogReference</code> instances
+	 */
+
+	public abstract List<LogReference> getReferences ();
+
+	/**
+	 * Initialize the <code>List</code> of <code>LogReference</code> instances
+	 * associated with the <code>SubActivity</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>SubActivity</code> instance is loaded.
+	 *
+	 * @param  references The <code>List</code> of <code>LogReference</code>
+	 *                    instances, not null
+	 */
+
+	protected abstract void setReferences (List<LogReference> references);
+
+	/**
+	 * Add the specified <code>LogReference</code> to the
+	 * <code>SubActivity</code>.
+	 *
+	 * @param  reference    The <code>LogReference</code> to add, not null
+	 *
+	 * @return              <code>True</code> if the <code>LogReference</code>
+	 *                      was successfully added, <code>False</code>
+	 *                      otherwise
+	 */
+
+	protected abstract boolean addReference (LogReference reference);
+
+	/**
+	 * Remove the specified <code>LogReference</code> from the
+	 * <code>SubActivity</code>.
+	 *
+	 * @param  reference    The <code>LogReference</code> to remove, not null
+	 *
+	 * @return              <code>True</code> if the <code>LogReference</code>
+	 *                      was successfully removed, <code>False</code>
+	 *                      otherwise
+	 */
+
+	protected abstract boolean removeReference (LogReference reference);
+
+	/**
 	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
-	 * for the <code>Activity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * for the <code>SubActivity</code>.  This method is intended to be used by
+	 * a <code>DataStore</code> when the <code>SubActivity</code> instance is
 	 * loaded.
 	 *
 	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
@@ -238,7 +285,7 @@ public abstract class SubActivity extends ParentActivity
 
 	/**
 	 * Add the specified <code>SubActivity</code> to the
-	 * <code>Activity</code>.
+	 * <code>SubActivity</code>.
 	 *
 	 * @param  subactivity The <code>SubActivity</code> to add, not null
 	 *
@@ -250,7 +297,7 @@ public abstract class SubActivity extends ParentActivity
 
 	/**
 	 * Remove the specified <code>SubActivity</code> from the
-	 * <code>Activity</code>.
+	 * <code>SubActivity</code>.
 	 *
 	 * @param  subactivity The <code>SubActivity</code> to remove, not null
 	 *

@@ -64,6 +64,9 @@ public abstract class LogEntry extends Element
 	/** The associated <code>Enrolment</code> */
 	public static final Property<Enrolment> ENROLMENT;
 
+	/** The associated <code>LogReference</code> (<code>SubActivity</code>) */
+	public static final Property<LogReference> REFERENCE;
+
 	/** The associated <code>Network</code> */
 	public static final Property<Network> NETWORK;
 
@@ -90,6 +93,7 @@ public abstract class LogEntry extends Element
 		ACTIVITY = Property.getInstance (Activity.class, "activity", false, true);
 		COURSE = Property.getInstance (Course.class, "course", false, true);
 		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", false, true);
+		REFERENCE = Property.getInstance (LogReference.class, "reference", false, true);
 		NETWORK = Property.getInstance (Network.class, "network", false, true);
 		TIME = Property.getInstance (Date.class, "time", false, true);
 
@@ -103,6 +107,7 @@ public abstract class LogEntry extends Element
 			.addRelationship (ACTION, LogEntry::getAction, LogEntry::setAction)
 			.addRelationship (ACTIVITY, LogEntry::getActivity, LogEntry::setActivity)
 			.addRelationship (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
+			.addRelationship (REFERENCE, LogEntry::getReference, LogEntry::setReference)
 			.addRelationship (NETWORK, LogEntry::getNetwork, LogEntry::setNetwork)
 			.addSelector (SELECTOR_ACTION)
 			.addSelector (SELECTOR_COURSE)
@@ -236,6 +241,31 @@ public abstract class LogEntry extends Element
 	 */
 
 	protected abstract void setNetwork (Network network);
+
+	/**
+	 * Get the reference to the <code>SubActivity</code> for the
+	 * <code>LogEntry</code>.  Some <code>LogEntry</code> instances will record
+	 * an <code>Action</code> upon a <code>SubActivity</code>, rather than the
+	 * <code>Activity</code> itself.  This method gets the
+	 * <code>LogReference</code> instance containing the
+	 * </code>SubActivity</code>.
+	 *
+	 * @return The <code>LogReference</code> instance
+	 */
+
+	public abstract LogReference getReference ();
+
+	/**
+	 * Set the reference to the <code>SubActivity</code> to the
+	 * <code>LogEntry</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
+	 * loaded, or by the <code>LogEntryBuilder</code> when the
+	 * <code>LogEntry</code> is created.
+	 *
+	 * @param  reference The <code>LogReference</code> instance, not null
+	 */
+
+	protected abstract void setReference (LogReference reference);
 
 	/**
 	 * Get the <code>SubActivity</code> upon which the logged

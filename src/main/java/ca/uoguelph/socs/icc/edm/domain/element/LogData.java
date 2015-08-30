@@ -28,6 +28,7 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.Network;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
@@ -282,20 +283,6 @@ public class LogData extends LogEntry implements Serializable
 	}
 
 	/**
-	 * Get the <code>SubActivity</code> upon which the logged
-	 * <code>Action</code> was performed.
-	 *
-	 * @return A reference to the associated <code>SubActivity</code> instance,
-	 *         may be null
-	 */
-
-	@Override
-	public SubActivity getSubActivity ()
-	{
-		return (this.reference != null) ? this.reference.getSubActivity () : null;
-	}
-
-	/**
 	 * Get the <code>Course</code> for which the action was logged.
 	 *
 	 * @return A reference to the associated <code>Course</code>
@@ -378,6 +365,7 @@ public class LogData extends LogEntry implements Serializable
 	 * @return The <code>LogReference</code> instance
 	 */
 
+	@Override
 	public LogReference getReference ()
 	{
 		return this.reference;
@@ -393,11 +381,26 @@ public class LogData extends LogEntry implements Serializable
 	 * @param  reference The <code>LogReference</code> instance, not null
 	 */
 
+	@Override
 	protected void setReference (final LogReference reference)
 	{
 		assert reference != null : "reference is NULL";
 
 		this.reference = reference;
+	}
+
+	/**
+	 * Get the <code>SubActivity</code> upon which the logged
+	 * <code>Action</code> was performed.
+	 *
+	 * @return A reference to the associated <code>SubActivity</code> instance,
+	 *         may be null
+	 */
+
+	@Override
+	public SubActivity getSubActivity ()
+	{
+		return (this.reference != null) ? this.reference.getSubActivity () : null;
 	}
 
 	/**

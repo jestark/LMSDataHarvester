@@ -21,12 +21,15 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
@@ -69,8 +72,8 @@ public class ForumPost extends SubActivity implements Serializable
 	/** The parent <code>Activity</code> */
 	private ParentActivity parent;
 
-	/** The <code>List</code> of <code>LogEntry</code> instances */
-	private List<LogEntry> log;
+	/** The <code>List</code> of <code>LogReference</code> instances */
+	private List<LogReference> references;
 
 	/** The <code>List</code> of <code>SubActivity</code> instances*/
 	private List<SubActivity> subactivities;
@@ -96,7 +99,7 @@ public class ForumPost extends SubActivity implements Serializable
 		this.name = null;
 		this.parent = null;
 
-		this.log = new ArrayList<LogEntry> ();
+		this.references = new ArrayList<LogReference> ();
 		this.subactivities = new ArrayList<SubActivity> ();
 	}
 
@@ -273,61 +276,78 @@ public class ForumPost extends SubActivity implements Serializable
 	@Override
 	public List<LogEntry> getLog ()
 	{
-		return new ArrayList<LogEntry> (this.log);
+		return this.references.stream ()
+			.map (LogReference::getEntry)
+			.collect (Collectors.toList ());
 	}
 
 	/**
-	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
-	 * associated with the <code>Activity</code> instance.  This method is
+	 * Get a <code>List</code> of all of the <code>LogReference</code>
+	 * instances for the <code>SubActivity</code>.
+	 *
+	 * @return A <code>List</code> of <code>LogReference</code> instances
+	 */
+
+	@Override
+	public List<LogReference> getReferences ()
+	{
+		return new ArrayList<LogReference> (this.references);
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>LogReference</code> instances
+	 * associated with the <code>SubActivity</code> instance.  This method is
 	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Activity</code> instance is loaded.
+	 * <code>SubActivity</code> instance is loaded.
 	 *
-	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
-	 *             not null
+	 * @param  references The <code>List</code> of <code>LogReference</code>
+	 *                    instances, not null
 	 */
 
 	@Override
-	protected void setLog (final List<LogEntry> log)
+	protected void setReferences (final List<LogReference> references)
 	{
-		assert log != null : "entry is NULL";
+		assert references != null : "references is NULL";
 
-		this.log = log;
+		this.references = references;
 	}
 
 	/**
-	 * Add the specified <code>LogEntry</code> to the specified
-	 * <code>Activity</code>.
+	 * Add the specified <code>LogReference</code> to the
+	 * <code>SubActivity</code>.
 	 *
-	 * @param  entry    The <code>LogEntry</code> to add, not null
+	 * @param  reference    The <code>LogReference</code> to add, not null
 	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully added, <code>False</code> otherwise
+	 * @return              <code>True</code> if the <code>LogReference</code>
+	 *                      was successfully added, <code>False</code>
+	 *                      otherwise
 	 */
 
 	@Override
-	protected boolean addLog (final LogEntry entry)
+	protected boolean addReference (final LogReference reference)
 	{
-		assert log != null : "entry is NULL";
+		assert reference != null : "reference is NULL";
 
-		return this.log.add (entry);
+		return this.references.add (reference);
 	}
 
 	/**
-	 * Remove the specified <code>LogEntry</code> from the specified
-	 * <code>Activity</code>.
+	 * Remove the specified <code>LogReference</code> from the
+	 * <code>SubActivity</code>.
 	 *
-	 * @param  entry    The <code>LogEntry</code> to remove, not null
+	 * @param  reference    The <code>LogReference</code> to remove, not null
 	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully removed, <code>False</code> otherwise
+	 * @return              <code>True</code> if the <code>LogReference</code>
+	 *                      was successfully removed, <code>False</code>
+	 *                      otherwise
 	 */
 
 	@Override
-	protected boolean removeLog (final LogEntry entry)
+	protected boolean removeReference (final LogReference reference)
 	{
-		assert log != null : "entry is NULL";
+		assert reference != null : "reference is NULL";
 
-		return this.log.remove (entry);
+		return this.references.remove (reference);
 	}
 
 	/**

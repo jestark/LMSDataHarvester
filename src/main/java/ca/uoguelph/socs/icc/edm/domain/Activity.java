@@ -235,4 +235,40 @@ public abstract class Activity extends ParentActivity
 	 */
 
 	protected abstract void setType (ActivityType type);
+
+	/**
+	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
+	 * associated with the <code>Activity</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Activity</code> instance is loaded.
+	 *
+	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
+	 *             not null
+	 */
+
+	protected abstract void setLog (List<LogEntry> log);
+
+	/**
+	 * Add the specified <code>LogEntry</code> to the specified
+	 * <code>Activity</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to add, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully added, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean addLog (LogEntry entry);
+
+	/**
+	 * Remove the specified <code>LogEntry</code> from the specified
+	 * <code>Activity</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to remove, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully removed, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean removeLog (LogEntry entry);
 }
