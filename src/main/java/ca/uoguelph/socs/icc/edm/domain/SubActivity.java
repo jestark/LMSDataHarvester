@@ -25,6 +25,7 @@ import java.util.HashMap;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -91,15 +92,28 @@ public abstract class SubActivity extends ParentActivity
 	@Override
 	public SubActivityBuilder getBuilder (final DataStore datastore)
 	{
-		if (datastore == null)
-		{
-			throw new NullPointerException ();
-		}
+		assert datastore != null : "datastore is null";
 
-		SubActivityBuilder builder = new SubActivityBuilder (datastore, this.getParent ());
-		builder.load (this);
+		return new SubActivityBuilder (datastore, this.getParent ())
+			.load (this);
+	}
 
-		return builder;
+	/**
+	 * Get the <code>MetaData</code> instance for this <code>SubActivity</code>
+	 * using the specified <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>MetaData</code>
+	 */
+
+	@Override
+	public MetaData<SubActivity> getMetaData (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is null";
+
+		return datastore.getProfile ()
+			.getCreator (SubActivity.class, this.getClass ());
 	}
 
 	/**

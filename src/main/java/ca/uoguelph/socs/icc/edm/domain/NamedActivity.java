@@ -22,6 +22,7 @@ import java.util.Set;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -74,10 +75,7 @@ public abstract class NamedActivity extends Activity
 	@Override
 	public NamedActivityBuilder getBuilder (final DataStore datastore)
 	{
-		if (datastore == null)
-		{
-			throw new NullPointerException ();
-		}
+		assert datastore != null : "datastore is null";
 
 		NamedActivityBuilder builder = new NamedActivityBuilder (datastore, this.getType ());
 		builder.load (this);

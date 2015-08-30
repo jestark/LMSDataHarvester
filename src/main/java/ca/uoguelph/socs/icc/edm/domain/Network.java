@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -72,13 +73,28 @@ public abstract class Network extends Element
 	@Override
 	public NetworkBuilder getBuilder (final DataStore datastore)
 	{
-		if (datastore == null)
-		{
-			throw new NullPointerException ();
-		}
+		assert datastore != null : "datastore is null";
 
 		return new NetworkBuilder (datastore)
 			.load (this);
+	}
+
+	/**
+	 * Get the <code>MetaData</code> instance for this <code>Network</code>
+	 * using the specified <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>MetaData</code>
+	 */
+
+	@Override
+	public MetaData<Network> getMetaData (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is null";
+
+		return datastore.getProfile ()
+			.getCreator (Network.class, this.getClass ());
 	}
 
 	/**

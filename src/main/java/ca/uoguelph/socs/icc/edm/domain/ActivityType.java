@@ -21,6 +21,7 @@ import java.util.Set;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -98,13 +99,28 @@ public abstract class ActivityType extends Element
 	@Override
 	public ActivityTypeBuilder getBuilder (final DataStore datastore)
 	{
-		if (datastore == null)
-		{
-			throw new NullPointerException ();
-		}
+		assert datastore != null : "datastore is null";
 
 		return new ActivityTypeBuilder (datastore)
 			.load (this);
+	}
+
+	/**
+	 * Get the <code>MetaData</code> instance for this
+	 * <code>ActivityType</code> using the specified <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>MetaData</code>
+	 */
+
+	@Override
+	public MetaData<ActivityType> getMetaData (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is null";
+
+		return datastore.getProfile ()
+			.getCreator (ActivityType.class, this.getClass ());
 	}
 
 	/**

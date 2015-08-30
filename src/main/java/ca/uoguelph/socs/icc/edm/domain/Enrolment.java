@@ -22,6 +22,7 @@ import java.util.Set;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -139,13 +140,28 @@ public abstract class Enrolment extends Element
 	@Override
 	public EnrolmentBuilder getBuilder (final DataStore datastore)
 	{
-		if (datastore == null)
-		{
-			throw new NullPointerException ();
-		}
+		assert datastore != null : "datastore is null";
 
 		return new EnrolmentBuilder (datastore)
 			.load (this);
+	}
+
+	/**
+	 * Get the <code>MetaData</code> instance for this <code>Enrolment</code>
+	 * using the specified <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>MetaData</code>
+	 */
+
+	@Override
+	public MetaData<Enrolment> getMetaData (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is null";
+
+		return datastore.getProfile ()
+			.getCreator (Enrolment.class, this.getClass ());
 	}
 
 	/**

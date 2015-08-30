@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+
 /**
  * Access and manipulate <code>Element</code> instances contained within the
  * encapsulated <code>DataStore</code>.  This class provides a High-level
@@ -176,11 +178,9 @@ public final class DomainModel
 	 *                               <code>Transaction</code>
 	 */
 
-	public <T extends Element> T insert (final T element)
+	public Element insert (final Element element)
 	{
 		this.log.trace ("insert: element={}", element);
-
-		T result = element;
 
 		if (element == null)
 		{
@@ -188,23 +188,14 @@ public final class DomainModel
 			throw new NullPointerException ();
 		}
 
-		if (! this.datastore.contains (element))
+		if ((this.datastore.getTransaction ()).isActive ())
 		{
-			if ((this.datastore.getTransaction ()).isActive ())
-			{
-				this.log.error ("Attempting to insert an Element without an Active Transaction");
-				throw new IllegalStateException ("Active Transaction required");
-			}
-			else
-			{
-//				AbstractBuilder<T> builder = AbstractBuilder.getInstance (this.datastore, element.getClass ());
-
-//				builder.load (element);
-//				result = builder.build ();
-			}
+			this.log.error ("Attempting to insert an Element without an Active Transaction");
+			throw new IllegalStateException ("Active Transaction required");
 		}
 
-		return result;
+		return element.getBuilder (this.datastore)
+			.build ();
 	}
 
 	/**
@@ -222,7 +213,7 @@ public final class DomainModel
 	 *                                  <code>Transaction</code>
 	 */
 
-	public void remove (final Element element)
+	public <T extends Element> void remove (final T element)
 	{
 		this.log.trace ("remove: element={}", element);
 
@@ -244,6 +235,15 @@ public final class DomainModel
 			throw new IllegalArgumentException ("Element does not exist in the DataStore");
 		}
 
-//		this.datastore.remove (element);
+		@SuppressWarnings ("unchecked")
+		MetaData<T> metadata = (MetaData<T>) element.getMetaData (this.datastore);
+
+		if (! metadata.canDisconnect (this.datastore, element))
+		{
+			this.log.error ("Can not safely remove the element: {}", element);
+			throw new IllegalStateException ("Can not break the relationships for the Element");
+		}
+
+		this.datastore.remove (metadata, element);
 	}
 }

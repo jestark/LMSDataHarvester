@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -75,6 +76,17 @@ public abstract class Element
 
 	public abstract Builder<? extends Element> getBuilder (DataStore datastore);
 
+	/**
+	 * Get an <code>Builder</code> instance for the specified
+	 * <code>DomainModel</code>.  This method creates a <code>Builder</code> on
+	 * the specified <code>DomainModel</code> and initializes it with the
+	 * contents of this <code>Element</code> instance.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>Builder</code>
+	 */
+
 	public final Builder<? extends Element> getBuilder (final DomainModel model)
 	{
 		if (model == null)
@@ -84,6 +96,17 @@ public abstract class Element
 
 		return this.getBuilder (model.getDataStore ());
 	}
+
+	/**
+	 * Get the <code>MetaData</code> instance for this <code>Element</code>
+	 * using the specified <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>MetaData</code>
+	 */
+
+	public abstract MetaData<? extends Element> getMetaData (DataStore datastore);
 
 	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>

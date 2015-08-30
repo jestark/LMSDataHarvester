@@ -29,6 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
 import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -189,15 +190,28 @@ public abstract class Activity extends ParentActivity
 	@Override
 	public ActivityBuilder getBuilder (final DataStore datastore)
 	{
-		if (datastore == null)
-		{
-			throw new NullPointerException ();
-		}
+		assert datastore != null : "datastore is null";
 
-		ActivityBuilder builder = new ActivityBuilder (datastore, this.getType ());
-		builder.load (this);
+		return new ActivityBuilder (datastore, this.getType ())
+			.load (this);
+	}
 
-		return builder;
+	/**
+	 * Get the <code>MetaData</code> instance for this <code>Activity</code>
+	 * using the specified <code>DataStore</code>.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The <code>MetaData</code>
+	 */
+
+	@Override
+	public MetaData<Activity> getMetaData (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is null";
+
+		return datastore.getProfile ()
+			.getCreator (Activity.class, this.getClass ());
 	}
 
 	/**
