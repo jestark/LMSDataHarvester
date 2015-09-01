@@ -19,6 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
@@ -58,6 +62,81 @@ public abstract class NamedActivity extends Activity
 			.addRelationship (GRADES, NamedActivity::getGrades, NamedActivity::addGrade, NamedActivity::removeGrade)
 			.addRelationship (SUBACTIVITIES, NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity)
 			.build ();
+	}
+	/**
+	 * Compare two <code>NamedActivity</code> instances to determine if they are
+	 * equal.  The <code>NamedActivity</code> instances are compared based upon
+	 * their <code>ActivityType</code>, the associated <code>Course</code> and
+	 * their names.
+	 *
+	 * @param  obj The <code>NamedActivity</code> instance to compare to the
+	 *             one represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>NamedActivity</code>
+	 *             instances are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof NamedActivity)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+
+			ebuilder.appendSuper (super.equals (obj));
+			ebuilder.append (this.getName (), ((NamedActivity) obj).getName ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>NamedActivity</code>
+	 * instance.  The hash code is computed based upon the
+	 * <code>ActivityType</code>, the <code>Course</code> and the name of the
+	 * instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 1117;
+		final int mult = 863;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.appendSuper (super.hashCode ());
+		hbuilder.append (this.getName ());
+
+		return hbuilder.toHashCode ();
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the
+	 * <code>NamedActivity</code> instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>NamedActivity</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.appendSuper (super.toString ());
+		builder.append ("name", this.getName ());
+
+		return builder.toString ();
 	}
 
 	/**

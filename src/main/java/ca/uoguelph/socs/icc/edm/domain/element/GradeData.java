@@ -18,10 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
@@ -72,60 +68,6 @@ public class GradeData extends Grade implements Serializable
 		this.grade = null;
 		this.activity = null;
 		this.enrolment = null;
-	}
-
-	/**
-	 * Compare two <code>Grade</code> instances to determine if they are equal.
-	 * The <code>Grade</code> instances are compared based upon the associated
-	 * <code>Activity</code> and the associated <code>Enrolment</code>.
-	 *
-	 * @param  obj The <code>Grade</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>Grade</code> instances
-	 *             are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof Grade)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.activity, ((Grade) obj).getActivity ());
-			ebuilder.append (this.enrolment, ((Grade) obj).getEnrolment ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Grade</code> instance.
-	 * The hash code is computed based upon associated <code>Activity</code>
-	 * and the associated <code>Enrolment</code>.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 1049;
-		final int mult = 947;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.activity);
-		hbuilder.append (this.enrolment);
-
-		return hbuilder.toHashCode ();
 	}
 
 	/**
@@ -248,42 +190,5 @@ public class GradeData extends Grade implements Serializable
 		assert grade >= 0 : "grade can not be negative";
 
 		this.grade = grade;
-	}
-
-	/**
-	 * Get the name of the <code>Enrolment</code> to which the
-	 * <code>Grade</code> is assigned.  This is a convenience method which
-	 * return the result from the <code>getName</code> method on the associated
-	 * <code>Enrolment</code> instance.
-	 *
-	 * @return A <code>String</code> containing the name of the
-	 *         <code>Enrolment</code>
-	 * @see    Enrolment#getName
-	 */
-
-	@Override
-	public String getName ()
-	{
-		return this.enrolment.getName ();
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>Grade</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the <code>Grade</code>
-	 *         instance
-	 */
-
-	@Override
-	public String toString()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("enrolment", this.enrolment);
-		builder.append ("activity", this.activity);
-		builder.append ("grade", this.grade);
-
-		return builder.toString ();
 	}
 }

@@ -19,6 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
@@ -126,6 +130,82 @@ public abstract class Enrolment extends Element
 	}
 
 	/**
+	 * Compare two <code>Enrolment</code> instances to determine if they are
+	 * equal.  The <code>Enrolment</code> instances are compared based upon the
+	 * <code>Course</code> and the <code>Role</code>.
+	 *
+	 * @param  obj The <code>Enrolment</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Enrolment</code>
+	 *             instances are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof Enrolment)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.getCourse (), ((Enrolment) obj).getCourse ());
+			ebuilder.append (this.getRole (), ((Enrolment) obj).getRole ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>Enrolment</code> instance.
+	 * The hash code is computed based upon the associated <code>Course</code>
+	 * and the associated <code>Role</code>.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 1091;
+		final int mult = 907;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.getCourse ());
+		hbuilder.append (this.getRole ());
+
+		return hbuilder.toHashCode ();
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>Enrolment</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>Enrolment</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("id", this.getId ());
+		builder.append ("usable", this.isUsable ());
+		builder.append ("finalgrade", this.getFinalGrade ());
+		builder.append ("course", this.getCourse ());
+		builder.append ("role", this.getRole ());
+
+		return builder.toString ();
+	}
+
+	/**
 	 * Get an <code>EnrolmentBuilder</code> instance for the specified
 	 * <code>DataStore</code>.  This method creates an
 	 * <code>EnrolmentBuilder</code> on the specified <code>DataStore</code>
@@ -150,35 +230,17 @@ public abstract class Enrolment extends Element
 	 * Get the <code>MetaData</code> instance for this <code>Enrolment</code>
 	 * using the specified <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The <code>MetaData</code>
+	 * @return The <code>MetaData</code>
 	 */
 
 	@Override
-	public MetaData<Enrolment> getMetaData (final DataStore datastore)
+	protected MetaData<Enrolment> getMetaData ()
 	{
-		assert datastore != null : "datastore is null";
-
-		return datastore.getProfile ()
+		return this.getDomainModel ()
+			.getDataStore ()
+			.getProfile ()
 			.getCreator (Enrolment.class, this.getClass ());
 	}
-
-	/**
-	 * Get the name associated with the <code>Enrolment</code>.  The contents
-	 * of the <code>String</code> returned by this method are implementation
-	 * dependent.  If the implementation has access to the <code>User</code>
-	 * information this this method should return the result of the
-	 * <code>getName</code> method for the associated <code>User</code>
-	 * instance, otherwise it should return some other identifier, usually the
-	 * identifier for the <code>Enrolment</code> in the <code>DataStore</code>.
-	 *
-	 * @return A <code>String</code> containing the name of the
-	 *         <code>Enrolment</code>
-	 * @see    User#getName
-	 */
-
-	public abstract String getName ();
 
 	/**
 	 * Get the <code>Course</code> in which the <code>User</code> represented

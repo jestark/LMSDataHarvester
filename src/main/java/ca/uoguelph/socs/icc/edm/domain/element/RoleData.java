@@ -18,10 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
@@ -35,7 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  * @author  James E. Stark
  * @version 1.0
  */
-
 
 public class RoleData extends Role implements Serializable
 {
@@ -66,57 +61,6 @@ public class RoleData extends Role implements Serializable
 	{
 		this.id = null;
 		this.name = null;
-	}
-
-	/**
-	 * Compare two <code>Role</code> instances to determine if they are
-	 * equal.  The <code>Role</code> instances are compared based upon their
-	 * names.
-	 *
-	 * @param  obj The <code>Role</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>Role</code> instances
-	 *             are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof Role)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.name, ((Role) obj).getName ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Role</code> instance.
-	 * The hash code is computed based upon the name of the instance.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 1069;
-		final int mult = 919;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.name);
-
-		return hbuilder.toHashCode ();
 	}
 
 	/**
@@ -172,23 +116,5 @@ public class RoleData extends Role implements Serializable
 		assert name != null : "name is NULL";
 
 		this.name = name;
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>Role</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the <code>Role</code>
-	 *         instance
-	 */
-
-	@Override
-	public String toString()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("name", this.name);
-
-		return builder.toString ();
 	}
 }

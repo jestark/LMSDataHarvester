@@ -18,10 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
@@ -72,60 +68,6 @@ public class ActivityTypeData extends ActivityType implements Serializable
 		this.id = null;
 		this.name = null;
 		this.source = null;
-	}
-
-	/**
-	 * Compare two <code>ActivityType</code> instances to determine if they are
-	 * equal.  The <code>ActivityType</code> instances are compared based upon
-	 * their associated <code>ActivitySource</code> and their names.
-	 *
-	 * @param  obj The <code>ActivityType</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>ActivityType</code>
-	 *             instances are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof ActivityType)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.name, ((ActivityType) obj).getName ());
-			ebuilder.append (this.source, ((ActivityType) obj).getSource ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>ActivityType</code>
-	 * instance.  The hash code is computed based upon the associated
-	 * <code>ActivitySource</code> and name of the instance.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 1009;
-		final int mult = 997;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.name);
-		hbuilder.append (this.source);
-
-		return hbuilder.toHashCode ();
 	}
 
 	/**
@@ -195,7 +137,7 @@ public class ActivityTypeData extends ActivityType implements Serializable
 	@Override
 	public ActivitySource getSource ()
 	{
-		return this.source;
+		return this.propagateDomainModel (this.source);
 	}
 
 	/**
@@ -213,24 +155,5 @@ public class ActivityTypeData extends ActivityType implements Serializable
 		assert source != null : "source is NULL";
 
 		this.source = source;
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the
-	 * <code>ActivityType</code> instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the
-	 *         <code>ActivityType</code> instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("source", this.source);
-		builder.append ("name", this.name);
-
-		return builder.toString ();
 	}
 }

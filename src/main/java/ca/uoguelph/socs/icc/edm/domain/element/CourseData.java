@@ -21,12 +21,8 @@ import java.util.List;
 import java.util.Set;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
@@ -89,64 +85,8 @@ public class CourseData extends Course implements Serializable
 		this.semester = null;
 		this.year = null;
 
-		this.activities = new LinkedList<Activity> ();
+		this.activities = new ArrayList<Activity> ();
 		this.enrolments = new HashSet<Enrolment> ();
-	}
-
-	/**
-	 * Compare two <code>Course</code> instances to determine if they are
-	 * equal.  The <code>Course</code> instances are compared based upon their
-	 * names, as well as their year and <code>Semester</code> of offering.
-	 *
-	 * @param  obj The <code>Course</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>Course</code> instances
-	 *             are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof Course)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.name, ((Course) obj).getName ());
-			ebuilder.append (this.year, ((Course) obj).getYear ());
-			ebuilder.append (this.semester, ((Course) obj).getSemester ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Course</code> instance.
-	 * The hash code is computed based upon the name of the instance as well as
-	 * the year and <code>Semester</code> of offering.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 1061;
-		final int mult = 937;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.name);
-		hbuilder.append (this.year);
-		hbuilder.append (this.semester);
-
-		return hbuilder.toHashCode ();
 	}
 
 	/**
@@ -277,7 +217,9 @@ public class CourseData extends Course implements Serializable
 	@Override
 	public List<Activity> getActivities ()
 	{
-		return new ArrayList<Activity> (this.activities);
+		this.activities.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableList (this.activities);
 	}
 
 	/**
@@ -343,7 +285,9 @@ public class CourseData extends Course implements Serializable
 	@Override
 	public Set<Enrolment> getEnrolments ()
 	{
-		return new HashSet<Enrolment> (this.enrolments);
+		this.enrolments.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableSet (this.enrolments);
 	}
 
 	/**
@@ -397,25 +341,5 @@ public class CourseData extends Course implements Serializable
 		assert enrolment != null : "enrolment is NULL";
 
 		return this.enrolments.remove (enrolment);
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>Course</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the <code>Course</code>
-	 *         instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("name", this.name);
-		builder.append ("semester", this.semester);
-		builder.append ("year", this.year);
-
-		return builder.toString ();
 	}
 }

@@ -22,6 +22,10 @@ import java.util.Set;
 
 import java.util.HashMap;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
@@ -177,6 +181,79 @@ public abstract class Activity extends ParentActivity
 	}
 
 	/**
+	 * Compare two <code>Activity</code> instances to determine if they are
+	 * equal.
+	 *
+	 * @param  obj The <code>Activity</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Activity</code> instances
+	 *             are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof Activity)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+
+			ebuilder.append (this.getType (), ((Activity) obj).getType ());
+			ebuilder.append (this.getCourse (), ((Activity) obj).getCourse ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
+	 * The hash code is computed based upon the <code>ActivityType</code> and 
+	 * the <code>Course</code>.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 1039;
+		final int mult = 953;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.getType ());
+		hbuilder.append (this.getCourse ());
+
+		return hbuilder.toHashCode ();
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>Activity</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>Activity</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("type", this.getType ());
+		builder.append ("course", this.getCourse ());
+
+		return builder.toString ();
+	}
+
+	/**
 	 * Get an <code>ActivityBuilder</code> instance for the specified
 	 * <code>DataStore</code>.  This method creates a <code>ActivityBuilder</code>
 	 * on the specified <code>DataStore</code> and initializes it with the
@@ -200,17 +277,15 @@ public abstract class Activity extends ParentActivity
 	 * Get the <code>MetaData</code> instance for this <code>Activity</code>
 	 * using the specified <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The <code>MetaData</code>
+	 * @return The <code>MetaData</code>
 	 */
 
 	@Override
-	public MetaData<Activity> getMetaData (final DataStore datastore)
+	protected MetaData<Activity> getMetaData ()
 	{
-		assert datastore != null : "datastore is null";
-
-		return datastore.getProfile ()
+		return this.getDomainModel ()
+			.getDataStore ()
+			.getProfile ()
 			.getCreator (Activity.class, this.getClass ());
 	}
 

@@ -21,11 +21,8 @@ import java.util.List;
 import java.util.Set;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
@@ -104,60 +101,6 @@ public class EnrolmentData extends Enrolment implements Serializable
 	}
 
 	/**
-	 * Compare two <code>Enrolment</code> instances to determine if they are
-	 * equal.  The <code>Enrolment</code> instances are compared based upon the
-	 * <code>Course</code> and the <code>Role</code>.
-	 *
-	 * @param  obj The <code>Enrolment</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>Enrolment</code>
-	 *             instances are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof EnrolmentData)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.course, ((EnrolmentData) obj).course);
-			ebuilder.append (this.role, ((EnrolmentData) obj).role);
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Enrolment</code> instance.
-	 * The hash code is computed based upon the associated <code>Course</code>
-	 * and the associated <code>Role</code>.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 1091;
-		final int mult = 907;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.course);
-		hbuilder.append (this.role);
-
-		return hbuilder.toHashCode ();
-	}
-
-	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Enrolment</code>
 	 * instance.
 	 *
@@ -196,7 +139,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 	@Override
 	public Course getCourse()
 	{
-		return this.course;
+		return this.propagateDomainModel (this.course);
 	}
 
 	/**
@@ -225,7 +168,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 	@Override
 	public Role getRole()
 	{
-		return this.role;
+		return this.propagateDomainModel (this.role);
 	}
 
 	/**
@@ -246,23 +189,6 @@ public class EnrolmentData extends Enrolment implements Serializable
 	}
 
 	/**
-	 * Get the name associated with the <code>Enrolment</code>.  This method
-	 * returns a <code>String</code> representation of the
-	 * <code>DataStore</code> identifier as the name of the
-	 * <code>Enrolment</code>.
-	 *
-	 * @return A <code>String</code> containing the name of the
-	 *         <code>Enrolment</code>
-	 * @see    Enrolment#getName
-	 */
-
-	@Override
-	public String getName ()
-	{
-		return (this.id != null) ? this.id.toString () : "(unset)";
-	}
-
-	/**
 	 * Get the <code>Grade</code> for the specified <code>Activity</code>.
 	 *
 	 * @param  activity The <code>Activity</code> for which the grade is to be
@@ -274,18 +200,11 @@ public class EnrolmentData extends Enrolment implements Serializable
 	@Override
 	public Grade getGrade (final Activity activity)
 	{
-		Grade result = null;
-
-		for (Grade i : this.grades)
-		{
-			if (activity == i.getActivity ())
-			{
-				result = i;
-				break;
-			}
-		}
-
-		return result;
+		return this.getGrades ()
+			.stream ()
+			.filter (x -> x.getActivity () == activity)
+			.findFirst ()
+			.orElse (null);
 	}
 
 	/**
@@ -298,7 +217,9 @@ public class EnrolmentData extends Enrolment implements Serializable
 	@Override
 	public Set<Grade> getGrades ()
 	{
-		return new HashSet<Grade> (this.grades);
+		this.grades.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableSet (this.grades);
 	}
 
 	/**
@@ -430,7 +351,9 @@ public class EnrolmentData extends Enrolment implements Serializable
 	@Override
 	public List<LogEntry> getLog ()
 	{
-		return this.log;
+		this.log.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableList (this.log);
 	}
 
 	/**
@@ -484,27 +407,5 @@ public class EnrolmentData extends Enrolment implements Serializable
 		assert entry != null : "entry is NULL";
 
 		return this.log.remove (entry);
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>Enrolment</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the
-	 *         <code>Enrolment</code> instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("id", this.id);
-		builder.append ("usable", this.usable);
-		builder.append ("finalgrade", this.finalgrade);
-		builder.append ("course", this.course);
-		builder.append ("role", this.role);
-
-		return builder.toString ();
 	}
 }

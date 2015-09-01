@@ -19,10 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
@@ -100,100 +96,6 @@ public class LogData extends LogEntry implements Serializable
 	}
 
 	/**
-	 * Compare two <code>LogEntry</code> instances and determine if they are
-	 * equal.
-	 * <p>
-	 * <ul>
-	 * <li>The <code>Action</code>
-	 * <li>The <code>Activity</code>
-	 * <li>The <code>Enrolment</code>
-	 * <li>The <code>Network</code>
-	 * <li>The time
-	 * <ul>
-	 *
-	 * @param  obj The <code>LogEntry</code> instance to compare with this one
-	 *
-	 * @return     <code>True</code> if the <code>LogEntry</code> instances
-	 *             should be considered to be equal, <code>False</code>
-	 *             otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof LogData)
-		{
-			if (this.reference != null)
-			{
-				result = this.reference.equals (((LogData) obj).reference);
-			}
-			else
-			{
-				EqualsBuilder ebuilder = new EqualsBuilder ();
-				ebuilder.append (this.action, ((LogData) obj).action);
-				ebuilder.append (this.activity, ((LogData) obj).activity);
-				ebuilder.append (this.enrolment, ((LogData) obj).enrolment);
-				ebuilder.append (this.network, ((LogData) obj).network);
-				ebuilder.append (this.time, ((LogData) obj).time);
-				ebuilder.append (this.reference, ((LogData) obj).reference);
-
-				result = ebuilder.isEquals ();
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>LogEntry</code> instance.
-	 * The hash code is computed based upon the following fields:
-	 * <p>
-	 * <ul>
-	 * <li>The <code>Action</code>
-	 * <li>The <code>Activity</code>
-	 * <li>The <code>Enrolment</code>
-	 * <li>The <code>Network</code>
-	 * <li>The time
-	 * <ul>
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 1093;
-		final int mult = 887;
-
-		int result = 0;
-
-		if (this.reference != null)
-		{
-			result = this.reference.hashCode ();
-		}
-		else
-		{
-			HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-			hbuilder.append (this.action);
-			hbuilder.append (this.activity);
-			hbuilder.append (this.enrolment);
-			hbuilder.append (this.network);
-			hbuilder.append (this.time);
-			hbuilder.append (this.reference);
-
-			result = hbuilder.toHashCode ();
-		}
-
-		return result;
-	}
-
-	/**
 	 * Get the <code>DataStore</code> identifier for the <code>LogEntry</code>
 	 * instance.
 	 *
@@ -232,7 +134,7 @@ public class LogData extends LogEntry implements Serializable
 	@Override
 	public Action getAction ()
 	{
-		return this.action;
+		return this.propagateDomainModel (this.action);
 	}
 
 	/**
@@ -262,7 +164,7 @@ public class LogData extends LogEntry implements Serializable
 	@Override
 	public Activity getActivity ()
 	{
-		return this.activity;
+		return this.propagateDomainModel (this.activity);
 	}
 
 	/**
@@ -291,7 +193,7 @@ public class LogData extends LogEntry implements Serializable
 	@Override
 	public Course getCourse ()
 	{
-		return this.activity.getCourse ();
+		return this.getActivity ().getCourse ();
 	}
 
 	/**
@@ -304,7 +206,7 @@ public class LogData extends LogEntry implements Serializable
 	@Override
 	public Enrolment getEnrolment ()
 	{
-		return this.enrolment;
+		return this.propagateDomainModel (this.enrolment);
 	}
 
 	/**
@@ -334,7 +236,7 @@ public class LogData extends LogEntry implements Serializable
 	@Override
 	public Network getNetwork ()
 	{
-		return this.network;
+		return this.propagateDomainModel (this.network);
 	}
 
 	/**
@@ -368,7 +270,7 @@ public class LogData extends LogEntry implements Serializable
 	@Override
 	public LogReference getReference ()
 	{
-		return this.reference;
+		return (this.reference != null) ? this.propagateDomainModel (this.reference) : null;
 	}
 
 	/**
@@ -400,7 +302,7 @@ public class LogData extends LogEntry implements Serializable
 	@Override
 	public SubActivity getSubActivity ()
 	{
-		return (this.reference != null) ? this.reference.getSubActivity () : null;
+		return (this.reference != null) ? this.getReference ().getSubActivity () : null;
 	}
 
 	/**
@@ -429,39 +331,5 @@ public class LogData extends LogEntry implements Serializable
 		assert time != null : "time is NULL";
 
 		this.time = time;
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>LogEntry</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the
-	 *         <code>LogEntry</code> instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		String result = null;
-
-		if (this.reference != null)
-		{
-			result = this.reference.toString ();
-		}
-		else
-		{
-			ToStringBuilder builder = new ToStringBuilder (this);
-
-			builder.append ("enrolment", this.enrolment);
-			builder.append ("action", this.action);
-			builder.append ("activity", this.activity);
-			builder.append ("network", this.network);
-			builder.append ("time", this.time);
-			builder.append ("subactivity", this.reference);
-
-			result = builder.toString ();
-		}
-
-		return result;
 	}
 }

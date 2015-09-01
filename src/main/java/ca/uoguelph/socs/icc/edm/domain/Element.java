@@ -38,11 +38,17 @@ public abstract class Element
 	/** The <code>DataStore</code> identifier of the <code>Element</code> */
 	public static final Property<Long> ID;
 
+	/** The <code>DomainModel</code> which contains the <code>Element</code> */
+	public static final Property<DomainModel> MODEL;
+
 	/** Select the <code>Activity</code> instance by its id */
 	public static final Selector SELECTOR_ID;
 
 	/** Select all of the <code>Activity</code> instances */
 	public static final Selector SELECTOR_ALL;
+
+	/** The <code>DomainModel</code> */
+	private DomainModel model;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -52,12 +58,14 @@ public abstract class Element
 	static
 	{
 		ID = Property.getInstance (Long.class, "id", false, false);
+		MODEL = Property.getInstance (DomainModel.class, "domainmodel", false, false);
 
 		SELECTOR_ID = Selector.getInstance (ID, true);
 		SELECTOR_ALL = Selector.getInstance ("all", false);
 
 		Definition.getBuilder (Element.class, null)
 			.addProperty (ID, Element::getId, Element::setId)
+			.addProperty (MODEL, Element::getDomainModel, Element::setDomainModel)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.build ();
@@ -98,15 +106,63 @@ public abstract class Element
 	}
 
 	/**
-	 * Get the <code>MetaData</code> instance for this <code>Element</code>
-	 * using the specified <code>DataStore</code>.
-	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * Get the <code>MetaData</code> instance for this <code>Element</code>.
 	 *
 	 * @return           The <code>MetaData</code>
 	 */
 
-	public abstract MetaData<? extends Element> getMetaData (DataStore datastore);
+	protected abstract MetaData<? extends Element> getMetaData ();
+
+	/**
+	 * Get a reference to the <code>DomainModel</code> which contains the
+	 * <code>Element</code>.
+	 *
+	 * @return A reference to the <code>DomainModel</code>
+	 */
+
+	public final DomainModel getDomainModel ()
+	{
+		return this.model;
+	}
+
+	/**
+	 * Set a reference to the <code>DomainModel</code> which contains the
+	 * <code>Element</code>.  This method will set the internal reference to
+	 * the <code>DomainModel</code> if the internal representation of the
+	 * <code>DomainModel</code> is null.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 */
+
+	protected final void setDomainModel (final DomainModel model)
+	{
+		assert model != null : "model is NULL";
+		assert this.model == null || model == this.model : "Can't change the DomainModel";
+
+		this.model = model;
+	}
+
+	/**
+	 * Propagate the <code>DomainModel</code> reference to the specified
+	 * <code>Element</code> instance.  This is an internal method to copy the
+	 * <code>DomainModel</code> reference to the target <code>Element</code>
+	 * instance.  It it used to make sure that an <code>Element</code> has a
+	 * reference to the <code>DomainModel</code> before it is returned by the
+	 * getter method on the containing <code>Element</code> instance.
+	 *
+	 * @param  element The <code>Element</code>, not null
+	 *
+	 * @return         The supplied <code>Element</code>
+	 */
+
+	protected final <T extends Element> T propagateDomainModel (final T element)
+	{
+		assert element != null : "element is NULL";
+
+		element.setDomainModel (this.model);
+
+		return element;
+	}
 
 	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>

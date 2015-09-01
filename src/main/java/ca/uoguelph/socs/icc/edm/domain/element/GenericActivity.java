@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -90,60 +90,6 @@ public class GenericActivity extends Activity implements Serializable
 	}
 
 	/**
-	 * Compare two <code>Activity</code> instances to determine if they are
-	 * equal.
-	 *
-	 * @param  obj The <code>Activity</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>Activity</code> instances
-	 *             are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof GenericActivity)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-
-			ebuilder.append (this.type, ((GenericActivity) obj).getType ());
-			ebuilder.append (this.course, ((GenericActivity) obj).getCourse ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed based upon the <code>ActivityType</code> and 
-	 * the <code>Course</code>.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 1039;
-		final int mult = 953;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getType ());
-		hbuilder.append (this.getCourse ());
-
-		return hbuilder.toHashCode ();
-	}
-
-	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
 	 * instance.
 	 * <p>
@@ -206,7 +152,7 @@ public class GenericActivity extends Activity implements Serializable
 	@Override
 	public Course getCourse ()
 	{
-		return this.course;
+		return this.propagateDomainModel (this.course);
 	}
 
 	/**
@@ -235,7 +181,7 @@ public class GenericActivity extends Activity implements Serializable
 	@Override
 	public ActivityType getType ()
 	{
-		return this.type;
+		return this.propagateDomainModel (this.type);
 	}
 
 	/**
@@ -268,7 +214,7 @@ public class GenericActivity extends Activity implements Serializable
 	@Override
 	public Set<Grade> getGrades ()
 	{
-		return new HashSet<Grade> ();
+		return Collections.emptySet ();
 	}
 
 	/**
@@ -281,7 +227,9 @@ public class GenericActivity extends Activity implements Serializable
 	@Override
 	public List<LogEntry> getLog ()
 	{
-		return new ArrayList<LogEntry> (this.log);
+		this.log.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableList (this.log);
 	}
 
 	/**
@@ -348,25 +296,6 @@ public class GenericActivity extends Activity implements Serializable
 	@Override
 	public List<SubActivity> getSubActivities ()
 	{
-		return new ArrayList<SubActivity> ();
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>Activity</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the
-	 *         <code>Activity</code> instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("type", this.type);
-		builder.append ("course", this.course);
-
-		return builder.toString ();
+		return Collections.emptyList ();
 	}
 }

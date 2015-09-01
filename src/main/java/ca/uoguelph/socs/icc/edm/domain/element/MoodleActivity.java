@@ -129,8 +129,7 @@ public class MoodleActivity extends Activity
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
 
-			ebuilder.append (this.type, ((MoodleActivity) obj).getType ());
-			ebuilder.append (this.course, ((MoodleActivity) obj).getCourse ());
+			ebuilder.appendSuper (super.equals (obj));
 			ebuilder.append (this.instanceid, ((MoodleActivity) obj).getInstanceId ());
 
 			result = ebuilder.isEquals ();
@@ -154,8 +153,7 @@ public class MoodleActivity extends Activity
 		final int mult = 991;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getType ());
-		hbuilder.append (this.getCourse ());
+		hbuilder.appendSuper (super.hashCode ());
 		hbuilder.append (this.getInstanceId ());
 
 		return hbuilder.toHashCode ();
@@ -442,24 +440,5 @@ public class MoodleActivity extends Activity
 		assert instanceid != null : "instanceid is NULL";
 
 		this.instanceid = instanceid;
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>Activity</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the
-	 *         <code>Activity</code> instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("type", this.type);
-		builder.append ("course", this.course);
-
-		return builder.toString ();
 	}
 }

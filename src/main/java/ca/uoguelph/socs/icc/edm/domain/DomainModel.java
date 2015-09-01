@@ -236,7 +236,7 @@ public final class DomainModel
 		}
 
 		@SuppressWarnings ("unchecked")
-		MetaData<T> metadata = (MetaData<T>) element.getMetaData (this.datastore);
+		MetaData<T> metadata = (MetaData<T>) element.getMetaData ();
 
 		if (! metadata.canDisconnect (this.datastore, element))
 		{

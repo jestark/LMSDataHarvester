@@ -19,6 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
@@ -99,6 +103,82 @@ public abstract class Course extends Element
 	}
 
 	/**
+	 * Compare two <code>Course</code> instances to determine if they are
+	 * equal.  The <code>Course</code> instances are compared based upon their
+	 * names, as well as their year and <code>Semester</code> of offering.
+	 *
+	 * @param  obj The <code>Course</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Course</code> instances
+	 *             are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof Course)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.getName (), ((Course) obj).getName ());
+			ebuilder.append (this.getYear (), ((Course) obj).getYear ());
+			ebuilder.append (this.getSemester (), ((Course) obj).getSemester ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>Course</code> instance.
+	 * The hash code is computed based upon the name of the instance as well as
+	 * the year and <code>Semester</code> of offering.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 1061;
+		final int mult = 937;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.getName ());
+		hbuilder.append (this.getYear ());
+		hbuilder.append (this.getSemester ());
+
+		return hbuilder.toHashCode ();
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>Course</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the <code>Course</code>
+	 *         instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("name", this.getName ());
+		builder.append ("semester", this.getSemester ());
+		builder.append ("year", this.getYear ());
+
+		return builder.toString ();
+	}
+
+	/**
 	 * Get an <code>CourseBuilder</code> instance for the specified
 	 * <code>DataStore</code>.  This method creates an
 	 * <code>CourseBuilder</code> on the specified <code>DataStore</code> and
@@ -122,17 +202,15 @@ public abstract class Course extends Element
 	 * Get the <code>MetaData</code> instance for this <code>Course</code>
 	 * using the specified <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The <code>MetaData</code>
+	 * @return The <code>MetaData</code>
 	 */
 
 	@Override
-	public MetaData<Course> getMetaData (final DataStore datastore)
+	protected MetaData<Course> getMetaData ()
 	{
-		assert datastore != null : "datastore is null";
-
-		return datastore.getProfile ()
+		return this.getDomainModel ()
+			.getDataStore ()
+			.getProfile ()
 			.getCreator (Course.class, this.getClass ());
 	}
 

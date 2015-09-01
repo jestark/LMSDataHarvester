@@ -18,6 +18,10 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
@@ -85,6 +89,79 @@ public abstract class ActivityType extends Element
 	}
 
 	/**
+	 * Compare two <code>ActivityType</code> instances to determine if they are
+	 * equal.  The <code>ActivityType</code> instances are compared based upon
+	 * their associated <code>ActivitySource</code> and their names.
+	 *
+	 * @param  obj The <code>ActivityType</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>ActivityType</code>
+	 *             instances are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof ActivityType)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.getName (), ((ActivityType) obj).getName ());
+			ebuilder.append (this.getSource (), ((ActivityType) obj).getSource ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the
+	 * <code>ActivityType</code> instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>ActivityType</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("source", this.getSource ());
+		builder.append ("name", this.getName ());
+
+		return builder.toString ();
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>ActivityType</code>
+	 * instance.  The hash code is computed based upon the associated
+	 * <code>ActivitySource</code> and name of the instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 1009;
+		final int mult = 997;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.getName ());
+		hbuilder.append (this.getSource ());
+
+		return hbuilder.toHashCode ();
+	}
+
+	/**
 	 * Get an <code>ActivityTypeBuilder</code> instance for the specified
 	 * <code>DataStore</code>.  This method creates an
 	 * <code>ActivityTypeBuilder</code> on the specified <code>DataStore</code>
@@ -109,17 +186,15 @@ public abstract class ActivityType extends Element
 	 * Get the <code>MetaData</code> instance for this
 	 * <code>ActivityType</code> using the specified <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The <code>MetaData</code>
+	 * @return The <code>MetaData</code>
 	 */
 
 	@Override
-	public MetaData<ActivityType> getMetaData (final DataStore datastore)
+	protected MetaData<ActivityType> getMetaData ()
 	{
-		assert datastore != null : "datastore is null";
-
-		return datastore.getProfile ()
+		return this.getDomainModel ()
+			.getDataStore ()
+			.getProfile ()
 			.getCreator (ActivityType.class, this.getClass ());
 	}
 

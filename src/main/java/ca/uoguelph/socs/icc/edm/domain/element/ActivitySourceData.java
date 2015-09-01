@@ -19,11 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import java.io.Serializable;
 import java.util.Set;
 
+import java.util.Collections;
 import java.util.HashSet;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
@@ -76,58 +73,6 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 		this.name = null;
 
 		this.types = new HashSet<ActivityType> ();
-	}
-
-	/**
-	 * Compare two <code>ActivitySource</code> instances to determine if they
-	 * are equal.  The <code>ActivitySource</code> instances are compared based
-	 * upon their names.
-	 *
-	 * @param  obj The <code>ActivitySource</code> instance to compare to the
-	 *             one represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>ActivitySource</code>
-	 *             instances are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof ActivitySource)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.name, ((ActivitySource) obj).getName ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>ActivitySource</code>
-	 * instance.  The hash code is computed based upon the name of the
-	 * instance.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 1097;
-		final int mult = 883;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.name);
-
-		return hbuilder.toHashCode ();
 	}
 
 	/**
@@ -200,7 +145,9 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 	@Override
 	public Set<ActivityType> getTypes ()
 	{
-		return new HashSet<ActivityType> (this.types);
+		this.types.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableSet (this.types);
 	}
 
 	/**
@@ -256,23 +203,5 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 		assert type != null : "type is NULL";
 
 		return this.types.remove (type);
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the
-	 * <code>ActivitySource</code> instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the
-	 *         <code>ActivitySource</code> instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("name", this.name);
-
-		return builder.toString ();
 	}
 }

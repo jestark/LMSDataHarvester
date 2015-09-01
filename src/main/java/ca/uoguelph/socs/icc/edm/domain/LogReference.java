@@ -209,17 +209,15 @@ public abstract class LogReference extends Element
 	 * Get the <code>MetaData</code> instance for this <code>LogEntry</code>
 	 * using the specified <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The <code>MetaData</code>
+	 * @return The <code>MetaData</code>
 	 */
 
 	@Override
-	public MetaData<LogReference> getMetaData (final DataStore datastore)
+	protected MetaData<LogReference> getMetaData ()
 	{
-		assert datastore != null : "datastore is null";
-
-		return datastore.getProfile ()
+		return this.getDomainModel ()
+			.getDataStore ()
+			.getProfile ()
 			.getCreator (LogReference.class, this.getClass ());
 	}
 

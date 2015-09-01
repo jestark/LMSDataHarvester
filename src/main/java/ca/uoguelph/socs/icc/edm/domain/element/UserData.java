@@ -19,11 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import java.io.Serializable;
 import java.util.Set;
 
+import java.util.Collections;
 import java.util.HashSet;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -88,60 +85,6 @@ public class UserData extends User implements Serializable
 		this.firstname= null;
 
 		this.enrolments = new HashSet<Enrolment> ();
-	}
-
-	/**
-	 * Compare two <code>User</code> instances to determine if they are
-	 * equal.  The <code>User</code> instances are compared based upon the
-	 * this ID number and the username.
-	 *
-	 * @param  obj The <code>User</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>User</code> instances
-	 *             are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof User)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.idnumber, ((User) obj).getIdNumber ());
-			ebuilder.append (this.username, ((User) obj).getUsername ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>User</code> instance.
-	 * The hash code is computed based upon the following fields ID number and
-	 * the username.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 1063;
-		final int mult = 929;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.idnumber);
-		hbuilder.append (this.username);
-
-		return hbuilder.toHashCode ();
 	}
 
 	/**
@@ -322,18 +265,11 @@ public class UserData extends User implements Serializable
 	@Override
 	public Enrolment getEnrolment (final Course course)
 	{
-		Enrolment result = null;
-
-		for (Enrolment i : this.enrolments)
-		{
-			if (course == i.getCourse ())
-			{
-				result = i;
-				break;
-			}
-		}
-
-		return result;
+		return this.getEnrolments ()
+			.stream ()
+			.filter (x -> x.getCourse () == course)
+			.findFirst ()
+			.orElse (null);
 	}
 
 	/**
@@ -348,7 +284,9 @@ public class UserData extends User implements Serializable
 	@Override
 	public Set<Enrolment> getEnrolments()
 	{
-		return new HashSet<Enrolment> (this.enrolments);
+		this.enrolments.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableSet (this.enrolments);
 	}
 
 	/**
@@ -401,26 +339,5 @@ public class UserData extends User implements Serializable
 		assert enrolment != null : "enrolment is NULL";
 
 		return this.enrolments.remove (enrolment);
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>User</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the <code>User</code>
-	 *         instance
-	 */
-
-	@Override
-	public String toString()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("firstname", this.firstname);
-		builder.append ("lastname", this.lastname);
-		builder.append ("username", this.username);
-		builder.append ("idnumber", this.idnumber);
-
-		return builder.toString ();
 	}
 }

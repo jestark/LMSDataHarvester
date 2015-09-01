@@ -20,12 +20,11 @@ import java.io.Serializable;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
@@ -126,11 +125,7 @@ public class LessonPage extends SubActivity implements Serializable
 		}
 		else if (obj instanceof LessonPage)
 		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.name, ((LessonPage) obj).getName ());
-			ebuilder.append (this.parent, ((LessonPage) obj).getParent ());
-
-			result = ebuilder.isEquals ();
+			result = super.equals (obj);
 		}
 
 		return result;
@@ -152,8 +147,7 @@ public class LessonPage extends SubActivity implements Serializable
 		final int mult = 599;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getName ());
-		hbuilder.append (this.getParent ());
+		hbuilder.appendSuper (super.hashCode ());
 
 		return hbuilder.toHashCode ();
 	}
@@ -241,7 +235,7 @@ public class LessonPage extends SubActivity implements Serializable
 	@Override
 	public ParentActivity getParent ()
 	{
-		return this.parent;
+		return this.propagateDomainModel (this.parent);
 	}
 
 	/**
@@ -276,7 +270,8 @@ public class LessonPage extends SubActivity implements Serializable
 	@Override
 	public List<LogEntry> getLog ()
 	{
-		return this.references.stream ()
+		return this.getReferences ()
+			.stream ()
 			.map (LogReference::getEntry)
 			.collect (Collectors.toList ());
 	}
@@ -291,7 +286,9 @@ public class LessonPage extends SubActivity implements Serializable
 	@Override
 	public List<LogReference> getReferences ()
 	{
-		return new ArrayList<LogReference> (this.references);
+		this.references.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableList (this.references);
 	}
 
 	/**
@@ -364,7 +361,9 @@ public class LessonPage extends SubActivity implements Serializable
 	@Override
 	public List<SubActivity> getSubActivities ()
 	{
-		return new ArrayList<SubActivity> (this.subactivities);
+		this.subactivities.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableList (this.subactivities);
 	}
 
 	/**
@@ -424,24 +423,5 @@ public class LessonPage extends SubActivity implements Serializable
 		assert subactivity != null : "subactivity is NULL";
 
 		return this.subactivities.remove (subactivity);
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>SubActivity</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the
-	 *         <code>SubActivity</code> instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("name", this.name);
-		builder.append ("parent", this.parent);
-
-		return builder.toString ();
 	}
 }

@@ -16,6 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
@@ -84,6 +88,80 @@ public abstract class Grade extends Element
 	}
 
 	/**
+	 * Compare two <code>Grade</code> instances to determine if they are equal.
+	 * The <code>Grade</code> instances are compared based upon the associated
+	 * <code>Activity</code> and the associated <code>Enrolment</code>.
+	 *
+	 * @param  obj The <code>Grade</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>Grade</code> instances
+	 *             are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof Grade)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.getActivity (), ((Grade) obj).getActivity ());
+			ebuilder.append (this.getEnrolment (), ((Grade) obj).getEnrolment ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>Grade</code> instance.
+	 * The hash code is computed based upon associated <code>Activity</code>
+	 * and the associated <code>Enrolment</code>.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 1049;
+		final int mult = 947;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.getActivity ());
+		hbuilder.append (this.getEnrolment ());
+
+		return hbuilder.toHashCode ();
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>Grade</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the <code>Grade</code>
+	 *         instance
+	 */
+
+	@Override
+	public String toString()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("enrolment", this.getEnrolment ());
+		builder.append ("activity", this.getActivity ());
+		builder.append ("grade", this.getGrade ());
+
+		return builder.toString ();
+	}
+
+	/**
 	 * Get an <code>GradeBuilder</code> instance for the specified
 	 * <code>DataStore</code>.  This method creates an
 	 * <code>GradeBuilder</code> on the specified <code>DataStore</code> and
@@ -107,32 +185,17 @@ public abstract class Grade extends Element
 	 * Get the <code>MetaData</code> instance for this <code>Grade</code>
 	 * using the specified <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The <code>MetaData</code>
+	 * @return The <code>MetaData</code>
 	 */
 
 	@Override
-	public MetaData<Grade> getMetaData (final DataStore datastore)
+	protected MetaData<Grade> getMetaData ()
 	{
-		assert datastore != null : "datastore is null";
-
-		return datastore.getProfile ()
+		return this.getDomainModel ()
+			.getDataStore ()
+			.getProfile ()
 			.getCreator (Grade.class, this.getClass ());
 	}
-
-	/**
-	 * Get the name of the <code>Enrolment</code> to which the
-	 * <code>Grade</code> is assigned.  This is a convenience method which
-	 * return the result from the <code>getName</code> method on the associated
-	 * <code>Enrolment</code> instance.
-	 *
-	 * @return A <code>String</code> containing the name of the
-	 *         <code>Enrolment</code>
-	 * @see    Enrolment#getName
-	 */
-
-	public abstract String getName ();
 
 	/**
 	 * Get the <code>Activity</code> for which the <code>Grade</code> is

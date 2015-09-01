@@ -22,6 +22,10 @@ import java.util.Set;
 
 import java.util.HashMap;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
@@ -75,6 +79,80 @@ public abstract class SubActivity extends ParentActivity
 			.addRelationship (REFERENCES, SubActivity::getReferences, SubActivity::addReference, SubActivity::removeReference)
 			.addRelationship (SUBACTIVITIES, SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity)
 			.build ();
+	}
+
+	/**
+	 * Compare two <code>SubActivity</code> instances to determine if they are
+	 * equal.  The <code>SubActivity</code> instances are compared based upon
+	 * their names and the parent <code>Activity</code>.
+	 *
+	 * @param  obj The <code>SubActivity</code> instance to compare to the one
+	 *             represented by the called instance
+	 *
+	 * @return     <code>True</code> if the two <code>SubActivity</code>
+	 *             instances are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		boolean result = false;
+
+		if (obj == this)
+		{
+			result = true;
+		}
+		else if (obj instanceof SubActivity)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.getName (), ((SubActivity) obj).getName ());
+			ebuilder.append (this.getParent (), ((SubActivity) obj).getParent ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>SubActivity</code>
+	 * instance.  The hash code is computed based upon the parent
+	 * <code>Activity</code> and the name of the <code>SubActivity</code>
+	 * instance.
+	 *
+	 * @return The hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		final int base = 1123;
+		final int mult = 859;
+
+		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.getName ());
+		hbuilder.append (this.getParent ());
+
+		return hbuilder.toHashCode ();
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>SubActivity</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>SubActivity</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		ToStringBuilder builder = new ToStringBuilder (this);
+
+		builder.append ("name", this.getName ());
+		builder.append ("parent", this.getParent ());
+
+		return builder.toString ();
 	}
 
 	/**
@@ -138,17 +216,15 @@ public abstract class SubActivity extends ParentActivity
 	 * Get the <code>MetaData</code> instance for this <code>SubActivity</code>
 	 * using the specified <code>DataStore</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The <code>MetaData</code>
+	 * @return The <code>MetaData</code>
 	 */
 
 	@Override
-	public MetaData<SubActivity> getMetaData (final DataStore datastore)
+	protected MetaData<SubActivity> getMetaData ()
 	{
-		assert datastore != null : "datastore is null";
-
-		return datastore.getProfile ()
+		return this.getDomainModel ()
+			.getDataStore ()
+			.getProfile ()
 			.getCreator (SubActivity.class, this.getClass ());
 	}
 

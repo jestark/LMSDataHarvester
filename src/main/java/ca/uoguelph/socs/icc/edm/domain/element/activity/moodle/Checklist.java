@@ -21,12 +21,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
@@ -137,13 +136,7 @@ public class Checklist extends NamedActivity implements Serializable
 		}
 		else if (obj instanceof Checklist)
 		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-
-			ebuilder.append (this.type, ((Checklist) obj).getType ());
-			ebuilder.append (this.course, ((Checklist) obj).getCourse ());
-			ebuilder.append (this.name, ((Checklist) obj).getName ());
-
-			result = ebuilder.isEquals ();
+			result = super.equals (obj);
 		}
 
 		return result;
@@ -164,9 +157,7 @@ public class Checklist extends NamedActivity implements Serializable
 		final int mult = 389;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getType ());
-		hbuilder.append (this.getCourse ());
-		hbuilder.append (this.getName ());
+		hbuilder.appendSuper (super.hashCode ());
 
 		return hbuilder.toHashCode ();
 	}
@@ -247,7 +238,7 @@ public class Checklist extends NamedActivity implements Serializable
 	@Override
 	public Course getCourse ()
 	{
-		return this.course;
+		return this.propagateDomainModel (this.course);
 	}
 
 	/**
@@ -276,7 +267,7 @@ public class Checklist extends NamedActivity implements Serializable
 	@Override
 	public ActivityType getType ()
 	{
-		return this.type;
+		return this.propagateDomainModel (this.type);
 	}
 
 	/**
@@ -309,7 +300,9 @@ public class Checklist extends NamedActivity implements Serializable
 	@Override
 	public Set<Grade> getGrades ()
 	{
-		return new HashSet<Grade> (this.grades);
+		this.grades.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableSet (this.grades);
 	}
 
 	/**
@@ -376,7 +369,9 @@ public class Checklist extends NamedActivity implements Serializable
 	@Override
 	public List<LogEntry> getLog ()
 	{
-		return new ArrayList<LogEntry> (this.log);
+		this.log.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableList (this.log);
 	}
 
 	/**
@@ -447,7 +442,9 @@ public class Checklist extends NamedActivity implements Serializable
 	@Override
 	public List<SubActivity> getSubActivities ()
 	{
-		return new ArrayList<SubActivity> (this.subactivities);
+		this.subactivities.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableList (this.subactivities);
 	}
 
 	/**
@@ -507,25 +504,5 @@ public class Checklist extends NamedActivity implements Serializable
 		assert subactivity != null : "subactivity is NULL";
 
 		return this.subactivities.remove (subactivity);
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>Activity</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the
-	 *         <code>Activity</code> instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("type", this.type);
-		builder.append ("course", this.course);
-		builder.append ("name", this.name);
-
-		return builder.toString ();
 	}
 }
