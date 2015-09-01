@@ -56,6 +56,7 @@ public final class DomainModel
 		this.log = LoggerFactory.getLogger (DomainModel.class);
 
 		this.datastore = datastore;
+		this.datastore.setDomainModel (this);
 	}
 
 	/**

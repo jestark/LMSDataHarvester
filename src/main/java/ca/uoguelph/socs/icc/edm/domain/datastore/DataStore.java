@@ -26,6 +26,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
@@ -49,6 +50,9 @@ public abstract class DataStore
 
 	/** The profile */
 	protected final Profile profile;
+
+	/** Reference to the enclosing <code>DomainModel</code> */
+	private DomainModel model;
 
 	/**
 	 * static initializer to create the factory
@@ -117,6 +121,33 @@ public abstract class DataStore
 	public final Profile getProfile ()
 	{
 		return this.profile;
+	}
+
+	/**
+	 * Get the enclosing <code>DomainModel</code> instance.
+	 *
+	 * @return The <code>DomainModel</code>
+	 */
+
+	public final DomainModel getDomainModel ()
+	{
+		return this.model;
+	}
+
+	/**
+	 * Set the reference to the enclosing <code>DomainModel</code>.  This
+	 * method is intended to be used by the enclosing <code>DomainModel</code>
+	 * to give the <code>DataStore</code> a reference to itself.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 */
+
+	public final void setDomainModel (final DomainModel model)
+	{
+		assert model != null : "model is NULL";
+		assert this.model == null || this.model == model : "can not change the DomainModel once is has been set";
+
+		this.model = model;
 	}
 
 	/**

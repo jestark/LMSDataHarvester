@@ -155,6 +155,9 @@ public final class JPADataStore extends DataStore
 			result.addAll (query.getResultList ());
 		}
 
+		this.log.debug ("Setting the Reference to the DomainModel");
+		result.forEach (x -> filter.getMetaData ().setValue (Element.MODEL, x, this.getDomainModel ()));
+
 		return result;
 	}
 
@@ -277,6 +280,9 @@ public final class JPADataStore extends DataStore
 			generator = IdGenerator.getInstance (this, metadata.getElementClass ());
 			this.generators.put (metadata.getElementClass (), generator);
 		}
+
+		this.log.debug ("Setting the Reference to the DomainModel");
+		metadata.setValue (Element.MODEL, element, this.getDomainModel ());
 
 		this.log.debug ("Setting ID");
 		generator.setId (metadata, element);
