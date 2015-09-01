@@ -163,42 +163,6 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	}
 
 	/**
-	 * Get the <code>Property</code> instance with the specified name.
-	 *
-	 * @param  name The name of the <code>Property</code> to retrieve, not null
-	 *
-	 * @return      The <code>Property</code>, may be null
-	 */
-
-	@Override
-	public Property<?> getProperty (final String name)
-	{
-		assert name != null : "name is NULL";
-
-		return this.definition.getProperty (name);
-	}
-
-	/**
-	 * Get the <code>Property</code> instance with the specified name and type.
-	 *
-	 * @param  name                     The name, not null
-	 * @param  type                     The type, not null
-	 *
-	 * @return                          The <code>Property</code>, may be null
-	 * @throws IllegalArgumentException if the type specified does not match
-	 *                                  the type of the <code>Property</code>
-	 */
-
-	@Override
-	public <V> Property<V> getProperty (final String name, final Class<V> type)
-	{
-		assert name != null : "name is NULL";
-		assert type != null : "type is NULL";
-
-		return this.definition.getProperty (name, type);
-	}
-
-	/**
 	 * Get the <code>Set</code> of <code>Property</code> instances which are
 	 * associated with the <code>Element</code>.
 	 *
@@ -227,22 +191,6 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 		assert type != null : "type is NULL";
 
 		return this.definition.getRelationship (type);
-	}
-
-	/**
-	 * Get the <code>Selector</code> instance with the specified name.
-	 *
-	 * @param  name The name of the <code>Selector</code> to retrieve, not null
-	 *
-	 * @return      The <code>Property</code>, may be null
-	 */
-
-	@Override
-	public Selector getSelector (final String name)
-	{
-		assert name != null : "name is NULL";
-
-		return this.definition.getSelector (name);
 	}
 
 	/**

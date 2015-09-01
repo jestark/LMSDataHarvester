@@ -64,29 +64,6 @@ public interface MetaData<T extends Element>
 	public abstract Class<? extends Element> getParentClass ();
 
 	/**
-	 * Get the <code>Property</code> instance with the specified name.
-	 *
-	 * @param  name The name of the <code>Property</code> to retrieve, not null
-	 *
-	 * @return      The <code>Property</code>, may be null
-	 */
-
-	public abstract Property<?> getProperty (String name);
-
-	/**
-	 * Get the <code>Property</code> instance with the specified name and type.
-	 *
-	 * @param  name                     The name, not null
-	 * @param  type                     The type, not null
-	 *
-	 * @return                          The <code>Property</code>, may be null
-	 * @throws IllegalArgumentException if the type specified does not match
-	 *                                  the type of the <code>Property</code>
-	 */
-
-	public abstract <V> Property<V> getProperty (String name, Class<V> type);
-
-	/**
 	 * Get the <code>Set</code> of <code>Property</code> instances which are
 	 * associated with the <code>Element</code>.
 	 *
@@ -107,16 +84,6 @@ public interface MetaData<T extends Element>
 	 */
 
 	public abstract <V extends Element> Relationship<? super T, V> getRelationship (Class<V> type);
-
-	/**
-	 * Get the <code>Selector</code> instance with the specified name.
-	 *
-	 * @param  name The name of the <code>Selector</code> to retrieve, not null
-	 *
-	 * @return      The <code>Property</code>, may be null
-	 */
-
-	public abstract Selector getSelector (String name);
 
 	/**
 	 * Get the <code>Set</code> of <code>Selector</code> instances which are

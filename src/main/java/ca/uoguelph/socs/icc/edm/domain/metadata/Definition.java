@@ -61,10 +61,10 @@ public class Definition<T extends Element> implements MetaData<T>
 	private final Class<T> type;
 
 	/** The <code>Property</code> instances associated with the interface */
-	private final Map<String, Property<?>> properties;
+	private final Set<Property<?>> properties;
 
 	/** The <code>Selector</code> instances for the interface */
-	private final Map<String, Selector> selectors;
+	private final Set<Selector> selectors;
 
 	/** The <code>Relationship</code> instances for the interface */
 	private final Map<Class<?>, Relationship<T, ?>> relationships;
@@ -103,11 +103,11 @@ public class Definition<T extends Element> implements MetaData<T>
 	 *
 	 * @param  type          The <code>Element</code> interface class, not null
 	 * @param  parent        The parent </code>Element</code> class, not null
-	 * @param  properties    The <code>Map</code> of <code>Property</code>
+	 * @param  properties    The <code>Set</code> of <code>Property</code>
+	 *                       instances, not null
+	 * @param  selectors     The <code>Set</code> of <code>Selector</code>
 	 *                       instances, not null
 	 * @param  relationships The <code>Map</code> of <code>Relationship</code>
-	 *                       instances, not null
-	 * @param  selectors     The <code>Map</code> of <code>Selector</code>
 	 *                       instances, not null
 	 * @param  prefs         The <code>Map</code> of
 	 *                       <code>PropertyReference</code> instances, not null
@@ -118,9 +118,9 @@ public class Definition<T extends Element> implements MetaData<T>
 
 	protected Definition (final Class<T> type,
 			final Definition<? super T> parent,
-			final Map<String, Property<?>> properties,
+			final Set<Property<?>> properties,
+			final Set<Selector> selectors,
 			final Map<Class<?>, Relationship<T, ?>> relationships,
-			final Map<String, Selector> selectors,
 			final Map<Property<?>, PropertyReference<T, ?>> prefs,
 			final Map<Property<?>, RelationshipReference<T, ?>> rrefs)
 	{
@@ -136,8 +136,8 @@ public class Definition<T extends Element> implements MetaData<T>
 
 		this.type = type;
 		this.parent = parent;
-		this.selectors = new HashMap<> (selectors);
-		this.properties = new HashMap<> (properties);
+		this.selectors = new HashSet<> (selectors);
+		this.properties = new HashSet<> (properties);
 		this.relationships = new HashMap<> (relationships);
 		this.prefs = new HashMap<> (prefs);
 		this.rrefs = new HashMap<> (rrefs);
@@ -183,57 +183,6 @@ public class Definition<T extends Element> implements MetaData<T>
 	}
 
 	/**
-	 * Get the <code>Property</code> instance with the specified name.
-	 *
-	 * @param  name The name of the <code>Property</code> to retrieve, not null
-	 *
-	 * @return      The <code>Property</code>, may be null
-	 */
-
-	@Override
-	public Property<?> getProperty (final String name)
-	{
-		assert name != null : "name is NULL";
-
-		Property<?> property = this.properties.get (name);
-
-		if ((property == null) && (this.parent != null))
-		{
-			property = this.parent.getProperty (name);
-		}
-
-		return property;
-	}
-
-	/**
-	 * Get the <code>Property</code> instance with the specified name and type.
-	 *
-	 * @param  name                     The name, not null
-	 * @param  type                     The type, not null
-	 *
-	 * @return                          The <code>Property</code>, may be null
-	 * @throws IllegalArgumentException if the type specified does not match
-	 *                                  the type of the <code>Property</code>
-	 */
-
-	@Override
-	@SuppressWarnings ("unchecked")
-	public <V> Property<V> getProperty (final String name, final Class<V> type)
-	{
-		assert name != null : "name is NULL";
-		assert type != null : "type is NULL";
-
-		Property<?> result = this.properties.get (name);
-
-		if ((result != null) && (type != result.getPropertyType ()))
-		{
-			throw new IllegalArgumentException ("The type specified and the Type of the property do not match");
-		}
-
-		return (Property<V>) result;
-	}
-
-	/**
 	 * Get the <code>Set</code> of <code>Property</code> instances which are
 	 * associated with the <code>Element</code>.
 	 *
@@ -244,7 +193,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	public Set<Property<?>> getProperties ()
 	{
 		Set<Property<?>> properties = (this.parent != null) ? this.parent.getProperties () : new HashSet<> ();
-		properties.addAll (this.properties.values ());
+		properties.addAll (this.properties);
 
 		return properties;
 	}
@@ -276,29 +225,6 @@ public class Definition<T extends Element> implements MetaData<T>
 	}
 
 	/**
-	 * Get the <code>Selector</code> instance with the specified name.
-	 *
-	 * @param  name The name of the <code>Selector</code> to retrieve, not null
-	 *
-	 * @return      The <code>Property</code>, may be null
-	 */
-
-	@Override
-	public Selector getSelector (final String name)
-	{
-		assert name != null : "name is NULL";
-
-		Selector selector = this.selectors.get (name);
-
-		if ((selector == null) && (this.parent != null))
-		{
-			selector = this.parent.getSelector (name);
-		}
-
-		return selector;
-	}
-
-	/**
 	 * Get the <code>Set</code> of <code>Selector</code> instances which are
 	 * associated with the <code>Element</code>.
 	 *
@@ -309,7 +235,7 @@ public class Definition<T extends Element> implements MetaData<T>
 	public Set<Selector> getSelectors ()
 	{
 		Set<Selector> selectors = (this.parent != null) ? this.parent.getSelectors () : new HashSet<> ();
-		selectors.addAll (this.selectors.values ());
+		selectors.addAll (this.selectors);
 
 		return selectors;
 	}

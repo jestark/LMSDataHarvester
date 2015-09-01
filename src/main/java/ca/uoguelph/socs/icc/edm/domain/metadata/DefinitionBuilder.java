@@ -57,13 +57,13 @@ public final class DefinitionBuilder<T extends Element>
 	private final Set<Property<?>> allprops;
 
 	/** The <code>Set</code> of <code>Property</code> instances */
-	private final Map<String, Property<?>> properties;
+	private final Set<Property<?>> properties;
 
 	/** The <code>Relationship</code> instances for the interface */
 	private final Map<Class<?>, Relationship<T, ?>> relationships;
 
 	/** The <code>Set</code> of <code>Selector</code> instances */
-	private final Map<String, Selector> selectors;
+	private final Set<Selector> selectors;
 
 	/** <code>Property</code> to <code>PropertyReference</code> mapping */
 	private final Map<Property<?>, PropertyReference<T, ?>> prefs;
@@ -87,10 +87,10 @@ public final class DefinitionBuilder<T extends Element>
 		this.type = type;
 		this.parent = parent;
 
-		this.allprops = new HashSet<> ();
-		this.properties = new HashMap<> ();
+		this.allprops = (parent != null) ? parent.getProperties () : new HashSet<> ();
+		this.properties = new HashSet<> ();
+		this.selectors = new HashSet<> ();
 		this.relationships = new HashMap<> ();
-		this.selectors = new HashMap<> ();
 		this.prefs = new HashMap<> ();
 		this.rrefs = new HashMap<> ();
 	}
@@ -118,10 +118,10 @@ public final class DefinitionBuilder<T extends Element>
 
 		assert property != null : "property is NULL";
 		assert get != null : "get is NULL";
-		assert ! this.properties.containsKey (property.getName ()) : "property is already registered";
+		assert ! this.properties.contains (property) : "property is already registered";
 
 		this.allprops.add (property);
-		this.properties.put (property.getName (), property);
+		this.properties.add (property);
 		this.prefs.put (property, new PropertyReference<T, V> (get, set));
 
 		return this;
@@ -170,12 +170,12 @@ public final class DefinitionBuilder<T extends Element>
 		assert property != null : "property is NULL";
 		assert get != null : "get is NULL";
 		assert set != null : "set is NULL";
-		assert ! this.properties.containsKey (property.getName ()) : "property is already registered";
+		assert ! this.properties.contains (property) : "property is already registered";
 
 		PropertyReference<T, V> pref = new PropertyReference<T, V> (get, set);
 
 		this.allprops.add (property);
-		this.properties.put (property.getName (), property);
+		this.properties.add (property);
 		this.relationships.put (property.getPropertyType (), Relationship.getInstance (this.type, property, pref));
 		this.prefs.put (property, pref);
 
@@ -204,7 +204,7 @@ public final class DefinitionBuilder<T extends Element>
 
 		assert property != null : "property is NULL";
 		assert get != null : "get is NULL";
-		assert ! this.properties.containsKey (property.getName ()) : "property is already registered";
+		assert ! this.properties.contains (property) : "property is already registered";
 
 		RelationshipReference<T, V> rref = new RelationshipReference<T, V> (get, add, remove);
 
@@ -255,10 +255,10 @@ public final class DefinitionBuilder<T extends Element>
 		this.log.trace ("addSelector: selector={}", selector);
 
 		assert selector != null : "selector is NULL";
-		assert ! this.selectors.containsKey (selector.getName ()) : "selector is already registered";
+		assert ! this.selectors.contains (selector) : "selector is already registered";
 		assert this.allprops.containsAll (selector.getProperties ()) : "Properties in selector missing from definition";
 
-		this.selectors.put (selector.getName (), selector);
+		this.selectors.add (selector);
 
 		return this;
 	}
@@ -274,7 +274,7 @@ public final class DefinitionBuilder<T extends Element>
 	{
 		this.log.trace ("build:");
 
-		Definition<T> defn = new Definition<T> (this.type, this.parent, this.properties, this.relationships, this.selectors, this.prefs, this.rrefs);
+		Definition<T> defn = new Definition<T> (this.type, this.parent, this.properties, this.selectors, this.relationships, this.prefs, this.rrefs);
 		Container.getInstance ().registerMetaData (defn);
 
 		return defn;
