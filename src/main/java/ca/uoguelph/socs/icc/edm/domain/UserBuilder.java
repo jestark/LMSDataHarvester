@@ -52,9 +52,6 @@ public final class UserBuilder implements Builder<User>
 	/** The <code>DataStore</code> id number for the <code>User</code> */
 	private Long id;
 
-	/** The student id number of the <code>User</code> */
-	private Integer idNumber;
-
 	/** The firstname of the <code>User</code> */
 	private String firstname;
 
@@ -106,7 +103,6 @@ public final class UserBuilder implements Builder<User>
 		this.userProxy = DataStoreProxy.getInstance (User.class, User.SELECTOR_USERNAME, datastore);
 
 		this.id = null;
-		this.idNumber = null;
 		this.firstname = null;
 		this.lastname = null;
 		this.username = null;
@@ -129,12 +125,6 @@ public final class UserBuilder implements Builder<User>
 	{
 		this.log.trace ("build:");
 
-		if (this.idNumber == null)
-		{
-			this.log.error ("Attempting to create an User without an ID number");
-			throw new IllegalStateException ("idNumber is NULL");
-		}
-
 		if (this.firstname == null)
 		{
 			this.log.error ("Attempting to create an User without a First name");
@@ -155,12 +145,10 @@ public final class UserBuilder implements Builder<User>
 
 		if ((this.oldUser == null)
 				|| (! this.userProxy.contains (this.oldUser))
-				|| ((this.oldUser.getIdNumber () != this.idNumber)
-					&& (this.oldUser.getUsername () != this.username)))
+				|| (this.oldUser.getUsername () != this.username))
 		{
 			User result = this.userProxy.create ();
 			result.setId (this.id);
-			result.setIdNumber (this.idNumber);
 			result.setFirstname (this.firstname);
 			result.setLastname (this.lastname);
 			result.setUsername (this.username);
@@ -181,8 +169,7 @@ public final class UserBuilder implements Builder<User>
 				throw new IllegalArgumentException ("User is already in the datastore with a different last name");
 			}
 		}
-		else if ((this.oldUser.getIdNumber () != this.idNumber)
-					&& (this.oldUser.getUsername () != this.username))
+		else
 		{
 			this.oldUser.setFirstname (this.firstname);
 			this.oldUser.setLastname (this.lastname);
@@ -190,11 +177,6 @@ public final class UserBuilder implements Builder<User>
 			this.enrolments.stream ()
 				.filter (x -> ! this.oldUser.getEnrolments ().contains (x))
 				.forEach (x -> this.oldUser.addEnrolment (x));
-		}
-		else
-		{
-			this.log.error ("Only one of the User's User name and ID number was assigned a new value");
-			throw new IllegalStateException ("Both the user name and the ID number must be changed");
 		}
 
 		return this.oldUser;
@@ -212,7 +194,6 @@ public final class UserBuilder implements Builder<User>
 		this.log.trace ("clear:");
 
 		this.id = null;
-		this.idNumber = null;
 		this.firstname = null;
 		this.lastname = null;
 		this.username = null;
@@ -250,58 +231,12 @@ public final class UserBuilder implements Builder<User>
 		this.clear ();
 
 		this.id = user.getId ();
-		this.setIdNumber (user.getIdNumber ());
 		this.setUsername (user.getUsername ());
 		this.setLastname (user.getLastname ());
 		this.setFirstname (user.getFirstname ());
 		this.oldUser = user;
 
 		user.getEnrolments ().forEach (x -> this.addEnrolment (x));
-
-		return this;
-	}
-
-	/**
-	 * Get the (student) ID number of the <code>User</code>.  This will be the
-	 * student number, or a similar identifier used to track the
-	 * <code>User</code> by the institution from which the data was harvested.
-	 * While the ID number is not used as the database identifier it is
-	 * expected to be unique.
-	 *
-	 * @return An Integer representation of the ID number
-	 */
-
-	public Integer getIdNumber()
-	{
-		return this.idNumber;
-	}
-
-	/**
-	 * Set the (student) ID number of the <code>User</code>.
-	 *
-	 * @param  idnumber                 The ID Number, not null
-	 *
-	 * @return                          This <code>UserBuilder</code>
-	 * @throws IllegalArgumentException If the ID number is negative
-	 */
-
-	public UserBuilder setIdNumber (final Integer idnumber)
-	{
-		this.log.trace ("setIdNumber: idnumber={}", idnumber);
-
-		if (idnumber == null)
-		{
-			this.log.error ("The specified ID number is NULL");
-			throw new NullPointerException ("The specified ID number is NULL");
-		}
-
-		if (idnumber < 0)
-		{
-			this.log.error ("Trying to set a negative id number");
-			throw new IllegalArgumentException ("idnumber is negative");
-		}
-
-		this.idNumber = idnumber;
 
 		return this;
 	}

@@ -56,9 +56,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class User extends Element
 {
-	/** The idnumber for the <code>User</code> */
-	public static final Property<Integer> IDNUMBER;
-
 	/** The first name of the <code>User</code> */
 	public static final Property<String> FIRSTNAME;
 
@@ -70,9 +67,6 @@ public abstract class User extends Element
 
 	/** The <code>Enrolment</code> instances associated with the <code>User</code> */
 	public static final Property<Enrolment> ENROLMENTS;
-
-	/** Select an <code>User</code> instance by its id number */
-	public static final Selector SELECTOR_IDNUMBER;
 
 	/** Select the <code>User</code> instance for a <code>Enrolment</code> */
 	public static final Selector SELECTOR_ENROLMENTS;
@@ -87,24 +81,20 @@ public abstract class User extends Element
 
 	static
 	{
-		IDNUMBER = Property.getInstance (Integer.class, "idnumber", false, true);
 		FIRSTNAME = Property.getInstance (String.class, "firstname", true, true);
 		LASTNAME = Property.getInstance (String.class, "lastname", true, true);
 		USERNAME = Property.getInstance (String.class, "username", false, true);
 
 		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", true, false);
 
-		SELECTOR_IDNUMBER = Selector.getInstance (IDNUMBER, true);
 		SELECTOR_ENROLMENTS = Selector.getInstance (ENROLMENTS, true);
 		SELECTOR_USERNAME = Selector.getInstance (USERNAME, true);
 
 		Definition.getBuilder (User.class, Element.class)
-			.addProperty (IDNUMBER, User::getIdNumber, User::setIdNumber)
 			.addProperty (FIRSTNAME, User::getFirstname, User::setFirstname)
 			.addProperty (LASTNAME, User::getLastname, User::setLastname)
 			.addProperty (USERNAME, User::getUsername, User::setUsername)
 			.addRelationship (ENROLMENTS, User::getEnrolments, User::addEnrolment, User::removeEnrolment)
-			.addSelector (SELECTOR_IDNUMBER)
 			.addSelector (SELECTOR_USERNAME)
 			.addSelector (SELECTOR_ENROLMENTS)
 			.build ();
@@ -134,7 +124,6 @@ public abstract class User extends Element
 		else if (obj instanceof User)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getIdNumber (), ((User) obj).getIdNumber ());
 			ebuilder.append (this.getUsername (), ((User) obj).getUsername ());
 
 			result = ebuilder.isEquals ();
@@ -158,7 +147,6 @@ public abstract class User extends Element
 		final int mult = 929;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getIdNumber ());
 		hbuilder.append (this.getUsername ());
 
 		return hbuilder.toHashCode ();
@@ -180,7 +168,6 @@ public abstract class User extends Element
 		builder.append ("firstname", this.getFirstname ());
 		builder.append ("lastname", this.getLastname ());
 		builder.append ("username", this.getUsername ());
-		builder.append ("idnumber", this.getIdNumber ());
 
 		return builder.toString ();
 	}
@@ -220,28 +207,6 @@ public abstract class User extends Element
 			.getProfile ()
 			.getCreator (User.class, this.getClass ());
 	}
-
-	/**
-	 * Get the (student) ID number of the <code>User</code>.  This will be the
-	 * student number, or a similar identifier used to track the
-	 * <code>User</code> by the institution from which the data was harvested.
-	 * While the ID number is not used as the database identifier it is
-	 * expected to be unique.
-	 *
-	 * @return An <code>Integer</code> representation of the ID number.
-	 */
-
-	public abstract Integer getIdNumber ();
-
-	/**
-	 * Set the (student) ID number of the <code>User</code>.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>User</code> instance is loaded.
-	 *
-	 * @param  idnumber The ID Number, not null
-	 */
-
-	protected abstract void setIdNumber (Integer idnumber);
 
 	/**
 	 * Get the first name (given name) of the <code>User</code>.

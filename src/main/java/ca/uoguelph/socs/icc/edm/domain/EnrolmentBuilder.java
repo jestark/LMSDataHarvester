@@ -144,7 +144,7 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 
 		if ((this.oldEnrolment == null)
 				|| (! this.enrolmentProxy.contains (this.oldEnrolment))
-				|| (this.oldEnrolment.getCourse () == this.course)
+				|| (this.oldEnrolment.getCourse () != this.course)
 				|| (this.oldEnrolment.getRole () != this.role))
 		{
 			Enrolment result = this.enrolmentProxy.create ();

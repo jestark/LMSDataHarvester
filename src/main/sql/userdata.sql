@@ -6,7 +6,6 @@ create schema if not exists userdb;
 -- Identifying information for students in the public database.
 create table if not exists userdb.user (
 	id bigserial primary key,
-	id_number integer not null,
 	username text not null unique,
 	first_name text not null,
 	last_name text not null

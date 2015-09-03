@@ -102,33 +102,6 @@ public final class UserLoader extends AbstractLoader<User>
 	}
 
 	/**
-	 * Retrieve a single <code>User</code> object, with the specified ID
-	 * number, from the <code>DataStore</code>.
-	 *
-	 * @param  idnumber              The ID number of the <code>User</code> to
-	 *                               retrieve, not null
-	 *
-	 * @return                       The <code>User</code> instance associated
-	 *                               with the ID number
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 */
-
-	public User fetchByIdNumber (final Integer idnumber)
-	{
-		this.log.trace ("fetchByIdNumber: idnumber={}", idnumber);
-
-		if (idnumber == null)
-		{
-			this.log.error ("The specified User ID number is NULL");
-			throw new NullPointerException ();
-		}
-
-		return this.getQuery (User.SELECTOR_IDNUMBER)
-			.setProperty (User.IDNUMBER, idnumber)
-			.query ();
-	}
-
-	/**
 	 * Retrieve a single <code>User</code> object, with the specified username,
 	 * from the <code>DataStore</code>.
 	 *
@@ -178,10 +151,8 @@ public final class UserLoader extends AbstractLoader<User>
 			throw new NullPointerException ();
 		}
 
-//		return this.getQuery (User.SELECTOR_ENROLMENT)
-//			.setProperty (User.ENROLMENT, enrolment)
-//			.query ();
-
-		return null;
+		return this.getQuery (User.SELECTOR_ENROLMENTS)
+			.setProperty (User.ENROLMENTS, enrolment)
+			.query ();
 	}
 }

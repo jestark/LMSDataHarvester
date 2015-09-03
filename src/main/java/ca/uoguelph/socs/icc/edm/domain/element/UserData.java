@@ -47,9 +47,6 @@ public class UserData extends User implements Serializable
 	/** The primary key of the user. */
 	private Long id;
 
-	/** The ID number (Student ID) of the user. */
-	private Integer idnumber;
-
 	/** The username of the user. */
 	private String username;
 
@@ -79,7 +76,6 @@ public class UserData extends User implements Serializable
 	protected UserData ()
 	{
 		this.id = null;
-		this.idnumber = null;
 		this.username = null;
 		this.lastname = null;
 		this.firstname= null;
@@ -114,38 +110,6 @@ public class UserData extends User implements Serializable
 	protected void setId (final Long id)
 	{
 		this.id = id;
-	}
-
-	/**
-	 * Get the (student) ID number of the <code>User</code>.  This will be the
-	 * student number, or a similar identifier used to track the
-	 * <code>User</code> by the institution from which the data was harvested.
-	 * While the ID number is not used as the database identifier it is
-	 * expected to be unique.
-	 *
-	 * @return An Integer representation of the ID number
-	 */
-
-	@Override
-	public Integer getIdNumber ()
-	{
-		return this.idnumber;
-	}
-
-	/**
-	 * Set the (student) ID number of the <code>User</code>.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>User</code> instance is loaded.
-	 *
-	 * @param  idnumber The ID Number, not null
-	 */
-
-	@Override
-	protected void setIdNumber (final Integer idnumber)
-	{
-		assert idnumber != null : "idnumber is NULL";
-
-		this.idnumber = idnumber;
 	}
 
 	/**
