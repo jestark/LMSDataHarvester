@@ -3,24 +3,24 @@ Filter							881		13
 Property						883		11
 Selector						887		7
 DomainModelProfile				907		5
-DomainModelProfile.Entry		911		3
-JPADataStoreBuilder.Key			919		2
 
 MoodleActivity					1013	991
 
-ActivityTypeData				1009	997
-GenericActivity					1039	953
+ActivityType					1009	997
+Activity						1039	953
 ActivityGrade					1049	947
-ActionData						1051	941
-CourseData						1061	937
-UserData						1063	929
-RoleData						1069	919
+Action							1051	941
+Course							1061	937
+User							1063	929
+Role							1069	919
 Semester						1087	911
-EnrolmentData					1091	907
-LogData							1093	887
-ActivitySourceData				1097	883
-UserEnrolmentData				1103	881
+Enrolment						1091	907
+LogEntry						1093	887
+ActivitySource					1097	883
+Network							1103	881
 LogReference					1109	877
+NamedActivity					1117	863
+SubActivity						1123	859
 
 Book							2003	691
 BookChapter						2011	683
@@ -47,5 +47,5 @@ Label							3041	367
 Page							3049	359
 Quiz							3061	353
 Resource						3067	349
-Schedulery						3079	347
+Scheduler						3079	347
 URL								3083	337
