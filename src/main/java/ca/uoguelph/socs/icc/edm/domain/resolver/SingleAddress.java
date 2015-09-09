@@ -56,6 +56,31 @@ final class SingleAddress extends NetAddress
 	}
 
 	/**
+	 * Get the IP address as a <code>String</code>.
+	 *
+	 * @return A <code>String</code> containing the IP Address.
+	 */
+
+	@Override
+	public String getHostAddress ()
+	{
+		return this.address.getHostAddress ();
+	}
+
+	/**
+	 * Get the <code>InetAddress</code> which corresponds to the
+	 * <code>NetAddress</code> instance.
+	 *
+	 * @return The <code>InetAddress</code>
+	 */
+
+	@Override
+	public InetAddress getInetAddress ()
+	{
+		return this.address;
+	}
+
+	/**
 	 * Determine if the specified <code>NetAddress</code> is a member of the
 	 * network represented by this <code>NetAddress</code>.  For a
 	 * <code>SingleAddress</code> this is the same as a call to

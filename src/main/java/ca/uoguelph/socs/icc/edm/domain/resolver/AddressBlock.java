@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 final class AddressBlock extends NetAddress
 {
 	/**
-	 *
+	 * Builder for the <code>AddressBlock</code>.
 	 */
 
 	public static final class Builder
@@ -173,6 +173,9 @@ final class AddressBlock extends NetAddress
 		}
 	}
 
+	/** The log */
+	private final Logger log;
+
 	/** The base address for the block */
 	private final SingleAddress address;
 
@@ -195,6 +198,8 @@ final class AddressBlock extends NetAddress
 		assert address != null : "address is NULL";
 		assert length >= 0 : "mask length can not be negative";
 		assert length <= 8 * address.getAddress ().length : "length can not be longer than the address";
+
+		this.log = LoggerFactory.getLogger (AddressBlock.class);
 
 		this.address = new SingleAddress (address);
 		this.length = length;
@@ -226,6 +231,31 @@ final class AddressBlock extends NetAddress
 	}
 
 	/**
+	 * Get the IP address as a <code>String</code>.
+	 *
+	 * @return A <code>String</code> containing the IP Address.
+	 */
+
+	@Override
+	public String getHostAddress ()
+	{
+		return this.address.getHostAddress ();
+	}
+
+	/**
+	 * Get the <code>InetAddress</code> which corresponds to the
+	 * <code>NetAddress</code> instance.
+	 *
+	 * @return The <code>InetAddress</code>
+	 */
+
+	@Override
+	public InetAddress getInetAddress ()
+	{
+		return this.address.getInetAddress ();
+	}
+
+	/**
 	 * Determine if the specified <code>NetAddress</code> is a member of the
 	 * network represented by this <code>NetAddress</code>.
 	 *
@@ -235,6 +265,8 @@ final class AddressBlock extends NetAddress
 	@Override
 	public boolean hasMember (final NetAddress address)
 	{
+		this.log.trace ("hasMember: address={}", address);
+
 		boolean result = false;
 
 		if ((address != null) && (address.getAddress ().length == this.mask.length))
@@ -266,6 +298,6 @@ final class AddressBlock extends NetAddress
 	@Override
 	public String toString ()
 	{
-		return String.format ("%s/%d", this.getAddress ().toString (), this.length);
+		return String.format ("%s/%d", this.address.toString (), this.length);
 	}
 }

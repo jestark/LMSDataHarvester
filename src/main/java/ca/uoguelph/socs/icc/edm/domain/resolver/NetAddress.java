@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.resolver;
 
+import java.net.InetAddress;
+
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -102,6 +104,23 @@ abstract class NetAddress implements Comparable<NetAddress>
 	 */
 
 	public abstract byte[] getAddress ();
+
+	/**
+	 * Get the IP address as a <code>String</code>.
+	 *
+	 * @return A <code>String</code> containing the IP Address.
+	 */
+
+	public abstract String getHostAddress ();
+
+	/**
+	 * Get the <code>InetAddress</code> which corresponds to the
+	 * <code>NetAddress</code> instance.
+	 *
+	 * @return The <code>InetAddress</code>
+	 */
+
+	public abstract InetAddress getInetAddress ();
 
 	/**
 	 * Determine if the specified <code>NetAddress</code> is a member of the
