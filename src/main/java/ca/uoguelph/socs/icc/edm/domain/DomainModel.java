@@ -37,11 +37,34 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 
 public final class DomainModel
 {
+	/** The translation table for imports */
+	private static final TranslationTable ttable;
+
 	/** The log */
 	private final Logger log;
 
 	/** The data store which contains all of the data */
 	private final DataStore datastore;
+
+	/**
+	 * Static initializer to create the <code>TranslationTable</code>
+	 */
+
+	static
+	{
+		ttable = new TranslationTable ();
+	}
+
+	/**
+	 * Get a reference to the <code>TranslationTable</code>.
+	 *
+	 * @return The <code>TranslationTable</code>
+	 */
+
+	protected static TranslationTable getTranslationTable ()
+	{
+		return DomainModel.ttable;
+	}
 
 	/**
 	 * Create the <code>DomainModel</code>.
@@ -97,14 +120,23 @@ public final class DomainModel
 	/**
 	 * Close the <code>DataStore</code>.  Closing the <code>DataStore</code>
 	 * causes the <code>DataStore</code> to flush is caches and release all of
-	 * its resources.  If the <code>DataStore</code> has an active
-	 * <code>Transaction</code> then the transaction will be allowed to
-	 * complete before the <code>DataStore</code> is closed.
+	 * its resources.
+	 * <p>
+	 * If the <code>DataStore</code> has an active <code>Transaction</code>
+	 * then the transaction will be allowed to complete before the
+	 * <code>DataStore</code> is closed.  However, all of the entries to the
+	 * current <code>DataStore</code> will be immediately removed from the
+	 * <code>TranslationTable</code>.  So operations executed as part of the
+	 * <code>Transaction</code> after the <code>DomainModel</code> has been
+	 * closed, which require the <code>TranslationTable</code> will probably
+	 * fail.
 	 */
 
 	public void close ()
 	{
 		this.datastore.close ();
+
+		DomainModel.ttable.removeAll (this.datastore);
 	}
 
 	/**
@@ -246,5 +278,6 @@ public final class DomainModel
 		}
 
 		this.datastore.remove (metadata, element);
+		DomainModel.ttable.remove (element);
 	}
 }

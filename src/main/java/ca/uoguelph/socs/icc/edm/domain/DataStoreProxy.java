@@ -372,6 +372,9 @@ final class QueryProxy<T extends Element> extends DataStoreProxy<T>
 
 final class TableProxy<T extends Element> extends DataStoreProxy<T>
 {
+	/** The <code>TranslationTable</code> */
+	private final TranslationTable ttable;
+
 	/**
 	 * Create the <code>TableProxy</code>.
 	 *
@@ -382,6 +385,8 @@ final class TableProxy<T extends Element> extends DataStoreProxy<T>
 	protected TableProxy (final Creator<T> creator, final DataStore datastore)
 	{
 		super (creator, datastore);
+
+		this.ttable = DomainModel.getTranslationTable ();
 	}
 
 	/**
@@ -397,7 +402,7 @@ final class TableProxy<T extends Element> extends DataStoreProxy<T>
 	{
 		assert element != null : "element is NULL";
 
-		return null;
+		return this.ttable.get (element, this.datastore);
 	}
 
 	/**
@@ -414,7 +419,9 @@ final class TableProxy<T extends Element> extends DataStoreProxy<T>
 	{
 		assert newElement != null : "newElement is NULL";
 
+		this.datastore.insert (this.creator, newElement);
+		this.ttable.put (oldElement, newElement);
 
-		return null;
+		return newElement;
 	}
 }
