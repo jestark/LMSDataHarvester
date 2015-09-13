@@ -67,11 +67,11 @@ public abstract class SubActivity extends ParentActivity
 	{
 		subactivities = new HashMap<> ();
 
-		NAME = Property.getInstance (String.class, "name", false, true);
-		PARENT = Property.getInstance (ParentActivity.class, "parent", false, true);
+		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
+		PARENT = Property.getInstance (ParentActivity.class, "parent", Property.Flags.REQUIRED);
 
-		REFERENCES = Property.getInstance (LogReference.class, "references", true, false);
-		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", true, false);
+		REFERENCES = Property.getInstance (LogReference.class, "references", Property.Flags.MULTIVALUED);
+		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", Property.Flags.MULTIVALUED);
 
 		Definition.getBuilder (SubActivity.class, Element.class)
 			.addProperty (NAME, SubActivity::getName, SubActivity::setName)

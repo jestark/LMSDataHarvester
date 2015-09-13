@@ -68,7 +68,7 @@ public abstract class Action extends Element
 
 	static
 	{
-		NAME = Property.getInstance (String.class, "name", false, true);
+		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
 
 		SELECTOR_NAME = Selector.getInstance (NAME, true);
 

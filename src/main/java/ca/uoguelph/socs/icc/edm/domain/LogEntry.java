@@ -93,13 +93,13 @@ public abstract class LogEntry extends Element
 
 	static
 	{
-		ACTION = Property.getInstance (Action.class, "action", false, true);
-		ACTIVITY = Property.getInstance (Activity.class, "activity", false, true);
-		COURSE = Property.getInstance (Course.class, "course", false, true);
-		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", false, true);
-		REFERENCE = Property.getInstance (LogReference.class, "reference", false, true);
-		NETWORK = Property.getInstance (Network.class, "network", false, true);
-		TIME = Property.getInstance (Date.class, "time", false, true);
+		ACTION = Property.getInstance (Action.class, "action", Property.Flags.REQUIRED);
+		ACTIVITY = Property.getInstance (Activity.class, "activity", Property.Flags.REQUIRED);
+		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
+		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
+		REFERENCE = Property.getInstance (LogReference.class, "reference", Property.Flags.MUTABLE);
+		NETWORK = Property.getInstance (Network.class, "network", Property.Flags.REQUIRED);
+		TIME = Property.getInstance (Date.class, "time", Property.Flags.REQUIRED);
 
 		SELECTOR_ACTION = Selector.getInstance (ACTION, false);
 		SELECTOR_COURSE = Selector.getInstance (COURSE, false);

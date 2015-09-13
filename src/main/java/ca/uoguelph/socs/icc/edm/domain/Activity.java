@@ -109,11 +109,11 @@ public abstract class Activity extends ParentActivity
 		sources = new HashMap<> ();
 		activities = new HashMap<> ();
 
-		COURSE = Property.getInstance (Course.class, "course", false, true);
-		TYPE = Property.getInstance (ActivityType.class, "type", false, true);
-		NAME = Property.getInstance (String.class, "name", false, true);
+		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
+		TYPE = Property.getInstance (ActivityType.class, "type", Property.Flags.REQUIRED);
+		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
 
-		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", true, false);
+		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
 
 		SELECTOR_TYPE = Selector.getInstance (TYPE, false);
 

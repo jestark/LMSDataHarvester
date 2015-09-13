@@ -73,9 +73,9 @@ public abstract class Grade extends Element
 
 	static
 	{
-		ACTIVITY = Property.getInstance (Activity.class, "activity", false, true);
-		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", false, true);
-		GRADE = Property.getInstance (Integer.class, "grade", true, true);
+		ACTIVITY = Property.getInstance (Activity.class, "activity", Property.Flags.REQUIRED);
+		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
+		GRADE = Property.getInstance (Integer.class, "grade", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
 
 		SELECTOR_PKEY = Selector.getInstance ("pkey", true, Grade.ACTIVITY, Grade.ENROLMENT);
 

@@ -73,8 +73,8 @@ public abstract class ActivitySource extends Element
 
 	static
 	{
-		NAME = Property.getInstance (String.class, "name", false, true);
-		TYPES = Property.getInstance (ActivityType.class, "types", true, false);
+		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
+		TYPES = Property.getInstance (ActivityType.class, "types", Property.Flags.MULTIVALUED);
 
 		SELECTOR_NAME = Selector.getInstance (NAME, true);
 

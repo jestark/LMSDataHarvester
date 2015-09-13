@@ -83,12 +83,12 @@ public abstract class Course extends Element
 
 	static
 	{
-		NAME = Property.getInstance (String.class, "name", false, true);
-		SEMESTER = Property.getInstance (Semester.class, "semester", false, true);
-		YEAR = Property.getInstance (Integer.class, "year", false, true);
+		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
+		SEMESTER = Property.getInstance (Semester.class, "semester", Property.Flags.REQUIRED);
+		YEAR = Property.getInstance (Integer.class, "year", Property.Flags.REQUIRED);
 
-		ACTIVITIES = Property.getInstance (Activity.class, "activities", true, false);
-		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", true, false);
+		ACTIVITIES = Property.getInstance (Activity.class, "activities", Property.Flags.MULTIVALUED);
+		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", Property.Flags.MULTIVALUED);
 
 		SELECTOR_OFFERING = Selector.getInstance ("offering", true, NAME, SEMESTER, YEAR);
 

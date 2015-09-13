@@ -81,11 +81,11 @@ public abstract class User extends Element
 
 	static
 	{
-		FIRSTNAME = Property.getInstance (String.class, "firstname", true, true);
-		LASTNAME = Property.getInstance (String.class, "lastname", true, true);
-		USERNAME = Property.getInstance (String.class, "username", false, true);
+		FIRSTNAME = Property.getInstance (String.class, "firstname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		LASTNAME = Property.getInstance (String.class, "lastname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		USERNAME = Property.getInstance (String.class, "username", Property.Flags.REQUIRED);
 
-		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", true, false);
+		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", Property.Flags.MUTABLE, Property.Flags.MULTIVALUED);
 
 		SELECTOR_ENROLMENTS = Selector.getInstance (ENROLMENTS, true);
 		SELECTOR_USERNAME = Selector.getInstance (USERNAME, true);

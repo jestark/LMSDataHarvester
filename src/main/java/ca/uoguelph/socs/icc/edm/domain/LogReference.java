@@ -62,8 +62,8 @@ public abstract class LogReference extends Element
 	{
 		references = new HashMap<> ();
 
-		ENTRY = Property.getInstance (LogEntry.class, "logentry", false, true);
-		SUBACTIVITY = Property.getInstance (SubActivity.class, "subactivity", false, true);
+		ENTRY = Property.getInstance (LogEntry.class, "logentry", Property.Flags.REQUIRED);
+		SUBACTIVITY = Property.getInstance (SubActivity.class, "subactivity", Property.Flags.REQUIRED);
 
 		SELECTOR_ENTRY = Selector.getInstance (ENTRY, true);
 

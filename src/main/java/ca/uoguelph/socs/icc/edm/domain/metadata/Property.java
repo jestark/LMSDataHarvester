@@ -16,6 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import java.util.Set;
+import java.util.EnumSet;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -35,17 +38,61 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public final class Property<T>
 {
+	/**
+	 * Meta-data for the <code>Property</code> instance.  The three flags
+	 * contained in this Enum, along with the type, are used to describe the
+	 * value represented by the <code>Property</code>. A <code>Property</code>
+	 * which has a type that is a subclass of <code>Element</code> is
+	 * considered to represent a relationship, with the relationship acting as
+	 * a pseudo-flag.
+	 * <p>
+	 * The flags contained in this Enum, along with the relationship may be
+	 * used with the following constraints:
+	 * <ol>
+	 *  <li> To be <code>MULTIVALUED</code> a <code>Property</code> must
+	 *       represent a relationship between two <code>Element</code>
+	 *       instances.
+	 *  <li> <code>MULTIVALUED</code> <code>Property</code> instances may not
+	 *       be <code>REQUIRED</code>.
+	 *  <li> A <code>Property</code> that represents a relationship can not be
+	 *       <code>REQUIRED</code> and <code>MUTABLE</code>.
+	 * </ol>
+	 */
+
+	public static enum Flags
+	{
+		/**
+		 * Indicates that the value associated with <code>Property</code> must
+		 * not be null.  For relationships, required <code>Property</code>
+		 * instances represent dependencies.
+		 */
+
+		REQUIRED,
+
+		/**
+		 * Indicates that the <code>Builder</code> may update the value(s)
+		 * associated with the <code>Property</code>.   For relationships,
+		 * mutable <code>Property</code> instances are treated as dependencies.
+		 */
+
+		MUTABLE,
+
+		/**
+		 * Indicates that the <code>Property</code> represents a collection of
+		 * values
+		 */
+
+		MULTIVALUED;
+	}
+
+	/** The flags for the <code>Property</code> */
+	private final Set<Flags> flags;
+
 	/** The name of the <code>Property</code> */
 	private final String name;
 
 	/** The Java type of the <code>Property</code> */
 	private final Class<T> type;
-
-	/** Indication if the value in the <code>Element</code> may be changed */
-	private final boolean mutable;
-
-	/** Indication if the value is required in the <code>Element</code> */
-	private final boolean required;
 
 	/**
  	 * Create the <code>Property</code>.
@@ -53,20 +100,42 @@ public final class Property<T>
 	 * @param  type     The type of the value associated with the
 	 *                  <code>Property</code>, not null
 	 * @param  name     The name of the <code>Property</code>, not null
-	 * @param  mutable  Indication if the <code>Property</code> can be changed
-	 * @param  required Indication if the <code>Property</code> is allowed to
-	 *                  be null
 	 *
 	 * @return          The <code>Property</code>
 	 */
 
-	public static <V> Property<V> getInstance (final Class<V> type, final String name, final boolean mutable, final boolean required)
+	public static <V> Property<V> getInstance (final Class<V> type, final String name)
 	{
 		assert type != null : "type is NULL";
 		assert name != null : "name is NULL";
 		assert name.length () > 0 : "name is empty";
 
-		return new Property<V> (name, type, mutable, required);
+		return new Property<V> (name, type, EnumSet.noneOf (Property.Flags.class));
+	}
+
+	public static <V> Property<V> getInstance (final Class<V> type, final String name, final Flags f1)
+	{
+		assert type != null : "type is NULL";
+		assert name != null : "name is NULL";
+		assert name.length () > 0 : "name is empty";
+		assert (f1 == Flags.MULTIVALUED) && Element.class.isAssignableFrom (type) : "Only Relationships may be Multi-Valued";
+
+		return new Property<V> (name, type, EnumSet.of (f1));
+	}
+
+	public static <V> Property<V> getInstance (final Class<V> type, final String name, final Flags f1, final Flags f2)
+	{
+		assert type != null : "type is NULL";
+		assert name != null : "name is NULL";
+		assert name.length () > 0 : "name is empty";
+
+		Set<Flags> flags = EnumSet.of (f1, f2);
+
+		assert ((flags.contains (Flags.REQUIRED) && flags.contains (Flags.MUTABLE) && (! Element.class.isAssignableFrom (type)))
+				|| (flags.contains (Flags.MUTABLE) && flags.contains (Flags.MULTIVALUED) && Element.class.isAssignableFrom (type)))
+			: "The specified flags can not be used together";
+
+		return new Property<V> (name, type, flags);
 	}
 
 	/**
@@ -79,7 +148,7 @@ public final class Property<T>
 	 *                  be null
 	 */
 
-	protected Property (final String name, final Class<T> type, final boolean mutable, final boolean required)
+	private Property (final String name, final Class<T> type, final Set<Flags> flags)
 	{
 		assert name != null : "name is NULL";
 		assert name.length () > 0 : "name is an empty String";
@@ -87,8 +156,7 @@ public final class Property<T>
 
 		this.name = name;
 		this.type = type;
-		this.mutable = mutable;
-		this.required = required;
+		this.flags = flags;
 	}
 
 	/**
@@ -167,6 +235,20 @@ public final class Property<T>
 	}
 
 	/**
+	 * Determine if the <code>Property</code> represents a single value or a
+	 * collection of values.
+	 *
+	 * @return <code>true</code> if the <code>Property</code> represents a
+	 *         collection of values, <code>false</code> if the
+	 *         <code>Property</code> represents a single value
+	 */
+
+	public boolean isMultivalued ()
+	{
+		return this.flags.contains (Flags.MULTIVALUED);
+	}
+
+	/**
 	 * Determine if the value represented by the <code>Property</code> may be
 	 * changed after the <code>Element</code> has been created.
 	 *
@@ -177,7 +259,21 @@ public final class Property<T>
 
 	public boolean isMutable ()
 	{
-		return this.mutable;
+		return this.flags.contains (Flags.MUTABLE);
+	}
+
+	/**
+	 * Determine if the value represented by the property if a relationship
+	 * with another <code>Element</code> instance.  The <code>Property</code>
+	 * represents a relationship if type is a subclass of <code>Element</code>.
+	 *
+	 * @return <code>true</code> if the <code>Property</code> represents a
+	 *         relationship, <code>false</code> otherwise
+	 */
+
+	public boolean isRelationship ()
+	{
+		return Element.class.isAssignableFrom (this.type);
 	}
 
 	/**
@@ -191,7 +287,7 @@ public final class Property<T>
 
 	public boolean isRequired ()
 	{
-		return this.required;
+		return this.flags.contains (Flags.REQUIRED);
 	}
 
 	/**
@@ -209,8 +305,7 @@ public final class Property<T>
 
 		builder.append ("name", this.name);
 		builder.append ("type", this.type);
-		builder.append ("mutable", this.mutable);
-		builder.append ("required", this.required);
+		builder.append ("flags", this.flags);
 
 		return builder.toString ();
 	}

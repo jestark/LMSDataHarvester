@@ -107,13 +107,13 @@ public abstract class Enrolment extends Element
 
 	static
 	{
-		COURSE = Property.getInstance (Course.class, "course", false, true);
-		FINALGRADE = Property.getInstance (Integer.class, "finalgrade", true, false);
-		ROLE = Property.getInstance (Role.class, "role", false, true);
-		USABLE = Property.getInstance (Boolean.class, "usable", true, true);
+		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
+		FINALGRADE = Property.getInstance (Integer.class, "finalgrade", Property.Flags.MUTABLE);
+		ROLE = Property.getInstance (Role.class, "role", Property.Flags.REQUIRED);
+		USABLE = Property.getInstance (Boolean.class, "usable", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
 
-		GRADES = Property.getInstance (Grade.class, "grades", true, false);
-		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", true, false);
+		GRADES = Property.getInstance (Grade.class, "grades", Property.Flags.MULTIVALUED);
+		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
 
 		SELECTOR_ROLE = Selector.getInstance (ROLE, false);
 

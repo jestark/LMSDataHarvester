@@ -57,8 +57,8 @@ public abstract class Element
 
 	static
 	{
-		ID = Property.getInstance (Long.class, "id", false, false);
-		MODEL = Property.getInstance (DomainModel.class, "domainmodel", false, false);
+		ID = Property.getInstance (Long.class, "id");
+		MODEL = Property.getInstance (DomainModel.class, "domainmodel");
 
 		SELECTOR_ID = Selector.getInstance (ID, true);
 		SELECTOR_ALL = Selector.getInstance ("all", false);
@@ -162,6 +162,20 @@ public abstract class Element
 		element.setDomainModel (this.model);
 
 		return element;
+	}
+
+	/**
+	 * Get a reference to the <code>DataStore</code> which contains the
+	 * <code>Element</code>.
+	 *
+	 * @return The <code>DataStore</code>
+	 */
+
+	protected final DataStore getDataStore ()
+	{
+		assert this.model != null : "Model has not been set";
+
+		return this.model.getDataStore ();
 	}
 
 	/**

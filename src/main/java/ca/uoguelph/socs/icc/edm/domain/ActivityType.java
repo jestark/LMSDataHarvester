@@ -75,8 +75,8 @@ public abstract class ActivityType extends Element
 
 	static
 	{
-		NAME = Property.getInstance (String.class, "name", false, true);
-		SOURCE = Property.getInstance (ActivitySource.class, "source", false, true);
+		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
+		SOURCE = Property.getInstance (ActivitySource.class, "source", Property.Flags.REQUIRED);
 
 		SELECTOR_NAME = Selector.getInstance ("name", true, NAME, SOURCE);
 
