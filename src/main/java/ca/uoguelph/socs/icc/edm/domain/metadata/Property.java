@@ -118,7 +118,7 @@ public final class Property<T>
 		assert type != null : "type is NULL";
 		assert name != null : "name is NULL";
 		assert name.length () > 0 : "name is empty";
-		assert (f1 == Flags.MULTIVALUED) && Element.class.isAssignableFrom (type) : "Only Relationships may be Multi-Valued";
+		assert (f1 != Flags.MULTIVALUED) || Element.class.isAssignableFrom (type) : "Only Relationships may be Multi-Valued";
 
 		return new Property<V> (name, type, EnumSet.of (f1));
 	}
