@@ -172,35 +172,22 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 			throw new IllegalStateException ("time is NULL");
 		}
 
-		if ((this.oldEntry == null)
-				|| (! this.entryProxy.contains (this.oldEntry))
-				|| (this.oldEntry.getAction () != this.action)
-				|| (this.oldEntry.getActivity () != this.activity)
-				|| (this.oldEntry.getEnrolment () != this.enrolment)
-				|| (this.oldEntry.getNetwork () != this.network)
-				|| (this.oldEntry.getSubActivity () != this.subActivity))
-		{
-			LogEntry result = this.entryProxy.create ();
-			result.setId (this.id);
-			result.setAction (this.action);
-			result.setActivity (this.activity);
-			result.setEnrolment (this.enrolment);
-			result.setNetwork (this.network);
-			result.setTime (this.time);
+		LogEntry result = this.entryProxy.create ();
+		result.setId (this.id);
+		result.setAction (this.action);
+		result.setActivity (this.activity);
+		result.setEnrolment (this.enrolment);
+		result.setNetwork (this.network);
+		result.setTime (this.time);
 
-			this.oldEntry = this.entryProxy.insert (this.oldEntry, result);
+		this.oldEntry = this.entryProxy.insert (this.oldEntry, result);
 
-			// Create the reference
-			if (this.subActivity != null)
-			{
-				this.refBuilder.setSubActivity (this.subActivity)
-					.setEntry (this.oldEntry)
-					.build ();
-			}
-		}
-		else
+		// Create the reference
+		if (this.subActivity != null)
 		{
-			this.oldEntry.setTime (this.time);
+			this.refBuilder.setSubActivity (this.subActivity)
+				.setEntry (this.oldEntry)
+				.build ();
 		}
 
 		return this.oldEntry;
