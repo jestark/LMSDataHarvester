@@ -20,19 +20,23 @@ import java.util.List;
 import java.util.Set;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -106,6 +110,36 @@ public class MoodleActivity extends Activity
 	}
 
 	/**
+	 * Get a reference to the <code>Activity</code>.
+	 *
+	 * @return The <code>Activity</code>
+	 */
+
+	public Activity getActivity ()
+	{
+		if (this.activity == null)
+		{
+			if (this.instanceid == null)
+			{
+				throw new IllegalStateException ("instance ID is NULL");
+			}
+
+			Creator<Activity> creator = this.getDataStore ()
+				.getProfile ()
+				.getCreator (Activity.class, Activity.getActivityClass (this.type));
+
+			this.activity = Query.getInstance (creator, Activity.SELECTOR_ID, this.getDataStore ())
+				.setProperty (Activity.ID, this.instanceid)
+				.query ();
+
+			// Type is transient on the loaded activity, so copy it in here
+			creator.setValue (Activity.TYPE, this.activity, this.type);
+		}
+
+		return this.activity;
+	}
+
+	/**
 	 * Compare two <code>Activity</code> instances to determine if they are
 	 * equal.
 	 *
@@ -160,6 +194,25 @@ public class MoodleActivity extends Activity
 	}
 
 	/**
+	 * Get an <code>ActivityBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method passes the <code>getBuilder</code>
+	 * call though to the <code>Activity</code> instance containing the actual
+	 * data.
+	 *
+	 * @param  datastore The <code>DataStore</code>, not null
+	 *
+	 * @return           The initialized <code>ActivityBuilder</code>
+	 */
+
+	@Override
+	public ActivityBuilder getBuilder (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is null";
+
+		return this.getActivity ().getBuilder (datastore);
+	}
+
+	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
 	 * instance.
 	 * <p>
@@ -209,14 +262,7 @@ public class MoodleActivity extends Activity
 	@Override
 	public String getName ()
 	{
-		String name = (this.getType ()).getName ();
-
-		if (this.activity != null)
-		{
-			name = this.activity.getName ();
-		}
-
-		return name;
+		return this.getActivity ().getName ();
 	}
 
 	/**
@@ -305,7 +351,7 @@ public class MoodleActivity extends Activity
 	@Override
 	public Set<Grade> getGrades ()
 	{
-		return new HashSet<Grade> ();
+		return this.getActivity ().getGrades ();
 	}
 
 	/**
@@ -385,33 +431,7 @@ public class MoodleActivity extends Activity
 	@Override
 	public List<SubActivity> getSubActivities ()
 	{
-		return (this.activity != null) ? this.activity.getSubActivities () : new ArrayList<SubActivity> ();
-	}
-
-	/**
-	 * Get a reference to the <code>Activity</code>.
-	 *
-	 * @return The <code>Activity</code>, may be null
-	 */
-
-	public Activity getActivity ()
-	{
-		return this.activity;
-	}
-
-	/**
-	 * Set the internal <code>Activity</code> instance.  This method is intended
-	 * to be used by the <code>MoodleActivityManager</code> to set the
-	 * <code>Activity</code>.
-	 *
-	 * @param  activity The internal <code>Activity</code> instance, not null
-	 */
-
-	protected void setActivity (final Activity activity)
-	{
-		assert activity != null : "activity is NULL";
-
-		this.activity = activity;
+		return this.getActivity ().getSubActivities ();
 	}
 
 	/**
