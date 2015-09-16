@@ -62,8 +62,7 @@ public class ActivityTypeData extends ActivityType implements Serializable
 	 * Create the <code>ActivityType</code> with null values.
 	 */
 
-	public ActivityTypeData ()
-//	protected ActivityTypeData ()
+	protected ActivityTypeData ()
 	{
 		this.id = null;
 		this.name = null;

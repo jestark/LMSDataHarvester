@@ -66,8 +66,7 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 	 * Create the <code>ActivitySource</code> with null values.
 	 */
 
-	public ActivitySourceData ()
-//	protected ActivitySourceData ()
+	protected ActivitySourceData ()
 	{
 		this.id = null;
 		this.name = null;

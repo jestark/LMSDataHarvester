@@ -27,6 +27,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.MemDataStore;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.SequentialIdGenerator;
 
 import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
@@ -35,6 +38,8 @@ import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
+import ca.uoguelph.socs.icc.edm.domain.metadata.ProfileBuilder;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
@@ -78,8 +83,8 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Activity extends ParentActivity
 {
-	/** <code>ActivitySource</code> name to class map */
-	private static final Map<String, ActivitySource> sources;
+	/** Internal <code>DomainModel</code> for sources and types */
+	private static DomainModel store;
 
 	/** <code>ActivityType</code> to implementation class map */
 	private static final Map<ActivityType, Class<? extends Activity>> activities;
@@ -106,7 +111,6 @@ public abstract class Activity extends ParentActivity
 
 	static
 	{
-		sources = new HashMap<> ();
 		activities = new HashMap<> ();
 
 		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
@@ -162,18 +166,31 @@ public abstract class Activity extends ParentActivity
 		assert impl != null : "impl is NULL";
 		assert source.length () > 0 : "source is empty";
 
-		ActivityType atype = new ActivityTypeData ();
-
-		if (! Activity.sources.containsKey (source))
+		if (Activity.store == null)
 		{
-			ActivitySource asource = new ActivitySourceData ();
-			asource.setName (source);
+			Profile activityProf = new ProfileBuilder ()
+				.setName ("Activity")
+				.setMutable (true)
+				.setElementClass (ActivitySource.class, ActivitySourceData.class)
+				.setElementClass (ActivityType.class, ActivityTypeData.class)
+				.setGenerator (Element.class, SequentialIdGenerator.class)
+				.build ();
 
-			Activity.sources.put (source, asource);
+			Activity.store = new DomainModel (DataStore.getInstance (MemDataStore.class, activityProf));
 		}
 
-		atype.setSource (Activity.sources.get (source));
-		atype.setName (type);
+		Activity.store.getTransaction ().begin ();
+
+		ActivitySource aSource = ActivitySourceBuilder.getInstance (Activity.store)
+			.setName (source)
+			.build ();
+
+		ActivityType atype = ActivityTypeBuilder.getInstance (Activity.store)
+			.setActivitySource (aSource)
+			.setName (type)
+			.build ();
+
+		Activity.store.getTransaction ().commit ();
 
 		assert ! Activity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
 
