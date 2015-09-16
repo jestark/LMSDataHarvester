@@ -258,9 +258,6 @@ public final class MemDataStore extends DataStore
 			this.elements.put (element.getClass (), new ElementStore<T> (metadata, this));
 		}
 
-		this.log.debug ("Setting the Reference to the DomainModel");
-		metadata.setValue (Element.MODEL, element, this.getDomainModel ());
-
 		this.log.debug ("Inserting the Element into the ElementStore");
 		this.getElementStore (metadata, element.getClass ())
 			.insert (element);

@@ -270,6 +270,9 @@ abstract class DataStoreProxy<T extends Element>
 	{
 		assert newElement != null : "element is NULL";
 
+		this.log.debug ("Setting the Reference to the DomainModel");
+		newElement.setDomainModel (this.datastore.getDomainModel ());
+
 		if (! this.isComplete (newElement))
 		{
 			this.log.error ("Required fields are missing from the Element (Wrong Builder)");

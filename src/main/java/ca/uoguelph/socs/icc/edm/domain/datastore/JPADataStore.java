@@ -281,9 +281,6 @@ public final class JPADataStore extends DataStore
 			this.generators.put (metadata.getElementClass (), generator);
 		}
 
-		this.log.debug ("Setting the Reference to the DomainModel");
-		metadata.setValue (Element.MODEL, element, this.getDomainModel ());
-
 		this.log.debug ("Setting ID");
 		generator.setId (metadata, element);
 
