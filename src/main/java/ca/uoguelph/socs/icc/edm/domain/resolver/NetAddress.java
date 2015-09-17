@@ -16,9 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain.resolver;
 
+import java.math.BigInteger;
+
 import java.net.InetAddress;
 
-import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -92,9 +93,7 @@ abstract class NetAddress implements Comparable<NetAddress>
 			throw new NullPointerException ();
 		}
 
-		return new CompareToBuilder ()
-			.append (this.getAddress (), address.getAddress ())
-			.toComparison ();
+		return this.getAddress ().compareTo (address.getAddress ());
 	}
 
 	/**
@@ -103,7 +102,7 @@ abstract class NetAddress implements Comparable<NetAddress>
 	 * @return A byte array containing the IP address
 	 */
 
-	public abstract byte[] getAddress ();
+	public abstract BigInteger getAddress ();
 
 	/**
 	 * Get the IP address as a <code>String</code>.
@@ -121,6 +120,14 @@ abstract class NetAddress implements Comparable<NetAddress>
 	 */
 
 	public abstract InetAddress getInetAddress ();
+
+	/**
+	 * Get the length (in bytes) of the IP Address.
+	 *
+	 * @return The number of bytes in the IP Address
+	 */
+
+	public abstract int getLength ();
 
 	/**
 	 * Determine if the specified <code>NetAddress</code> is a member of the

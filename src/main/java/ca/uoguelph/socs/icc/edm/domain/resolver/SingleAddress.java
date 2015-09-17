@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.resolver;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 
 /**
@@ -30,6 +31,9 @@ final class SingleAddress extends NetAddress
 	/** The Internet Protocol address */
 	private final InetAddress address;
 
+	/** Integer representation of the ip address */
+	private final BigInteger ipAddress;
+
 	/**
 	 * Create the <code>SingleAddress</code>.
 	 *
@@ -41,6 +45,31 @@ final class SingleAddress extends NetAddress
 		assert address != null : "address is NULL";
 
 		this.address = address;
+		this.ipAddress = this.calculateIPAddress (this.address);
+	}
+
+	/**
+	 * Get a representation of the IP Address as an integer from the
+	 * <code>InetAddress</code>.
+	 *
+	 * @param  addr The <code>InetAddress</code>, not null
+	 *
+	 * @return      The IP Address
+	 */
+
+	private BigInteger calculateIPAddress (final InetAddress addr)
+	{
+		assert addr != null : "addr is NULL";
+
+		BigInteger result = BigInteger.ZERO;
+
+		for (byte b : addr.getAddress ())
+		{
+			result = result.shiftLeft (8);
+			result = result.or (BigInteger.valueOf (b & 0xFF));
+		}
+
+		return result;
 	}
 
 	/**
@@ -50,9 +79,9 @@ final class SingleAddress extends NetAddress
 	 */
 
 	@Override
-	public byte[] getAddress ()
+	public BigInteger getAddress ()
 	{
-		return this.address.getAddress ();
+		return this.ipAddress;
 	}
 
 	/**
@@ -78,6 +107,18 @@ final class SingleAddress extends NetAddress
 	public InetAddress getInetAddress ()
 	{
 		return this.address;
+	}
+
+	/**
+	 * Get the length (in bytes) of the IP Address.
+	 *
+	 * @return The number of bytes in the IP Address
+	 */
+
+	@Override
+	public int getLength ()
+	{
+		return this.address.getAddress ().length;
 	}
 
 	/**

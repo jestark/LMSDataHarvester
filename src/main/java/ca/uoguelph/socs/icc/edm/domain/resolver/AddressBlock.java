@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.resolver;
 
+import java.math.BigInteger;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -107,6 +109,8 @@ final class AddressBlock extends NetAddress
 
 		public Builder setAddress (final InetAddress address)
 		{
+			this.log.trace ("setAddress: address={}", address);
+
 			if (address == null)
 			{
 				this.log.error ("address is NULL");
@@ -128,6 +132,8 @@ final class AddressBlock extends NetAddress
 
 		public Builder setAddress (final String address) throws UnknownHostException
 		{
+			this.log.trace ("setAddress: address={}", address);
+
 			if (address == null)
 			{
 				this.log.error ("address is NULL");
@@ -161,6 +167,8 @@ final class AddressBlock extends NetAddress
 
 		public Builder setLength (final short length)
 		{
+			this.log.trace ("setLength: length={}", length);
+
 			if (length < 0)
 			{
 				this.log.error ("Length can not be negative");
@@ -179,8 +187,8 @@ final class AddressBlock extends NetAddress
 	/** The base address for the block */
 	private final SingleAddress address;
 
-	/** byte array containing the netmask */
-	private final byte[] mask;
+	/** The netmask */
+	private final BigInteger mask;
 
 	/** The number of set bits in the net mask */
 	private final short length;
@@ -203,19 +211,37 @@ final class AddressBlock extends NetAddress
 
 		this.address = new SingleAddress (address);
 		this.length = length;
+		this.mask = this.calculateNetMask (this.address.getLength (), length);
+	}
 
-		this.mask = new byte[address.getAddress ().length];
+	/**
+	 * Calculate the Netmask for the network.
+	 *
+	 * @param  len     The number of bytes in the IP Address
+	 * @param  cidrlen The number of set bits in the mask
+	 *
+	 * @return         The netmask
+	 */
 
-		for (int i = 0; i < length / 8; i ++)
+	private BigInteger calculateNetMask (final int len, final short cidrlen)
+	{
+		BigInteger result = BigInteger.ZERO;
+
+		for (int i = 0; i < len / 4; i ++)
 		{
-			this.mask[i] = ~(0);
+			result = result.shiftLeft (32);
+
+			if (cidrlen - (i * 32) >= 32)
+			{
+				result = result.or (BigInteger.valueOf (0xFFFFFFFFL));
+			}
+			else if (cidrlen - (i * 32) > 0)
+			{
+				result = result.or (BigInteger.valueOf ((0xFFFFFFFFL << (((i + 1) * 32) - cidrlen)) & 0x00000000FFFFFFFFL));
+			}
 		}
 
-		if (length % 8 > 0)
-		{
-			this.mask[length / 8] = ~(0);
-			this.mask[length / 8] <<= (8 - (length % 8));
-		}
+		return result;
 	}
 
 	/**
@@ -225,7 +251,7 @@ final class AddressBlock extends NetAddress
 	 */
 
 	@Override
-	public byte[] getAddress ()
+	public BigInteger getAddress ()
 	{
 		return this.address.getAddress ();
 	}
@@ -256,6 +282,18 @@ final class AddressBlock extends NetAddress
 	}
 
 	/**
+	 * Get the length (in bytes) of the IP Address.
+	 *
+	 * @return The number of bytes in the IP Address
+	 */
+
+	@Override
+	public int getLength ()
+	{
+		return this.address.getLength ();
+	}
+
+	/**
 	 * Determine if the specified <code>NetAddress</code> is a member of the
 	 * network represented by this <code>NetAddress</code>.
 	 *
@@ -267,26 +305,8 @@ final class AddressBlock extends NetAddress
 	{
 		this.log.trace ("hasMember: address={}", address);
 
-		boolean result = false;
-
-		if ((address != null) && (address.getAddress ().length == this.mask.length))
-		{
-			byte[] laddr = this.address.getAddress ();
-			byte[] raddr = address.getAddress ();
-
-			result = true;
-
-			for (int i = 0; i < address.getAddress ().length; i ++)
-			{
-				if (laddr[i] != (raddr[i] & this.mask[i]))
-				{
-					result = false;
-					break;
-				}
-			}
-		}
-
-		return result;
+		return this.address.getAddress ()
+			.equals (address.getAddress ().and (this.mask));
 	}
 
 	/**
