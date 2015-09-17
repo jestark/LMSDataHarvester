@@ -16,6 +16,7 @@
 	<mapped-superclass class="ca.uoguelph.socs.icc.edm.domain.Activity" metadata-complete="true">
 		<description>Top-level Activity Mapping</description>
 		<attributes>
+			<transient name="metaData"/>
 			<transient name="log"/>
 			<transient name="course"/>
 			<transient name="type"/>
@@ -31,10 +32,12 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
+			<transient name="metaData"/>
 			<transient name="parent"/>
 			<transient name="course"/>
 			<transient name="type"/>
 			<transient name="grades"/>
+			<transient name="references"/>
 			<transient name="subActivities"/>
 			<transient name="log"/>
 		</attributes>
@@ -65,17 +68,10 @@
 		<named-query name="UserData:username">
 			<query>SELECT u FROM User u where u.username = :username</query>
 		</named-query>
-		<named-query name="UserData:idnumber">
-			<query>SELECT u FROM User u where u.idNumber = :idnumber</query>
-		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" unique="true" nullable="false" insertable="false" updatable="false"/>
 			</id>
-			<basic name="idNumber">
-				<column name="idnumber" insertable="false" updatable="false"/>
-				<convert converter="ca.uoguelph.socs.icc.edm.domain.element.converter.IdNumberConverter"/>
-			</basic>
 			<basic name="username">
 				<column name="username" nullable="false" insertable="false" updatable="false"/>
 			</basic>
@@ -217,6 +213,8 @@
 			<transient name="action"/>
 			<transient name="activity"/>
 			<transient name="enrolment"/>
+			<transient name="network"/>
+			<transient name="reference"/>
 			<transient name="subActivity"/>
 		</attributes>
 	</entity>
