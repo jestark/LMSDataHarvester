@@ -23,16 +23,21 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 
+import java.util.Set;
+import java.util.HashSet;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import org.xml.sax.SAXException;
 
@@ -50,6 +55,9 @@ final class ARINQuery extends WhoisQuery
 	/** The XML DOM parser */
 	private static final DocumentBuilder parser;
 
+	/** XPath to get the netblocks */
+	private static final XPathExpression netBlocks;
+
 	/** XPath Query to get the base address of the network */
 	private static final XPathExpression startAddress;
 
@@ -58,6 +66,9 @@ final class ARINQuery extends WhoisQuery
 
 	/** XPath Query to get the name of the organization which owned the network */
 	private static final XPathExpression orgName;
+
+	/** XPath Query to get the parent network */
+	private static final XPathExpression parent;
 
 	/**
 	 * Static initilaiizer to setup the parser, sice it is constance across all
@@ -73,9 +84,11 @@ final class ARINQuery extends WhoisQuery
 			parser = DocumentBuilderFactory.newInstance ()
 				.newDocumentBuilder ();
 
-			startAddress = xpath.compile ("/net/netBlocks/netBlock/startAddress");
-			cidrLength = xpath.compile ("/net/netBlocks/netBlock/cidrLength");
+			netBlocks = xpath.compile ("/net/netBlocks/netBlock");
+			startAddress = xpath.compile ("./startAddress");
+			cidrLength = xpath.compile ("./cidrLength");
 			orgName = xpath.compile ("/net/orgRef/@name");
+			parent = xpath.compile ("/net/parentNetRef");
 		}
 		catch (ParserConfigurationException ex)
 		{
@@ -88,45 +101,88 @@ final class ARINQuery extends WhoisQuery
 	}
 
 	/**
-	 * Create the <code>ARINQuery</code>.
+	 * Extract the <code>AddressBlock</code> instances from the document.
 	 *
-	 * @param  cache The cache, not null
+	 * @param  ipData The document to process, not null
+	 *
+	 * @return        The <code>Set</code> of <code>AddressBlock</code>
+	 *                instances
 	 */
 
-	public ARINQuery (final AddressCache cache)
+	private Set<AddressBlock> processNetBlocks (final Document ipData)
 	{
-		super (cache);
+		this.log.trace ("processNetBlocks: ipdata={}", ipData);
+
+		assert ipData != null : "ipData is NULL";
+
+		Set<AddressBlock> result = new HashSet<> ();
+
+		AddressBlock.Builder blockBuilder = new AddressBlock.Builder ();
+
+		try
+		{
+			NodeList nl = (NodeList) ARINQuery.netBlocks.evaluate (ipData, XPathConstants.NODESET);
+
+			for (int i = 0; i < nl.getLength (); i ++)
+			{
+				blockBuilder.setAddress (ARINQuery.startAddress.evaluate (nl.item (i)));
+				blockBuilder.setLength (Short.valueOf (ARINQuery.cidrLength.evaluate (nl.item (i))).shortValue ());
+
+				result.add (blockBuilder.build ());
+			}
+		}
+		catch (IOException ex)
+		{
+			throw new RuntimeException (ex);
+		}
+		catch (XPathExpressionException ex)
+		{
+			throw new RuntimeException (ex);
+		}
+
+		return result;
 	}
 
 	/**
 	 * Execute a "whois" query for the specified IP address.
 	 *
-	 * @param  address The IP address, not null
+	 * @param  url The <code>URL</code> for the whois query, not null
 	 *
-	 * @return         The name of the organization which owns the IP Address
+	 * @return     The name of the organization which owns the IP Address
 	 */
 
-	@Override
-	public String getOrg (final NetAddress address)
+	private QueryResult executeQuery (final URL url)
 	{
-		this.log.trace ("getOrg: address={}", address);
+		this.log.trace ("getOrg: url={}", url);
 
-		AddressBlock.Builder blockBuilder = new AddressBlock.Builder ();
-		String orgName = null;
+		assert url != null : "url is NULL";
+
+		QueryResult result = null;
 
 		try
 		{
-			URL url = new URL ("http://whois.arin.net/rest/ip/" + address.getHostAddress ());
-			this.log.debug ("Executing Query: {}", url);
-
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestProperty("Accept", "application/xml");
 
 			Document ipData = ARINQuery.parser.parse (conn.getInputStream ());
 
-			blockBuilder.setAddress (ARINQuery.startAddress.evaluate (ipData));
-			blockBuilder.setLength (Short.valueOf (ARINQuery.cidrLength.evaluate (ipData)).shortValue ());
-			orgName = ARINQuery.orgName.evaluate (ipData);
+			String parentRef = ARINQuery.parent.evaluate (ipData);
+
+			if (parentRef.length () > 0)
+			{
+				result = this.executeQuery (new URL (parentRef));
+
+				String orgName = ARINQuery.orgName.evaluate (ipData);
+
+				if ((orgName.length () > 0) && (! orgName.equals (result.getName ())))
+				{
+					result = new QueryResult (orgName, this.processNetBlocks (ipData));
+				}
+			}
+			else
+			{
+				result = new QueryResult (ARINQuery.orgName.evaluate (ipData), this.processNetBlocks (ipData));
+			}
 
 			conn.disconnect();
 		}
@@ -143,8 +199,29 @@ final class ARINQuery extends WhoisQuery
 			throw new RuntimeException (ex);
 		}
 
-		this.cache.addOrg (blockBuilder.build (), orgName);
+		return result;
+	}
 
-		return orgName;
+	/**
+	 * Execute a "whois" query for the specified IP address.
+	 *
+	 * @param  address The IP address, not null
+	 *
+	 * @return         The name of the organization which owns the IP Address
+	 */
+
+	@Override
+	public QueryResult getOrg (final NetAddress address)
+	{
+		this.log.trace ("getOrg: address={}", address);
+
+		try
+		{
+			return this.executeQuery (new URL ("http://whois.arin.net/rest/ip/" + address.getHostAddress ()));
+		}
+		catch (IOException ex)
+		{
+			throw new RuntimeException (ex);
+		}
 	}
 }

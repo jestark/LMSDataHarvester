@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.resolver;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import java.util.Set;
+import java.util.List;
 
 import java.util.stream.Collectors;
 
@@ -52,6 +52,9 @@ public final class Resolver
 	/** Query to fetch whois data*/
 	private final WhoisQuery query;
 
+	/** Number of Whois queries issued */
+	private int queryCount;
+
 	/**
 	 * static initializer to create the singleton instance.
 	 */
@@ -81,7 +84,9 @@ public final class Resolver
 		this.log = LoggerFactory.getLogger (Resolver.class);
 
 		this.cache = new AddressCache ();
-		this.query = new ARINQuery (this.cache);
+		this.query = new ARINQuery ();
+
+		this.queryCount = 0;
 	}
 
 	/**
@@ -112,7 +117,14 @@ public final class Resolver
 		else
 		{
 			this.log.debug ("Address {} is not cached, executing Whois query", address);
-			result = this.query.getOrg (addr);
+			WhoisQuery.QueryResult qData = this.query.getOrg (addr);
+
+			qData.getBlocks ()
+				.forEach (x -> this.cache.addOrg (x, qData.getName ()));
+
+			result = qData.getName ();
+
+			this.queryCount += 1;
 		}
 
 		return result;
@@ -153,11 +165,22 @@ public final class Resolver
 	 * @return A <code>Set</code> of IP addresses
 	 */
 
-	public Set<InetAddress> getAddresses ()
+	public List<InetAddress> getAddresses ()
 	{
 		return this.cache.getAddresses ()
 			.stream ()
 			.map (NetAddress::getInetAddress)
-			.collect (Collectors.toSet ());
+			.collect (Collectors.toList ());
+	}
+
+	/**
+	 * Get the number of Whois queries that were sent.
+	 *
+	 * @return The number of queries sent
+	 */
+
+	public int getNumQueries ()
+	{
+		return this.queryCount;
 	}
 }

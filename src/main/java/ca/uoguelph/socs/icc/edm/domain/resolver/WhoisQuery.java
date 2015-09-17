@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.resolver;
 
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,22 +32,66 @@ import org.slf4j.LoggerFactory;
 
 abstract class WhoisQuery
 {
+	/**
+	 * Carrier class for the results of a whois query.
+	 */
+
+	public static final class QueryResult
+	{
+		/** The <code>Set</code> of <code>AddressBlock</code> instances */
+		private final Set<AddressBlock> blocks;
+
+		/** The name of the organization */
+		private final String orgName;
+
+		/**
+		 * Create the <code>QueryResult</code>.
+		 *
+		 * @param  orgName The name of the organization, not null
+		 * @param  blocks  The <code>Set</code> of <code>AddressBlock</code>
+		 *                 instances, not null
+		 */
+
+		protected QueryResult (final String orgName, final Set<AddressBlock> blocks)
+		{
+			this.orgName = orgName;
+			this.blocks = blocks;
+		}
+
+		/**
+		 * Get the name of the organization returned by the whois query.
+		 *
+		 * @return The name of the organization
+		 */
+
+		public String getName ()
+		{
+			return this.orgName;
+		}
+
+		/**
+		 * Get the <code>Set</code> of <code>AddressBlock</code> instances
+		 * returned by the whois query.
+		 *
+		 * @return A <code>Set</code> of <code>AddressBlock</code> instances
+		 */
+
+		public Set<AddressBlock> getBlocks ()
+		{
+			return this.blocks;
+		}
+	}
+
 	/** The Log */
 	protected final Logger log;
 
-	/** The cache */
-	protected final AddressCache cache;
-
-	/** Create the WhoisQuery.
-	 *
-	 * @param  cache 
+	/**
+	 * Create the WhoisQuery.
 	 */
 
-	public WhoisQuery (final AddressCache cache)
+	public WhoisQuery ()
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
-
-		this.cache = cache;
 	}
 
 	/**
@@ -56,5 +102,5 @@ abstract class WhoisQuery
 	 * @return         The name of the organization which owns the IP Address
 	 */
 
-	public abstract String getOrg (NetAddress address);
+	public abstract QueryResult getOrg (NetAddress address);
 }
