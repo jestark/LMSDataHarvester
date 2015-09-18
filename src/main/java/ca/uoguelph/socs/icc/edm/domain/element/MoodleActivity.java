@@ -34,9 +34,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
 /**
@@ -124,16 +122,18 @@ public class MoodleActivity extends Activity
 				throw new IllegalStateException ("instance ID is NULL");
 			}
 
-			Creator<Activity> creator = this.getDataStore ()
-				.getProfile ()
-				.getCreator (Activity.class, Activity.getActivityClass (this.type));
-
-			this.activity = Query.getInstance (creator, Activity.SELECTOR_ID, this.getDataStore ())
+			this.activity = this.getDataStore ()
+				.getQuery (Activity.class,
+						Activity.getActivityClass (this.type),
+						Activity.SELECTOR_ID)
 				.setProperty (Activity.ID, this.instanceid)
 				.query ();
 
 			// Type is transient on the loaded activity, so copy it in here
-			creator.setValue (Activity.TYPE, this.activity, this.type);
+			this.getDataStore ()
+				.getProfile ()
+				.getCreator (Activity.class, Activity.getActivityClass (this.type))
+				.setValue (Activity.TYPE, this.activity, this.type);
 		}
 
 		return this.activity;

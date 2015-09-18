@@ -31,6 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * Representation of a <code>DataStore</code>.
@@ -148,6 +149,72 @@ public abstract class DataStore
 		assert this.model == null || this.model == model : "can not change the DomainModel once is has been set";
 
 		this.model = model;
+	}
+
+	/**
+	 * Get a <code>Query</code> for the specified <code>Element</code> using
+	 * the default implementation class defined in the <code>Profile</code>.
+	 *
+	 * @param  <T>      The type of the <code>Element</code> returned by the
+	 *                  <code>Query</code>
+	 * @param  element  The <code>Element</code> interface class, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Query</code>
+	 */
+
+	public final <T extends Element> Query<T> getQuery (final Class<T> element, final Selector selector)
+	{
+		assert element != null : "element is NULL";
+		assert selector != null : "selector is NULL";
+
+		return Query.getInstance (this.getProfile ()
+				.getCreator (element), selector, this);
+	}
+
+	/**
+	 * Get a <code>Query</code> for the specified <code>Element</code> using
+	 * the specified implementation class.
+	 *
+	 * @param  <T>      The type of the <code>Element</code> returned by the
+	 *                  <code>Query</code>
+	 * @param  type     The <code>Element</code> interface class, not null
+	 * @param  impl     The <code>Element</code> implementation class, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Query</code>
+	 */
+
+	public final <T extends Element> Query<T> getQuery (final Class<T> type, Class<? extends T> impl, final Selector selector)
+	{
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+		assert selector != null : "selector is NULL";
+
+		return Query.getInstance (this.getProfile ()
+				.getCreator (type, impl), selector,	this);
+	}
+
+	/**
+	 * Get a <code>Query</code> for the specified <code>Element</code>
+	 * definition.  A <code>Query</code> for an <code>Element</code> definition
+	 * covers all implementation classes, at the cost of some performance.
+	 *
+	 * @param  <T>      The type of the <code>Element</code> returned by the
+	 *                  <code>Query</code>
+	 * @param  element  The <code>Element</code> interface class, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Query</code>
+	 */
+
+	public final <T extends Element> Query<T> getDefinitionQuery (final Class<T> element, final Selector selector)
+	{
+		assert element != null : "element is NULL";
+		assert selector != null : "selector is NULL";
+
+		return Query.getInstance (this.getProfile ()
+				.getMetaData (element), selector, this);
 	}
 
 	/**
