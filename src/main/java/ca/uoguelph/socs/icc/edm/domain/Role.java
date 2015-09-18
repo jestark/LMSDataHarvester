@@ -76,6 +76,53 @@ public abstract class Role extends Element
 	}
 
 	/**
+	 * Get an instance of the <code>RoleBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 *
+	 * @return                       The <code>RoleBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Role</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is
+	 *                               immutable
+	 */
+
+	public static RoleBuilder builder (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new RoleBuilder (datastore);
+	}
+
+	/**
+	 * Get an instance of the <code>RoleBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 *
+	 * @return                       The <code>RoleBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
+	 * @throws IllegalStateException if the <code>DomainModel</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Role</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
+	 */
+
+	public static RoleBuilder builder (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return Role.builder (model.getDataStore ());
+	}
+
+	/**
 	 * Compare two <code>Role</code> instances to determine if they are
 	 * equal.  The <code>Role</code> instances are compared based upon their
 	 * names.
@@ -160,7 +207,7 @@ public abstract class Role extends Element
 	{
 		assert datastore != null : "datastore is null";
 
-		return new RoleBuilder (datastore)
+		return Role.builder (datastore)
 			.load (this);
 	}
 

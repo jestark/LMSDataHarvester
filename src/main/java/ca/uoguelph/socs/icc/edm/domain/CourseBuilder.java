@@ -52,31 +52,6 @@ public final class CourseBuilder implements Builder<Course>
 	private Integer year;
 
 	/**
-	 * Get an instance of the <code>CourseBuilder</code> for the specified
-	 * <code>DomainModel</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 *
-	 * @return                       The <code>CourseBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Course</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static CourseBuilder getInstance (final DomainModel model)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new CourseBuilder (model.getDataStore ());
-	}
-
-	/**
 	 * Create the <code>CourseBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null

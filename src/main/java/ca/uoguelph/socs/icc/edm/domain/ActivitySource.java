@@ -86,6 +86,55 @@ public abstract class ActivitySource extends Element
 	}
 
 	/**
+	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
+	 * specified <code>DataStore</code>.
+	 *
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 *
+	 * @return                       The <code>ActivitySourceBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>ActivitySource</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is
+	 *                               immutable
+	 */
+
+	public static ActivitySourceBuilder builder (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new ActivitySourceBuilder (datastore);
+	}
+
+	/**
+	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
+	 * specified <code>DomainModel</code>.
+	 *
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 *
+	 * @return                       The <code>ActivitySourceBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
+	 * @throws IllegalStateException if the <code>DomainModel</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>ActivitySource</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
+	 */
+
+	public static ActivitySourceBuilder builder (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return ActivitySource.builder (model.getDataStore ());
+	}
+
+	/**
 	 * Compare two <code>ActivitySource</code> instances to determine if they
 	 * are equal.  The <code>ActivitySource</code> instances are compared based
 	 * upon their names.
@@ -172,7 +221,7 @@ public abstract class ActivitySource extends Element
 	{
 		assert datastore != null : "datastore is null";
 
-		return new ActivitySourceBuilder (datastore)
+		return ActivitySource.builder (datastore)
 			.load (this);
 	}
 

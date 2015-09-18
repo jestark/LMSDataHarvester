@@ -46,31 +46,6 @@ public final class NetworkBuilder implements Builder<Network>
 	private String name;
 
 	/**
-	 * Get an instance of the <code>NetworkBuilder</code> for the specified
-	 * <code>DomainModel</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 *
-	 * @return                       The <code>NetworkBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Network</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static NetworkBuilder getInstance (final DomainModel model)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new NetworkBuilder (model.getDataStore ());
-	}
-
-	/**
 	 * Create the <code>NetworkBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null

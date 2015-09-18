@@ -46,31 +46,6 @@ public final class ActionBuilder implements Builder<Action>
 	private String name;
 
 	/**
-	 * Get an instance of the <code>ActionBuilder</code> for the specified
-	 * <code>DomainModel</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 *
-	 * @return                       The <code>ActionBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Action</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static ActionBuilder getInstance (final DomainModel model)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new ActionBuilder (model.getDataStore ());
-	}
-
-	/**
 	 * Create the <code>ActionBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null

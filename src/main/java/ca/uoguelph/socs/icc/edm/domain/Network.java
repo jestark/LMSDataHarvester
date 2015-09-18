@@ -64,6 +64,53 @@ public abstract class Network extends Element
 	}
 
 	/**
+	 * Get an instance of the <code>NetworkBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 *
+	 * @return                       The <code>NetworkBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Network</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is
+	 *                               immutable
+	 */
+
+	public static NetworkBuilder builder (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new NetworkBuilder (datastore);
+	}
+
+	/**
+	 * Get an instance of the <code>NetworkBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 *
+	 * @return                       The <code>NetworkBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
+	 * @throws IllegalStateException if the <code>DomainModel</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Network</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
+	 */
+
+	public static NetworkBuilder builder (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return Network.builder (model.getDataStore ());
+	}
+
+	/**
 	 * Compare two <code>Network</code> instances to determine if they are
 	 * equal.  The <code>Network</code> instances are compared based upon their
 	 * names.
@@ -148,7 +195,7 @@ public abstract class Network extends Element
 	{
 		assert datastore != null : "datastore is null";
 
-		return new NetworkBuilder (datastore)
+		return Network.builder (datastore)
 			.load (this);
 	}
 
@@ -187,4 +234,3 @@ public abstract class Network extends Element
 
 	protected abstract void setName (String name);
 }
-

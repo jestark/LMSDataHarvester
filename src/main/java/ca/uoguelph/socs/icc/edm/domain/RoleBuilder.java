@@ -46,31 +46,6 @@ public final class RoleBuilder implements Builder<Role>
 	private String name;
 
 	/**
-	 * Get an instance of the <code>RoleBuilder</code> for the specified
-	 * <code>DomainModel</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 *
-	 * @return                       The <code>RoleBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Role</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static RoleBuilder getInstance (final DomainModel model)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new RoleBuilder (model.getDataStore ());
-	}
-
-	/**
 	 * Create the <code>RoleBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null

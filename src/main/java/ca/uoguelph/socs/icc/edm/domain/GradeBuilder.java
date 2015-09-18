@@ -59,31 +59,6 @@ public final class GradeBuilder implements Builder<Grade>
 	private Integer grade;
 
 	/**
-	 * Get an instance of the <code>GradeBuilder</code> for the specified
-	 * <code>DomainModel</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 *
-	 * @return                       The <code>GradeBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Grade</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static GradeBuilder getInstance (final DomainModel model)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new GradeBuilder (model.getDataStore ());
-	}
-
-	/**
 	 * Create the <code>GradeBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null

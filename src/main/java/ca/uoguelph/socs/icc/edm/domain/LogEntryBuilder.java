@@ -81,32 +81,6 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 	private Date time;
 
 	/**
-	 * Get an instance of the <code>LogEntryBuilder</code> for the specified
-	 * <code>DomainModel</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 *
-	 * @return                       The <code>LogEntryBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>LogEntry</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-
-	public static LogEntryBuilder getInstance (final DomainModel model)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new LogEntryBuilder (model.getDataStore ());
-	}
-
-	/**
 	 * Create the <code>LogEntryBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
@@ -449,7 +423,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 	 * <code>Action</code> was performed.  The <code>Subactivity</code> is
 	 * optional, so it may be null.
 	 *
-	 * @param  activity                 The <code>SubActivity</code>
+	 * @param  subActivity              The <code>SubActivity</code>
 	 *
 	 * @return                          This <code>LogEntryBuilder</code>
 	 * @throws IllegalArgumentException if the <code>SubActivity</code> is not

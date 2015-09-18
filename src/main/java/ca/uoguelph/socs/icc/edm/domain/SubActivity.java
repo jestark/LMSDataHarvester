@@ -82,6 +82,91 @@ public abstract class SubActivity extends ParentActivity
 	}
 
 	/**
+	 * Get the <code>SubActivity</code> implementation class which is
+	 * associated with the specified <code>Activity</code> implementation
+	 * class.
+	 *
+	 * @param  activity The <code>Activity</code> implementation class
+	 *
+	 * @return          The <code>SubActivity</code> implementation class, may be
+	 *                  null
+	 */
+
+	public static final Class<? extends SubActivity> getSubActivityClass (final Class<? extends ParentActivity> activity)
+	{
+		assert activity != null : "activity is NULL";
+		assert SubActivity.subactivities.containsKey (activity) : "Activity is not registered";
+
+		return SubActivity.subactivities.get (activity);
+	}
+
+	/**
+	 * Register an association between an <code>Activity</code> implementation
+	 * class and a <code>SubActivity</code> implementation class.
+	 *
+	 * @param  activity    The <code>Activity</code> implementation, not null
+	 * @param  subactivity The <code>SubActivity</code> implementation, not null
+	 */
+
+	protected static final void registerImplementation (final Class<? extends ParentActivity> activity, final Class<? extends SubActivity> subactivity)
+	{
+		assert activity != null : "activity is NULL";
+		assert subactivity != null : "subactivity is NULL";
+		assert (! SubActivity.subactivities.containsKey (activity)) : "activity is already registered";
+
+		SubActivity.subactivities.put (activity, subactivity);
+	}
+
+	/**
+	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  parent                The parent <code>Activity</code>, not null
+	 *
+	 * @return                       The <code>SubActivityBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> is
+	 *                               immutable
+	 */
+
+	public static SubActivityBuilder builder (final DataStore datastore, final ParentActivity parent)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert parent != null : "parent is NULL";
+
+		return new SubActivityBuilder (datastore, parent);
+	}
+
+	/**
+	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  parent                The parent <code>Activity</code>, not null
+	 *
+	 * @return                       The <code>SubActivityBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
+	 */
+
+	public static SubActivityBuilder builder (final DomainModel model, final ParentActivity parent)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		if (parent == null)
+		{
+			throw new NullPointerException ("parent is NULL");
+		}
+
+		return SubActivity.builder (model.getDataStore (), parent);
+	}
+
+	/**
 	 * Compare two <code>SubActivity</code> instances to determine if they are
 	 * equal.  The <code>SubActivity</code> instances are compared based upon
 	 * their names and the parent <code>Activity</code>.
@@ -156,42 +241,6 @@ public abstract class SubActivity extends ParentActivity
 	}
 
 	/**
-	 * Get the <code>SubActivity</code> implementation class which is
-	 * associated with the specified <code>Activity</code> implementation
-	 * class.
-	 *
-	 * @param  activity The <code>Activity</code> implementation class
-	 *
-	 * @return          The <code>SubActivity</code> implementation class, may be
-	 *                  null
-	 */
-
-	public static final Class<? extends SubActivity> getSubActivityClass (final Class<? extends ParentActivity> activity)
-	{
-		assert activity != null : "activity is NULL";
-		assert SubActivity.subactivities.containsKey (activity) : "Activity is not registered";
-
-		return SubActivity.subactivities.get (activity);
-	}
-
-	/**
-	 * Register an association between an <code>Activity</code> implementation
-	 * class and a <code>SubActivity</code> implementation class.
-	 *
-	 * @param  activity    The <code>Activity</code> implementation, not null
-	 * @param  subactivity The <code>SubActivity</code> implementation, not null
-	 */
-
-	protected static final void registerImplementation (final Class<? extends ParentActivity> activity, final Class<? extends SubActivity> subactivity)
-	{
-		assert activity != null : "activity is NULL";
-		assert subactivity != null : "subactivity is NULL";
-		assert (! SubActivity.subactivities.containsKey (activity)) : "activity is already registered";
-
-		SubActivity.subactivities.put (activity, subactivity);
-	}
-
-	/**
 	 * Get an <code>SubActivityBuilder</code> instance for the specified
 	 * <code>DataStore</code>.  This method creates an
 	 * <code>SubActivityBuilder</code> on the specified <code>DataStore</code>
@@ -208,7 +257,7 @@ public abstract class SubActivity extends ParentActivity
 	{
 		assert datastore != null : "datastore is null";
 
-		return new SubActivityBuilder (datastore, this.getParent ())
+		return SubActivity.builder (datastore, this.getParent ())
 			.load (this);
 	}
 

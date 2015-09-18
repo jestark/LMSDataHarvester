@@ -80,6 +80,53 @@ public abstract class Action extends Element
 	}
 
 	/**
+	 * Get an instance of the <code>ActionBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 *
+	 * @return                       The <code>ActionBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Action</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is
+	 *                               immutable
+	 */
+
+	public static ActionBuilder builder (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new ActionBuilder (datastore);
+	}
+
+	/**
+	 * Get an instance of the <code>ActionBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 *
+	 * @return                       The <code>ActionBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
+	 * @throws IllegalStateException if the <code>DomainModel</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Action</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
+	 */
+
+	public static ActionBuilder builder (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return Action.builder (model.getDataStore ());
+	}
+
+	/**
 	 * Compare two <code>Action</code> instances to determine if they are
 	 * equal.  The <code>Action</code> instances are compared based upon their
 	 * names.
@@ -164,7 +211,7 @@ public abstract class Action extends Element
 	{
 		assert datastore != null : "datastore is null";
 
-		return new ActionBuilder (datastore)
+		return Action.builder (datastore)
 			.load (this);
 	}
 
@@ -202,4 +249,3 @@ public abstract class Action extends Element
 
 	protected abstract void setName (final String name);
 }
-

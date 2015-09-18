@@ -125,7 +125,7 @@ public final class LogReferenceBuilder implements Builder<LogReference>
 	 * the specified <code>LogReference</code> instance.  The  parameters are
 	 * validated as they are set.
 	 *
-	 * @param  entry                    The <code>LogReference</code>, not null
+	 * @param  reference                The <code>LogReference</code>, not null
 	 *
 	 * @return                          This <code>LogReferenceBuilder</code>
 	 * @throws IllegalArgumentException If any of the fields in the

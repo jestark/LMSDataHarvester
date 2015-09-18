@@ -65,31 +65,6 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 	private Boolean usable;
 
 	/**
-	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
-	 * <code>DomainModel</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 *
-	 * @return                       The <code>EnrolmentBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Enrolment</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static EnrolmentBuilder getInstance (final DomainModel model)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		return new EnrolmentBuilder (model.getDataStore ());
-	}
-
-	/**
 	 * Create the <code>EnrolmentBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null

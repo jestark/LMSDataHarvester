@@ -181,12 +181,10 @@ public abstract class Activity extends ParentActivity
 
 		Activity.store.getTransaction ().begin ();
 
-		ActivitySource aSource = ActivitySourceBuilder.getInstance (Activity.store)
-			.setName (source)
-			.build ();
-
-		ActivityType atype = ActivityTypeBuilder.getInstance (Activity.store)
-			.setActivitySource (aSource)
+		ActivityType atype = ActivityType.builder (Activity.store)
+			.setActivitySource (ActivitySource.builder (Activity.store)
+					.setName (source)
+					.build ())
 			.setName (type)
 			.build ();
 
@@ -195,6 +193,61 @@ public abstract class Activity extends ParentActivity
 		assert ! Activity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
 
 		Activity.activities.put (atype, impl);
+	}
+
+	/**
+	 * Get an instance of the <code>ActivityBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  type                  The <code>ActivityType</code>, not null
+	 *
+	 * @return                       The <code>ActivityBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is
+	 *                               immutable
+	 */
+
+	public static ActivityBuilder builder (final DataStore datastore, final ActivityType type)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert type != null : "type is NULL";
+
+		return new ActivityBuilder (datastore, type);
+	}
+
+	/**
+	 * Get an instance of the <code>ActivityBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  type                  The <code>ActivityType</code>, not null
+	 *
+	 * @return                       The <code>ActivityBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
+	 * @throws IllegalStateException if the <code>DomainModel</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Activity</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
+	 */
+
+	public static ActivityBuilder builder (final DomainModel model, final ActivityType type)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		if (type == null)
+		{
+			throw new NullPointerException ("type is NULL");
+		}
+
+		return Activity.builder (model.getDataStore (), type);
 	}
 
 	/**
@@ -286,7 +339,7 @@ public abstract class Activity extends ParentActivity
 	{
 		assert datastore != null : "datastore is null";
 
-		return new ActivityBuilder (datastore, this.getType ())
+		return Activity.builder (datastore, this.getType ())
 			.load (this);
 	}
 

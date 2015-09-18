@@ -63,6 +63,58 @@ public abstract class NamedActivity extends Activity
 			.addRelationship (SUBACTIVITIES, NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity)
 			.build ();
 	}
+
+	/**
+	 * Get an instance of the <code>NamedActivityBuilder</code> for the
+	 * specified <code>DataStore</code>.
+	 *
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 * @param  type                  The <code>ActivityType</code>, not null
+	 *
+	 * @return                       The <code>NamedActivityBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> is
+	 *                               immutable
+	 */
+
+	public static NamedActivityBuilder builder (final DataStore datastore, final ActivityType type)
+	{
+		assert datastore != null : "datastore is NULL";
+		assert type != null : "type is NULL";
+
+		return new NamedActivityBuilder (datastore, type);
+	}
+
+	/**
+	 * Get an instance of the <code>NamedActivityBuilder</code> for the
+	 * specified <code>DomainModel</code>.
+	 *
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  type                  The <code>ActivityType</code>, not null
+	 *
+	 * @return                       The <code>NamedActivityBuilder</code>
+	 *                               instance
+	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
+	 */
+
+	public static NamedActivityBuilder builder (final DomainModel model, final ActivityType type)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		if (type == null)
+		{
+			throw new NullPointerException ("type is NULL");
+		}
+
+		return NamedActivity.builder (model.getDataStore (), type);
+	}
+
 	/**
 	 * Compare two <code>NamedActivity</code> instances to determine if they are
 	 * equal.  The <code>NamedActivity</code> instances are compared based upon
@@ -156,7 +208,7 @@ public abstract class NamedActivity extends Activity
 	{
 		assert datastore != null : "datastore is null";
 
-		NamedActivityBuilder builder = new NamedActivityBuilder (datastore, this.getType ());
+		NamedActivityBuilder builder = NamedActivity.builder (datastore, this.getType ());
 		builder.load (this);
 
 		return builder;

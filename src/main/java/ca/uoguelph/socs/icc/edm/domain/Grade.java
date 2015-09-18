@@ -88,6 +88,53 @@ public abstract class Grade extends Element
 	}
 
 	/**
+	 * Get an instance of the <code>GradeBuilder</code> for the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  datastore             The <code>DataStore</code>, not null
+	 *
+	 * @return                       The <code>GradeBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
+	 * @throws IllegalStateException if the <code>DataStore</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Grade</code>
+	 * @throws IllegalStateException if the <code>DataStore</code> is
+	 *                               immutable
+	 */
+
+	public static GradeBuilder builder (final DataStore datastore)
+	{
+		assert datastore != null : "datastore is NULL";
+
+		return new GradeBuilder (datastore);
+	}
+
+	/**
+	 * Get an instance of the <code>GradeBuilder</code> for the specified
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  model                 The <code>DomainModel</code>, not null
+	 *
+	 * @return                       The <code>GradeBuilder</code> instance
+	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
+	 * @throws IllegalStateException if the <code>DomainModel</code> does not
+	 *                               have a default implementation class for
+	 *                               the <code>Grade</code>
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
+	 */
+
+	public static GradeBuilder builder (final DomainModel model)
+	{
+		if (model == null)
+		{
+			throw new NullPointerException ("model is NULL");
+		}
+
+		return Grade.builder (model.getDataStore ());
+	}
+
+	/**
 	 * Compare two <code>Grade</code> instances to determine if they are equal.
 	 * The <code>Grade</code> instances are compared based upon the associated
 	 * <code>Activity</code> and the associated <code>Enrolment</code>.
@@ -177,7 +224,7 @@ public abstract class Grade extends Element
 	{
 		assert datastore != null : "datastore is null";
 
-		return new GradeBuilder (datastore)
+		return Grade.builder (datastore)
 			.load (this);
 	}
 

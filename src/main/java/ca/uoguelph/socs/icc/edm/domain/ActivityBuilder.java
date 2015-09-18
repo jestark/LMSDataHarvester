@@ -69,43 +69,10 @@ public class ActivityBuilder implements Builder<Activity>
 	protected Course course;
 
 	/**
-	 * Get an instance of the <code>ActivityBuilder</code> for the specified
-	 * <code>DomainModel</code> and <code>ActivityType</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  type                  The <code>ActivityType</code>, not null
-	 *
-	 * @return                       The <code>ActivityBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Activity</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static ActivityBuilder getInstance (final DomainModel model, ActivityType type)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		if (type == null)
-		{
-			throw new NullPointerException ("type is NULL");
-		}
-
-		return new ActivityBuilder (model.getDataStore (), type);
-	}
-
-	/**
 	 * Create the <code>AbstractActivityBuilder</code>.
 	 *
 	 * @param  datastore                The <code>DataStore</code>, not null
-	 * @param  metadata                 The meta-data <code>Creator</code>
-	 *                                  instance, not null
+	 * @param  type                     The <code>ActivityType</code>, not null
 	 *
 	 * @throws IllegalArgumentException If the <code>ActivityType</code> does
 	 *                                  not exist in the <code>DataStore</code>

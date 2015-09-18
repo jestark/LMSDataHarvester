@@ -34,45 +34,10 @@ public class NamedActivityBuilder extends ActivityBuilder
 	private String name;
 
 	/**
-	 * Get an instance of the <code>NamedActivityBuilder</code> for the specified
-	 * <code>DomainModel</code> and <code>ActivityType</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  type                  The <code>ActivityType</code>, not null
-	 *
-	 * @return                       The <code>NamedActivityBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Activity</code>
-	 * @throws IllegalStateException if there is no <code>Activity</code> class
-	 *                               registered for the specified
-	 *                               <code>ActivityType</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static NamedActivityBuilder getInstance (final DomainModel model, ActivityType type)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		if (type == null)
-		{
-			throw new NullPointerException ("type is NULL");
-		}
-
-		return new NamedActivityBuilder (model.getDataStore (), type);
-	}
-
-	/**
 	 * Create the <code>NamedActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  metadata  The meta-data <code>Creator</code> instance, not null
+	 * @param  type      The <code>ActivityType</code>, not null
 	 */
 
 	protected NamedActivityBuilder (final DataStore datastore, final ActivityType type)

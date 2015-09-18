@@ -63,40 +63,6 @@ public class SubActivityBuilder implements Builder<SubActivity>
 	protected String name;
 
 	/**
-	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
-	 * <code>DomainModel</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 *
-	 * @return                       The <code>SubActivityBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>SubActivity</code>
-	 * @throws IllegalStateException if there is no <code>SubActivity</code>
-	 *                               class registered for the specified parent
-	 *                               <code>Activity</code>
-	 * @throws IllegalStateException if the <code>DomainModel</code> is
-	 *                               immutable
-	 */
-
-	public static SubActivityBuilder getInstance (final DomainModel model, ParentActivity parent)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		if (parent == null)
-		{
-			throw new NullPointerException ("parent is NULL");
-		}
-
-		return new SubActivityBuilder (model.getDataStore (), parent);
-	}
-
-	/**
 	 * Create the <code>SubActivityBuilder</code>.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
