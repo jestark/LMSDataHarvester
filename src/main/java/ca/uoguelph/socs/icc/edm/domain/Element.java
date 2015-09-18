@@ -90,9 +90,9 @@ public abstract class Element
 	 * the specified <code>DomainModel</code> and initializes it with the
 	 * contents of this <code>Element</code> instance.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
 	 *
-	 * @return           The initialized <code>Builder</code>
+	 * @return       The initialized <code>Builder</code>
 	 */
 
 	public final Builder<? extends Element> getBuilder (final DomainModel model)
@@ -131,7 +131,7 @@ public abstract class Element
 	 * the <code>DomainModel</code> if the internal representation of the
 	 * <code>DomainModel</code> is null.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
 	 */
 
 	protected final void setDomainModel (final DomainModel model)
