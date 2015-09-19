@@ -119,7 +119,7 @@ public final class GradeBuilder implements Builder<Grade>
 			result.setEnrolment (this.enrolment);
 			result.setGrade (this.grade);
 
-			this.oldGrade = this.gradeProxy.insert (this.oldGrade, result);
+			this.oldGrade = this.gradeProxy.insert (result);
 
 			if (! this.oldGrade.getGrade ().equals (this.grade))
 			{

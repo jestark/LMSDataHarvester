@@ -99,7 +99,7 @@ public final class LogReferenceBuilder implements Builder<LogReference>
 		result.setEntry (this.entry);
 		result.setSubActivity (this.subActivity);
 
-		return this.referenceProxy.insert (null, result);
+		return this.referenceProxy.insert (result);
 	}
 
 	/**

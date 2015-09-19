@@ -84,7 +84,7 @@ public final class ActionBuilder implements Builder<Action>
 		result.setId (this.id);
 		result.setName (this.name);
 
-		return this.actionProxy.insert (null, result);
+		return this.actionProxy.insert (result);
 	}
 
 	/**

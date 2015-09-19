@@ -123,6 +123,35 @@ public class SubActivityBuilder implements Builder<SubActivity>
 	}
 
 	/**
+	 * Create an instance of the <code>SubActivity</code>.
+	 *
+	 * @return                       The new <code>SubActivity</code> instance
+	 * @throws IllegalStateException If any if the fields is missing
+	 * @throws IllegalStateException If there isn't an active transaction
+	 */
+
+	@Override
+	public SubActivity build ()
+	{
+		this.log.trace ("build:");
+
+		if (this.name == null)
+		{
+			this.log.error ("name is NULL");
+			throw new IllegalStateException ("name is NULL");
+		}
+
+		SubActivity result = this.subActivityProxy.create ();
+		result.setId (this.id);
+		result.setParent (this.parent);
+		result.setName (this.name);
+
+		this.oldSubActivity = this.subActivityProxy.insert (this.oldSubActivity, result);
+
+		return this.oldSubActivity;
+	}
+
+	/**
 	 * Reset the builder.  This method will set all of the fields for the
 	 * <code>Element</code> to be built to <code>null</code>.
 	 *
@@ -228,34 +257,5 @@ public class SubActivityBuilder implements Builder<SubActivity>
 	public final ParentActivity getParent ()
 	{
 		return this.parent;
-	}
-
-	/**
-	 * Create an instance of the <code>SubActivity</code>.
-	 *
-	 * @return                       The new <code>SubActivity</code> instance
-	 * @throws IllegalStateException If any if the fields is missing
-	 * @throws IllegalStateException If there isn't an active transaction
-	 */
-
-	@Override
-	public SubActivity build ()
-	{
-		this.log.trace ("build:");
-
-		if (this.name == null)
-		{
-			this.log.error ("name is NULL");
-			throw new IllegalStateException ("name is NULL");
-		}
-
-		SubActivity result = this.subActivityProxy.create ();
-		result.setId (this.id);
-		result.setParent (this.parent);
-		result.setName (this.name);
-
-		this.oldSubActivity = this.subActivityProxy.insert (this.oldSubActivity, result);
-
-		return this.oldSubActivity;
 	}
 }

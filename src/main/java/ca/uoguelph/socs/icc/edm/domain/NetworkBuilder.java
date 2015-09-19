@@ -84,7 +84,7 @@ public final class NetworkBuilder implements Builder<Network>
 		result.setId (this.id);
 		result.setName (this.name);
 
-		return this.networkProxy.insert (null, result);
+		return this.networkProxy.insert (result);
 	}
 
 	/**

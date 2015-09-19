@@ -99,7 +99,7 @@ public final class ActivityTypeBuilder implements Builder<ActivityType>
 		result.setName (this.name);
 		result.setSource (this.source);
 
-		return this.typeProxy.insert (null, result);
+		return this.typeProxy.insert (result);
 	}
 
 	/**

@@ -84,7 +84,7 @@ public final class RoleBuilder implements Builder<Role>
 		result.setId (this.id);
 		result.setName (this.name);
 
-		return this.roleProxy.insert (null, result);
+		return this.roleProxy.insert (result);
 	}
 
 	/**

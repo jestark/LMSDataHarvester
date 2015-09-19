@@ -56,9 +56,6 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 	/** Helper to substitute <code>Network</code> instances */
 	private final DataStoreProxy<Network> networkProxy;
 
-	/** The loaded or previously built <code>LogEntry</code> instance */
-	private LogEntry oldEntry;
-
 	/** The <code>DataStore</code> ID number for the <code>LogEntry</code> */
 	private Long id;
 
@@ -106,7 +103,6 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 		this.network = null;
 		this.subActivity = null;
 		this.time = null;
-		this.oldEntry = null;
 	}
 
 	/**
@@ -154,17 +150,17 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 		result.setNetwork (this.network);
 		result.setTime (this.time);
 
-		this.oldEntry = this.entryProxy.insert (this.oldEntry, result);
+		result = this.entryProxy.insert (result);
 
 		// Create the reference
 		if (this.subActivity != null)
 		{
 			this.refBuilder.setSubActivity (this.subActivity)
-				.setEntry (this.oldEntry)
+				.setEntry (result)
 				.build ();
 		}
 
-		return this.oldEntry;
+		return result;
 	}
 
 	/**
@@ -185,7 +181,6 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 		this.network = null;
 		this.subActivity = null;
 		this.time = null;
-		this.oldEntry = null;
 
 		return this;
 	}
@@ -221,7 +216,6 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 		this.setNetwork (entry.getNetwork ());
 		this.setSubActivity (entry.getSubActivity ());
 		this.setTime (entry.getTime ());
-		this.oldEntry = entry;
 
 		return this;
 	}

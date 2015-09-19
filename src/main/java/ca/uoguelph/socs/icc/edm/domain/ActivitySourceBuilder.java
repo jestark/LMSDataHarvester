@@ -84,7 +84,7 @@ public final class ActivitySourceBuilder implements Builder<ActivitySource>
 		result.setId (this.id);
 		result.setName (this.name);
 
-		return this.sourceProxy.insert (null, result);
+		return this.sourceProxy.insert (result);
 	}
 
 	/**

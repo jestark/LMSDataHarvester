@@ -130,7 +130,7 @@ public final class UserBuilder implements Builder<User>
 
 			this.enrolments.forEach (x -> result.addEnrolment (x));
 
-			this.oldUser = this.userProxy.insert (this.oldUser, result);
+			this.oldUser = this.userProxy.insert (result);
 
 			if (! this.oldUser.getFirstname ().equals (this.firstname))
 			{

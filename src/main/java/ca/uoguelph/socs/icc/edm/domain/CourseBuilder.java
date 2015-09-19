@@ -106,7 +106,7 @@ public final class CourseBuilder implements Builder<Course>
 		result.setSemester (this.semester);
 		result.setYear (this.year);
 
-		return this.courseProxy.insert (null, result);
+		return this.courseProxy.insert (result);
 	}
 
 	/**
