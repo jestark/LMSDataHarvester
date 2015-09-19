@@ -20,13 +20,15 @@ import java.util.List;
 import java.util.Set;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.NamedActivity;
+import ca.uoguelph.socs.icc.edm.domain.NamedActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
@@ -59,7 +61,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  * @version 1.1
  */
 
-public class MoodleActivity extends Activity
+public class MoodleActivity extends NamedActivity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -77,7 +79,7 @@ public class MoodleActivity extends Activity
 	private List<LogEntry> log;
 
 	/** The <code>Activity</code> instance containing the data */
-	private Activity activity;
+	private NamedActivity activity;
 
 	/** The instance data identifier */
 	private Long instanceid;
@@ -89,7 +91,7 @@ public class MoodleActivity extends Activity
 
 	static
 	{
-		Implementation.getInstance (Activity.class, MoodleActivity.class, MoodleActivity::new);
+		Implementation.getInstance (NamedActivity.class, MoodleActivity.class, MoodleActivity::new);
 	}
 
 	/**
@@ -113,7 +115,7 @@ public class MoodleActivity extends Activity
 	 * @return The <code>Activity</code>
 	 */
 
-	public Activity getActivity ()
+	private NamedActivity getActivity ()
 	{
 		if (this.activity == null)
 		{
@@ -122,9 +124,9 @@ public class MoodleActivity extends Activity
 				throw new IllegalStateException ("instance ID is NULL");
 			}
 
-			this.activity = this.getDataStore ()
+			this.activity = (NamedActivity) this.getDataStore ()
 				.getQuery (Activity.class,
-						Activity.getActivityClass (this.type),
+						Activity.getActivityClass (this.getType ()),
 						Activity.SELECTOR_ID)
 				.setProperty (Activity.ID, this.instanceid)
 				.query ();
@@ -205,7 +207,7 @@ public class MoodleActivity extends Activity
 	 */
 
 	@Override
-	public ActivityBuilder getBuilder (final DataStore datastore)
+	public NamedActivityBuilder getBuilder (final DataStore datastore)
 	{
 		assert datastore != null : "datastore is null";
 
@@ -266,6 +268,22 @@ public class MoodleActivity extends Activity
 	}
 
 	/**
+	 * Set the name of the <code>Activity</code>.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Activity</code>
+	 * instance is loaded.
+	 *
+	 * @param  name The name of the <code>Activity</code>, not null
+	 */
+
+	@Override
+	protected void setName (final String name)
+	{
+		assert name != null : "name is NULL";
+
+		throw new UnsupportedOperationException ("MoodleActivity is Read-only");
+	}
+
+	/**
 	 * Get the <code>Course</code> with which the <code>Activity</code> is
 	 * associated.
 	 * <p>
@@ -279,7 +297,7 @@ public class MoodleActivity extends Activity
 	@Override
 	public Course getCourse ()
 	{
-		return this.course;
+		return this.propagateDomainModel (this.course);
 	}
 
 	/**
@@ -315,7 +333,7 @@ public class MoodleActivity extends Activity
 	@Override
 	public ActivityType getType ()
 	{
-		return this.type;
+		return this.propagateDomainModel (this.type);
 	}
 
 	/**
@@ -355,6 +373,60 @@ public class MoodleActivity extends Activity
 	}
 
 	/**
+	 * Initialize the <code>Set</code> of <code>Grade</code> instances
+	 * associated with the <code>Activity</code> instance.  This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Activity</code> instance is loaded.
+	 *
+	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
+	 *                null
+	 */
+
+	@Override
+	protected void setGrades (final Set<Grade> grades)
+	{
+		assert grades != null : "grades is NULL";
+
+		throw new UnsupportedOperationException ("MoodleActivity is Read-only");
+	}
+
+	/**
+	 * Add the specified <code>Grade</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  grade    The <code>Grade</code> to add, not null
+	 *
+	 * @return          <code>True</code> if the <code>Grade</code> was
+	 *                  successfully added, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean addGrade (final Grade grade)
+	{
+		assert grade != null : "grade is NULL";
+
+		throw new UnsupportedOperationException ("MoodleActivity is Read-only");
+	}
+
+	/**
+	 * Remove the specified <code>Grade</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  grade    The <code>Grade</code> to remove, not null
+	 *
+	 * @return          <code>True</code> if the <code>Grade</code> was
+	 *                  successfully removed from, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean removeGrade (final Grade grade)
+	{
+		assert grade != null : "grade is NULL";
+
+		throw new UnsupportedOperationException ("MoodleActivity is Read-only");
+	}
+
+	/**
 	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
 	 * which act upon the <code>Activity</code>.
 	 *
@@ -364,7 +436,9 @@ public class MoodleActivity extends Activity
 	@Override
 	public List<LogEntry> getLog ()
 	{
-		return new ArrayList<LogEntry> (this.log);
+		this.log.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableList (this.log);
 	}
 
 	/**
@@ -400,7 +474,7 @@ public class MoodleActivity extends Activity
 	{
 		assert entry != null : "entry is NULL";
 
-		return this.log.add (entry);
+		throw new UnsupportedOperationException ("MoodleActivity is Read-only");
 	}
 
 	/**
@@ -418,7 +492,7 @@ public class MoodleActivity extends Activity
 	{
 		assert entry != null : "entry is NULL";
 
-		return this.log.remove (entry);
+		throw new UnsupportedOperationException ("MoodleActivity is Read-only");
 	}
 
 	/**
@@ -432,6 +506,65 @@ public class MoodleActivity extends Activity
 	public List<SubActivity> getSubActivities ()
 	{
 		return this.getActivity ().getSubActivities ();
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
+	 * for the <code>Activity</code>.  This method is intended to be used by a
+	 * <code>DataStore</code> when the <code>Activity</code> instance is
+	 * loaded.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the child class.
+	 *
+	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
+	 *                       instances, not null
+	 */
+
+	@Override
+	protected void setSubActivities (final List<SubActivity> subactivities)
+	{
+		assert subactivities != null : "subactivities is NULL";
+
+		throw new UnsupportedOperationException ("MoodleActivity is Read-only");
+	}
+
+	/**
+	 * Add the specified <code>SubActivity</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to add, not null
+	 *
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully added, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean addSubActivity (final SubActivity subactivity)
+	{
+		assert subactivity != null : "subactivity is NULL";
+
+		throw new UnsupportedOperationException ("MoodleActivity is Read-only");
+	}
+
+	/**
+	 * Remove the specified <code>SubActivity</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to remove, not null
+	 *
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully removed, <code>False</code>
+	 *                     otherwise
+	 */
+
+	@Override
+	protected boolean removeSubActivity (final SubActivity subactivity)
+	{
+		assert subactivity != null : "subactivity is NULL";
+
+		throw new UnsupportedOperationException ("MoodleActivity is Read-only");
 	}
 
 	/**
