@@ -172,7 +172,7 @@ final class ARINQuery extends WhoisQuery
 			{
 				result = this.executeQuery (new URL (parentRef));
 
-				String orgName = ARINQuery.orgName.evaluate (ipData);
+				String orgName = ARINQuery.orgName.evaluate (ipData).trim ();
 
 				if ((orgName.length () > 0) && (! orgName.equals (result.getName ())))
 				{
