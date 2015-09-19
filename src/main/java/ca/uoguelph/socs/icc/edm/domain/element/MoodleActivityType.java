@@ -143,7 +143,7 @@ public class MoodleActivityType extends ActivityType implements Serializable
 	@Override
 	public ActivitySource getSource ()
 	{
-		return MoodleActivityType.source;
+		return this.propagateDomainModel (MoodleActivityType.source);
 	}
 
 	/**
