@@ -202,12 +202,14 @@ public final class DomainModel
 	 * Insert the specified <code>Element</code> instance into the
 	 * <code>DataStore</code>.  This method will insert a copy of the specified
 	 * <code>Element</code> into the <code>DataStore</code> and return a
-	 * reference to the <code>Element</code> instance which was inserted.  If
-	 * the specified <code>Element</code> instance already exists in the
+	 * reference to the <code>Element</code> instance which was inserted.
+	 * <p>
+	 * If the specified <code>Element</code> instance already exists in the
 	 * <code>DataStore</code> then the returned instance will be a reference to
-	 * the specified <code>Element</code> instance.  To insert an
-	 * <code>Element</code> into the <code>DataStore</code>, an active
-	 * <code>Transaction</code> is required.
+	 * the specified <code>Element</code> instance.
+	 * <p>
+	 * To insert an <code>Element</code> into the <code>DataStore</code>, an
+	 * active <code>Transaction</code> is required.
 	 *
 	 * @param  element               The <code>Element</code> to insert, not
 	 *                               null
@@ -228,14 +230,46 @@ public final class DomainModel
 			throw new NullPointerException ();
 		}
 
-		if ((this.datastore.getTransaction ()).isActive ())
+		if (! this.datastore.getTransaction ().isActive ())
 		{
 			this.log.error ("Attempting to insert an Element without an Active Transaction");
 			throw new IllegalStateException ("Active Transaction required");
 		}
 
-		return null;
+		InsertProcessor processor = new InsertProcessor (this.datastore, DomainModel.ttable);
+
+		Element result = processor.processElement (element);
+		processor.processQueue ();
+
+		return result;
 	}
+
+	/**
+	 * Insert all of the <code>Element</code> instances in the specified
+	 * <code>Collection</code> into the <code>DataStore</code>.  This method
+	 * will insert a copy of the specified <code>Element</code> instances into
+	 * the <code>DataStore</code> and return <code>Collection</code> of
+	 * references to the <code>Element</code> instances which were inserted.
+	 * <p>
+	 * If any of the <code>Element</code> instances in the specified
+	 * <code>Collection</code> already exists in the <code>DataStore</code>
+	 * then the returned instances will be the same as the input instance.
+	 * <p>
+	 * To insert an <code>Element</code> into the <code>DataStore</code>, an
+	 * active <code>Transaction</code> is required.
+	 * <p>
+	 * The <code>Collection</code> of <code>Element</code> instances returned
+	 * by this method will have the same order as the input
+	 * <code>Collection</code>.
+	 *
+	 * @param  element               The <code>Element</code> to insert, not
+	 *                               null
+	 *
+	 * @return                       A reference to the <code>Element</code> in
+	 *                               the <code>DataStore</code>
+	 * @throws IllegalStateException If there is not an active
+	 *                               <code>Transaction</code>
+	 */
 
 	public Collection<Element> insert (final Collection<Element> elements)
 	{
@@ -247,13 +281,18 @@ public final class DomainModel
 			throw new NullPointerException ();
 		}
 
-		if ((this.datastore.getTransaction ()).isActive ())
+		if (! this.datastore.getTransaction ().isActive ())
 		{
 			this.log.error ("Attempting to insert an Element without an Active Transaction");
 			throw new IllegalStateException ("Active Transaction required");
 		}
 
-		return null;
+		InsertProcessor processor = new InsertProcessor (this.datastore, DomainModel.ttable);
+
+		Collection<Element> results = processor.processElements (elements);
+		processor.processQueue ();
+
+		return results;
 	}
 
 	/**
@@ -281,7 +320,7 @@ public final class DomainModel
 			throw new NullPointerException ();
 		}
 
-		if ((this.datastore.getTransaction ()).isActive ())
+		if (! this.datastore.getTransaction ().isActive ())
 		{
 			this.log.error ("Attempting to insert an Element without an Active Transaction");
 			throw new IllegalStateException ("Active Transaction required");
@@ -308,7 +347,22 @@ public final class DomainModel
 }
 
 /**
- *
+ * Insert <code>Element</code> instances along with their relationships.  This
+ * class analyzes an <code>Element</code> instance and inserts it into the
+ * <code>DataStore</code> along with all of its dependencies and, optionally,
+ * its other relationships.  Before an <code>Element</code> instance is
+ * inserted into the <code>DataStore</code> its relationships are traversed
+ * recursively.  Any relationships which are dependencies of the specified
+ * <code>Element</code> instance are inserted immediately, and any
+ * relationships which are not dependencies are queued for later processing.
+ * <p>
+ * Once an <code>Element</code> has been inserted into the
+ * <code>DataStore</code> it is added to the <code>TranslationTable</code>.
+ * The <code>TranslationTable</code> is inspected before an
+ * <code>Element</code> instance is processed.  If the <code>Element</code>
+ * instance is found in the <code>TranslationTable</code> then the
+ * <code>Element</code> instance is not processed as it is already present in
+ * the <code>DataStore</code>.
  */
 
 final class InsertProcessor
@@ -398,6 +452,7 @@ final class InsertProcessor
 						}
 						else
 						{
+							this.log.trace ("Processing required relationship: {}", p.getName ());
 							this.processElement ((Element) metadata.getValue (p, element));
 						}
 					}
@@ -405,11 +460,13 @@ final class InsertProcessor
 					{
 						if (p.isMultivalued ())
 						{
+							this.log.trace ("Processing Multi-Valued Mutable relationship: {}", p.getName ());
 							metadata.getValues (p, element)
 								.forEach (x -> this.processElement ((Element) x));
 						}
 						else
 						{
+							this.log.trace ("Processing Single-Valued Mutable relationship: {}", p.getName ());
 							this.processElement ((Element) metadata.getValue (p, element));
 						}
 					}
@@ -417,11 +474,13 @@ final class InsertProcessor
 					{
 						if (p.isMultivalued ())
 						{
+							this.log.trace ("Queuing Multi-Valued relationship: {}", p.getName ());
 							metadata.getValues (p, element)
 								.forEach (x -> this.queue.add ((Element) x));
 						}
 						else
 						{
+							this.log.trace ("Queuing Single-Valued relationship: {}", p.getName ());
 							this.queue.add ((Element) metadata.getValue (p, element));
 						}
 					}
