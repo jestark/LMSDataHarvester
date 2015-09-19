@@ -209,6 +209,7 @@ public final class DefinitionBuilder<T extends Element>
 		RelationshipReference<T, V> rref = new RelationshipReference<T, V> (get, add, remove);
 
 		this.allprops.add (property);
+		this.properties.add (property);
 		this.relationships.put (property.getPropertyType (), Relationship.getInstance (this.type, property, rref));
 		this.rrefs.put (property, rref);
 
