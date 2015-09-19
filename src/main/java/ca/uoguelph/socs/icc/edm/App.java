@@ -3,14 +3,14 @@ package ca.uoguelph.socs.icc.edm;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.File;
+import java.io.IOException;
 
-import java.util.Set;
-import java.util.Map;
+import java.net.InetAddress;
+
 import java.util.List;
+import java.util.NavigableMap;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.TreeMap;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -19,66 +19,86 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Action;
-import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
-import ca.uoguelph.socs.icc.edm.domain.ActionLoader;
-import ca.uoguelph.socs.icc.edm.domain.ActivityLoader;
+import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
-import ca.uoguelph.socs.icc.edm.domain.ActivitySourceLoader;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-import ca.uoguelph.socs.icc.edm.domain.ActivityTypeLoader;
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
-import ca.uoguelph.socs.icc.edm.domain.CourseLoader;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
-import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
-import ca.uoguelph.socs.icc.edm.domain.EnrolmentLoader;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
-import ca.uoguelph.socs.icc.edm.domain.LogEntryLoader;
-import ca.uoguelph.socs.icc.edm.domain.NamedActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.Network;
 import ca.uoguelph.socs.icc.edm.domain.Role;
-import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
-import ca.uoguelph.socs.icc.edm.domain.RoleLoader;
-import ca.uoguelph.socs.icc.edm.domain.User;
-import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
-import ca.uoguelph.socs.icc.edm.domain.UserLoader;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.User;
 
 import ca.uoguelph.socs.icc.edm.domain.element.ActionData;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
+import ca.uoguelph.socs.icc.edm.domain.element.CourseData;
+import ca.uoguelph.socs.icc.edm.domain.element.EnrolmentData;
 import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.GradeData;
 import ca.uoguelph.socs.icc.edm.domain.element.LogData;
+import ca.uoguelph.socs.icc.edm.domain.element.MoodleActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType;
+import ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData;
+import ca.uoguelph.socs.icc.edm.domain.element.NetworkData;
 import ca.uoguelph.socs.icc.edm.domain.element.RoleData;
 import ca.uoguelph.socs.icc.edm.domain.element.UserData;
-import ca.uoguelph.socs.icc.edm.domain.element.EnrolmentData;
 
-import ca.uoguelph.socs.icc.edm.domain.database.UserDatabaseFactory;
-import ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleActivity;
-import ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleLogData;
-import ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleDatabaseFactory;
+import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
+import ca.uoguelph.socs.icc.edm.domain.ActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.ActivitySourceBuilder;
+import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
+import ca.uoguelph.socs.icc.edm.domain.CourseBuilder;
+import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
+import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
+import ca.uoguelph.socs.icc.edm.domain.NamedActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.NetworkBuilder;
+import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
+import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
+import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 
+import ca.uoguelph.socs.icc.edm.domain.ActionLoader;
+import ca.uoguelph.socs.icc.edm.domain.ActivityLoader;
+import ca.uoguelph.socs.icc.edm.domain.ActivitySourceLoader;
+import ca.uoguelph.socs.icc.edm.domain.ActivityTypeLoader;
+import ca.uoguelph.socs.icc.edm.domain.CourseLoader;
+import ca.uoguelph.socs.icc.edm.domain.EnrolmentLoader;
+import ca.uoguelph.socs.icc.edm.domain.LogEntryLoader;
+import ca.uoguelph.socs.icc.edm.domain.NetworkLoader;
+import ca.uoguelph.socs.icc.edm.domain.RoleLoader;
+import ca.uoguelph.socs.icc.edm.domain.UserLoader;
+
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Semester;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
+import ca.uoguelph.socs.icc.edm.domain.datastore.JPADataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.MemDataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.NullDataStore;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.NullIdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.PassThruIdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.RandomIdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.SequentialIdGenerator;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
+import ca.uoguelph.socs.icc.edm.domain.metadata.ProfileBuilder;
+
+import ca.uoguelph.socs.icc.edm.domain.resolver.Resolver;
 
 public class App
 {
 	public static final Logger log;
 
-	private ActivitySource source;
-	private Map<String, Action> actions;
-	private Map<String, Activity> activities;
-	private Map<String, ActivityType> types;
-
-	private Map<Long, Enrolment> enrolments;
-	private Map<Long, User> users;
-
 	static void loadClass (final String name)
 	{
 		log.trace ("loadClass: name={}", name);
+
 		try
 		{
 			Class.forName (name);
@@ -94,92 +114,58 @@ public class App
 	{
 		log = LoggerFactory.getLogger (App.class);
 
-		// Default ElementBuilder Implementations
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultActionBuilder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivitySourceBuilder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultActivityTypeBuilder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultCourseBuilder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultEnrolmentBuilder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultGenericActivityBuilder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultGradeBuilder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultLogEntryBuilder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultNamedActivityBuilder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultRoleBuilder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultSubActivityBuilder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.builder.DefaultUserBuilder");
-
-		// Default ElementLoader implementations
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.loader.DefaultActionLoader");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.loader.DefaultActivityLoader");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.loader.DefaultActivitySourceLoader");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.loader.DefaultActivityTypeLoader");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.loader.DefaultCourseLoader");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.loader.DefaultEnrolmentLoader");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.loader.DefaultLogEntryLoader");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.loader.DefaultRoleLoader");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.loader.DefaultUserLoader");
-
-		// ElementLoader implementations for the Moodle Database
-//		loadClass ("ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleActivityLoader");
-//		loadClass ("ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleCourseLoader");
-//		loadClass ("ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleLogEntryLoader");
+		// DataStore implementations
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.datastore.JPADataStore");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.datastore.MemDataStore");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.datastore.NullDataStore");
 
 		// IdGenerator implementations
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.NullIdGenerator");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.PassThruIdGenerator");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.RandomIdGenerator");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.SequentialIdGenerator");
 
 		// Core Element implementations
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActionData");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActivitySourceData");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.ActivityTypeData");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.CourseData");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.EnrolmentData");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.GradedActivity");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.LogData");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.RoleData");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.core.UserData");
-
-		// Element implmentations for the Moodle Database
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.database.moodle.MoodleActivity");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.ActionData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.CourseData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.EnrolmentData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.GradeData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.LogData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.MoodleActivity");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.NetworkData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.RoleData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.UserData");
 
 		// Moodle Activity Data Classes
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Assign");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Book");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.BookChapter");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.BookChapterLog");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Checklist");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Choice");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Feedback");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Folder");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Forum");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.ForumDiscussion");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.ForumDiscussionLog");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.ForumPost");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.ForumPostLog");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Label");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Lesson");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.LessonPage");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.LessonPageLog");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Page");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Quiz");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Resource");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Scheduler");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.URL");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.Workshop");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.WorkshopSubmission");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.activity.moodle.WorkshopSubmissionLog");
-	}
-
-	public App ()
-	{
-		this.source = new ActivitySourceData ("moodle");
-		this.actions = new HashMap<String, Action> ();
-		this.activities = new HashMap<String, Activity> ();
-		this.types = new HashMap<String, ActivityType> ();
-
-		this.enrolments = new HashMap<Long, Enrolment> ();
-		this.users = new HashMap<Long, User> ();
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Assign");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Book");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.BookChapter");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.BookChapterLog");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Checklist");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Choice");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Feedback");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Folder");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Forum");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.ForumDiscussion");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.ForumDiscussionLog");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.ForumPost");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.ForumPostLog");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Label");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Lesson");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.LessonPage");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.LessonPageLog");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Page");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Quiz");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Resource");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Scheduler");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.URL");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Workshop");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WorkshopSubmission");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WorkshopSubmissionLog");
 	}
 
 /*	public void loadCSV (final DomainModel model, final String filename, final Course course, final Role role) throws Exception
@@ -201,149 +187,94 @@ public class App
 		reader.close ();
 	}*/
 
-	public Action getAction (final String name)
-	{
-		if (! this.actions.containsKey (name))
-		{
-			this.actions.put (name, new ActionData (name));
-		}
 
-		return this.actions.get (name);
-	}
-
-	public ActivityType getType (final String name)
-	{
-		if (! this.types.containsKey (name))
-		{
-			this.types.put (name, new ActivityTypeData (this.source, name));
-		}
-
-		return this.types.get (name);
-	}
-
-	public Activity getGenericActivity (final String name, final Course course)
-	{
-		if (! this.activities.containsKey (name))
-		{
-			activities.put (name, new GenericActivity (this.getType (name), course));
-		}
-
-		return activities.get (name);
-	}
-
-/*	public List<LogEntry> processLog (final DomainModel model, final List<LogEntry> entries)
-	{
-		List<LogEntry> result = new LinkedList<LogEntry> ();
-
-		for (LogEntry e : entries)
-		{
-			if (this.enrolments.containsKey (((MoodleLogData) e).getUser ()))
-			{
-				Action action = this.getAction (((MoodleLogData) e).getActionName ());
-
-				Activity activity = (model.getActivityLoader ()).fetchById (((MoodleLogData) e).getActivityId ());
-
-				if (activity == null)
-				{
-					activity = this.getGenericActivity (((MoodleLogData)e).getModule (), e.getCourse ());
-				}
-
-				Enrolment enrolment = this.enrolments.get (((MoodleLogData) e).getUser ());
-
-				result.add (new LogData (action, activity, enrolment, e.getIPAddress (), e.getTime ()));
-			}
-			else
-			{
-
-			}
-		}
-
-		return result;
-	}
-
-	public void processCourse (final DomainModel model, final Course course)
-	{
-		log.trace ("processCourse: model={}, course={}", model, course);
-
-		CourseBuilder builder = (model.getCourseLoader ()).getBuilder ();
-		builder.load (course);
-
-		Course newCourse = builder.build ();
-
-		for (Activity a : course.getActivities ())
-		{
-			processActivity (model, a);
-		}
-	}
-
-	public void processActivity (final DomainModel model, final Activity activity)
-	{
-		log.trace ("processActivity: model={}, activity={}", model, activity);
-
-		ActivityType type = (model.getActivityTypeLoader ()).fetchByName (this.source, (activity.getType ()).getName ());
-
-		NamedActivityBuilder builder = (model.getActivityLoader ()).getBuilder (NamedActivityBuilder.class, type);
-		builder.setCourse (activity.getCourse ());
-		builder.setName (activity.getName ());
-
-		Activity newActivity = builder.build ();
-
-		if (activity.hasSubActivities ())
-		{
-			SubActivityBuilder sBuilder = (model.getActivityLoader ()).getBuilder (newActivity);
-
-			for (SubActivity s : activity.getSubActivities ())
-			{
-				processSubActivity (model, s, activity);
-			}
-		}
-	}
-
-	public void processSubActivity (final DomainModel model, final SubActivity subactivity, final Activity parent)
-	{
-		log.trace ("processSubActivity: model={}, subactivity='{}', parent={}", model, subactivity, parent);
-
-		Activity newSubActivity = null;
-
-		if (subactivity.hasSubActivities ())
-		{
-			SubActivityBuilder sBuilder = (model.getActivityLoader ()).getBuilder (newSubActivity);
-
-			for (SubActivity s : subactivity.getSubActivities ())
-			{
-				processSubActivity (model, s, subactivity);
-			}
-		}
-	}*/
 
     public static void main(final String[] args) throws Exception
     {
+		DomainModel scratch = null;
 		DomainModel moodledb = null;
 		DomainModel coursedb = null;
 
+		Profile course = new ProfileBuilder ()
+			.setName ("course")
+			.setMutable (true)
+			.setElementClass (Action.class, ActionData.class)
+			.setElementClass (Activity.class, GenericActivity.class)
+			.setElementClass (ActivitySource.class, ActivitySourceData.class)
+			.setElementClass (ActivityType.class, ActivityTypeData.class)
+			.setElementClass (Course.class, CourseData.class)
+			.setElementClass (Enrolment.class, EnrolmentData.class)
+			.setElementClass (Grade.class, GradeData.class)
+			.setElementClass (LogEntry.class, LogData.class)
+			.setElementClass (Role.class, RoleData.class)
+			.setElementClass (User.class, UserData.class)
+			.setGenerator (Element.class, NullIdGenerator.class)
+			.setGenerator (Enrolment.class, RandomIdGenerator.class)
+			.build ();
+
+		Profile moodle = new ProfileBuilder ()
+			.setName ("moodledb")
+			.setElementClass (Activity.class, MoodleActivity.class)
+			.setElementClass (ActivityType.class, ActivityTypeData.class)
+			.setElementClass (Course.class, CourseData.class)
+			.setElementClass (Enrolment.class, EnrolmentData.class)
+			.setElementClass (LogEntry.class, MoodleLogData.class)
+			.setElementClass (User.class, UserData.class)
+			.setGenerator (Element.class, SequentialIdGenerator.class)
+			.build ();
+
+		Profile mem = new ProfileBuilder ()
+			.setName ("mem")
+			.setMutable (true)
+			.setElementClass (Action.class, ActionData.class)
+			.setElementClass (Activity.class, GenericActivity.class)
+			.setElementClass (ActivitySource.class, ActivitySourceData.class)
+			.setElementClass (ActivityType.class, ActivityTypeData.class)
+			.setElementClass (Course.class, CourseData.class)
+			.setElementClass (Enrolment.class, EnrolmentData.class)
+			.setElementClass (Grade.class, GradeData.class)
+			.setElementClass (LogEntry.class, LogData.class)
+			.setElementClass (Network.class, NetworkData.class)
+			.setElementClass (Role.class, RoleData.class)
+			.setElementClass (User.class, UserData.class)
+			.setGenerator (Element.class, SequentialIdGenerator.class)
+			.setGenerator (Enrolment.class, RandomIdGenerator.class)
+			.build ();
+
 		try
 		{
-			moodledb = (MoodleDatabaseFactory.getInstance ()).createDomainModel ();
-			coursedb = (UserDatabaseFactory.getInstance ()).createDomainModel ();
+			moodledb = new DomainModel (DataStore.getInstance (JPADataStore.class, moodle));
+			scratch = new DomainModel (DataStore.getInstance (MemDataStore.class, mem));
 
 			System.out.println ("--------------------++++++++++++++++++++++++++++++++++++++++--------------------");
 
-			App app = new App ();
+			Course c = CourseLoader.getInstance (moodledb)
+				.fetchById (5L);
 
-//			Transaction trans = coursedb.getTransaction ();
-//			trans.begin ();
+			System.out.printf ("%s: %s %d\n", c.getName (), c.getSemester ().getName (), c.getYear ());
+			c.getActivities ().forEach (x -> System.out.printf ("\t%s: %d\n", x.getName (), x.getSubActivities ().size ()));
 
-//			Course course = (moodledb.getCourseLoader ()).fetchById (5L);
+			scratch.getTransaction ().begin ();
 
-//			app.loadCSV (moodledb, "***REMOVED***", course, new RoleData ("student"));
+			ActivitySource.builder (scratch)
+				.setName ("moodle")
+				.build ();
 
-//			List<LogEntry> entries = app.processLog (moodledb, (moodledb.getLogEntryLoader ()).fetchAllforCourse (course));
+			scratch.insert (c);
+			scratch.getTransaction ().commit ();
 
-//			processCourse (cloader.fetchById (5L), coursedb);
+			Course nc = CourseLoader.getInstance (scratch)
+				.fetchById (1L);
 
-//			trans.commit ();
+			System.out.printf ("%s: %s %d\n", nc.getName (), nc.getSemester ().getName (), nc.getYear ());
+			nc.getActivities ().forEach (x -> System.out.printf ("\t%s: %d\n", x.getName (), x.getSubActivities ().size ()));
 
 			System.out.println ("--------------------++++++++++++++++++++++++++++++++++++++++--------------------");
+		}
+		catch (Throwable ex)
+		{
+			log.error ("We have an exception: ", ex);
+			throw ex;
 		}
 		finally
 		{
