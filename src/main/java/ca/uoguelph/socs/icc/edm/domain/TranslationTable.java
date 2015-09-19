@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -209,9 +210,17 @@ public final class TranslationTable
 	{
 		this.log.trace ("removeAll: datastore={}", datastore);
 
-		this.table.keySet ()
-			.stream ()
-			.filter (x -> x.getDataStore () == datastore)
-			.forEach (x -> this.table.remove (this.table.get (x).remove (datastore)));
+		Iterator<Element> i = this.table.keySet ().iterator ();
+
+		while (i.hasNext ())
+		{
+			Element key = i.next ();
+
+			if (key.getDataStore () == datastore)
+			{
+				this.table.get (key).remove (datastore);
+				i.remove ();
+			}
+		}
 	}
 }
