@@ -162,35 +162,14 @@ abstract class DataStoreProxy<T extends Element>
 
 	protected final boolean isComplete (final T element)
 	{
+		this.log.trace ("isComplete: element={}", element);
+
 		return this.creator.getProperties ()
 			.stream ()
 			.filter (Property::isRequired)
 			.map (x -> this.creator.getValue (x, element))
 			.allMatch (x -> x != null);
 	}
-
-	/**
-	 * Retrieve the matching <code>Element</code> from the
-	 * <code>DataStore</code>.
-	 *
-	 * @param  element The <code>Element</code> to match, not null
-	 *
-	 * @return         The matching <code>Element</code>, may be null
-	 */
-
-	protected abstract T load (T element);
-
-	/**
-	 * Store the specified <code>Element</code> in the <code>DataStore</code>.
-	 *
-	 * @param  oldElement The reference <code>Element</code>
-	 * @param  newElement The <code>Element</code> to store, not null
-	 *
-	 * @return            The <code>Element</code> written to the
-	 *                    <code>DataStore</code>
-	 */
-
-	protected abstract T store (T oldElement, T newElement);
 
 	/**
 	 * Determine if the <code>DataStore</code> contains the specified
@@ -220,6 +199,8 @@ abstract class DataStoreProxy<T extends Element>
 
 	public final T create ()
 	{
+		this.log.trace ("create:");
+
 		return this.creator.create ();
 	}
 
@@ -240,24 +221,23 @@ abstract class DataStoreProxy<T extends Element>
 	 *                 <code>DataStore</code> or <code>null</code>
 	 */
 
-	public final T fetch (final T element)
-	{
-		this.log.trace ("fetch: element={}", element);
-
-		assert element != null : "element is NULL";
-
-		if (! this.datastore.isOpen ())
-		{
-			this.log.error ("datastore is closed");
-			throw new IllegalStateException ("datastore is closed");
-		}
-
-		return (this.datastore.contains (element)) ? element : this.load (element);
-	}
+	public abstract T fetch (final T element);
 
 	/**
 	 * Insert the <code>Element</code> instance into the
-	 * <code>DataStore</code>.  This method determines if the specified
+	 * <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code> to store, not null
+	 *
+	 * @return         The <code>Element</code> stored in the
+	 *                 <code>DataStore</code>
+	 */
+
+	public abstract T insert (final T element);
+
+	/**
+	 * Insert the <code>Element</code> instance into the
+	 * <code>DataStore</code>.
 	 *
 	 * @param  oldElement The reference <code>Element</code>
 	 * @param  newElement The <code>Element</code> to store, not null
@@ -266,34 +246,7 @@ abstract class DataStoreProxy<T extends Element>
 	 *                    <code>DataStore</code>
 	 */
 
-	public final T insert (final T oldElement, final T newElement)
-	{
-		assert newElement != null : "element is NULL";
-
-		this.log.debug ("Setting the Reference to the DomainModel");
-		newElement.setDomainModel (this.datastore.getDomainModel ());
-
-		if (! this.isComplete (newElement))
-		{
-			this.log.error ("Required fields are missing from the Element (Wrong Builder)");
-			throw new IllegalStateException ("Element is missing required fields");
-		}
-
-		if (! this.datastore.getTransaction ().isActive ())
-		{
-			this.log.error ("Attempting to build an Action without an active transaction");
-			throw new IllegalStateException ("no active transaction");
-		}
-
-		T result = this.load (newElement);
-
-		if (result == null)
-		{
-			result = this.store (oldElement, newElement);
-		}
-
-		return result;
-	}
+	public abstract T insert (final T oldElement, final T newElement);
 }
 
 /**
@@ -326,41 +279,101 @@ final class QueryProxy<T extends Element> extends DataStoreProxy<T>
 	}
 
 	/**
-	 * Retrieve the matching <code>Element</code> from the
-	 * <code>DataStore</code>.
+	 * Retrieve the <code>Element</code> instance from the
+	 * <code>DataStore</code> corresponding specified <code>Element</code>
+	 * instance.  This method is used to implement the transparent substitution
+	 * of <code>Element</code> instances.  If the specified
+	 * <code>Element</code> instance is already in the <code>DataStore</code>
+	 * then that will be returned.  Otherwise This method will retrieve the
+	 * matching <code>Element</code> instance from the <code>DataStore</code>
+	 * or <code>null</code> if there is no matching <code>Element</code>
+	 * instance in the <code>DataStore</code>.
 	 *
-	 * @param  element The <code>Element</code> to match, not null
+	 * @param  element The <code>Element</code> instance, not null
 	 *
-	 * @return         The matching <code>Element</code>, may be null
+	 * @return         The <code>Element</code> instance in the
+	 *                 <code>DataStore</code> or <code>null</code>
 	 */
 
 	@Override
-	protected T load (final T element)
+	public T fetch (final T element)
 	{
+		this.log.trace ("fetch: element={}", element);
+
 		assert element != null : "element is NULL";
 
-		return this.query.setAllProperties (element)
-			.query ();
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("datastore is closed");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		return (this.datastore.contains (element)) ? element
+			: this.query.setAllProperties (element).query ();
 	}
 
 	/**
-	 * Store the specified <code>Element</code> in the <code>DataStore</code>.
+	 * Insert the <code>Element</code> instance into the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code> to store, not null
+	 *
+	 * @return         The <code>Element</code> stored in the
+	 *                 <code>DataStore</code>
+	 */
+
+	@Override
+	public T insert (final T element)
+	{
+		this.log.trace ("insert: element={}", element);
+
+		assert element != null : "element is NULL";
+
+		this.log.debug ("Setting the Reference to the DomainModel");
+		element.setDomainModel (this.datastore.getDomainModel ());
+
+		if (! this.isComplete (element))
+		{
+			this.log.error ("Required fields are missing from the Element (Wrong Builder)");
+			throw new IllegalStateException ("Element is missing required fields");
+		}
+
+		if (! this.datastore.getTransaction ().isActive ())
+		{
+			this.log.error ("Attempting to build an Action without an active transaction");
+			throw new IllegalStateException ("no active transaction");
+		}
+
+		T result = this.query.setAllProperties (element).query ();
+
+		if (result == null)
+		{
+			this.datastore.insert (this.creator, element);
+			result = element;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Insert the <code>Element</code> instance into the
+	 * <code>DataStore</code>.  The <code>QueryProxy</code> ignores the
+	 * reference <code>Element</code> since there is not association to create.
+	 * As such, this method is the same as <code>insert (T element)</code>.
 	 *
 	 * @param  oldElement The reference <code>Element</code>
 	 * @param  newElement The <code>Element</code> to store, not null
 	 *
-	 * @return            The <code>Element</code> written to the
+	 * @return            The <code>Element</code> stored in the
 	 *                    <code>DataStore</code>
 	 */
 
 	@Override
-	protected T store (final T oldElement, final T newElement)
+	public T insert (final T oldElement, final T newElement)
 	{
-		assert newElement != null : "newElement is NULL";
+		this.log.trace ("insert: oldElement={}, newElement={}", oldElement, newElement);
 
-		this.datastore.insert (this.creator, newElement);
-
-		return newElement;
+		return this.insert (newElement);
 	}
 }
 
@@ -393,38 +406,130 @@ final class TableProxy<T extends Element> extends DataStoreProxy<T>
 	}
 
 	/**
-	 * Retrieve the matching <code>Element</code> from the
-	 * <code>DataStore</code>.
+	 * Retrieve the <code>Element</code> instance from the
+	 * <code>DataStore</code> corresponding specified <code>Element</code>
+	 * instance.  This method is used to implement the transparent substitution
+	 * of <code>Element</code> instances.  If the specified
+	 * <code>Element</code> instance is already in the <code>DataStore</code>
+	 * then that will be returned.  Otherwise This method will retrieve the
+	 * matching <code>Element</code> instance from the <code>DataStore</code>
+	 * or <code>null</code> if there is no matching <code>Element</code>
+	 * instance in the <code>DataStore</code>.
 	 *
-	 * @param  element The <code>Element</code> to match, not null
+	 * @param  element The <code>Element</code> instance, not null
 	 *
-	 * @return         The matching <code>Element</code>, may be null
+	 * @return         The <code>Element</code> instance in the
+	 *                 <code>DataStore</code> or <code>null</code>
 	 */
 
-	protected T load (final T element)
+	@Override
+	public T fetch (final T element)
 	{
+		this.log.trace ("fetch: element={}", element);
+
 		assert element != null : "element is NULL";
 
-		return this.ttable.get (element, this.datastore);
+		if (! this.datastore.isOpen ())
+		{
+			this.log.error ("datastore is closed");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
+		return (this.datastore.contains (element)) ? element
+			: this.ttable.get (element, this.datastore);
 	}
 
 	/**
-	 * Store the specified <code>Element</code> in the <code>DataStore</code>.
+	 * Insert the <code>Element</code> instance into the
+	 * <code>DataStore</code>.
 	 *
 	 * @param  oldElement The reference <code>Element</code>
 	 * @param  newElement The <code>Element</code> to store, not null
 	 *
-	 * @return            The <code>Element</code> written to the
+	 * @return            The <code>Element</code> stored in the
 	 *                    <code>DataStore</code>
 	 */
 
-	protected T store (final T oldElement, final T newElement)
+	@Override
+	public T insert (final T element)
 	{
-		assert newElement != null : "newElement is NULL";
+		this.log.trace ("insert: element={}", element);
 
-		this.datastore.insert (this.creator, newElement);
-		this.ttable.put (oldElement, newElement);
+		assert element != null : "element is NULL";
 
-		return newElement;
+		this.log.debug ("Setting the Reference to the DomainModel");
+		element.setDomainModel (this.datastore.getDomainModel ());
+
+		if (! this.isComplete (element))
+		{
+			this.log.error ("Required fields are missing from the Element (Wrong Builder)");
+			throw new IllegalStateException ("Element is missing required fields");
+		}
+
+		if (! this.datastore.getTransaction ().isActive ())
+		{
+			this.log.error ("Attempting to build an Action without an active transaction");
+			throw new IllegalStateException ("no active transaction");
+		}
+
+		this.datastore.insert (this.creator, element);
+
+		return element;
+	}
+
+	/**
+	 * Insert the <code>Element</code> instance into the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  oldElement The reference <code>Element</code>
+	 * @param  newElement The <code>Element</code> to store, not null
+	 *
+	 * @return            The <code>Element</code> stored in the
+	 *                    <code>DataStore</code>
+	 */
+
+	@Override
+	public T insert (final T oldElement, final T newElement)
+	{
+		this.log.trace ("insert: oldElement={}, newElement={}", oldElement, newElement);
+
+		assert newElement != null : "element is NULL";
+
+		this.log.debug ("Setting the Reference to the DomainModel");
+		newElement.setDomainModel (this.datastore.getDomainModel ());
+
+		if (! this.isComplete (newElement))
+		{
+			this.log.error ("Required fields are missing from the Element (Wrong Builder)");
+			throw new IllegalStateException ("Element is missing required fields");
+		}
+
+		if (! this.datastore.getTransaction ().isActive ())
+		{
+			this.log.error ("Attempting to build an Element without an active transaction");
+			throw new IllegalStateException ("no active transaction");
+		}
+
+		T result = null;
+
+		if ((oldElement != null) && (oldElement.equals (newElement)))
+		{
+			result = this.ttable.get (oldElement, this.datastore);
+
+			if (result == null)
+			{
+				this.datastore.insert (this.creator, newElement);
+				this.ttable.put (oldElement, newElement);
+
+				result = newElement;
+			}
+		}
+		else
+		{
+			this.datastore.insert (this.creator, newElement);
+			result = newElement;
+		}
+
+		return result;
 	}
 }
