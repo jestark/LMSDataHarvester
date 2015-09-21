@@ -195,7 +195,7 @@ final class ElementStore<T extends Element>
 
 	public List<T> fetch (final Filter<T> filter)
 	{
-		this.log.trace ("fetchAll: filter={}", filter);
+		this.log.trace ("fetch: filter={}", filter);
 
 		assert filter != null : "filter is NULL";
 
