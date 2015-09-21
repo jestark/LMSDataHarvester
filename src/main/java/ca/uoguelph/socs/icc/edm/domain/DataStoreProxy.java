@@ -201,7 +201,10 @@ abstract class DataStoreProxy<T extends Element>
 	{
 		this.log.trace ("create:");
 
-		return this.creator.create ();
+		T element = this.creator.create ();
+		element.setDomainModel (this.datastore.getDomainModel ());
+
+		return element;
 	}
 
 	/**
@@ -329,9 +332,6 @@ final class QueryProxy<T extends Element> extends DataStoreProxy<T>
 
 		assert element != null : "element is NULL";
 
-		this.log.debug ("Setting the Reference to the DomainModel");
-		element.setDomainModel (this.datastore.getDomainModel ());
-
 		if (! this.isComplete (element))
 		{
 			this.log.error ("Required fields are missing from the Element (Wrong Builder)");
@@ -457,9 +457,6 @@ final class TableProxy<T extends Element> extends DataStoreProxy<T>
 
 		assert element != null : "element is NULL";
 
-		this.log.debug ("Setting the Reference to the DomainModel");
-		element.setDomainModel (this.datastore.getDomainModel ());
-
 		if (! this.isComplete (element))
 		{
 			this.log.error ("Required fields are missing from the Element (Wrong Builder)");
@@ -494,9 +491,6 @@ final class TableProxy<T extends Element> extends DataStoreProxy<T>
 		this.log.trace ("insert: oldElement={}, newElement={}", oldElement, newElement);
 
 		assert newElement != null : "element is NULL";
-
-		this.log.debug ("Setting the Reference to the DomainModel");
-		newElement.setDomainModel (this.datastore.getDomainModel ());
 
 		if (! this.isComplete (newElement))
 		{
