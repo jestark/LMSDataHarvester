@@ -215,9 +215,11 @@ public final class Filter<T extends Element>
 	{
 		assert element != null : "element is NULL";
 
-		return this.values.entrySet ()
+		return this.values.keySet ()
 			.stream ()
-			.allMatch ((x) -> x.getValue ().equals (this.metadata.getValue (x.getKey (), element)));
+			.allMatch ((x) -> (x.isMultivalued ())
+					? this.metadata.getValues (x, element).contains (this.values.get (x))
+					: this.values.get (x).equals (this.metadata.getValue (x, element)));
 	}
 
 	/**
