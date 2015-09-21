@@ -86,7 +86,7 @@ public class RandomIdGenerator extends IdGenerator
 		do
 		{
 			result = Long.valueOf (this.generator.nextLong ());
-		} while ((result < 0) && (! this.usedids.add (result)));
+		} while ((result < 0) || (! this.usedids.add (result)));
 
 		return result;
 	}
