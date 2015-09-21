@@ -136,7 +136,8 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	@Override
 	protected boolean insert (final DataStore datastore, final T element, final V value)
 	{
-		this.log.trace ("insert: element={}, value={}");
+		this.log.trace ("insert: element={}, value={}", element, value);
+		this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
@@ -165,6 +166,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	protected boolean remove (final T element, final V value)
 	{
 		this.log.trace ("remove: element={}, value={}");
+		this.log.debug ("removing Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
@@ -248,6 +250,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	public boolean connect (final DataStore datastore, final T element)
 	{
 		this.log.trace ("connect: element={}", element);
+		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
@@ -274,6 +277,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	public boolean disconnect (final DataStore datastore, final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
+		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";

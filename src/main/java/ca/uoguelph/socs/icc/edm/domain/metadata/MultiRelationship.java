@@ -127,6 +127,7 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	protected boolean insert (final DataStore datastore, final T element, final V value)
 	{
 		this.log.trace ("insert: element={}, value={}", element, value);
+		this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
@@ -155,6 +156,7 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	protected boolean remove (final T element, final V value)
 	{
 		this.log.trace ("remove: element={}, value={}", element, value);
+		this.log.debug ("removing Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
@@ -231,6 +233,7 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	public boolean connect (final DataStore datastore, final T element)
 	{
 		this.log.trace ("connect: element={}", element);
+		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
@@ -259,6 +262,7 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	public boolean disconnect (final DataStore datastore, final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
+		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
