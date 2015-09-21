@@ -263,7 +263,11 @@ public final class MemDataStore extends DataStore
 			.insert (element);
 
 		this.log.debug ("Connecting the relationships");
-		metadata.connect (this, element);
+		if (! metadata.connect (this, element))
+		{
+			this.log.error ("Failed to connect relationships");
+			throw new RuntimeException ("Failed to connect relationships");
+		}
 	}
 
 	/**

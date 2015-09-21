@@ -295,7 +295,11 @@ public final class JPADataStore extends DataStore
 		this.em.persist (element);
 
 		this.log.debug ("Connecting the Element's relationships");
-		metadata.connect (this, element);
+		if (! metadata.connect (this, element))
+		{
+			this.log.error ("Failed to connect relationships");
+			throw new RuntimeException ("Failed to connect relationships");
+		}
 	}
 
 	/**
