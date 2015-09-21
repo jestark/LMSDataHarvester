@@ -18,11 +18,9 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
@@ -61,8 +59,8 @@ public class CourseData extends Course implements Serializable
 	/** The <code>List</code> of <code>Activity</code> instances */
 	private List<Activity> activities;
 
-	/** The <code>Set</code> of individuals which are enrolled in the course. */
-	private Set<Enrolment> enrolments;
+	/** The <code>List</code> of individuals which are enrolled in the course. */
+	private List<Enrolment> enrolments;
 
 	/**
 	 * Static initializer to register the <code>CourseData</code> class with
@@ -86,7 +84,7 @@ public class CourseData extends Course implements Serializable
 		this.year = null;
 
 		this.activities = new ArrayList<Activity> ();
-		this.enrolments = new HashSet<Enrolment> ();
+		this.enrolments = new ArrayList<Enrolment> ();
 	}
 
 	/**
@@ -275,33 +273,33 @@ public class CourseData extends Course implements Serializable
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>Enrolment</code> instances which are
-	 * associated with the <code>Course</code>.  The <code>Set</code> will be
+	 * Get the <code>List</code> of <code>Enrolment</code> instances which are
+	 * associated with the <code>Course</code>.  The <code>List</code> will be
 	 * empty if no one is enrolled in the <code>Course</code>.
 	 *
-	 * @return A <code>Set</code> of <code>Enrolment</code> instances
+	 * @return A <code>List</code> of <code>Enrolment</code> instances
 	 */
 
 	@Override
-	public Set<Enrolment> getEnrolments ()
+	public List<Enrolment> getEnrolments ()
 	{
 		this.enrolments.forEach (x -> this.propagateDomainModel (x));
 
-		return Collections.unmodifiableSet (this.enrolments);
+		return Collections.unmodifiableList (this.enrolments);
 	}
 
 	/**
-	 * Initialize the <code>Set</code> of <code>Enrolment</code> instances
+	 * Initialize the <code>List</code> of <code>Enrolment</code> instances
 	 * associated with the <code>Course</code> instance.  This method is
 	 * intended to be used by a <code>DataStore</code> when the
 	 * <code>Course</code> instance is loaded.
 	 *
-	 * @param  enrolments The <code>Set</code> of <code>Enrolment</code>
+	 * @param  enrolments The <code>List</code> of <code>Enrolment</code>
 	 *                    instances, not null
 	 */
 
 	@Override
-	protected void setEnrolments (final Set<Enrolment> enrolments)
+	protected void setEnrolments (final List<Enrolment> enrolments)
 	{
 		assert enrolments != null : "enrolments is NULL";
 

@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -364,26 +363,26 @@ public abstract class Course extends Element
 	protected abstract boolean removeActivity (Activity activity);
 
 	/**
-	 * Get the <code>Set</code> of <code>Enrolment</code> instances which are
-	 * associated with the <code>Course</code>.  The <code>Set</code> will be
+	 * Get the <code>List</code> of <code>Enrolment</code> instances which are
+	 * associated with the <code>Course</code>.  The <code>List</code> will be
 	 * empty if no one is enrolled in the <code>Course</code>.
 	 *
-	 * @return A <code>Set</code> of <code>Enrolment</code> instances
+	 * @return A <code>List</code> of <code>Enrolment</code> instances
 	 */
 
-	public abstract Set<Enrolment> getEnrolments ();
+	public abstract List<Enrolment> getEnrolments ();
 
 	/**
-	 * Initialize the <code>Set</code> of <code>Enrolment</code> instances
+	 * Initialize the <code>List</code> of <code>Enrolment</code> instances
 	 * associated with the <code>Course</code> instance.  This method is
 	 * intended to be used by a <code>DataStore</code> when the
 	 * <code>Course</code> instance is loaded.
 	 *
-	 * @param  enrolments The <code>Set</code> of <code>Enrolment</code>
+	 * @param  enrolments The <code>List</code> of <code>Enrolment</code>
 	 *                    instances, not null
 	 */
 
-	protected abstract void setEnrolments (Set<Enrolment> enrolments);
+	protected abstract void setEnrolments (List<Enrolment> enrolments);
 
 	/**
 	 * Add the specified <code>Enrolment</code> to the <code>Course</code>.
