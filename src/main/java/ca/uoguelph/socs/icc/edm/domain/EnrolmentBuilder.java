@@ -130,18 +130,6 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 			result.setUsable (this.usable);
 
 			this.oldEnrolment = this.enrolmentProxy.insert (this.oldEnrolment, result);
-
-			if (! this.oldEnrolment.getFinalGrade ().equals (this.finalGrade))
-			{
-				this.log.error ("Enrolment already exists in the datastore with a final grade of {}, vs. the specified value: {}", this.oldEnrolment.getFinalGrade (), this.finalGrade);
-				throw new IllegalStateException ("Enrolment already exists but with a different final grade");
-			}
-
-			if (! this.oldEnrolment.isUsable ().equals (this.usable))
-			{
-				this.log.error ("Enrolment already exists in the datastore with a usability of {}, vs the specified value: {}", this.oldEnrolment.isUsable (), this.usable);
-				throw new IllegalStateException ("Enrolment already exists but with different usability");
-			}
 		}
 		else
 		{
