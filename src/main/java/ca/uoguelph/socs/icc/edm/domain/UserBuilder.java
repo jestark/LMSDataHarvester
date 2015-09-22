@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
  * Create and modify <code>User</code> instances.  This class extends
@@ -45,6 +46,9 @@ public final class UserBuilder implements Builder<User>
 
 	/** Helper to operate on <code>User</code> instances */
 	private final DataStoreProxy<User> userProxy;
+
+	/** Query instance to look up <code>User</code> instances by <code>Enrolment</code> */
+	private final Query<User> enrolmentQuery;
 
 	/** The loaded or previously built <code>User</code> instance */
 	private User oldUser;
@@ -82,6 +86,8 @@ public final class UserBuilder implements Builder<User>
 		this.lastname = null;
 		this.username = null;
 		this.oldUser = null;
+
+		this.enrolmentQuery = datastore.getQuery (User.class, User.SELECTOR_ENROLMENTS);
 
 		this.enrolments = new HashSet<Enrolment> ();
 	}
@@ -378,6 +384,12 @@ public final class UserBuilder implements Builder<User>
 		{
 			this.log.error ("Specified Enrolment does not exist in the DataStore");
 			throw new IllegalArgumentException ("Enrolment not in DataStore");
+		}
+
+		if (! this.enrolmentQuery.setProperty (User.ENROLMENTS, add).queryAll ().isEmpty ())
+		{
+			this.log.error ("The Enrolment is already assigned to another user");
+			throw new IllegalArgumentException ("The Enrolment is already assigned to another User");
 		}
 
 		this.enrolments.add (add);

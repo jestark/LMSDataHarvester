@@ -168,6 +168,8 @@ public final class LogReferenceBuilder implements Builder<LogReference>
 	 * @return                          This <code>LogReferenceBuilder</code>
 	 * @throws IllegalArgumentException if the <code>LogEntry</code> is not in
 	 *                                  the <code>DataStore</code>
+	 * @throws IllegalArgumentException if the <code>LogEntry</code> already
+	 *                                  has a <code>LogReference</code>
 	 */
 
 	public LogReferenceBuilder setEntry (final LogEntry entry)
@@ -186,6 +188,12 @@ public final class LogReferenceBuilder implements Builder<LogReference>
 		{
 			this.log.error ("The specified LogEntry does not exist in the DataStore");
 			throw new IllegalArgumentException ("LogEntry is not in the DataStore");
+		}
+
+		if (this.entry.getReference () != null)
+		{
+			this.log.error ("The entry already has another reference assigned to it");
+			throw new IllegalArgumentException ("Entry already has a reference");
 		}
 
 		return this;
