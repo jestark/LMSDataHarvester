@@ -179,6 +179,41 @@ public abstract class Element
 	}
 
 	/**
+	 * Compare two <code>Element</code> instances to determine if they are
+	 * equal using all of the instance fields.  In most cases this will be the
+	 * same as the <code>equals</code> method.
+	 *
+	 * @param  element The <code>Element</code> instance to compare to this
+	 *                 instance
+	 *
+	 * @return         <code>True</code> if the two <code>Enrolment</code>
+	 *                 instances are equal, <code>False</code> otherwise
+	 */
+
+	public boolean equalsAll (final Element element)
+	{
+		return this.equals (element);
+	}
+
+	/**
+	 * Compare two <code>Element</code> instances to determine if they are
+	 * equal using the minimum set fields required to identify the
+	 * <code>Element</code> instance.  In almost all cases this methods will
+	 * give the same result as calling <code>equals</code>.
+	 *
+	 * @param  element The <code>Element</code> instance to compare to this
+	 *                 instance
+	 *
+	 * @return         <code>True</code> if the two <code>Enrolment</code>
+	 *                 instances are equal, <code>False</code> otherwise
+	 */
+
+	public boolean equalsUnique (final Element element)
+	{
+		return this.equals (element);
+	}
+
+	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
 	 * instance.  Some <code>Element</code> interfaces are dependent on other
 	 * <code>Element</code> interfaces for their identification.  The dependent

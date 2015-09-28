@@ -168,6 +168,42 @@ public abstract class Grade extends Element
 	}
 
 	/**
+	 * Compare two <code>Grade</code> instances to determine if they are equal
+	 * using all of the instance fields.  For <code>Grade</code> the
+	 * <code>equals</code> methods excludes the mutable fields from the
+	 * comparison.  This methods compares two <code>Grade</code> instances
+	 * using all of the fields.
+	 *
+	 * @param  element The <code>Element</code> instance to compare to this
+	 *                 instance
+	 *
+	 * @return         <code>True</code> if the two <code>Grade</code>
+	 *                 instances are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equalsAll (final Element element)
+	{
+		boolean result = false;
+
+		if (element == this)
+		{
+			result = true;
+		}
+		else if (element instanceof Grade)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.getActivity (), ((Grade) element).getActivity ());
+			ebuilder.append (this.getEnrolment (), ((Grade) element).getEnrolment ());
+			ebuilder.append (this.getGrade (), ((Grade) element).getGrade ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compute a <code>hashCode</code> of the <code>Grade</code> instance.
 	 * The hash code is computed based upon associated <code>Activity</code>
 	 * and the associated <code>Enrolment</code>.

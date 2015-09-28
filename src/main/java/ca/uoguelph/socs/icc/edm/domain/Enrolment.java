@@ -35,17 +35,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * <code>Course</code>.  The purpose of the <code>Enrolment</code> interface,
  * and its implementations, is to separate data about the participation in a
  * <code>Course</code> by a particular <code>User</code> from the data that
- * identifies the <code>User</code>.
- * <p>
- * Implementations of the <code>Enrolment</code> interface act as anonymous
- * place holders for the <code>User</code> interface, within the remainder of
- * the domain model.  If an implementation of the <code>Enrolment</code>
- * interface does not contain a link to an implementation of the
- * <code>User</code> interface then it must be impossible to identify the user
- * based on the data provided by the <code>Enrolment</code>.  For any given
- * <code>Enrolment</code> the associated <code>User</code> data may, or may
- * not, be present, so implementations must not rely on the presence of the
- * <code>User</code>.
+ * identifies the <code>User</code>.  As such, the <code>Enrolment</code>
+ * interface act as an anonymous place holders for the <code>User</code>
+ * interface, within the remainder of the domain model.
  * <p>
  * The <code>Enrolment</code> interface (and its implementations) has a strong
  * dependency on the <code>Course</code> and <code>Role</code> interfaces, and
@@ -55,7 +47,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * these required instances is deleted, then the <code>Enrolment</code>
  * instance must be deleted as well.  An instance of the <code>User</code>
  * interface should be present for the initial creation of the
- * <code>Enrolment</code> instance.  However, if it should be possible, if
+ * <code>Enrolment</code> instance.  However, it should be possible, if
  * difficult, to create an <code>Enrolment</code> instance without an
  * associated <code>User</code> instance.  Deletion of the associated
  * <code>User</code> instance should not impact the <code>Enrolment</code>
@@ -67,9 +59,19 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * associated instances of the <code>Grade</code> and <code>LogEntry</code>
  * interfaces must be deleted as well.
  * <p>
- * With the exception of adding and removing instances of the
- * <code>Grade</code> and <code>LogEntry</code> interfaces, instances of the
- * <code>Enrolment</code> interface, once created, are immutable.
+ * A single <code>Enrolment</code> instance exists to represent the
+ * participation of a single <code>User</code> in a single <code>Course</code>.
+ * Normally the <code>User</code> and <code>Course</code> instances would be
+ * used to uniquely identify the <code>Enrolment</code>.  Since the
+ * <code>Enrolment</code> instance does not contain a link to the associated
+ * <code>User</code> instance (which may not exist in the
+ * <code>DataStore</code>), <code>Enrolment</code> uses its
+ * <code>DataStore</code> ID as a stand in for the <code>User</code> during
+ * comparisons.  As a result, two otherwise identical <code>Enrolment</code>
+ * instances from different data stores will probably compare as different.
+ * <p>
+ * Once created an <code>Enrolment</code> instance is immutable except for the
+ * <code>finalGrade</code> and <code>usable</code> properties.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -179,7 +181,7 @@ public abstract class Enrolment extends Element
 	/**
 	 * Compare two <code>Enrolment</code> instances to determine if they are
 	 * equal.  The <code>Enrolment</code> instances are compared based upon the
-	 * <code>Course</code> and the <code>Role</code>.
+	 * <code>Course</code>, <code>Role</code> and <code>DataStore</code> id.
 	 *
 	 * @param  obj The <code>Enrolment</code> instance to compare to the one
 	 *             represented by the called instance
@@ -200,6 +202,7 @@ public abstract class Enrolment extends Element
 		else if (obj instanceof Enrolment)
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.getId (), ((Enrolment) obj).getId ());
 			ebuilder.append (this.getCourse (), ((Enrolment) obj).getCourse ());
 			ebuilder.append (this.getRole (), ((Enrolment) obj).getRole ());
 
@@ -208,6 +211,80 @@ public abstract class Enrolment extends Element
 
 		return result;
 	}
+
+	/**
+	 * Compare two <code>Enrolment</code> instances to determine if they are
+	 * equal using all of the instance fields.  For <code>Enrolment</code> the
+	 * <code>equals</code> methods excludes the mutable fields from the
+	 * comparison.  This methods compares two <code>Enrolment</code> instances
+	 * using all of the fields.
+	 *
+	 * @param  element The <code>Element</code> instance to compare to this
+	 *                 instance
+	 *
+	 * @return         <code>True</code> if the two <code>Enrolment</code>
+	 *                 instances are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equalsAll (final Element element)
+	{
+		boolean result = false;
+
+		if (element == this)
+		{
+			result = true;
+		}
+		else if (element instanceof Enrolment)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.getCourse (), ((Enrolment) element).getCourse ());
+			ebuilder.append (this.getRole (), ((Enrolment) element).getRole ());
+			ebuilder.append (this.getFinalGrade (), ((Enrolment) element).getFinalGrade ());
+			ebuilder.append (this.isUsable (), ((Enrolment) element).isUsable ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Compare two <code>Enrolment</code> instances to determine if they are
+	 * equal using the minimum set fields required to identify the
+	 * <code>Element</code> instance.  The <code>equals</code> method for
+	 * <code>Enrolment</code> includes the <code>DataStore</code> id in the
+	 * comparison.  This methods compares two <code>Enrolment</code> instances
+	 * without using the <code>DataStore</code> id.
+	 *
+	 * @param  element The <code>Element</code> instance to compare to this
+	 *                 instance
+	 *
+	 * @return         <code>True</code> if the two <code>Enrolment</code>
+	 *                 instances are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equalsUnique (final Element element)
+	{
+		boolean result = false;
+
+		if (element == this)
+		{
+			result = true;
+		}
+		else if (element instanceof Enrolment)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.getCourse (), ((Enrolment) element).getCourse ());
+			ebuilder.append (this.getRole (), ((Enrolment) element).getRole ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
 
 	/**
 	 * Compute a <code>hashCode</code> of the <code>Enrolment</code> instance.
@@ -224,6 +301,7 @@ public abstract class Enrolment extends Element
 		final int mult = 907;
 
 		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
+		hbuilder.append (this.getId ());
 		hbuilder.append (this.getCourse ());
 		hbuilder.append (this.getRole ());
 

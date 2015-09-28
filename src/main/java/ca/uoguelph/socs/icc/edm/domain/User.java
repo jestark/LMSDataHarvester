@@ -180,6 +180,42 @@ public abstract class User extends Element
 	}
 
 	/**
+	 * Compare two <code>User</code> instances to determine if they are equal
+	 * using all of the instance fields.  For <code>User</code> the
+	 * <code>equals</code> methods excludes the mutable fields from the
+	 * comparison.  This methods compares two <code>User</code> instances
+	 * using all of the fields.
+	 *
+	 * @param  element The <code>Element</code> instance to compare to this
+	 *                 instance
+	 *
+	 * @return         <code>True</code> if the two <code>User</code>
+	 *                 instances are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equalsAll (final Element element)
+	{
+		boolean result = false;
+
+		if (element == this)
+		{
+			result = true;
+		}
+		else if (element instanceof User)
+		{
+			EqualsBuilder ebuilder = new EqualsBuilder ();
+			ebuilder.append (this.getUsername (), ((User) element).getUsername ());
+			ebuilder.append (this.getFirstname (), ((User) element).getFirstname ());
+			ebuilder.append (this.getLastname (), ((User) element).getLastname ());
+
+			result = ebuilder.isEquals ();
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compute a <code>hashCode</code> of the <code>User</code> instance.
 	 * The hash code is computed based upon the following fields ID number and
 	 * the username.
