@@ -17,6 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -370,7 +371,7 @@ public abstract class Course extends Element
 	 * @return A <code>List</code> of <code>Enrolment</code> instances
 	 */
 
-	public abstract List<Enrolment> getEnrolments ();
+	public abstract Set<Enrolment> getEnrolments ();
 
 	/**
 	 * Initialize the <code>List</code> of <code>Enrolment</code> instances
@@ -382,7 +383,7 @@ public abstract class Course extends Element
 	 *                    instances, not null
 	 */
 
-	protected abstract void setEnrolments (List<Enrolment> enrolments);
+	protected abstract void setEnrolments (Set<Enrolment> enrolments);
 
 	/**
 	 * Add the specified <code>Enrolment</code> to the <code>Course</code>.

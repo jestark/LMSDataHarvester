@@ -18,9 +18,11 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
@@ -60,7 +62,7 @@ public class CourseData extends Course implements Serializable
 	private List<Activity> activities;
 
 	/** The <code>List</code> of individuals which are enrolled in the course. */
-	private List<Enrolment> enrolments;
+	private Set<Enrolment> enrolments;
 
 	/**
 	 * Static initializer to register the <code>CourseData</code> class with
@@ -84,7 +86,7 @@ public class CourseData extends Course implements Serializable
 		this.year = null;
 
 		this.activities = new ArrayList<Activity> ();
-		this.enrolments = new ArrayList<Enrolment> ();
+		this.enrolments = new HashSet<Enrolment> ();
 	}
 
 	/**
@@ -281,11 +283,11 @@ public class CourseData extends Course implements Serializable
 	 */
 
 	@Override
-	public List<Enrolment> getEnrolments ()
+	public Set<Enrolment> getEnrolments ()
 	{
 		this.enrolments.forEach (x -> this.propagateDomainModel (x));
 
-		return Collections.unmodifiableList (this.enrolments);
+		return Collections.unmodifiableSet (this.enrolments);
 	}
 
 	/**
@@ -299,7 +301,7 @@ public class CourseData extends Course implements Serializable
 	 */
 
 	@Override
-	protected void setEnrolments (final List<Enrolment> enrolments)
+	protected void setEnrolments (final Set<Enrolment> enrolments)
 	{
 		assert enrolments != null : "enrolments is NULL";
 
