@@ -139,7 +139,19 @@ public final class JPADataStore extends DataStore
 		{
 			this.log.debug ("Fetching by ID for: class={}, id={}", type.getSimpleName (), filter.getValue (Element.ID));
 
-			result.add (this.em.find (type, filter.getValue (Element.ID)));
+			T data = this.em.find (type, filter.getValue (Element.ID));
+
+			if (data != null)
+			{
+				this.log.debug ("Loaded Element: {}", data);
+
+				filter.getMetaData ().setValue (Element.MODEL, data, this.getDomainModel ());
+				result.add (data);
+			}
+			else
+			{
+				this.log.debug ("No Element of type {} found with ID: {}", type.getSimpleName (), filter.getValue (Element.ID));
+			}
 		}
 		else
 		{
@@ -153,10 +165,8 @@ public final class JPADataStore extends DataStore
 				.forEach ((x) -> query.setParameter (x.getName (), filter.getValue (x)));
 
 			result.addAll (query.getResultList ());
+			result.forEach (x -> filter.getMetaData ().setValue (Element.MODEL, x, this.getDomainModel ()));
 		}
-
-		this.log.debug ("Setting the Reference to the DomainModel");
-		result.forEach (x -> filter.getMetaData ().setValue (Element.MODEL, x, this.getDomainModel ()));
 
 		return result;
 	}
