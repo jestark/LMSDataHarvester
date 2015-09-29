@@ -231,7 +231,7 @@ public class UserData extends User implements Serializable
 	{
 		return this.getEnrolments ()
 			.stream ()
-			.filter (x -> x.getCourse () == course)
+			.filter (x -> x.getCourse ().equals (course))
 			.findFirst ()
 			.orElse (null);
 	}
