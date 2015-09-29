@@ -31,12 +31,15 @@ Lesson							2039	601
 LessonPage						2053	599
 Workshop						2063	593
 WorkshopSubmission				2069	587
+Wiki							2111	547
+WikiPage						2113	541
 
 BookChapterLog					2081	577
 ForumDiscussionLog				2083	571
 ForumPostLog					2087	569
 LessonPostLog					2089	563
 WorkshopSubmissionLog			2099	557
+WikiPageLog						2129	523
 
 Assign							3001	397
 Checklist						3011	389

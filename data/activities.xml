@@ -44,6 +44,12 @@
 
 	<activity name="URL" type="url" base="3083" mult="337"/>
 
+	<activity name="Wiki" type="wiki" base="2111" mult="547">
+		<subactivity name="WikiPage" base="2113" mult="541">
+			<log name="WikiPageLog" base="2129" mult="523"/>
+		</subactivity>
+	</activity>
+
 	<activity name="Workshop" type="workshop" base="2063" mult="593">
 		<subactivity name="WorkshopSubmission" base="2069" mult="587">
 			<log name="WorkshopSubmissionLog" base="2099" mult="557"/>
