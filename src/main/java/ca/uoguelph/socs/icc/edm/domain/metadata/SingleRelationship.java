@@ -258,7 +258,9 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 
 		V value = this.reference.getValue (element);
 
-		return datastore.contains (element) && this.getInverse (value.getClass ()).insert (datastore, this.reference.getValue (element), element);
+		return (value == null)
+			|| (datastore.contains (element)
+			&& this.getInverse (value.getClass ()).insert (datastore, value, element));
 	}
 
 	/**
@@ -287,6 +289,8 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 
 		V value = this.reference.getValue (element);
 
-		return datastore.contains (element) && this.getInverse (value.getClass ()).remove (value, element);
+		return (value == null)
+			|| (datastore.contains (element)
+			&& this.getInverse (value.getClass ()).remove (value, element));
 	}
 }
