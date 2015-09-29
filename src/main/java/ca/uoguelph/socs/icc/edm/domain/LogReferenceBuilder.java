@@ -42,9 +42,6 @@ public final class LogReferenceBuilder implements Builder<LogReference>
 	/** Helper to substitute <code>LogEntry</code> instances*/
 	private final DataStoreProxy<LogEntry> entryProxy;
 
-	/** Helper to operate on <code>LogReference</code> instances */
-	private final DataStoreProxy<LogReference> referenceProxy;
-
 	/** The associated <code>LogEnty</code>*/
 	private LogEntry entry;
 
@@ -64,7 +61,6 @@ public final class LogReferenceBuilder implements Builder<LogReference>
 		this.datastore = datastore;
 
 		this.entryProxy = DataStoreProxy.getInstance (LogEntry.class, LogEntry.SELECTOR_ID, datastore);
-		this.referenceProxy = DataStoreProxy.getInstance (LogReference.class, LogReference.SELECTOR_ENTRY, datastore);
 
 		this.entry = null;
 		this.subActivity = null;
@@ -95,11 +91,15 @@ public final class LogReferenceBuilder implements Builder<LogReference>
 			throw new IllegalStateException ("subActivity is NULL");
 		}
 
-		LogReference result = this.referenceProxy.create ();
+		DataStoreProxy<LogReference> referenceProxy = DataStoreProxy.getInstance (LogReference.class,
+				LogReference.getLogClass (this.subActivity.getClass ()),
+				LogReference.SELECTOR_ENTRY, datastore);
+
+		LogReference result = referenceProxy.create ();
 		result.setEntry (this.entry);
 		result.setSubActivity (this.subActivity);
 
-		return this.referenceProxy.insert (result);
+		return referenceProxy.insert (result);
 	}
 
 	/**
@@ -224,7 +224,7 @@ public final class LogReferenceBuilder implements Builder<LogReference>
 	{
 		this.log.trace ("setSubActivity: subActivity={}", subActivity);
 
-		if (subActivity != null)
+		if (subActivity == null)
 		{
 			this.log.error ("subActivity is NULL");
 			throw new NullPointerException ("subActivity is NULL");
