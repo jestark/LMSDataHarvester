@@ -95,7 +95,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 		return datastore.contains (element) && ((! this.selector.isUnique ()) || this.getQuery (datastore)
 			.setProperty (this.property, element)
 			.queryAll ()
-			.isEmpty ());
+			.size () <= 1);
 	}
 
 	/**
