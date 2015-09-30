@@ -131,6 +131,24 @@ public abstract class Activity extends ParentActivity
 	}
 
 	/**
+	 * Determine if an <code>Activity</code> implementation class has been
+	 * registered for the specified <code>ActivityType</code>.
+	 *
+	 * @param  type The <code>ActivityType</code>, not null
+	 *
+	 * @return      <code>true</code> if an <code>Activity</code>
+	 *              implementation class has been registered for the specified
+	 *              <code>ActivityType</code>, <code>false</code> otherwise
+	 */
+
+	public static final boolean hasActivityClass (final ActivityType type)
+	{
+		assert type != null : "type is NULL";
+
+		return Activity.activities.containsKey (type);
+	}
+
+	/**
 	 * Get the <code>Activity</code> implementation class which is associated
 	 * with the specified <code>ActivityType</code>.
 	 *
