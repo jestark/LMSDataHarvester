@@ -66,6 +66,9 @@ public class MoodleLogData extends LogEntry
 
 	/** The info String*/
 	private String info;
+	
+	/** The URL contained in the <code>LogEntry</code> */
+	private String url;
 
 	/**
 	 * Static initializer to register the <code>LogData</code> class with the
@@ -77,6 +80,10 @@ public class MoodleLogData extends LogEntry
 		Implementation.getInstance (LogEntry.class, MoodleLogData.class, MoodleLogData::new);
 	}
 
+	/**
+	 * Create the <code>MoodleLogData</code>
+	 */
+	
 	protected MoodleLogData ()
 	{
 		this.id = null;
@@ -88,6 +95,7 @@ public class MoodleLogData extends LogEntry
 		this.ip = null;
 		this.module = null;
 		this.info = null;
+		this.url = null;
 	}
 
 	/**
@@ -493,6 +501,30 @@ public class MoodleLogData extends LogEntry
 	}
 
 	/**
+	 * Get the URL associated with the <code>LogEntry</code>.
+	 *
+	 * @return The URL
+	 */
+
+	public String getUrl ()
+	{
+		return this.url;
+	}
+	
+	/**
+	 * Set the URL associated with the <code>LogEntry</code>
+	 *
+	 * @param url The URL, not null
+	 */
+
+	protected void setUrl (final String url)
+	{
+		assert url != null : "url is NULL";
+		
+		this.url = url;
+	}
+
+	/**
 	 * Get a <code>String</code> representation of the <code>LogEntry</code>
 	 * instance, including the identifying fields.
 	 *
@@ -513,6 +545,7 @@ public class MoodleLogData extends LogEntry
 		builder.append ("time", this.time);
 		builder.append ("ipaddress", this.ip);
 		builder.append ("info", this.info);
+		builder.append ("url", this.url);
 
 		return builder.toString ();
 	}

@@ -210,6 +210,9 @@
 			<basic name="module" optional="false">
 				<column name="module" nullable="false"/>
 			</basic>
+			<basic name="url" optional="false">
+				<column name="url" nullable="false"/>
+			</basic>
 			<many-to-one name="course" target-entity="CourseData" optional="false">
 				<join-column name="course" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
