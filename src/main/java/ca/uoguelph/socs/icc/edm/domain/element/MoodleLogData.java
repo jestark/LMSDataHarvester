@@ -25,24 +25,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.Network;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
-
-import ca.uoguelph.socs.icc.edm.domain.resolver.Resolver;
 
 public class MoodleLogData extends LogEntry
 {
@@ -52,38 +43,28 @@ public class MoodleLogData extends LogEntry
 	/** The primary key for the log entry */
 	private Long id;
 
-	/** The logged <code>Action</code> */
-	private Action action;
+	/** The name of the <code>Action</code> */
+	private String action;
 
-	/** The associated <code>Activity</code> */
-	private Activity activity;
+	/** The <code>DataStore</code> id of the associated <code>Activity</code> */
+	private Long activityId;
 
-	/** The <code>Enrolment</code> which generated the log entry */
-	private Enrolment enrolment;
-
-	/** The associated <code>Network</code> */
-	private Network network;
-
-	/** The reference to the logged <code>SubActivity</code> */
-	private LogReference reference;
+	/** The Associated <code>Course</code> */
+	private Course course;
 
 	/** The time at which the action was performed */
 	private Date time;
 
-	/** The <code>ActivityType</code> for the associated <code>Activity</code> */
-	private ActivityType type;
+	/** The name of the module */
+	private String module;
 
-	/** The <code>User</code> which created the <code>LogEntry</code> */
-	private User userElement;
+	/** The <code>DataStore</code> id of the associated <code>User</code> */
+	private Long userId;
 
 	/** The originating IP Address for the logged action */
 	private String ip;
 
-	private Long user;
-	private Course course;
-	private String module;
-	private Long activityId;
-	private String actionName;
+	/** The info String*/
 	private String info;
 
 	/**
@@ -99,176 +80,14 @@ public class MoodleLogData extends LogEntry
 	protected MoodleLogData ()
 	{
 		this.id = null;
-		this.time = null;
-		this.user = null;
-		this.ip = null;
-		this.course = null;
-		this.module = null;
-		this.activity = null;
 		this.action = null;
+		this.activityId = null;
+		this.course = null;
+		this.time = null;
+		this.userId = null;
+		this.ip = null;
+		this.module = null;
 		this.info = null;
-	}
-
-	private Action buildAction (final DataStore datastore, final String name)
-	{
-		if (this.getAction () == null)
-		{
-			this.setAction (datastore.getQuery (Action.class, Action.SELECTOR_NAME)
-					.setProperty (Action.NAME, name)
-					.query ());
-
-			if (this.getAction () == null)
-			{
-				this.action = Action.builder (datastore)
-					.setName (name)
-					.build ();
-			}
-		}
-
-		return this.action;
-	}
-
-	private Activity buildActivity (final DataStore datastore, final String module)
-	{
-		if (this.getActivity () == null)
-		{
-			this.activity = datastore.getQuery (Activity.class,
-					GenericActivity.class,
-					Selector.getInstance ("instance", true,
-						Activity.TYPE, Activity.COURSE))
-				.setProperty (Activity.TYPE, this.loadActivityType (module))
-				.setProperty (Activity.COURSE, this.getCourse ())
-				.query ();
-
-			if (this.activity == null)
-			{
-				this.activity = Activity.builder (datastore, this.loadActivityType (module))
-					.setCourse (this.course)
-					.build ();
-			}
-		}
-
-		return this.activity;
-	}
-
-	private Network buildNetwork (final DataStore datastore, final String ipAddress)
-	{
-		if (this.getNetwork () == null)
-		{
-			String name = Resolver.getInstance ().getOrgName (ipAddress);
-
-			this.setNetwork (datastore.getQuery (Network.class, Network.SELECTOR_NAME)
-					.setProperty (Network.NAME, name)
-					.query ());
-
-			if (this.getNetwork () == null)
-			{
-				this.setNetwork (Network.builder (datastore)
-						.setName (name)
-						.build ());
-			}
-		}
-
-		return this.getNetwork ();
-	}
-
-	private Activity loadActivity (final Long id, final String type)
-	{
-		if (id != 0)
-		{
-			this.activity = this.getDataStore ()
-				.getQuery (Activity.class,
-						Activity.getActivityClass (this.loadActivityType (type)),
-						Activity.SELECTOR_ID)
-				.setProperty (Activity.ID, id)
-				.query ();
-		}
-
-		return this.activity;
-	}
-
-	private ActivityType loadActivityType (final String name)
-	{
-		if (this.type != null)
-		{
-			this.type = this.getDataStore ()
-				.getQuery (ActivityType.class, ActivityType.SELECTOR_NAME)
-				.setProperty (ActivityType.NAME, this.module)
-				.query ();
-		}
-
-		return this.type;
-	}
-
-	private Enrolment loadEnrolment (final DataStore datastore, final Long userid)
-	{
-		if (this.enrolment == null)
-		{
-			if (this.loadUser (userid) != null)
-			{
-				User u = datastore.getQuery (User.class, User.SELECTOR_USERNAME)
-					.setAllProperties (this.userElement)
-					.query ();
-
-				if (u != null)
-				{
-					this.enrolment = u.getEnrolment (this.course);
-				}
-				else
-				{
-					throw new IllegalStateException ("User does not exist in the destination database");
-				}
-			}
-			else
-			{
-				throw new IllegalStateException ("User does not exist");
-			}
-		}
-
-		return this.enrolment;
-	}
-
-	private SubActivity loadSubActivity (final SubActivity subActivity)
-	{
-		return null;
-	}
-
-	private User loadUser (final Long id)
-	{
-		if (this.userElement == null)
-		{
-			this.userElement = this.getDataStore ()
-				.getQuery (User.class, User.SELECTOR_ID)
-				.setProperty (User.ID, id)
-				.query ();
-		}
-
-		return this.userElement;
-	}
-
-	/**
-	 * Get an <code>LogEntryBuilder</code> instance for the specified
-	 * <code>DataStore</code>.  This method creates an
-	 * <code>LogEntryBuilder</code> on the specified <code>DataStore</code> and
-	 * initializes it with the contents of this <code>LogEntry</code> instance.
-	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The initialized <code>LogEntryBuilder</code>
-	 */
-
-	@Override
-	public LogEntryBuilder getBuilder (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is null";
-
-		return LogEntry.builder (this.getDataStore ())
-			.setAction (this.buildAction (datastore, this.actionName))
-			.setActivity (this.buildActivity (datastore, this.module))
-			.setEnrolment (this.loadEnrolment (datastore, this.user))
-			.setNetwork (this.buildNetwork (datastore, this.ip))
-			.setSubActivity (this.loadSubActivity (this.getSubActivity ()))
-			.setTime (this.time);
 	}
 
 	/**
@@ -310,7 +129,7 @@ public class MoodleLogData extends LogEntry
 	@Override
 	public Action getAction ()
 	{
-		return this.action;
+		return null;
 	}
 
 	/**
@@ -327,7 +146,7 @@ public class MoodleLogData extends LogEntry
 	{
 		assert action != null : "action is NULL";
 
-		this.action = action;
+		throw new UnsupportedOperationException ();
 	}
 
 	/**
@@ -340,8 +159,7 @@ public class MoodleLogData extends LogEntry
 	@Override
 	public Activity getActivity ()
 	{
-		return (this.activity != null) ? this.activity :
-			this.loadActivity (this.activityId, this.module);
+		return null;
 	}
 
 	/**
@@ -358,7 +176,7 @@ public class MoodleLogData extends LogEntry
 	{
 		assert activity != null : "activity is NULL";
 
-		this.activity = activity;
+		throw new UnsupportedOperationException ();
 	}
 
 	/**
@@ -397,7 +215,7 @@ public class MoodleLogData extends LogEntry
 	@Override
 	public Enrolment getEnrolment ()
 	{
-		return this.enrolment;
+		return null;
 	}
 
 	/**
@@ -414,7 +232,7 @@ public class MoodleLogData extends LogEntry
 	{
 		assert enrolment != null : "enrolment is NULL";
 
-		this.enrolment = enrolment;
+		throw new UnsupportedOperationException ();
 	}
 
 	/**
@@ -427,7 +245,7 @@ public class MoodleLogData extends LogEntry
 	@Override
 	public Network getNetwork ()
 	{
-		return this.network;
+		return null;
 	}
 
 	/**
@@ -444,7 +262,7 @@ public class MoodleLogData extends LogEntry
 	{
 		assert network != null : "network is NULL";
 
-		this.network = network;
+		throw new UnsupportedOperationException ();
 	}
 
 	/**
@@ -461,7 +279,7 @@ public class MoodleLogData extends LogEntry
 	@Override
 	public LogReference getReference ()
 	{
-		return this.reference;
+		return null;
 	}
 
 	/**
@@ -479,7 +297,7 @@ public class MoodleLogData extends LogEntry
 	{
 		assert reference != null : "reference is NULL";
 
-		this.reference = reference;
+		throw new UnsupportedOperationException ();
 	}
 
 	/**
@@ -493,7 +311,7 @@ public class MoodleLogData extends LogEntry
 	@Override
 	public SubActivity getSubActivity ()
 	{
-		return (this.reference != null) ? this.getReference ().getSubActivity () : null;
+		return null;
 	}
 
 	/**
@@ -532,20 +350,20 @@ public class MoodleLogData extends LogEntry
 
 	public String getActionName ()
 	{
-		return this.actionName;
+		return this.action;
 	}
 
 	/**
 	 * Set the name of the logged <code>Action</code>.
 	 *
-	 * @param  actionName The name of the logged <code>Action</code>, not null
+	 * @param  action The name of the logged <code>Action</code>, not null
 	 */
 
-	protected void setActionName (final String actionName)
+	protected void setActionName (final String action)
 	{
-		assert ip != null : "ip is NULL";
+		assert action != null : "action is NULL";
 
-		this.actionName = actionName;
+		this.action = action;
 	}
 
 	/**
@@ -643,7 +461,7 @@ public class MoodleLogData extends LogEntry
 
 	protected void setModule (final String module)
 	{
-		assert ip != null : "ip is NULL";
+		assert module != null : "module is NULL";
 
 		this.module = module;
 	}
@@ -655,23 +473,23 @@ public class MoodleLogData extends LogEntry
 	 * @return The ID number
 	 */
 
-	public Long getUser ()
+	public Long getUserId ()
 	{
-		return this.user;
+		return this.userId;
 	}
 
 	/**
 	 * Set the ID number of the <code>User</code> which performed the logged
 	 * <code>Action</code>.
 	 *
-	 * @param  user The ID number of the <code>User</code>, not null
+	 * @param  userId The ID number of the <code>User</code>, not null
 	 */
 
-	protected void setUser (final Long user)
+	protected void setUserId (final Long userId)
 	{
 		assert ip != null : "ip is NULL";
 
-		this.user = user;
+		this.userId = userId;
 	}
 
 	/**
@@ -687,16 +505,13 @@ public class MoodleLogData extends LogEntry
 	{
 		ToStringBuilder builder = new ToStringBuilder (this);
 
-		builder.append ("enrolment", this.enrolment);
 		builder.append ("action", this.action);
-		builder.append ("activity", this.activity);
-		builder.append ("time", this.time);
-		builder.append ("ipaddress", this.ip);
-		builder.append ("user", this.user);
+		builder.append ("activityId", this.activityId);
 		builder.append ("course", this.course);
 		builder.append ("module", this.module);
-		builder.append ("activityId", this.activityId);
-		builder.append ("actionName", this.actionName);
+		builder.append ("userId", this.userId);
+		builder.append ("time", this.time);
+		builder.append ("ipaddress", this.ip);
 		builder.append ("info", this.info);
 
 		return builder.toString ();

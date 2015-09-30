@@ -127,8 +127,11 @@
 	<entity name="ActivityType" class="MoodleActivityType" metadata-complete="true">
 		<description>Mapping definition for the Activity Types (Moodle modules)</description>
 		<table name="mdl_modules"/>
-		<named-query name="ActivityTypeData:all">
+		<named-query name="MoodleActivityType:all">
 			<query>SELECT t FROM ActivityType t</query>
+		</named-query>
+		<named-query name="MoodleActivityType:name">
+			<query>SELECT t FROM ActivityType t WHERE t.name = :name</query>
 		</named-query>
 		<attributes>
 			<id name="id">
@@ -195,17 +198,17 @@
 			<basic name="activityId" optional="false">
 				<column name="cmid" nullable="false"/>
 			</basic>
-			<basic name="module" optional="false">
-				<column name="module" nullable="false"/>
-			</basic>
 			<basic name="info" optional="false">
 				<column name="info" nullable="false"/>
 			</basic>
 			<basic name="IPAddress" optional="false">
 				<column name="ip" nullable="false"/>
 			</basic>
-			<basic name="user" optional="false">
+			<basic name="userId" optional="false">
 				<column name="userid" nullable="false"/>
+			</basic>
+			<basic name="module" optional="false">
+				<column name="module" nullable="false"/>
 			</basic>
 			<many-to-one name="course" target-entity="CourseData" optional="false">
 				<join-column name="course" nullable="false" referenced-column-name="id"/>
