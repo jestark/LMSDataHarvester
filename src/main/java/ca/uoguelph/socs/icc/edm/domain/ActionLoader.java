@@ -83,7 +83,7 @@ public final class ActionLoader extends AbstractLoader<Action>
 		}
 
 		return this.getQuery (Action.SELECTOR_ID)
-			.setProperty (Action.ID, id)
+			.setValue (Action.ID, id)
 			.query ();
 	}
 
@@ -124,7 +124,7 @@ public final class ActionLoader extends AbstractLoader<Action>
 		}
 
 		return this.getQuery (Action.SELECTOR_NAME)
-			.setProperty (Action.NAME, name)
+			.setValue (Action.NAME, name)
 			.query ();
 	}
 }

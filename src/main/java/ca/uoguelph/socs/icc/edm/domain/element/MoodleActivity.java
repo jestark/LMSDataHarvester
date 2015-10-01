@@ -128,7 +128,7 @@ public class MoodleActivity extends NamedActivity
 				.getQuery (Activity.class,
 						Activity.getActivityClass (this.getType ()),
 						Activity.SELECTOR_ID)
-				.setProperty (Activity.ID, this.instanceid)
+				.setValue (Activity.ID, this.instanceid)
 				.query ();
 
 			// Type is transient on the loaded activity, so copy it in here

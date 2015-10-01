@@ -82,7 +82,7 @@ public final class RoleLoader extends AbstractLoader<Role>
 		}
 
 		return this.getQuery (Role.SELECTOR_ID)
-			.setProperty (Role.ID, id)
+			.setValue (Role.ID, id)
 			.query ();
 	}
 
@@ -122,7 +122,7 @@ public final class RoleLoader extends AbstractLoader<Role>
 		}
 
 		return this.getQuery (Role.SELECTOR_NAME)
-			.setProperty (Role.NAME, name)
+			.setValue (Role.NAME, name)
 			.query ();
 	}
 }

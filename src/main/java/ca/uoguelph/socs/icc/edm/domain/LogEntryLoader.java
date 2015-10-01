@@ -83,7 +83,7 @@ public final class LogEntryLoader extends AbstractLoader<LogEntry>
 		}
 
 		return this.getQuery (LogEntry.SELECTOR_ID)
-			.setProperty (LogEntry.ID, id)
+			.setValue (LogEntry.ID, id)
 			.query ();
 	}
 
@@ -124,7 +124,7 @@ public final class LogEntryLoader extends AbstractLoader<LogEntry>
 		}
 
 		return this.getQuery (LogEntry.SELECTOR_COURSE)
-			.setProperty (LogEntry.COURSE, course)
+			.setValue (LogEntry.COURSE, course)
 			.queryAll ();
 	}
 }

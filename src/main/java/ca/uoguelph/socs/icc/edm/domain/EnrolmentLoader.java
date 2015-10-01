@@ -82,7 +82,7 @@ public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 		}
 
 		return this.getQuery (Enrolment.SELECTOR_ID)
-			.setProperty (Enrolment.ID, id)
+			.setValue (Enrolment.ID, id)
 			.query ();
 	}
 
@@ -123,7 +123,7 @@ public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 		}
 
 		return this.getQuery (Enrolment.SELECTOR_ROLE)
-			.setProperty (Enrolment.ROLE, role)
+			.setValue (Enrolment.ROLE, role)
 			.queryAll ();
 	}
 }

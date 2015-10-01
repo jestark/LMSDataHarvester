@@ -119,7 +119,7 @@ public final class Query<T extends Element>
 	 * @return          The value associated with the specified property
 	 */
 
-	public final <V> V getPropertyValue (final Property<V> property)
+	public final <V> V getValue (final Property<V> property)
 	{
 		assert property != null : "property is NULL";
 		assert (this.selector.getProperties ().contains (property)) : "invalid property";
@@ -137,7 +137,7 @@ public final class Query<T extends Element>
 	 * @return         A reference to this <code>Query</code>
 	 */
 
-	public final <V> Query<T> setProperty (final Property<V> property, final V value)
+	public final <V> Query<T> setValue (final Property<V> property, final V value)
 	{
 		this.log.trace ("setProperty: property={}, value={}", property, value);
 
@@ -160,7 +160,7 @@ public final class Query<T extends Element>
 	 * @return         A reference to this <code>Query</code>
 	 */
 
-	public final Query<T> setAllProperties (final T element)
+	public final Query<T> setAllValues (final T element)
 	{
 		this.log.trace ("setAllProperties: element={}", element);
 

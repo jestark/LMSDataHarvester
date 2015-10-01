@@ -386,7 +386,7 @@ public final class UserBuilder implements Builder<User>
 			throw new IllegalArgumentException ("Enrolment not in DataStore");
 		}
 
-		if (! this.enrolmentQuery.setProperty (User.ENROLMENTS, add).queryAll ().isEmpty ())
+		if (! this.enrolmentQuery.setValue (User.ENROLMENTS, add).queryAll ().isEmpty ())
 		{
 			this.log.error ("The Enrolment is already assigned to another user");
 			throw new IllegalArgumentException ("The Enrolment is already assigned to another User");

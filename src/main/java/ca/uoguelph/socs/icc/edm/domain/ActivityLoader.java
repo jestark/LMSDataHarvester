@@ -84,7 +84,7 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 		}
 
 		return this.getDefinitionQuery (Activity.SELECTOR_ID)
-			.setProperty (Activity.ID, id)
+			.setValue (Activity.ID, id)
 			.query ();
 	}
 

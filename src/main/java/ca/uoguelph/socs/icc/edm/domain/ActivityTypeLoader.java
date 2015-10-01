@@ -82,7 +82,7 @@ public final class ActivityTypeLoader extends AbstractLoader<ActivityType>
 		}
 
 		return this.getQuery (ActivityType.SELECTOR_ID)
-			.setProperty (ActivityType.ID, id)
+			.setValue (ActivityType.ID, id)
 			.query ();
 	}
 
@@ -131,8 +131,8 @@ public final class ActivityTypeLoader extends AbstractLoader<ActivityType>
 		}
 
 		return this.getQuery (ActivityType.SELECTOR_NAME)
-			.setProperty (ActivityType.SOURCE, source)
-			.setProperty (ActivityType.NAME, name)
+			.setValue (ActivityType.SOURCE, source)
+			.setValue (ActivityType.NAME, name)
 			.query ();
 	}
 }

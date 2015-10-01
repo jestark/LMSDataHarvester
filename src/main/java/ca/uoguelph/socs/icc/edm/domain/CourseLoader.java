@@ -82,7 +82,7 @@ public final class CourseLoader extends AbstractLoader<Course>
 		}
 
 		return this.getQuery (Course.SELECTOR_ID)
-			.setProperty (Course.ID, id)
+			.setValue (Course.ID, id)
 			.query ();
 	}
 
@@ -137,9 +137,9 @@ public final class CourseLoader extends AbstractLoader<Course>
 		}
 
 		return this.getQuery (Course.SELECTOR_OFFERING)
-			.setProperty (Course.SEMESTER, semester)
-			.setProperty (Course.YEAR, year)
-			.setProperty (Course.NAME, name)
+			.setValue (Course.SEMESTER, semester)
+			.setValue (Course.YEAR, year)
+			.setValue (Course.NAME, name)
 			.query ();
 	}
 }

@@ -62,7 +62,9 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	{
 		assert datastore != null : "datastore is NULL";
 
-		return datastore.getDefinitionQuery (this.value, this.selector);
+		return datastore.getQuery (datastore.getProfile ()
+				.getMetaData (this.value),
+				this.selector);
 	}
 
 	/**
@@ -93,7 +95,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 		assert datastore.contains (element) : "element is not in the datastore";
 
 		return datastore.contains (element) && ((! this.selector.isUnique ()) || this.getQuery (datastore)
-			.setProperty (this.property, element)
+			.setValue (this.property, element)
 			.queryAll ()
 			.size () <= 1);
 	}
@@ -226,7 +228,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 		assert datastore.contains (element) : "element is not in the datastore";
 
 		return datastore.contains (element) && this.getQuery (datastore)
-			.setProperty (this.property, element)
+			.setValue (this.property, element)
 			.queryAll ()
 			.stream ()
 			.allMatch (x -> this.getInverse (x.getClass ()).canRemove ());
@@ -284,7 +286,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 		assert datastore.contains (element) : "element is not in the datastore";
 
 		return datastore.contains (element) && this.getQuery (datastore)
-			.setProperty (this.property, element)
+			.setValue (this.property, element)
 			.queryAll ()
 			.stream ()
 			.allMatch (x -> this.getInverse (x.getClass ())

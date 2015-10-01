@@ -214,27 +214,6 @@ public abstract class DataStore
 	}
 
 	/**
-	 * Get a <code>Query</code> for the specified <code>Element</code>
-	 * definition.  A <code>Query</code> for an <code>Element</code> definition
-	 * covers all implementation classes, at the cost of some performance.
-	 *
-	 * @param  <T>      The type of the <code>Element</code> returned by the
-	 *                  <code>Query</code>
-	 * @param  element  The <code>Element</code> interface class, not null
-	 * @param  selector The <code>Selector</code>, not null
-	 *
-	 * @return          The <code>Query</code>
-	 */
-
-	public final <T extends Element> Query<T> getDefinitionQuery (final Class<T> element, final Selector selector)
-	{
-		assert element != null : "element is NULL";
-		assert selector != null : "selector is NULL";
-
-		return new Query<T> (this.getProfile ().getMetaData (element), selector, this);
-	}
-
-	/**
 	 * Retrieve a <code>List</code> of <code>Element</code> instances which
 	 * match the specified <code>Filter</code>.
 	 *

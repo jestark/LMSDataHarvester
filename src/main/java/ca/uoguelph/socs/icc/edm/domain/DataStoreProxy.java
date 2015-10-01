@@ -312,7 +312,7 @@ final class QueryProxy<T extends Element> extends DataStoreProxy<T>
 		}
 
 		return (this.datastore.contains (element)) ? element
-			: this.query.setAllProperties (element).query ();
+			: this.query.setAllValues (element).query ();
 	}
 
 	/**
@@ -344,7 +344,7 @@ final class QueryProxy<T extends Element> extends DataStoreProxy<T>
 			throw new IllegalStateException ("no active transaction");
 		}
 
-		T result = this.query.setAllProperties (element).query ();
+		T result = this.query.setAllValues (element).query ();
 
 		if (result == null)
 		{

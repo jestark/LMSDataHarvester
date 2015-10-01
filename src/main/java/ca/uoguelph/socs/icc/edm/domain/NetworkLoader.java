@@ -82,7 +82,7 @@ public final class NetworkLoader extends AbstractLoader<Network>
 		}
 
 		return this.getQuery (Network.SELECTOR_ID)
-			.setProperty (Network.ID, id)
+			.setValue (Network.ID, id)
 			.query ();
 	}
 
@@ -123,7 +123,7 @@ public final class NetworkLoader extends AbstractLoader<Network>
 		}
 
 		return this.getQuery (Network.SELECTOR_NAME)
-			.setProperty (Network.NAME, name)
+			.setValue (Network.NAME, name)
 			.query ();
 	}
 }

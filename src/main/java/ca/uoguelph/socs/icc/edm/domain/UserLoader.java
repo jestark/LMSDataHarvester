@@ -82,7 +82,7 @@ public final class UserLoader extends AbstractLoader<User>
 		}
 
 		return this.getQuery (User.SELECTOR_ID)
-			.setProperty (User.ID, id)
+			.setValue (User.ID, id)
 			.query ();
 	}
 
@@ -124,7 +124,7 @@ public final class UserLoader extends AbstractLoader<User>
 		}
 
 		return this.getQuery (User.SELECTOR_USERNAME)
-			.setProperty (User.USERNAME, username)
+			.setValue (User.USERNAME, username)
 			.query ();
 	}
 
@@ -152,7 +152,7 @@ public final class UserLoader extends AbstractLoader<User>
 		}
 
 		return this.getQuery (User.SELECTOR_ENROLMENTS)
-			.setProperty (User.ENROLMENTS, enrolment)
+			.setValue (User.ENROLMENTS, enrolment)
 			.query ();
 	}
 }

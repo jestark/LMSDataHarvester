@@ -194,7 +194,8 @@ public abstract class AbstractLoader<T extends Element>
 			throw new IllegalStateException ("datastore is closed");
 		}
 
-		return this.datastore.getDefinitionQuery (this.type, selector);
+		return this.datastore.getQuery (this.datastore.getProfile ()
+				.getMetaData (this.type), selector);
 	}
 
 	/**
