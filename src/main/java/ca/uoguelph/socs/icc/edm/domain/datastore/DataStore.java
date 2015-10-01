@@ -168,8 +168,7 @@ public abstract class DataStore
 		assert element != null : "element is NULL";
 		assert selector != null : "selector is NULL";
 
-		return Query.getInstance (this.getProfile ()
-				.getCreator (element), selector, this);
+		return new Query<T> (this.getProfile ().getCreator (element), selector, this);
 	}
 
 	/**
@@ -191,8 +190,27 @@ public abstract class DataStore
 		assert impl != null : "impl is NULL";
 		assert selector != null : "selector is NULL";
 
-		return Query.getInstance (this.getProfile ()
-				.getCreator (type, impl), selector,	this);
+		return new Query<T> (this.getProfile ().getCreator (type, impl), selector,	this);
+	}
+
+	/**
+	 * Get a <code>Query</code> for the specified <code>Element</code> using
+	 * the specified <code>MetaData</code> instance
+	 *
+	 * @param  <T>      The type of the <code>Element</code> returned by the
+	 *                  <code>Query</code>
+	 * @param  metadata The <code>MetaData</code> instance, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Query</code>
+	 */
+
+	public final <T extends Element> Query<T> getQuery (final MetaData<T> metadata, final Selector selector)
+	{
+		assert metadata != null : "metadata is NULL";
+		assert selector != null : "selector is NULL";
+
+		return new Query<T> (metadata, selector, this);
 	}
 
 	/**
@@ -213,8 +231,7 @@ public abstract class DataStore
 		assert element != null : "element is NULL";
 		assert selector != null : "selector is NULL";
 
-		return Query.getInstance (this.getProfile ()
-				.getMetaData (element), selector, this);
+		return new Query<T> (this.getProfile ().getMetaData (element), selector, this);
 	}
 
 	/**
@@ -222,13 +239,12 @@ public abstract class DataStore
 	 * match the specified <code>Filter</code>.
 	 *
 	 * @param  <T>    The <code>Element</code> interface type
-	 * @param  <U>    The <code>Element</code> implementation type
 	 * @param  filter The <code>Filter</code>, not null
 	 *
 	 * @return        A <code>List</code> of <code>Element</code> instances
 	 */
 
-	protected abstract <T extends Element, U extends T> List<T> fetch (Class<U> type, Filter<T> filter);
+	protected abstract <T extends Element> List<T> fetch (Class<? extends T> type, Filter<T> filter);
 
 	/**
 	 * Get a <code>List</code> containing all of the ID numbers in the

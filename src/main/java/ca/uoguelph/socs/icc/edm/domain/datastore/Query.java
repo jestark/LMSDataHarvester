@@ -27,7 +27,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Receiver;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
@@ -43,160 +42,22 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     ca.uoguelph.socs.icc.edm.domain.Element
  */
 
-public abstract class Query<T extends Element>
+public final class Query<T extends Element>
 {
-	/**
-	 * Factory to produce <code>Query</code> instances.
-	 *
-	 * @param   <T> The <code>Element</code> interface type of the <code>Query</code>
-	 */
-
-	private static final class QueryFactory<T extends Element> implements Receiver<T, Query<T>>
-	{
-		/** The <code>DataStore</code> to be used by the <code>Query</code> */
-		private final DataStore datastore;
-
-		/** The <code>Selector</code> which defines the <code>Query</code> */
-		private final Selector selector;
-
-		/**
-		 * Create the <code>QueryFactory</code>, for the specified
-		 * <code>Selector</code> on the specified <code>DataStore</code>.
-		 *
-		 * @param  datastore The <code>DataStore</code>
-		 * @param  selector  The <code>Selector</code>
-		 */
-
-		public QueryFactory (final DataStore datastore, final Selector selector)
-		{
-			assert datastore != null : "datastore is NULL";
-			assert selector != null : "selector is NULL";
-
-			this.datastore = datastore;
-			this.selector = selector;
-		}
-
-		/**
-		 * Create the <code>Query</code> using the supplied
-		 * <code>MetaData</code>.
-		 *
-		 * @param  metadata The <code>MetaData</code>, not null
-		 * @param  type     The <code>Element</code> implementation class, not null
-		 *
-		 * @return          The <code>Query</code>
-		 */
-
-		@Override
-		public <U extends T> Query<T> apply (final MetaData<T> metadata, final Class<U> type)
-		{
-			assert metadata != null : "metadata is NULL";
-			assert type != null : "type is NULL";
-
-			return new QueryImpl<T, U> (metadata, selector, type, datastore);
-		}
-	}
-
-	/**
-	 * Implementation of the <code>Query</code>.
-	 *
-	 * @param   T The <code>Element</code> interface type of the result
-	 * @param   U The <code>Element</code> implementation type of the result
-	 */
-
-	private static final class QueryImpl<T extends Element, U extends T> extends Query<T>
-	{
-		/** The implementation type of the <code>Element</code> to fetch */
-		private final Class<U> type;
-
-		/**
-		 * Create the <code>QueryImpl</code>.
-		 *
-		 * @param  metadata  The <code>MetaData</code>, not null
-		 * @param  selector  The <code>Selector</code>, not null
-		 * @param  type      The <code>Element</code> implementation class to
-		 *                   retrieve, not null
-		 * @param  datastore The <code>DataStore</code>, not null
-		 */
-
-		protected QueryImpl (final MetaData<T> metadata, final Selector selector, final Class<U> type, final DataStore datastore)
-		{
-			super (metadata, selector, datastore);
-
-			assert type != null : "type is NULL";
-
-			this.type = type;
-		}
-
-		/**
-		 * Fetch a <code>List</code> of <code>Element</code> instances from the
-		 * <code>DataStore</code> which match the specified query parameters.
-		 * Values must be specified for all of the parameters for the
-		 * <code>Query</code>.
-		 *
-		 * @return The <code>List</code> of <code>Element</code> instances
-		 *         which match the parameters specified for the query.  The
-		 *         <code>List</code> will be empty if no <code>Element</code>
-		 *         instances match the <code>Query</code>.
-		 */
-
-		@Override
-		public List<T> queryAll ()
-		{
-			this.log.trace ("queryAll:");
-
-			assert this.checkValues () : "Some properties are missing values";
-
-			return this.datastore.fetch (this.type, this.values);
-		}
-	}
-
 	/** The logger for this Query instance */
-	protected final Logger log;
+	private final Logger log;
+
+	/** The implementation type of the <code>Element</code> to fetch */
+	private final Class<? extends T> type;
 
 	/** The <code>Selector</code> defining the <code>Query</code> */
-	protected final Selector selector;
+	private final Selector selector;
 
 	/** The <code>DataStore</code> to query */
-	protected final DataStore datastore;
+	private final DataStore datastore;
 
 	/** <code>Filter</code> to be built by the <code>Query</code> */
-	protected final Filter<T> values;
-
-	/**
-	 * Create the <code>Query</code> for an <code>Element</code> implementation
-	 * class.
-	 *
-	 * @param  creator   The <code>Creator</code>, not null
-	 * @param  selector  The <code>Selector</code>, not null
-	 * @param  datastore The <code>DataStore</code>, not null
-	 */
-
-	public static final <T extends Element> Query<T> getInstance (final Creator<T> creator, final Selector selector, final DataStore datastore)
-	{
-		assert creator != null : "creator is NULL";
-		assert selector != null : "selector is NULL";
-		assert datastore != null : "datastore is NULL";
-
-		return creator.inject (new QueryFactory<T> (datastore, selector));
-	}
-
-	/**
-	 * Create the <code>Query</code> for an <code>Element</code> interface
-	 * class.
-	 *
-	 * @param  metadata  The <code>MetaData</code>, not null
-	 * @param  selector  The <code>Selector</code>, not null
-	 * @param  datastore The <code>DataStore</code>, not null
-	 */
-
-	public static final <T extends Element> Query<T> getInstance (final MetaData<T> metadata, final Selector selector, final DataStore datastore)
-	{
-		assert metadata != null : "metadata is NULL";
-		assert selector != null : "selector is NULL";
-		assert datastore != null : "datastore is NULL";
-
-		return new QueryImpl<T, T> (metadata, selector, metadata.getElementType (), datastore);
-	}
+	private final Filter<T> values;
 
 	/**
 	 * Create the <code>Query</code>.
@@ -217,6 +78,8 @@ public abstract class Query<T extends Element>
 		this.selector = selector;
 		this.datastore = datastore;
 
+		this.type = metadata.getElementClass ();
+
 		this.values = new Filter<T> (metadata, this.selector);
 	}
 
@@ -228,7 +91,7 @@ public abstract class Query<T extends Element>
 	 *         <code>false</code> otherwise
 	 */
 
-	protected boolean checkValues ()
+	private boolean checkValues ()
 	{
 		return this.selector.getProperties ()
 			.stream ()
@@ -237,27 +100,14 @@ public abstract class Query<T extends Element>
 	}
 
 	/**
-	 * Get the name of the <code>Query</code>.
+	 * Get the <code>Selector</code>, used to create the <code>Query</code>
 	 *
-	 * @return A <code>String</code> which identifies the <code>Query</code>.
+	 * @return The <code>Selector</code>
 	 */
 
-	public final String getName ()
+	public Selector getSelector ()
 	{
-		return this.selector.getName ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Property</code> instances
-	 * corresponding to the <code>Element</code>.
-	 *
-	 * @return A <code>Set</code> containing all of the <code>Property</code>
-	 *         instances for the <code>Element</code>
-	 */
-
-	public final Set<Property<?>> getProperties ()
-	{
-		return this.selector.getProperties ();
+		return this.selector;
 	}
 
 	/**
@@ -366,5 +216,13 @@ public abstract class Query<T extends Element>
 	 *         instances match the <code>Query</code>.
 	 */
 
-	public abstract List<T> queryAll ();
+	public List<T> queryAll ()
+	{
+		this.log.trace ("queryAll:");
+
+		assert this.checkValues () : "Some properties are missing values";
+
+		return this.datastore.fetch (this.type, this.values);
+	}
+
 }

@@ -118,14 +118,13 @@ public final class JPADataStore extends DataStore
 	 * match the specified <code>Filter</code>.
 	 *
 	 * @param  <T>    The <code>Element</code> interface type
-	 * @param  <U>    The <code>Element</code> implementation type
 	 * @param  filter The <code>Filter</code>, not null
 	 *
 	 * @return        A <code>List</code> of <code>Element</code> instances
 	 */
 
 	@Override
-	protected <T extends Element, U extends T> List<T> fetch (final Class<U> type, final Filter<T> filter)
+	protected <T extends Element> List<T> fetch (final Class<? extends T> type, final Filter<T> filter)
 	{
 		this.log.trace ("fetch: type={}, filter={}", type, filter);
 
@@ -157,7 +156,7 @@ public final class JPADataStore extends DataStore
 		{
 			String qname = type.getSimpleName () + ":" + filter.getSelector ().getName ();
 
-			TypedQuery<U> query = this.em.createNamedQuery (qname, type);
+			TypedQuery<? extends T> query = this.em.createNamedQuery (qname, type);
 
 			filter.getSelector ()
 				.getProperties ()

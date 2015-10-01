@@ -278,7 +278,7 @@ final class QueryProxy<T extends Element> extends DataStoreProxy<T>
 	{
 		super (creator, datastore);
 
-		this.query = Query.getInstance (creator, selector, datastore);
+		this.query = datastore.getQuery (creator, selector);
 	}
 
 	/**

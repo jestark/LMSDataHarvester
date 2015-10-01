@@ -408,24 +408,6 @@ public final class Implementation<T extends Element, U extends T> implements Cre
 	}
 
 	/**
-	 * Inject the <code>MetaData</code> instance into the
-	 * <code>Receiver</code>.
-	 *
-	 * @param  <R>      The result type of the <code>Receiver</code>
-	 * @param  receiver The <code>Receiver</code>, not null
-	 *
-	 * @return          The return value of the receiving method
-	 */
-
-	@Override
-	public <R> R inject (final Receiver<T, R> receiver)
-	{
-		assert receiver != null : "receiver is NULL";
-
-		return receiver.apply (this, this.element);
-	}
-
-	/**
 	 * Get a new Instance of the <code>Element</code> implementation class.
 	 *
 	 * @return The new <code>Element</code> instance
