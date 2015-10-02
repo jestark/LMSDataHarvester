@@ -36,13 +36,23 @@ public class NamedActivityBuilder extends ActivityBuilder
 	/**
 	 * Create the <code>NamedActivityBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  type      The <code>ActivityType</code>, not null
+	 * @param  datastore                The <code>DataStore</code>, not null
+	 * @param  type                     The <code>ActivityType</code>, not null
+	 *
+	 * @throws IllegalArgumentException if there is no implementation class
+	 *                                  registered for the specified
+	 *                                  <code>ActivityType</code>
 	 */
 
 	protected NamedActivityBuilder (final DataStore datastore, final ActivityType type)
 	{
 		super (datastore, type);
+		
+		if (! Activity.hasActivityClass (type))
+		{
+			this.log.error ("No Activity implementation class registered for type: {}", type.getName ());
+			throw new IllegalArgumentException ("No implementation class for type");
+		}
 	}
 
 	/**
