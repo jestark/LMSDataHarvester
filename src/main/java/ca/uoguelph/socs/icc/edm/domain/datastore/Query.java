@@ -180,7 +180,7 @@ public final class Query<T extends Element>
 	{
 		this.log.trace ("setAllProperties: element={}", element);
 
-		if (element != null)
+		if (element == null)
 		{
 			throw new NullPointerException ();
 		}
