@@ -28,10 +28,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * Access and manipulate <code>Element</code> instances contained within the
@@ -164,6 +166,62 @@ public final class DomainModel
 		}
 
 		return this.datastore.getTransaction ();
+	}
+
+	/**
+	 * Get a <code>Query</code> for the specified <code>Element</code> using
+	 * the using the definition, but no implementation.  Queries based on the
+	 * definition cover all of the implementations existing in the
+	 * <code>DataStore</code>, at the cost of some performance.
+	 *
+	 * @param  <T>      The type of the <code>Element</code> returned by the
+	 *                  <code>Query</code>
+	 * @param  element  The <code>Element</code> interface class, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Query</code>
+	 */
+
+	public <T extends Element> Query<T> getDefinitionQuery (final Class<T> element, final Selector selector)
+	{
+		return this.datastore.getQuery (this.datastore.getProfile ()
+				.getMetaData (element),
+				selector);
+	}
+
+	/**
+	 * Get a <code>Query</code> for the specified <code>Element</code> using
+	 * the default implementation class defined in the <code>Profile</code>.
+	 *
+	 * @param  <T>      The type of the <code>Element</code> returned by the
+	 *                  <code>Query</code>
+	 * @param  element  The <code>Element</code> interface class, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Query</code>
+	 */
+
+	public <T extends Element> Query<T> getQuery (final Class<T> element, final Selector selector)
+	{
+		return this.datastore.getQuery (element, selector);
+	}
+
+	/**
+	 * Get a <code>Query</code> for the specified <code>Element</code> using
+	 * the specified implementation class.
+	 *
+	 * @param  <T>      The type of the <code>Element</code> returned by the
+	 *                  <code>Query</code>
+	 * @param  type     The <code>Element</code> interface class, not null
+	 * @param  impl     The <code>Element</code> implementation class, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Query</code>
+	 */
+
+	public <T extends Element> Query<T> getQuery (final Class<T> type, final Class<? extends T> impl, final Selector selector)
+	{
+		return this.datastore.getQuery (type, impl, selector);
 	}
 
 	/**

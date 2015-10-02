@@ -135,15 +135,31 @@ public final class Query<T extends Element>
 	 * @param  value    The value to set for the property
 	 *
 	 * @return         A reference to this <code>Query</code>
+	 * @throws IllegalArgumentException if the specified <code>Property</code>
+	 *                                  is not a member of the
+	 *                                  <code>Selector</code> for this
+	 *                                  <code>Query</code>
 	 */
 
 	public final <V> Query<T> setValue (final Property<V> property, final V value)
 	{
 		this.log.trace ("setProperty: property={}, value={}", property, value);
 
-		assert property != null : "property is NULL";
-		assert value != null : "value is NULL";
-		assert (this.selector.getProperties ().contains (property)) : "invalid property";
+		if (property == null)
+		{
+			throw new NullPointerException ("property is NULL");
+		}
+
+		if (value == null)
+		{
+			throw new NullPointerException ("value is NULL");
+		}
+
+		if (! this.selector.getProperties ().contains (property))
+		{
+			this.log.error ("Property ({}) is not a member of the selector ({})", property.getName (), this.selector.getName ());
+			throw new IllegalArgumentException ("invalid property");
+		}
 
 		this.values.setValue (property, value);
 
@@ -164,7 +180,10 @@ public final class Query<T extends Element>
 	{
 		this.log.trace ("setAllProperties: element={}", element);
 
-		assert element != null : "element is NULL";
+		if (element != null)
+		{
+			throw new NullPointerException ();
+		}
 
 		this.values.setAllValues (element);
 
@@ -176,17 +195,26 @@ public final class Query<T extends Element>
 	 * which matches the properties set on the <code>Query</code>.  Values must
 	 * be specified for all of the properties for the <code>Query</code>.
 	 *
-	 * @return The <code>Element</code> instance which matches the properties
-	 *         specified for the query, null if no <code>Element</code>
-	 *         instances exist in the <code>DataStore</code> that match the
-	 *         <code>Query</code>
+	 * @return                       The <code>Element</code> instance which
+	 *                               matches the properties specified for the
+	 *                               query, null if no <code>Element</code>
+	 *                               instances exist in the
+	 *                               <code>DataStore</code> that match the
+	 *                               <code>Query</code>
+	 * @throws IllegalstateException if the <code>Selector</code> upon which
+	 *                               the <code>Query</code> is based is not
+	 *                               unique
 	 */
 
 	public final T query ()
 	{
 		this.log.trace ("query:");
 
-		assert this.selector.isUnique () : "This query will not return unique results";
+		if (! this.selector.isUnique ())
+		{
+			this.log.error ("Attempting to get a single result from a selector designed for multiple results");
+			throw new IllegalStateException ("This query will not return unique results");
+		}
 
 		final List<T> results = this.queryAll ();
 		T result = null;
@@ -210,17 +238,25 @@ public final class Query<T extends Element>
 	 * Values must be specified for all of the properties for the
 	 * <code>Query</code>.
 	 *
-	 * @return The <code>List</code> of <code>Element</code> instances which
-	 *         match the properits specified for the query.  The
-	 *         <code>List</code> will be empty if no <code>Element</code>
-	 *         instances match the <code>Query</code>.
+	 * @return                       The <code>List</code> of
+	 *                               <code>Element</code> instances which match
+	 *                               the query.  The <code>List</code> will be
+	 *                               empty if no <code>Element</code> instances
+	 *                               match the <code>Query</code>.
+	 * @throws IllegalStateException if any <code>Property</code> instance
+	 *                               associated with the <code>Query</code> has
+	 *                               a null value
 	 */
 
 	public List<T> queryAll ()
 	{
 		this.log.trace ("queryAll:");
 
-		assert this.checkValues () : "Some properties are missing values";
+		if (! this.checkValues ())
+		{
+			this.log.error ("Query is incomplete, some of the required values are null");
+			throw new IllegalStateException ("Some properties are missing values");
+		}
 
 		return this.datastore.fetch (this.type, this.values);
 	}
