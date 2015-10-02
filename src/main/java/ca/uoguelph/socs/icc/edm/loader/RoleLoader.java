@@ -14,52 +14,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.loader;
 
 import java.util.List;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.Role;
 
 /**
- * Load <code>Action</code> instances from the <code>DataStore</code>.  This
+ * Load <code>Role</code> instances from the <code>DataStore</code>.  This
  * class extends <code>AbstractLoader</code>, adding the functionality
- * required to handle <code>Action</code> instances.
+ * required to handle <code>Role</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class ActionLoader extends AbstractLoader<Action>
+public final class RoleLoader extends AbstractLoader<Role>
 {
 	/**
-	 * Get an instance of the <code>ActionLoader</code> for the specified
-	 * <code>DomainModel</code>.
+	 * Create the <code>RoleLoader</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return                       The <code>ActionLoader</code>
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Element</code> queried by the
-	 *                               loader
 	 */
 
-	public static ActionLoader getInstance (final DomainModel model)
+	public RoleLoader (final DomainModel model)
 	{
-		return AbstractLoader.getInstance (model, Action.class, ActionLoader::new);
-	}
-
-	/**
-	 * Create the <code>ActionLoader</code>
-	 *
-	 * @param  datastore The instance of the <code>DataStore</code> upon which
-	 *                   the <code>ActionLoader</code> will operate, not null
-	 */
-
-	public ActionLoader (final DataStore datastore)
-	{
-		super (Action.class, datastore);
+		super (Role.class, model);
 	}
 
 	/**
@@ -72,7 +56,7 @@ public final class ActionLoader extends AbstractLoader<Action>
 	 * @return    The requested <code>Element</code>
 	 */
 
-	public Action fetchById (final Long id)
+	public Role fetchById (final Long id)
 	{
 		this.log.trace ("fetchById: id={}", id);
 
@@ -82,8 +66,8 @@ public final class ActionLoader extends AbstractLoader<Action>
 			throw new NullPointerException ();
 		}
 
-		return this.getQuery (Action.SELECTOR_ID)
-			.setValue (Action.ID, id)
+		return this.getQuery (Role.SELECTOR_ID)
+			.setValue (Role.ID, id)
 			.query ();
 	}
 
@@ -94,37 +78,36 @@ public final class ActionLoader extends AbstractLoader<Action>
 	 * @return A <code>List</code> of <code>Element</code> instances
 	 */
 
-	public List<Action> fetchAll ()
+	public List<Role> fetchAll ()
 	{
 		this.log.trace ("fetchAll:");
 
-		return this.getQuery (Action.SELECTOR_ALL)
+		return this.getQuery (Role.SELECTOR_ALL)
 			.queryAll ();
 	}
 
 	/**
-	 * Retrieve the <code>Action</code> with the specified name from the
-	 * <code>DataStore</code>.
+	 * Retrieve a <code>Role</code> object from the underlying
+	 * <code>DataStore</code> based on its name.
 	 *
-	 * @param  name                  The name of the <code>Action</code>, not
-	 *                               null
+	 * @param  name                  The name of the <code>Role</code>, not null
 	 *
-	 * @return                       The <code>Action</code>
+	 * @return                       The <code>Role</code>
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
-	public Action fetchByName (final String name)
+	public Role fetchByName (final String name)
 	{
 		this.log.trace ("fetchByName: name={}", name);
 
 		if (name == null)
 		{
-			this.log.error ("The specified Action name is NULL");
+			this.log.error ("The specified Role name is NULL");
 			throw new NullPointerException ();
 		}
 
-		return this.getQuery (Action.SELECTOR_NAME)
-			.setValue (Action.NAME, name)
+		return this.getQuery (Role.SELECTOR_NAME)
+			.setValue (Role.NAME, name)
 			.query ();
 	}
 }

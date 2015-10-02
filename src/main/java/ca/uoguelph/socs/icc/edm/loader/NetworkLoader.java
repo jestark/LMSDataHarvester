@@ -14,51 +14,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.loader;
 
 import java.util.List;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.Network;
 
 /**
- * Load <code>Enrolment</code> instances from the <code>DataStore</code>.  This
+ * Load <code>Network</code> instances from the <code>DataStore</code>.  This
  * class extends <code>AbstractLoader</code>, adding the functionality
- * required to handle <code>Enrolment</code> instances.
+ * required to handle <code>Network</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class EnrolmentLoader extends AbstractLoader<Enrolment>
+public final class NetworkLoader extends AbstractLoader<Network>
 {
 	/**
-	 * Get an instance of the <code>EnrolmentLoader</code> for the specified
-	 * <code>DomainModel</code>.
+	 * Create the <code>NetworkLoader</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return                       The <code>EnrolmentLoader</code>
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Element</code> queried by the
-	 *                               loader
 	 */
 
-	public static EnrolmentLoader getInstance (final DomainModel model)
+	public NetworkLoader (final DomainModel model)
 	{
-		return AbstractLoader.getInstance (model, Enrolment.class, EnrolmentLoader::new);
-	}
-
-	/**
-	 * Create the <code>EnrolmentLoader</code>.
-	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 */
-
-	public EnrolmentLoader (final DataStore datastore)
-	{
-		super (Enrolment.class, datastore);
+		super (Network.class, model);
 	}
 
 	/**
@@ -71,7 +56,7 @@ public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 	 * @return    The requested <code>Element</code>
 	 */
 
-	public Enrolment fetchById (final Long id)
+	public Network fetchById (final Long id)
 	{
 		this.log.trace ("fetchById: id={}", id);
 
@@ -81,8 +66,8 @@ public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 			throw new NullPointerException ();
 		}
 
-		return this.getQuery (Enrolment.SELECTOR_ID)
-			.setValue (Enrolment.ID, id)
+		return this.getQuery (Network.SELECTOR_ID)
+			.setValue (Network.ID, id)
 			.query ();
 	}
 
@@ -93,37 +78,37 @@ public final class EnrolmentLoader extends AbstractLoader<Enrolment>
 	 * @return A <code>List</code> of <code>Element</code> instances
 	 */
 
-	public List<Enrolment> fetchAll ()
+	public List<Network> fetchAll ()
 	{
 		this.log.trace ("fetchAll:");
 
-		return this.getQuery (Enrolment.SELECTOR_ALL)
+		return this.getQuery (Network.SELECTOR_ALL)
 			.queryAll ();
 	}
 
 	/**
-	 * Retrieve a list of <code>Enrolment</code> objects from the
-	 * <code>DataStore</code> for the specified <code>Role</code>.
+	 * Retrieve a <code>Network</code> object from the underlying
+	 * <code>DataStore</code> based on its name.
 	 *
-	 * @param  role                  The <code>Role</code>, not null
+	 * @param  name                  The name of the <code>Network</code>, not
+	 *                               null
 	 *
-	 * @return                       A <code>List</code> of
-	 *                               <code>Enrolment</code> instances
+	 * @return                       The <code>Network</code>
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
-	public List<Enrolment> fetchAllForRole (final Role role)
+	public Network fetchByName (final String name)
 	{
-		this.log.trace ("fetchingAllForRole: role={}", role);
+		this.log.trace ("fetchByName: name={}", name);
 
-		if (role == null)
+		if (name == null)
 		{
-			this.log.error ("The specified Role is NULL");
+			this.log.error ("The specified Network name is NULL");
 			throw new NullPointerException ();
 		}
 
-		return this.getQuery (Enrolment.SELECTOR_ROLE)
-			.setValue (Enrolment.ROLE, role)
-			.queryAll ();
+		return this.getQuery (Network.SELECTOR_NAME)
+			.setValue (Network.NAME, name)
+			.query ();
 	}
 }

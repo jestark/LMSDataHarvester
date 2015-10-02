@@ -14,17 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.loader;
 
 import java.util.List;
 import java.util.Map;
 
-import java.util.function.Function;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -57,67 +57,39 @@ public abstract class AbstractLoader<T extends Element>
 	protected final Logger log;
 
 	/** The return type */
-	private final Class<T> type;
+	protected final Class<T> type;
 
 	/** The <code>DomainModel</code> instance which owns this Loader. */
-	private final DataStore datastore;
-
-	/**
-	 * Create the loader for the specified <code>DomainModel</code>.
-	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  type                  The <code>Element</code> interface class,
-	 *                               not null
-	 * @param  create                Method reference to the constructor, not
-	 *                               null
-	 *
-	 * @return                       The loader instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Element</code> queried by the
-	 *                               loader
-	 */
-
-	protected static <T extends Element, U extends AbstractLoader<T>> U getInstance (final DomainModel model, final Class<T> type, final Function<DataStore, U> create)
-	{
-		assert type != null : "type is NULL";
-		assert create != null : "create is NULL";
-
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
-
-		if (! model.getDataStore ().isOpen ())
-		{
-			throw new IllegalStateException ("datastore is closed");
-		}
-
-		if (model.getDataStore ().getProfile ().getElementClass (type) == null)
-		{
-			throw new IllegalStateException ("Element is not available for this datastore");
-		}
-
-		return create.apply (model.getDataStore ());
-	}
+	protected final DomainModel model;
 
 	/**
 	 * Create the <code>AbstractLoader</code>.
 	 *
-	 * @param  type      The <code>Element</code> interface class, not null
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  type  The <code>Element</code> interface class, not null
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
-	protected AbstractLoader (final Class<T> type, final DataStore datastore)
+	protected AbstractLoader (final Class<T> type, final DomainModel model)
 	{
 		assert type != null : "type is NULL";
-		assert datastore != null : "datastore is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
+		if (model == null)
+		{
+			throw new NullPointerException ();
+		}
+
+		if (! model.isOpen ())
+		{
+			this.log.error ("DataStore is closed");
+			throw new IllegalStateException ("datastore is closed");
+		}
+
 		this.type = type;
-		this.datastore = datastore;
+		this.model = model;
 	}
 
 	/**
@@ -138,13 +110,13 @@ public abstract class AbstractLoader<T extends Element>
 		assert selector != null : "selector is NULL";
 		assert impl != null : "impl is NULL";
 
-		if (! this.datastore.isOpen ())
+		if (! this.model.isOpen ())
 		{
 			this.log.error ("Attempting to Query a closed datastore");
 			throw new IllegalStateException ("datastore is closed");
 		}
 
-		return this.datastore.getQuery (this.type, impl, selector);
+		return this.model.getQuery (this.type, impl, selector);
 	}
 
 	/**
@@ -163,13 +135,13 @@ public abstract class AbstractLoader<T extends Element>
 
 		assert selector != null : "selector is NULL";
 
-		if (! this.datastore.isOpen ())
+		if (! this.model.isOpen ())
 		{
 			this.log.error ("Attempting to Query a closed datastore");
 			throw new IllegalStateException ("datastore is closed");
 		}
 
-		return this.datastore.getQuery (this.type, selector);
+		return this.model.getQuery (this.type, selector);
 	}
 
 	/**
@@ -188,14 +160,13 @@ public abstract class AbstractLoader<T extends Element>
 
 		assert selector != null : "selector is NULL";
 
-		if (! this.datastore.isOpen ())
+		if (! this.model.isOpen ())
 		{
 			this.log.error ("Attempting to Query a closed datastore");
 			throw new IllegalStateException ("datastore is closed");
 		}
 
-		return this.datastore.getQuery (this.datastore.getProfile ()
-				.getMetaData (this.type), selector);
+		return this.model.getDefinitionQuery (this.type, selector);
 	}
 
 	/**

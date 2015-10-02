@@ -14,51 +14,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.loader;
 
 import java.util.List;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.Semester;
 
 /**
- * Load <code>Network</code> instances from the <code>DataStore</code>.  This
+ * Load <code>Course</code> instances from the <code>DataStore</code>.  This
  * class extends <code>AbstractLoader</code>, adding the functionality
- * required to handle <code>Network</code> instances.
+ * required to handle <code>Course</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class NetworkLoader extends AbstractLoader<Network>
+public final class CourseLoader extends AbstractLoader<Course>
 {
 	/**
-	 * Get an instance of the <code>NetworkLoader</code> for the specified
-	 * <code>DomainModel</code>.
+	 * Create the <code>CourseLoader</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return                       The <code>NetworkLoader</code>
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Element</code> queried by the
-	 *                               loader
 	 */
 
-	public static NetworkLoader getInstance (final DomainModel model)
+	public CourseLoader (final DomainModel model)
 	{
-		return AbstractLoader.getInstance (model, Network.class, NetworkLoader::new);
-	}
-
-	/**
-	 * Create the <code>NetworkLoader</code>.
-	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 */
-
-	public NetworkLoader (final DataStore datastore)
-	{
-		super (Network.class, datastore);
+		super (Course.class, model);
 	}
 
 	/**
@@ -71,7 +57,7 @@ public final class NetworkLoader extends AbstractLoader<Network>
 	 * @return    The requested <code>Element</code>
 	 */
 
-	public Network fetchById (final Long id)
+	public Course fetchById (final Long id)
 	{
 		this.log.trace ("fetchById: id={}", id);
 
@@ -81,8 +67,8 @@ public final class NetworkLoader extends AbstractLoader<Network>
 			throw new NullPointerException ();
 		}
 
-		return this.getQuery (Network.SELECTOR_ID)
-			.setValue (Network.ID, id)
+		return this.getQuery (Course.SELECTOR_ID)
+			.setValue (Course.ID, id)
 			.query ();
 	}
 
@@ -93,37 +79,53 @@ public final class NetworkLoader extends AbstractLoader<Network>
 	 * @return A <code>List</code> of <code>Element</code> instances
 	 */
 
-	public List<Network> fetchAll ()
+	public List<Course> fetchAll ()
 	{
 		this.log.trace ("fetchAll:");
 
-		return this.getQuery (Network.SELECTOR_ALL)
+		return this.getQuery (Course.SELECTOR_ALL)
 			.queryAll ();
 	}
 
 	/**
-	 * Retrieve a <code>Network</code> object from the underlying
-	 * <code>DataStore</code> based on its name.
+	 * Retrieve a course from the underlying data-store based on its name and
+	 * time of offering.
 	 *
-	 * @param  name                  The name of the <code>Network</code>, not
+	 * @param  name                  The name of the course, not null
+	 * @param  semester              The <code>Semester</code> of offering, not
 	 *                               null
+	 * @param  year                  The year of offering, not null
 	 *
-	 * @return                       The <code>Network</code>
+	 * @return                       The <code>Course</code> instance
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
-	public Network fetchByName (final String name)
+	public Course fetchByOffering (final String name, final Semester semester, final Integer year)
 	{
-		this.log.trace ("fetchByName: name={}", name);
+		this.log.trace ("fetchAllForOffering: name={}, semester={}, year={}", name, semester, year);
 
-		if (name == null)
+		if (semester == null)
 		{
-			this.log.error ("The specified Network name is NULL");
+			this.log.error ("The specified semester is NULL");
 			throw new NullPointerException ();
 		}
 
-		return this.getQuery (Network.SELECTOR_NAME)
-			.setValue (Network.NAME, name)
+		if (year == null)
+		{
+			this.log.error ("The specified year is NULL");
+			throw new NullPointerException ();
+		}
+
+		if (name == null)
+		{
+			this.log.error ("The specified Course name is NULL");
+			throw new NullPointerException ();
+		}
+
+		return this.getQuery (Course.SELECTOR_OFFERING)
+			.setValue (Course.SEMESTER, semester)
+			.setValue (Course.YEAR, year)
+			.setValue (Course.NAME, name)
 			.query ();
 	}
 }

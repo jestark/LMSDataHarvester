@@ -14,12 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.loader;
 
 import java.util.Date;
 import java.util.List;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 /**
  * Load <code>LogEntry</code> instances from the <code>DataStore</code>.  This
@@ -33,33 +36,16 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 public final class LogEntryLoader extends AbstractLoader<LogEntry>
 {
 	/**
-	 * Get an instance of the <code>LogEntryLoader</code> for the specified
-	 * <code>DomainModel</code>.
+	 * Create the <code>LogEntryLoader</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return                       The <code>LogEntryLoader</code>
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Element</code> queried by the
-	 *                               loader
 	 */
 
-	public static LogEntryLoader getInstance (final DomainModel model)
+	public LogEntryLoader (final DomainModel model)
 	{
-		return AbstractLoader.getInstance (model, LogEntry.class, LogEntryLoader::new);
-	}
-
-	/**
-	 * Create the <code>LogEntryLoader</code>.
-	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 */
-
-	public LogEntryLoader (final DataStore datastore)
-	{
-		super (LogEntry.class, datastore);
+		super (LogEntry.class, model);
 	}
 
 	/**

@@ -14,11 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.loader;
 
 import java.util.List;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.Enrolment;
+import ca.uoguelph.socs.icc.edm.domain.User;
 
 /**
  * Load <code>User</code> instances from the <code>DataStore</code>.  This
@@ -32,33 +35,16 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 public final class UserLoader extends AbstractLoader<User>
 {
 	/**
-	 * Get an instance of the <code>UserLoader</code> for the specified
-	 * <code>DomainModel</code>.
+	 * Create the <code>UserLoader</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return                       The <code>UserLoader</code>
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Element</code> queried by the
-	 *                               loader
 	 */
 
-	public static UserLoader getInstance (final DomainModel model)
+	public UserLoader (final DomainModel model)
 	{
-		return AbstractLoader.getInstance (model, User.class, UserLoader::new);
-	}
-
-	/**
-	 * Create the <code>DefaultUserLoader</code>.
-	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 */
-
-	public UserLoader (final DataStore datastore)
-	{
-		super (User.class, datastore);
+		super (User.class, model);
 	}
 
 	/**

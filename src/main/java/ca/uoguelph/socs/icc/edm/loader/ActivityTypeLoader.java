@@ -14,51 +14,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.loader;
 
 import java.util.List;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
+import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * Load <code>Role</code> instances from the <code>DataStore</code>.  This
- * class extends <code>AbstractLoader</code>, adding the functionality
- * required to handle <code>Role</code> instances.
+ * Load <code>ActivityType</code> instances from the <code>DataStore</code>.
+ * This class extends <code>AbstractLoader</code>, adding the functionality
+ * required to handle <code>ActivityType</code> instances.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-public final class RoleLoader extends AbstractLoader<Role>
+public final class ActivityTypeLoader extends AbstractLoader<ActivityType>
 {
 	/**
-	 * Get an instance of the <code>RoleLoader</code> for the specified
-	 * <code>DomainModel</code>.
+	 * Create the <code>ActivityTypeLoader</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return                       The <code>RoleLoader</code>
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Element</code> queried by the
-	 *                               loader
 	 */
 
-	public static RoleLoader getInstance (final DomainModel model)
+	public ActivityTypeLoader (final DomainModel model)
 	{
-		return AbstractLoader.getInstance (model, Role.class, RoleLoader::new);
-	}
-
-	/**
-	 * Create the <code>DefaultRoleLoader</code>.
-	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 */
-
-	public RoleLoader (final DataStore datastore)
-	{
-		super (Role.class, datastore);
+		super (ActivityType.class, model);
 	}
 
 	/**
@@ -71,7 +57,7 @@ public final class RoleLoader extends AbstractLoader<Role>
 	 * @return    The requested <code>Element</code>
 	 */
 
-	public Role fetchById (final Long id)
+	public ActivityType fetchById (final Long id)
 	{
 		this.log.trace ("fetchById: id={}", id);
 
@@ -81,8 +67,8 @@ public final class RoleLoader extends AbstractLoader<Role>
 			throw new NullPointerException ();
 		}
 
-		return this.getQuery (Role.SELECTOR_ID)
-			.setValue (Role.ID, id)
+		return this.getQuery (ActivityType.SELECTOR_ID)
+			.setValue (ActivityType.ID, id)
 			.query ();
 	}
 
@@ -93,36 +79,46 @@ public final class RoleLoader extends AbstractLoader<Role>
 	 * @return A <code>List</code> of <code>Element</code> instances
 	 */
 
-	public List<Role> fetchAll ()
+	public List<ActivityType> fetchAll ()
 	{
 		this.log.trace ("fetchAll:");
 
-		return this.getQuery (Role.SELECTOR_ALL)
+		return this.getQuery (ActivityType.SELECTOR_ALL)
 			.queryAll ();
 	}
 
 	/**
-	 * Retrieve a <code>Role</code> object from the underlying
-	 * <code>DataStore</code> based on its name.
+	 * Retrieve the <code>ActivityType</code> object from the
+	 * <code>DataStore</code> which has the specified
+	 * <code>ActivitySource</code> and name.
 	 *
-	 * @param  name                  The name of the <code>Role</code>, not null
+	 * @param  source                The <code>ActivitySource</code>, not null
+	 * @param  name                  The name of the <code>ActivityType</code>,
+	 *                               not null
 	 *
-	 * @return                       The <code>Role</code>
+	 * @return                       The <code>ActivityType</code> instance
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 */
 
-	public Role fetchByName (final String name)
+	public ActivityType fetchByName (final ActivitySource source, final String name)
 	{
-		this.log.trace ("fetchByName: name={}", name);
+		this.log.trace ("fetchByName source={}, name={}", source, name);
 
-		if (name == null)
+		if (source == null)
 		{
-			this.log.error ("The specified Role name is NULL");
+			this.log.error ("The specified ActivitySource is NULL");
 			throw new NullPointerException ();
 		}
 
-		return this.getQuery (Role.SELECTOR_NAME)
-			.setValue (Role.NAME, name)
+		if (name == null)
+		{
+			this.log.error ("The specified ActivityType name is NULL");
+			throw new NullPointerException ();
+		}
+
+		return this.getQuery (ActivityType.SELECTOR_NAME)
+			.setValue (ActivityType.SOURCE, source)
+			.setValue (ActivityType.NAME, name)
 			.query ();
 	}
 }

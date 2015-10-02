@@ -14,11 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.loader;
 
 import java.util.List;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * Load <code>Activity</code> instances from the <code>DataStore</code>.  This
@@ -32,35 +35,16 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 public final class ActivityLoader extends AbstractLoader<Activity>
 {
 	/**
-	 * Get an instance of the <code>ActivityLoader</code> for the specified
-	 * <code>DomainModel</code>.
+	 * Create the <code>ActivityLoader</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return                       The <code>ActivityLoader</code>
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Element</code> queried by the
-	 *                               loader
 	 */
 
-	public static ActivityLoader getInstance (final DomainModel model)
+	protected ActivityLoader (final DomainModel model)
 	{
-		return AbstractLoader.getInstance (model, Activity.class, ActivityLoader::new);
-	}
-
-	/**
-	 * Create the <code>ActivityLoader</code>.
-	 *
-	 * @param  datastore The instance of the <code>DataStore</code> upon which
-	 *                   the <code>ActivityLoader</code> will operate, not
-	 *                   null
-	 */
-
-	protected ActivityLoader (final DataStore datastore)
-	{
-		super (Activity.class, datastore);
+		super (Activity.class, model);
 	}
 
 	/**
@@ -126,7 +110,7 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 
 		List<Activity> result = null;
 
-		Class<? extends Activity> acls = NamedActivity.getActivityClass (type);
+		Class<? extends Activity> acls = Activity.getActivityClass (type);
 
 		if (acls != null)
 		{

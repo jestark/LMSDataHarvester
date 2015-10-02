@@ -14,11 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.loader;
 
 import java.util.List;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * Load <code>ActivitySource</code> instances from the <code>DataStore</code>.
@@ -32,35 +34,16 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 public final class ActivitySourceLoader extends AbstractLoader<ActivitySource>
 {
 	/**
-	 * Get an instance of the <code>ActivitySourceLoader</code> for the
-	 * specified <code>DomainModel</code>.
+	 * Create the <code>ActivitySourceLoader</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return                       The <code>ActivitySourceLoader</code>
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Element</code> queried by the
-	 *                               loader
 	 */
 
-	public static ActivitySourceLoader getInstance (final DomainModel model)
+	public ActivitySourceLoader (final DomainModel model)
 	{
-		return AbstractLoader.getInstance (model, ActivitySource.class, ActivitySourceLoader::new);
-	}
-
-	/**
-	 * Create the <code>ActivitySourceLoader</code>.
-	 *
-	 * @param  datastore The instance of the <code>DataStore</code> upon which
-	 *                   the <code>ActivitySourceLoader</code> will operate,
-	 *                   not null
-	 */
-
-	public ActivitySourceLoader (final DataStore datastore)
-	{
-		super (ActivitySource.class, datastore);
+		super (ActivitySource.class, model);
 	}
 
 	/**
