@@ -83,7 +83,7 @@ public class Label extends NamedActivity implements Serializable
 	private List<LogEntry> log;
 
 	/** The associated <code>SubActivity</code> instances*/
-	private List<SubActivity> subactivities;
+	private List<SubActivity> subActivities;
 
 	/**
 	 * Register the <code>Label</code> with the factories on
@@ -109,7 +109,7 @@ public class Label extends NamedActivity implements Serializable
 
 		this.grades = new HashSet<Grade> ();
 		this.log = new ArrayList<LogEntry> ();
-		this.subactivities = new ArrayList<SubActivity> ();
+		this.subActivities = new ArrayList<SubActivity> ();
 	}
 
 	/**
@@ -442,9 +442,9 @@ public class Label extends NamedActivity implements Serializable
 	@Override
 	public List<SubActivity> getSubActivities ()
 	{
-		this.subactivities.forEach (x -> this.propagateDomainModel (x));
+		this.subActivities.forEach (x -> this.propagateDomainModel (x));
 
-		return Collections.unmodifiableList (this.subactivities);
+		return Collections.unmodifiableList (this.subActivities);
 	}
 
 	/**
@@ -457,41 +457,41 @@ public class Label extends NamedActivity implements Serializable
 	 * exists solely to allow JPA to map the relationship to the instances of
 	 * the child class.
 	 *
-	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
+	 * @param  subActivities The <code>List</code> of <code>SubActivity</code>
 	 *                       instances, not null
 	 */
 
 	@Override
-	protected void setSubActivities (final List<SubActivity> subactivities)
+	protected void setSubActivities (final List<SubActivity> subActivities)
 	{
-		assert subactivities != null : "subactivities is NULL";
+		assert subActivities != null : "subActivities is NULL";
 
-		this.subactivities = subactivities;
+		this.subActivities = subActivities;
 	}
 
 	/**
 	 * Add the specified <code>SubActivity</code> to the
 	 * <code>Activity</code>.
 	 *
-	 * @param  subactivity The <code>SubActivity</code> to add, not null
+	 * @param  subActivity The <code>SubActivity</code> to add, not null
 	 *
 	 * @return             <code>True</code> if the <code>SubActivity</code>
 	 *                     was successfully added, <code>False</code> otherwise
 	 */
 
 	@Override
-	protected boolean addSubActivity (final SubActivity subactivity)
+	protected boolean addSubActivity (final SubActivity subActivity)
 	{
-		assert subactivity != null : "subactivity is NULL";
+		assert subActivity != null : "subActivity is NULL";
 
-		return this.subactivities.add (subactivity);
+		return this.subActivities.add (subActivity);
 	}
 
 	/**
 	 * Remove the specified <code>SubActivity</code> from the
 	 * <code>Activity</code>.
 	 *
-	 * @param  subactivity The <code>SubActivity</code> to remove, not null
+	 * @param  subActivity The <code>SubActivity</code> to remove, not null
 	 *
 	 * @return             <code>True</code> if the <code>SubActivity</code>
 	 *                     was successfully removed, <code>False</code>
@@ -499,10 +499,10 @@ public class Label extends NamedActivity implements Serializable
 	 */
 
 	@Override
-	protected boolean removeSubActivity (final SubActivity subactivity)
+	protected boolean removeSubActivity (final SubActivity subActivity)
 	{
-		assert subactivity != null : "subactivity is NULL";
+		assert subActivity != null : "subActivity is NULL";
 
-		return this.subactivities.remove (subactivity);
+		return this.subActivities.remove (subActivity);
 	}
 }

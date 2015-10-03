@@ -62,7 +62,7 @@ public class MoodleLogData extends LogEntry
 	private Long userId;
 
 	/** The originating IP Address for the logged action */
-	private String ip;
+	private String ipAddress;
 
 	/** The info String*/
 	private String info;
@@ -92,7 +92,7 @@ public class MoodleLogData extends LogEntry
 		this.course = null;
 		this.time = null;
 		this.userId = null;
-		this.ip = null;
+		this.ipAddress = null;
 		this.module = null;
 		this.info = null;
 		this.url = null;
@@ -393,7 +393,7 @@ public class MoodleLogData extends LogEntry
 
 	protected void setActivityId (final Long activityId)
 	{
-		assert ip != null : "ip is NULL";
+		assert activityId != null : "activityId is NULL";
 
 		this.activityId = activityId;
 	}
@@ -417,7 +417,7 @@ public class MoodleLogData extends LogEntry
 
 	protected void setInfo (final String info)
 	{
-		assert ip != null : "ip is NULL";
+		assert info != null : "info is NULL";
 
 		this.info = info;
 	}
@@ -429,23 +429,23 @@ public class MoodleLogData extends LogEntry
 	 * @return A <code>String</code> containing the IP address
 	 */
 
-	public String getIPAddress ()
+	public String getIpAddress ()
 	{
-		return this.ip;
+		return this.ipAddress;
 	}
 
 	/**
 	 * Get the Internet Protocol address which is associated with the logged
 	 * <code>Action</code>.
 	 *
-	 * @param  ip The IP Address, not null
+	 * @param  ipAddress The IP Address, not null
 	 */
 
-	protected void setIPAddress (final String ip)
+	protected void setIpAddress (final String ipAddress)
 	{
-		assert ip != null : "ip is NULL";
+		assert ipAddress != null : "ipAddress is NULL";
 
-		this.ip = ip;
+		this.ipAddress = ipAddress;
 	}
 
 	/**
@@ -495,7 +495,7 @@ public class MoodleLogData extends LogEntry
 
 	protected void setUserId (final Long userId)
 	{
-		assert ip != null : "ip is NULL";
+		assert userId != null : "userId is NULL";
 
 		this.userId = userId;
 	}
@@ -543,7 +543,7 @@ public class MoodleLogData extends LogEntry
 		builder.append ("module", this.module);
 		builder.append ("userId", this.userId);
 		builder.append ("time", this.time);
-		builder.append ("ipaddress", this.ip);
+		builder.append ("ipAddress", this.ipAddress);
 		builder.append ("info", this.info);
 		builder.append ("url", this.url);
 

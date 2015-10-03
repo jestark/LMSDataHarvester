@@ -54,8 +54,8 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  * <code>Activity</code> data in a second step.
  * <p>
  * Since the Moodle database is intended to be read-only, this class does not
- * implement an <code>ElementFactory</code> or require a builder capable of
- * setting the <code>instanceid</code> as should never be needed.
+ * require a builder capable of setting the <code>instanceId</code> as it
+ * should never be needed.
  *
  * @author  James E. Stark
  * @version 1.1
@@ -78,11 +78,8 @@ public class MoodleActivity extends NamedActivity
 	/** The associated <code>LogEntry</code> instances */
 	private List<LogEntry> log;
 
-	/** The <code>Activity</code> instance containing the data */
-	private NamedActivity activity;
-
 	/** The instance data identifier */
-	private Long instanceid;
+	private Long instanceId;
 
 	/**
 	 * Static initializer to register the <code>MoodleActivity</code>
@@ -103,8 +100,7 @@ public class MoodleActivity extends NamedActivity
 		this.id = null;
 		this.type = null;
 		this.course = null;
-		this.activity = null;
-		this.instanceid = null;
+		this.instanceId = null;
 
 		this.log = new ArrayList<LogEntry> ();
 	}
@@ -117,28 +113,25 @@ public class MoodleActivity extends NamedActivity
 
 	private NamedActivity getActivity ()
 	{
-		if (this.activity == null)
+		if (this.instanceId == null)
 		{
-			if (this.instanceid == null)
-			{
-				throw new IllegalStateException ("instance ID is NULL");
-			}
-
-			this.activity = (NamedActivity) this.getDataStore ()
-				.getQuery (Activity.class,
-						Activity.getActivityClass (this.getType ()),
-						Activity.SELECTOR_ID)
-				.setValue (Activity.ID, this.instanceid)
-				.query ();
-
-			// Type is transient on the loaded activity, so copy it in here
-			this.getDataStore ()
-				.getProfile ()
-				.getCreator (Activity.class, Activity.getActivityClass (this.type))
-				.setValue (Activity.TYPE, this.activity, this.type);
+			throw new IllegalStateException ("instance ID is NULL");
 		}
 
-		return this.activity;
+		NamedActivity activity = (NamedActivity) this.getDataStore ()
+			.getQuery (Activity.class,
+					Activity.getActivityClass (this.getType ()),
+					Activity.SELECTOR_ID)
+			.setValue (Activity.ID, this.instanceId)
+			.query ();
+
+		// Type is transient on the loaded activity, so copy it in here
+		this.getDataStore ()
+			.getProfile ()
+			.getCreator (Activity.class, Activity.getActivityClass (this.type))
+			.setValue (Activity.TYPE, activity, this.type);
+
+		return activity;
 	}
 
 	/**
@@ -166,7 +159,7 @@ public class MoodleActivity extends NamedActivity
 			EqualsBuilder ebuilder = new EqualsBuilder ();
 
 			ebuilder.appendSuper (super.equals (obj));
-			ebuilder.append (this.instanceid, ((MoodleActivity) obj).getInstanceId ());
+			ebuilder.append (this.instanceId, ((MoodleActivity) obj).getInstanceId ());
 
 			result = ebuilder.isEquals ();
 		}
@@ -576,7 +569,7 @@ public class MoodleActivity extends NamedActivity
 
 	public Long getInstanceId ()
 	{
-		return this.instanceid;
+		return this.instanceId;
 	}
 
 	/**
@@ -585,13 +578,13 @@ public class MoodleActivity extends NamedActivity
 	 * method is intended to be used by a <code>DataStore</code> when the
 	 * <code>Activity</code> instance is loaded.
 	 *
-	 * @param  instanceid The identifier
+	 * @param  instanceId The identifier
 	 */
 
-	protected void setInstanceId (final Long instanceid)
+	protected void setInstanceId (final Long instanceId)
 	{
-		assert instanceid != null : "instanceid is NULL";
+		assert instanceId != null : "instanceId is NULL";
 
-		this.instanceid = instanceid;
+		this.instanceId = instanceId;
 	}
 }
