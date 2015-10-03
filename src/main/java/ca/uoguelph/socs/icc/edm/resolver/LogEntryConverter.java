@@ -96,7 +96,7 @@ public final class LogEntryConverter
 		return this.builder.clear ()
 			.setAction (this.actionBuilder.setName (entry.getActionName ())
 					.build ())
-			.setNetwork (this.networkConverter.convert (entry.getIPAddress ()))
+			.setNetwork (this.networkConverter.convert (entry.getIpAddress ()))
 			.setEnrolment (this.enrolmentConverter.convert (entry.getUserId (), entry.getCourse ()))
 			.setActivity (this.activityConverter.convert (entry.getActivityId (), entry.getModule (), entry.getCourse ()))
 			.setSubActivity (this.subActivityConverter.convert (this.builder.getActivity (), this.builder.getAction (), entry.getInfo (), entry.getUrl ()))

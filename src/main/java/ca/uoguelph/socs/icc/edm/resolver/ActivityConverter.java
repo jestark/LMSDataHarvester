@@ -137,7 +137,7 @@ import ca.uoguelph.socs.icc.edm.domain.element.MoodleActivity;
  * @see     ca.uoguelph.socs.icc.edm.domain.element.MoodleActivity
  */
 
-final class ActivityConverter
+public final class ActivityConverter
 {
 	/** The name to assign to missing <code>Activity</code> instances */
 	public static final String MISSING_ACTIVITY_NAME = "-=- MISSING ACTIVITY -=-";

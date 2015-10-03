@@ -30,7 +30,7 @@ import ca.uoguelph.socs.icc.edm.domain.NetworkBuilder;
  *
  */
 
-final class NetworkConverter
+public final class NetworkConverter
 {
 	/** The log */
 	private final Logger log;

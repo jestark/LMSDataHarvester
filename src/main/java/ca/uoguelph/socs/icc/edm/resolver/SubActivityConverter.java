@@ -39,7 +39,7 @@ import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.LessonPage;
 import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Workshop;
 import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WorkshopSubmission;
 
-final class SubActivityConverter
+public final class SubActivityConverter
 {
 	private static final String MISSING_SUBACTIVITY_NAME = "-=- MISSING SUBACTIVITY -=-";
 
