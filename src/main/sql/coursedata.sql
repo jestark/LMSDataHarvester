@@ -122,7 +122,7 @@ create table if not exists log_network (
 	name text unique not null
 );
 
-comment on table log_network is 'Th IP network from which the logged action originated';
+comment on table log_network is 'The IP network from which the logged action originated';
 
 -- The log.
 create table if not exists log (
@@ -284,6 +284,22 @@ create table if not exists activity_moodle_url (
 
 comment on table activity_moodle_url is 'Data from the moodle url module';
 
+-- Moodle Wiki Module
+create table if not exists activity_moodle_wiki (
+	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	name text not null
+);
+
+comment on table activity_moodle_wiki is 'Data from the moodle wiki module';
+
+create table if not exists activity_moodle_wiki_page (
+	id bigserial primary key,
+	wiki_id bigint not null references activity_moodle_wiki (activity_id) on delete restrict on update cascade,
+	title text not null
+);
+
+comment on table activity_moodle_wiki_page is 'Data from pages in the moodle wiki module';
+
 -- Moodle Workshop Module
 create table if not exists activity_moodle_workshop (
 	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
@@ -335,6 +351,14 @@ create table if not exists log_moodle_lesson_page (
 
 comment on table log_moodle_lesson_page is 'Relationship table for mapping log entries to moodle lesson pages';
 
+-- Moodle wiki module
+create table if not exists log_moodle_wiki_page (
+	log_id bigint primary key references log (id) on delete cascade on update cascade,
+	page_id bigint references activity_moodle_wiki_page (id) on delete restrict on update cascade
+);
+
+comment on table log_moodle_workshop_submission is 'Relationship table for mapping log entries to moodle workshop submissions';
+
 -- Moodle workshop module
 create table if not exists log_moodle_workshop_submission (
 	log_id bigint primary key references log (id) on delete cascade on update cascade,
@@ -350,6 +374,8 @@ comment on table log_moodle_workshop_submission is 'Relationship table for mappi
 insert into course_semester values (0, 'WINTER');
 insert into course_semester values (1, 'SPRING');
 insert into course_semester values (2, 'FALL');
+
+insert into enrolment_role values (0, 'admin');
 
 insert into activity_source (name) values ('moodle');
 
