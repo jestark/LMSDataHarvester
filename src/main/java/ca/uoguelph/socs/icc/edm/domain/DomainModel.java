@@ -278,7 +278,7 @@ public final class DomainModel
 	 *                               <code>Transaction</code>
 	 */
 
-	public Element insert (final Element element)
+	public <T extends Element> T insert (final T element)
 	{
 		this.log.trace ("insert: element={}", element);
 
@@ -296,7 +296,7 @@ public final class DomainModel
 
 		InsertProcessor processor = new InsertProcessor (this.datastore, DomainModel.ttable);
 
-		Element result = processor.processElement (element);
+		T result = processor.processElement (element);
 		processor.processQueue ();
 
 		return result;
@@ -329,7 +329,7 @@ public final class DomainModel
 	 *                               <code>Transaction</code>
 	 */
 
-	public Collection<Element> insert (final Collection<Element> elements)
+	public <T extends Element> Collection<T> insert (final Collection<T> elements)
 	{
 		this.log.trace ("insert: elements={}", elements);
 
@@ -347,7 +347,7 @@ public final class DomainModel
 
 		InsertProcessor processor = new InsertProcessor (this.datastore, DomainModel.ttable);
 
-		Collection<Element> results = processor.processElements (elements);
+		Collection<T> results = processor.processElements (elements);
 		processor.processQueue ();
 
 		return results;
@@ -485,7 +485,7 @@ final class InsertProcessor
 	 *                               <code>MULTIVALUED</code>
 	 */
 
-	public Element processElement (final Element element)
+	public <T extends Element> T processElement (final T element)
 	{
 		this.log.trace ("processElement: element={}", element);
 
@@ -564,7 +564,7 @@ final class InsertProcessor
 	 *                <code>Collection</code>
 	 */
 
-	public Collection<Element> processElements (final Collection<Element> inputs)
+	public <T extends Element> Collection<T> processElements (final Collection<T> inputs)
 	{
 		this.log.trace ("processElements: inputs={}", inputs);
 
