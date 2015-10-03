@@ -53,7 +53,7 @@ public class MoodleLogData extends LogEntry
 	private Course course;
 
 	/** The time at which the action was performed */
-	private Date time;
+	private Long time;
 
 	/** The name of the module */
 	private String module;
@@ -331,7 +331,7 @@ public class MoodleLogData extends LogEntry
 	@Override
 	public Date getTime ()
 	{
-		return (Date) this.time.clone ();
+		return new Date (this.time * 1000);
 	}
 
 	/**
@@ -347,7 +347,7 @@ public class MoodleLogData extends LogEntry
 	{
 		assert time != null : "time is NULL";
 
-		this.time = time;
+		this.time = Long.valueOf (time.getTime () / 1000);
 	}
 
 	/**
