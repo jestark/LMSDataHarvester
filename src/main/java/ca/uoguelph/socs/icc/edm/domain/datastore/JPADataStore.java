@@ -280,7 +280,7 @@ public final class JPADataStore extends DataStore
 		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
 		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
-		assert metadata.canConnect (this, element) : "element can not be disconnected";
+		assert metadata.canConnect (this, element) : "element can not be connected";
 
 		IdGenerator generator = this.generators.get (metadata.getElementClass ());
 
@@ -292,13 +292,6 @@ public final class JPADataStore extends DataStore
 
 		this.log.debug ("Setting ID");
 		generator.setId (metadata, element);
-
-		this.log.debug ("Connecting Relationships");
-		if (! metadata.connect (this, element))
-		{
-			this.log.error ("Failed to connect relationships");
-			throw new RuntimeException ("Failed to connect relationships");
-		}
 
 		this.log.debug ("Persisting the Element");
 		this.em.persist (element);
