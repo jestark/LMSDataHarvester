@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.io.Serializable;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -39,8 +41,11 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.1
  */
 
-public abstract class LogReference extends Element
+public abstract class LogReference extends Element implements Serializable
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	/** <code>SubActivity</code> to <code>LogReference</code> class mapping */
 	private static final Map<Class<? extends SubActivity>, Class<? extends LogReference>> references;
 
