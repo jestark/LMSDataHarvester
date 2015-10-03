@@ -7,50 +7,7 @@
 	<description>Entity mappings for the moodle database</description>
 	<package>ca.uoguelph.socs.icc.edm.domain.element</package>
 
-	<access>PROPERTY</access>
-
-	<!--*********************************************************************-->
-	<!--  Mapped super classes used by activities                            -->
-	<!--*********************************************************************-->
-
-	<mapped-superclass class="ca.uoguelph.socs.icc.edm.domain.Activity" metadata-complete="true">
-		<description>Top-level Activity Mapping</description>
-		<attributes>
-			<transient name="metaData"/>
-			<transient name="log"/>
-			<transient name="course"/>
-			<transient name="type"/>
-			<transient name="name"/>
-			<transient name="grades"/>
-			<transient name="subActivities"/>
-		</attributes>
-	</mapped-superclass>
-
-	<mapped-superclass class="ca.uoguelph.socs.icc.edm.domain.SubActivity" metadata-complete="true">
-		<description></description>
-		<attributes>
-			<basic name="name">
-				<column name="name"/>
-			</basic>
-			<transient name="metaData"/>
-			<transient name="parent"/>
-			<transient name="course"/>
-			<transient name="type"/>
-			<transient name="grades"/>
-			<transient name="references"/>
-			<transient name="subActivities"/>
-			<transient name="log"/>
-		</attributes>
-	</mapped-superclass>
-
-	<mapped-superclass class="ca.uoguelph.socs.icc.edm.domain.NamedActivity" metadata-complete="true">
-		<description>Mapping For the Generic Activity and the relationship the the instance</description>
-		<attributes>
-			<basic name="name">
-				<column name="name"/>
-			</basic>
-		</attributes>
-	</mapped-superclass>
+	<access>FIELD</access>
 
 	<!--*********************************************************************-->
 	<!-- Core data mapping: Users                                            -->
@@ -70,7 +27,7 @@
 		</named-query>
 		<attributes>
 			<id name="id">
-				<column name="id" unique="true" nullable="false" insertable="false" updatable="false"/>
+				<column name="id" nullable="false" unique="true"/>
 			</id>
 			<basic name="username">
 				<column name="username" nullable="false" insertable="false" updatable="false"/>
@@ -81,7 +38,6 @@
 			<basic name="lastname">
 				<column name="lastname" nullable="false" insertable="false" updatable="false"/>
 			</basic>
-			<transient name="name"/>
 			<transient name="enrolments"/>
 		</attributes>
 	</entity>
@@ -98,7 +54,7 @@
 		</named-query>
 		<attributes>
 			<id name="id">
-				<column name="id" nullable="false" insertable="false" updatable="false"/>
+				<column name="id" nullable="false" unique="true"/>
 			</id>
 			<basic name="name">
 				<column name="fullname" insertable="false" updatable="false"/>
@@ -112,10 +68,6 @@
 				<convert converter="ca.uoguelph.socs.icc.edm.domain.element.converter.DateYearConverter"/>
 			</basic>
 			<one-to-many name="activities" target-entity="MoodleActivity" mapped-by="course"/>
-			<!--			<one-to-many name="enrolments" mapped-by="course"/>
-			<one-to-many name="log" target-entity="MoodleDBLogEntry" mapped-by="course">
-			<order-by>id</order-by>
-			</one-to-many>-->
 			<transient name="enrolments"/>
 		</attributes>
 	</entity>
@@ -135,7 +87,7 @@
 		</named-query>
 		<attributes>
 			<id name="id">
-				<column name="id"/>
+				<column name="id" nullable="false" unique="true"/>
 			</id>
 			<basic name="name">
 				<column name="name"/>
@@ -144,7 +96,7 @@
 		</attributes>
 	</entity>
 
-	<entity name="MoodleActivity" class="MoodleActivity" metadata-complete="true">
+	<entity name="Activity" class="MoodleActivity" metadata-complete="true">
 		<description>Activity mapping with moodle instance data</description>
 		<table name="mdl_course_modules"/>
 		<attributes>
@@ -160,10 +112,6 @@
 			<many-to-one name="type" target-entity="MoodleActivityType" optional="false">
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
-			<transient name="name"/>
-			<transient name="activity"/>
-			<transient name="grades"/>
-			<transient name="subActivities"/>
 			<transient name="log"/>
 		</attributes>
 	</entity>
@@ -188,27 +136,26 @@
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
-			<basic name="time" optional="false">
-				<column name="time" nullable="false"/>
-				<convert converter="ca.uoguelph.socs.icc.edm.domain.element.converter.IntDateConverter"/>
-			</basic>
-			<basic name="actionName" optional="false">
+			<basic name="action" optional="false">
 				<column name="action" nullable="false"/>
 			</basic>
 			<basic name="activityId" optional="false">
 				<column name="cmid" nullable="false"/>
 			</basic>
-			<basic name="info" optional="false">
-				<column name="info" nullable="false"/>
+			<basic name="time" optional="false">
+				<column name="time" nullable="false"/>
 			</basic>
-			<basic name="IPAddress" optional="false">
-				<column name="ip" nullable="false"/>
+			<basic name="module" optional="false">
+				<column name="module" nullable="false"/>
 			</basic>
 			<basic name="userId" optional="false">
 				<column name="userid" nullable="false"/>
 			</basic>
-			<basic name="module" optional="false">
-				<column name="module" nullable="false"/>
+			<basic name="ipAddress" optional="false">
+				<column name="ip" nullable="false"/>
+			</basic>
+			<basic name="info" optional="false">
+				<column name="info" nullable="false"/>
 			</basic>
 			<basic name="url" optional="false">
 				<column name="url" nullable="false"/>
@@ -216,13 +163,6 @@
 			<many-to-one name="course" target-entity="CourseData" optional="false">
 				<join-column name="course" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
-			<transient name="action"/>
-			<transient name="activity"/>
-			<transient name="enrolment"/>
-			<transient name="network"/>
-			<transient name="reference"/>
-			<transient name="subActivity"/>
 		</attributes>
 	</entity>
-
 </entity-mappings>

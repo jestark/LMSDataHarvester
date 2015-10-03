@@ -7,11 +7,34 @@
 	<description>Entity mappings for the activity data components of the moodle database</description>
 	<package>ca.uoguelph.socs.icc.edm.domain.element.activity.moodle</package>
 
-	<access>PROPERTY</access>
+	<access>FIELD</access>
 
-	<!--*********************************************************************-->
-	<!-- MoodleDataMapping:  Subclasses of GenericGroupedActivity            -->
-	<!--*********************************************************************-->
+	<!--********************************************************************-->
+	<!-- Assign                                                             -->
+	<!--********************************************************************-->
+
+	<entity name="Assign" class="Assign" metadata-complete="true">
+		<table name="mdl_assign"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
+				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
+			</many-to-one>
+			<transient name="grades"/>
+			<transient name="log"/>
+			<transient name="subActivities"/>
+			<transient name="type"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Book                                                               -->
+	<!--********************************************************************-->
 
 	<entity name="Book" class="Book" metadata-complete="true">
 		<table name="mdl_book"/>
@@ -19,6 +42,9 @@
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
@@ -29,12 +55,128 @@
 		</attributes>
 	</entity>
 
+	<entity name="BookChapter" class="BookChapter" metadata-complete="true">
+		<table name="mdl_book_chapters"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="title"/>
+			</basic>
+			<many-to-one name="parent" target-entity="Book" optional="false">
+				<join-column name="bookid" referenced-column-name="id" nullable="false" updatable="false"/>
+			</many-to-one>
+			<transient name="references"/>
+			<transient name="subActivities"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Checklist                                                          -->
+	<!--********************************************************************-->
+
+	<entity name="Checklist" class="Checklist" metadata-complete="true">
+		<table name="mdl_checklist"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
+				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
+			</many-to-one>
+			<transient name="grades"/>
+			<transient name="log"/>
+			<transient name="subActivities"/>
+			<transient name="type"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Choice                                                             -->
+	<!--********************************************************************-->
+
+	<entity name="Choice" class="Choice" metadata-complete="true">
+		<table name="mdl_choice"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
+				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
+			</many-to-one>
+			<transient name="grades"/>
+			<transient name="log"/>
+			<transient name="subActivities"/>
+			<transient name="type"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Feedback                                                           -->
+	<!--********************************************************************-->
+
+	<entity name="Feedback" class="Feedback" metadata-complete="true">
+		<table name="mdl_feedback"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
+				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
+			</many-to-one>
+			<transient name="grades"/>
+			<transient name="log"/>
+			<transient name="subActivities"/>
+			<transient name="type"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Folder                                                             -->
+	<!--********************************************************************-->
+
+	<entity name="Folder" class="Folder" metadata-complete="true">
+		<table name="mdl_folder"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
+				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
+			</many-to-one>
+			<transient name="grades"/>
+			<transient name="log"/>
+			<transient name="subActivities"/>
+			<transient name="type"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Forum                                                              -->
+	<!--********************************************************************-->
+
 	<entity name="Forum" class="Forum" metadata-complete="true">
 		<table name="mdl_forum"/>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
@@ -45,12 +187,76 @@
 		</attributes>
 	</entity>
 
+	<entity name="ForumDiscussion" class="ForumDiscussion" metadata-complete="true">
+		<table name="mdl_forum_discussions"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<many-to-one name="parent" target-entity="Forum" optional="false">
+				<join-column name="forum"/>
+			</many-to-one>
+			<one-to-many name="subActivities" target-entity="ForumPost" mapped-by="parent"/>
+			<transient name="references"/>
+		</attributes>
+	</entity>
+
+	<entity name="ForumPost" class="ForumPost" metadata-complete="true">
+		<table name="mdl_forum_posts"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="subject"/>
+			</basic>
+			<many-to-one name="parent" target-entity="ForumDiscussion" optional="false">
+				<join-column name="discussion"/>
+			</many-to-one>
+			<transient name="references"/>
+			<transient name="subActivities"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Label                                                              -->
+	<!--********************************************************************-->
+
+	<entity name="Label" class="Label" metadata-complete="true">
+		<table name="mdl_label"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
+				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
+			</many-to-one>
+			<transient name="grades"/>
+			<transient name="log"/>
+			<transient name="subActivities"/>
+			<transient name="type"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Lesson                                                             -->
+	<!--********************************************************************-->
+
 	<entity name="Lesson" class="Lesson" metadata-complete="true">
 		<table name="mdl_lesson"/>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
@@ -58,81 +264,6 @@
 			<transient name="grades"/>
 			<transient name="log"/>
 			<transient name="type"/>
-		</attributes>
-	</entity>
-
-	<entity name="Workshop" class="Workshop" metadata-complete="true">
-		<table name="mdl_workshop"/>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
-			<one-to-many name="subActivities" target-entity="WorkshopSubmission" mapped-by="parent"/>
-			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="type"/>
-		</attributes>
-	</entity>
-
-	<!--*********************************************************************-->
-	<!-- Moodle data mapping:  Subclasses of GenericGroupedActivityGroup     -->
-	<!--*********************************************************************-->
-
-	<entity name="ForumDiscussion" class="ForumDiscussion" metadata-complete="true">
-		<table name="mdl_forum_discussions"/>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<many-to-one name="parent" target-entity="Forum" optional="false">
-				<join-column name="forum"/>
-			</many-to-one>
-			<one-to-many name="subActivities" target-entity="ForumPost" mapped-by="parent"/>
-			<transient name="log"/>
-			<transient name="references"/>
-		</attributes>
-	</entity>
-
-	<!--*********************************************************************-->
-	<!-- Moodle data mapping:  SubActivites                                  -->
-	<!--*********************************************************************-->
-
-	<entity name="BookChapter" class="BookChapter" metadata-complete="true">
-		<table name="mdl_book_chapters"/>
-		<attribute-override name="name">
-			<column name="title"/>
-		</attribute-override>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<many-to-one name="parent" target-entity="Book" optional="false">
-				<join-column name="bookid" referenced-column-name="id" nullable="false" updatable="false"/>
-			</many-to-one>
-			<transient name="log"/>
-			<transient name="references"/>
-			<transient name="subActivities"/>
-		</attributes>
-	</entity>
-
-	<entity name="ForumPost" class="ForumPost" metadata-complete="true">
-		<table name="mdl_forum_posts"/>
-		<attribute-override name="name">
-			<column name="subject"/>
-		</attribute-override>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<many-to-one name="parent" target-entity="ForumDiscussion" optional="false">
-				<join-column name="discussion"/>
-			</many-to-one>
-			<transient name="log"/>
-			<transient name="references"/>
-			<transient name="subActivities"/>
 		</attributes>
 	</entity>
 
@@ -145,132 +276,20 @@
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
 			<many-to-one name="parent" target-entity="Lesson" optional="false">
 				<join-column name="lessonid"/>
 			</many-to-one>
-			<transient name="log"/>
 			<transient name="references"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
 
-	<entity name="WorkshopSubmission" class="WorkshopSubmission" metadata-complete="true">
-		<table name="mdl_workshop_submissions"/>
-		<attribute-override name="name">
-			<column name="title"/>
-		</attribute-override>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<many-to-one name="parent" target-entity="Workshop" optional="false">
-				<join-column name="workshopid"/>
-			</many-to-one>
-			<transient name="log"/>
-			<transient name="references"/>
-			<transient name="subActivities"/>
-		</attributes>
-	</entity>
-
-	<!--*********************************************************************-->
-	<!-- Moodle data mapping:  Named Activities                              -->
-	<!--*********************************************************************-->
-
-	<entity name="Assign" class="Assign" metadata-complete="true">
-		<table name="mdl_assign"/>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
-			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="subActivities"/>
-			<transient name="type"/>
-		</attributes>
-	</entity>
-
-	<entity name="Checklist" class="Checklist" metadata-complete="true">
-		<table name="mdl_checklist"/>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
-			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="subActivities"/>
-			<transient name="type"/>
-		</attributes>
-	</entity>
-
-	<entity name="Choice" class="Choice" metadata-complete="true">
-		<table name="mdl_choice"/>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
-			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="subActivities"/>
-			<transient name="type"/>
-		</attributes>
-	</entity>
-
-	<entity name="Feedback" class="Feedback" metadata-complete="true">
-		<table name="mdl_feedback"/>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
-			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="subActivities"/>
-			<transient name="type"/>
-		</attributes>
-	</entity>
-
-	<entity name="Folder" class="Folder" metadata-complete="true">
-		<table name="mdl_folder"/>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
-			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="subActivities"/>
-			<transient name="type"/>
-		</attributes>
-	</entity>
-
-	<entity name="Label" class="Label" metadata-complete="true">
-		<table name="mdl_label"/>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-			</id>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
-			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="subActivities"/>
-			<transient name="type"/>
-		</attributes>
-	</entity>
+	<!--********************************************************************-->
+	<!-- Page                                                               -->
+	<!--********************************************************************-->
 
 	<entity name="Page" class="Page" metadata-complete="true">
 		<table name="mdl_page"/>
@@ -278,6 +297,9 @@
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
@@ -287,6 +309,10 @@
 			<transient name="type"/>
 		</attributes>
 	</entity>
+
+	<!--********************************************************************-->
+	<!-- Quiz                                                               -->
+	<!--********************************************************************-->
 
 	<entity name="Quiz" class="Quiz" metadata-complete="true">
 		<table name="mdl_quiz"/>
@@ -294,6 +320,9 @@
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
@@ -303,6 +332,10 @@
 			<transient name="type"/>
 		</attributes>
 	</entity>
+
+	<!--********************************************************************-->
+	<!-- Resource                                                           -->
+	<!--********************************************************************-->
 
 	<entity name="Resource" class="Resource" metadata-complete="true">
 		<table name="mdl_resource"/>
@@ -310,6 +343,9 @@
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
@@ -319,6 +355,10 @@
 			<transient name="type"/>
 		</attributes>
 	</entity>
+
+	<!--********************************************************************-->
+	<!-- Scheduler                                                          -->
+	<!--********************************************************************-->
 
 	<entity name="Scheduler" class="Scheduler" metadata-complete="true">
 		<table name="mdl_scheduler"/>
@@ -326,6 +366,9 @@
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
@@ -336,12 +379,19 @@
 		</attributes>
 	</entity>
 
+	<!--********************************************************************-->
+	<!-- URL                                                                -->
+	<!--********************************************************************-->
+
 	<entity name="URL" class="URL" metadata-complete="true">
 		<table name="mdl_url"/>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
 			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
 			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
 				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
@@ -349,6 +399,86 @@
 			<transient name="log"/>
 			<transient name="subActivities"/>
 			<transient name="type"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Wiki                                                               -->
+	<!--********************************************************************-->
+
+	<entity name="Wiki" class="Wiki" metadata-complete="true">
+		<table name="mdl_wiki"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
+				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
+			</many-to-one>
+			<one-to-many name="subActivities" target-entity="WikiPage" mapped-by="parent"/>
+			<transient name="grades"/>
+			<transient name="log"/>
+			<transient name="type"/>
+		</attributes>
+	</entity>
+
+	<entity name="WikiPage" class="WikiPage" metadata-complete="true">
+		<table name="mdl_wiki_pages"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="title"/>
+			</basic>
+			<many-to-one name="parent" target-entity="Wiki" optional="false">
+				<join-column name="subwikiid"/>
+			</many-to-one>
+			<transient name="references"/>
+			<transient name="subActivities"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Workshop                                                           -->
+	<!--********************************************************************-->
+
+	<entity name="Workshop" class="Workshop" metadata-complete="true">
+		<table name="mdl_workshop"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
+				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
+			</many-to-one>
+			<one-to-many name="subActivities" target-entity="WorkshopSubmission" mapped-by="parent"/>
+			<transient name="grades"/>
+			<transient name="log"/>
+			<transient name="type"/>
+		</attributes>
+	</entity>
+
+	<entity name="WorkshopSubmission" class="WorkshopSubmission" metadata-complete="true">
+		<table name="mdl_workshop_submissions"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="name">
+				<column name="title"/>
+			</basic>
+			<many-to-one name="parent" target-entity="Workshop" optional="false">
+				<join-column name="workshopid"/>
+			</many-to-one>
+			<transient name="references"/>
+			<transient name="subActivities"/>
 		</attributes>
 	</entity>
 </entity-mappings>
