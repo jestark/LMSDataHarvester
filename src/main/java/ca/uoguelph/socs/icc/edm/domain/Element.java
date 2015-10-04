@@ -136,7 +136,6 @@ public abstract class Element
 
 	protected final void setDomainModel (final DomainModel model)
 	{
-		assert model != null : "model is NULL";
 		assert this.model == null || model == this.model : "Can't change the DomainModel";
 
 		this.model = model;
@@ -157,9 +156,10 @@ public abstract class Element
 
 	protected final <T extends Element> T propagateDomainModel (final T element)
 	{
-		assert element != null : "element is NULL";
-
-		element.setDomainModel (this.model);
+		if (element != null)
+		{
+			element.setDomainModel (this.model);
+		}
 
 		return element;
 	}
