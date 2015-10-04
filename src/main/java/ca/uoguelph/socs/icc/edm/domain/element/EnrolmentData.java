@@ -62,7 +62,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 	private Role role;
 
 	/** The user's final grade in the associated course */
-	protected Integer finalgrade;
+	protected Integer finalGrade;
 
 	/** Flag indicating if the enrolment can be used for research */
 	protected Boolean usable;
@@ -92,7 +92,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 		this.id = null;
 		this.role = null;
 		this.course = null;
-		this.finalgrade = null;
+		this.finalGrade = null;
 
 		this.usable = Boolean.valueOf (false);
 
@@ -287,7 +287,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 	@Override
 	public Integer getFinalGrade ()
 	{
-		return this.finalgrade;
+		return this.finalGrade;
 	}
 
 	/**
@@ -296,17 +296,17 @@ public class EnrolmentData extends Enrolment implements Serializable
 	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
 	 * loaded.
 	 *
-	 * @param  finalgrade The final grade for the <code>User</code> in the
+	 * @param  finalGrade The final grade for the <code>User</code> in the
 	 *                    course, on the interval [0, 100]
 	 */
 
 	@Override
-	protected void setFinalGrade (final Integer finalgrade)
+	protected void setFinalGrade (final Integer finalGrade)
 	{
-		assert ((finalgrade == null) || (finalgrade >= 0)) : "Grade can not be negative";
-		assert ((finalgrade == null) || (finalgrade <= 100)) : "Grade can not be greater than 100%";
+		assert ((finalGrade == null) || (finalGrade >= 0)) : "Grade can not be negative";
+		assert ((finalGrade == null) || (finalGrade <= 100)) : "Grade can not be greater than 100%";
 
-		this.finalgrade = finalgrade;
+		this.finalGrade = finalGrade;
 	}
 
 	/**
