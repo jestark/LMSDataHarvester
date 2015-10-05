@@ -269,7 +269,7 @@ public abstract class SubActivity extends ParentActivity
 	 */
 
 	@Override
-	protected MetaData<SubActivity> getMetaData ()
+	protected MetaData<SubActivity> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

@@ -283,7 +283,7 @@ public abstract class User extends Element
 	 */
 
 	@Override
-	protected MetaData<User> getMetaData ()
+	protected MetaData<User> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

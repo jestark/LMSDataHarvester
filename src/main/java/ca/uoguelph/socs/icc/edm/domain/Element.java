@@ -111,7 +111,7 @@ public abstract class Element
 	 * @return           The <code>MetaData</code>
 	 */
 
-	protected abstract MetaData<? extends Element> getMetaData ();
+	protected abstract MetaData<? extends Element> metadata ();
 
 	/**
 	 * Get a reference to the <code>DomainModel</code> which contains the

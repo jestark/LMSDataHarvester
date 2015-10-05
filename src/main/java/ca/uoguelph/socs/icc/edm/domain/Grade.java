@@ -272,7 +272,7 @@ public abstract class Grade extends Element
 	 */
 
 	@Override
-	protected MetaData<Grade> getMetaData ()
+	protected MetaData<Grade> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

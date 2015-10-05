@@ -219,7 +219,7 @@ public abstract class Role extends Element
 	 */
 
 	@Override
-	protected MetaData<Role> getMetaData ()
+	protected MetaData<Role> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

@@ -253,7 +253,7 @@ public abstract class Course extends Element
 	 */
 
 	@Override
-	protected MetaData<Course> getMetaData ()
+	protected MetaData<Course> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

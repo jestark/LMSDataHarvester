@@ -218,7 +218,7 @@ public abstract class LogReference extends Element implements Serializable
 	 */
 
 	@Override
-	protected MetaData<LogReference> getMetaData ()
+	protected MetaData<LogReference> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

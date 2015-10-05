@@ -359,7 +359,7 @@ public abstract class Enrolment extends Element
 	 */
 
 	@Override
-	protected MetaData<Enrolment> getMetaData ()
+	protected MetaData<Enrolment> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

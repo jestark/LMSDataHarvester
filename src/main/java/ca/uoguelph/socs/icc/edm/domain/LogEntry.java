@@ -295,7 +295,7 @@ public abstract class LogEntry extends Element
 	 */
 
 	@Override
-	protected MetaData<LogEntry> getMetaData ()
+	protected MetaData<LogEntry> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

@@ -212,7 +212,7 @@ public abstract class ActivityType extends Element
 	 * Get an <code>ActivityTypeBuilder</code> instance for the specified
 	 * <code>DataStore</code>.  This method creates an
 	 * <code>ActivityTypeBuilder</code> on the specified <code>DataStore</code>
-	 * and initializes it with the contents of this <code>ActivityType</code> 
+	 * and initializes it with the contents of this <code>ActivityType</code>
 	 * instance.
 	 *
 	 * @param  datastore The <code>DataStore</code>, not null
@@ -237,7 +237,7 @@ public abstract class ActivityType extends Element
 	 */
 
 	@Override
-	protected MetaData<ActivityType> getMetaData ()
+	protected MetaData<ActivityType> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

@@ -207,7 +207,7 @@ public abstract class Network extends Element
 	 */
 
 	@Override
-	protected MetaData<Network> getMetaData ()
+	protected MetaData<Network> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

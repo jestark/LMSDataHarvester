@@ -303,7 +303,7 @@ public abstract class Activity extends ParentActivity
 
 	/**
 	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed based upon the <code>ActivityType</code> and 
+	 * The hash code is computed based upon the <code>ActivityType</code> and
 	 * the <code>Course</code>.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
@@ -369,7 +369,7 @@ public abstract class Activity extends ParentActivity
 	 */
 
 	@Override
-	protected MetaData<Activity> getMetaData ()
+	protected MetaData<Activity> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

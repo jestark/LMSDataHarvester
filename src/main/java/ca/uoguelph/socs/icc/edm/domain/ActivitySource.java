@@ -233,7 +233,7 @@ public abstract class ActivitySource extends Element
 	 */
 
 	@Override
-	protected MetaData<ActivitySource> getMetaData ()
+	protected MetaData<ActivitySource> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()

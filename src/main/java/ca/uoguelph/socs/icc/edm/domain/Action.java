@@ -223,7 +223,7 @@ public abstract class Action extends Element
 	 */
 
 	@Override
-	protected MetaData<Action> getMetaData ()
+	protected MetaData<Action> metadata ()
 	{
 		return this.getDomainModel ()
 			.getDataStore ()
