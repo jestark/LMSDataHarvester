@@ -130,67 +130,6 @@ class ${ClassName} extends LogReference
 		return hbuilder.toHashCode ();
 	}
 
- 	/**
-	 * Get the <code>DataStore</code> identifier for the <code>LogEntry</code>
-	 * instance.  Since <code>LogReference</code> is dependent on the
-	 * <code>LogEntryt</code> instance for its <code>DataStore</code>
-	 * identifier, the identifier from the associated <code>LogEntry</code>
-	 * will be returned.
-	 *
-	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
-	 */
-
-	@Override
-	public Long getId ()
-	{
-		return this.entry.getId ();
-	}
-
-	/**
-	 * Set the <code>DataStore</code> identifier.   Since
-	 * <code>LogReference</code> is dependent on the <code>LogEntry</code>
-	 * instance for its <code>DataStore</code> identifier, this method throws
-	 * an <code>UnsupportedOperationException</code>.
-	 *
-	 * @param  id                            The <code>DataStore</code>
-	 *                                       identifier, not null
-	 * @throws UnsupportedOperationException unconditionally
-	 */
-
-	@Override
-	protected void setId (final Long id)
-	{
-		throw new UnsupportedOperationException ();
-	}
-
-	/**
-	 * Get the parent <code>LogEntry</code> instance.
-	 *
-	 * @return The parent <code>LogEntry</code> instance
-	 */
-
-	@Override
-	public LogEntry getEntry ()
-	{
-		return this.entry;
-	}
-
-	/**
-	 * Set the reference to the parent <code>LogEntry</code>.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>LogEntry</code> instance is loaded.
-	 *
-	 * @param  entry The parent <code>LogEntry</code> instance, not null
-	 */
-
-	@Override
-	protected void setEntry (final LogEntry entry)
-	{
-		assert entry != null : "entry is NULL";
-
-		this.entry = entry;
-	}
-
 	/**
 	 * Get the <code>SubActivity</code> upon which the logged
 	 * <code>Action</code> was performed.

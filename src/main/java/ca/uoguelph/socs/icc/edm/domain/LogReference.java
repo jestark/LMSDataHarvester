@@ -58,6 +58,9 @@ public abstract class LogReference extends Element implements Serializable
 	/** Select an <code>LogReference</code> instance by its <code>LogEntry</code> */
 	public static final Selector SELECTOR_ENTRY;
 
+	/** The associated <code>LogEntry</code> */
+	protected LogEntry entry;
+
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
 	 * <code>Selector</code> instances for the <code>LogReference</code>.
@@ -227,12 +230,48 @@ public abstract class LogReference extends Element implements Serializable
 	}
 
 	/**
+	 * Get the <code>DataStore</code> identifier for the <code>LogEntry</code>
+	 * instance.  Since <code>LogReference</code> is dependent on the
+	 * <code>LogEntryt</code> instance for its <code>DataStore</code>
+	 * identifier, the identifier from the associated <code>LogEntry</code>
+	 * will be returned.
+	 *
+	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
+	 */
+
+	@Override
+	public Long getId ()
+	{
+		return this.entry.getId ();
+	}
+
+	/**
+	 * Set the <code>DataStore</code> identifier.   Since
+	 * <code>LogReference</code> is dependent on the <code>LogEntry</code>
+	 * instance for its <code>DataStore</code> identifier, this method throws
+	 * an <code>UnsupportedOperationException</code>.
+	 *
+	 * @param  id                            The <code>DataStore</code>
+	 *                                       identifier, not null
+	 * @throws UnsupportedOperationException unconditionally
+	 */
+
+	@Override
+	protected void setId (final Long id)
+	{
+		throw new UnsupportedOperationException ();
+	}
+
+	/**
 	 * Get the parent <code>LogEntry</code> instance.
 	 *
 	 * @return The parent <code>LogEntry</code> instance
 	 */
 
-	public abstract LogEntry getEntry ();
+	public LogEntry getEntry ()
+	{
+		return this.entry;
+	}
 
 	/**
 	 * Set the reference to the parent <code>LogEntry</code>.  This method is
@@ -242,7 +281,12 @@ public abstract class LogReference extends Element implements Serializable
 	 * @param  entry The parent <code>LogEntry</code> instance, not null
 	 */
 
-	protected abstract void setEntry (LogEntry entry);
+	protected void setEntry (final LogEntry entry)
+	{
+		assert entry != null : "entry is NULL";
+
+		this.entry = entry;
+	}
 
 	/**
 	 * Get the <code>SubActivity</code> upon which the logged
