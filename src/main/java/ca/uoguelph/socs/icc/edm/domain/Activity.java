@@ -104,6 +104,15 @@ public abstract class Activity extends ParentActivity
 	/** Select all <code>Activity</code> instances by <code>ActivityType</code> */
 	public static final Selector SELECTOR_TYPE;
 
+	/** The primary key for the <code>Activity</code> */
+	protected Long id;
+
+	/** The associated <code>Course</code> */
+	protected Course course;
+
+	/** The type of the <code>Activity</code> */
+	protected ActivityType type;
+
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
 	 * <code>Selector</code> instances for the <code>Activity</code>.
@@ -378,6 +387,58 @@ public abstract class Activity extends ParentActivity
 	}
 
 	/**
+	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
+	 * instance.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the child class.
+	 *
+	 * @return a Long integer containing <code>DataStore</code> identifier
+	 */
+
+	@Override
+	public Long getId ()
+	{
+		return this.id;
+	}
+
+	/**
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Activity</code>
+	 * instance is loaded, or by the <code>ActivityBuilder</code>
+	 * implementation to set the <code>DataStore</code> identifier, prior to
+	 * storing a new <code>Activity</code> instance.
+	 * <p>
+	 * This method is a redefinition of the same method in the superclass.  It
+	 * exists solely to allow JPA to map the relationship to the instances of
+	 * the child class.
+	 *
+	 * @param  id The <code>DataStore</code> identifier, not null
+	 */
+
+	@Override
+	protected void setId (final Long id)
+	{
+		assert id != null : "id is NULL";
+
+		this.id = id;
+	}
+
+	/**
+	 * Get the <code>Course</code> with which the <code>Activity</code> is
+	 * associated.
+	 *
+	 * @return The <code>Course</code> instance
+	 */
+
+	@Override
+	public Course getCourse ()
+	{
+		return this.propagateDomainModel (this.course);
+	}
+
+	/**
 	 * Set the <code>Course</code> with which the <code>Activity</code> is
 	 * associated.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>Activity</code> instance is
@@ -386,7 +447,24 @@ public abstract class Activity extends ParentActivity
 	 * @param  course The <code>Course</code>, not null
 	 */
 
-	protected abstract void setCourse (Course course);
+	protected void setCourse (final Course course)
+	{
+		assert course != null : "course is NULL";
+
+		this.course = course;
+	}
+
+	/**
+	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
+	 *
+	 * @return The <code>ActivityType</code> instance
+	 */
+
+	@Override
+	public ActivityType getType ()
+	{
+		return this.propagateDomainModel (this.type);
+	}
 
 	/**
 	 * Set the <code>ActvityType</code> with which the <code>Activity</code> is
@@ -397,7 +475,12 @@ public abstract class Activity extends ParentActivity
 	 * @param  type The <code>ActivityType</code>, not null
 	 */
 
-	protected abstract void setType (ActivityType type);
+	protected void setType (final ActivityType type)
+	{
+		assert type != null : "type is NULL";
+
+		this.type = type;
+	}
 
 	/**
 	 * Initialize the <code>List</code> of <code>LogEntry</code> instances

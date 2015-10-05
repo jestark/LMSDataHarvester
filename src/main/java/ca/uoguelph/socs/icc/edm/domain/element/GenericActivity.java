@@ -48,20 +48,10 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  * @version 1.0
  */
 
-
 public class GenericActivity extends Activity implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
-
-	/** The primary key for the <code>${ClassName}</code> */
-	private Long id;
-
-	/** The type of the <code>Activity</code> */
-	private ActivityType type;
-
-	/** The associated <code>Course</code> */
-	private Course course;
 
 	/** The associated <code>LogEntry</code> instances */
 	private List<LogEntry> log;
@@ -82,48 +72,7 @@ public class GenericActivity extends Activity implements Serializable
 
 	protected GenericActivity ()
 	{
-		this.id = null;
-		this.type = null;
-		this.course = null;
-
 		this.log = new ArrayList<LogEntry> ();
-	}
-
-	/**
-	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
-	 * instance.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
-	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
-	 */
-
-	@Override
-	public Long getId ()
-	{
-		return this.id;
-	}
-
-	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Activity</code>
-	 * instance is loaded, or by the <code>ActivityBuilder</code>
-	 * implementation to set the <code>DataStore</code> identifier, prior to
-	 * storing a new <code>Activity</code> instance.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
-	 *
-	 * @param  id The <code>DataStore</code> identifier, not null
-	 */
-
-	@Override
-	protected void setId (final Long id)
-	{
-		this.id = id;
 	}
 
 	/**
@@ -140,65 +89,6 @@ public class GenericActivity extends Activity implements Serializable
 	public String getName ()
 	{
 		return (this.type != null) ? this.type.getName () : null;
-	}
-
-	/**
-	 * Get the <code>Course</code> with which the <code>Activity</code> is
-	 * associated.
-	 *
-	 * @return The <code>Course</code> instance
-	 */
-
-	@Override
-	public Course getCourse ()
-	{
-		return this.propagateDomainModel (this.course);
-	}
-
-	/**
-	 * Set the <code>Course</code> with which the <code>Activity</code> is
-	 * associated.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
-	 *
-	 * @param  course The <code>Course</code>, not null
-	 */
-
-	@Override
-	protected void setCourse (final Course course)
-	{
-		assert course != null : "course is NULL";
-
-		this.course = course;
-	}
-
-	/**
-	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
-	 *
-	 * @return The <code>ActivityType</code> instance
-	 */
-
-	@Override
-	public ActivityType getType ()
-	{
-		return this.propagateDomainModel (this.type);
-	}
-
-	/**
-	 * Set the <code>ActvityType</code> with which the <code>Activity</code> is
-	 * associated.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
-	 *
-	 * @param  type The <code>ActivityType</code>, not null
-	 */
-
-	@Override
-	protected void setType (final ActivityType type)
-	{
-		assert type != null : "type is NULL";
-
-		this.type = type;
 	}
 
 	/**

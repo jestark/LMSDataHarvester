@@ -64,17 +64,8 @@ public class Page extends NamedActivity implements Serializable
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
-	/** The primary key for the <code>Page</code> */
-	private Long id;
-
 	/** The name of the <code>Activity</code> */
 	private String name;
-
-	/** The type of the <code>Activity</code> */
-	private ActivityType type;
-
-	/** The associated <code>Course</code> */
-	private Course course;
 
 	/** The associated <code>Grade</code> instances */
 	private Set<Grade> grades;
@@ -176,7 +167,7 @@ public class Page extends NamedActivity implements Serializable
 	@Override
 	public Long getId ()
 	{
-		return this.id;
+		return super.getId ();
 	}
 
 	/**
@@ -196,7 +187,7 @@ public class Page extends NamedActivity implements Serializable
 	@Override
 	protected void setId (final Long id)
 	{
-		this.id = id;
+		super.setId (id);
 	}
 
 	/**
@@ -238,7 +229,7 @@ public class Page extends NamedActivity implements Serializable
 	@Override
 	public Course getCourse ()
 	{
-		return this.propagateDomainModel (this.course);
+		return super.getCourse ();
 	}
 
 	/**
@@ -253,9 +244,7 @@ public class Page extends NamedActivity implements Serializable
 	@Override
 	protected void setCourse (final Course course)
 	{
-		assert course != null : "course is NULL";
-
-		this.course = course;
+		super.setCourse (course);
 	}
 
 	/**
@@ -267,7 +256,7 @@ public class Page extends NamedActivity implements Serializable
 	@Override
 	public ActivityType getType ()
 	{
-		return this.propagateDomainModel (this.type);
+		return super.getType ();
 	}
 
 	/**
@@ -282,9 +271,7 @@ public class Page extends NamedActivity implements Serializable
 	@Override
 	protected void setType (final ActivityType type)
 	{
-		assert type != null : "type is NULL";
-
-		this.type = type;
+		super.setType (type);
 	}
 
 	/**
