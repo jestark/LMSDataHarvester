@@ -79,20 +79,14 @@ create table if not exists enrolment (
 	id bigint primary key,
 	course_id bigint not null references course (id) on delete restrict on update cascade,
 	role_id bigint not null references enrolment_role (id) on delete restrict on update cascade,
+	grade integer,
 	usable boolean default false
 );
 
 comment on table enrolment is 'Anonymized list of all of the participants in a given course.';
 comment on column enrolment.id is 'Randomized ID to protect the identity of the user';
 comment on column enrolment.usable is 'True if the participant consented to their data being being used for research, false otherwise (Default: False)';
-
--- All of the recorded final grades
-create table if not exists enrolment_final_grade (
-	enrolment_id bigint primary key references enrolment (id) on delete cascade on update cascade,
-	grade integer not null
-);
-
-comment on table enrolment_final_grade is 'Final grades for all students that completed the course';
+comment on column enrolment.grade is 'Final grade in the course';
 
 -- All of the grades recorded for the gradable activities
 create table if not exists enrolment_activity_grade (
@@ -164,6 +158,13 @@ create table if not exists activity_moodle_book_chapter (
 
 comment on table activity_moodle_book_chapter is 'Data for chapters in the moodle book module';
 
+create table if not exists log_moodle_book_chapter (
+	log_id bigint primary key references log (id) on delete cascade on update cascade,
+	chapter_id bigint references activity_moodle_book_chapter (id) on delete restrict on update cascade
+);
+
+comment on table log_moodle_book_chapter is 'Relationship table for mapping log entries to moodle book chapters';
+
 -- Moodle Checklist Module
 create table if not exists activity_moodle_checklist (
 	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
@@ -212,6 +213,13 @@ create table if not exists activity_moodle_forum_discussion (
 
 comment on table activity_moodle_forum_discussion is 'Data from moodle forum discussions';
 
+create table if not exists log_moodle_forum_discussion (
+	log_id bigint primary key references log (id) on delete cascade on update cascade,
+	discussion_id bigint references activity_moodle_forum_discussion (id) on delete restrict on update cascade
+);
+
+comment on table log_moodle_forum_discussion is 'Relationship table for mapping log entries to moodle forum discussions';
+
 create table if not exists activity_moodle_forum_post (
 	id bigserial primary key,
 	discussion_id bigint not null references activity_moodle_forum_discussion (id) on delete restrict on update cascade,
@@ -219,6 +227,13 @@ create table if not exists activity_moodle_forum_post (
 );
 
 comment on table activity_moodle_forum_post is 'Data from moodle forum posts';
+
+create table if not exists log_moodle_forum_post (
+	log_id bigint primary key references log (id) on delete cascade on update cascade,
+	post_id bigint references activity_moodle_forum_post (id) on delete restrict on update cascade
+);
+
+comment on table log_moodle_forum_post is 'Relationship table for mapping log entries to moodle forum posts';
 
 -- Moodle Label Module
 create table if not exists activity_moodle_label (
@@ -243,6 +258,13 @@ create table if not exists activity_moodle_lesson_page (
 );
 
 comment on table activity_moodle_lesson_page is 'Data from pages in the moodle lesson module';
+
+create table if not exists log_moodle_lesson_page (
+	log_id bigint primary key references log (id) on delete cascade on update cascade,
+	page_id bigint references activity_moodle_lesson_page (id) on delete restrict on update cascade
+);
+
+comment on table log_moodle_lesson_page is 'Relationship table for mapping log entries to moodle lesson pages';
 
 -- Moodle Page Module
 create table if not exists activity_moodle_page (
@@ -300,6 +322,13 @@ create table if not exists activity_moodle_wiki_page (
 
 comment on table activity_moodle_wiki_page is 'Data from pages in the moodle wiki module';
 
+create table if not exists log_moodle_wiki_page (
+	log_id bigint primary key references log (id) on delete cascade on update cascade,
+	page_id bigint references activity_moodle_wiki_page (id) on delete restrict on update cascade
+);
+
+comment on table log_moodle_wiki_page is 'Relationship table for mapping log entries to moodle wiki pages';
+
 -- Moodle Workshop Module
 create table if not exists activity_moodle_workshop (
 	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
@@ -316,50 +345,6 @@ create table if not exists activity_moodle_workshop_submission (
 
 comment on table activity_moodle_workshop_submission is 'Data from submissions in the moodle workshop module';
 
---****************************************************************************--
--- Log reference tables for Moodle modules.
---****************************************************************************--
-
--- Moodle book module
-create table if not exists log_moodle_book_chapter (
-	log_id bigint primary key references log (id) on delete cascade on update cascade,
-	chapter_id bigint references activity_moodle_book_chapter (id) on delete restrict on update cascade
-);
-
-comment on table log_moodle_book_chapter is 'Relationship table for mapping log entries to moodle book chapters';
-
--- Moodle forum module
-create table if not exists log_moodle_forum_discussion (
-	log_id bigint primary key references log (id) on delete cascade on update cascade,
-	discussion_id bigint references activity_moodle_forum_discussion (id) on delete restrict on update cascade
-);
-
-comment on table log_moodle_forum_discussion is 'Relationship table for mapping log entries to moodle forum discussions';
-
-create table if not exists log_moodle_forum_post (
-	log_id bigint primary key references log (id) on delete cascade on update cascade,
-	post_id bigint references activity_moodle_forum_post (id) on delete restrict on update cascade
-);
-
-comment on table log_moodle_forum_post is 'Relationship table for mapping log entries to moodle forum posts';
-
--- Moodle lesson module
-create table if not exists log_moodle_lesson_page (
-	log_id bigint primary key references log (id) on delete cascade on update cascade,
-	page_id bigint references activity_moodle_lesson_page (id) on delete restrict on update cascade
-);
-
-comment on table log_moodle_lesson_page is 'Relationship table for mapping log entries to moodle lesson pages';
-
--- Moodle wiki module
-create table if not exists log_moodle_wiki_page (
-	log_id bigint primary key references log (id) on delete cascade on update cascade,
-	page_id bigint references activity_moodle_wiki_page (id) on delete restrict on update cascade
-);
-
-comment on table log_moodle_workshop_submission is 'Relationship table for mapping log entries to moodle workshop submissions';
-
--- Moodle workshop module
 create table if not exists log_moodle_workshop_submission (
 	log_id bigint primary key references log (id) on delete cascade on update cascade,
 	submission_id bigint references activity_moodle_workshop_submission (id) on delete restrict on update cascade
