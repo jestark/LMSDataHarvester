@@ -489,7 +489,7 @@ final class InsertProcessor
 	{
 		this.log.trace ("processElement: element={}", element);
 
-		if ((element != null) && (! this.ttable.contains (element)))
+		if ((element != null) && (! this.ttable.contains (element, this.datastore)))
 		{
 			MetaData<Element> metadata = datastore.getProfile ().getCreator (Element.class, element.getClass ());
 

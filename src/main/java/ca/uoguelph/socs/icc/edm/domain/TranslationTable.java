@@ -68,18 +68,29 @@ public final class TranslationTable
 
 	/**
 	 * Determine if the specified <code>Element</code> instance is in the has
-	 * been entered into the <code>TranslationTable</code>.
+	 * been entered into the <code>TranslationTable</code>, for the specified
+	 * <code>DataStore</code>.
 	 *
-	 * @param  element The <code>Element</code> instance
+	 * @param  element   The <code>Element</code> instance
+	 * @param  datastore The <code>DataStore</code>
 	 *
-	 * @return         <code>true</code> if the <code>Element</code> instance
-	 *                 is in the <code>TranslationTable</code>,
-	 *                 <code>false</code> otherwise
+	 * @return           <code>true</code> if the <code>Element</code> instance
+	 *                   is in the <code>TranslationTable</code>,
+	 *                   <code>false</code> otherwise
 	 */
 
-	public boolean contains (final Element element)
+	public boolean contains (final Element element, final DataStore datastore)
 	{
-		return this.table.containsKey (element);
+		this.log.trace ("contains: element={}, datastore={}", element, datastore);
+
+		boolean result = false;
+
+		if (this.table.containsKey (element))
+		{
+			result = this.table.get (element).containsKey (datastore);
+		}
+
+		return result;
 	}
 
 	/**
