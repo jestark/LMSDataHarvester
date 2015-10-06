@@ -282,9 +282,11 @@ public abstract class DataStore
 	 *
 	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code> instance to insert, not null
+	 *
+	 * @return          A reference to the <code>Element</code>
 	 */
 
-	public abstract <T extends Element> void insert (MetaData<T> metadata, T element);
+	public abstract <T extends Element> T insert (MetaData<T> metadata, T element);
 
 	/**
 	 * Remove the specified <code>Element</code> instance from the

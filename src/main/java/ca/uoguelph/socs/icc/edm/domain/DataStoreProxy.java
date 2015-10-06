@@ -348,8 +348,7 @@ final class QueryProxy<T extends Element> extends DataStoreProxy<T>
 
 		if (result == null)
 		{
-			this.datastore.insert (this.creator, element);
-			result = element;
+			result = this.datastore.insert (this.creator, element);
 		}
 
 		return result;
@@ -469,9 +468,7 @@ final class TableProxy<T extends Element> extends DataStoreProxy<T>
 			throw new IllegalStateException ("no active transaction");
 		}
 
-		this.datastore.insert (this.creator, element);
-
-		return element;
+		return this.datastore.insert (this.creator, element);
 	}
 
 	/**
@@ -512,16 +509,13 @@ final class TableProxy<T extends Element> extends DataStoreProxy<T>
 
 			if (result == null)
 			{
-				this.datastore.insert (this.creator, newElement);
-				this.ttable.put (oldElement, newElement);
-
-				result = newElement;
+				result = this.datastore.insert (this.creator, newElement);
+				this.ttable.put (oldElement, result);
 			}
 		}
 		else
 		{
-			this.datastore.insert (this.creator, newElement);
-			result = newElement;
+			result = this.datastore.insert (this.creator, newElement);
 		}
 
 		return result;

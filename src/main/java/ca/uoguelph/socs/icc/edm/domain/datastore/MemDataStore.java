@@ -238,10 +238,12 @@ public final class MemDataStore extends DataStore
 	 *
 	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code> instance to insert, not null
+	 *
+	 * @return          A reference to the <code>Element</code>
 	 */
 
 	@Override
-	public <T extends Element> void insert (final MetaData<T> metadata, final T element)
+	public <T extends Element> T insert (final MetaData<T> metadata, final T element)
 	{
 		this.log.trace ("insert: metadata={}, element={}", metadata, element);
 
@@ -253,7 +255,7 @@ public final class MemDataStore extends DataStore
 
 		if (! this.elements.containsKey (element.getClass ()))
 		{
-			this.log.debug ("Creating the IdGenerator");
+			this.log.debug ("Creating the ElementStore");
 			this.elements.put (element.getClass (), new ElementStore<T> (metadata, this));
 		}
 
@@ -267,6 +269,8 @@ public final class MemDataStore extends DataStore
 			this.log.error ("Failed to connect relationships");
 			throw new RuntimeException ("Failed to connect relationships");
 		}
+
+		return element;
 	}
 
 	/**

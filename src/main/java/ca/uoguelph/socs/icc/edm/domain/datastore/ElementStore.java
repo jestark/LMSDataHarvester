@@ -97,7 +97,7 @@ final class ElementStore<T extends Element>
 					.allMatch (y -> ! y.isMutable ()))
 			.collect (Collectors.toSet ());
 
-		this.generator = IdGenerator.getInstance (datastore, metadata.getElementClass ());
+		this.generator = IdGenerator.getInstance (datastore, metadata.getElementType ());
 	}
 
 	/**

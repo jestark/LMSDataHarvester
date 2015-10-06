@@ -154,7 +154,9 @@ public final class JPADataStore extends DataStore
 		}
 		else
 		{
-			String qname = type.getSimpleName () + ":" + filter.getSelector ().getName ();
+			String qname = String.format ("%s:%s", filter.getMetaData ()
+					.getElementType ().getSimpleName (),
+					filter.getSelector ().getName ());
 
 			TypedQuery<? extends T> query = this.em.createNamedQuery (qname, type);
 
@@ -185,7 +187,9 @@ public final class JPADataStore extends DataStore
 	{
 		assert element != null : "element is NULL";
 
-		TypedQuery<Long> query = this.em.createNamedQuery (element.getSimpleName () + ":allid", Long.class);
+		String name = String.format ("%s:allid", element.getSimpleName ());
+
+		TypedQuery<Long> query = this.em.createNamedQuery (name, Long.class);
 
 		return query.getResultList ();
 	}
@@ -268,10 +272,12 @@ public final class JPADataStore extends DataStore
 	 *
 	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code> instance to insert, not null
+	 *
+	 * @return          A reference to the <code>Element</code>
 	 */
 
 	@Override
-	public <T extends Element> void insert (final MetaData<T> metadata, final T element)
+	public <T extends Element> T insert (final MetaData<T> metadata, final T element)
 	{
 		this.log.trace ("insert: metadata={}, element={}", metadata, element);
 
@@ -286,7 +292,7 @@ public final class JPADataStore extends DataStore
 
 		if (generator == null)
 		{
-			generator = IdGenerator.getInstance (this, metadata.getElementClass ());
+			generator = IdGenerator.getInstance (this, metadata.getElementType ());
 			this.generators.put (metadata.getElementClass (), generator);
 		}
 
@@ -296,12 +302,16 @@ public final class JPADataStore extends DataStore
 		this.log.debug ("Persisting the Element");
 		this.em.persist (element);
 
+		T result = this.em.find (metadata.getElementClass (), element.getId ());
+
 		this.log.debug ("Connecting the Element's relationships");
-		if (! metadata.connect (this, element))
+		if (! metadata.connect (this, result))
 		{
 			this.log.error ("Failed to connect relationships");
 			throw new RuntimeException ("Failed to connect relationships");
 		}
+
+		return result;
 	}
 
 	/**
