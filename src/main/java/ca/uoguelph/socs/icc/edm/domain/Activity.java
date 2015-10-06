@@ -420,8 +420,6 @@ public abstract class Activity extends ParentActivity
 	@Override
 	protected void setId (final Long id)
 	{
-		assert id != null : "id is NULL";
-
 		this.id = id;
 	}
 
