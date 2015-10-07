@@ -212,7 +212,7 @@ public class MoodleActivityReference extends ActivityReference
 				.setValue (ActivityReference.TYPE, this.activity.getReference (), this.type);
 		}
 
-		return this.activity;
+		return this.propagateDomainModel (this.activity);
 	}
 
 	protected void setActivity (final Activity activity)

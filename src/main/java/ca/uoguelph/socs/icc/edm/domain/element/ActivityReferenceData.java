@@ -113,7 +113,7 @@ public class ActivityReferenceData extends ActivityReference
 	@Override
 	public Course getCourse ()
 	{
-		return this.course;
+		return this.propagateDomainModel (this.course);
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class ActivityReferenceData extends ActivityReference
 	@Override
 	public ActivityType getType ()
 	{
-		return this.type;
+		return this.propagateDomainModel (this.type);
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class ActivityReferenceData extends ActivityReference
 	@Override
 	public Activity getActivity ()
 	{
-		return this.activity;
+		return this.propagateDomainModel (this.activity);
 	}
 
 	/**

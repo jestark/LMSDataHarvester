@@ -392,7 +392,7 @@ public abstract class Activity extends ParentActivity
 	@Override
 	public Course getCourse ()
 	{
-		return this.reference.getCourse ();
+		return this.getReference ().getCourse ();
 	}
 
 	/**
@@ -404,7 +404,7 @@ public abstract class Activity extends ParentActivity
 	@Override
 	public ActivityType getType()
 	{
-		return this.reference.getType ();
+		return this.getReference ().getType ();
 	}
 
 	/**
@@ -418,7 +418,7 @@ public abstract class Activity extends ParentActivity
 
 	public ActivityReference getReference ()
 	{
-		return this.reference;
+		return this.propagateDomainModel (this.reference);
 	}
 
 	/**
