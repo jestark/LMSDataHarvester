@@ -24,7 +24,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
+import java.util.stream.Collectors;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
@@ -59,7 +62,7 @@ public class CourseData extends Course implements Serializable
 	private Integer year;
 
 	/** The <code>List</code> of <code>Activity</code> instances */
-	private List<Activity> activities;
+	private List<ActivityReference> activities;
 
 	/** The <code>List</code> of individuals which are enrolled in the course. */
 	private Set<Enrolment> enrolments;
@@ -85,7 +88,7 @@ public class CourseData extends Course implements Serializable
 		this.semester = null;
 		this.year = null;
 
-		this.activities = new ArrayList<Activity> ();
+		this.activities = new ArrayList<ActivityReference> ();
 		this.enrolments = new HashSet<Enrolment> ();
 	}
 
@@ -217,9 +220,9 @@ public class CourseData extends Course implements Serializable
 	@Override
 	public List<Activity> getActivities ()
 	{
-		this.activities.forEach (x -> this.propagateDomainModel (x));
-
-		return Collections.unmodifiableList (this.activities);
+		return Collections.unmodifiableList (this.activities.stream ()
+				.map (x -> this.propagateDomainModel (x).getActivity ())
+				.collect (Collectors.toList ()));
 	}
 
 	/**
@@ -237,7 +240,9 @@ public class CourseData extends Course implements Serializable
 	{
 		assert activities != null : "activities is NULL";
 
-		this.activities = activities;
+		this.activities = activities.stream ()
+			.map (Activity::getReference)
+			.collect (Collectors.toList ());
 	}
 
 	/**
@@ -254,7 +259,7 @@ public class CourseData extends Course implements Serializable
 	{
 		assert activity != null : "activity is NULL";
 
-		return this.activities.add (activity);
+		return this.activities.add (activity.getReference ());
 	}
 
 	/**
@@ -271,7 +276,7 @@ public class CourseData extends Course implements Serializable
 	{
 		assert activity != null : "activity is NULL";
 
-		return this.activities.remove (activity);
+		return this.activities.remove (activity.getReference ());
 	}
 
 	/**

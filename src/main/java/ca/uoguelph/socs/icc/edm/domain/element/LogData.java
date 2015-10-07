@@ -21,6 +21,7 @@ import java.util.Date;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
@@ -56,7 +57,7 @@ public class LogData extends LogEntry implements Serializable
 	private Enrolment enrolment;
 
 	/** The activity which is associated with the log entry */
-	private Activity activity;
+	private ActivityReference activity;
 
 	/** The logged action, which was performed on the associated activity */
 	private Action action;
@@ -164,7 +165,7 @@ public class LogData extends LogEntry implements Serializable
 	@Override
 	public Activity getActivity ()
 	{
-		return this.propagateDomainModel (this.activity);
+		return this.propagateDomainModel (this.activity).getActivity ();
 	}
 
 	/**
@@ -181,7 +182,7 @@ public class LogData extends LogEntry implements Serializable
 	{
 		assert activity != null : "activity is NULL";
 
-		this.activity = activity;
+		this.activity = activity.getReference ();
 	}
 
 	/**

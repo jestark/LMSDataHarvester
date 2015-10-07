@@ -83,7 +83,7 @@ public abstract class ActivityType extends Element
 		Definition.getBuilder (ActivityType.class, Element.class)
 			.addProperty (NAME, ActivityType::getName, ActivityType::setName)
 			.addRelationship (SOURCE, ActivityType::getSource, ActivityType::setSource)
-			.addRelationship (Activity.class, Activity.TYPE, Activity.SELECTOR_TYPE)
+			.addRelationship (ActivityReference.class, ActivityReference.TYPE, ActivityReference.SELECTOR_TYPE)
 			.addSelector (SELECTOR_NAME)
 			.build ();
 	}

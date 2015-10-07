@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import java.io.Serializable;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
@@ -47,7 +48,7 @@ public class GradeData extends Grade implements Serializable
 	private Enrolment enrolment;
 
 	/** The activity for which the grade is assigned */
-	private Activity activity;
+	private ActivityReference activity;
 
 	/**
 	 * Static initializer to register the <code>GradedActivity</code> class
@@ -87,20 +88,15 @@ public class GradeData extends Grade implements Serializable
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.   Since
-	 * <code>GradedActivity</code> is dependent on the <code>Enrolment</code>
-	 * instance for its <code>DataStore</code> identifier, this method throws
-	 * an <code>UnsupportedOperationException</code>.
+	 * Set the <code>DataStore</code> identifier.    This method is a no-op as
+	 * the associated <code>LogEntry</code> provides the ID.
 	 *
-	 * @param  id                            The <code>DataStore</code>
-	 *                                       identifier, not null
-	 * @throws UnsupportedOperationException unconditionally
+	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
 	@Override
 	protected void setId (final Long id)
 	{
-		throw new UnsupportedOperationException ();
 	}
 
 	/**
@@ -111,9 +107,9 @@ public class GradeData extends Grade implements Serializable
 	 */
 
 	@Override
-	public Activity getActivity()
+	public Activity getActivity ()
 	{
-		return this.activity;
+		return this.propagateDomainModel (this.activity).getActivity ();
 	}
 
 	/**
@@ -129,7 +125,7 @@ public class GradeData extends Grade implements Serializable
 	{
 		assert activity != null : "grade is NULL";
 
-		this.activity = activity;
+		this.activity = activity.getReference ();
 	}
 
 	/**
@@ -142,7 +138,7 @@ public class GradeData extends Grade implements Serializable
 	@Override
 	public Enrolment getEnrolment ()
 	{
-		return this.enrolment;
+		return this.propagateDomainModel (this.enrolment);
 	}
 
 	/**
