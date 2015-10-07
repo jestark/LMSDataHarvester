@@ -7,7 +7,7 @@ DomainModelProfile				907		5
 MoodleActivity					1013	991
 
 ActivityType					1009	997
-Activity						1039	953
+ActivityReference				1039	953
 ActivityGrade					1049	947
 Action							1051	941
 Course							1061	937

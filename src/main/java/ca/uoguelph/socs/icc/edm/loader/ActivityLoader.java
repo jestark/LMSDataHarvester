@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.loader;
 import java.util.List;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -119,7 +120,7 @@ public final class ActivityLoader extends AbstractLoader<Activity>
 		}
 		else
 		{
-			result = this.getDefinitionQuery (Activity.SELECTOR_TYPE)
+			result = this.getDefinitionQuery (ActivityReference.SELECTOR_TYPE)
 				.queryAll ();
 		}
 

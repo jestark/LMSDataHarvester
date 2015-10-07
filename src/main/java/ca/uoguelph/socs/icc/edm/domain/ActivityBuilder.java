@@ -50,23 +50,14 @@ public class ActivityBuilder implements Builder<Activity>
 	/** The Logger */
 	protected final Logger log;
 
-	/** Helper to operate on <code>SubActivity</code> instances*/
+	/** Builder to create the <code>ActivityReferences</code> */
+	protected final ActivityReferenceBuilder referenceBuilder;
+
+	/** Helper to operate on <code>Activity</code> instances*/
 	protected final DataStoreProxy<Activity> activityProxy;
-
-	/** Helper to substitute <code>Course</code> instances */
-	protected final DataStoreProxy<Course> courseProxy;
-
-	/** The associated <code>ActivityType</code> */
-	protected final ActivityType type;
 
 	/** The loaded or previously built <code>SubActivity</code> instance */
 	protected Activity oldActivity;
-
-	/** The <code>DataStore</code> id number for the <code>Activity</code> */
-	protected Long id;
-
-	/** The associated <code>Course</code> */
-	protected Course course;
 
 	/**
 	 * Create the <code>AbstractActivityBuilder</code>.
@@ -85,21 +76,11 @@ public class ActivityBuilder implements Builder<Activity>
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.courseProxy = DataStoreProxy.getInstance (Course.class, Course.SELECTOR_OFFERING, datastore);
+		this.referenceBuilder = new ActivityReferenceBuilder (datastore)
+				.setType (type);
 
-		this.type = DataStoreProxy.getInstance (ActivityType.class, ActivityType.SELECTOR_NAME, datastore)
-			.fetch (type);
+		this.activityProxy = DataStoreProxy.getInstance (Activity.class, Activity.getActivityClass (type), Activity.SELECTOR_ID, datastore);
 
-		if (this.type == null)
-		{
-			this.log.error ("This specified ActivityType does not exist in the DataStore");
-			throw new IllegalArgumentException ("ActivityType is not in the DataStore");
-		}
-
-		this.activityProxy = DataStoreProxy.getInstance (Activity.class, Activity.getActivityClass (this.type), Activity.SELECTOR_ID, datastore);
-
-		this.id = null;
-		this.course = null;
 		this.oldActivity = null;
 	}
 
@@ -116,16 +97,8 @@ public class ActivityBuilder implements Builder<Activity>
 	{
 		this.log.trace ("build:");
 
-		if (this.course == null)
-		{
-			this.log.error ("course is NULL");
-			throw new IllegalStateException ("course is NULL");
-		}
-
 		Activity result = this.activityProxy.create ();
-		result.setId (this.id);
-		result.setType (this.type);
-		result.setCourse (this.course);
+		result.setReference (this.referenceBuilder.build ());
 
 		this.oldActivity = this.activityProxy.insert (this.oldActivity, result);
 
@@ -143,8 +116,6 @@ public class ActivityBuilder implements Builder<Activity>
 	{
 		this.log.trace ("clear:");
 
-		this.id = null;
-		this.course = null;
 		this.oldActivity = null;
 
 		return this;
@@ -173,14 +144,12 @@ public class ActivityBuilder implements Builder<Activity>
 			throw new NullPointerException ();
 		}
 
-		if (! (this.getActivityType ()).equals (activity.getType ()))
+		if (! (this.getType ()).equals (activity.getType ()))
 		{
-			this.log.error ("Invalid ActivityType:  required {}, received {}", this.getActivityType (), activity.getType ());
+			this.log.error ("Invalid ActivityType:  required {}, received {}", this.getType (), activity.getType ());
 			throw new IllegalArgumentException ("Invalid ActivityType");
 		}
 
-		this.id = activity.getId ();
-		this.setCourse (activity.getCourse ());
 		this.oldActivity = activity;
 
 		return this;
@@ -192,9 +161,9 @@ public class ActivityBuilder implements Builder<Activity>
 	 * @return The <code>ActivityType</code> instance
 	 */
 
-	public final ActivityType getActivityType ()
+	public final ActivityType getType ()
 	{
-		return this.type;
+		return this.referenceBuilder.getType ();
 	}
 
 	/**
@@ -206,7 +175,7 @@ public class ActivityBuilder implements Builder<Activity>
 
 	public final Course getCourse ()
 	{
-		return this.course;
+		return this.referenceBuilder.getCourse ();
 	}
 
 	/**
@@ -223,19 +192,7 @@ public class ActivityBuilder implements Builder<Activity>
 	{
 		this.log.trace ("setCourse: course={}", course);
 
-		if (course == null)
-		{
-			this.log.error ("Course is NULL");
-			throw new NullPointerException ("Course is NULL");
-		}
-
-		this.course = this.courseProxy.fetch (course);
-
-		if (this.course == null)
-		{
-			this.log.error ("This specified Course does not exist in the DataStore");
-			throw new IllegalArgumentException ("Course is not in the DataStore");
-		}
+		this.referenceBuilder.setCourse (course);
 
 		return this;
 	}

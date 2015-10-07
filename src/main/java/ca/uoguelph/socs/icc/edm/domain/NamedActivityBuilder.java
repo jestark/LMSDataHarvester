@@ -47,7 +47,7 @@ public class NamedActivityBuilder extends ActivityBuilder
 	protected NamedActivityBuilder (final DataStore datastore, final ActivityType type)
 	{
 		super (datastore, type);
-		
+
 		if (! Activity.hasActivityClass (type))
 		{
 			this.log.error ("No Activity implementation class registered for type: {}", type.getName ());
@@ -68,12 +68,6 @@ public class NamedActivityBuilder extends ActivityBuilder
 	{
 		this.log.trace ("build:");
 
-		if (this.course == null)
-		{
-			this.log.error ("course is NULL");
-			throw new IllegalStateException ("course is NULL");
-		}
-
 		if (this.name == null)
 		{
 			this.log.error ("name is NULL");
@@ -81,9 +75,7 @@ public class NamedActivityBuilder extends ActivityBuilder
 		}
 
 		NamedActivity result = (NamedActivity) this.activityProxy.create ();
-		result.setId (this.id);
-		result.setType (this.type);
-		result.setCourse (this.course);
+		result.setReference (this.referenceBuilder.build ());
 		result.setName (this.name);
 
 		this.oldActivity = this.activityProxy.insert (this.oldActivity, result);
@@ -108,12 +100,6 @@ public class NamedActivityBuilder extends ActivityBuilder
 	public NamedActivityBuilder load (final Activity activity)
 	{
 		this.log.trace ("load: activity={}", activity);
-
-		if (activity == null)
-		{
-			this.log.error ("Attempting to load a NULL Activity");
-			throw new NullPointerException ();
-		}
 
 		super.load (activity);
 		this.setName (activity.getName ());

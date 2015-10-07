@@ -22,10 +22,6 @@ import java.util.Set;
 
 import java.util.HashMap;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.MemDataStore;
 
@@ -54,7 +50,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * Since the <code>Activity</code> interface represents all of the content of a
  * <code>Course</code>, its implementation can be complex.  Each instance of
  * the <code>Activity</code> interface must contain the
- * <code>ActviityType</code>, the associated <code>Course</code>,
+ * <code>ActivityType</code>, the associated <code>Course</code>,
  * <code>Grade</code>, and <code>LogEntry</code> instances.  Depending on the
  * <code>ActivityType</code> an <code>Activity</code> instance can contain
  * additional data including, but not limited to, <code>SubActivity</code>
@@ -89,29 +85,17 @@ public abstract class Activity extends ParentActivity
 	/** <code>ActivityType</code> to implementation class map */
 	private static final Map<ActivityType, Class<? extends Activity>> activities;
 
-	/** The associated <code>Course</code> */
-	public static final Property<Course> COURSE;
-
-	/** The associated <code>ActivityType</code> */
-	public static final Property<ActivityType> TYPE;
-
 	/** The name of the <code>Activity</code> */
 	public static final Property<String> NAME;
+
+	/** The associated <code>ActivityReference</code> */
+	public static final Property<ActivityReference> REFERENCE;
 
 	/** The <code>LogEntry</code> instances associated with the <code>Activity</code> */
 	public static final Property<LogEntry> LOGENTRIES;
 
-	/** Select all <code>Activity</code> instances by <code>ActivityType</code> */
-	public static final Selector SELECTOR_TYPE;
-
-	/** The primary key for the <code>Activity</code> */
-	protected Long id;
-
-	/** The associated <code>Course</code> */
-	protected Course course;
-
-	/** The type of the <code>Activity</code> */
-	protected ActivityType type;
+	/** The associated <code>ActivityReference</code> instance */
+	private ActivityReference reference;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -122,20 +106,15 @@ public abstract class Activity extends ParentActivity
 	{
 		activities = new HashMap<> ();
 
-		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
-		TYPE = Property.getInstance (ActivityType.class, "type", Property.Flags.REQUIRED);
 		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
+		REFERENCE = Property.getInstance (ActivityReference.class, "reference", Property.Flags.REQUIRED);
 
 		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
 
-		SELECTOR_TYPE = Selector.getInstance (TYPE, false);
-
 		Definition.getBuilder (Activity.class, Element.class)
 			.addProperty (NAME, Activity::getName)
-			.addRelationship (COURSE, Activity::getCourse, Activity::setCourse)
-			.addRelationship (TYPE, Activity::getType, Activity::setType)
+			.addRelationship (REFERENCE, Activity::getReference, Activity::setReference)
 			.addRelationship (LOGENTRIES, Activity::getLog, Activity::addLog, Activity::removeLog)
-			.addSelector (SELECTOR_TYPE)
 			.build ();
 	}
 
@@ -299,12 +278,7 @@ public abstract class Activity extends ParentActivity
 		}
 		else if (obj instanceof Activity)
 		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-
-			ebuilder.append (this.getType (), ((Activity) obj).getType ());
-			ebuilder.append (this.getCourse (), ((Activity) obj).getCourse ());
-
-			result = ebuilder.isEquals ();
+			result = this.getReference ().equals (((Activity) obj).getReference ());
 		}
 
 		return result;
@@ -321,14 +295,7 @@ public abstract class Activity extends ParentActivity
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1039;
-		final int mult = 953;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getType ());
-		hbuilder.append (this.getCourse ());
-
-		return hbuilder.toHashCode ();
+		return this.getReference ().hashCode ();
 	}
 
 	/**
@@ -342,12 +309,7 @@ public abstract class Activity extends ParentActivity
 	@Override
 	public String toString ()
 	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("type", this.getType ());
-		builder.append ("course", this.getCourse ());
-
-		return builder.toString ();
+		return this.getReference ().toString ();
 	}
 
 	/**
@@ -387,32 +349,30 @@ public abstract class Activity extends ParentActivity
 	}
 
 	/**
-	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
-	 * instance.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
+	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
+	 * instance.  Some <code>Element</code> interfaces are dependent on other
+	 * <code>Element</code> interfaces for their identification.  The dependent
+	 * interface implementations should return the <code>DataStore</code>
+	 * identifier from the interface on which they depend.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
 	 */
 
 	@Override
 	public Long getId ()
 	{
-		return this.id;
+		return this.reference.getId ();
 	}
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Activity</code>
-	 * instance is loaded, or by the <code>ActivityBuilder</code>
-	 * implementation to set the <code>DataStore</code> identifier, prior to
-	 * storing a new <code>Activity</code> instance.
+	 * be used by a <code>DataStore</code> when the <code>Element</code>
+	 * instance is loaded, or by the <code>ElementBuilder</code> implementation
+	 * to set the <code>DataStore</code> identifier, prior to storing a new
+	 * <code>Element</code> instance.
 	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
+	 * This method is a no-op as the associated <code>ActivityReference</code>
+	 * provides the ID.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -420,7 +380,6 @@ public abstract class Activity extends ParentActivity
 	@Override
 	protected void setId (final Long id)
 	{
-		this.id = id;
 	}
 
 	/**
@@ -433,23 +392,7 @@ public abstract class Activity extends ParentActivity
 	@Override
 	public Course getCourse ()
 	{
-		return this.propagateDomainModel (this.course);
-	}
-
-	/**
-	 * Set the <code>Course</code> with which the <code>Activity</code> is
-	 * associated.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
-	 *
-	 * @param  course The <code>Course</code>, not null
-	 */
-
-	protected void setCourse (final Course course)
-	{
-		assert course != null : "course is NULL";
-
-		this.course = course;
+		return this.reference.getCourse ();
 	}
 
 	/**
@@ -459,25 +402,38 @@ public abstract class Activity extends ParentActivity
 	 */
 
 	@Override
-	public ActivityType getType ()
+	public ActivityType getType()
 	{
-		return this.propagateDomainModel (this.type);
+		return this.reference.getType ();
 	}
 
 	/**
-	 * Set the <code>ActvityType</code> with which the <code>Activity</code> is
-	 * associated.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
+	 * Get the associated <code>ActivityReference</code> instance.  This method
+	 * is intended to be used by other <code>Element</code> implementations, as
+	 * all of the data stored in the <code>ActivityReference</code> is
+	 * accessible though <code>Activity</code>
 	 *
-	 * @param  type The <code>ActivityType</code>, not null
+	 * @return The <code>ActivityReference</code>
 	 */
 
-	protected void setType (final ActivityType type)
+	public ActivityReference getReference ()
 	{
-		assert type != null : "type is NULL";
+		return this.reference;
+	}
 
-		this.type = type;
+	/**
+	 * Set the associated <code>ActivityReference</code>.   This method is
+	 * intended to be used by a <code>DataStore</code> when the
+	 * <code>Activity</code> instance is loaded.
+	 *
+	 * @param  reference The <code>ActivityReference</code>, not null
+	 */
+
+	protected void setReference (final ActivityReference reference)
+	{
+		assert reference != null : "reference is NULL";
+
+		this.reference = reference;
 	}
 
 	/**

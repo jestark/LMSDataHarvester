@@ -88,7 +88,7 @@ public class GenericActivity extends Activity implements Serializable
 	@Override
 	public String getName ()
 	{
-		return (this.type != null) ? this.type.getName () : null;
+		return (this.getType () != null) ? this.getType ().getName () : null;
 	}
 
 	/**
