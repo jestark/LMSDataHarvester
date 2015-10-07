@@ -66,7 +66,7 @@ public class MoodleLogData extends LogEntry
 
 	/** The info String*/
 	private String info;
-	
+
 	/** The URL contained in the <code>LogEntry</code> */
 	private String url;
 
@@ -83,7 +83,7 @@ public class MoodleLogData extends LogEntry
 	/**
 	 * Create the <code>MoodleLogData</code>
 	 */
-	
+
 	protected MoodleLogData ()
 	{
 		this.id = null;

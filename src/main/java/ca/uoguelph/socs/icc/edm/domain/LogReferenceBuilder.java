@@ -31,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @see     LogReference
  */
 
-public final class LogReferenceBuilder implements Builder<LogReference>
+final class LogReferenceBuilder implements Builder<LogReference>
 {
 	/** The Logger */
 	private final Logger log;

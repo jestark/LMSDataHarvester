@@ -205,12 +205,11 @@ public abstract class LogReference extends Element implements Serializable
 	 */
 
 	@Override
-	public LogReferenceBuilder getBuilder (final DataStore datastore)
+	public LogEntryBuilder getBuilder (final DataStore datastore)
 	{
 		assert datastore != null : "datastore is null";
 
-		return new LogReferenceBuilder (datastore)
-			.load (this);
+		return this.getEntry ().getBuilder (datastore);
 	}
 
 	/**
@@ -246,20 +245,15 @@ public abstract class LogReference extends Element implements Serializable
 	}
 
 	/**
-	 * Set the <code>DataStore</code> identifier.   Since
-	 * <code>LogReference</code> is dependent on the <code>LogEntry</code>
-	 * instance for its <code>DataStore</code> identifier, this method throws
-	 * an <code>UnsupportedOperationException</code>.
+	 * Set the <code>DataStore</code> identifier.  This method is a no-op as
+	 * the associated <code>LogEntry</code> provides the ID.
 	 *
-	 * @param  id                            The <code>DataStore</code>
-	 *                                       identifier, not null
-	 * @throws UnsupportedOperationException unconditionally
+	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
 	@Override
 	protected void setId (final Long id)
 	{
-		throw new UnsupportedOperationException ();
 	}
 
 	/**
