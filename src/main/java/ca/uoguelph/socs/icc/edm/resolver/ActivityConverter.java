@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
@@ -33,8 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.NamedActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
-
-import ca.uoguelph.socs.icc.edm.domain.element.MoodleActivity;
 
 /**
  * Convert <code>Activity</code> data in the moodle log to something sane.
@@ -152,7 +151,7 @@ public final class ActivityConverter
 	private final DomainModel dest;
 
 	/** Query for loading <code>Activity</code> instances */
-	private final Query<Activity> idQuery;
+	private final Query<ActivityReference> idQuery;
 
 	/** Builder to create the <code>ActivityType</code> instances */
 	private final ActivityTypeBuilder typeBuilder;
@@ -176,7 +175,7 @@ public final class ActivityConverter
 
 		this.dest = dest;
 
-		this.idQuery = source.getQuery (Activity.class, MoodleActivity.class, Activity.SELECTOR_ID);
+		this.idQuery = source.getQuery (ActivityReference.class, ActivityReference.SELECTOR_ID);
 
 		this.typeBuilder = ActivityType.builder (this.dest)
 			.setActivitySource (ActivitySource.builder (this.dest)
@@ -255,7 +254,7 @@ public final class ActivityConverter
 		{
 			if (activityId != 0)
 			{
-				Activity moodleActivity = this.idQuery.setValue (Activity.ID, activityId)
+				ActivityReference moodleActivity = this.idQuery.setValue (Activity.ID, activityId)
 					.query ();
 
 				if (moodleActivity != null)
