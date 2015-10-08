@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -49,7 +51,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  * @version 1.1
  */
 
-public class MoodleActivityReference extends ActivityReference
+public class MoodleActivityReference extends ActivityReference implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
