@@ -52,9 +52,6 @@ class WorkshopSubmissionLog extends LogReference
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
-	/** The associated <code>LogEntry</code> */
-	private LogEntry entry;
-
 	/** The associated <code>SubActivity</code> */
 	private SubActivity subActivity;
 
@@ -75,7 +72,6 @@ class WorkshopSubmissionLog extends LogReference
 
 	protected WorkshopSubmissionLog ()
 	{
-		this.entry = null;
 		this.subActivity = null;
 	}
 
