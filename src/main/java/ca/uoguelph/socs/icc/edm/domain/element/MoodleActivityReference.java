@@ -149,6 +149,23 @@ public class MoodleActivityReference extends ActivityReference implements Serial
 	}
 
 	/**
+	 * Get a <code>String</code> representation of the <code>Activity</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>Activity</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		return new ToStringBuilder (this)
+				.appendSuper (super.toString ())
+				.append ("instanceId", this.instanceId)
+				.toString ();
+	}
+
+	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
 	 * instance.
 	 * <p>
@@ -207,11 +224,16 @@ public class MoodleActivityReference extends ActivityReference implements Serial
 				.setValue (Activity.ID, this.instanceId)
 				.query ();
 
+			if (this.activity == null)
+			{
+				throw new IllegalStateException (String.format ("Failed to load data for Activity: %s/%d", this.type.getName (), this.instanceId));
+			}
+
 			// Type is transient on the loaded activity, so copy it in here
 			this.getDataStore ()
 				.getProfile ()
-				.getMetaData (ActivityReference.class)
-				.setValue (ActivityReference.TYPE, this.activity.getReference (), this.type);
+				.getMetaData (Activity.class)
+				.setValue (Activity.REFERENCE, this.activity, this);
 		}
 
 		return this.propagateDomainModel (this.activity);
