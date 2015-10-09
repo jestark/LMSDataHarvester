@@ -16,11 +16,17 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.io.Serializable;
+
 import java.util.Map;
 import java.util.List;
 import java.util.Set;
 
 import java.util.HashMap;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.MemDataStore;
@@ -77,8 +83,11 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     ActivityLoader
  */
 
-public abstract class Activity extends ParentActivity
+public abstract class Activity extends ParentActivity implements Serializable
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	/** Internal <code>DomainModel</code> for sources and types */
 	private static DomainModel store;
 
@@ -257,6 +266,15 @@ public abstract class Activity extends ParentActivity
 	}
 
 	/**
+	 * Create the <code>Activity</code>
+	 */
+
+	protected Activity ()
+	{
+		this.reference = null;
+	}
+
+	/**
 	 * Compare two <code>Activity</code> instances to determine if they are
 	 * equal.
 	 *
@@ -278,7 +296,9 @@ public abstract class Activity extends ParentActivity
 		}
 		else if (obj instanceof Activity)
 		{
-			result = this.getReference ().equals (((Activity) obj).getReference ());
+			result = new EqualsBuilder ()
+				.append (this.getReference (), ((Activity) obj).getReference ())
+				.isEquals ();
 		}
 
 		return result;
@@ -295,7 +315,12 @@ public abstract class Activity extends ParentActivity
 	@Override
 	public int hashCode ()
 	{
-		return this.getReference ().hashCode ();
+		final int base = 1013;
+		final int mult = 983;
+
+		return new HashCodeBuilder (base, mult)
+			.append (this.getReference ())
+			.hashCode ();
 	}
 
 	/**
@@ -309,7 +334,9 @@ public abstract class Activity extends ParentActivity
 	@Override
 	public String toString ()
 	{
-		return this.getReference ().toString ();
+		return new ToStringBuilder (this)
+				.append ("reference", this.getReference ())
+				.toString ();
 	}
 
 	/**
@@ -346,40 +373,6 @@ public abstract class Activity extends ParentActivity
 			.getDataStore ()
 			.getProfile ()
 			.getCreator (Activity.class, this.getClass ());
-	}
-
-	/**
-	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
-	 * instance.  Some <code>Element</code> interfaces are dependent on other
-	 * <code>Element</code> interfaces for their identification.  The dependent
-	 * interface implementations should return the <code>DataStore</code>
-	 * identifier from the interface on which they depend.
-	 *
-	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
-	 */
-
-	@Override
-	public Long getId ()
-	{
-		return this.reference.getId ();
-	}
-
-	/**
-	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Element</code>
-	 * instance is loaded, or by the <code>ElementBuilder</code> implementation
-	 * to set the <code>DataStore</code> identifier, prior to storing a new
-	 * <code>Element</code> instance.
-	 * <p>
-	 * This method is a no-op as the associated <code>ActivityReference</code>
-	 * provides the ID.
-	 *
-	 * @param  id The <code>DataStore</code> identifier, not null
-	 */
-
-	@Override
-	protected void setId (final Long id)
-	{
 	}
 
 	/**

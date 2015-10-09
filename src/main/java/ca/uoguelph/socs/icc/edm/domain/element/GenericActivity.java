@@ -76,6 +76,40 @@ public class GenericActivity extends Activity implements Serializable
 	}
 
 	/**
+	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
+	 * instance.  Some <code>Element</code> interfaces are dependent on other
+	 * <code>Element</code> interfaces for their identification.  The dependent
+	 * interface implementations should return the <code>DataStore</code>
+	 * identifier from the interface on which they depend.
+	 *
+	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
+	 */
+
+	@Override
+	public Long getId ()
+	{
+		return (this.getReference () != null) ? this.getReference ().getId () : null;
+	}
+
+	/**
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Element</code>
+	 * instance is loaded, or by the <code>ElementBuilder</code> implementation
+	 * to set the <code>DataStore</code> identifier, prior to storing a new
+	 * <code>Element</code> instance.
+	 * <p>
+	 * This method is a no-op as the associated <code>ActivityReference</code>
+	 * provides the ID.
+	 *
+	 * @param  id The <code>DataStore</code> identifier, not null
+	 */
+
+	@Override
+	protected void setId (final Long id)
+	{
+	}
+
+	/**
 	 * Get the name of the <code>Activity</code>.  Not all
 	 * <code>Activity</code> instances have names.  For those
 	 * <code>Activity</code> instances which do not have names, the name of the

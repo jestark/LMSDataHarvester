@@ -4,8 +4,9 @@ Property						883		11
 Selector						887		7
 DomainModelProfile				907		5
 
-MoodleActivity					1013	991
+MoodleActivityReference			1013	991
 
+Activity						1019	983
 ActivityType					1009	997
 ActivityReference				1039	953
 ActivityGrade					1049	947

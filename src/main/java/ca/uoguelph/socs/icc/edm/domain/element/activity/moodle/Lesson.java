@@ -64,6 +64,9 @@ public class Lesson extends NamedActivity implements Serializable
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** Copy of the id number to work around bad JPA behaviour */
+	private Long id;
+
 	/** The name of the <code>Activity</code> */
 	private String name;
 
@@ -148,6 +151,38 @@ public class Lesson extends NamedActivity implements Serializable
 		hbuilder.appendSuper (super.hashCode ());
 
 		return hbuilder.toHashCode ();
+	}
+
+	/**
+	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
+	 * instance.  Some <code>Element</code> interfaces are dependent on other
+	 * <code>Element</code> interfaces for their identification.  The dependent
+	 * interface implementations should return the <code>DataStore</code>
+	 * identifier from the interface on which they depend.
+	 *
+	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
+	 */
+
+	@Override
+	public Long getId ()
+	{
+		return (this.getReference () != null) ? this.getReference ().getId () : this.id;
+	}
+
+	/**
+	 * Set the <code>DataStore</code> identifier.  This method is intended to
+	 * be used by a <code>DataStore</code> when the <code>Element</code>
+	 * instance is loaded, or by the <code>ElementBuilder</code> implementation
+	 * to set the <code>DataStore</code> identifier, prior to storing a new
+	 * <code>Element</code> instance.
+	 *
+	 * @param  id The <code>DataStore</code> identifier, not null
+	 */
+
+	@Override
+	protected void setId (final Long id)
+	{
+		this.id = id;
 	}
 
 	/**
