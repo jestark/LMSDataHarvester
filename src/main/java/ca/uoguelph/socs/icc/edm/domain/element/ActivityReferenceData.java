@@ -18,10 +18,16 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.io.Serializable;
 
+import java.util.List;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
 
@@ -49,6 +55,9 @@ public class ActivityReferenceData extends ActivityReference implements Serializ
 	/** The <code>Activity</code> which contains the actual data */
 	private Activity activity;
 
+	/** The associated <code>LogEntry</code> instances */
+	private List<LogEntry> log;
+
 	/**
 	 * Static initializer to register the <code>ActivityReferenceData</code>
 	 * class with the factories.
@@ -69,6 +78,7 @@ public class ActivityReferenceData extends ActivityReference implements Serializ
 		this.activity = null;
 		this.course = null;
 		this.type = null;
+		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**
@@ -193,5 +203,74 @@ public class ActivityReferenceData extends ActivityReference implements Serializ
 		assert activity != null : "activity is NULL";
 
 		this.activity = activity;
+	}
+
+	/**
+	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
+	 * which act upon the <code>ActivityReference</code>.
+	 *
+	 * @return A <code>List</code> of <code>LogEntry</code> instances
+	 */
+
+	@Override
+	public List<LogEntry> getLog ()
+	{
+		this.log.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableList (this.log);
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
+	 * associated with the <code>ActivityReference</code> instance.  This
+	 * method is intended to be used by a <code>DataStore</code> when the
+	 * <code>ActivityReference</code> instance is loaded.
+	 *
+	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
+	 *             not null
+	 */
+
+	@Override
+	protected void setLog (final List<LogEntry> log)
+	{
+		assert log != null : "log is NULL";
+
+		this.log = log;
+	}
+
+	/**
+	 * Add the specified <code>LogEntry</code> to the specified
+	 * <code>ActivityReference</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to add, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully added, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean addLog (final LogEntry entry)
+	{
+		assert entry != null : "entry is NULL";
+
+		return this.log.add (entry);
+	}
+
+	/**
+	 * Remove the specified <code>LogEntry</code> from the specified
+	 * <code>ActivityReference</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to remove, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully removed, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean removeLog (final LogEntry entry)
+	{
+		assert entry != null : "entry is NULL";
+
+		return this.log.remove (entry);
 	}
 }

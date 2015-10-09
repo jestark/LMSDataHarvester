@@ -100,9 +100,6 @@ public abstract class Activity extends ParentActivity implements Serializable
 	/** The associated <code>ActivityReference</code> */
 	public static final Property<ActivityReference> REFERENCE;
 
-	/** The <code>LogEntry</code> instances associated with the <code>Activity</code> */
-	public static final Property<LogEntry> LOGENTRIES;
-
 	/** The associated <code>ActivityReference</code> instance */
 	private ActivityReference reference;
 
@@ -118,12 +115,9 @@ public abstract class Activity extends ParentActivity implements Serializable
 		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
 		REFERENCE = Property.getInstance (ActivityReference.class, "reference", Property.Flags.REQUIRED);
 
-		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
-
 		Definition.getBuilder (Activity.class, Element.class)
 			.addProperty (NAME, Activity::getName)
 			.addRelationship (REFERENCE, Activity::getReference, Activity::setReference)
-			.addRelationship (LOGENTRIES, Activity::getLog, Activity::addLog, Activity::removeLog)
 			.build ();
 	}
 
@@ -389,6 +383,19 @@ public abstract class Activity extends ParentActivity implements Serializable
 	}
 
 	/**
+	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
+	 * which act upon the <code>Activity</code>.
+	 *
+	 * @return A <code>List</code> of <code>LogEntry</code> instances
+	 */
+
+	@Override
+	public List<LogEntry> getLog ()
+	{
+		return this.getReference ().getLog ();
+	}
+
+	/**
 	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
 	 *
 	 * @return The <code>ActivityType</code> instance
@@ -409,7 +416,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 	 * @return The <code>ActivityReference</code>
 	 */
 
-	public ActivityReference getReference ()
+	protected ActivityReference getReference ()
 	{
 		return this.propagateDomainModel (this.reference);
 	}
@@ -428,40 +435,4 @@ public abstract class Activity extends ParentActivity implements Serializable
 
 		this.reference = reference;
 	}
-
-	/**
-	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
-	 * associated with the <code>Activity</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Activity</code> instance is loaded.
-	 *
-	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
-	 *             not null
-	 */
-
-	protected abstract void setLog (List<LogEntry> log);
-
-	/**
-	 * Add the specified <code>LogEntry</code> to the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to add, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully added, <code>False</code> otherwise
-	 */
-
-	protected abstract boolean addLog (LogEntry entry);
-
-	/**
-	 * Remove the specified <code>LogEntry</code> from the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to remove, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully removed, <code>False</code> otherwise
-	 */
-
-	protected abstract boolean removeLog (LogEntry entry);
 }

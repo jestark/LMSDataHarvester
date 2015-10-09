@@ -18,6 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.io.Serializable;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -53,6 +55,9 @@ public abstract class ActivityReference extends Element implements Serializable
 	/** The associated <code>ActivityType</code> */
 	public static final Property<ActivityType> TYPE;
 
+	/** The <code>LogEntry</code> instances associated with the <code>Activity</code> */
+	public static final Property<LogEntry> LOGENTRIES;
+
 	/** Select all <code>Activity</code> instances by <code>ActivityType</code> */
 	public static final Selector SELECTOR_TYPE;
 
@@ -67,12 +72,15 @@ public abstract class ActivityReference extends Element implements Serializable
 		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
 		TYPE = Property.getInstance (ActivityType.class, "type", Property.Flags.REQUIRED);
 
+		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
+
 		SELECTOR_TYPE = Selector.getInstance (TYPE, false);
 
 		Definition.getBuilder (ActivityReference.class, Element.class)
 			.addRelationship (ACTIVITY, ActivityReference::getActivity, ActivityReference::setActivity)
 			.addRelationship (COURSE, ActivityReference::getCourse, ActivityReference::setCourse)
 			.addRelationship (TYPE, ActivityReference::getType, ActivityReference::setType)
+			.addRelationship (LOGENTRIES, ActivityReference::getLog, ActivityReference::addLog, ActivityReference::removeLog)
 			.addSelector (SELECTOR_TYPE)
 			.build ();
 	}
@@ -151,10 +159,11 @@ public abstract class ActivityReference extends Element implements Serializable
 	}
 
 	/**
-	 * Get an <code>ActivityBuilder</code> instance for the specified
-	 * <code>DataStore</code>.  This method creates a <code>ActivityBuilder</code>
-	 * on the specified <code>DataStore</code> and initializes it with the
-	 * contents of this <code>Activity</code> instance.
+	 * Get an <code>ActivityReferenceBuilder</code> instance for the specified
+	 * <code>DataStore</code>.  This method creates a
+	 * <code>ActivityReferenceBuilder</code> on the specified
+	 * <code>DataStore</code> and initializes it with the contents of this
+	 * <code>Activity</code> instance.
 	 * <p>
 	 * <code>ActivityReference</code> instances are created though the builder
 	 * for the associated <code>Activity</code> instance.
@@ -165,11 +174,12 @@ public abstract class ActivityReference extends Element implements Serializable
 	 */
 
 	@Override
-	public ActivityBuilder getBuilder (final DataStore datastore)
+	public ActivityReferenceBuilder getBuilder (final DataStore datastore)
 	{
 		assert datastore != null : "datastore is null";
 
-		return this.getActivity ().getBuilder (datastore);
+		return new ActivityReferenceBuilder (datastore)
+			.load (this);
 	}
 
 	/**
@@ -244,4 +254,49 @@ public abstract class ActivityReference extends Element implements Serializable
 	 */
 
 	protected abstract void setActivity (Activity activity);
+
+	/**
+	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
+	 * which act upon the <code>ActivityReference</code>.
+	 *
+	 * @return A <code>List</code> of <code>LogEntry</code> instances
+	 */
+
+	public abstract List<LogEntry> getLog ();
+
+	/**
+	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
+	 * associated with the <code>ActivityReference</code> instance.  This
+	 * method is intended to be used by a <code>DataStore</code> when the
+	 * <code>Activity</code> instance is loaded.
+	 *
+	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
+	 *             not null
+	 */
+
+	protected abstract void setLog (List<LogEntry> log);
+
+	/**
+	 * Add the specified <code>LogEntry</code> to the specified
+	 * <code>ActivityReference</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to add, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully added, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean addLog (LogEntry entry);
+
+	/**
+	 * Remove the specified <code>LogEntry</code> from the specified
+	 * <code>ActivityReference</code>.
+	 *
+	 * @param  entry    The <code>LogEntry</code> to remove, not null
+	 *
+	 * @return          <code>True</code> if the <code>LogEntry</code> was
+	 *                  successfully removed, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean removeLog (LogEntry entry);
 }

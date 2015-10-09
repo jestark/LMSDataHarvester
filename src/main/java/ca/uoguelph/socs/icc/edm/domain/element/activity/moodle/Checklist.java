@@ -31,7 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
-import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.NamedActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
@@ -73,9 +72,6 @@ public class Checklist extends NamedActivity implements Serializable
 	/** The associated <code>Grade</code> instances */
 	private Set<Grade> grades;
 
-	/** The associated <code>LogEntry</code> instances */
-	private List<LogEntry> log;
-
 	/** The associated <code>SubActivity</code> instances*/
 	private List<SubActivity> subActivities;
 
@@ -99,7 +95,6 @@ public class Checklist extends NamedActivity implements Serializable
 		this.name = null;
 
 		this.grades = new HashSet<Grade> ();
-		this.log = new ArrayList<LogEntry> ();
 		this.subActivities = new ArrayList<SubActivity> ();
 	}
 
@@ -284,75 +279,6 @@ public class Checklist extends NamedActivity implements Serializable
 		assert grade != null : "grade is NULL";
 
 		return this.grades.remove (grade);
-	}
-
-	/**
-	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
-	 * which act upon the <code>Activity</code>.
-	 *
-	 * @return A <code>List</code> of <code>LogEntry</code> instances
-	 */
-
-	@Override
-	public List<LogEntry> getLog ()
-	{
-		this.log.forEach (x -> this.propagateDomainModel (x));
-
-		return Collections.unmodifiableList (this.log);
-	}
-
-	/**
-	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
-	 * associated with the <code>Activity</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Activity</code> instance is loaded.
-	 *
-	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
-	 *             not null
-	 */
-
-	@Override
-	protected void setLog (final List<LogEntry> log)
-	{
-		assert log != null : "log is NULL";
-
-		this.log = log;
-	}
-
-	/**
-	 * Add the specified <code>LogEntry</code> to the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to add, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully added, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean addLog (final LogEntry entry)
-	{
-		assert entry != null : "entry is NULL";
-
-		return this.log.add (entry);
-	}
-
-	/**
-	 * Remove the specified <code>LogEntry</code> from the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to remove, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully removed, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean removeLog (final LogEntry entry)
-	{
-		assert entry != null : "entry is NULL";
-
-		return this.log.remove (entry);
 	}
 
 	/**

@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -53,9 +52,6 @@ public class GenericActivity extends Activity implements Serializable
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
-	/** The associated <code>LogEntry</code> instances */
-	private List<LogEntry> log;
-
 	/**
 	 * Static initializer to register the <code>GenericActivity</code> class
 	 * with the factories.
@@ -72,7 +68,6 @@ public class GenericActivity extends Activity implements Serializable
 
 	protected GenericActivity ()
 	{
-		this.log = new ArrayList<LogEntry> ();
 	}
 
 	/**
@@ -139,75 +134,6 @@ public class GenericActivity extends Activity implements Serializable
 	public Set<Grade> getGrades ()
 	{
 		return Collections.emptySet ();
-	}
-
-	/**
-	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
-	 * which act upon the <code>Activity</code>.
-	 *
-	 * @return A <code>List</code> of <code>LogEntry</code> instances
-	 */
-
-	@Override
-	public List<LogEntry> getLog ()
-	{
-		this.log.forEach (x -> this.propagateDomainModel (x));
-
-		return Collections.unmodifiableList (this.log);
-	}
-
-	/**
-	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
-	 * associated with the <code>Activity</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Activity</code> instance is loaded.
-	 *
-	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
-	 *             not null
-	 */
-
-	@Override
-	protected void setLog (final List<LogEntry> log)
-	{
-		assert log != null : "log is NULL";
-
-		this.log = log;
-	}
-
-	/**
-	 * Add the specified <code>LogEntry</code> to the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to add, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully added, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean addLog (final LogEntry entry)
-	{
-		assert entry != null : "entry is NULL";
-
-		return this.log.add (entry);
-	}
-
-	/**
-	 * Remove the specified <code>LogEntry</code> from the specified
-	 * <code>Activity</code>.
-	 *
-	 * @param  entry    The <code>LogEntry</code> to remove, not null
-	 *
-	 * @return          <code>True</code> if the <code>LogEntry</code> was
-	 *                  successfully removed, <code>False</code> otherwise
-	 */
-
-	@Override
-	protected boolean removeLog (final LogEntry entry)
-	{
-		assert entry != null : "entry is NULL";
-
-		return this.log.remove (entry);
 	}
 
 	/**
