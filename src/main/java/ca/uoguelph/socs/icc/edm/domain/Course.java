@@ -68,7 +68,7 @@ public abstract class Course extends Element
 	public static final Property<Integer> YEAR;
 
 	/** The <code>Activity</code> instances associated with the <code>Course</code> */
-	public static final Property<Activity> ACTIVITIES;
+	public static final Property<ActivityReference> ACTIVITIES;
 
 	/** The <code>Enrolment</code> instances associated with the <code>Course</code> */
 	public static final Property<Enrolment> ENROLMENTS;
@@ -87,7 +87,7 @@ public abstract class Course extends Element
 		SEMESTER = Property.getInstance (Semester.class, "semester", Property.Flags.REQUIRED);
 		YEAR = Property.getInstance (Integer.class, "year", Property.Flags.REQUIRED);
 
-		ACTIVITIES = Property.getInstance (Activity.class, "activities", Property.Flags.MULTIVALUED);
+		ACTIVITIES = Property.getInstance (ActivityReference.class, "activities", Property.Flags.MULTIVALUED);
 		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", Property.Flags.MULTIVALUED);
 
 		SELECTOR_OFFERING = Selector.getInstance ("offering", true, NAME, SEMESTER, YEAR);
@@ -96,7 +96,7 @@ public abstract class Course extends Element
 			.addProperty (NAME, Course::getName, Course::setName)
 			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
 			.addProperty (YEAR, Course::getYear, Course::setYear)
-			.addRelationship (ACTIVITIES, Course::getActivities, Course::addActivity, Course::removeActivity)
+			.addRelationship (ACTIVITIES, Course::getActivityReferences, Course::addActivityReference, Course::removeActivityReference)
 			.addRelationship (ENROLMENTS, Course::getEnrolments, Course::addEnrolment, Course::removeEnrolment)
 			.addSelector (SELECTOR_OFFERING)
 			.build ();
@@ -330,6 +330,15 @@ public abstract class Course extends Element
 	public abstract List<Activity> getActivities ();
 
 	/**
+	 * Get the <code>List</code> <code>ActivityReference</code> instances which
+	 * are associated with the <code>Course</code>.
+	 *
+	 * @return A <code>List</code> of <code>ActivityReference</code> instances
+	 */
+
+	protected abstract List<ActivityReference> getActivityReferences ();
+
+	/**
 	 * Initialize the <code>List</code> of <code>Activity</code> instances
 	 * associated with the <code>Course</code> instance.  This method is
 	 * intended to be used by a <code>DataStore</code> when the
@@ -339,29 +348,31 @@ public abstract class Course extends Element
 	 *                    instances, not null
 	 */
 
-	protected abstract void setActivities (List<Activity> activities);
+	protected abstract void setActivityReferences (List<ActivityReference> activities);
 
 	/**
-	 * Add the specified <code>Activity</code> to the <code>Course</code>.
+	 * Add the specified <code>ActivityReference</code> to the
+	 * <code>Course</code>.
 	 *
-	 * @param  activity The <code>Activity</code> to add, not null
+	 * @param  activity The <code>Activityreference</code> to add, not null
 	 *
-	 * @return          <code>True</code> if the <code>Activity</code> was
-	 *                  successfully added, <code>False</code> otherwise
+	 * @return          <code>True</code> if the <code>ActivityReference</code>
+	 *                  was successfully added, <code>False</code> otherwise
 	 */
 
-	protected abstract boolean addActivity (Activity activity);
+	protected abstract boolean addActivityReference (ActivityReference activity);
 
 	/**
-	 * Remove the specified <code>Activity</code> from the <code>Course</code>.
+	 * Remove the specified <code>ActivityReference</code> from the
+	 * <code>Course</code>.
 	 *
-	 * @param  activity The <code>Activity</code> to remove,  not null
+	 * @param  activity The <code>ActivityReference</code> to remove,  not null
 	 *
-	 * @return          <code>True</code> if the <code>Activity</code> was
-	 *                  successfully removed, <code>False</code> otherwise
+	 * @return          <code>True</code> if the <code>ActivityReference</code>
+	 *                  was successfully removed, <code>False</code> otherwise
 	 */
 
-	protected abstract boolean removeActivity (Activity activity);
+	protected abstract boolean removeActivityReference (ActivityReference activity);
 
 	/**
 	 * Get the <code>List</code> of <code>Enrolment</code> instances which are

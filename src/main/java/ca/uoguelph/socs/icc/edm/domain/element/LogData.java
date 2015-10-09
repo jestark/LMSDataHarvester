@@ -165,24 +165,37 @@ public class LogData extends LogEntry implements Serializable
 	@Override
 	public Activity getActivity ()
 	{
-		return this.propagateDomainModel (this.activity).getActivity ();
+		return this.getActivityReference ().getActivity ();
 	}
 
 	/**
-	 * Set the <code>Activity</code>  upon which the logged action was
+	 * Get the <code>ActivityReference</code> for the <code>Activity</code>
+	 * upon which the logged <code>Action</code> was performed.
+	 *
+	 * @return The <code>ActivityReference</code>
+	 */
+
+	@Override
+	protected ActivityReference getActivityReference ()
+	{
+		return this.propagateDomainModel (this.activity);
+	}
+
+	/**
+	 * Set the <code>ActivityReference</code> upon which the logged action was
 	 * performed.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
 	 * loaded.
 	 *
-	 * @param  activity The <code>Activity</code>, not null
+	 * @param  activity The <code>ActivityReference</code>, not null
 	 */
 
 	@Override
-	protected void setActivity (final Activity activity)
+	protected void setActivityReference (final ActivityReference activity)
 	{
 		assert activity != null : "activity is NULL";
 
-		this.activity = activity.getReference ();
+		this.activity = activity;
 	}
 
 	/**

@@ -60,7 +60,7 @@ public abstract class LogEntry extends Element
 	public static final Property<Action> ACTION;
 
 	/** The associated <code>Activity</code> */
-	public static final Property<Activity> ACTIVITY;
+	public static final Property<ActivityReference> ACTIVITY;
 
 	/** The associated <code>Course</code> (read only) */
 	public static final Property<Course> COURSE;
@@ -94,7 +94,7 @@ public abstract class LogEntry extends Element
 	static
 	{
 		ACTION = Property.getInstance (Action.class, "action", Property.Flags.REQUIRED);
-		ACTIVITY = Property.getInstance (Activity.class, "activity", Property.Flags.REQUIRED);
+		ACTIVITY = Property.getInstance (ActivityReference.class, "activity", Property.Flags.REQUIRED);
 		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
 		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
 		REFERENCE = Property.getInstance (LogReference.class, "reference", Property.Flags.MUTABLE);
@@ -109,7 +109,7 @@ public abstract class LogEntry extends Element
 			.addProperty (COURSE, LogEntry::getCourse)
 			.addProperty (TIME, LogEntry::getTime, LogEntry::setTime)
 			.addRelationship (ACTION, LogEntry::getAction, LogEntry::setAction)
-			.addRelationship (ACTIVITY, LogEntry::getActivity, LogEntry::setActivity)
+			.addRelationship (ACTIVITY, LogEntry::getActivityReference, LogEntry::setActivityReference)
 			.addRelationship (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
 			.addRelationship (REFERENCE, LogEntry::getReference, LogEntry::setReference)
 			.addRelationship (NETWORK, LogEntry::getNetwork, LogEntry::setNetwork)
@@ -333,15 +333,24 @@ public abstract class LogEntry extends Element
 	public abstract Activity getActivity();
 
 	/**
-	 * Set the <code>Activity</code>  upon which the logged action was
+	 * Get the <code>ActivityReference</code> for the <code>Activity</code>
+	 * upon which the logged <code>Action</code> was performed.
+	 *
+	 * @return The <code>ActivityReference</code>
+	 */
+
+	protected abstract ActivityReference getActivityReference ();
+
+	/**
+	 * Set the <code>ActivityReference</code> upon which the logged action was
 	 * performed.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
 	 * loaded.
 	 *
-	 * @param  activity The <code>Activity</code>, not null
+	 * @param  activity The <code>ActivityReference</code>, not null
 	 */
 
-	protected abstract void setActivity (Activity activity);
+	protected abstract void setActivityReference (ActivityReference activity);
 
 	/**
 	 * Get the <code>Course</code> for which the <code>Action</code> was

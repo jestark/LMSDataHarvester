@@ -115,7 +115,7 @@ public final class GradeBuilder implements Builder<Grade>
 				|| (this.oldGrade.getEnrolment () != this.enrolment))
 		{
 			Grade result = this.gradeProxy.create ();
-			result.setActivity (this.activity);
+			result.setActivityReference (this.activity.getReference ());
 			result.setEnrolment (this.enrolment);
 			result.setGrade (this.grade);
 

@@ -150,6 +150,7 @@ public class ActivityBuilder implements Builder<Activity>
 			throw new IllegalArgumentException ("Invalid ActivityType");
 		}
 
+		this.referenceBuilder.load (activity.getReference ());
 		this.oldActivity = activity;
 
 		return this;

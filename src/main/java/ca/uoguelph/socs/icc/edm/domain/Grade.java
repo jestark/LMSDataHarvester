@@ -55,7 +55,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public abstract class Grade extends Element
 {
 	/** The associated <code>Activity</code> */
-	public static final Property<Activity> ACTIVITY;
+	public static final Property<ActivityReference> ACTIVITY;
 
 	/** The associated <code>Enrolment</code> */
 	public static final Property<Enrolment> ENROLMENT;
@@ -73,7 +73,7 @@ public abstract class Grade extends Element
 
 	static
 	{
-		ACTIVITY = Property.getInstance (Activity.class, "activity", Property.Flags.REQUIRED);
+		ACTIVITY = Property.getInstance (ActivityReference.class, "activity", Property.Flags.REQUIRED);
 		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
 		GRADE = Property.getInstance (Integer.class, "grade", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
 
@@ -81,7 +81,7 @@ public abstract class Grade extends Element
 
 		Definition.getBuilder (Grade.class, Element.class)
 			.addProperty (GRADE, Grade::getGrade, Grade::setGrade)
-			.addRelationship (ACTIVITY, Grade::getActivity, Grade::setActivity)
+			.addRelationship (ACTIVITY, Grade::getActivityReference, Grade::setActivityReference)
 			.addRelationship (ENROLMENT, Grade::getEnrolment, Grade::setEnrolment)
 			.addSelector (SELECTOR_PKEY)
 			.build ();
@@ -290,14 +290,23 @@ public abstract class Grade extends Element
 	public abstract Activity getActivity ();
 
 	/**
-	 * Set the <code>Activity</code> which is associated with the
+	 * Get the <code>ActivityReference</code> for which the <code>Grade</code>
+	 * is assigned.
+	 *
+	 * @return The associated <code>ActivityReference</code>
+	 */
+
+	protected abstract ActivityReference getActivityReference ();
+
+	/**
+	 * Set the <code>ActivityReference</code> which is associated with the
 	 * <code>Grade</code>.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>Grade</code> instance is loaded.
 	 *
-	 * @param  activity The <code>Activity</code>, not null
+	 * @param  activity The <code>ActivityReference</code>, not null
 	 */
 
-	protected abstract void setActivity (Activity activity);
+	protected abstract void setActivityReference (ActivityReference activity);
 
 	/**
 	 * Get the <code>Enrolment</code>, for the student, to which the

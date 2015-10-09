@@ -145,7 +145,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 		LogEntry result = this.entryProxy.create ();
 		result.setId (this.id);
 		result.setAction (this.action);
-		result.setActivity (this.activity);
+		result.setActivityReference (this.activity.getReference ());
 		result.setEnrolment (this.enrolment);
 		result.setNetwork (this.network);
 		result.setTime (this.time);

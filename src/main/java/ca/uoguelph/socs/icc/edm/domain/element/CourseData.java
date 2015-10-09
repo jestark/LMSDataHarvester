@@ -226,9 +226,24 @@ public class CourseData extends Course implements Serializable
 	}
 
 	/**
-	 * Initialize the <code>List</code> of <code>Activity</code> instances
-	 * associated with the <code>Course</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
+	 * Get the <code>List</code> <code>ActivityReference</code> instances which
+	 * are associated with the <code>Course</code>.
+	 *
+	 * @return A <code>List</code> of <code>ActivityReference</code> instances
+	 */
+
+	@Override
+	protected List<ActivityReference> getActivityReferences ()
+	{
+		this.activities.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableList (this.activities);
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>ActivityReferences</code>
+	 * instances associated with the <code>Course</code> instance.  This method
+	 * is intended to be used by a <code>DataStore</code> when the
 	 * <code>Course</code> instance is loaded.
 	 *
 	 * @param  activities The <code>List</code> of <code>Activity</code>
@@ -236,47 +251,47 @@ public class CourseData extends Course implements Serializable
 	 */
 
 	@Override
-	protected void setActivities (final List<Activity> activities)
+	protected void setActivityReferences (final List<ActivityReference> activities)
 	{
 		assert activities != null : "activities is NULL";
 
-		this.activities = activities.stream ()
-			.map (Activity::getReference)
-			.collect (Collectors.toList ());
+		this.activities = activities;
 	}
 
 	/**
-	 * Add the specified <code>Activity</code> to the <code>Course</code>.
+	 * Add the specified <code>ActivityReference</code> to the
+	 * <code>Course</code>.
 	 *
-	 * @param  activity The <code>Activity</code> to add, not null
+	 * @param  activity The <code>ActivityReference</code> to add, not null
 	 *
-	 * @return          <code>True</code> if the <code>Activity</code> was
-	 *                  successfully added, <code>False</code> otherwise
+	 * @return          <code>True</code> if the <code>ActivityReference</code>
+	 *                  was successfully added, <code>False</code> otherwise
 	 */
 
 	@Override
-	protected boolean addActivity (final Activity activity)
+	protected boolean addActivityReference (final ActivityReference activity)
 	{
 		assert activity != null : "activity is NULL";
 
-		return this.activities.add (activity.getReference ());
+		return this.activities.add (activity);
 	}
 
 	/**
-	 * Remove the specified <code>Activity</code> from the <code>Course</code>.
+	 * Remove the specified <code>ActivityReference</code> from the
+	 * <code>Course</code>.
 	 *
-	 * @param  activity The <code>Activity</code> to remove,  not null
+	 * @param  activity The <code>ActivityReference</code> to remove,  not null
 	 *
-	 * @return          <code>True</code> if the <code>Activity</code> was
-	 *                  successfully removed, <code>False</code> otherwise
+	 * @return          <code>True</code> if the <code>ActivityReference</code>
+	 *                  was successfully removed, <code>False</code> otherwise
 	 */
 
 	@Override
-	protected boolean removeActivity (final Activity activity)
+	protected boolean removeActivityReference (final ActivityReference activity)
 	{
 		assert activity != null : "activity is NULL";
 
-		return this.activities.remove (activity.getReference ());
+		return this.activities.remove (activity);
 	}
 
 	/**

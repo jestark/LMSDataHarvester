@@ -25,6 +25,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
@@ -171,16 +172,29 @@ public class MoodleLogData extends LogEntry
 	}
 
 	/**
-	 * Set the <code>Activity</code>  upon which the logged action was
+	 * Get the <code>ActivityReference</code> for the <code>Activity</code>
+	 * upon which the logged <code>Action</code> was performed.
+	 *
+	 * @return The <code>ActivityReference</code>
+	 */
+
+	@Override
+	protected ActivityReference getActivityReference ()
+	{
+		return null;
+	}
+
+	/**
+	 * Set the <code>ActivityReference</code> upon which the logged action was
 	 * performed.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
 	 * loaded.
 	 *
-	 * @param  activity The <code>Activity</code>, not null
+	 * @param  activity The <code>ActivityReference</code>, not null
 	 */
 
 	@Override
-	protected void setActivity (final Activity activity)
+	protected void setActivityReference (final ActivityReference activity)
 	{
 		assert activity != null : "activity is NULL";
 
@@ -510,7 +524,7 @@ public class MoodleLogData extends LogEntry
 	{
 		return this.url;
 	}
-	
+
 	/**
 	 * Set the URL associated with the <code>LogEntry</code>
 	 *
@@ -520,7 +534,7 @@ public class MoodleLogData extends LogEntry
 	protected void setUrl (final String url)
 	{
 		assert url != null : "url is NULL";
-		
+
 		this.url = url;
 	}
 

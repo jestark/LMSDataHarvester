@@ -63,7 +63,7 @@ public abstract class ActivityReference extends Element implements Serializable
 
 	static
 	{
-		ACTIVITY = Property.getInstance (Activity.class, "activity", Property.Flags.REQUIRED);
+		ACTIVITY = Property.getInstance (Activity.class, "activity");
 		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
 		TYPE = Property.getInstance (ActivityType.class, "type", Property.Flags.REQUIRED);
 
@@ -101,8 +101,8 @@ public abstract class ActivityReference extends Element implements Serializable
 		{
 			EqualsBuilder ebuilder = new EqualsBuilder ();
 
-			ebuilder.append (this.getType (), ((Activity) obj).getType ());
-			ebuilder.append (this.getCourse (), ((Activity) obj).getCourse ());
+			ebuilder.append (this.getType (), ((ActivityReference) obj).getType ());
+			ebuilder.append (this.getCourse (), ((ActivityReference) obj).getCourse ());
 
 			result = ebuilder.isEquals ();
 		}

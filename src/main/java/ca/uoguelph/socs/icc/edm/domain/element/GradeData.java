@@ -109,23 +109,35 @@ public class GradeData extends Grade implements Serializable
 	@Override
 	public Activity getActivity ()
 	{
-		return this.propagateDomainModel (this.activity).getActivity ();
+		return this.getActivityReference ().getActivity ();
 	}
 
 	/**
-	 * Set the <code>Activity</code> which is associated with the
+	 * Get the <code>ActivityReference</code> for which the <code>Grade</code>
+	 * is assigned.
+	 *
+	 * @return The associated <code>ActivityReference</code>
+	 */
+
+	protected ActivityReference getActivityReference ()
+	{
+		return this.propagateDomainModel (this.activity);
+	}
+
+	/**
+	 * Set the <code>ActivityReference</code> which is associated with the
 	 * <code>Grade</code>.  This method is intended to be used by a
 	 * <code>DataStore</code> when the <code>Grade</code> instance is loaded.
 	 *
-	 * @param  activity The <code>Activity</code>, not null
+	 * @param  activity The <code>ActivityReference</code>, not null
 	 */
 
 	@Override
-	protected void setActivity (final Activity activity)
+	protected void setActivityReference (final ActivityReference activity)
 	{
-		assert activity != null : "grade is NULL";
+		assert activity != null : "activity is NULL";
 
-		this.activity = activity.getReference ();
+		this.activity = activity;
 	}
 
 	/**
