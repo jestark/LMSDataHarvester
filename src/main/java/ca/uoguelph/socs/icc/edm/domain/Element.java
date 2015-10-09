@@ -156,9 +156,9 @@ public abstract class Element
 
 	protected final <T extends Element> T propagateDomainModel (final T element)
 	{
-		if (element != null)
+		if ((element != null) && (this.model != null))
 		{
-			element.setDomainModel (this.model);
+			((Element) element).model = this.model;
 		}
 
 		return element;
