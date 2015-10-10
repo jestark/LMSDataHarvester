@@ -206,7 +206,8 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 
 		V value = this.reference.getValue (element);
 
-		return this.getInverse (value.getClass ()).canInsert (datastore, value);
+		return (value == null) || (this.getInverse (value.getClass ())
+			.canInsert (datastore, value));
 	}
 
 	/**
