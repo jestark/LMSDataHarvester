@@ -13,8 +13,16 @@
 			<AppenderRef ref="App" level="ALL"/>
 			<AppenderRef ref="Console" level="INFO"/>
 		</Logger>
+		<Logger name="ca.uoguelph.socs.icc.edm.domain" level="INFO" additivity="false">
+			<AppenderRef ref="App" level="ALL"/>
+			<AppenderRef ref="Console" level="INFO"/>
+		</Logger>
+		<Logger name="ca.uoguelph.socs.icc.edm.resolver" level="INFO" additivity="false">
+			<AppenderRef ref="App" level="ALL"/>
+			<AppenderRef ref="Console" level="INFO"/>
+		</Logger>
 		<Logger name="org.hibernate" level="INFO" additivity="false">
-			<AppenderRef ref="App" level="INFO"/>
+			<AppenderRef ref="App" level="ALL"/>
 			<AppenderRef ref="Console" level="WARN"/>
 		</Logger>
 		<Logger name="org.hibernate.internal.util.EntityPrinter" level="INFO" additivity="false">
