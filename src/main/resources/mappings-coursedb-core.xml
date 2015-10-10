@@ -1,55 +1,145 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
-                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
-                                     http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
-                 version="2.1">
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+									 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
+				 version="2.1">
 	<description>Entity mappings for the course database</description>
 	<package>ca.uoguelph.socs.icc.edm.domain.element</package>
+	<access>FIELD</access>
 
-	<access>PROPERTY</access>
+	<!--********************************************************************-->
+	<!-- Action                                                             -->
+	<!--********************************************************************-->
 
-	<!--*********************************************************************-->
-	<!--  Mapped super classes used by activities                            -->
-	<!--*********************************************************************-->
-
-	<mapped-superclass class="NamedActivity" metadata-complete="true">
-		<description>Mapping for the common componets of named activities</description>
+	<entity name="Action" class="ActionData" metadata-complete="true">
+		<table name="log_action"/>
+		<named-query name="Action:allid">
+			<query>SELECT a.id FROM Action a</query>
+		</named-query>
+		<named-query name="Action:all">
+			<query>SELECT a FROM Action a</query>
+		</named-query>
+		<named-query name="Action:name">
+			<query>SELECT a FROM Action a WHERE a.name = :name</query>
+		</named-query>
 		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="log_action_id_seq"/>
+				<sequence-generator name="log_action_id_seq" sequence-name="log_action_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
 			<basic name="name">
 				<column name="name" nullable="false"/>
 			</basic>
 		</attributes>
-	</mapped-superclass>
+	</entity>
 
-	<mapped-superclass class="ca.uoguelph.socs.icc.edm.domain.SubActivity" metadata-complete="true">
-		<description>Mapping for the common components of sub-activities</description>
+	<!--********************************************************************-->
+	<!-- Activity                                                           -->
+	<!--********************************************************************-->
+
+	<entity name="Activity" class="ca.uoguelph.socs.icc.edm.domain.Activity" metadata-complete="true">
+		<inheritance strategy="TABLE_PER_CLASS"/>
 		<attributes>
+			<one-to-one name="reference" target-entity="ActivityReferenceData" optional="false" id="true">
+				<join-column name="id" nullable="false" referenced-column-name="id"/>
+			</one-to-one>
+		</attributes>
+	</entity>
+
+	<entity name="GenericActivity" class="GenericActivity" metadata-complete="true">
+		<table name="activity_stealth"/>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Activity Reference                                                 -->
+	<!--********************************************************************-->
+
+	<entity name="ActivityReference" class="ActivityReferenceData" metadata-complete="true">
+		<table name="activity"/>
+		<named-query name="Activity:all">
+			<query>SELECT a FROM ActivityReference a</query>
+		</named-query>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_id_seq"/>
+				<sequence-generator name="activity_id_seq" sequence-name="activity_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<many-to-one name="course" target-entity="CourseData" optional="false">
+				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-one name="type" target-entity="ActivityTypeData" optional="false">
+				<join-column name="activity_type_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<one-to-many name="log" target-entity="LogData" mapped-by="activity"/>
+			<one-to-one name="activity" target-entity="ca.uoguelph.socs.icc.edm.domain.Activity" mapped-by="reference"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Activity Source                                                    -->
+	<!--********************************************************************-->
+
+	<entity name="ActivitySource" class="ActivitySourceData" metadata-complete="true">
+		<table name="activity_source"/>
+		<named-query name="ActivitySource:all">
+			<query>SELECT a FROM ActivitySource a</query>
+		</named-query>
+		<named-query name="ActivitySource:name">
+			<query>SELECT a FROM ActivitySource a WHERE a.name = :name</query>
+		</named-query>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_source_id_seq"/>
+				<sequence-generator name="activity_source_id_seq" sequence-name="activity_source_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
 			<basic name="name">
 				<column name="name" nullable="false"/>
 			</basic>
-			<transient name="log"/>
-			<transient name="course"/>
-			<transient name="type"/>
-			<transient name="grades"/>
-			<transient name="parent"/>
+			<one-to-many name="types" target-entity="ActivityTypeData" mapped-by="source"/>
 		</attributes>
-	</mapped-superclass>
+	</entity>
 
-	<!--*********************************************************************-->
-	<!-- Core data mapping: Courses                                          -->
-	<!--*********************************************************************-->
+	<!--********************************************************************-->
+	<!-- Activity Type                                                      -->
+	<!--********************************************************************-->
+
+	<entity name="ActivityType" class="ActivityTypeData" metadata-complete="true">
+		<table name="activity_type"/>
+		<named-query name="ActivityType:all">
+			<query>SELECT a FROM ActivityType a</query>
+		</named-query>
+		<named-query name="ActivityType:name">
+			<query>SELECT a FROM ActivityType a WHERE a.source = :source AND a.name = :name</query>
+		</named-query>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="activity_type_id_seq"/>
+				<sequence-generator name="activity_type_id_seq" sequence-name="activity_type_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="name" nullable="false"/>
+			</basic>
+			<many-to-one name="source" target-entity="ActivitySourceData" optional="false">
+				<join-column name="source_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Course                                                             -->
+	<!--********************************************************************-->
 
 	<entity name="Course" class="CourseData" metadata-complete="true">
-		<description>Date identifying a particular offering of a course</description>
 		<table name="course"/>
-		<named-query name="CourseData:allid">
-			<query>SELECT c.id FROM Course c</query>
-		</named-query>
-		<named-query name="CourseData:all">
+		<named-query name="Course:all">
 			<query>SELECT c FROM Course c</query>
 		</named-query>
-		<named-query name="CourseData:offering">
+		<named-query name="Course:offering">
 			<query>SELECT c FROM Course c WHERE c.year = :year AND c.semester = :semester AND c.name = :name</query>
 		</named-query>
 		<attributes>
@@ -68,26 +158,128 @@
 			<basic name="year">
 				<column name="year" nullable="false"/>
 			</basic>
-			<one-to-many name="activities" target-entity="ActivityInstance" mapped-by="course"/>
-			<!--<one-to-many name="enrolments" target-entity="EnrolmentData" mapped-by="course"/>-->
-			<transient name="enrolments"/>
+			<one-to-many name="activities" target-entity="ActivityReferenceData" mapped-by="course"/>
+			<one-to-many name="enrolments" target-entity="EnrolmentData" mapped-by="course"/>
 		</attributes>
 	</entity>
 
-	<!--*********************************************************************-->
-	<!-- Core data mapping: Enrolments                                       -->
-	<!--*********************************************************************-->
+	<!--********************************************************************-->
+	<!-- Enrolment                                                          -->
+	<!--********************************************************************-->
+
+	<entity name="Enrolment" class="EnrolmentData" metadata-complete="true">
+		<table name="enrolment"/>
+		<named-query name="Enrolment:allid">
+			<query>SELECT e.id FROM Enrolment e</query>
+		</named-query>
+		<named-query name="Enrolment:all">
+			<query>SELECT e FROM Enrolment e</query>
+		</named-query>
+		<named-query name="Enrolment:role">
+			<query>SELECT e FROM Enrolment e WHERE e.role = :role</query>
+		</named-query>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+			</id>
+			<basic name="usable">
+				<column name="usable" nullable="false"/>
+			</basic>
+			<basic name="finalGrade">
+				<column name="grade"/>
+			</basic>
+			<many-to-one name="role" target-entity="RoleData" optional="false">
+				<join-column name="role_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-one name="course" target-entity="CourseData" optional="false">
+				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<one-to-many name="log" target-entity="LogData" mapped-by="enrolment"/>
+			<transient name="grades"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Log Entries                                                        -->
+	<!--********************************************************************-->
+
+	<entity name="LogEntry" class="LogData" metadata-complete="true">
+		<table name="log"/>
+		<named-query name="LogEntry:all">
+			<query>SELECT e FROM LogEntry e</query>
+		</named-query>
+		<named-query name="LogEntry:course">
+			<query>SELECT e FROM LogEntry e JOIN e.activity a WHERE a.course = :course ORDER BY e.id</query>
+		</named-query>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="log_id_seq"/>
+				<sequence-generator name="log_id_seq" sequence-name="log_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="time" optional="false">
+				<column name="time" nullable="false"/>
+				<temporal>TIMESTAMP</temporal>
+			</basic>
+			<many-to-one name="activity" target-entity="ActivityReferenceData" optional="false">
+				<join-column name="activity_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-one name="action" target-entity="ActionData" optional="false">
+				<join-column name="action_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-one name="enrolment" target-entity="EnrolmentData" optional="false">
+				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-one name="network" target-entity="NetworkData" optional="false">
+				<join-column name="network_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<one-to-one name="reference" target-entity="ca.uoguelph.socs.icc.edm.domain.LogReference" mapped-by="entry" fetch="LAZY"/>
+		</attributes>
+	</entity>
+
+	<entity name="LogReference" class="ca.uoguelph.socs.icc.edm.domain.LogReference" metadata-complete="true">
+		<inheritance strategy="TABLE_PER_CLASS"/>
+		<attributes>
+			<one-to-one name="entry" target-entity="LogData" optional="false" id="true">
+				<join-column name="log_id" nullable="false" referenced-column-name="id"/>
+			</one-to-one>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Network                                                            -->
+	<!--********************************************************************-->
+
+	<entity name="Network" class="NetworkData" metadata-complete="true">
+		<table name="log_network"/>
+		<named-query name="Network:all">
+			<query>SELECT n FROM Network n</query>
+		</named-query>
+		<named-query name="Network:name">
+			<query>SELECT n FROM Network n WHERE n.name = :name</query>
+		</named-query>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="log_network_id_seq"/>
+				<sequence-generator name="log_network_id_seq" sequence-name="log_network_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="name">
+				<column name="name" nullable="false"/>
+			</basic>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Role                                                               -->
+	<!--********************************************************************-->
 
 	<entity name="Role" class="RoleData" metadata-complete="true">
-		<description>The Role of a participant in a course</description>
 		<table name="enrolment_role"/>
-		<named-query name="RoleData:allid">
-			<query>SELECT r.id FROM Role r</query>
-		</named-query>
-		<named-query name="RoleData:all">
+		<named-query name="Role:all">
 			<query>SELECT r FROM Role r</query>
 		</named-query>
-		<named-query name="RoleData:name">
+		<named-query name="Role:name">
 			<query>SELECT r FROM Role r WHERE r.name = :name</query>
 		</named-query>
 		<attributes>
@@ -102,244 +294,45 @@
 		</attributes>
 	</entity>
 
-	<entity name="Enrolment" class="EnrolmentData" metadata-complete="true">
-		<description>Record for a user enrolled in a course</description>
-		<table name="enrolment"/>
-		<secondary-table name="enrolment_final_grade">
-			<primary-key-join-column name="enrolment_id" referenced-column-name="id"/>
-		</secondary-table>
-		<named-query name="EnrolmentData:allid">
-			<query>SELECT e.id FROM Enrolment e</query>
+	<!--********************************************************************-->
+	<!-- User                                                               -->
+	<!--********************************************************************-->
+
+	<entity name="User" class="UserData" metadata-complete="true">
+		<table name="user" schema="userdb"/>
+		<named-query name="User:allid">
+			<query>SELECT u.id FROM User u</query>
 		</named-query>
-		<named-query name="EnrolmentData:all">
-			<query>SELECT e FROM Enrolment e</query>
+		<named-query name="User:all">
+			<query>SELECT u FROM User u</query>
 		</named-query>
-		<named-query name="EnrolmentData:role">
-			<query>SELECT e FROM Enrolment e WHERE e.role = :role</query>
+		<named-query name="User:username">
+			<query>SELECT u FROM User u WHERE u.username = :username</query>
+		</named-query>
+		<named-query name="User:enrolments">
+			<query>SELECT u FROM User u JOIN u.enrolments e WHERE e = :enrolments</query>
 		</named-query>
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="user_id_seq"/>
+				<sequence-generator name="user_id_seq" sequence-name="userdb.user_id_seq" initial-value="1" allocation-size="1"/>
 			</id>
-			<basic name="usable">
-				<column name="usable" nullable="false"/>
+			<basic name="username">
+				<column name="username" nullable="false" unique="true"/>
 			</basic>
-			<basic name="finalGrade">
-				<column table="enrolment_final_grade" name="grade"/>
+			<basic name="firstname">
+				<column name="first_name" nullable="false"/>
 			</basic>
-			<many-to-one name="role" target-entity="RoleData" optional="false">
-				<join-column name="role_id" nullable="false" referenced-column-name="id"/>
-			</many-to-one>
-			<many-to-one name="course" target-entity="CourseData" optional="false">
-				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
-			</many-to-one>
-			<!--			<one-to-many name="grades" target-entity="GradedActivity" mapped-by="enrolment"/> -->
-			<!--<one-to-many name="log" target-entity="LogData" mapped-by="enrolment" orphan-removal="true"/>-->
-			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="name"/>
-		</attributes>
-	</entity>
-
-	<!--	<entity name="Grade" class="GradedActivity" metadata-complete="true">
-		<description>Grades assigned to individual activities for a student</description>
-		<table name="enrolment_activity_grade"/>
-		<attributes>
-			<id name="enrolment"/>
-			<id name="activity"/>
-			<basic name="grade">
-				<column name="grade" nullable="false"/>
+			<basic name="lastname">
+				<column name="last_name" nullable="false"/>
 			</basic>
-			<many-to-one name="enrolment" target-entity="EnrolmentData" optional="false">
-				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
-			</many-to-one>
-			<many-to-one name="activity" target-entity="ActivityInstance" optional="false">
-				<join-column name="activity_id" nullable="false" referenced-column-name="id"/>
-			</many-to-one>
-			<transient name="name"/>
-		</attributes>
-	</entity>-->
-
-	<!--*********************************************************************-->
-	<!--  Core data mapping: Activities                                      -->
-	<!--*********************************************************************-->
-
-	<entity name="ActivitySource" class="ActivitySourceData" metadata-complete="true">
-		<description>The the source of the activity data</description>
-		<table name="activity_source"/>
-		<named-query name="ActivitySourceData:allid">
-			<query>SELECT s.id FROM ActivitySource s</query>
-		</named-query>
-		<named-query name="ActivitySourceData:all">
-			<query>SELECT s FROM ActivitySource s</query>
-		</named-query>
-		<named-query name="ActivitySourceData:name">
-			<query>SELECT s FROM ActivitySource s WHERE s.name = :name</query>
-		</named-query>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-				<generated-value strategy="SEQUENCE" generator="activity_source_id_seq"/>
-				<sequence-generator name="activity_source_id_seq" sequence-name="activity_source_id_seq" initial-value="1" allocation-size="1"/>
-			</id>
-			<basic name="name">
-				<column name="name" nullable="false" unique="true"/>
-			</basic>
-			<one-to-many name="types" target-entity="ActivityTypeData" mapped-by="source"/><!-- orphan-removal="true"/> -->
-		</attributes>
-	</entity>
-
-	<entity name="ActivityType" class="ActivityTypeData" metadata-complete="true">
-		<description>The type of the activity (or the module)</description>
-		<table name="activity_type"/>
-		<named-query name="ActivityTypeData:allid">
-			<query>SELECT t.id FROM ActivityType t</query>
-		</named-query>
-		<named-query name="ActivityTypeData:all">
-			<query>SELECT t FROM ActivityType t</query>
-		</named-query>
-		<named-query name="ActivityTypeData:name">
-			<query>SELECT t FROM ActivityType t WHERE t.name = :name AND t.source = :source</query>
-		</named-query>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-				<generated-value strategy="SEQUENCE" generator="activity_id_seq"/>
-				<sequence-generator name="activity_id_seq" sequence-name="activity_id_seq" initial-value="1" allocation-size="1"/>
-			</id>
-			<basic name="name">
-				<column name="name" updatable="false"/>
-			</basic>
-			<many-to-one name="source" target-entity="ActivitySourceData" optional="false">
-				<join-column name="source_id" nullable="false" referenced-column-name="id"/>
-			</many-to-one>
-		</attributes>
-	</entity>
-
-	<entity name="Activity" class="ActivityInstance" metadata-complete="true">
-		<description>The activities which are associated with a given course</description>
-		<table name="activity"/>
-		<inheritance strategy="JOINED"/>
-		<named-query name="ActivityInstance:allid">
-			<query>SELECT a.id FROM Activity a</query>
-		</named-query>
-		<named-query name="ActivityInstance:all">
-			<query>SELECT a FROM Activity a</query>
-		</named-query>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-				<generated-value strategy="SEQUENCE" generator="activity_instance_id_seq"/>
-				<sequence-generator name="activity_instance_id_seq" sequence-name="activity_instance_id_seq" initial-value="1" allocation-size="1"/>
-			</id>
-			<many-to-one name="type" target-entity="ActivityTypeData" optional="false">
-				<join-column name="activity_id" nullable="false" referenced-column-name="id"/>
-			</many-to-one>
-			<many-to-one name="course" target-entity="CourseData" optional="false">
-				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
-			</many-to-one>
-			<!--<one-to-many name="grades" target-entity="GradedActivity" mapped-by="activity"/>
-			<one-to-many name="log" target-entity="LogData" mapped-by="activity">-->
-			<transient name="grades"/>
-			<transient name="log"/>
-		</attributes>
-	</entity>
-
-	<entity name="GenericActivity" class="GenericActivity" metadata-complete="true">
-		<description>Mapping For the Generic Activity and the relationship the the instance</description>
-		<table name="activity_stealth"/>
-		<primary-key-join-column name="instance_id" referenced-column-name="id"/>
-		<attributes>
-			<transient name="name"/>
-		</attributes>
-	</entity>
-
-	<!--*********************************************************************-->
-	<!-- Core data mapping: Log entries                                      -->
-	<!--*********************************************************************-->
-
-	<entity name="Action" class="ActionData" metadata-complete="true">
-		<description>The name of the action performed</description>
-		<table name="log_action"/>
-		<named-query name="ActionData:allid">
-			<query>SELECT a.id FROM Action a</query>
-		</named-query>
-		<named-query name="ActionData:all">
-			<query>SELECT a FROM Action a</query>
-		</named-query>
-		<named-query name="ActionData:name">
-			<query>SELECT a FROM Action a WHERE a.name = :name</query>
-		</named-query>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-				<generated-value strategy="SEQUENCE" generator="activity_action_id_seq"/>
-				<sequence-generator name="activity_action_id_seq" sequence-name="activity_action_id_seq" initial-value="1" allocation-size="1"/>
-			</id>
-			<basic name="name">
-				<column name="name" nullable="false"/>
-			</basic>
-		</attributes>
-	</entity>
-
-	<entity name="LogEntry" class="LogData" metadata-complete="true">
-		<description>The course activity log</description>
-		<table name="log"/>
-		<secondary-table name="log_ip">
-			<primary-key-join-column name="log_id" referenced-column-name="id"/>
-		</secondary-table>
-		<named-query name="LogData:allid">
-			<query>SELECT e.id FROM LogEntry e</query>
-		</named-query>
-		<named-query name="LogData:all">
-			<query>SELECT e FROM LogEntry e</query>
-		</named-query>
-		<named-query name="LogData:course">
-			<query>SELECT e FROM LogEntry e JOIN e.activity a WHERE a.course = :course ORDER BY e.id</query>
-		</named-query>
-		<attributes>
-			<id name="id">
-				<column name="id" nullable="false" unique="true"/>
-				<generated-value strategy="SEQUENCE" generator="log_id_seq"/>
-				<sequence-generator name="log_id_seq" sequence-name="log_id_seq" initial-value="1" allocation-size="1"/>
-			</id>
-			<basic name="time" optional="false">
-				<column name="time" nullable="false"/>
-				<temporal>TIMESTAMP</temporal>
-			</basic>
-			<basic name="IPAddress" optional="false">
-				<column name="ipaddress" nullable="false"/>
-			</basic>
-			<many-to-one name="activity" target-entity="ActivityInstance" optional="false">
-				<join-column name="instance_id" nullable="false" referenced-column-name="id"/>
-			</many-to-one>
-			<many-to-one name="action" target-entity="ActionData" optional="false">
-				<join-column name="action_id" nullable="false" referenced-column-name="id"/>
-			</many-to-one>
-			<many-to-one name="enrolment" target-entity="EnrolmentData" optional="false">
-				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
-			</many-to-one>
-			<one-to-one name="reference" target-entity="LogReference" mapped-by="entry"/>
-			<transient name="course"/>
-			<transient name="subActivity"/>
-		</attributes>
-	</entity>
-
-	<entity name="LogReference" class="LogReference" metadata-complete="true">
-		<description>References to logged sub-activities</description>
-		<inheritance strategy="TABLE_PER_CLASS"/>
-		<attributes>
-			<id name="entry"/>
-			<one-to-one name="entry" target-entity="LogData" optional="false">
-				<join-column name="log_id" nullable="false" referenced-column-name="id"/>
-			</one-to-one>
-			<transient name="action"/>
-			<transient name="activity"/>
-			<transient name="course"/>
-			<transient name="enrolment"/>
-			<transient name="IPAddress"/>
-			<transient name="time"/>
-			<transient name="subActivity"/>
+			<one-to-many name="enrolments" target-entity="EnrolmentData">
+				<join-table name="user_enrolment" schema="userdb">
+					<join-column name="user_id" nullable="false" referenced-column-name="id"/>
+					<inverse-join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
+				</join-table>
+			</one-to-many>
 		</attributes>
 	</entity>
 </entity-mappings>
