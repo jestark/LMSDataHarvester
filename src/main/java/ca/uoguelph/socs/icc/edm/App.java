@@ -12,6 +12,11 @@ import java.util.NavigableMap;
 
 import java.util.TreeMap;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+import java.util.stream.Collectors;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -22,18 +27,23 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
+import ca.uoguelph.socs.icc.edm.domain.InsertProcessor;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.Network;
+import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
 import ca.uoguelph.socs.icc.edm.domain.element.ActionData;
+import ca.uoguelph.socs.icc.edm.domain.element.ActivityReferenceData;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
 import ca.uoguelph.socs.icc.edm.domain.element.CourseData;
@@ -41,7 +51,7 @@ import ca.uoguelph.socs.icc.edm.domain.element.EnrolmentData;
 import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
 import ca.uoguelph.socs.icc.edm.domain.element.GradeData;
 import ca.uoguelph.socs.icc.edm.domain.element.LogData;
-import ca.uoguelph.socs.icc.edm.domain.element.MoodleActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType;
 import ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData;
 import ca.uoguelph.socs.icc.edm.domain.element.NetworkData;
@@ -61,21 +71,11 @@ import ca.uoguelph.socs.icc.edm.domain.RoleBuilder;
 import ca.uoguelph.socs.icc.edm.domain.SubActivityBuilder;
 import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.ActionLoader;
-import ca.uoguelph.socs.icc.edm.domain.ActivityLoader;
-import ca.uoguelph.socs.icc.edm.domain.ActivitySourceLoader;
-import ca.uoguelph.socs.icc.edm.domain.ActivityTypeLoader;
-import ca.uoguelph.socs.icc.edm.domain.CourseLoader;
-import ca.uoguelph.socs.icc.edm.domain.EnrolmentLoader;
-import ca.uoguelph.socs.icc.edm.domain.LogEntryLoader;
-import ca.uoguelph.socs.icc.edm.domain.NetworkLoader;
-import ca.uoguelph.socs.icc.edm.domain.RoleLoader;
-import ca.uoguelph.socs.icc.edm.domain.UserLoader;
-
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 import ca.uoguelph.socs.icc.edm.domain.datastore.JPADataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.MemDataStore;
@@ -89,11 +89,17 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.SequentialIdGenerat
 import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
 import ca.uoguelph.socs.icc.edm.domain.metadata.ProfileBuilder;
 
-import ca.uoguelph.socs.icc.edm.domain.resolver.Resolver;
+import ca.uoguelph.socs.icc.edm.resolver.LogEntryConverter;
 
 public class App
 {
 	public static final Logger log;
+
+	public static final Profile COURSE;
+
+	public static final Profile MEMORY;
+
+	public static final Profile MOODLE;
 
 	static void loadClass (final String name)
 	{
@@ -127,13 +133,15 @@ public class App
 
 		// Core Element implementations
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.ActivityReferenceData");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.ActionData");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.CourseData");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.EnrolmentData");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.GenericActivity");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.GradeData");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.LogData");
-		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.MoodleActivity");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityReference");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.NetworkData");
@@ -163,58 +171,35 @@ public class App
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Resource");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Scheduler");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.URL");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Wiki");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WikiPage");
+		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WikiPageLog");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Workshop");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WorkshopSubmission");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WorkshopSubmissionLog");
-	}
 
-/*	public void loadCSV (final DomainModel model, final String filename, final Course course, final Role role) throws Exception
-	{
-		CSVParser reader = (CSVFormat.EXCEL.withNullString("#N/A")).parse (new BufferedReader (new FileReader (filename)));
-
-		for (CSVRecord rec : reader)
-		{
-			User muser = (model.getUserLoader ()).fetchByUsername ((rec.get (0)).substring (0, (rec.get (0)).indexOf ('@')));
-
-			if (muser != null)
-			{
-				this.users.put (muser.getId (), new UserData (Integer.valueOf (rec.get (3)), muser.getFirstname (), muser.getLastname (), muser.getUsername ()));
-
-				this.enrolments.put (muser.getId (), new UserEnrolmentData (this.users.get (muser.getId ()), course, role, (rec.get (1) != null) ?  new Integer ((int) Math.ceil (Double.valueOf (rec.get (1)))) : null, (rec.get (2) != null) ? true : false));
-			}
-		}
-
-		reader.close ();
-	}*/
-
-
-
-    public static void main(final String[] args) throws Exception
-    {
-		DomainModel scratch = null;
-		DomainModel moodledb = null;
-		DomainModel coursedb = null;
-
-		Profile course = new ProfileBuilder ()
-			.setName ("course")
+		COURSE = new ProfileBuilder ()
+			.setName ("coursedb")
 			.setMutable (true)
 			.setElementClass (Action.class, ActionData.class)
 			.setElementClass (Activity.class, GenericActivity.class)
+			.setElementClass (ActivityReference.class, ActivityReferenceData.class)
 			.setElementClass (ActivitySource.class, ActivitySourceData.class)
 			.setElementClass (ActivityType.class, ActivityTypeData.class)
 			.setElementClass (Course.class, CourseData.class)
 			.setElementClass (Enrolment.class, EnrolmentData.class)
 			.setElementClass (Grade.class, GradeData.class)
 			.setElementClass (LogEntry.class, LogData.class)
+			.setElementClass (Network.class, NetworkData.class)
 			.setElementClass (Role.class, RoleData.class)
 			.setElementClass (User.class, UserData.class)
 			.setGenerator (Element.class, NullIdGenerator.class)
 			.setGenerator (Enrolment.class, RandomIdGenerator.class)
 			.build ();
 
-		Profile moodle = new ProfileBuilder ()
+		MOODLE = new ProfileBuilder ()
 			.setName ("moodledb")
-			.setElementClass (Activity.class, MoodleActivity.class)
+			.setElementClass (ActivityReference.class, MoodleActivityReference.class)
 			.setElementClass (ActivityType.class, ActivityTypeData.class)
 			.setElementClass (Course.class, CourseData.class)
 			.setElementClass (Enrolment.class, EnrolmentData.class)
@@ -223,11 +208,12 @@ public class App
 			.setGenerator (Element.class, SequentialIdGenerator.class)
 			.build ();
 
-		Profile mem = new ProfileBuilder ()
+		MEMORY = new ProfileBuilder ()
 			.setName ("mem")
 			.setMutable (true)
 			.setElementClass (Action.class, ActionData.class)
 			.setElementClass (Activity.class, GenericActivity.class)
+			.setElementClass (ActivityReference.class, ActivityReferenceData.class)
 			.setElementClass (ActivitySource.class, ActivitySourceData.class)
 			.setElementClass (ActivityType.class, ActivityTypeData.class)
 			.setElementClass (Course.class, CourseData.class)
@@ -240,36 +226,179 @@ public class App
 			.setGenerator (Element.class, SequentialIdGenerator.class)
 			.setGenerator (Enrolment.class, RandomIdGenerator.class)
 			.build ();
+	}
+
+	public static int compareIds (final Element e1, final Element e2)
+	{
+		return e1.getId ().compareTo (e2.getId ());
+	}
+
+	public static int compareUsers (final User u1, final User u2, final Course course)
+	{
+		int result = u1.getEnrolment (course).getRole ().getId ().compareTo (u2.getEnrolment (course).getRole ().getId ());
+
+		if (result == 0)
+		{
+			result = u1.getLastname ().compareTo (u2.getLastname ());
+
+			if (result == 0)
+			{
+				result = u1.getFirstname ().compareTo (u2.getFirstname ());
+
+				if (result == 0)
+				{
+					result = u1.getUsername ().compareTo (u2.getUsername ());
+				}
+			}
+		}
+
+		return result;
+	}
+
+    public static void main(final String[] args) throws Exception
+    {
+		DomainModel scratch = null;
+		DomainModel moodledb = null;
+		DomainModel coursedb = null;
 
 		try
 		{
-			moodledb = new DomainModel (DataStore.getInstance (JPADataStore.class, moodle));
-			scratch = new DomainModel (DataStore.getInstance (MemDataStore.class, mem));
+			CSVFormat format = CSVFormat.EXCEL.withNullString("#N/A");
 
-			System.out.println ("--------------------++++++++++++++++++++++++++++++++++++++++--------------------");
+			App.log.debug ("Creating Course DomainModel");
+			coursedb = new DomainModel (DataStore.getInstance (JPADataStore.class, App.COURSE));
 
-			Course c = CourseLoader.getInstance (moodledb)
-				.fetchById (5L);
+			App.log.debug ("Creating Moodle DomainModel");
+			moodledb = new DomainModel (DataStore.getInstance (JPADataStore.class, App.MOODLE));
 
-			System.out.printf ("%s: %s %d\n", c.getName (), c.getSemester ().getName (), c.getYear ());
-			c.getActivities ().forEach (x -> System.out.printf ("\t%s: %d\n", x.getName (), x.getSubActivities ().size ()));
+			App.log.debug ("Creating Scratch DomainModel");
+			scratch = new DomainModel (DataStore.getInstance (MemDataStore.class, App.MEMORY));
+
+			Query<Course> cQuery = moodledb.getQuery (Course.class, Course.SELECTOR_ID);
+			Query<LogEntry> lQuery = moodledb.getQuery (LogEntry.class, LogEntry.SELECTOR_COURSE);
+			Query<User> uQuery = moodledb.getQuery (User.class, User.SELECTOR_USERNAME);
+
+			MoodleHarvester harvester = new MoodleHarvester (scratch);
+
+			InsertProcessor processor = coursedb.getProcessor ();
 
 			scratch.getTransaction ().begin ();
+			coursedb.getTransaction ().begin ();
 
-			ActivitySource.builder (scratch)
-				.setName ("moodle")
-				.build ();
+			App.log.info ("Creating Roles in scratch");
+			Role admin = harvester.addRole ("admin");
+			Role instructor = harvester.addRole ("instructor");
+			Role ta = harvester.addRole ("ta");
+			Role student = harvester.addRole ("student");
 
-			scratch.insert (c);
+			final Course moodleCourse = cQuery.setValue (Course.ID, 5L)
+					.query ();
+
+			App.log.info ("Copying Course from moodledb to scratch");
+			final Course course = harvester.addCourse (moodleCourse);
+
+			App.log.info ("Copying Activities from scratch to coursedb");
+			processor.processElements (course.getActivities ());
+
+			App.log.info ("Adding admin users to scratch");
+			harvester.addEnrolment (harvester.addUser ("@@NONE@@", "NULL", "USER"), course, admin);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "admin").query (), course, admin);
+
+			App.log.info ("Adding instructors to scratch");
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, instructor);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, instructor);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, instructor);
+
+			App.log.info ("Adding TA's to scratch");
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
+
+			App.log.info ("Adding students to scratch");
+			for (CSVRecord rec : format.parse (new BufferedReader (new FileReader ("***REMOVED***"))))
+			{
+				User user = uQuery.setValue (User.USERNAME, rec.get (0))
+					.query ();
+
+				if (user != null)
+				{
+					harvester.addEnrolment (user,
+							course,
+							student,
+							(rec.get (1) != null)
+								?  Integer.valueOf ((int) Math.ceil (Double.valueOf (rec.get (1))))
+								: null,
+							(rec.get (2) != null) ? true : false);
+				}
+				else
+				{
+					App.log.warn ("User: {} does not exist in the moodle database", rec.get (0));
+				}
+			}
+
+			App.log.info ("Processing Log");
+
+			LogEntryConverter lConverter = new LogEntryConverter (scratch, moodledb);
+
+			List<LogEntry> log = lQuery.setValue (LogEntry.COURSE, moodleCourse)
+				.queryAll ()
+				.stream ()
+				.map (x -> lConverter.convert ((MoodleLogData) x))
+				.collect (Collectors.toList ());
+
 			scratch.getTransaction ().commit ();
 
-			Course nc = CourseLoader.getInstance (scratch)
-				.fetchById (1L);
+			App.log.info ("Copying Course from scratch to coursedb");
+			final Course cCourse = processor.processElement (course);
 
-			System.out.printf ("%s: %s %d\n", nc.getName (), nc.getSemester ().getName (), nc.getYear ());
-			nc.getActivities ().forEach (x -> System.out.printf ("\t%s: %d\n", x.getName (), x.getSubActivities ().size ()));
+			App.log.info ("Copying Roles from scratch to coursedb");
+			processor.processElement (admin);
+			processor.processElement (instructor);
+			processor.processElement (ta);
+			processor.processElement (student);
 
-			System.out.println ("--------------------++++++++++++++++++++++++++++++++++++++++--------------------");
+			App.log.info ("Copying Activities from scratch to coursedb");
+			processor.processElements (course.getActivities ());
+
+			List<User> allUsers = scratch.getQuery (User.class, User.SELECTOR_ALL)
+				.queryAll ()
+				.stream ()
+				.filter (u -> u.getEnrolment (course) != null)
+				.sorted ((u1, u2) -> App.compareUsers (u1, u2, course))
+				.collect (Collectors.toList ());
+
+			App.log.info ("Copying Enrolments from scratch to coursedb");
+			processor.processElements (allUsers.stream ()
+					.map (u -> u.getEnrolment (course))
+					.sorted ((e1, e2) -> App.compareIds (e1, e2))
+					.collect (Collectors.toList ()));
+
+			processor.clear ();
+
+			App.log.info ("Copying Log Entries from scratch to coursedb");
+			processor.processElements (log);
+			processor.processQueue ();
+
+			App.log.info ("Writing Course/Enrolment/Log data to the database");
+			coursedb.getTransaction ().commit ();
+			coursedb.getTransaction ().begin ();
+
+			App.log.info ("Copying Users from scratch to coursedb");
+			processor.processElements (allUsers);
+			processor.processQueue ();
+
+			App.log.info ("Writing User data to the database");
+			coursedb.getTransaction ().commit ();
 		}
 		catch (Throwable ex)
 		{
@@ -289,4 +418,111 @@ public class App
 			}
 		}
     }
+}
+
+class MoodleHarvester
+{
+	private static final CSVFormat FORMAT;
+
+	private final Logger log;
+
+	private final DomainModel model;
+
+	private final EnrolmentBuilder eBuilder;
+
+	private final RoleBuilder rBuilder;
+
+	private final UserBuilder uBuilder;
+
+	private final InsertProcessor processor;
+
+//	private final Role admin;
+
+//	private final Role instructor;
+
+//	private final Role ta;
+
+//	private final Role student;
+
+	static
+	{
+		FORMAT = CSVFormat.EXCEL.withNullString("#N/A");
+	}
+
+	public MoodleHarvester (final DomainModel model)
+	{
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.model = model;
+
+		this.eBuilder = Enrolment.builder (model);
+		this.uBuilder = User.builder (model);
+
+		this.rBuilder = Role.builder (model);
+
+		this.processor = this.model.getProcessor ();
+
+//		this.admin = rBuilder.setName ("admin").build ();
+//		this.instructor = rBuilder.setName ("instructor").build ();
+//		this.ta = rBuilder.setName ("ta").build ();
+//		this.student = rBuilder.setName ("student").build ();
+	}
+
+	public Course addCourse (final Course course)
+	{
+		Course result = this.processor.processElement (course);
+
+		this.processor.clear ();
+		this.processor.processElements (course.getActivities ());
+
+		return result;
+	}
+
+	public Enrolment addEnrolment (final User user, final Course course, final Role role)
+	{
+		this.log.trace ("addEnrolment: user={}, course={}, role={}", user, course, role);
+
+		Enrolment enrolment = this.eBuilder.clear ()
+			.setRole (role)
+			.setCourse (course)
+			.setUsable (false)
+			.build ();
+
+		this.uBuilder.load (user)
+			.addEnrolment (enrolment)
+			.build ();
+
+		return enrolment;
+	}
+
+	public Enrolment addEnrolment (final User user, final Course course, final Role role, final Integer grade, final Boolean usable)
+	{
+		Enrolment enrolment = this.eBuilder.clear ()
+			.setRole (role)
+			.setCourse (course)
+			.setFinalGrade (grade)
+			.setUsable (usable)
+			.build ();
+
+		this.uBuilder.load (user)
+			.addEnrolment (enrolment)
+			.build ();
+
+		return enrolment;
+	}
+
+	public Role addRole (final String name)
+	{
+		return this.rBuilder.setName (name)
+			.build ();
+	}
+
+	public User addUser (final String username, final String firstName, final String lastName)
+	{
+		return this.uBuilder.clear ()
+			.setUsername (username)
+			.setFirstname (firstName)
+			.setLastname (lastName)
+			.build ();
+	}
 }
