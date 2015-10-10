@@ -6,7 +6,6 @@
 				 version="2.1">
 	<description>Entity mappings for the activity data components of the moodle database</description>
 	<package>ca.uoguelph.socs.icc.edm.domain.element.activity.moodle</package>
-
 	<access>FIELD</access>
 
 	<!--********************************************************************-->
@@ -22,13 +21,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<transient name="grades"/>
-			<transient name="log"/>
 			<transient name="subActivities"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -45,13 +39,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<one-to-many name="subActivities" target-entity="BookChapter" mapped-by="parent"/>
 			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -85,13 +74,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<transient name="grades"/>
-			<transient name="log"/>
 			<transient name="subActivities"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -108,13 +92,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<transient name="grades"/>
-			<transient name="log"/>
 			<transient name="subActivities"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -131,13 +110,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<transient name="grades"/>
-			<transient name="log"/>
 			<transient name="subActivities"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -154,13 +128,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<transient name="grades"/>
-			<transient name="log"/>
 			<transient name="subActivities"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -177,13 +146,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<one-to-many name="subActivities" target-entity="ForumDiscussion" mapped-by="parent"/>
 			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -234,13 +198,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<transient name="grades"/>
-			<transient name="log"/>
 			<transient name="subActivities"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -257,13 +216,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<one-to-many name="subActivities" target-entity="LessonPage" mapped-by="parent"/>
 			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -300,13 +254,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<transient name="grades"/>
-			<transient name="log"/>
 			<transient name="subActivities"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -323,13 +272,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<transient name="grades"/>
-			<transient name="log"/>
 			<transient name="subActivities"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -346,13 +290,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<transient name="grades"/>
-			<transient name="log"/>
 			<transient name="subActivities"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -369,13 +308,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<transient name="grades"/>
-			<transient name="log"/>
 			<transient name="subActivities"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -392,13 +326,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<transient name="grades"/>
-			<transient name="log"/>
 			<transient name="subActivities"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -415,13 +344,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<one-to-many name="subActivities" target-entity="WikiPage" mapped-by="parent"/>
 			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
@@ -455,13 +379,8 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<many-to-one name="course" target-entity="ca.uoguelph.socs.icc.edm.domain.element.CourseData" optional="false">
-				<join-column name="course" nullable="false" insertable="false" updatable="false"/>
-			</many-to-one>
 			<one-to-many name="subActivities" target-entity="WorkshopSubmission" mapped-by="parent"/>
 			<transient name="grades"/>
-			<transient name="log"/>
-			<transient name="type"/>
 		</attributes>
 	</entity>
 
