@@ -123,6 +123,8 @@ public final class TranslationTable
 	{
 		this.log.trace ("get: element={}, datastore={}", element, datastore);
 
+		assert element != null : "element is NULL";
+		assert datastore != null : "datastore is NULL";
 		assert element.getDataStore () != datastore : "The specified element is in the specified datastore";
 
 		return (this.table.containsKey (element)) ? (T) this.table.get (element).get (datastore) : null;
