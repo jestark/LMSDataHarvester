@@ -57,7 +57,7 @@ create table if not exists activity (
 comment on table activity is 'All of the activities associated with a course offering';
 
 create table if not exists activity_stealth (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade
+	id bigint primary key references activity (id) on delete restrict on update cascade
 );
 
 comment on table activity_stealth is 'Activities found in the log but not added to the course by the instructor';
@@ -136,7 +136,7 @@ comment on table log is 'Log of actions taken by participants in a given course'
 
 -- Moodle assign module
 create table if not exists activity_moodle_assign (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -144,7 +144,7 @@ comment on table activity_moodle_assign is 'Data from the moodle assign module';
 
 -- Moodle Book Module
 create table if not exists activity_moodle_book (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -152,7 +152,7 @@ comment on table activity_moodle_book is 'Data from the moodle book module';
 
 create table if not exists activity_moodle_book_chapter (
 	id bigserial primary key,
-	book_id bigint not null references activity_moodle_book (activity_id) on delete restrict on update cascade,
+	book_id bigint not null references activity_moodle_book (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -167,7 +167,7 @@ comment on table log_moodle_book_chapter is 'Relationship table for mapping log 
 
 -- Moodle Checklist Module
 create table if not exists activity_moodle_checklist (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -175,7 +175,7 @@ comment on table activity_moodle_checklist is 'Data from the moodle checklist mo
 
 -- Moodle Choice Module
 create table if not exists activity_moodle_choice (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -183,7 +183,7 @@ comment on table activity_moodle_choice is 'Data from the moodle choice module';
 
 -- Moodle Feedback Module
 create table if not exists activity_moodle_feedback (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -191,7 +191,7 @@ comment on table activity_moodle_feedback is 'Data from the moodle feedback modu
 
 -- Moodle Folder Module
 create table if not exists activity_moodle_folder (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -199,7 +199,7 @@ comment on table activity_moodle_folder is 'Data from the moodle folder module';
 
 -- Moodle Forum Module
 create table if not exists activity_moodle_forum (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -207,7 +207,7 @@ comment on table activity_moodle_forum is 'Data from the moodle forum module';
 
 create table if not exists activity_moodle_forum_discussion (
 	id bigserial primary key,
-	forum_id bigint not null references activity_moodle_forum (activity_id) on delete restrict on update cascade,
+	forum_id bigint not null references activity_moodle_forum (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -237,7 +237,7 @@ comment on table log_moodle_forum_post is 'Relationship table for mapping log en
 
 -- Moodle Label Module
 create table if not exists activity_moodle_label (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -245,7 +245,7 @@ comment on table activity_moodle_label is 'Data from the moodle label module';
 
 -- Moodle Lesson Module
 create table if not exists activity_moodle_lesson (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -253,7 +253,7 @@ comment on table activity_moodle_lesson is 'Data from the moodle lesson module';
 
 create table if not exists activity_moodle_lesson_page (
 	id bigserial primary key,
-	lesson_id bigint not null references activity_moodle_lesson (activity_id) on delete restrict on update cascade,
+	lesson_id bigint not null references activity_moodle_lesson (id) on delete restrict on update cascade,
 	title text not null
 );
 
@@ -268,7 +268,7 @@ comment on table log_moodle_lesson_page is 'Relationship table for mapping log e
 
 -- Moodle Page Module
 create table if not exists activity_moodle_page (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -276,7 +276,7 @@ comment on table activity_moodle_page is 'Data from the moodle page module';
 
 -- Moodle Quiz Module
 create table if not exists activity_moodle_quiz (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -284,7 +284,7 @@ comment on table activity_moodle_quiz is 'Data from the moodle quiz module';
 
 -- Moodle Resource Module
 create table if not exists activity_moodle_resource (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -292,7 +292,7 @@ comment on table activity_moodle_resource is 'Data from the moodle resource modu
 
 -- Moodle Scheduler Module
 create table if not exists activity_moodle_scheduler (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -300,7 +300,7 @@ comment on table activity_moodle_scheduler is 'Data from the moodle scheduler mo
 
 -- Moodle url Module
 create table if not exists activity_moodle_url (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -308,7 +308,7 @@ comment on table activity_moodle_url is 'Data from the moodle url module';
 
 -- Moodle Wiki Module
 create table if not exists activity_moodle_wiki (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -316,7 +316,7 @@ comment on table activity_moodle_wiki is 'Data from the moodle wiki module';
 
 create table if not exists activity_moodle_wiki_page (
 	id bigserial primary key,
-	wiki_id bigint not null references activity_moodle_wiki (activity_id) on delete restrict on update cascade,
+	wiki_id bigint not null references activity_moodle_wiki (id) on delete restrict on update cascade,
 	title text not null
 );
 
@@ -331,7 +331,7 @@ comment on table log_moodle_wiki_page is 'Relationship table for mapping log ent
 
 -- Moodle Workshop Module
 create table if not exists activity_moodle_workshop (
-	activity_id bigint primary key references activity (id) on delete restrict on update cascade,
+	id bigint primary key references activity (id) on delete restrict on update cascade,
 	name text not null
 );
 
@@ -339,7 +339,7 @@ comment on table activity_moodle_workshop is 'Data from the moodle workshop modu
 
 create table if not exists activity_moodle_workshop_submission (
 	id bigserial primary key,
-	workshop_id bigint not null references activity_moodle_workshop (activity_id) on delete restrict on update cascade,
+	workshop_id bigint not null references activity_moodle_workshop (id) on delete restrict on update cascade,
 	title text not null
 );
 
