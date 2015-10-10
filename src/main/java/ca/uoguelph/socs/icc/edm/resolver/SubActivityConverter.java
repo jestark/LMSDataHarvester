@@ -118,11 +118,11 @@ public final class SubActivityConverter
 						.setName (SubActivityConverter.MISSING_SUBACTIVITY_NAME)
 						.build ();
 
-					this.log.info ("Created entry for missing sub-activity Class: {} id: {}", sclass.getSimpleName (), subId);
+					this.log.debug ("Created entry for missing sub-activity Class: {} id: {}", sclass.getSimpleName (), subId);
 				}
 				else
 				{
-					this.log.info ("Loaded sub-activity instance for Class: {} id: {}", sclass.getSimpleName (), subId);
+					this.log.debug ("Loaded sub-activity instance for Class: {} id: {}", sclass.getSimpleName (), subId);
 				}
 
 				this.cache.put (cacheKey, subActivity);

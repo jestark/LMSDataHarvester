@@ -259,8 +259,9 @@ public final class ActivityConverter
 
 				if (moodleActivity != null)
 				{
-					this.log.info ("Loaded activity instance for module: {} id: {}", type.getName (), activityId);
-					this.cache.put (key, (Activity) moodleActivity.getBuilder (this.dest)
+					this.log.debug ("Loaded activity instance for module: {} id: {}", type.getName (), activityId);
+					this.cache.put (key, (Activity) moodleActivity.getActivity ()
+							.getBuilder (this.dest)
 							.build ());
 					this.keys.put (activityId, key);
 				}
