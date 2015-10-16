@@ -21,3 +21,4 @@ comment on table userdb.user is 'Identifying user data';
 comment on table userdb.user_enrolment is 'User to enrolment mapping';
 
 insert into userdb.user values (0, '@@NONE@@', 'NULL', 'USER');
+insert into userdb.user (username, first_name, last_name) values ('admin', 'Admin', 'User');

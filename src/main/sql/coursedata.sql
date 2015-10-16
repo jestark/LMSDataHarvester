@@ -360,7 +360,11 @@ insert into course_semester values (0, 'WINTER');
 insert into course_semester values (1, 'SPRING');
 insert into course_semester values (2, 'FALL');
 
-insert into enrolment_role values (0, 'admin');
+insert into enrolment_role values (0, 'UNKNOWN');
+insert into enrolment_role (name) values ('admin');
+insert into enrolment_role (name) values ('instructor');
+insert into enrolment_role (name) values ('ta');
+insert into enrolment_role (name) values ('student');
 
 insert into activity_source (name) values ('moodle');
 
