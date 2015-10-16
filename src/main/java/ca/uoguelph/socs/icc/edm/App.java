@@ -228,27 +228,17 @@ public class App
 			.build ();
 	}
 
-	public static int compareIds (final Element e1, final Element e2)
-	{
-		return e1.getId ().compareTo (e2.getId ());
-	}
-
 	public static int compareUsers (final User u1, final User u2, final Course course)
 	{
-		int result = u1.getEnrolment (course).getRole ().getId ().compareTo (u2.getEnrolment (course).getRole ().getId ());
+		int result = u1.getLastname ().compareTo (u2.getLastname ());
 
 		if (result == 0)
 		{
-			result = u1.getLastname ().compareTo (u2.getLastname ());
+			result = u1.getFirstname ().compareTo (u2.getFirstname ());
 
 			if (result == 0)
 			{
-				result = u1.getFirstname ().compareTo (u2.getFirstname ());
-
-				if (result == 0)
-				{
-					result = u1.getUsername ().compareTo (u2.getUsername ());
-				}
+				result = u1.getUsername ().compareTo (u2.getUsername ());
 			}
 		}
 
@@ -301,7 +291,6 @@ public class App
 			processor.processElements (course.getActivities ());
 
 			App.log.info ("Adding admin users to scratch");
-			harvester.addEnrolment (harvester.addUser ("@@NONE@@", "NULL", "USER"), course, admin);
 			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "admin").query (), course, admin);
 
 			App.log.info ("Adding instructors to scratch");
@@ -358,18 +347,6 @@ public class App
 
 			scratch.getTransaction ().commit ();
 
-			App.log.info ("Copying Course from scratch to coursedb");
-			final Course cCourse = processor.processElement (course);
-
-			App.log.info ("Copying Roles from scratch to coursedb");
-			processor.processElement (admin);
-			processor.processElement (instructor);
-			processor.processElement (ta);
-			processor.processElement (student);
-
-			App.log.info ("Copying Activities from scratch to coursedb");
-			processor.processElements (course.getActivities ());
-
 			List<User> allUsers = scratch.getQuery (User.class, User.SELECTOR_ALL)
 				.queryAll ()
 				.stream ()
@@ -380,21 +357,52 @@ public class App
 			App.log.info ("Copying Enrolments from scratch to coursedb");
 			processor.processElements (allUsers.stream ()
 					.map (u -> u.getEnrolment (course))
-					.sorted ((e1, e2) -> App.compareIds (e1, e2))
+					.sorted ((e1, e2) -> e1.getId ().compareTo (e2.getId ()))
 					.collect (Collectors.toList ()));
 
-			processor.clear ();
-
-			App.log.info ("Copying Log Entries from scratch to coursedb");
-			processor.processElements (log);
-			processor.processQueue ();
-
-			App.log.info ("Writing Course/Enrolment/Log data to the database");
+			App.log.info ("Committing Transaction data to the database");
 			coursedb.getTransaction ().commit ();
 			coursedb.getTransaction ().begin ();
 
 			App.log.info ("Copying Users from scratch to coursedb");
 			processor.processElements (allUsers);
+
+			App.log.info ("Committing Transaction data to the database");
+			coursedb.getTransaction ().commit ();
+			coursedb.getTransaction ().begin ();
+
+			App.log.info ("Copying Activities from scratch to coursedb");
+			processor.processElements (course.getActivities ());
+
+			App.log.info ("Committing Transaction data to the database");
+			coursedb.getTransaction ().commit ();
+			coursedb.getTransaction ().begin ();
+
+
+			App.log.info ("Copying Log Entries from scratch to coursedb");
+
+
+			int i = 0;
+
+			for (LogEntry le : log)
+			{
+				if ((i > 0) && (i % 100 == 0))
+				{
+					App.log.info ("Copying log entries {}/{}", i, log.size ());
+
+					if (i % 10000 == 0)
+					{
+						App.log.info ("Committing Transaction data to the database");
+						coursedb.getTransaction ().commit ();
+						coursedb.getTransaction ().begin ();
+					}
+				}
+
+				processor.processElement (le);
+				i ++;
+			}
+
+			App.log.info ("Processing deferred items");
 			processor.processQueue ();
 
 			App.log.info ("Writing User data to the database");
@@ -471,9 +479,7 @@ class MoodleHarvester
 	public Course addCourse (final Course course)
 	{
 		Course result = this.processor.processElement (course);
-
-		this.processor.clear ();
-		this.processor.processElements (course.getActivities ());
+		this.processor.processQueue ();
 
 		return result;
 	}
