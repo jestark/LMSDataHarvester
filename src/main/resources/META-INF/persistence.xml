@@ -23,7 +23,6 @@
 		<description>Database mapping definition for the course Database</description>
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<mapping-file>mappings-coursedb-core.xml</mapping-file>
-		<mapping-file>mappings-coursedb-user.xml</mapping-file>
 		<mapping-file>mappings-coursedb-moodle.xml</mapping-file>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
@@ -33,5 +32,4 @@
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
 		</properties>
 	</persistence-unit>
-
 </persistence>
