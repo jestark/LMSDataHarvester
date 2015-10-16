@@ -91,9 +91,10 @@ final class LogReferenceBuilder implements Builder<LogReference>
 			throw new IllegalStateException ("subActivity is NULL");
 		}
 
-		DataStoreProxy<LogReference> referenceProxy = DataStoreProxy.getInstance (LogReference.class,
-				LogReference.getLogClass (this.subActivity.getClass ()),
-				LogReference.SELECTOR_ENTRY, datastore);
+		DataStoreProxy<LogReference> referenceProxy = new TableProxy<> (this.datastore.getProfile ()
+				.getCreator (LogReference.class,
+					LogReference.getLogClass (this.subActivity.getClass ())),
+				this.datastore);
 
 		LogReference result = referenceProxy.create ();
 		result.setEntry (this.entry);
