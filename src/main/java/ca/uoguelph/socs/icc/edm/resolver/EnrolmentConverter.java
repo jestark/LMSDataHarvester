@@ -25,7 +25,10 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
+import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
+import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
+import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
@@ -37,14 +40,32 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 public final class EnrolmentConverter
 {
-	/** Non-existent users should be mapped to this username */
-	private static final String NULL_USERNAME = "@@NONE@@";
+	/** The username for the NULL (unknown) <code>User</code> */
+	private static final String NULL_USER_USERNAME = "@@NONE@@";
+
+	/** The first name for the null (unknown) <code>User</code> */
+	private static final String NULL_USER_FIRSTNAME = "NULL";
+
+	/** The last name for the null (unknown) <code>User</code> */
+	private static final String NULL_USER_LASTNAME = "USER";
+
+	/** The name of the <code>Role</code> to assign to unknown <code>user</code> instances */
+	private static final String UNKNOWN_ROLE_NAME = "UNKNOWN";
 
 	/** The log */
 	private final Logger log;
 
 	/** cache of <code>User</code> instances */
 	private final Map<Long, User> cache;
+
+	/** Role for unknown <code>Enrolment</code> instances */
+	private final Role unknownRole;
+
+	/** Builder to create missing <code>Enrolment</code> instances*/
+	private final EnrolmentBuilder eBuilder;
+
+	/** Builder to create missing <code>User</code> instances*/
+	private final UserBuilder uBuilder;
 
 	/** <code>Query</code> for the source <code>DomainModel</code> */
 	private final Query<User> sourceQuery;
@@ -73,10 +94,88 @@ public final class EnrolmentConverter
 			throw new NullPointerException ("source is NULL");
 		}
 
+		this.unknownRole = Role.builder (dest)
+			.setName (EnrolmentConverter.UNKNOWN_ROLE_NAME)
+			.build ();
+
+		this.eBuilder = Enrolment.builder (dest);
+		this.uBuilder = User.builder (dest);
+
 		this.sourceQuery = source.getQuery (User.class, User.SELECTOR_ID);
 		this.destQuery = dest.getQuery (User.class, User.SELECTOR_USERNAME);
 
 		this.cache = new HashMap<> ();
+	}
+
+	private User nullUser (final Course course)
+	{
+		this.log.trace ("nullUser: course={}", course);
+
+		assert course != null : "course is NULL";
+
+		return this.uBuilder.clear ()
+			.setFirstname (EnrolmentConverter.NULL_USER_FIRSTNAME)
+			.setLastname (EnrolmentConverter.NULL_USER_LASTNAME)
+			.setUsername (EnrolmentConverter.NULL_USER_USERNAME)
+			.addEnrolment (this.eBuilder.clear ()
+					.setRole (this.unknownRole)
+					.setCourse (course)
+					.setUsable (false)
+					.build ())
+			.build ();
+	}
+
+	private User importUser (final User user, final Course course)
+	{
+		this.log.trace ("importUser: User={}, course={}", user, course);
+
+		assert user != null : "user is NULL";
+		assert course != null : "course is NULL";
+
+		return this.uBuilder.load (user)
+			.addEnrolment (this.eBuilder.clear ()
+					.setRole (this.unknownRole)
+					.setCourse (course)
+					.setUsable (false)
+					.build ())
+			.build ();
+	}
+
+	private User loadUser (final Long userId, final Course course)
+	{
+		this.log.trace ("loadUser: userId={}, course={}", userId, course);
+
+		assert userId != null : "userId is NULL";
+		assert course != null : "course is NULL";
+		assert userId > 0 : "userId must be greater than 0";
+
+		User result = null;
+
+		User sUser = this.sourceQuery.setValue (User.ID, userId)
+			.query ();
+
+		if (sUser != null)
+		{
+			result = this.destQuery.setValue (User.USERNAME, sUser.getUsername ())
+				.query ();
+
+			if (result == null)
+			{
+				this.log.warn ("Creating Enrolment for non-existent user: {}", sUser);
+				result = this.importUser (sUser, course);
+			}
+			else
+			{
+				this.log.debug ("Loaded enrolment for user: {}", result);
+			}
+		}
+		else
+		{
+			this.log.warn ("Creating Enrolment for non-existent NULL user");
+			result = this.nullUser (course);
+		}
+
+		return result;
 	}
 
 	/**
@@ -113,30 +212,9 @@ public final class EnrolmentConverter
 
 		if (! this.cache.containsKey (userId))
 		{
-			String username = EnrolmentConverter.NULL_USERNAME;
-
-			if (userId > 0)
-			{
-				User sUser = this.sourceQuery.setValue (User.ID, userId)
-					.query ();
-
-				if (sUser == null)
-				{
-					this.log.error ("Source Domain Model does not contain a user with the ID: {}", userId);
-					throw new IllegalArgumentException ("user does not exist");
-				}
-			}
-
-			User user = this.destQuery.setValue (User.USERNAME, username)
-				.query ();
-
-			if (user == null)
-			{
-				this.log.error ("User does not exist in the destination database: {}", user);
-				throw new IllegalStateException ("User does not exist in the destination database");
-			}
-
-			this.cache.put (userId, user);
+			this.cache.put (userId, (userId > 0)
+					? this.loadUser (userId, course)
+					: this.nullUser (course));
 		}
 
 		return this.cache.get (userId)
