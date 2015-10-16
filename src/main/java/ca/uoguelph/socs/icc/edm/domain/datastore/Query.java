@@ -221,7 +221,7 @@ public final class Query<T extends Element>
 
 		if (results.size () > 1)
 		{
-			this.log.error ("Query returned multiple results");
+			this.log.error ("Query returned multiple results: {}", results);
 			throw new IllegalStateException ("Query returned multiple results");
 		}
 		else if (results.size () == 1)
