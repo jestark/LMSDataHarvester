@@ -9,15 +9,7 @@
 		</File>
 	</Appenders>
 	<Loggers>
-		<Logger name="ca.uoguelph.socs.icc.edm" level="ALL" additivity="false">
-			<AppenderRef ref="App" level="ALL"/>
-			<AppenderRef ref="Console" level="INFO"/>
-		</Logger>
-		<Logger name="ca.uoguelph.socs.icc.edm.domain" level="INFO" additivity="false">
-			<AppenderRef ref="App" level="ALL"/>
-			<AppenderRef ref="Console" level="INFO"/>
-		</Logger>
-		<Logger name="ca.uoguelph.socs.icc.edm.resolver" level="INFO" additivity="false">
+		<Logger name="ca.uoguelph.socs.icc.edm" level="INFO" additivity="false">
 			<AppenderRef ref="App" level="ALL"/>
 			<AppenderRef ref="Console" level="INFO"/>
 		</Logger>
