@@ -214,7 +214,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 		this.setActivity (entry.getActivity ());
 		this.setEnrolment (entry.getEnrolment ());
 		this.setNetwork (entry.getNetwork ());
-		this.setSubActivity (entry.getSubActivity ());
+//		this.setSubActivity (entry.getSubActivity ());
 		this.setTime (entry.getTime ());
 
 		return this;
