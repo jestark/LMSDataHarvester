@@ -204,7 +204,13 @@ final class ElementStore<T extends Element>
 		if (this.selectors.contains (filter.getSelector ()))
 		{
 			result = new ArrayList<T> ();
-			result.add (this.index.get (this.buildIndex (filter)));
+
+			T element = this.index.get (this.buildIndex (filter));
+
+			if (element != null)
+			{
+				result.add (element);
+			}
 		}
 		else
 		{
