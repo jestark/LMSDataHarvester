@@ -70,7 +70,7 @@ public abstract class LogReference extends Element implements Serializable
 	{
 		references = new HashMap<> ();
 
-		ENTRY = Property.getInstance (LogEntry.class, "logentry", Property.Flags.REQUIRED);
+		ENTRY = Property.getInstance (LogEntry.class, "entry", Property.Flags.REQUIRED);
 		SUBACTIVITY = Property.getInstance (SubActivity.class, "subactivity", Property.Flags.REQUIRED);
 
 		SELECTOR_ENTRY = Selector.getInstance (ENTRY, true);
@@ -205,11 +205,12 @@ public abstract class LogReference extends Element implements Serializable
 	 */
 
 	@Override
-	public LogEntryBuilder getBuilder (final DataStore datastore)
+	public LogReferenceBuilder getBuilder (final DataStore datastore)
 	{
 		assert datastore != null : "datastore is null";
 
-		return this.getEntry ().getBuilder (datastore);
+		return new LogReferenceBuilder (datastore)
+			.load (this);
 	}
 
 	/**

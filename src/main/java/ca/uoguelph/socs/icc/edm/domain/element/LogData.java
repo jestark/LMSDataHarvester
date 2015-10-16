@@ -282,7 +282,7 @@ public class LogData extends LogEntry implements Serializable
 	 */
 
 	@Override
-	public LogReference getReference ()
+	protected LogReference getReference ()
 	{
 		return (this.reference != null) ? this.propagateDomainModel (this.reference) : null;
 	}

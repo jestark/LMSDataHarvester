@@ -97,7 +97,7 @@ public abstract class LogEntry extends Element
 		ACTIVITY = Property.getInstance (ActivityReference.class, "activity", Property.Flags.REQUIRED);
 		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
 		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
-		REFERENCE = Property.getInstance (LogReference.class, "reference", Property.Flags.MUTABLE);
+		REFERENCE = Property.getInstance (LogReference.class, "reference");
 		NETWORK = Property.getInstance (Network.class, "network", Property.Flags.REQUIRED);
 		TIME = Property.getInstance (Date.class, "time", Property.Flags.REQUIRED);
 
@@ -175,7 +175,6 @@ public abstract class LogEntry extends Element
 	 * <li>The <code>Activity</code>
 	 * <li>The <code>Enrolment</code>
 	 * <li>The <code>Network</code>
-	 * <li>The <code>Reference</code>
 	 * <li>The time
 	 * <ul>
 	 *
@@ -203,7 +202,6 @@ public abstract class LogEntry extends Element
 			ebuilder.append (this.getEnrolment (), ((LogEntry) obj).getEnrolment ());
 			ebuilder.append (this.getNetwork (), ((LogEntry) obj).getNetwork ());
 			ebuilder.append (this.getTime (), ((LogEntry) obj).getTime ());
-			ebuilder.append (this.getReference (), ((LogEntry) obj).getReference ());
 
 			result = ebuilder.isEquals ();
 		}
@@ -220,7 +218,6 @@ public abstract class LogEntry extends Element
 	 * <li>The <code>Activity</code>
 	 * <li>The <code>Enrolment</code>
 	 * <li>The <code>Network</code>
-	 * <li>The <code>Reference</code>
 	 * <li>The time
 	 * <ul>
 	 *
@@ -239,7 +236,6 @@ public abstract class LogEntry extends Element
 		hbuilder.append (this.getEnrolment ());
 		hbuilder.append (this.getNetwork ());
 		hbuilder.append (this.getTime ());
-		hbuilder.append (this.getReference ());
 
 		return hbuilder.toHashCode ();
 	}
@@ -262,7 +258,7 @@ public abstract class LogEntry extends Element
 		builder.append ("activity", this.getActivity ());
 		builder.append ("network", this.getNetwork ());
 		builder.append ("time", this.getTime ());
-		builder.append ("subactivity", this.getReference ());
+		builder.append ("subactivity", this.getSubActivity ());
 
 		return builder.toString ();
 	}
@@ -412,7 +408,7 @@ public abstract class LogEntry extends Element
 	 * @return The <code>LogReference</code> instance
 	 */
 
-	public abstract LogReference getReference ();
+	protected abstract LogReference getReference ();
 
 	/**
 	 * Set the reference to the <code>SubActivity</code> to the
