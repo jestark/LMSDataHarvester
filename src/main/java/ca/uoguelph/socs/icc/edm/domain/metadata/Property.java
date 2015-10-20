@@ -38,7 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 public final class Property<T>
 {
 	/**
-	 * Meta-data for the <code>Property</code> instance.  The three flags
+	 * Meta-data for the <code>Property</code> instance.  The four flags
 	 * contained in this Enum, along with the type, are used to describe the
 	 * value represented by the <code>Property</code>. A <code>Property</code>
 	 * which has a type that is a subclass of <code>Element</code> is
@@ -55,6 +55,9 @@ public final class Property<T>
 	 *       be <code>REQUIRED</code>.
 	 *  <li> A <code>Property</code> that represents a relationship can not be
 	 *       <code>REQUIRED</code> and <code>MUTABLE</code>.
+	 *  <li> To be <code>RECOMMENDED</code> the <code>Property</code> must
+	 *       represent a relationship and must not be <code>REQUIRED</code> or
+	 *       <code>MUTABLE</code>
 	 * </ol>
 	 */
 
@@ -67,6 +70,14 @@ public final class Property<T>
 		 */
 
 		REQUIRED,
+
+		/**
+		 * Indicates that the <code>Property</code> represents a relationship
+		 * that is not <code>REQUIRED</code>, but is a part of the definition
+		 * of the <code>Element</code>
+		 */
+
+		RECOMMENDED,
 
 		/**
 		 * Indicates that the <code>Builder</code> may update the value(s)
@@ -96,11 +107,11 @@ public final class Property<T>
 	/**
  	 * Create the <code>Property</code>.
  	 *
-	 * @param  type     The type of the value associated with the
-	 *                  <code>Property</code>, not null
-	 * @param  name     The name of the <code>Property</code>, not null
+	 * @param  type The type of the value associated with the
+	 *              <code>Property</code>, not null
+	 * @param  name The name of the <code>Property</code>, not null
 	 *
-	 * @return          The <code>Property</code>
+	 * @return      The <code>Property</code>
 	 */
 
 	public static <V> Property<V> getInstance (final Class<V> type, final String name)
@@ -112,29 +123,36 @@ public final class Property<T>
 		return new Property<V> (name, type, EnumSet.noneOf (Property.Flags.class));
 	}
 
-	public static <V> Property<V> getInstance (final Class<V> type, final String name, final Flags f1)
+	/**
+	 * Create the <code>Property</code>.
+	 *
+	 * @param  type  The type of the value associated with the
+	 *               <code>Property</code>, not null
+	 * @param  name  The name of the <code>Property</code>, not null
+	 * @param  flags The <code>Flags</code> for the <code>Property</code>
+	 *
+	 * @return      The <code>Property</code>
+	 */
+
+	public static <V> Property<V> getInstance (final Class<V> type, final String name, final Flags... flags)
 	{
 		assert type != null : "type is NULL";
 		assert name != null : "name is NULL";
 		assert name.length () > 0 : "name is empty";
-		assert (f1 != Flags.MULTIVALUED) || Element.class.isAssignableFrom (type) : "Only Relationships may be Multi-Valued";
 
-		return new Property<V> (name, type, EnumSet.of (f1));
-	}
+		Set<Flags> nflags = EnumSet.noneOf (Property.Flags.class);
 
-	public static <V> Property<V> getInstance (final Class<V> type, final String name, final Flags f1, final Flags f2)
-	{
-		assert type != null : "type is NULL";
-		assert name != null : "name is NULL";
-		assert name.length () > 0 : "name is empty";
+		for (Flags f : flags)
+		{
+			nflags.add (f);
+		}
 
-		Set<Flags> flags = EnumSet.of (f1, f2);
-
-		assert ((flags.contains (Flags.REQUIRED) && flags.contains (Flags.MUTABLE) && (! Element.class.isAssignableFrom (type)))
-				|| (flags.contains (Flags.MUTABLE) && flags.contains (Flags.MULTIVALUED) && Element.class.isAssignableFrom (type)))
+		assert (! Element.class.isAssignableFrom (type)) && (! nflags.contains (Flags.RECOMMENDED))
+				|| Element.class.isAssignableFrom (type) && (! nflags.contains (Flags.REQUIRED))
+				|| nflags.equals (EnumSet.of (Flags.REQUIRED))
 			: "The specified flags can not be used together";
 
-		return new Property<V> (name, type, flags);
+		return new Property<V> (name, type, nflags);
 	}
 
 	/**
@@ -267,6 +285,21 @@ public final class Property<T>
 	public boolean isRequired ()
 	{
 		return this.flags.contains (Flags.REQUIRED);
+	}
+
+	/**
+	 * Determine if the value represented by the <code>Property</code> is
+	 * required.  If the value is not recommended, then it may be
+	 * <code>null</code>.
+	 *
+	 * @return <code>true</code> if the value represented by the
+	 *         <code>Property</code> is recommended, <code>false</code>
+	 *         otherwise
+	 */
+
+	public boolean isRecommended ()
+	{
+		return this.flags.contains (Flags.RECOMMENDED);
 	}
 
 	/**

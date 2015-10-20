@@ -101,7 +101,7 @@ public abstract class LogEntry extends Element implements Serializable
 		ACTIVITY = Property.getInstance (ActivityReference.class, "activity", Property.Flags.REQUIRED);
 		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
 		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
-		REFERENCE = Property.getInstance (LogReference.class, "reference");
+		REFERENCE = Property.getInstance (LogReference.class, "reference", Property.Flags.RECOMMENDED);
 		NETWORK = Property.getInstance (Network.class, "network", Property.Flags.REQUIRED);
 		TIME = Property.getInstance (Date.class, "time", Property.Flags.REQUIRED);
 

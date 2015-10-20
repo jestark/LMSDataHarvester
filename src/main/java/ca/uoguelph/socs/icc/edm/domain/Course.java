@@ -86,8 +86,8 @@ public abstract class Course extends Element
 		SEMESTER = Property.getInstance (Semester.class, "semester", Property.Flags.REQUIRED);
 		YEAR = Property.getInstance (Integer.class, "year", Property.Flags.REQUIRED);
 
-		ACTIVITIES = Property.getInstance (ActivityReference.class, "activities", Property.Flags.MULTIVALUED);
-		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", Property.Flags.MULTIVALUED);
+		ACTIVITIES = Property.getInstance (ActivityReference.class, "activities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
+		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
 
 		SELECTOR_OFFERING = Selector.getInstance ("offering", true, NAME, SEMESTER, YEAR);
 

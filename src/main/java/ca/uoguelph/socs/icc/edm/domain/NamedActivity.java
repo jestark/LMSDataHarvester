@@ -57,7 +57,7 @@ public abstract class NamedActivity extends Activity
 	static
 	{
 		GRADES = Property.getInstance (Grade.class, "grade", Property.Flags.MULTIVALUED);
-		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", Property.Flags.MULTIVALUED);
+		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
 
 		Definition.getBuilder (NamedActivity.class, Activity.class)
 			.addProperty (Activity.NAME, NamedActivity::getName, NamedActivity::setName)

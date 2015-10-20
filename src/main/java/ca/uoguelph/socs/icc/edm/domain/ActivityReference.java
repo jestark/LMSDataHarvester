@@ -67,7 +67,7 @@ public abstract class ActivityReference extends Element implements Serializable
 
 	static
 	{
-		ACTIVITY = Property.getInstance (Activity.class, "activity");
+		ACTIVITY = Property.getInstance (Activity.class, "activity", Property.Flags.RECOMMENDED);
 		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
 		TYPE = Property.getInstance (ActivityType.class, "type", Property.Flags.REQUIRED);
 
