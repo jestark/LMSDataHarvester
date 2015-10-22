@@ -104,7 +104,7 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	{
 		this.log.trace ("canRemove:");
 
-		return ! this.property.isRequired ();
+		return ! this.property.hasFlags (Property.Flags.REQUIRED);
 	}
 
 	/**
@@ -175,7 +175,8 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 
 		boolean result = false;
 
-		if ((! this.property.isRequired ()) && (value == this.reference.getValue (element)))
+		if ((! this.property.hasFlags (Property.Flags.REQUIRED))
+				&& (value == this.reference.getValue (element)))
 		{
 			this.reference.setValue (element, null);
 			result = true;

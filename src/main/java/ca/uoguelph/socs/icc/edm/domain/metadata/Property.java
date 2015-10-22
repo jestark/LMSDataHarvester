@@ -17,6 +17,9 @@
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Set;
+
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Objects;
 
@@ -63,6 +66,13 @@ public final class Property<T>
 
 	public static enum Flags
 	{
+		/**
+		 * Indicates that the value associated with the <code>Property</code>
+		 * represents a relationship with another <code>Element</code>.
+		 */
+
+		RELATIONSHIP,
+
 		/**
 		 * Indicates that the value associated with <code>Property</code> must
 		 * not be null.  For relationships, required <code>Property</code>
@@ -120,7 +130,11 @@ public final class Property<T>
 		assert name != null : "name is NULL";
 		assert name.length () > 0 : "name is empty";
 
-		return new Property<V> (name, type, EnumSet.noneOf (Property.Flags.class));
+		Set<Flags> nflags = (Element.class.isAssignableFrom (type))
+				? EnumSet.of (Flags.RELATIONSHIP)
+				: EnumSet.noneOf (Property.Flags.class);
+
+		return new Property<V> (name, type, nflags);
 	}
 
 	/**
@@ -140,15 +154,17 @@ public final class Property<T>
 		assert name != null : "name is NULL";
 		assert name.length () > 0 : "name is empty";
 
-		Set<Flags> nflags = EnumSet.noneOf (Property.Flags.class);
+		Set<Flags> nflags = (Element.class.isAssignableFrom (type))
+				? EnumSet.of (Flags.RELATIONSHIP)
+				: EnumSet.noneOf (Property.Flags.class);
 
 		for (Flags f : flags)
 		{
 			nflags.add (f);
 		}
 
-		assert (! Element.class.isAssignableFrom (type)) && (! nflags.contains (Flags.RECOMMENDED))
-				|| Element.class.isAssignableFrom (type) && (! nflags.contains (Flags.REQUIRED))
+		assert (! nflags.contains (Flags.RELATIONSHIP)) && (! nflags.contains (Flags.RECOMMENDED))
+				|| nflags.contains (Flags.RELATIONSHIP) && (! nflags.contains (Flags.REQUIRED))
 				|| nflags.equals (EnumSet.of (Flags.REQUIRED))
 			: "The specified flags can not be used together";
 
@@ -208,6 +224,60 @@ public final class Property<T>
 	}
 
 	/**
+	 * Determine if the specified flag is set for this <code>Property</code>.
+	 *
+	 * @param  flag The flag to test
+	 *
+	 * @return      <code>true</code> if the specified flag is set,
+	 *              <code>false</code> otherwise
+	 */
+
+	public boolean hasFlags (final Flags flag)
+	{
+		return this.flags.contains (flag);
+	}
+
+	/**
+	 * Determine if the specified flags are set for this <code>Property</code>.
+	 *
+	 * @param  flags The flags to test
+	 *
+	 * @return      <code>true</code> if all of the specified flags are set,
+	 *              <code>false</code> otherwise
+	 */
+
+	public boolean hasFlags (final Flags... flags)
+	{
+		return Arrays.stream (flags).allMatch (f -> this.flags.contains (f));
+	}
+
+	/**
+	 * Determine if the specified flags are set for this <code>Property</code>.
+	 *
+	 * @param  flags The <code>Set</code> of flags to test
+	 *
+	 * @return      <code>true</code> if all of the specified flags are set,
+	 *              <code>false</code> otherwise
+	 */
+
+	public boolean hasFlags (final Set<Flags> flags)
+	{
+		return this.flags.containsAll (flags);
+	}
+
+	/**
+	 * Get the <code>Set</code> of <code>Flags</code> for this
+	 * <code>Property</code>.
+	 *
+	 * @return A <code>Set</code> containing the <code>Flags</code>
+	 */
+
+	public Set<Flags> getFlags ()
+	{
+		return Collections.unmodifiableSet (this.flags);
+	}
+
+	/**
 	 * Get the name of the <code>Property</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the
@@ -229,77 +299,6 @@ public final class Property<T>
 	public Class<T> getPropertyType ()
 	{
 		return this.type;
-	}
-
-	/**
-	 * Determine if the <code>Property</code> represents a single value or a
-	 * collection of values.
-	 *
-	 * @return <code>true</code> if the <code>Property</code> represents a
-	 *         collection of values, <code>false</code> if the
-	 *         <code>Property</code> represents a single value
-	 */
-
-	public boolean isMultivalued ()
-	{
-		return this.flags.contains (Flags.MULTIVALUED);
-	}
-
-	/**
-	 * Determine if the value represented by the <code>Property</code> may be
-	 * changed after the <code>Element</code> has been created.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> may be changed, <code>false</code>
-	 *         otherwise
-	 */
-
-	public boolean isMutable ()
-	{
-		return this.flags.contains (Flags.MUTABLE);
-	}
-
-	/**
-	 * Determine if the value represented by the property if a relationship
-	 * with another <code>Element</code> instance.  The <code>Property</code>
-	 * represents a relationship if type is a subclass of <code>Element</code>.
-	 *
-	 * @return <code>true</code> if the <code>Property</code> represents a
-	 *         relationship, <code>false</code> otherwise
-	 */
-
-	public boolean isRelationship ()
-	{
-		return Element.class.isAssignableFrom (this.type);
-	}
-
-	/**
-	 * Determine if the value represented by the <code>Property</code> is
-	 * required.  If the value is not required, then it may be
-	 * <code>null</code>.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> is required, <code>false</code> otherwise
-	 */
-
-	public boolean isRequired ()
-	{
-		return this.flags.contains (Flags.REQUIRED);
-	}
-
-	/**
-	 * Determine if the value represented by the <code>Property</code> is
-	 * required.  If the value is not recommended, then it may be
-	 * <code>null</code>.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> is recommended, <code>false</code>
-	 *         otherwise
-	 */
-
-	public boolean isRecommended ()
-	{
-		return this.flags.contains (Flags.RECOMMENDED);
 	}
 
 	/**

@@ -197,7 +197,7 @@ public final class Filter<T extends Element>
 
 		return this.values.keySet ()
 			.stream ()
-			.allMatch ((x) -> (x.isMultivalued ())
+			.allMatch ((x) -> (x.hasFlags (Property.Flags.MULTIVALUED))
 					? this.metadata.getValues (x, element).contains (this.values.get (x))
 					: this.values.get (x).equals (this.metadata.getValue (x, element)));
 	}

@@ -166,7 +166,7 @@ abstract class DataStoreProxy<T extends Element>
 
 		return this.creator.getProperties ()
 			.stream ()
-			.filter (Property::isRequired)
+			.filter (x -> x.hasFlags (Property.Flags.REQUIRED))
 			.map (x -> this.creator.getValue (x, element))
 			.allMatch (x -> x != null);
 	}

@@ -37,6 +37,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
@@ -123,7 +124,7 @@ final class ElementStore<T extends Element>
 			.filter (x -> x.isUnique ())
 			.filter (x -> x.getProperties ()
 					.stream ()
-					.allMatch (y -> ! y.isMutable ()))
+					.allMatch (y -> ! y.hasFlags (Property.Flags.MUTABLE)))
 			.collect (Collectors.toSet ());
 
 		this.generator = IdGenerator.getInstance (datastore, metadata.getElementType ());
