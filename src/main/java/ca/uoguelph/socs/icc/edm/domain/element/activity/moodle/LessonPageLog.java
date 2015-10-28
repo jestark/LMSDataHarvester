@@ -16,9 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
@@ -73,57 +70,6 @@ class LessonPageLog extends LogReference
 	protected LessonPageLog ()
 	{
 		this.subActivity = null;
-	}
-
-	/**
-	 * Compare two <code>LogReference</code> instances to determine if they are
-	 * equal.
-	 *
-	 * @param  obj The <code>LogReference</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>LogReference</code>
-	 *             instances are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof LessonPageLog)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-
-			ebuilder.appendSuper (super.equals (obj));
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>LogReference</code>
-	 * instance.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 2089;
-		final int mult = 563;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
 	}
 
 	/**

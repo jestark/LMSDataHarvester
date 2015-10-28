@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
@@ -50,8 +48,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  * <li>ActivitySource = moodle
  * <li>ActivityType   = feedback
  * <li>ClassName      = Feedback
- * <li>HashBase       = 3023
- * <li>HashMult       = 379
  * </ul>
  *
  * @author  James E. Stark
@@ -96,56 +92,6 @@ public class Feedback extends NamedActivity implements Serializable
 
 		this.grades = new HashSet<Grade> ();
 		this.subActivities = new ArrayList<SubActivity> ();
-	}
-
-	/**
-	 * Compare two <code>Activity</code> instances to determine if they are
-	 * equal.  The <code>Activity</code> instances are compared based upon
-	 * their <code>ActivityType</code>, the associated <code>Course</code> and
-	 * their names.
-	 *
-	 * @param  obj The <code>Activity</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>Activity</code> instances
-	 *             are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof Feedback)
-		{
-			result = super.equals (obj);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed based upon the <code>ActivityType</code>, the
-	 * <code>Course</code> and the name of the instance.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 3023;
-		final int mult = 379;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
 	}
 
 	/**

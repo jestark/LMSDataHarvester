@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <source name="moodle">
-	<activity name="Assign" type="assign" base="3001" mult="397"/>
+	<activity name="Assign" type="assign"/>
 
-	<activity name="Book" type="book" base="2003" mult="691">
-		<subactivity name="BookChapter" base="2011" mult="683">
-			<log name="BookChapterLog" base="2081" mult="577"/>
+	<activity name="Book" type="book">
+		<subactivity name="BookChapter">
+			<log name="BookChapterLog"/>
 		</subactivity>
 	</activity>
 
-	<activity name="Checklist" type="checklist" base="3011" mult="389"/>
+	<activity name="Checklist" type="checklist"/>
 
-	<activity name="Choice" type="choice" base="3019" mult="383"/>
+	<activity name="Choice" type="choice"/>
 
-	<activity name="Feedback" type="feedback" base="3023" mult="379"/>
+	<activity name="Feedback" type="feedback"/>
 
-	<activity name="Folder" type="folder" base="3037" mult="373"/>
+	<activity name="Folder" type="folder"/>
 
-	<activity name="Forum" type="forum" base="2017" mult="677">
-		<subactivity name="ForumDiscussion" base="2029" mult="661">
-			<subactivity name="ForumPost" base="2027" mult="673">
-				<log name="ForumPostLog" base="2087" mult="569"/>
+	<activity name="Forum" type="forum">
+		<subactivity name="ForumDiscussion">
+			<subactivity name="ForumPost">
+				<log name="ForumPostLog"/>
 			</subactivity>
-			<log name="ForumDiscussionLog" base="2083" mult="571"/>
+			<log name="ForumDiscussionLog"/>
 		</subactivity>
 	</activity>
 
-	<activity name="Label" type="label" base="3041" mult="367"/>
+	<activity name="Label" type="label"/>
 
-	<activity name="Lesson" type="lesson" base="2039" mult="601">
-		<subactivity name="LessonPage" base="2053" mult="599">
-			<log name="LessonPageLog" base="2089" mult="563"/>
+	<activity name="Lesson" type="lesson">
+		<subactivity name="LessonPage">
+			<log name="LessonPageLog"/>
 		</subactivity>
 	</activity>
 
-	<activity name="Page" type="page" base="3049" mult="359"/>
+	<activity name="Page" type="page"/>
 
-	<activity name="Quiz" type="quiz" base="3061" mult="353"/>
+	<activity name="Quiz" type="quiz"/>
 
-	<activity name="Resource" type="resource" base="3067" mult="349"/>
+	<activity name="Resource" type="resource"/>
 
-	<activity name="Scheduler" type="scheduler" base="3079" mult="347"/>
+	<activity name="Scheduler" type="scheduler"/>
 
-	<activity name="URL" type="url" base="3083" mult="337"/>
+	<activity name="URL" type="url"/>
 
-	<activity name="Wiki" type="wiki" base="2111" mult="547">
-		<subactivity name="WikiPage" base="2113" mult="541">
-			<log name="WikiPageLog" base="2129" mult="523"/>
+	<activity name="Wiki" type="wiki">
+		<subactivity name="WikiPage">
+			<log name="WikiPageLog"/>
 		</subactivity>
 	</activity>
 
-	<activity name="Workshop" type="workshop" base="2063" mult="593">
-		<subactivity name="WorkshopSubmission" base="2069" mult="587">
-			<log name="WorkshopSubmissionLog" base="2099" mult="557"/>
+	<activity name="Workshop" type="workshop">
+		<subactivity name="WorkshopSubmission">
+			<log name="WorkshopSubmissionLog"/>
 		</subactivity>
 	</activity>
 </source>

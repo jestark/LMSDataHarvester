@@ -24,8 +24,6 @@ import java.util.Collections;
 
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
@@ -49,8 +47,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  * <li>ActivityType   = forum
  * <li>ClassName      = ForumDiscussion
  * <li>ParentClass    = Forum
- * <li>HashBase       = 2029
- * <li>HashMult       = 661
  * </ul>
  *
  * @author  James E. Stark
@@ -100,56 +96,6 @@ public class ForumDiscussion extends SubActivity implements Serializable
 
 		this.references = new ArrayList<LogReference> ();
 		this.subActivities = new ArrayList<SubActivity> ();
-	}
-
-	/**
-	 * Compare two <code>SubActivity</code> instances to determine if they are
-	 * equal.  The <code>SubActivity</code> instances are compared based upon
-	 * their names and the parent <code>Activity</code>.
-	 *
-	 * @param  obj The <code>SubActivity</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>SubActivity</code>
-	 *             instances are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof ForumDiscussion)
-		{
-			result = super.equals (obj);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>SubActivity</code>
-	 * instance.  The hash code is computed based upon the parent
-	 * <code>Activity</code> and the name of the <code>SubActivity</code>
-	 * instance.
-	 *
-	 * @return The hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 2029;
-		final int mult = 661;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-
-		return hbuilder.toHashCode ();
 	}
 
 	/**
