@@ -18,9 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -193,23 +192,10 @@ public abstract class Enrolment extends Element
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof Enrolment)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getId (), ((Enrolment) obj).getId ());
-			ebuilder.append (this.getCourse (), ((Enrolment) obj).getCourse ());
-			ebuilder.append (this.getRole (), ((Enrolment) obj).getRole ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof Enrolment)
+			&& Objects.equals (this.getId (), ((Enrolment) obj).getId ())
+			&& Objects.equals (this.getCourse (), ((Enrolment) obj).getCourse ())
+			&& Objects.equals (this.getRole (), ((Enrolment) obj).getRole ());
 	}
 
 	/**
@@ -229,24 +215,11 @@ public abstract class Enrolment extends Element
 	@Override
 	public boolean equalsAll (final Element element)
 	{
-		boolean result = false;
-
-		if (element == this)
-		{
-			result = true;
-		}
-		else if (element instanceof Enrolment)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getCourse (), ((Enrolment) element).getCourse ());
-			ebuilder.append (this.getRole (), ((Enrolment) element).getRole ());
-			ebuilder.append (this.getFinalGrade (), ((Enrolment) element).getFinalGrade ());
-			ebuilder.append (this.isUsable (), ((Enrolment) element).isUsable ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (element == this) ? true : (element instanceof Enrolment)
+			&& Objects.equals (this.getCourse (), ((Enrolment) element).getCourse ())
+			&& Objects.equals (this.getRole (), ((Enrolment) element).getRole ())
+			&& Objects.equals (this.getFinalGrade (), ((Enrolment) element).getFinalGrade ())
+			&& Objects.equals (this.isUsable (), ((Enrolment) element).isUsable ());
 	}
 
 	/**
@@ -267,22 +240,9 @@ public abstract class Enrolment extends Element
 	@Override
 	public boolean equalsUnique (final Element element)
 	{
-		boolean result = false;
-
-		if (element == this)
-		{
-			result = true;
-		}
-		else if (element instanceof Enrolment)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getCourse (), ((Enrolment) element).getCourse ());
-			ebuilder.append (this.getRole (), ((Enrolment) element).getRole ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (element == this) ? true : (element instanceof Enrolment)
+			&& Objects.equals (this.getCourse (), ((Enrolment) element).getCourse ())
+			&& Objects.equals (this.getRole (), ((Enrolment) element).getRole ());
 	}
 
 
@@ -297,15 +257,7 @@ public abstract class Enrolment extends Element
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1091;
-		final int mult = 907;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getId ());
-		hbuilder.append (this.getCourse ());
-		hbuilder.append (this.getRole ());
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (this.getId (), this.getCourse (), this.getRole ());
 	}
 
 	/**

@@ -17,9 +17,8 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -162,21 +161,8 @@ public abstract class User extends Element
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof User)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getUsername (), ((User) obj).getUsername ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof User)
+			&& Objects.equals (this.getUsername (), ((User) obj).getUsername ());
 	}
 
 	/**
@@ -196,23 +182,10 @@ public abstract class User extends Element
 	@Override
 	public boolean equalsAll (final Element element)
 	{
-		boolean result = false;
-
-		if (element == this)
-		{
-			result = true;
-		}
-		else if (element instanceof User)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getUsername (), ((User) element).getUsername ());
-			ebuilder.append (this.getFirstname (), ((User) element).getFirstname ());
-			ebuilder.append (this.getLastname (), ((User) element).getLastname ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (element == this) ? true : (element instanceof User)
+			&& Objects.equals (this.getUsername (), ((User) element).getUsername ())
+			&& Objects.equals (this.getFirstname (), ((User) element).getFirstname ())
+			&& Objects.equals (this.getLastname (), ((User) element).getLastname ());
 	}
 
 	/**
@@ -226,13 +199,7 @@ public abstract class User extends Element
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1063;
-		final int mult = 929;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getUsername ());
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (this.getUsername ());
 	}
 
 	/**

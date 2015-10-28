@@ -18,9 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -164,23 +163,10 @@ public abstract class Course extends Element
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof Course)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getName (), ((Course) obj).getName ());
-			ebuilder.append (this.getYear (), ((Course) obj).getYear ());
-			ebuilder.append (this.getSemester (), ((Course) obj).getSemester ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof Course)
+			&& Objects.equals (this.getName (), ((Course) obj).getName ())
+			&& Objects.equals (this.getYear (), ((Course) obj).getYear ())
+			&& Objects.equals (this.getSemester (), ((Course) obj).getSemester ());
 	}
 
 	/**
@@ -194,15 +180,7 @@ public abstract class Course extends Element
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1061;
-		final int mult = 937;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getName ());
-		hbuilder.append (this.getYear ());
-		hbuilder.append (this.getSemester ());
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (this.getName (), this.getYear (), this.getSemester ());
 	}
 
 	/**

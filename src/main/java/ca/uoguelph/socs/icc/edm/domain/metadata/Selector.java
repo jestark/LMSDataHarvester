@@ -20,11 +20,10 @@ import java.util.Set;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -123,23 +122,10 @@ public final class Selector
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof Selector)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.name, ((Selector) obj).name);
-			ebuilder.append (this.unique, ((Selector) obj).unique);
-			ebuilder.append (this.properties, ((Selector) obj).properties);
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof Selector)
+			&& Objects.equals (this.name, ((Selector) obj).name)
+			&& Objects.equals (this.unique, ((Selector) obj).unique)
+			&& Objects.equals (this.properties, ((Selector) obj).properties);
 	}
 
 	/**
@@ -151,15 +137,7 @@ public final class Selector
 	@Override
 	public int hashCode ()
 	{
-		final int base = 887;
-		final int mult = 7;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.name);
-		hbuilder.append (this.unique);
-		hbuilder.append (this.properties);
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (this.name, this.unique, this.properties);
 	}
 
 	/**

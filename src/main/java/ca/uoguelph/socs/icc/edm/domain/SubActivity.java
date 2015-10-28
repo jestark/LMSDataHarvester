@@ -21,9 +21,8 @@ import java.util.Map;
 import java.util.Set;
 
 import java.util.HashMap;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -181,22 +180,9 @@ public abstract class SubActivity extends ParentActivity
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof SubActivity)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getName (), ((SubActivity) obj).getName ());
-			ebuilder.append (this.getParent (), ((SubActivity) obj).getParent ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof SubActivity)
+			&& Objects.equals (this.getName (), ((SubActivity) obj).getName ())
+			&& Objects.equals (this.getParent (), ((SubActivity) obj).getParent ());
 	}
 
 	/**
@@ -211,14 +197,7 @@ public abstract class SubActivity extends ParentActivity
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1123;
-		final int mult = 859;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getName ());
-		hbuilder.append (this.getParent ());
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (this.getName (), this.getParent ());
 	}
 
 	/**

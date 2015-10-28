@@ -22,9 +22,8 @@ import java.util.List;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
@@ -118,23 +117,9 @@ public class MoodleActivityReference extends ActivityReference implements Serial
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof MoodleActivityReference)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-
-			ebuilder.appendSuper (super.equals (obj));
-			ebuilder.append (this.instanceId, ((MoodleActivityReference) obj).getInstanceId ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof MoodleActivityReference)
+			&& super.equals (obj)
+			&& Objects.equals (this.instanceId, ((MoodleActivityReference) obj).getInstanceId ());
 	}
 
 	/**
@@ -148,14 +133,7 @@ public class MoodleActivityReference extends ActivityReference implements Serial
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1013;
-		final int mult = 991;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.appendSuper (super.hashCode ());
-		hbuilder.append (this.getInstanceId ());
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (super.hashCode (), this.getInstanceId ());
 	}
 
 	/**

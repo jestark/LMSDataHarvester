@@ -18,9 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Set;
 import java.util.EnumSet;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -173,22 +172,9 @@ public final class Property<T>
 	@Override
 	public boolean equals (final Object property)
 	{
-		boolean result = false;
-
-		if (property == this)
-		{
-			result = true;
-		}
-		else if (property instanceof Property)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.name, ((Property) property).getName ());
-			ebuilder.append (this.type, ((Property) property).getPropertyType ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (property == this) ? true : (property instanceof Property)
+			&& Objects.equals (this.name, ((Property) property).getName ())
+			&& Objects.equals (this.type, ((Property) property).getPropertyType ());
 	}
 
 	/**
@@ -200,14 +186,7 @@ public final class Property<T>
 	@Override
 	public int hashCode ()
 	{
-		final int base = 883;
-		final int mult = 11;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.name);
-		hbuilder.append (this.type);
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (this.name, this.type);
 	}
 
 	/**

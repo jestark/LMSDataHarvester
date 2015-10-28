@@ -19,9 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.io.Serializable;
 
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -99,23 +98,9 @@ public abstract class ActivityReference extends Element implements Serializable
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof ActivityReference)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-
-			ebuilder.append (this.getType (), ((ActivityReference) obj).getType ());
-			ebuilder.append (this.getCourse (), ((ActivityReference) obj).getCourse ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof ActivityReference)
+			&& Objects.equals (this.getType (), ((ActivityReference) obj).getType ())
+			&& Objects.equals (this.getCourse (), ((ActivityReference) obj).getCourse ());
 	}
 
 	/**
@@ -129,14 +114,7 @@ public abstract class ActivityReference extends Element implements Serializable
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1039;
-		final int mult = 953;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getType ());
-		hbuilder.append (this.getCourse ());
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (this.getType (), this.getCourse ());
 	}
 
 	/**

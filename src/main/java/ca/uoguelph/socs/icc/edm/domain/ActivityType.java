@@ -17,9 +17,8 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -150,22 +149,23 @@ public abstract class ActivityType extends Element
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
+		return (obj == this) ? true : (obj instanceof ActivityType)
+			&& Objects.equals (this.getName (), ((ActivityType) obj).getName ())
+			&& Objects.equals (this.getSource (), ((ActivityType) obj).getSource ());
+	}
 
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof ActivityType)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getName (), ((ActivityType) obj).getName ());
-			ebuilder.append (this.getSource (), ((ActivityType) obj).getSource ());
+	/**
+	 * Compute a <code>hashCode</code> of the <code>ActivityType</code>
+	 * instance.  The hash code is computed based upon the associated
+	 * <code>ActivitySource</code> and name of the instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
 
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+	@Override
+	public int hashCode ()
+	{
+		return Objects.hash (this.getName (), this.getSource ());
 	}
 
 	/**
@@ -185,27 +185,6 @@ public abstract class ActivityType extends Element
 		builder.append ("name", this.getName ());
 
 		return builder.toString ();
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>ActivityType</code>
-	 * instance.  The hash code is computed based upon the associated
-	 * <code>ActivitySource</code> and name of the instance.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		final int base = 1009;
-		final int mult = 997;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getName ());
-		hbuilder.append (this.getSource ());
-
-		return hbuilder.toHashCode ();
 	}
 
 	/**

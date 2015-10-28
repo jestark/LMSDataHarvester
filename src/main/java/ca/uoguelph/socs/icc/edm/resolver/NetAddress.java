@@ -17,11 +17,8 @@
 package ca.uoguelph.socs.icc.edm.resolver;
 
 import java.math.BigInteger;
-
 import java.net.InetAddress;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.util.Objects;
 
 /**
  * Generic representation of an Internet Protocol addresses and networks.
@@ -46,20 +43,8 @@ abstract class NetAddress implements Comparable<NetAddress>
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof NetAddress)
-		{
-			result = new EqualsBuilder ()
-				.append (this.getAddress (), ((NetAddress) obj).getAddress ())
-				.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof NetAddress)
+			&& Objects.equals (this.getAddress (), ((NetAddress) obj).getAddress ());
 	}
 
 	/**
@@ -71,9 +56,7 @@ abstract class NetAddress implements Comparable<NetAddress>
 	@Override
 	public int hashCode ()
 	{
-		return new HashCodeBuilder (3, 5)
-			.append (this.getAddress ())
-			.toHashCode ();
+		return Objects.hash (this.getAddress ());
 	}
 
 	/**

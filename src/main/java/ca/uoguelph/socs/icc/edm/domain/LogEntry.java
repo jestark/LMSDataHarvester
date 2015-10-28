@@ -17,9 +17,8 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -188,25 +187,12 @@ public abstract class LogEntry extends Element
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof LogEntry)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getAction (), ((LogEntry) obj).getAction ());
-			ebuilder.append (this.getActivity (), ((LogEntry) obj).getActivity ());
-			ebuilder.append (this.getEnrolment (), ((LogEntry) obj).getEnrolment ());
-			ebuilder.append (this.getNetwork (), ((LogEntry) obj).getNetwork ());
-			ebuilder.append (this.getTime (), ((LogEntry) obj).getTime ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof LogEntry)
+			&& Objects.equals (this.getAction (), ((LogEntry) obj).getAction ())
+			&& Objects.equals (this.getActivity (), ((LogEntry) obj).getActivity ())
+			&& Objects.equals (this.getEnrolment (), ((LogEntry) obj).getEnrolment ())
+			&& Objects.equals (this.getNetwork (), ((LogEntry) obj).getNetwork ())
+			&& Objects.equals (this.getTime (), ((LogEntry) obj).getTime ());
 	}
 
 	/**
@@ -227,17 +213,7 @@ public abstract class LogEntry extends Element
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1093;
-		final int mult = 887;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getAction ());
-		hbuilder.append (this.getActivity ());
-		hbuilder.append (this.getEnrolment ());
-		hbuilder.append (this.getNetwork ());
-		hbuilder.append (this.getTime ());
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (this.getAction (), this.getActivity (), this.getEnrolment (), this.getNetwork (), this.getTime ());
 	}
 
 	/**

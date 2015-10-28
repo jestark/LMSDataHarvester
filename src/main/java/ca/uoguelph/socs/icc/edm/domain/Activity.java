@@ -23,9 +23,8 @@ import java.util.List;
 import java.util.Set;
 
 import java.util.HashMap;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -282,20 +281,8 @@ public abstract class Activity extends ParentActivity implements Serializable
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof Activity)
-		{
-			result = new EqualsBuilder ()
-				.append (this.getReference (), ((Activity) obj).getReference ())
-				.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof Activity)
+				&& Objects.equals (this.getReference (), ((Activity) obj).getReference ());
 	}
 
 	/**
@@ -309,12 +296,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1013;
-		final int mult = 983;
-
-		return new HashCodeBuilder (base, mult)
-			.append (this.getReference ())
-			.hashCode ();
+		return Objects.hash (this.getReference ());
 	}
 
 	/**

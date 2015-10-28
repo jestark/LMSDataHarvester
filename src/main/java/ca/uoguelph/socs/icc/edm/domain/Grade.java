@@ -16,8 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.util.Objects;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -149,22 +148,9 @@ public abstract class Grade extends Element
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof Grade)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getActivity (), ((Grade) obj).getActivity ());
-			ebuilder.append (this.getEnrolment (), ((Grade) obj).getEnrolment ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof Grade)
+			&& Objects.equals (this.getActivity (), ((Grade) obj).getActivity ())
+			&& Objects.equals (this.getEnrolment (), ((Grade) obj).getEnrolment ());
 	}
 
 	/**
@@ -184,23 +170,10 @@ public abstract class Grade extends Element
 	@Override
 	public boolean equalsAll (final Element element)
 	{
-		boolean result = false;
-
-		if (element == this)
-		{
-			result = true;
-		}
-		else if (element instanceof Grade)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getActivity (), ((Grade) element).getActivity ());
-			ebuilder.append (this.getEnrolment (), ((Grade) element).getEnrolment ());
-			ebuilder.append (this.getGrade (), ((Grade) element).getGrade ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (element == this) ? true : (element instanceof Grade)
+			&& Objects.equals (this.getActivity (), ((Grade) element).getActivity ())
+			&& Objects.equals (this.getEnrolment (), ((Grade) element).getEnrolment ())
+			&& Objects.equals (this.getGrade (), ((Grade) element).getGrade ());
 	}
 
 	/**
@@ -214,14 +187,7 @@ public abstract class Grade extends Element
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1049;
-		final int mult = 947;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getActivity ());
-		hbuilder.append (this.getEnrolment ());
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (this.getActivity (), this.getEnrolment ());
 	}
 
 	/**

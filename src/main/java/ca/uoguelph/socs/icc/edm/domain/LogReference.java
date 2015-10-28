@@ -20,9 +20,8 @@ import java.io.Serializable;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -133,23 +132,9 @@ public abstract class LogReference extends Element implements Serializable
 	@Override
 	public boolean equals (Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof LogReference)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-
-			ebuilder.append (this.getEntry (), ((LogReference) obj).getEntry ());
-			ebuilder.append (this.getSubActivity (), ((LogReference) obj).getSubActivity ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof LogReference)
+			&& Objects.equals (this.getEntry (), ((LogReference) obj).getEntry ())
+			&& Objects.equals (this.getSubActivity (), ((LogReference) obj).getSubActivity ());
 	}
 
 	/**
@@ -162,15 +147,7 @@ public abstract class LogReference extends Element implements Serializable
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1109;
-		final int mult = 877;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-
-		hbuilder.append (this.getEntry ());
-		hbuilder.append (this.getSubActivity ());
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (this.getEntry (), this.getSubActivity ());
 	}
 
 	/**

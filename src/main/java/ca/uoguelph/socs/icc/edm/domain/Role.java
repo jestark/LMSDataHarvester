@@ -16,8 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.util.Objects;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -137,21 +137,8 @@ public abstract class Role extends Element
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof Role)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getName (), ((Role) obj).getName ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof Role)
+			&& Objects.equals (this.getName (), ((Role) obj).getName ());
 	}
 
 	/**
@@ -164,13 +151,7 @@ public abstract class Role extends Element
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1069;
-		final int mult = 919;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getName ());
-
-		return hbuilder.toHashCode ();
+		return Objects.hash (this.getName ());
 	}
 
 	/**

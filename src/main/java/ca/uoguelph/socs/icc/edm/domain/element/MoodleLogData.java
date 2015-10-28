@@ -19,8 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;

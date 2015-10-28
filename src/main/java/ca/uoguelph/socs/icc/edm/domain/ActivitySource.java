@@ -17,9 +17,8 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Set;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -149,21 +148,8 @@ public abstract class ActivitySource extends Element
 	@Override
 	public boolean equals (final Object obj)
 	{
-		boolean result = false;
-
-		if (obj == this)
-		{
-			result = true;
-		}
-		else if (obj instanceof ActivitySource)
-		{
-			EqualsBuilder ebuilder = new EqualsBuilder ();
-			ebuilder.append (this.getName (), ((ActivitySource) obj).getName ());
-
-			result = ebuilder.isEquals ();
-		}
-
-		return result;
+		return (obj == this) ? true : (obj instanceof ActivitySource)
+			&& Objects.equals (this.getName (), ((ActivitySource) obj).getName ());
 	}
 
 	/**
@@ -177,13 +163,7 @@ public abstract class ActivitySource extends Element
 	@Override
 	public int hashCode ()
 	{
-		final int base = 1097;
-		final int mult = 883;
-
-		HashCodeBuilder hbuilder = new HashCodeBuilder (base, mult);
-		hbuilder.append (this.getName ());
-
-		return hbuilder.toHashCode ();
+		return Objects.hashCode (this.getName ());
 	}
 
 	/**
