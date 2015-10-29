@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Objects;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
@@ -178,6 +178,22 @@ public abstract class Enrolment extends Element
 	}
 
 	/**
+	 * Template method to create and initialize a <code>ToStringHelper</code>.
+	 *
+	 * @return The <code>ToStringHelper</code>
+	 */
+
+	@Override
+	protected MoreObjects.ToStringHelper toStringHelper ()
+	{
+		return super.toStringHelper ()
+			.add ("usable", this.isUsable ())
+			.add ("finalgrade", this.getFinalGrade ())
+			.add ("course", this.getCourse ())
+			.add ("role", this.getRole ());
+	}
+
+	/**
 	 * Compare two <code>Enrolment</code> instances to determine if they are
 	 * equal.  The <code>Enrolment</code> instances are compared based upon the
 	 * <code>Course</code>, <code>Role</code> and <code>DataStore</code> id.
@@ -271,15 +287,8 @@ public abstract class Enrolment extends Element
 	@Override
 	public String toString ()
 	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("id", this.getId ());
-		builder.append ("usable", this.isUsable ());
-		builder.append ("finalgrade", this.getFinalGrade ());
-		builder.append ("course", this.getCourse ());
-		builder.append ("role", this.getRole ());
-
-		return builder.toString ();
+		return this.toStringHelper ()
+			.toString ();
 	}
 
 	/**

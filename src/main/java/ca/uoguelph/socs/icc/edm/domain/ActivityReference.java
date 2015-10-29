@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
@@ -85,6 +85,20 @@ public abstract class ActivityReference extends Element implements Serializable
 	}
 
 	/**
+	 * Template method to create and initialize a <code>ToStringHelper</code>.
+	 *
+	 * @return The <code>ToStringHelper</code>
+	 */
+
+	@Override
+	protected MoreObjects.ToStringHelper toStringHelper ()
+	{
+		return super.toStringHelper ()
+			.add ("type", this.getType ())
+			.add ("course", this.getCourse ());
+	}
+
+	/**
 	 * Compare two <code>Activity</code> instances to determine if they are
 	 * equal.
 	 *
@@ -128,12 +142,8 @@ public abstract class ActivityReference extends Element implements Serializable
 	@Override
 	public String toString ()
 	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("type", this.getType ());
-		builder.append ("course", this.getCourse ());
-
-		return builder.toString ();
+		return this.toStringHelper ()
+			.toString ();
 	}
 
 	/**

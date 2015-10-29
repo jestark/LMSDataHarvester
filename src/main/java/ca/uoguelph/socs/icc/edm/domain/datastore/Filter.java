@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -224,11 +224,9 @@ public final class Filter<T extends Element>
 	@Override
 	public String toString ()
 	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("selector", this.selector);
-		builder.append ("values", this.values);
-
-		return builder.toString ();
+		return MoreObjects.toStringHelper (this)
+			.add ("selector", this.selector)
+			.add ("values", this.values)
+			.toString ();
 	}
 }

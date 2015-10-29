@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Set;
 import java.util.Objects;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
@@ -147,6 +147,21 @@ public abstract class User extends Element
 	}
 
 	/**
+	 * Template method to create and initialize a <code>ToStringHelper</code>.
+	 *
+	 * @return The <code>ToStringHelper</code>
+	 */
+
+	@Override
+	protected MoreObjects.ToStringHelper toStringHelper ()
+	{
+		return super.toStringHelper ()
+			.add ("firstname", this.getFirstname ())
+			.add ("lastname", this.getLastname ())
+			.add ("username", this.getUsername ());
+	}
+
+	/**
 	 * Compare two <code>User</code> instances to determine if they are
 	 * equal.  The <code>User</code> instances are compared based upon the
 	 * this ID number and the username.
@@ -213,13 +228,8 @@ public abstract class User extends Element
 	@Override
 	public String toString()
 	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("firstname", this.getFirstname ());
-		builder.append ("lastname", this.getLastname ());
-		builder.append ("username", this.getUsername ());
-
-		return builder.toString ();
+		return this.toStringHelper ()
+			.toString ();
 	}
 
 	/**

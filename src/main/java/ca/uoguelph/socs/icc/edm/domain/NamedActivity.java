@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Objects;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
@@ -118,6 +118,19 @@ public abstract class NamedActivity extends Activity
 	}
 
 	/**
+	 * Template method to create and initialize a <code>ToStringHelper</code>.
+	 *
+	 * @return The <code>ToStringHelper</code>
+	 */
+
+	@Override
+	protected MoreObjects.ToStringHelper toStringHelper ()
+	{
+		return super.toStringHelper ()
+			.add ("name", this.getName ());
+	}
+
+	/**
 	 * Compare two <code>NamedActivity</code> instances to determine if they are
 	 * equal.  The <code>NamedActivity</code> instances are compared based upon
 	 * their <code>ActivityType</code>, the associated <code>Course</code> and
@@ -164,12 +177,8 @@ public abstract class NamedActivity extends Activity
 	@Override
 	public String toString ()
 	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.appendSuper (super.toString ());
-		builder.append ("name", this.getName ());
-
-		return builder.toString ();
+		return this.toStringHelper ()
+				.toString ();
 	}
 
 	/**

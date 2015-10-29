@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * A representation of a semester.  The semesters are four months in length
  * and span the entire calendar year without and breaks.  Semesters begin
@@ -56,7 +58,7 @@ public enum Semester
 	 * @return      The <code>Semester</code> containing the specified date
 	 */
 
-	public static Semester getSemesterByDate (Date date)
+	public static Semester getSemesterByDate (final Date date)
 	{
 		Calendar cal = Calendar.getInstance ();
 		cal.setTime (date);
@@ -80,7 +82,7 @@ public enum Semester
 	 * @param  name  The name of the <code>Semester</code>, not null
 	 */
 
-	private Semester (int start, int end, String name)
+	private Semester (final int start, final int end, final String name)
 	{
 		this.start = start;
 		this.end = end;
@@ -139,6 +141,8 @@ public enum Semester
 	@Override
 	public String toString ()
 	{
-		return this.name;
+		return MoreObjects.toStringHelper (this)
+			.add ("name", this.name)
+			.toString ();
 	}
 }

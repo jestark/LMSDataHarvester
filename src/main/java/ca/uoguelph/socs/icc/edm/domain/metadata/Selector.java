@@ -24,7 +24,7 @@ import java.util.Objects;
 
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -189,12 +189,10 @@ public final class Selector
 	@Override
 	public String toString ()
 	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("name", this.name);
-		builder.append ("unique", this.unique);
-		builder.append ("properties", this.properties);
-
-		return builder.toString ();
+		return MoreObjects.toStringHelper (this)
+			.add ("name", this.name)
+			.add ("unique", this.unique)
+			.add ("properties", this.properties)
+			.toString ();
 	}
 }

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
@@ -145,10 +145,9 @@ public class MoodleActivityReference extends ActivityReference
 	@Override
 	public String toString ()
 	{
-		return new ToStringBuilder (this)
-				.appendSuper (super.toString ())
-				.append ("instanceId", this.instanceId)
-				.toString ();
+		return this.toStringHelper ()
+			.add ("instanceId", this.instanceId)
+			.toString ();
 	}
 
 	/**

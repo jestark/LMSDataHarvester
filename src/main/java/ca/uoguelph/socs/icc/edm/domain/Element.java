@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import com.google.common.base.MoreObjects;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
@@ -69,6 +71,18 @@ public abstract class Element
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.build ();
+	}
+
+	/**
+	 * Template method to create and initialize a <code>ToStringHelper</code>.
+	 *
+	 * @return The <code>ToStringHelper</code>
+	 */
+
+	protected MoreObjects.ToStringHelper toStringHelper ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("id", this.getId ());
 	}
 
 	/**

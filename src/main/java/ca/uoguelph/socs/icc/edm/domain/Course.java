@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Objects;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
@@ -149,6 +149,21 @@ public abstract class Course extends Element
 	}
 
 	/**
+	 * Template method to create and initialize a <code>ToStringHelper</code>.
+	 *
+	 * @return The <code>ToStringHelper</code>
+	 */
+
+	@Override
+	protected MoreObjects.ToStringHelper toStringHelper ()
+	{
+		return super.toStringHelper ()
+			.add ("name", this.getName ())
+			.add ("semester", this.getSemester ())
+			.add ("year", this.getYear ());
+	}
+
+	/**
 	 * Compare two <code>Course</code> instances to determine if they are
 	 * equal.  The <code>Course</code> instances are compared based upon their
 	 * names, as well as their year and <code>Semester</code> of offering.
@@ -194,13 +209,8 @@ public abstract class Course extends Element
 	@Override
 	public String toString ()
 	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("name", this.getName ());
-		builder.append ("semester", this.getSemester ());
-		builder.append ("year", this.getYear ());
-
-		return builder.toString ();
+		return this.toStringHelper ()
+			.toString ();
 	}
 
 	/**

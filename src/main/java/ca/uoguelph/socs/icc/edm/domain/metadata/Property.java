@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.EnumSet;
 import java.util.Objects;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -280,12 +280,10 @@ public final class Property<T>
 	@Override
 	public String toString ()
 	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("name", this.name);
-		builder.append ("type", this.type);
-		builder.append ("flags", this.flags);
-
-		return builder.toString ();
+		return MoreObjects.toStringHelper (this)
+			.add ("name", this.name)
+			.add ("type", this.type)
+			.add ("flags", this.flags)
+			.toString ();
 	}
 }

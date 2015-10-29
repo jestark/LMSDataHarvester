@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.Objects;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.MemDataStore;
@@ -276,6 +276,19 @@ public abstract class Activity extends ParentActivity implements Serializable
 	}
 
 	/**
+	 * Template method to create and initialize a <code>ToStringHelper</code>.
+	 *
+	 * @return The <code>ToStringHelper</code>
+	 */
+
+	@Override
+	protected MoreObjects.ToStringHelper toStringHelper ()
+	{
+		return super.toStringHelper ()
+			.add ("reference", this.getReference ());
+	}
+
+	/**
 	 * Compare two <code>Activity</code> instances to determine if they are
 	 * equal.
 	 *
@@ -318,9 +331,8 @@ public abstract class Activity extends ParentActivity implements Serializable
 	@Override
 	public String toString ()
 	{
-		return new ToStringBuilder (this)
-				.append ("reference", this.getReference ())
-				.toString ();
+		return this.toStringHelper ()
+			.toString ();
 	}
 
 	/**

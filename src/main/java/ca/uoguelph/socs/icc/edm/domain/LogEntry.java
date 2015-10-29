@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
@@ -171,6 +171,24 @@ public abstract class LogEntry extends Element implements Serializable
 	}
 
 	/**
+	 * Template method to create and initialize a <code>ToStringHelper</code>.
+	 *
+	 * @return The <code>ToStringHelper</code>
+	 */
+
+	@Override
+	protected MoreObjects.ToStringHelper toStringHelper ()
+	{
+		return super.toStringHelper ()
+			.add ("enrolment", this.getEnrolment ())
+			.add ("action", this.getAction ())
+			.add ("activity", this.getActivity ())
+			.add ("network", this.getNetwork ())
+			.add ("time", this.getTime ())
+			.add ("subactivity", this.getSubActivity ());
+	}
+
+	/**
 	 * Compare two <code>LogEntry</code> instances and determine if they are
 	 * equal.
 	 * <p>
@@ -232,16 +250,8 @@ public abstract class LogEntry extends Element implements Serializable
 	@Override
 	public String toString ()
 	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("enrolment", this.getEnrolment ());
-		builder.append ("action", this.getAction ());
-		builder.append ("activity", this.getActivity ());
-		builder.append ("network", this.getNetwork ());
-		builder.append ("time", this.getTime ());
-		builder.append ("subactivity", this.getSubActivity ());
-
-		return builder.toString ();
+		return this.toStringHelper ()
+			.toString ();
 	}
 
 	/**

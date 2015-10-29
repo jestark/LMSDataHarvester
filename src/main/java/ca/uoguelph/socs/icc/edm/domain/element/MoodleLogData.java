@@ -18,7 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
@@ -546,18 +546,16 @@ public class MoodleLogData extends LogEntry
 	@Override
 	public String toString ()
 	{
-		ToStringBuilder builder = new ToStringBuilder (this);
-
-		builder.append ("action", this.action);
-		builder.append ("activityId", this.activityId);
-		builder.append ("course", this.course);
-		builder.append ("module", this.module);
-		builder.append ("userId", this.userId);
-		builder.append ("time", this.time);
-		builder.append ("ipAddress", this.ipAddress);
-		builder.append ("info", this.info);
-		builder.append ("url", this.url);
-
-		return builder.toString ();
+		return MoreObjects.toStringHelper (this)
+			.add ("action", this.action)
+			.add ("activityId", this.activityId)
+			.add ("course", this.course)
+			.add ("module", this.module)
+			.add ("userId", this.userId)
+			.add ("time", this.time)
+			.add ("ipAddress", this.ipAddress)
+			.add ("info", this.info)
+			.add ("url", this.url)
+			.toString ();
 	}
 }
