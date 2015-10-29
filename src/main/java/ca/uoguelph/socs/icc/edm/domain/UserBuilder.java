@@ -126,7 +126,7 @@ public final class UserBuilder implements Builder<User>
 
 		if ((this.oldUser == null)
 				|| (! this.userProxy.contains (this.oldUser))
-				|| (this.oldUser.getUsername () != this.username))
+				|| (! this.username.equals (this.oldUser.getUsername ())))
 		{
 			User result = this.userProxy.create ();
 			result.setId (this.id);
@@ -273,7 +273,7 @@ public final class UserBuilder implements Builder<User>
 
 	public String getLastname ()
 	{
-		return this.lastname = lastname;
+		return this.lastname;
 	}
 
 	/**
