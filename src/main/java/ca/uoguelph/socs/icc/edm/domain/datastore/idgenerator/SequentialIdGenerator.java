@@ -74,7 +74,7 @@ public class SequentialIdGenerator extends IdGenerator
 	@Override
 	public Long nextId ()
 	{
-		Long result = new Long (this.currentid);
+		Long result = Long.valueOf (this.currentid);
 
 		this.currentid += 1;
 

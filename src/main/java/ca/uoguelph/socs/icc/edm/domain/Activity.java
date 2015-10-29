@@ -120,6 +120,22 @@ public abstract class Activity extends ParentActivity implements Serializable
 			.build ();
 	}
 
+	private static synchronized final void initDataStore ()
+	{
+		if (Activity.store == null)
+		{
+			Profile activityProf = new ProfileBuilder ()
+				.setName ("Activity")
+				.setMutable (true)
+				.setElementClass (ActivitySource.class, ActivitySourceData.class)
+				.setElementClass (ActivityType.class, ActivityTypeData.class)
+				.setGenerator (Element.class, SequentialIdGenerator.class)
+				.build ();
+
+			Activity.store = new DomainModel (DataStore.getInstance (MemDataStore.class, activityProf));
+		}
+	}
+
 	/**
 	 * Determine if an <code>Activity</code> implementation class has been
 	 * registered for the specified <code>ActivityType</code>.
@@ -176,15 +192,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 
 		if (Activity.store == null)
 		{
-			Profile activityProf = new ProfileBuilder ()
-				.setName ("Activity")
-				.setMutable (true)
-				.setElementClass (ActivitySource.class, ActivitySourceData.class)
-				.setElementClass (ActivityType.class, ActivityTypeData.class)
-				.setGenerator (Element.class, SequentialIdGenerator.class)
-				.build ();
-
-			Activity.store = new DomainModel (DataStore.getInstance (MemDataStore.class, activityProf));
+			Activity. initDataStore ();
 		}
 
 		Activity.store.getTransaction ().begin ();

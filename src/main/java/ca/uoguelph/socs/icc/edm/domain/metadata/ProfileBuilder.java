@@ -181,7 +181,7 @@ public final class ProfileBuilder
 
 	public boolean hasElementClass (final Class<? extends Element> type)
 	{
-		if (type != null)
+		if (type == null)
 		{
 			throw new NullPointerException ();
 		}

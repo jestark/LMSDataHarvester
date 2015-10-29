@@ -223,15 +223,15 @@ public final class TranslationTable
 	{
 		this.log.trace ("removeAll: datastore={}", datastore);
 
-		Iterator<Element> i = this.table.keySet ().iterator ();
+		Iterator<Map.Entry<Element, Map<DataStore, Element>>> i = this.table.entrySet ().iterator ();
 
 		while (i.hasNext ())
 		{
-			Element key = i.next ();
+			Map.Entry<Element,Map<DataStore,Element>> key = i.next ();
 
-			if (key.getDataStore () == datastore)
+			if (key.getKey ().getDataStore () == datastore)
 			{
-				this.table.get (key).remove (datastore);
+				key.getValue ().remove (datastore);
 				i.remove ();
 			}
 		}

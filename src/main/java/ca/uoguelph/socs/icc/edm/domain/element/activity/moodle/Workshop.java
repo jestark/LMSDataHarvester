@@ -54,7 +54,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  * @version 1.3
  */
 
-public class Workshop extends NamedActivity implements Serializable
+public class Workshop extends NamedActivity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;

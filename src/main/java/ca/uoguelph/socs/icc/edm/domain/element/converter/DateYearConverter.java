@@ -55,12 +55,12 @@ public class DateYearConverter implements AttributeConverter<Integer, Long>
 	 */
 
 	@Override
-	public Long convertToDatabaseColumn(Integer year)
+	public Long convertToDatabaseColumn (Integer year)
 	{
 		Calendar calendar = Calendar.getInstance ();
 		calendar.set (year, Calendar.JANUARY, 1, 0, 0, 0);
 
-		return new Long (calendar.getTimeInMillis () / 1000);
+		return Long.valueOf (calendar.getTimeInMillis () / 1000);
 	}
 
 	/**
@@ -72,11 +72,11 @@ public class DateYearConverter implements AttributeConverter<Integer, Long>
 	 */
 
 	@Override
-	public Integer convertToEntityAttribute(Long seconds)
+	public Integer convertToEntityAttribute (Long seconds)
 	{
 		Calendar calendar = Calendar.getInstance ();
 		calendar.setTimeInMillis (seconds * 1000);
 
-		return new Integer (calendar.get (Calendar.YEAR));
+		return Integer.valueOf (calendar.get (Calendar.YEAR));
 	}
 }

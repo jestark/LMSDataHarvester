@@ -53,7 +53,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  * @version 1.3
  */
 
-public class ForumPost extends SubActivity implements Serializable
+public class ForumPost extends SubActivity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;

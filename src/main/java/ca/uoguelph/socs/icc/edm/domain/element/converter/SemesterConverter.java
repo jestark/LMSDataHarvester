@@ -65,7 +65,7 @@ public class SemesterConverter implements AttributeConverter<Semester, Long>
 		Calendar calendar = Calendar.getInstance ();
 		calendar.set (1970, semester.getStartMonth (), 1, 0, 0, 0);
 
-		return new Long (calendar.getTimeInMillis () / 1000);
+		return Long.valueOf (calendar.getTimeInMillis () / 1000);
 	}
 
 	/**
@@ -80,6 +80,6 @@ public class SemesterConverter implements AttributeConverter<Semester, Long>
 	@Override
 	public Semester convertToEntityAttribute(Long seconds)
 	{
-		return Semester.getSemesterByDate(new Date (seconds.intValue () * 1000));
+		return Semester.getSemesterByDate (new Date (seconds * 1000));
 	}
 }

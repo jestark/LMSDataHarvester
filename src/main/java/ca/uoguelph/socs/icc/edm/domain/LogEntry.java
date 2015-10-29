@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.io.Serializable;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -53,8 +55,11 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     LogEntryLoader
  */
 
-public abstract class LogEntry extends Element
+public abstract class LogEntry extends Element implements Serializable
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	/** The associated <code>Action</code> */
 	public static final Property<Action> ACTION;
 

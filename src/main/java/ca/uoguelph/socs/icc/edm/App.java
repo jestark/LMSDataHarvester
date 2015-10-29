@@ -1,9 +1,12 @@
 package ca.uoguelph.socs.icc.edm;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.File;
 import java.io.IOException;
+
+import java.nio.charset.Charset;
 
 import java.net.InetAddress;
 
@@ -95,6 +98,8 @@ public class App
 {
 	public static final Logger log;
 
+	public static final String STUDENTLIST;
+
 	public static final Profile COURSE;
 
 	public static final Profile MEMORY;
@@ -178,6 +183,8 @@ public class App
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WorkshopSubmission");
 		loadClass ("ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WorkshopSubmissionLog");
 
+		STUDENTLIST = "***REMOVED***";
+
 		COURSE = new ProfileBuilder ()
 			.setName ("coursedb")
 			.setMutable (true)
@@ -253,8 +260,6 @@ public class App
 
 		try
 		{
-			CSVFormat format = CSVFormat.EXCEL.withNullString("#N/A");
-
 			App.log.debug ("Creating Course DomainModel");
 			coursedb = new DomainModel (DataStore.getInstance (JPADataStore.class, App.COURSE));
 
@@ -314,26 +319,7 @@ public class App
 			harvester.addEnrolment (uQuery.setValue (User.USERNAME, "***REMOVED***").query (), course, ta);
 
 			App.log.info ("Adding students to scratch");
-			for (CSVRecord rec : format.parse (new BufferedReader (new FileReader ("***REMOVED***"))))
-			{
-				User user = uQuery.setValue (User.USERNAME, rec.get (0))
-					.query ();
-
-				if (user != null)
-				{
-					harvester.addEnrolment (user,
-							course,
-							student,
-							(rec.get (1) != null)
-								?  Integer.valueOf ((int) Math.ceil (Double.valueOf (rec.get (1))))
-								: null,
-							(rec.get (2) != null) ? true : false);
-				}
-				else
-				{
-					App.log.warn ("User: {} does not exist in the moodle database", rec.get (0));
-				}
-			}
+			harvester.loadStudents (new File (App.STUDENTLIST), course, student, uQuery);
 
 			App.log.info ("Processing Log");
 
@@ -378,9 +364,7 @@ public class App
 			coursedb.getTransaction ().commit ();
 			coursedb.getTransaction ().begin ();
 
-
 			App.log.info ("Copying Log Entries from scratch to coursedb");
-
 
 			int i = 0;
 
@@ -482,6 +466,27 @@ class MoodleHarvester
 		this.processor.processQueue ();
 
 		return result;
+	}
+
+	public void loadStudents (final File studentList, final Course course, final Role role, final Query<User> uQuery) throws Exception
+	{
+		for (CSVRecord rec : FORMAT.parse (new BufferedReader (new InputStreamReader (new FileInputStream (studentList), Charset.forName ("UTF-8")))))
+		{
+			User user = uQuery.setValue (User.USERNAME, rec.get (0))
+				.query ();
+
+			if (user != null)
+			{
+				this.addEnrolment (user, course, role, (rec.get (1) != null)
+							?  Integer.valueOf ((int) Math.ceil (Double.valueOf (rec.get (1))))
+							: null,
+						(rec.get (2) != null) ? true : false);
+			}
+			else
+			{
+				App.log.warn ("User: {} does not exist in the moodle database", rec.get (0));
+			}
+		}
 	}
 
 	public Enrolment addEnrolment (final User user, final Course course, final Role role)

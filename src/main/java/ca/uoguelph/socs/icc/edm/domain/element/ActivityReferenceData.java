@@ -16,8 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
-import java.io.Serializable;
-
 import java.util.List;
 
 import java.util.ArrayList;
@@ -38,7 +36,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
  * @version 1.0
  */
 
-public class ActivityReferenceData extends ActivityReference implements Serializable
+public class ActivityReferenceData extends ActivityReference
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;

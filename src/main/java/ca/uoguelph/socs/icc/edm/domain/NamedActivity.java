@@ -16,8 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.io.Serializable;
-
 import java.util.List;
 import java.util.Set;
 import java.util.Objects;
@@ -40,7 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.0
  */
 
-public abstract class NamedActivity extends Activity implements Serializable
+public abstract class NamedActivity extends Activity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;

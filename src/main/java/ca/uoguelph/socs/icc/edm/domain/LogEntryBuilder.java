@@ -458,7 +458,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 
 	public Date getTime ()
 	{
-		return this.time;
+		return (Date) this.time.clone ();
 	}
 
 	/**
@@ -479,7 +479,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 		}
 		else
 		{
-			this.time = time;
+			this.time = (Date) time.clone ();
 		}
 
 		return this;

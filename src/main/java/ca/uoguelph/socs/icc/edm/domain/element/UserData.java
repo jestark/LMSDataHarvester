@@ -212,7 +212,7 @@ public class UserData extends User implements Serializable
 	@Override
 	public String getName()
 	{
-		return new String (this.firstname + " " + this.lastname);
+		return String.format ("%s %s", this.firstname, this.lastname);
 	}
 
 	/**

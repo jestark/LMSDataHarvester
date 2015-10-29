@@ -16,7 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
