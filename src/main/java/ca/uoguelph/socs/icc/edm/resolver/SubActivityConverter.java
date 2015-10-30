@@ -22,7 +22,7 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.collections4.keyvalue.MultiKey;
+import com.google.auto.value.AutoValue;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
@@ -41,9 +41,35 @@ import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WorkshopSubmissio
 
 public final class SubActivityConverter
 {
+	@AutoValue
+	protected static abstract class ClassKey
+	{
+		public static ClassKey create (final Class<? extends Activity> cls, final String action)
+		{
+			return new AutoValue_SubActivityConverter_ClassKey (cls, action);
+		}
+
+		public abstract Class<? extends Activity> getActivityClass ();
+
+		public abstract String getAction ();
+	}
+
+	@AutoValue
+	protected static abstract class Key
+	{
+		public static Key create (final Long id, final Class<? extends SubActivity> cls)
+		{
+			return new AutoValue_SubActivityConverter_Key (id, cls);
+		}
+
+		public abstract Long getId ();
+
+		public abstract Class<? extends SubActivity> getSubActivityClass ();
+	}
+
 	private static final String MISSING_SUBACTIVITY_NAME = "-=- MISSING SUBACTIVITY -=-";
 
-	private static final Map<MultiKey<Object>, Class<? extends SubActivity>> tmpmap;
+	private static final Map<ClassKey, Class<? extends SubActivity>> tmpmap;
 
 	private final Logger log;
 
@@ -51,36 +77,36 @@ public final class SubActivityConverter
 
 	private final DomainModel source;
 
-	private final Map<MultiKey<Object>, SubActivity> cache;
+	private final Map<Key, SubActivity> cache;
 
 	static
 	{
 		tmpmap = new HashMap<> ();
 
-		tmpmap.put (new MultiKey<Object> (Book.class, "add chapter"), BookChapter.class);
-		tmpmap.put (new MultiKey<Object> (Book.class, "print chapter"), BookChapter.class);
-		tmpmap.put (new MultiKey<Object> (Book.class, "update chapter"), BookChapter.class);
-		tmpmap.put (new MultiKey<Object> (Book.class, "view chapter"), BookChapter.class);
-		tmpmap.put (new MultiKey<Object> (Forum.class, "add discussion"), ForumDiscussion.class);
-		tmpmap.put (new MultiKey<Object> (Forum.class, "move discussion"), ForumDiscussion.class);
-		tmpmap.put (new MultiKey<Object> (Forum.class, "update discussion"), ForumDiscussion.class);
-		tmpmap.put (new MultiKey<Object> (Forum.class, "view discussion"), ForumDiscussion.class);
-		tmpmap.put (new MultiKey<Object> (Forum.class, "add post"), ForumPost.class);
-		tmpmap.put (new MultiKey<Object> (Forum.class, "update post"), ForumPost.class);
-		tmpmap.put (new MultiKey<Object> (Forum.class, "delete chapter"), ForumPost.class);
-		tmpmap.put (new MultiKey<Object> (Lesson.class, "view"), LessonPage.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "update example assessment"), WorkshopSubmission.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "add example assessment"), WorkshopSubmission.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "update reference assessment"), WorkshopSubmission.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "add reference assessment"), WorkshopSubmission.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "view example"), WorkshopSubmission.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "update example"), WorkshopSubmission.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "add example"), WorkshopSubmission.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "update assessment"), WorkshopSubmission.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "add assessment"), WorkshopSubmission.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "view submission"), WorkshopSubmission.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "update submission"), WorkshopSubmission.class);
-		tmpmap.put (new MultiKey<Object> (Workshop.class, "add submission"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Book.class, "add chapter"), BookChapter.class);
+		tmpmap.put (ClassKey.create (Book.class, "print chapter"), BookChapter.class);
+		tmpmap.put (ClassKey.create (Book.class, "update chapter"), BookChapter.class);
+		tmpmap.put (ClassKey.create (Book.class, "view chapter"), BookChapter.class);
+		tmpmap.put (ClassKey.create (Forum.class, "add discussion"), ForumDiscussion.class);
+		tmpmap.put (ClassKey.create (Forum.class, "move discussion"), ForumDiscussion.class);
+		tmpmap.put (ClassKey.create (Forum.class, "update discussion"), ForumDiscussion.class);
+		tmpmap.put (ClassKey.create (Forum.class, "view discussion"), ForumDiscussion.class);
+		tmpmap.put (ClassKey.create (Forum.class, "add post"), ForumPost.class);
+		tmpmap.put (ClassKey.create (Forum.class, "update post"), ForumPost.class);
+		tmpmap.put (ClassKey.create (Forum.class, "delete chapter"), ForumPost.class);
+		tmpmap.put (ClassKey.create (Lesson.class, "view"), LessonPage.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "update example assessment"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "add example assessment"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "update reference assessment"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "add reference assessment"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "view example"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "update example"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "add example"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "update assessment"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "add assessment"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "view submission"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "update submission"), WorkshopSubmission.class);
+		tmpmap.put (ClassKey.create (Workshop.class, "add submission"), WorkshopSubmission.class);
 	}
 
 	public SubActivityConverter (final DomainModel dest, final DomainModel source)
@@ -99,12 +125,12 @@ public final class SubActivityConverter
 
 		SubActivity subActivity = null;
 
-		Class<? extends SubActivity> sclass = SubActivityConverter.tmpmap.get (new MultiKey<Object> (activity.getClass (), action.getName ()));
+		Class<? extends SubActivity> sclass = SubActivityConverter.tmpmap.get (ClassKey.create (activity.getClass (), action.getName ()));
 
 		if (sclass != null)
 		{
 			Long subId = Long.valueOf (info);
-			MultiKey<Object> cacheKey = new MultiKey<Object> (sclass, subId);
+			Key cacheKey = Key.create (subId, sclass);
 
 			if (! this.cache.containsKey (cacheKey))
 			{

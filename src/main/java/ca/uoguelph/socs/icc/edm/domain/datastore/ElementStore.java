@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.collections4.keyvalue.MultiKey;
+import com.google.auto.value.AutoValue;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -53,6 +53,35 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 final class ElementStore<T extends Element>
 {
+	/**
+	 *
+	 */
+
+	@AutoValue
+	protected static abstract class Key
+	{
+		/**
+		 *
+		 */
+
+		public static Key create (final Selector selector, final List<Object> keys)
+		{
+			return new AutoValue_ElementStore_Key (selector, keys);
+		}
+
+		/**
+		 *
+		 */
+
+		public abstract Selector getSelector ();
+
+		/**
+		 *
+		 */
+
+		public abstract List<Object> getKeys ();
+	}
+
 	/** The logger */
 	private final Logger log;
 
@@ -69,7 +98,7 @@ final class ElementStore<T extends Element>
 	private final Set<Wrapper<T>> elements;
 
 	/** Indexed <code>Element</code> instances */
-	private final Map<MultiKey<Object>, T> index;
+	private final Map<Key, T> index;
 
 	/**
 	 * Create the <code>ElementStore</code>.
@@ -85,8 +114,8 @@ final class ElementStore<T extends Element>
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.elements = new HashSet<Wrapper<T>> ();
-		this.index = new HashMap<MultiKey<Object>, T> ();
+		this.elements = new HashSet<> ();
+		this.index = new HashMap<> ();
 
 		this.metadata = metadata;
 		this.selectors = this.metadata.getSelectors ()
@@ -109,19 +138,15 @@ final class ElementStore<T extends Element>
 	 * @return The key for the index <code>Map</code>
 	 */
 
-	private MultiKey<Object> buildIndex (final Filter<T> filter)
+	private Key buildIndex (final Filter<T> filter)
 	{
 		assert filter != null : "filter is NULL";
 
-		final List<Object> indexdata = filter.getSelector ()
+		return Key.create (filter.getSelector (), filter.getSelector ()
 			.getProperties ()
 			.stream ()
 			.map ((x) -> filter.getValue (x))
-			.collect (Collectors.toList ());
-
-		indexdata.add (filter.getSelector ());
-
-		return new MultiKey<Object> (indexdata.toArray (), false);
+			.collect (Collectors.toList ()));
 	}
 
 	/**
@@ -134,21 +159,17 @@ final class ElementStore<T extends Element>
 	 * @return          The key for the index <code>Map</code>
 	 */
 
-	private MultiKey<Object> buildIndex (final Selector selector, final T element)
+	private Key buildIndex (final Selector selector, final T element)
 	{
 		this.log.trace ("buildIndex: selector={}, element={}", selector, element);
 
 		assert selector != null : "selector is NULL";
 		assert element != null : "element is NULL";
 
-		final List<Object> indexdata = selector.getProperties ()
+		return Key.create (selector, selector.getProperties ()
 			.stream ()
 			.map ((x) -> this.metadata.getValue (x, element))
-			.collect (Collectors.toList ());
-
-		indexdata.add (selector);
-
-		return new MultiKey<Object> (indexdata.toArray (), false);
+			.collect (Collectors.toList ()));
 	}
 
 	/**
