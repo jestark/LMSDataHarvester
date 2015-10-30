@@ -22,7 +22,7 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.collections4.keyvalue.MultiKey;
+import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
@@ -85,7 +85,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
  * the single stealth <code>Activity</code> instance.
  * <p>
  * For the final case, it appears that the <code>Action</code> in question was
- * not associated specifically with a particular instance of the recored
+ * not associated specifically with a particular instance of the recorded
  * module.  In this case a new <code>Activity</code> instance, of the
  * appropriate type, will be created using the name specified in the
  * <code>NULL_ACTIVITY_NAME</code> constant.  All <code>LogEntry</code>
@@ -156,11 +156,11 @@ public final class ActivityConverter
 	/** Builder to create the <code>ActivityType</code> instances */
 	private final ActivityTypeBuilder typeBuilder;
 
-	/** Cache of the keys associated with the ID's */
-	private final Map<Long, MultiKey<Object>> keys;
+	/** Cache of <code>Activity</code> instances, indexed by ID */
+	private final Map<Long, Activity> idCache;
 
-	/** Cache of <code>Activity</code> instances */
-	private final Map<MultiKey<Object>, Activity> cache;
+	/** Cache of <code>Activity</code> instances, indexed by <code>ActivityType</code> */
+	private final Map<ActivityType, Activity> typeCache;
 
 	/**
 	 * Create the <code>ActivityConverter</code>.
@@ -182,8 +182,8 @@ public final class ActivityConverter
 					.setName ("moodle")
 					.build ());
 
-		this.keys = new HashMap<> ();
-		this.cache = new HashMap<> ();
+		this.idCache = new HashMap<> ();
+		this.typeCache = new HashMap<> ();
 	}
 
 	/**
@@ -209,6 +209,79 @@ public final class ActivityConverter
 	}
 
 	/**
+	 * Load the <code>Activity</code> based on its <code>DataStore</code>
+	 * identifier.
+	 *
+	 * @param  activityId The <code>DataStore</code> ID of the
+	 *                    <code>Activity</code>, not null
+	 * @param  module     The name of the module (<code>ActivityType</code>),
+	 *                    not null
+	 * @param  course     The <code>Course</code>, not null
+	 *
+	 * @return            The <code>Activity</code>
+	 */
+
+	private Activity getById (final Long id, final String module, final Course course)
+	{
+		if (! this.idCache.containsKey (id))
+		{
+			ActivityReference moodleActivity = this.idQuery.setValue (Activity.ID, id)
+				.query ();
+
+			if (moodleActivity != null)
+			{
+				this.log.debug ("Loaded activity instance for module: {} id: {}", module, id);
+				this.idCache.put (id, (Activity) moodleActivity.getActivity ()
+						.getBuilder (this.dest)
+						.build ());
+			}
+			else
+			{
+				this.log.info ("Created dummy activity instance for module: {} id: {}", module, id);
+				this.idCache.put (id, this.buildNamedActivity (this.typeBuilder.setName (module).build (),
+							course, ActivityConverter.MISSING_ACTIVITY_NAME));
+			}
+		}
+
+		return this.idCache.get (id);
+	}
+
+	/**
+	 * Load or generate the default <code>Activity</code> for the specified
+	 * module.
+	 *
+	 * @param  module     The name of the module (<code>ActivityType</code>),
+	 *                    not null
+	 * @param  course     The <code>Course</code>, not null
+	 *
+	 * @return            The <code>Activity</code>
+	 */
+
+	private Activity getByModule (final String module, final Course course)
+	{
+		ActivityType type = this.typeBuilder.setName (module)
+			.build ();
+
+		if (! this.typeCache.containsKey (type))
+		{
+			if (Activity.hasActivityClass (type))
+			{
+				this.log.info ("Created null activity instance for module: {}", type.getName ());
+				this.typeCache.put (type, this.buildNamedActivity (type, course, ActivityConverter.NULL_ACTIVITY_NAME));
+			}
+			else
+			{
+				this.log.info ("Created stealth activity for module: {}", type.getName ());
+				this.typeCache.put (type, Activity.builder (this.dest, type)
+					.setCourse (course)
+					.build ());
+			}
+		}
+
+		return this.typeCache.get (type);
+	}
+
+	/**
 	 * Load an <code>Activity</code> instance from the moodle database and
 	 * convert it to a format that works with the destination database.
 	 *
@@ -225,72 +298,10 @@ public final class ActivityConverter
 	{
 		this.log.trace ("convert: activityId={}, module={}, course={}", activityId, module, course);
 
-		if (activityId == null)
-		{
-			throw new NullPointerException ("activityId is NULL");
-		}
+		Preconditions.checkNotNull (activityId, "activityId is NULL");
+		Preconditions.checkNotNull (module, "module is NULL");
+		Preconditions.checkNotNull (course, "course is NULL");
 
-		if (module == null)
-		{
-			throw new NullPointerException ("module is NULL");
-		}
-
-		if (course == null)
-		{
-			throw new NullPointerException ("course is NULL");
-		}
-
-		ActivityType type = this.typeBuilder.setName (module)
-			.build ();
-
-		MultiKey<Object> key = this.keys.get (activityId);
-
-		if (key == null)
-		{
-			key = new MultiKey<Object> (type, activityId);
-		}
-
-		if (! this.cache.containsKey (key))
-		{
-			if (activityId != 0)
-			{
-				ActivityReference moodleActivity = this.idQuery.setValue (Activity.ID, activityId)
-					.query ();
-
-				if (moodleActivity != null)
-				{
-					this.log.debug ("Loaded activity instance for module: {} id: {}", type.getName (), activityId);
-					this.cache.put (key, (Activity) moodleActivity.getActivity ()
-							.getBuilder (this.dest)
-							.build ());
-					this.keys.put (activityId, key);
-				}
-				else
-				{
-					this.log.info ("Created dummy activity instance for module: {} id: {}", type.getName (), activityId);
-					this.cache.put (key,
-							this.buildNamedActivity (type, course,
-								ActivityConverter.MISSING_ACTIVITY_NAME));
-					this.keys.put (activityId, key);
-				}
-			}
-			else
-			{
-				if (Activity.hasActivityClass (type))
-				{
-					this.log.info ("Created null activity instance for module: {}", type.getName ());
-					this.cache.put (key, this.buildNamedActivity (type, course, ActivityConverter.NULL_ACTIVITY_NAME));
-				}
-				else
-				{
-					this.log.info ("Created stealth activity for module: {}", type.getName ());
-					this.cache.put (key, Activity.builder (this.dest, type)
-						.setCourse (course)
-						.build ());
-				}
-			}
-		}
-
-		return this.cache.get (key);
+		return (activityId != 0) ? this.getById (activityId, module, course) : this.getByModule (module, course);
 	}
 }
