@@ -22,16 +22,18 @@ import java.util.Set;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import java.util.stream.Collectors;
+
+import com.google.auto.value.AutoValue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * Memory based implementation of the <code>DataStore</code>.
@@ -40,10 +42,45 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
  * @version 1.0
  */
 
-public final class MemDataStore extends DataStore
+public final class MemDataStore implements DataStore
 {
-	/** The storage for each <code>Element</code> implementation class  */
-	private final Map<Class<?>, ElementStore<?>> elements;
+	/**
+	 *
+	 */
+
+	@AutoValue
+	protected static abstract class Key
+	{
+		/**
+		 *
+		 */
+
+		public static Key create (final Selector selector, final List<Object> keys)
+		{
+			return new AutoValue_MemDataStore_Key (selector, keys);
+		}
+
+		/**
+		 *
+		 */
+
+		public abstract Selector getSelector ();
+
+		/**
+		 *
+		 */
+
+		public abstract List<Object> getKeys ();
+	}
+
+	/** The logger */
+	private final Logger log;
+
+	/** The <code>Set</code> of stored <code>Element</code> instances */
+	private final Set<Wrapper<? extends Element>> elements;
+
+	/** Indexed <code>Element</code> instances */
+	private final Map<Key, Element> index;
 
 	/** The transaction manager for the <code>DataStore</code> */
 	private Transaction transaction;
@@ -52,103 +89,61 @@ public final class MemDataStore extends DataStore
 	private boolean open;
 
 	/**
-	 * static initializer to register the <code>MemDataStore</code> with the
-	 * factory.
-	 */
-
-	static
-	{
-		DataStore.registerDataStore (MemDataStore.class, MemDataStore::new);
-	}
-
-	/**
 	 * Create the <code>MemDataStore</code>.
-	 *
-	 * @param  profile The <code>Profile</code> data, not null
 	 */
 
-	protected MemDataStore (final Profile profile)
+	protected MemDataStore ()
 	{
-		super (profile);
+		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.open = true;
-		this.elements = new HashMap<> ();
 		this.transaction = null;
-	}
 
-	@SuppressWarnings ("unchecked")
-	private <T extends Element> ElementStore<T> getElementStore (final MetaData<T> metadata, final Class<?> element)
-	{
-		assert metadata != null : "metadata is null";
-		assert element != null : "element is NULL";
-		assert metadata.getElementClass ().isAssignableFrom (element) : "element is not represented by metadata";
-		assert this.elements.containsKey (element) : "no elements of that type";
-
-		return (ElementStore<T>) this.elements.get (element);
+		this.elements = new HashSet<> ();
+		this.index = new HashMap<> ();
 	}
 
 	/**
-	 * Retrieve a <code>List</code> of <code>Element</code> instances which
-	 * match the specified <code>Filter</code>.
+	 * Build a key for the index <code>Map</code> from the supplied
+	 * <code>Filter</code> instance.
 	 *
-	 * @param  <T>    The <code>Element</code> interface type
 	 * @param  filter The <code>Filter</code>, not null
 	 *
-	 * @return        A <code>List</code> of <code>Element</code> instances
+	 * @return The key for the index <code>Map</code>
 	 */
 
-	@Override
-	protected <T extends Element> List<T> fetch (final Class<? extends T> type, final Filter<T> filter)
+	private <T extends Element> Key buildIndex (final Filter<T> filter)
 	{
-		this.log.trace ("fetch: type={}, filter={}", type, filter);
-
-		assert type != null : "type is NULL";
 		assert filter != null : "filter is NULL";
 
-		List<T> result = null;
-
-		if (this.elements.containsKey (type))
-		{
-			result = this.getElementStore (filter.getMetaData (), type).fetch (filter);
-		}
-		else
-		{
-			result = this.elements.keySet ()
-				.stream ()
-				.filter (x -> type.isAssignableFrom (x))
-				.flatMap (x -> this.getElementStore (filter.getMetaData (), x).fetch (filter).stream ())
-				.collect (Collectors.toList ());
-		}
-
-		return result;
+		return Key.create (filter.getSelector (), filter.getSelector ()
+			.getProperties ()
+			.stream ()
+			.map ((x) -> filter.getValue (x))
+			.collect (Collectors.toList ()));
 	}
 
 	/**
-	 * Get a <code>List</code> containing all of the ID numbers in the
-	 * <code>DataStore</code> for instances of the specified
-	 * <code>Element</code> class.
+	 * Build a key for the index <code>Map</code> from the supplied
+	 * <code>Element</code> instance, using the specified <code>Selector</code>.
 	 *
-	 * @param  element The <code>Element</code> class, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 * @param  element  The <code>Element</code>, not null
 	 *
-	 * @return         A <code>List</code> of ID numbers, may be empty
+	 * @return          The key for the index <code>Map</code>
 	 */
 
-	@Override
-	public List<Long> getAllIds (final Class<? extends Element> element)
+	private <T extends Element> Key buildIndex (final Selector selector, final T element)
 	{
-		this.log.trace ("getAllIds: element={}", element);
+		this.log.trace ("buildIndex: selector={}, element={}", selector, element);
 
+		assert selector != null : "selector is NULL";
 		assert element != null : "element is NULL";
-		assert this.isOpen () : "datastore is clased";
 
-		List<Long> result = new ArrayList<Long> ();
-
-		if (this.elements.containsKey (element))
-		{
-			result.addAll (this.elements.get (element).getAllIds ());
-		}
-
-		return result;
+		return Key.create (selector, selector.getProperties ()
+			.stream ()
+			.flatMap ((x) -> element.stream (x))
+			.collect (Collectors.toList ()));
 	}
 
 	/**
@@ -197,8 +192,8 @@ public final class MemDataStore extends DataStore
 
 		if (! this.transaction.isActive ())
 		{
-			this.elements.forEach ((k, v) -> v.clear ());
 			this.elements.clear ();
+			this.index.clear ();
 		}
 	}
 
@@ -214,61 +209,108 @@ public final class MemDataStore extends DataStore
 	 */
 
 	@Override
-	public boolean contains (final Element element)
+	public <T extends Element> boolean contains (final T element)
 	{
 		this.log.trace ("contains: element={}", element);
 
 		assert element != null : "element is NULL";
 		assert this.isOpen () : "datastore is closed";
 
-		boolean result = false;
+		return this.elements.contains (new Wrapper<T> (element));
+	}
 
-		if (this.elements.containsKey (element.getClass ()))
+	/**
+	 * Retrieve a <code>List</code> of <code>Element</code> instances which
+	 * match the specified <code>Filter</code>.
+	 *
+	 * @param  <T>    The <code>Element</code> interface type
+	 * @param  filter The <code>Filter</code>, not null
+	 *
+	 * @return        A <code>List</code> of <code>Element</code> instances
+	 */
+
+	@Override
+	public <T extends Element> List<T> fetch (final Class<? extends T> type, final Filter<T> filter)
+	{
+		this.log.trace ("fetch: type={}, filter={}", type, filter);
+
+		assert type != null : "type is NULL";
+		assert filter != null : "filter is NULL";
+
+		List<T> result = null;
+
+		if (filter.getSelector ().isUnique () && filter.getSelector ().isConstant ())
 		{
-			result = this.elements.get (element.getClass ())
-				.contains (element);
+			result = new ArrayList<T> ();
+
+			T element = (T) this.index.get (this.buildIndex (filter));
+
+			if (element != null)
+			{
+				result.add (element);
+			}
+		}
+		else
+		{
+			result = (List<T>) this.elements.parallelStream ()
+				.map (Wrapper::unwrap)
+				.filter (x -> type.isInstance (x) && filter.test ((T) x))
+				.collect (Collectors.toList ());
 		}
 
 		return result;
 	}
 
 	/**
+	 * Get a <code>List</code> containing all of the ID numbers in the
+	 * <code>DataStore</code> for instances of the specified
+	 * <code>Element</code> class.
+	 *
+	 * @param  element The <code>Element</code> class, not null
+	 *
+	 * @return         A <code>List</code> of ID numbers, may be empty
+	 */
+
+	@Override
+	public List<Long> getAllIds (final Class<? extends Element> element)
+	{
+		this.log.trace ("getAllIds: element={}", element);
+
+		assert element != null : "element is NULL";
+		assert this.isOpen () : "datastore is closed";
+
+		return this.elements.parallelStream ()
+			.map (Wrapper::unwrap)
+			.filter (x -> element.isInstance (x))
+			.map (Element::getId)
+			.collect (Collectors.toList ());
+	}
+
+	/**
 	 * Insert the specified <code>Element</code> instance into the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code> instance to insert, not null
 	 *
 	 * @return          A reference to the <code>Element</code>
 	 */
 
 	@Override
-	public <T extends Element> T insert (final MetaData<T> metadata, final T element)
+	public <T extends Element> T insert (final T element)
 	{
-		this.log.trace ("insert: metadata={}, element={}", metadata, element);
+		this.log.trace ("insert: element={}", element);
 
-		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
-		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
-		assert this.getProfile ().isMutable () : "Datastore is immutable";
+		assert ! this.contains (element) : "element is already in the DataStore";
 		assert this.transaction.isActive () : "No Active transaction";
 
-		if (! this.elements.containsKey (element.getClass ()))
-		{
-			this.log.debug ("Creating the ElementStore");
-			this.elements.put (element.getClass (), new ElementStore<T> (metadata, this));
-		}
+		this.log.debug ("Inserting the Element");
+		this.elements.add (new Wrapper<T> (element));
 
-		this.log.debug ("Inserting the Element into the ElementStore");
-		this.getElementStore (metadata, element.getClass ())
-			.insert (element);
-
-		this.log.debug ("Connecting the relationships");
-		if (! metadata.connect (this, element))
-		{
-			this.log.error ("Failed to connect relationships");
-			throw new RuntimeException ("Failed to connect relationships");
-		}
+		this.log.debug ("building indexes");
+		element.selectors ().stream ()
+			.filter (x -> x.isUnique () && x.isConstant ())
+			.forEach (x -> this.index.put (this.buildIndex (x, element), element));
 
 		return element;
 	}
@@ -277,33 +319,24 @@ public final class MemDataStore extends DataStore
 	 * Remove the specified <code>Element</code> instance from the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code> instance to remove, not null
 	 */
 
 	@Override
-	public <T extends Element> void remove (final MetaData<T> metadata, final T element)
+	public <T extends Element> void remove (final T element)
 	{
-		this.log.trace ("remove: metadata={}, element={}", metadata, element);
+		this.log.trace ("remove: element={}", element);
 
-		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
-		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
-		assert this.getProfile ().isMutable () : "Datastore is immutable";
+		assert this.contains (element) : "element is not in the DataStore";
 		assert this.transaction.isActive () : "No Active transaction";
 
-		if (this.elements.containsKey (element.getClass ()))
-		{
-			this.log.debug ("Removing the Element from the ElementStore");
-			this.getElementStore (metadata, element.getClass ())
-				.remove (element);
+		this.log.debug ("removing element");
+		this.elements.remove (new Wrapper<T> (element));
 
-			this.log.debug ("Disconnecting relationships");
-			metadata.disconnect (this, element);
-		}
-		else
-		{
-			this.log.warn ("Datastore does not contain any elements of type: {}", (element.getClass ()).getSimpleName ());
-		}
+		this.log.debug ("removing indexes");
+		element.selectors ().stream ()
+			.filter (x -> x.isUnique () && x.isConstant ())
+			.forEach ((x) -> this.index.remove (this.buildIndex (x, element)));
 	}
 }

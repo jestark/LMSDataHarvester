@@ -46,6 +46,9 @@ public final class Selector
 	/** The name of the <code>Selector</code> */
 	private final String name;
 
+	/** Are all of the associated <code>Property</code> instances immutable */
+	private final boolean constant;
+
 	/** Will this <code>Selector</code> yield only one <code>Element</code> */
 	private final boolean unique;
 
@@ -106,6 +109,9 @@ public final class Selector
 		this.name = name;
 		this.unique = unique;
 		this.properties = properties;
+
+		this.constant = this.properties.stream ()
+			.allMatch (p -> ! p.hasFlags (Property.Flags.MUTABLE));
 	}
 
 	/**
@@ -149,6 +155,19 @@ public final class Selector
 	public String getName ()
 	{
 		return this.name;
+	}
+
+	/**
+	 * Determine if all of the <code>Property</code> instances associated with
+	 * this <code>Selector</code> are immutable.
+	 *
+	 * @return <code>true</code> if all of the associated <code>Property</code>
+	 *         instances are immutable, <code>false</code> otherwise
+	 */
+
+	public boolean isConstant ()
+	{
+		return this.constant;
 	}
 
 	/**

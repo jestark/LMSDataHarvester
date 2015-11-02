@@ -28,9 +28,11 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -47,8 +49,11 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
  * @see     JPATransaction
  */
 
-public final class JPADataStore extends DataStore
+public final class JPADataStore implements DataStore
 {
+	/** The logger */
+	private final Logger log;
+
 	/** The JPA Entity manager factory for this database */
 	private final EntityManagerFactory emf;
 
@@ -58,19 +63,6 @@ public final class JPADataStore extends DataStore
 	/** The <code>Transaction</code> instance */
 	private final Transaction transaction;
 
-	/** The <code>IdGenerator</code> instances */
-	private final Map<Class<?>, IdGenerator> generators;
-
-	/**
-	 * static initializer to register the <code>JPADataStore</code> with the
-	 * factory.
-	 */
-
-	static
-	{
-		DataStore.registerDataStore (JPADataStore.class, JPADataStore::new);
-	}
-
 	/**
 	 * Create the <code>JPADataStore</code>.
 	 *
@@ -79,9 +71,7 @@ public final class JPADataStore extends DataStore
 
 	protected JPADataStore (final Profile profile)
 	{
-		super (profile);
-
-		this.generators = new HashMap<> ();
+		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.log.debug ("Creating the JPA EntityManagerFactory");
 		this.emf = Persistence.createEntityManagerFactory (profile.getName ());
@@ -124,7 +114,7 @@ public final class JPADataStore extends DataStore
 	 */
 
 	@Override
-	protected <T extends Element> List<T> fetch (final Class<? extends T> type, final Filter<T> filter)
+	public <T extends Element> List<T> fetch (final Class<? extends T> type, final Filter<T> filter)
 	{
 		this.log.trace ("fetch: type={}, filter={}", type, filter);
 
@@ -144,7 +134,6 @@ public final class JPADataStore extends DataStore
 			{
 				this.log.debug ("Loaded Element: {}", data);
 
-				filter.getMetaData ().setValue (Element.MODEL, data, this.getDomainModel ());
 				result.add (data);
 			}
 			else
@@ -166,7 +155,6 @@ public final class JPADataStore extends DataStore
 				.forEach ((x) -> query.setParameter (x.getName (), filter.getValue (x)));
 
 			result.addAll (query.getResultList ());
-			result.forEach (x -> filter.getMetaData ().setValue (Element.MODEL, x, this.getDomainModel ()));
 		}
 
 		return result;
@@ -256,7 +244,7 @@ public final class JPADataStore extends DataStore
 	 */
 
 	@Override
-	public boolean contains (final Element element)
+	public  <T extends Element> boolean contains (final T element)
 	{
 		this.log.trace ("contains: element={}", element);
 
@@ -270,46 +258,23 @@ public final class JPADataStore extends DataStore
 	 * Insert the specified <code>Element</code> instance into the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code> instance to insert, not null
 	 *
 	 * @return          A reference to the <code>Element</code>
 	 */
 
 	@Override
-	public <T extends Element> T insert (final MetaData<T> metadata, final T element)
+	public <T extends Element> T insert (final T element)
 	{
-		this.log.trace ("insert: metadata={}, element={}", metadata, element);
+		this.log.trace ("insert: element={}", element);
 
-		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
-		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
-		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
-		assert metadata.canConnect (this, element) : "element can not be connected";
-
-		IdGenerator generator = this.generators.get (metadata.getElementClass ());
-
-		if (generator == null)
-		{
-			generator = IdGenerator.getInstance (this, metadata.getElementType ());
-			this.generators.put (metadata.getElementClass (), generator);
-		}
-
-		this.log.debug ("Setting ID");
-		generator.setId (metadata, element);
 
 		this.log.debug ("Persisting the Element");
 		this.em.persist (element);
 
-		T result = this.em.find (metadata.getElementClass (), element.getId ());
-
-		this.log.debug ("Connecting the Element's relationships");
-		if (! metadata.connect (this, result))
-		{
-			this.log.error ("Failed to connect relationships");
-			throw new RuntimeException ("Failed to connect relationships");
-		}
+		T result = this.em.find (((Class<? extends T>) element.getClass ()), element.getId ());
 
 		return result;
 	}
@@ -318,24 +283,16 @@ public final class JPADataStore extends DataStore
 	 * Remove the specified <code>Element</code> instance from the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code> instance to remove, not null
 	 */
 
 	@Override
-	public <T extends Element> void remove (final MetaData<T> metadata, final T element)
+	public <T extends Element> void remove (final T element)
 	{
-		this.log.trace ("remove: metadata={}, element={}", metadata, element);
+		this.log.trace ("remove: element={}", element);
 
-		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
-		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
-		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
-		assert metadata.canDisconnect (this, element) : "element can not be disconnected";
-
-		this.log.debug ("Disconnecting the Element's relationships");
-		metadata.disconnect (this, element);
 
 		this.log.debug ("Removing the element from the database");
 		this.em.remove (element);

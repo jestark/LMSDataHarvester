@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
@@ -48,26 +47,16 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
  * @version 1.0
  */
 
-public final class NullDataStore extends DataStore
+public final class NullDataStore implements DataStore
 {
-	/** The <code>IdGenerator</code> instances */
-	private final Map<Class<?>, IdGenerator> generators;
+	/** The logger */
+	private final Logger log;
 
 	/** The transaction manager for the <code>NullDataDtore</code> */
 	private Transaction transaction;
 
 	/** Indication if the <code>DataStore</code> is open */
 	private boolean open;
-
-	/**
-	 * static initializer to register the <code>NullDataStore</code> with the
-	 * factory.
-	 */
-
-	static
-	{
-		DataStore.registerDataStore (NullDataStore.class, NullDataStore::new);
-	}
 
 	/**
 	 * Create the <code>NullDataStore</code>.
@@ -77,12 +66,10 @@ public final class NullDataStore extends DataStore
 
 	protected NullDataStore (final Profile profile)
 	{
-		super (profile);
+		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.open = true;
 		this.transaction = null;
-
-		this.generators = new HashMap<> ();
 	}
 
 	/**
@@ -96,7 +83,7 @@ public final class NullDataStore extends DataStore
 	 */
 
 	@Override
-	protected <T extends Element> List<T> fetch (final Class<? extends T> type, final Filter<T> filter)
+	public <T extends Element> List<T> fetch (final Class<? extends T> type, final Filter<T> filter)
 	{
 		this.log.trace ("fetch: type={}, filter={}", type, filter);
 
@@ -184,7 +171,7 @@ public final class NullDataStore extends DataStore
 	 */
 
 	@Override
-	public boolean contains (final Element element)
+	public  <T extends Element> boolean contains (final T element)
 	{
 		this.log.trace ("contains: element={}", element);
 
@@ -199,42 +186,18 @@ public final class NullDataStore extends DataStore
 	 * <code>DataStore</code>.  For the <code>NullDataStore</code> this does
 	 * nothing as there is no actual storage.
 	 *
-	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code> instance to insert, not null
 	 *
 	 * @return          A reference to the <code>Element</code>
 	 */
 
 	@Override
-	public <T extends Element> T insert (final MetaData<T> metadata, final T element)
+	public <T extends Element> T insert (final T element)
 	{
-		this.log.trace ("insert: metadata={}, element={}", metadata, element);
+		this.log.trace ("insert: element={}", element);
 
-		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
-		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
-		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
-		assert metadata.canConnect (this, element) : "element can not be connected";
-
-		IdGenerator generator = this.generators.get (metadata.getElementClass ());
-
-		if (generator == null)
-		{
-			this.log.debug ("Creating the IDGenerator");
-			generator = IdGenerator.getInstance (this, metadata.getElementType ());
-			this.generators.put (metadata.getElementClass (), generator);
-		}
-
-		this.log.debug ("Setting ID");
-		generator.setId (metadata, element);
-
-		this.log.debug ("Connecting Relationships");
-		if (! metadata.connect (this, element))
-		{
-			this.log.error ("Failed to connect relationships");
-			throw new RuntimeException ("Failed to connect relationships");
-		}
 
 		return element;
 	}
@@ -244,22 +207,15 @@ public final class NullDataStore extends DataStore
 	 * <code>DataStore</code>.  For the <code>NullDataStore</code> this does
 	 * nothing as there is no actual storage.
 	 *
-	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code> instance to remove, not null
 	 */
 
 	@Override
-	public <T extends Element> void remove (final MetaData<T> metadata, final T element)
+	public <T extends Element> void remove (final T element)
 	{
-		this.log.trace ("remove: metadata={}, element={}", metadata, element);
+		this.log.trace ("remove: element={}", element);
 
-		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
-		assert metadata.getElementClass () == element.getClass () : "metadata does not match Element";
-		assert this.getProfile ().isMutable () : "Datastore is immutable";
 		assert this.transaction.isActive () : "No Active transaction";
-		assert metadata.canDisconnect (this, element) : "element can not be disconnected";
-
-		metadata.disconnect (this, element);
 	}
 }

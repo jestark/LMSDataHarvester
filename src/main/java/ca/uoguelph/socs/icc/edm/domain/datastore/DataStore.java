@@ -16,22 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
-import java.util.Map;
 import java.util.List;
 
-import java.util.HashMap;
-
-import java.util.function.Function;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * Representation of a <code>DataStore</code>.
@@ -41,178 +28,8 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     Transaction
  */
 
-public abstract class DataStore
+public interface DataStore
 {
-	/** <code>DataStore</code> factories */
-	private static Map<Class<? extends DataStore>, Function<Profile, DataStore>> factories;
-
-	/** The logger */
-	protected final Logger log;
-
-	/** The profile */
-	protected final Profile profile;
-
-	/** Reference to the enclosing <code>DomainModel</code> */
-	private DomainModel model;
-
-	/**
-	 * static initializer to create the factory
-	 */
-
-	static
-	{
-		factories = new HashMap<> ();
-	}
-
-	/**
-	 * Register a <code>DataStore</code> implementation with the factory.
-	 *
-	 * @param  impl    The <code>DataStore</code> implementation class, not null
-	 * @param  factory Method reference to the constructor, not null
-	 */
-
-	protected static final void registerDataStore (final Class<? extends DataStore> impl, final Function<Profile, DataStore> factory)
-	{
-		assert impl != null : "impl is NULL";
-		assert factory != null : "factory is NULL";
-		assert ! DataStore.factories.containsKey (impl) : "DataStore is already registered";
-
-		DataStore.factories.put (impl, factory);
-	}
-
-	/**
-	 * Get an instance of the <code>DataStore</code>.
-	 *
-	 * @param  impl    The <code>DataStore</code> implementation class, not null
-	 * @param  profile The <code>Profile</code>, not null
-	 *
-	 * @return         The <code>DataStore</code>
-	 */
-
-	public static final DataStore getInstance (final Class<? extends DataStore> impl, final Profile profile)
-	{
-		assert impl != null : "impl is NULL";
-		assert profile != null : "profile is NULL";
-		assert DataStore.factories.containsKey (impl) : "DataStore is not registered";
-
-		return DataStore.factories.get (impl).apply (profile);
-	}
-
-	/**
-	 * Create the <code>DataStore</code>.
-	 *
-	 * @param  profile The <code>Profile</code> data, not null
-	 */
-
-	protected DataStore (final Profile profile)
-	{
-		assert profile != null : "profile is NULL";
-
-		this.log = LoggerFactory.getLogger (this.getClass ());
-		this.profile = profile;
-	}
-
-	/**
-	 * Get a reference to the <code>Profile</code> data for the
-	 * <code>DataStore</code>.
-	 *
-	 * @return The <code>Profile</code>
-	 */
-
-	public final Profile getProfile ()
-	{
-		return this.profile;
-	}
-
-	/**
-	 * Get the enclosing <code>DomainModel</code> instance.
-	 *
-	 * @return The <code>DomainModel</code>
-	 */
-
-	public final DomainModel getDomainModel ()
-	{
-		return this.model;
-	}
-
-	/**
-	 * Set the reference to the enclosing <code>DomainModel</code>.  This
-	 * method is intended to be used by the enclosing <code>DomainModel</code>
-	 * to give the <code>DataStore</code> a reference to itself.
-	 *
-	 * @param  model The <code>DomainModel</code>, not null
-	 */
-
-	public final void setDomainModel (final DomainModel model)
-	{
-		assert model != null : "model is NULL";
-		assert this.model == null || this.model == model : "can not change the DomainModel once is has been set";
-
-		this.model = model;
-	}
-
-	/**
-	 * Get a <code>Query</code> for the specified <code>Element</code> using
-	 * the default implementation class defined in the <code>Profile</code>.
-	 *
-	 * @param  <T>      The type of the <code>Element</code> returned by the
-	 *                  <code>Query</code>
-	 * @param  element  The <code>Element</code> interface class, not null
-	 * @param  selector The <code>Selector</code>, not null
-	 *
-	 * @return          The <code>Query</code>
-	 */
-
-	public final <T extends Element> Query<T> getQuery (final Class<T> element, final Selector selector)
-	{
-		assert element != null : "element is NULL";
-		assert selector != null : "selector is NULL";
-
-		return new Query<T> (this.getProfile ().getCreator (element), selector, this);
-	}
-
-	/**
-	 * Get a <code>Query</code> for the specified <code>Element</code> using
-	 * the specified implementation class.
-	 *
-	 * @param  <T>      The type of the <code>Element</code> returned by the
-	 *                  <code>Query</code>
-	 * @param  type     The <code>Element</code> interface class, not null
-	 * @param  impl     The <code>Element</code> implementation class, not null
-	 * @param  selector The <code>Selector</code>, not null
-	 *
-	 * @return          The <code>Query</code>
-	 */
-
-	public final <T extends Element> Query<T> getQuery (final Class<T> type, Class<? extends T> impl, final Selector selector)
-	{
-		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
-		assert selector != null : "selector is NULL";
-
-		return new Query<T> (this.getProfile ().getCreator (type, impl), selector,	this);
-	}
-
-	/**
-	 * Get a <code>Query</code> for the specified <code>Element</code> using
-	 * the specified <code>MetaData</code> instance
-	 *
-	 * @param  <T>      The type of the <code>Element</code> returned by the
-	 *                  <code>Query</code>
-	 * @param  metadata The <code>MetaData</code> instance, not null
-	 * @param  selector The <code>Selector</code>, not null
-	 *
-	 * @return          The <code>Query</code>
-	 */
-
-	public final <T extends Element> Query<T> getQuery (final MetaData<T> metadata, final Selector selector)
-	{
-		assert metadata != null : "metadata is NULL";
-		assert selector != null : "selector is NULL";
-
-		return new Query<T> (metadata, selector, this);
-	}
-
 	/**
 	 * Retrieve a <code>List</code> of <code>Element</code> instances which
 	 * match the specified <code>Filter</code>.
@@ -223,7 +40,7 @@ public abstract class DataStore
 	 * @return        A <code>List</code> of <code>Element</code> instances
 	 */
 
-	protected abstract <T extends Element> List<T> fetch (Class<? extends T> type, Filter<T> filter);
+	public abstract <T extends Element> List<T> fetch (Class<? extends T> type, Filter<T> filter);
 
 	/**
 	 * Get a <code>List</code> containing all of the ID numbers in the
@@ -274,27 +91,25 @@ public abstract class DataStore
 	 *                 otherwise
 	 */
 
-	public abstract boolean contains (Element element);
+	public abstract <T extends Element> boolean contains (T element);
 
 	/**
 	 * Insert the specified <code>Element</code> instance into the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code> instance to insert, not null
 	 *
 	 * @return          A reference to the <code>Element</code>
 	 */
 
-	public abstract <T extends Element> T insert (MetaData<T> metadata, T element);
+	public abstract <T extends Element> T insert (T element);
 
 	/**
 	 * Remove the specified <code>Element</code> instance from the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code> instance to remove, not null
 	 */
 
-	public abstract <T extends Element> void remove (MetaData<T> metadata, T element);
+	public abstract <T extends Element> void remove (T element);
 }

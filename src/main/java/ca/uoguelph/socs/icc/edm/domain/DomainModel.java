@@ -26,6 +26,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
@@ -39,34 +40,14 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public final class DomainModel
 {
-	/** The translation table for imports */
-	private static final TranslationTable ttable;
-
 	/** The log */
 	private final Logger log;
 
+	/** The profile */
+	private final Profile profile;
+
 	/** The data store which contains all of the data */
 	private final DataStore datastore;
-
-	/**
-	 * Static initializer to create the <code>TranslationTable</code>
-	 */
-
-	static
-	{
-		ttable = new TranslationTable ();
-	}
-
-	/**
-	 * Get a reference to the <code>TranslationTable</code>.
-	 *
-	 * @return The <code>TranslationTable</code>
-	 */
-
-	protected static TranslationTable getTranslationTable ()
-	{
-		return DomainModel.ttable;
-	}
 
 	/**
 	 * Create the <code>DomainModel</code>.
@@ -76,12 +57,24 @@ public final class DomainModel
 	 *                   not null
 	 */
 
-	public DomainModel (final DataStore datastore)
+	public DomainModel (final Profile profile, final DataStore datastore)
 	{
 		this.log = LoggerFactory.getLogger (DomainModel.class);
 
+		this.profile = profile;
 		this.datastore = datastore;
-		this.datastore.setDomainModel (this);
+	}
+
+	/**
+	 * Get a reference to the <code>Profile</code> data for the
+	 * <code>DataStore</code>.
+	 *
+	 * @return The <code>Profile</code>
+	 */
+
+	protected Profile getProfile ()
+	{
+		return this.profile;
 	}
 
 	/**
@@ -104,7 +97,7 @@ public final class DomainModel
 
 	public boolean isMutable ()
 	{
-		return this.datastore.getProfile ().isMutable ();
+		return this.profile.isMutable ();
 	}
 
 	/**
@@ -137,8 +130,68 @@ public final class DomainModel
 	public void close ()
 	{
 		this.datastore.close ();
+	}
 
-		DomainModel.ttable.removeAll (this.datastore);
+	/**
+	 * Get a <code>Query</code> for the specified <code>Element</code> using
+	 * the default implementation class defined in the <code>Profile</code>.
+	 *
+	 * @param  <T>      The type of the <code>Element</code> returned by the
+	 *                  <code>Query</code>
+	 * @param  element  The <code>Element</code> interface class, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Query</code>
+	 */
+
+	public <T extends Element> Query<T> getQuery (final Class<T> element, final Selector selector)
+	{
+		assert element != null : "element is NULL";
+		assert selector != null : "selector is NULL";
+
+		return null; // new Query<T> (this.getProfile ().getCreator (element), selector, this.datastore);
+	}
+
+	/**
+	 * Get a <code>Query</code> for the specified <code>Element</code> using
+	 * the specified implementation class.
+	 *
+	 * @param  <T>      The type of the <code>Element</code> returned by the
+	 *                  <code>Query</code>
+	 * @param  type     The <code>Element</code> interface class, not null
+	 * @param  impl     The <code>Element</code> implementation class, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Query</code>
+	 */
+
+	public <T extends Element> Query<T> getQuery (final Class<T> type, Class<? extends T> impl, final Selector selector)
+	{
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+		assert selector != null : "selector is NULL";
+
+		return null; //new Query<T> (this.getProfile ().getCreator (type, impl), selector,	this.datastore);
+	}
+
+	/**
+	 * Get a <code>Query</code> for the specified <code>Element</code> using
+	 * the specified <code>MetaData</code> instance
+	 *
+	 * @param  <T>      The type of the <code>Element</code> returned by the
+	 *                  <code>Query</code>
+	 * @param  metadata The <code>MetaData</code> instance, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 *
+	 * @return          The <code>Query</code>
+	 */
+
+	public <T extends Element> Query<T> getQuery (final MetaData<T> metadata, final Selector selector)
+	{
+		assert metadata != null : "metadata is NULL";
+		assert selector != null : "selector is NULL";
+
+		return null; //new Query<T> (metadata, selector, this.datastore);
 	}
 
 	/**
@@ -161,65 +214,9 @@ public final class DomainModel
 		return this.datastore.getTransaction ();
 	}
 
-	/**
-	 * Get a <code>Query</code> for the specified <code>Element</code> using
-	 * the using the definition, but no implementation.  Queries based on the
-	 * definition cover all of the implementations existing in the
-	 * <code>DataStore</code>, at the cost of some performance.
-	 *
-	 * @param  <T>      The type of the <code>Element</code> returned by the
-	 *                  <code>Query</code>
-	 * @param  element  The <code>Element</code> interface class, not null
-	 * @param  selector The <code>Selector</code>, not null
-	 *
-	 * @return          The <code>Query</code>
-	 */
-
-	public <T extends Element> Query<T> getDefinitionQuery (final Class<T> element, final Selector selector)
-	{
-		return this.datastore.getQuery (this.datastore.getProfile ()
-				.getMetaData (element),
-				selector);
-	}
-
-	/**
-	 * Get a <code>Query</code> for the specified <code>Element</code> using
-	 * the default implementation class defined in the <code>Profile</code>.
-	 *
-	 * @param  <T>      The type of the <code>Element</code> returned by the
-	 *                  <code>Query</code>
-	 * @param  element  The <code>Element</code> interface class, not null
-	 * @param  selector The <code>Selector</code>, not null
-	 *
-	 * @return          The <code>Query</code>
-	 */
-
-	public <T extends Element> Query<T> getQuery (final Class<T> element, final Selector selector)
-	{
-		return this.datastore.getQuery (element, selector);
-	}
-
-	/**
-	 * Get a <code>Query</code> for the specified <code>Element</code> using
-	 * the specified implementation class.
-	 *
-	 * @param  <T>      The type of the <code>Element</code> returned by the
-	 *                  <code>Query</code>
-	 * @param  type     The <code>Element</code> interface class, not null
-	 * @param  impl     The <code>Element</code> implementation class, not null
-	 * @param  selector The <code>Selector</code>, not null
-	 *
-	 * @return          The <code>Query</code>
-	 */
-
-	public <T extends Element> Query<T> getQuery (final Class<T> type, final Class<? extends T> impl, final Selector selector)
-	{
-		return this.datastore.getQuery (type, impl, selector);
-	}
-
 	public InsertProcessor getProcessor ()
 	{
-		return new InsertProcessor (this.datastore, DomainModel.ttable);
+		return null; // new InsertProcessor (this.datastore, DomainModel.ttable);
 	}
 
 	/**
@@ -292,12 +289,12 @@ public final class DomainModel
 			throw new IllegalStateException ("Active Transaction required");
 		}
 
-		InsertProcessor processor = new InsertProcessor (this.datastore, DomainModel.ttable);
+		InsertProcessor processor = null; // new InsertProcessor (this.datastore, DomainModel.ttable);
 
-		T result = processor.processElement (element);
-		processor.processQueue ();
+//		T result = processor.insert (element);
+//		processor.processDeferred ();
 
-		return result;
+		return null; // result;
 	}
 
 	/**
@@ -343,12 +340,12 @@ public final class DomainModel
 			throw new IllegalStateException ("Active Transaction required");
 		}
 
-		InsertProcessor processor = new InsertProcessor (this.datastore, DomainModel.ttable);
+		InsertProcessor processor = null; // new InsertProcessor (this.datastore, DomainModel.ttable);
 
-		Collection<T> results = processor.processElements (elements);
-		processor.processQueue ();
+//		Collection<T> results = processor.insert (elements);
+//		processor.processDeferred ();
 
-		return results;
+		return null; // results;
 	}
 
 	/**
@@ -370,7 +367,7 @@ public final class DomainModel
 	{
 		this.log.trace ("remove: element={}", element);
 
-		if (element == null)
+/*		if (element == null)
 		{
 			this.log.error ("Attempting to remove a NULL element");
 			throw new NullPointerException ();
@@ -388,16 +385,12 @@ public final class DomainModel
 			throw new IllegalArgumentException ("Element does not exist in the DataStore");
 		}
 
-		@SuppressWarnings ("unchecked")
-		MetaData<T> metadata = (MetaData<T>) element.metadata ();
-
-		if (! metadata.canDisconnect (this.datastore, element))
+		if (! ((MetaData<T>) element.metadata ()).disconnect (this.datastore, element))
 		{
 			this.log.error ("Can not safely remove the element: {}", element);
 			throw new IllegalStateException ("Can not break the relationships for the Element");
 		}
 
-		this.datastore.remove (metadata, element);
-		DomainModel.ttable.remove (element);
-	}
+		this.datastore.remove (element);
+*/	}
 }
