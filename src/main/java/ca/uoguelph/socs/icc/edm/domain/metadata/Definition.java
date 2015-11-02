@@ -267,6 +267,66 @@ public class Definition<T extends Element> implements MetaData<T>
 	}
 
 	/**
+	 * Get a <code>Stream</code> containing the value(s) for the
+	 * <code>Property</code> which are assigned to the <code>Element</code>.
+	 * This method will return a <code>Stream</code> containing zero of more
+	 * values.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 *
+	 * @return          The value(s) corresponding to the <code>Property</code>
+	 *                  in the <code>Element</code>
+	 */
+
+	@Override
+	public <V> Stream<V> getStream (final Property<V> property, final T element)
+	{
+		this.log.trace ("getStream: property={}, element={}", property, element);
+
+		assert property != null : "property is NULL";
+		assert element != null : "element is NULL";
+
+		return (property.hasFlags (Property.Flags.MULTIVALUED))
+				? this.getRelationshipReference (property).stream (element)
+				: this.getPropertyReference (property).stream (element);
+	}
+
+	/**
+	 * Determine if the value contained in the <code>Element</code> represented
+	 * by the specified <code>Property</code> has the specified value.  If the
+	 * <code>Property</code> represents a singe value, then this method will be
+	 * equivalent to calling the <code>equals</code> method on the value
+	 * represented by the <code>Property</code>.  This method is equivalent to
+	 * calling the <code>contains</code> method for <code>Property</code>
+	 * instances that represent collections.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code> containing the value, not null
+	 * @param  value    The value to test, not null
+	 *
+	 * @return <code>true</code> if the value represented by the
+	 *         <code>Property</code> equals/contains the specified value,
+	 *         <code>false</code> otherwise.
+	 */
+
+	@Override
+	public <V> boolean hasValue (final Property<V> property, final T element, final V value)
+	{
+		this.log.trace ("hasValue: property={}, element={}, value={}", property, element, value);
+
+		assert property != null : "property is NULL";
+		assert element != null : "element is NULL";
+		assert value != null : "value is NULL";
+
+		return (property.hasFlags (Property.Flags.MULTIVALUED))
+				? this.getRelationshipReference (property).hasValue (element, value)
+				: this.getPropertyReference (property).hasValue (element, value);
+	}
+
+	/**
 	 * Get the value corresponding to the specified <code>Property</code> from
 	 * the specified <code>Element</code> instance.
 	 *

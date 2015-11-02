@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain.metadata;
 import java.util.Collection;
 import java.util.Set;
 
+import java.util.stream.Stream;
+
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
@@ -95,9 +97,47 @@ public interface MetaData<T extends Element>
 	public abstract Set<Selector> getSelectors ();
 
 	/**
+	 * Get a <code>Stream</code> containing the value(s) for the
+	 * <code>Property</code> which are assigned to the <code>Element</code>.
+	 * This method will return a <code>Stream</code> containing zero of more
+	 * values.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code>, not null
+	 *
+	 * @return          The value(s) corresponding to the <code>Property</code>
+	 *                  in the <code>Element</code>
+	 */
+
+	public abstract <V> Stream<V> getStream (Property<V> property, T element);
+
+	/**
+	 * Determine if the value contained in the <code>Element</code> represented
+	 * by the specified <code>Property</code> has the specified value.  If the
+	 * <code>Property</code> represents a singe value, then this method will be
+	 * equivalent to calling the <code>equals</code> method on the value
+	 * represented by the <code>Property</code>.  This method is equivalent to
+	 * calling the <code>contains</code> method for <code>Property</code>
+	 * instances that represent collections.
+	 *
+	 * @param  <V>      The type of the value
+	 * @param  property The <code>Property</code>, not null
+	 * @param  element  The <code>Element</code> containing the value, not null
+	 * @param  value    The value to test, not null
+	 *
+	 * @return <code>true</code> if the value represented by the
+	 *         <code>Property</code> equals/contains the specified value,
+	 *         <code>false</code> otherwise.
+	 */
+
+	public abstract <V> boolean hasValue (Property<V> property, T element, V value);
+
+	/**
 	 * Get the value corresponding to the specified <code>Property</code> from
 	 * the specified <code>Element</code> instance.
 	 *
+	 * @param  <V>      The type of the value
 	 * @param  property The <code>Property</code>, not null
 	 * @param  element  The <code>Element</code>, not null
 	 *
@@ -111,6 +151,7 @@ public interface MetaData<T extends Element>
 	 * Set the value corresponding to the specified <code>Property</code> in
 	 * the specified <code>Element</code> instance to the specified value.
 	 *
+	 * @param  <V>      The type of the value
 	 * @param  property The <code>Property</code>, not null
 	 * @param  element  The <code>Element</code>, not null
 	 * @param  value    The value to be set, may be null

@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain.metadata;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import java.util.stream.Stream;
+
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
@@ -101,5 +103,46 @@ final class PropertyReference<T extends Element, V>
 		assert this.isWritable () : "element is Read-Only";
 
 		this.set.accept (element, value);
+	}
+
+	/**
+	 * Determine if the value contained in the <code>Element</code> has the
+	 * specified value.
+	 * <p>
+	 * This method is equivalent to calling the <code>equals</code> method on
+	 * the value.
+	 *
+	 * @param  element  The <code>Element</code> containing the value, not null
+	 * @param  value    The value to test, not null
+	 *
+	 * @return <code>true</code> if the <code>Element</code> contains the
+	 *         specified value, <code>false</code> otherwise.
+	 */
+
+	public boolean hasValue (final T element, final V value)
+	{
+		assert element != null : "element is NULL";
+		assert value != null : "value is NULL";
+
+		return this.get.apply (element).equals (value);
+	}
+
+	/**
+	 * Get the a <code>Stream</code> containing value from the specified
+	 * <code>Element</code> instance.
+	 *
+	 * @param  element  The <code>Element</code>, not null
+	 *
+	 * @return          A <code>Stream</code> containing the value from the
+	 *                  <code>Element</code>
+	 */
+
+	public Stream<V> stream (final T element)
+	{
+		assert element != null : "element is NULL";
+
+		V value = this.get.apply (element);
+
+		return (value != null) ? Stream.of (value) : Stream.empty ();
 	}
 }
