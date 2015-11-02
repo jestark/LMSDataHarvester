@@ -19,9 +19,13 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Set;
 import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
+import java.util.stream.Stream;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
@@ -56,6 +60,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class ActivitySource extends Element
 {
+	/** The <code>MetaData</code> for the <code>ActivitySource</code> */
+	private static final MetaData<ActivitySource> METADATA;
+
 	/** The name of the <code>ActivitySource</code> */
 	public static final Property<String> NAME;
 
@@ -77,34 +84,11 @@ public abstract class ActivitySource extends Element
 
 		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
-		Definition.getBuilder (ActivitySource.class, Element.class)
+		METADATA = Definition.getBuilder (ActivitySource.class, Element.class)
 			.addProperty (NAME, ActivitySource::getName, ActivitySource::setName)
 			.addRelationship (TYPES, ActivitySource::getTypes, ActivitySource::addType, ActivitySource::removeType)
 			.addSelector (SELECTOR_NAME)
 			.build ();
-	}
-
-	/**
-	 * Get an instance of the <code>ActivitySourceBuilder</code> for the
-	 * specified <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>ActivitySourceBuilder</code>
-	 *                               instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>ActivitySource</code>
-	 * @throws IllegalStateException if the <code>DataStore</code> is
-	 *                               immutable
-	 */
-
-	public static ActivitySourceBuilder builder (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
-
-		return new ActivitySourceBuilder (datastore);
 	}
 
 	/**
@@ -125,12 +109,18 @@ public abstract class ActivitySource extends Element
 
 	public static ActivitySourceBuilder builder (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
+		Preconditions.checkNotNull (model, "model");
 
-		return ActivitySource.builder (model.getDataStore ());
+		return null;
+	}
+
+	/**
+	 * Create the <code>ActivitySource</code>.
+	 */
+
+	protected ActivitySource ()
+	{
+		super ();
 	}
 
 	/**
@@ -140,6 +130,7 @@ public abstract class ActivitySource extends Element
 	 */
 
 	@Override
+	@CheckReturnValue
 	protected MoreObjects.ToStringHelper toStringHelper ()
 	{
 		return super.toStringHelper ()
@@ -188,6 +179,7 @@ public abstract class ActivitySource extends Element
 	 */
 
 	@Override
+	@CheckReturnValue
 	public String toString ()
 	{
 		return this.toStringHelper ()
@@ -195,40 +187,93 @@ public abstract class ActivitySource extends Element
 	}
 
 	/**
-	 * Get an <code>ActivitySourceBuilder</code> instance for the specified
-	 * <code>DataStore</code>.  This method creates an
-	 * <code>ActivitySourceBuilder</code> on the specified
-	 * <code>DataStore</code> and initializes it with the contents of this
-	 * <code>ActivitySource</code> instance.
+	 * Get the <code>Set</code> of <code>Property</code> instances associated
+	 * with the <code>Element</code> interface class.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The initialized <code>ActivitySourceBuilder</code>
+	 * @return The <code>Set</code> of <code>Property</code> instances
+	 *         associated with the <code>Element</code> interface class
 	 */
 
 	@Override
-	public ActivitySourceBuilder getBuilder (final DataStore datastore)
+	public Set<Property<?>> properties ()
 	{
-		assert datastore != null : "datastore is null";
-
-		return ActivitySource.builder (datastore)
-			.load (this);
+		return ActivitySource.METADATA.getProperties ();
 	}
 
 	/**
-	 * Get the <code>MetaData</code> instance for this
-	 * <code>ActivitySource</code> using the specified <code>DataStore</code>.
+	 * Get the <code>Set</code> of <code>Selector</code> instances associated
+	 * with the <code>Element</code> interface class.
 	 *
-	 * @return The <code>MetaData</code>
+	 * @return The <code>Set</code> of <code>Selector</code> instances
+	 *         associated with the <code>Element</code> interface class
 	 */
 
 	@Override
-	protected MetaData<ActivitySource> metadata ()
+	public Set<Selector> selectors ()
 	{
-		return this.getDomainModel ()
-			.getDataStore ()
-			.getProfile ()
-			.getCreator (ActivitySource.class, this.getClass ());
+		return ActivitySource.METADATA.getSelectors ();
+	}
+
+	/**
+	 * Determine if the value contained in the <code>Element</code> represented
+	 * by the specified <code>Property</code> has the specified value.  If the
+	 * <code>Property</code> represents a singe value, then this method will be
+	 * equivalent to calling the <code>equals</code> method on the value
+	 * represented by the <code>Property</code>.  This method is equivalent to
+	 * calling the <code>contains</code> method for <code>Property</code>
+	 * instances that represent collections.
+	 *
+	 * @return <code>true</code> if the value represented by the
+	 *         <code>Property</code> equals/contains the specified value,
+	 *         <code>false</code> otherwise.
+	 */
+
+	@Override
+	public <V> boolean hasValue (final Property<V> property, final V value)
+	{
+		return ActivitySource.METADATA.hasValue (property, this, value);
+	}
+
+	/**
+	 * Get a <code>Stream</code> containing all of the values in this
+	 * <code>Element</code> instance which are represented by the specified
+	 * <code>Property</code>.  This method will return a <code>Stream</code>
+	 * containing zero or more values.  For a single-valued
+	 * <code>Property</code>, the returned <code>Stream</code> will contain
+	 * exactly zero or one values.  An empty <code>Stream</code> will be
+	 * returned if the associated value is null.  A <code>Stream</code>
+	 * containing all of the values in the associated collection will be
+	 * returned for multi-valued <code>Property</code> instances.
+	 *
+	 * @param  <V>      The type of the values in the <code>Stream</code>
+	 * @param  property The <code>Property</code>, not null
+	 *
+	 * @return          The <code>Stream</code>
+	 */
+
+	@Override
+	public <V> Stream<V> stream (final Property<V> property)
+	{
+		return ActivitySource.METADATA.getStream (property, this);
+	}
+
+	/**
+	 * Get an <code>ActivitySourceBuilder</code> instance for the specified
+	 * <code>DomainModel</code>.  This method creates an
+	 * <code>ActivitySourceBuilder</code> on the specified
+	 * <code>DomainModel</code> and initializes it with the contents of this
+	 * <code>ActivitySource</code> instance.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The initialized <code>ActivitySourceBuilder</code>
+	 */
+
+	@Override
+	public ActivitySourceBuilder getBuilder (final DomainModel model)
+	{
+		return ActivitySource.builder (Preconditions.checkNotNull (model, "model"))
+			.load (this);
 	}
 
 	/**
@@ -242,8 +287,8 @@ public abstract class ActivitySource extends Element
 
 	/**
 	 * Set the name of the <code>ActivitySource</code>.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>ActivitySource</code> instance is loaded.
+	 * intended to be used to initialize a new <code>ActivitySource</code>
+	 * instance.
 	 *
 	 * @param name The name of the <code>ActivitySource</code>
 	 */
@@ -263,9 +308,8 @@ public abstract class ActivitySource extends Element
 
 	/**
 	 * Initialize the <code>Set</code> of dependent <code>ActivityType</code>
-	 * instances.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>ActivitySource</code> instance is
-	 * loaded.
+	 * instances.  This method is intended to be used to initialize a new
+	 * <code>ActivitySource</code> instance.
 	 *
 	 * @param  types The <code>Set</code> of <code>ActivityType</code>
 	 *               instances to be associated with the

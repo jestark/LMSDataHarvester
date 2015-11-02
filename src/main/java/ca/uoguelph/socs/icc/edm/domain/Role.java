@@ -16,11 +16,16 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.Set;
 import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
+import java.util.stream.Stream;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
@@ -51,6 +56,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Role extends Element
 {
+	/** The <code>MetaData</code> for the <code>Role</code> */
+	private static final MetaData<Role> METADATA;
+
 	/** The name of the <code>Role</code> */
 	public static final Property<String> NAME;
 
@@ -68,33 +76,11 @@ public abstract class Role extends Element
 
 		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
-		Definition.getBuilder (Role.class, Element.class)
+		METADATA = Definition.getBuilder (Role.class, Element.class)
 			.addProperty (NAME, Role::getName, Role::setName)
 			.addRelationship (Enrolment.class, Enrolment.ROLE, Enrolment.SELECTOR_ROLE)
 			.addSelector (SELECTOR_NAME)
 			.build ();
-	}
-
-	/**
-	 * Get an instance of the <code>RoleBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>RoleBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Role</code>
-	 * @throws IllegalStateException if the <code>DataStore</code> is
-	 *                               immutable
-	 */
-
-	public static RoleBuilder builder (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
-
-		return new RoleBuilder (datastore);
 	}
 
 	/**
@@ -114,12 +100,18 @@ public abstract class Role extends Element
 
 	public static RoleBuilder builder (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
+		Preconditions.checkNotNull (model, "model");
 
-		return Role.builder (model.getDataStore ());
+		return null;
+	}
+
+	/**
+	 * Create the <code>Role</code>.
+	 */
+
+	protected Role ()
+	{
+		super ();
 	}
 
 	/**
@@ -129,6 +121,7 @@ public abstract class Role extends Element
 	 */
 
 	@Override
+	@CheckReturnValue
 	protected MoreObjects.ToStringHelper toStringHelper ()
 	{
 		return super.toStringHelper ()
@@ -176,6 +169,7 @@ public abstract class Role extends Element
 	 */
 
 	@Override
+	@CheckReturnValue
 	public String toString()
 	{
 		return this.toStringHelper ()
@@ -183,39 +177,92 @@ public abstract class Role extends Element
 	}
 
 	/**
-	 * Get an <code>RoleBuilder</code> instance for the specified
-	 * <code>DataStore</code>.  This method creates an
-	 * <code>RoleBuilder</code> on the specified <code>DataStore</code> and
-	 * initializes it with the contents of this <code>Role</code> instance.
+	 * Get the <code>Set</code> of <code>Property</code> instances associated
+	 * with the <code>Element</code> interface class.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The initialized <code>RoleBuilder</code>
+	 * @return The <code>Set</code> of <code>Property</code> instances
+	 *         associated with the <code>Element</code> interface class
 	 */
 
 	@Override
-	public RoleBuilder getBuilder (final DataStore datastore)
+	public Set<Property<?>> properties ()
 	{
-		assert datastore != null : "datastore is null";
-
-		return Role.builder (datastore)
-			.load (this);
+		return Role.METADATA.getProperties ();
 	}
 
 	/**
-	 * Get the <code>MetaData</code> instance for this <code>Role</code>
-	 * using the specified <code>DataStore</code>.
+	 * Get the <code>Set</code> of <code>Selector</code> instances associated
+	 * with the <code>Element</code> interface class.
 	 *
-	 * @return The <code>MetaData</code>
+	 * @return The <code>Set</code> of <code>Selector</code> instances
+	 *         associated with the <code>Element</code> interface class
 	 */
 
 	@Override
-	protected MetaData<Role> metadata ()
+	public Set<Selector> selectors ()
 	{
-		return this.getDomainModel ()
-			.getDataStore ()
-			.getProfile ()
-			.getCreator (Role.class, this.getClass ());
+		return Role.METADATA.getSelectors ();
+	}
+
+	/**
+	 * Determine if the value contained in the <code>Element</code> represented
+	 * by the specified <code>Property</code> has the specified value.  If the
+	 * <code>Property</code> represents a singe value, then this method will be
+	 * equivalent to calling the <code>equals</code> method on the value
+	 * represented by the <code>Property</code>.  This method is equivalent to
+	 * calling the <code>contains</code> method for <code>Property</code>
+	 * instances that represent collections.
+	 *
+	 * @return <code>true</code> if the value represented by the
+	 *         <code>Property</code> equals/contains the specified value,
+	 *         <code>false</code> otherwise.
+	 */
+
+	@Override
+	public <V> boolean hasValue (final Property<V> property, final V value)
+	{
+		return Role.METADATA.hasValue (property, this, value);
+	}
+
+	/**
+	 * Get a <code>Stream</code> containing all of the values in this
+	 * <code>Element</code> instance which are represented by the specified
+	 * <code>Property</code>.  This method will return a <code>Stream</code>
+	 * containing zero or more values.  For a single-valued
+	 * <code>Property</code>, the returned <code>Stream</code> will contain
+	 * exactly zero or one values.  An empty <code>Stream</code> will be
+	 * returned if the associated value is null.  A <code>Stream</code>
+	 * containing all of the values in the associated collection will be
+	 * returned for multi-valued <code>Property</code> instances.
+	 *
+	 * @param  <V>      The type of the values in the <code>Stream</code>
+	 * @param  property The <code>Property</code>, not null
+	 *
+	 * @return          The <code>Stream</code>
+	 */
+
+	@Override
+	public <V> Stream<V> stream (final Property<V> property)
+	{
+		return Role.METADATA.getStream (property, this);
+	}
+
+	/**
+	 * Get an <code>RoleBuilder</code> instance for the specified
+	 * <code>DomainModel</code>.  This method creates an
+	 * <code>RoleBuilder</code> on the specified <code>DomainModel</code> and
+	 * initializes it with the contents of this <code>Role</code> instance.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The initialized <code>RoleBuilder</code>
+	 */
+
+	@Override
+	public RoleBuilder getBuilder (final DomainModel model)
+	{
+		return Role.builder (Preconditions.checkNotNull (model, "model"))
+			.load (this);
 	}
 
 	/**
@@ -229,8 +276,7 @@ public abstract class Role extends Element
 
 	/**
 	 * Set the name of the <code>Role</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Role</code> instance is
-	 * loaded.
+	 * used to initialize a new <code>Role</code> instance.
 	 *
 	 * @param name The name of the <code>Role</code>
 	 */

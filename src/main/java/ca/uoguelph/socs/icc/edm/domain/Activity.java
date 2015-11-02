@@ -25,7 +25,13 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.Objects;
 
+import java.util.stream.Stream;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.MemDataStore;
@@ -93,6 +99,9 @@ public abstract class Activity extends ParentActivity implements Serializable
 	/** <code>ActivityType</code> to implementation class map */
 	private static final Map<ActivityType, Class<? extends Activity>> activities;
 
+	/** The <code>MetaData</code> for the <code>Activity</code> */
+	private static final MetaData<Activity> METADATA;
+
 	/** The name of the <code>Activity</code> */
 	public static final Property<String> NAME;
 
@@ -114,7 +123,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
 		REFERENCE = Property.getInstance (ActivityReference.class, "reference", Property.Flags.REQUIRED);
 
-		Definition.getBuilder (Activity.class, Element.class)
+		METADATA = Definition.getBuilder (Activity.class, Element.class)
 			.addProperty (NAME, Activity::getName)
 			.addRelationship (REFERENCE, Activity::getReference, Activity::setReference)
 			.build ();
@@ -132,7 +141,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 				.setGenerator (Element.class, SequentialIdGenerator.class)
 				.build ();
 
-			Activity.store = new DomainModel (DataStore.getInstance (MemDataStore.class, activityProf));
+			// Activity.store = new DomainModel (DataStore.getInstance (MemDataStore.class, activityProf));
 		}
 	}
 
@@ -213,30 +222,6 @@ public abstract class Activity extends ParentActivity implements Serializable
 
 	/**
 	 * Get an instance of the <code>ActivityBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 * @param  type                  The <code>ActivityType</code>, not null
-	 *
-	 * @return                       The <code>ActivityBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Activity</code>
-	 * @throws IllegalStateException if the <code>DataStore</code> is
-	 *                               immutable
-	 */
-
-	public static ActivityBuilder builder (final DataStore datastore, final ActivityType type)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert type != null : "type is NULL";
-
-		return new ActivityBuilder (datastore, type);
-	}
-
-	/**
-	 * Get an instance of the <code>ActivityBuilder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
@@ -253,17 +238,10 @@ public abstract class Activity extends ParentActivity implements Serializable
 
 	public static ActivityBuilder builder (final DomainModel model, final ActivityType type)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
+		Preconditions.checkNotNull (model, "model");
+		Preconditions.checkNotNull (type, "type");
 
-		if (type == null)
-		{
-			throw new NullPointerException ("type is NULL");
-		}
-
-		return Activity.builder (model.getDataStore (), type);
+		return null;
 	}
 
 	/**
@@ -272,6 +250,8 @@ public abstract class Activity extends ParentActivity implements Serializable
 
 	protected Activity ()
 	{
+		super ();
+
 		this.reference = null;
 	}
 
@@ -282,6 +262,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 	 */
 
 	@Override
+	@CheckReturnValue
 	protected MoreObjects.ToStringHelper toStringHelper ()
 	{
 		return super.toStringHelper ()
@@ -329,6 +310,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 	 */
 
 	@Override
+	@CheckReturnValue
 	public String toString ()
 	{
 		return this.toStringHelper ()
@@ -336,39 +318,92 @@ public abstract class Activity extends ParentActivity implements Serializable
 	}
 
 	/**
-	 * Get an <code>ActivityBuilder</code> instance for the specified
-	 * <code>DataStore</code>.  This method creates a <code>ActivityBuilder</code>
-	 * on the specified <code>DataStore</code> and initializes it with the
-	 * contents of this <code>Activity</code> instance.
+	 * Get the <code>Set</code> of <code>Property</code> instances associated
+	 * with the <code>Element</code> interface class.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The initialized <code>ActivityBuilder</code>
+	 * @return The <code>Set</code> of <code>Property</code> instances
+	 *         associated with the <code>Element</code> interface class
 	 */
 
 	@Override
-	public ActivityBuilder getBuilder (final DataStore datastore)
+	public Set<Property<?>> properties ()
 	{
-		assert datastore != null : "datastore is null";
-
-		return Activity.builder (datastore, this.getType ())
-			.load (this);
+		return Activity.METADATA.getProperties ();
 	}
 
 	/**
-	 * Get the <code>MetaData</code> instance for this <code>Activity</code>
-	 * using the specified <code>DataStore</code>.
+	 * Get the <code>Set</code> of <code>Selector</code> instances associated
+	 * with the <code>Element</code> interface class.
 	 *
-	 * @return The <code>MetaData</code>
+	 * @return The <code>Set</code> of <code>Selector</code> instances
+	 *         associated with the <code>Element</code> interface class
 	 */
 
 	@Override
-	protected MetaData<Activity> metadata ()
+	public Set<Selector> selectors ()
 	{
-		return this.getDomainModel ()
-			.getDataStore ()
-			.getProfile ()
-			.getCreator (Activity.class, this.getClass ());
+		return Activity.METADATA.getSelectors ();
+	}
+
+	/**
+	 * Determine if the value contained in the <code>Element</code> represented
+	 * by the specified <code>Property</code> has the specified value.  If the
+	 * <code>Property</code> represents a singe value, then this method will be
+	 * equivalent to calling the <code>equals</code> method on the value
+	 * represented by the <code>Property</code>.  This method is equivalent to
+	 * calling the <code>contains</code> method for <code>Property</code>
+	 * instances that represent collections.
+	 *
+	 * @return <code>true</code> if the value represented by the
+	 *         <code>Property</code> equals/contains the specified value,
+	 *         <code>false</code> otherwise.
+	 */
+
+	@Override
+	public <V> boolean hasValue (final Property<V> property, final V value)
+	{
+		return Activity.METADATA.hasValue (property, this, value);
+	}
+
+	/**
+	 * Get a <code>Stream</code> containing all of the values in this
+	 * <code>Element</code> instance which are represented by the specified
+	 * <code>Property</code>.  This method will return a <code>Stream</code>
+	 * containing zero or more values.  For a single-valued
+	 * <code>Property</code>, the returned <code>Stream</code> will contain
+	 * exactly zero or one values.  An empty <code>Stream</code> will be
+	 * returned if the associated value is null.  A <code>Stream</code>
+	 * containing all of the values in the associated collection will be
+	 * returned for multi-valued <code>Property</code> instances.
+	 *
+	 * @param  <V>      The type of the values in the <code>Stream</code>
+	 * @param  property The <code>Property</code>, not null
+	 *
+	 * @return          The <code>Stream</code>
+	 */
+
+	@Override
+	public <V> Stream<V> stream (final Property<V> property)
+	{
+		return Activity.METADATA.getStream (property, this);
+	}
+
+	/**
+	 * Get an <code>ActivityBuilder</code> instance for the specified
+	 * <code>DomainModel</code>.  This method creates a <code>ActivityBuilder</code>
+	 * on the specified <code>DomainModel</code> and initializes it with the
+	 * contents of this <code>Activity</code> instance.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The initialized <code>ActivityBuilder</code>
+	 */
+
+	@Override
+	public ActivityBuilder getBuilder (final DomainModel model)
+	{
+		return Activity.builder (Preconditions.checkNotNull (model, "model"), this.getType ())
+			.load (this);
 	}
 
 	/**
@@ -418,6 +453,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 	 * @return The <code>ActivityReference</code>
 	 */
 
+	@CheckReturnValue
 	protected ActivityReference getReference ()
 	{
 		return this.propagateDomainModel (this.reference);
@@ -425,8 +461,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 
 	/**
 	 * Set the associated <code>ActivityReference</code>.   This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Activity</code> instance is loaded.
+	 * intended to be used to initialize a new <code>Activity</code> instance.
 	 *
 	 * @param  reference The <code>ActivityReference</code>, not null
 	 */

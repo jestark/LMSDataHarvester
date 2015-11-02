@@ -20,9 +20,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
+import java.util.stream.Stream;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
@@ -57,6 +61,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Course extends Element
 {
+	/** The <code>MetaData</code> for the <code>Course</code> */
+	private static final MetaData<Course> METADATA;
+
 	/** The name of the <code>Course</code> */
 	public static final Property<String> NAME;
 
@@ -91,7 +98,7 @@ public abstract class Course extends Element
 
 		SELECTOR_OFFERING = Selector.getInstance ("offering", true, NAME, SEMESTER, YEAR);
 
-		Definition.getBuilder (Course.class, Element.class)
+		METADATA = Definition.getBuilder (Course.class, Element.class)
 			.addProperty (NAME, Course::getName, Course::setName)
 			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
 			.addProperty (YEAR, Course::getYear, Course::setYear)
@@ -99,28 +106,6 @@ public abstract class Course extends Element
 			.addRelationship (ENROLMENTS, Course::getEnrolments, Course::addEnrolment, Course::removeEnrolment)
 			.addSelector (SELECTOR_OFFERING)
 			.build ();
-	}
-
-	/**
-	 * Get an instance of the <code>CourseBuilder</code> for the specified
-	 * <code>DataStore</code>.
-	 *
-	 * @param  datastore             The <code>DataStore</code>, not null
-	 *
-	 * @return                       The <code>CourseBuilder</code> instance
-	 * @throws IllegalStateException if the <code>DataStore</code> is closed
-	 * @throws IllegalStateException if the <code>DataStore</code> does not
-	 *                               have a default implementation class for
-	 *                               the <code>Course</code>
-	 * @throws IllegalStateException if the <code>DataStore</code> is
-	 *                               immutable
-	 */
-
-	public static CourseBuilder builder (final DataStore datastore)
-	{
-		assert datastore != null : "datastore is NULL";
-
-		return new CourseBuilder (datastore);
 	}
 
 	/**
@@ -140,12 +125,18 @@ public abstract class Course extends Element
 
 	public static CourseBuilder builder (final DomainModel model)
 	{
-		if (model == null)
-		{
-			throw new NullPointerException ("model is NULL");
-		}
+		Preconditions.checkNotNull (model, "model");
 
-		return Course.builder (model.getDataStore ());
+		return null;
+	}
+
+	/**
+	 * Create the <code>Course</code>.
+	 */
+
+	protected Course ()
+	{
+		super ();
 	}
 
 	/**
@@ -155,6 +146,7 @@ public abstract class Course extends Element
 	 */
 
 	@Override
+	@CheckReturnValue
 	protected MoreObjects.ToStringHelper toStringHelper ()
 	{
 		return super.toStringHelper ()
@@ -207,6 +199,7 @@ public abstract class Course extends Element
 	 */
 
 	@Override
+	@CheckReturnValue
 	public String toString ()
 	{
 		return this.toStringHelper ()
@@ -214,39 +207,92 @@ public abstract class Course extends Element
 	}
 
 	/**
-	 * Get an <code>CourseBuilder</code> instance for the specified
-	 * <code>DataStore</code>.  This method creates an
-	 * <code>CourseBuilder</code> on the specified <code>DataStore</code> and
-	 * initializes it with the contents of this <code>Course</code> instance.
+	 * Get the <code>Set</code> of <code>Property</code> instances associated
+	 * with the <code>Element</code> interface class.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The initialized <code>CourseBuilder</code>
+	 * @return The <code>Set</code> of <code>Property</code> instances
+	 *         associated with the <code>Element</code> interface class
 	 */
 
 	@Override
-	public CourseBuilder getBuilder (final DataStore datastore)
+	public Set<Property<?>> properties ()
 	{
-		assert datastore != null : "datastore is null";
-
-		return Course.builder (datastore)
-			.load (this);
+		return Course.METADATA.getProperties ();
 	}
 
 	/**
-	 * Get the <code>MetaData</code> instance for this <code>Course</code>
-	 * using the specified <code>DataStore</code>.
+	 * Get the <code>Set</code> of <code>Selector</code> instances associated
+	 * with the <code>Element</code> interface class.
 	 *
-	 * @return The <code>MetaData</code>
+	 * @return The <code>Set</code> of <code>Selector</code> instances
+	 *         associated with the <code>Element</code> interface class
 	 */
 
 	@Override
-	protected MetaData<Course> metadata ()
+	public Set<Selector> selectors ()
 	{
-		return this.getDomainModel ()
-			.getDataStore ()
-			.getProfile ()
-			.getCreator (Course.class, this.getClass ());
+		return Course.METADATA.getSelectors ();
+	}
+
+	/**
+	 * Determine if the value contained in the <code>Element</code> represented
+	 * by the specified <code>Property</code> has the specified value.  If the
+	 * <code>Property</code> represents a singe value, then this method will be
+	 * equivalent to calling the <code>equals</code> method on the value
+	 * represented by the <code>Property</code>.  This method is equivalent to
+	 * calling the <code>contains</code> method for <code>Property</code>
+	 * instances that represent collections.
+	 *
+	 * @return <code>true</code> if the value represented by the
+	 *         <code>Property</code> equals/contains the specified value,
+	 *         <code>false</code> otherwise.
+	 */
+
+	@Override
+	public <V> boolean hasValue (final Property<V> property, final V value)
+	{
+		return Course.METADATA.hasValue (property, this, value);
+	}
+
+	/**
+	 * Get a <code>Stream</code> containing all of the values in this
+	 * <code>Element</code> instance which are represented by the specified
+	 * <code>Property</code>.  This method will return a <code>Stream</code>
+	 * containing zero or more values.  For a single-valued
+	 * <code>Property</code>, the returned <code>Stream</code> will contain
+	 * exactly zero or one values.  An empty <code>Stream</code> will be
+	 * returned if the associated value is null.  A <code>Stream</code>
+	 * containing all of the values in the associated collection will be
+	 * returned for multi-valued <code>Property</code> instances.
+	 *
+	 * @param  <V>      The type of the values in the <code>Stream</code>
+	 * @param  property The <code>Property</code>, not null
+	 *
+	 * @return          The <code>Stream</code>
+	 */
+
+	@Override
+	public <V> Stream<V> stream (final Property<V> property)
+	{
+		return Course.METADATA.getStream (property, this);
+	}
+
+	/**
+	 * Get an <code>CourseBuilder</code> instance for the specified
+	 * <code>DomainModel</code>.  This method creates an
+	 * <code>CourseBuilder</code> on the specified <code>DomainModel</code> and
+	 * initializes it with the contents of this <code>Course</code> instance.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 *
+	 * @return       The initialized <code>CourseBuilder</code>
+	 */
+
+	@Override
+	public CourseBuilder getBuilder (final DomainModel model)
+	{
+		return Course.builder (Preconditions.checkNotNull (model, "model"))
+			.load (this);
 	}
 
 	/**
@@ -260,8 +306,7 @@ public abstract class Course extends Element
 
 	/**
 	 * Set the name of the <code>Course</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Course</code> instance
-	 * is loaded.
+	 * used to be used to initialize a new <code>Course</code> instance.
 	 *
 	 * @param  name The name of the <code>Course</code>
 	 */
@@ -279,8 +324,8 @@ public abstract class Course extends Element
 
 	/**
 	 * Set the <code>Semester</code> in which the <code>Course</code> was
-	 * offered.  This method is intended to be used by a <code>DataStore</code>
-	 * when the <code>Course</code> instance is loaded.
+	 * offered.  This method is intended to be used to be used to initialize a
+	 * new <code>Course</code> instance.
 	 *
 	 * @param  semester The <code>Semester</code> in which the
 	 *                  <code>Course</code> was offered
@@ -298,8 +343,8 @@ public abstract class Course extends Element
 
 	/**
 	 * Set the year in which the <code>Course</code> was offered.  This method
-	 * is intended to be used by a <code>DataStore</code> when the
-	 * <code>Course</code> instance is loaded.
+	 * is intended to be used to be used to initialize a new <code>Course</code>
+	 * instance.
 	 *
 	 * @param  year The year in which the <code>Course</code> was offered
 	 */
@@ -329,8 +374,8 @@ public abstract class Course extends Element
 	/**
 	 * Initialize the <code>List</code> of <code>Activity</code> instances
 	 * associated with the <code>Course</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Course</code> instance is loaded.
+	 * intended to be used to be used to initialize a new <code>Course</code>
+	 * instance.
 	 *
 	 * @param  activities The <code>List</code> of <code>Activity</code>
 	 *                    instances, not null
@@ -375,8 +420,7 @@ public abstract class Course extends Element
 	/**
 	 * Initialize the <code>List</code> of <code>Enrolment</code> instances
 	 * associated with the <code>Course</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Course</code> instance is loaded.
+	 * intended to be used to initialize a new <code>Course</code> instance.
 	 *
 	 * @param  enrolments The <code>List</code> of <code>Enrolment</code>
 	 *                    instances, not null

@@ -16,9 +16,14 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import com.google.common.base.MoreObjects;
+import java.util.Set;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import java.util.stream.Stream;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
+import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
@@ -74,11 +79,21 @@ public abstract class Element
 	}
 
 	/**
+	 * Create the <code>Element</code> instance.
+	 */
+
+	protected Element ()
+	{
+		this.model = null;
+	}
+
+	/**
 	 * Template method to create and initialize a <code>ToStringHelper</code>.
 	 *
 	 * @return The <code>ToStringHelper</code>
 	 */
 
+	@CheckReturnValue
 	protected MoreObjects.ToStringHelper toStringHelper ()
 	{
 		return MoreObjects.toStringHelper (this)
@@ -86,17 +101,117 @@ public abstract class Element
 	}
 
 	/**
-	 * Get an <code>Builder</code> instance for the specified
-	 * <code>DataStore</code>.  This method creates a <code>Builder</code> on
-	 * the specified <code>DataStore</code> and initializes it with the
-	 * contents of this <code>Element</code> instance.
+	 * Propagate the <code>DomainModel</code> reference to the specified
+	 * <code>Element</code> instance.  This is an internal method to copy the
+	 * <code>DomainModel</code> reference to the target <code>Element</code>
+	 * instance.  It it used to make sure that an <code>Element</code> has a
+	 * reference to the <code>DomainModel</code> before it is returned by the
+	 * getter method on the containing <code>Element</code> instance.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element The <code>Element</code>, not null
 	 *
-	 * @return           The initialized <code>Builder</code>
+	 * @return         The supplied <code>Element</code>
 	 */
 
-	public abstract Builder<? extends Element> getBuilder (DataStore datastore);
+	protected final <T extends Element> T propagateDomainModel (final @Nullable T element)
+	{
+		if ((element != null) && (this.model != null))
+		{
+			((Element) element).model = this.model;
+		}
+
+		return element;
+	}
+
+	/**
+	 * Compare two <code>Element</code> instances to determine if they are
+	 * equal using all of the instance fields.  In most cases this will be the
+	 * same as the <code>equals</code> method.
+	 *
+	 * @param  element The <code>Element</code> instance to compare to this
+	 *                 instance
+	 *
+	 * @return         <code>True</code> if the two <code>Enrolment</code>
+	 *                 instances are equal, <code>False</code> otherwise
+	 */
+
+	public boolean equalsAll (final @Nullable Element element)
+	{
+		return this.equals (element);
+	}
+
+	/**
+	 * Compare two <code>Element</code> instances to determine if they are
+	 * equal using the minimum set fields required to identify the
+	 * <code>Element</code> instance.  In almost all cases this methods will
+	 * give the same result as calling <code>equals</code>.
+	 *
+	 * @param  element The <code>Element</code> instance to compare to this
+	 *                 instance
+	 *
+	 * @return         <code>True</code> if the two <code>Enrolment</code>
+	 *                 instances are equal, <code>False</code> otherwise
+	 */
+
+	public boolean equalsUnique (final @Nullable Element element)
+	{
+		return this.equals (element);
+	}
+
+	/**
+	 * Get the <code>Set</code> of <code>Property</code> instances associated
+	 * with the <code>Element</code> interface class.
+	 *
+	 * @return The <code>Set</code> of <code>Property</code> instances
+	 *         associated with the <code>Element</code> interface class
+	 */
+
+	public abstract Set<Property<?>> properties ();
+
+	/**
+	 * Get the <code>Set</code> of <code>Selector</code> instances associated
+	 * with the <code>Element</code> interface class.
+	 *
+	 * @return The <code>Set</code> of <code>Selector</code> instances
+	 *         associated with the <code>Element</code> interface class
+	 */
+
+	public abstract Set<Selector> selectors ();
+
+	/**
+	 * Determine if the value contained in the <code>Element</code> represented
+	 * by the specified <code>Property</code> has the specified value.  If the
+	 * <code>Property</code> represents a singe value, then this method will be
+	 * equivalent to calling the <code>equals</code> method on the value
+	 * represented by the <code>Property</code>.  This method is equivalent to
+	 * calling the <code>contains</code> method for <code>Property</code>
+	 * instances that represent collections.
+	 *
+	 * @return <code>true</code> if the value represented by the
+	 *         <code>Property</code> equals/contains the specified value,
+	 *         <code>false</code> otherwise.
+	 */
+
+	public abstract <V> boolean hasValue (final Property<V> property, final V value);
+
+	/**
+	 * Get a <code>Stream</code> containing all of the values in this
+	 * <code>Element</code> instance which are represented by the specified
+	 * <code>Property</code>.  This method will return a <code>Stream</code>
+	 * containing zero or more values.  For a single-valued
+	 * <code>Property</code>, the returned <code>Stream</code> will contain
+	 * exactly zero or one values.  An empty <code>Stream</code> will be
+	 * returned if the associated value is null.  A <code>Stream</code>
+	 * containing all of the values in the associated collection will be
+	 * returned for multi-valued <code>Property</code> instances.
+	 *
+	 * @param  <V>      The type of the values in the <code>Stream</code>
+	 * @param  property The <code>Property</code>, not null
+	 *
+	 * @return          The <code>Stream</code>
+	 */
+
+	public abstract <V> Stream<V> stream (final Property<V> property);
 
 	/**
 	 * Get an <code>Builder</code> instance for the specified
@@ -109,23 +224,7 @@ public abstract class Element
 	 * @return       The initialized <code>Builder</code>
 	 */
 
-	public final Builder<? extends Element> getBuilder (final DomainModel model)
-	{
-		if (model == null)
-		{
-			throw new NullPointerException ();
-		}
-
-		return this.getBuilder (model.getDataStore ());
-	}
-
-	/**
-	 * Get the <code>MetaData</code> instance for this <code>Element</code>.
-	 *
-	 * @return           The <code>MetaData</code>
-	 */
-
-	protected abstract MetaData<? extends Element> metadata ();
+	public abstract Builder<? extends Element> getBuilder (DomainModel model);
 
 	/**
 	 * Get a reference to the <code>DomainModel</code> which contains the
@@ -156,78 +255,6 @@ public abstract class Element
 	}
 
 	/**
-	 * Propagate the <code>DomainModel</code> reference to the specified
-	 * <code>Element</code> instance.  This is an internal method to copy the
-	 * <code>DomainModel</code> reference to the target <code>Element</code>
-	 * instance.  It it used to make sure that an <code>Element</code> has a
-	 * reference to the <code>DomainModel</code> before it is returned by the
-	 * getter method on the containing <code>Element</code> instance.
-	 *
-	 * @param  element The <code>Element</code>, not null
-	 *
-	 * @return         The supplied <code>Element</code>
-	 */
-
-	protected final <T extends Element> T propagateDomainModel (final T element)
-	{
-		if ((element != null) && (this.model != null))
-		{
-			((Element) element).model = this.model;
-		}
-
-		return element;
-	}
-
-	/**
-	 * Get a reference to the <code>DataStore</code> which contains the
-	 * <code>Element</code>.
-	 *
-	 * @return The <code>DataStore</code>
-	 */
-
-	protected final DataStore getDataStore ()
-	{
-		assert this.model != null : "Model has not been set";
-
-		return this.model.getDataStore ();
-	}
-
-	/**
-	 * Compare two <code>Element</code> instances to determine if they are
-	 * equal using all of the instance fields.  In most cases this will be the
-	 * same as the <code>equals</code> method.
-	 *
-	 * @param  element The <code>Element</code> instance to compare to this
-	 *                 instance
-	 *
-	 * @return         <code>True</code> if the two <code>Enrolment</code>
-	 *                 instances are equal, <code>False</code> otherwise
-	 */
-
-	public boolean equalsAll (final Element element)
-	{
-		return this.equals (element);
-	}
-
-	/**
-	 * Compare two <code>Element</code> instances to determine if they are
-	 * equal using the minimum set fields required to identify the
-	 * <code>Element</code> instance.  In almost all cases this methods will
-	 * give the same result as calling <code>equals</code>.
-	 *
-	 * @param  element The <code>Element</code> instance to compare to this
-	 *                 instance
-	 *
-	 * @return         <code>True</code> if the two <code>Enrolment</code>
-	 *                 instances are equal, <code>False</code> otherwise
-	 */
-
-	public boolean equalsUnique (final Element element)
-	{
-		return this.equals (element);
-	}
-
-	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
 	 * instance.  Some <code>Element</code> interfaces are dependent on other
 	 * <code>Element</code> interfaces for their identification.  The dependent
@@ -237,6 +264,7 @@ public abstract class Element
 	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
 	 */
 
+	@CheckReturnValue
 	public abstract Long getId ();
 
 	/**
@@ -254,5 +282,5 @@ public abstract class Element
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
-	protected abstract void setId (Long id);
+	protected abstract void setId (@Nullable Long id);
 }

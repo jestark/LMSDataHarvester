@@ -19,7 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.annotation.CheckReturnValue;
+
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 /**
  * A representation of a semester.  The semesters are four months in length
@@ -61,7 +64,7 @@ public enum Semester
 	public static Semester getSemesterByDate (final Date date)
 	{
 		Calendar cal = Calendar.getInstance ();
-		cal.setTime (date);
+		cal.setTime (Preconditions.checkNotNull (date));
 
 		int i = 0;
 		Semester[] semesters = Semester.values ();
@@ -86,7 +89,7 @@ public enum Semester
 	{
 		this.start = start;
 		this.end = end;
-		this.name = name;
+		this.name = Preconditions.checkNotNull (name);
 	}
 
 	/**
@@ -139,6 +142,7 @@ public enum Semester
 	 */
 
 	@Override
+	@CheckReturnValue
 	public String toString ()
 	{
 		return MoreObjects.toStringHelper (this)
