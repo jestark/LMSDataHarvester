@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.Map;
 import java.util.Set;
@@ -28,16 +28,17 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * Translate <code>Element</code> instances between <code>DomainModel</code> /
- * <code>DataStore</code> instances.  This class maintains a set of symmetric,
- * transitive, relationships between <code>Element</code> instances across
- * multiple <code>DataStore</code> instances.  It is primarily intended to be
- * used to provide a mapping for translation <code>Element</code> references
- * between <code>DataStore</code> instances when an <code>Element</code>
- * instance can not be uniquely identified based on its required fields.
+ * Translate <code>Element</code> instances between <code>DomainModel</code>
+ * instances.  This class maintains a set of symmetric, transitive,
+ * relationships between <code>Element</code> instances across multiple
+ * <code>DomainModel</code> instances.  It is primarily intended to be used to
+ * provide a mapping for translation <code>Element</code> references between
+ * <code>DomainModel</code> instances when an <code>Element</code> instance can
+ * not be uniquely identified based on its required fields.
  * <p>
  * The <code>TranslationTable</code> is implemented as a Map of maps.  However,
  * due to the transitive nature of the storage of the relationships, each set
@@ -53,7 +54,7 @@ public final class TranslationTable
 	private final Logger log;
 
 	/** The table */
-	private final Map<Element, Map<DataStore, Element>> table;
+	private final Map<Element, Map<DomainModel, Element>> table;
 
 	/**
 	 * Create the <code>TranslationTable</code>.
@@ -69,25 +70,25 @@ public final class TranslationTable
 	/**
 	 * Determine if the specified <code>Element</code> instance is in the has
 	 * been entered into the <code>TranslationTable</code>, for the specified
-	 * <code>DataStore</code>.
+	 * <code>DomainModel</code>.
 	 *
 	 * @param  element   The <code>Element</code> instance
-	 * @param  datastore The <code>DataStore</code>
+	 * @param  model     The <code>DomainModel</code>
 	 *
 	 * @return           <code>true</code> if the <code>Element</code> instance
 	 *                   is in the <code>TranslationTable</code>,
 	 *                   <code>false</code> otherwise
 	 */
 
-	public boolean contains (final Element element, final DataStore datastore)
+	public boolean contains (final Element element, final DomainModel model)
 	{
-		this.log.trace ("contains: element={}, datastore={}", element, datastore);
+		this.log.trace ("contains: element={}, model={}", element, model);
 
 		boolean result = false;
 
 		if (this.table.containsKey (element))
 		{
-			result = this.table.get (element).containsKey (datastore);
+			result = this.table.get (element).containsKey (model);
 		}
 
 		return result;
@@ -108,26 +109,26 @@ public final class TranslationTable
 
 	/**
 	 * Get the <code>Element</code> instance in the specified
-	 * <code>DataStore</code> which corresponds to the specified
+	 * <code>DomainModel</code> which corresponds to the specified
 	 * <code>Element</code> instance.
 	 *
 	 * @param  element   The <code>Element</code> instance
-	 * @param  datastore The <code>DataStore</code>
+	 * @param  model     The <code>DomainModel</code>
 	 *
 	 * @return           The corresponding <code>Element</code> instance, or
 	 *                   <code>null</code> if it does not exist
 	 */
 
 	@SuppressWarnings ("unchecked")
-	public <T extends Element> T get (final T element, final DataStore datastore)
+	public <T extends Element> T get (final T element, final DomainModel model)
 	{
-		this.log.trace ("get: element={}, datastore={}", element, datastore);
+		this.log.trace ("get: element={}, model={}", element, model);
 
 		assert element != null : "element is NULL";
-		assert datastore != null : "datastore is NULL";
-		assert element.getDataStore () != datastore : "The specified element is in the specified datastore";
+		assert model != null : "model is NULL";
+		assert element.getDomainModel () != model : "The specified element is in the specified model";
 
-		return (this.table.containsKey (element)) ? (T) this.table.get (element).get (datastore) : null;
+		return (this.table.containsKey (element)) ? (T) this.table.get (element).get (model) : null;
 	}
 
 	/**
@@ -144,7 +145,7 @@ public final class TranslationTable
 
 		assert left != null : "left is NULL";
 		assert right != null : "right is NULL";
-		assert left.getDataStore () != right.getDataStore () : "The elements can't both be from the same datastore";
+		assert left.getDomainModel () != right.getDomainModel () : "The elements can't both be from the same DomainModel";
 
 		if (this.table.containsKey (left) && this.table.containsKey (right))
 		{
@@ -154,7 +155,7 @@ public final class TranslationTable
 				{
 					this.log.debug ("Merging disjoint Translation table entries for {} and {}", left, right);
 
-					Map<DataStore, Element> e = this.table.get (left);
+					Map<DomainModel, Element> e = this.table.get (left);
 					e.putAll (this.table.get (right));
 
 					e.forEach ((k, v) -> this.table.put (v, e));
@@ -170,25 +171,25 @@ public final class TranslationTable
 		{
 			this.log.debug ("Adding {} to the existing translation table mapping for {}", right, left);
 
-			Map<DataStore, Element> e = this.table.get (left);
-			e.put (right.getDataStore (), right);
+			Map<DomainModel, Element> e = this.table.get (left);
+			e.put (right.getDomainModel (), right);
 			this.table.put (right, e);
 		}
 		else if ((! this.table.containsKey (left)) && this.table.containsKey (right))
 		{
 			this.log.debug ("Adding {} to the existing translation table mapping for {}", left, right);
 
-			Map<DataStore, Element> e = this.table.get (right);
-			e.put (left.getDataStore (), left);
+			Map<DomainModel, Element> e = this.table.get (right);
+			e.put (left.getDomainModel (), left);
 			this.table.put (left, e);
 		}
 		else
 		{
 			this.log.debug ("Creating new translation table entry for {} <-> {}", left, right);
 
-			Map<DataStore, Element> e = new HashMap<DataStore, Element> ();
-			e.put (left.getDataStore (), left);
-			e.put (right.getDataStore (), right);
+			Map<DomainModel, Element> e = new HashMap<DomainModel, Element> ();
+			e.put (left.getDomainModel (), left);
+			e.put (right.getDomainModel (), right);
 
 			this.table.put (left, e);
 			this.table.put (right, e);
@@ -207,31 +208,31 @@ public final class TranslationTable
 
 		if (this.table.containsKey (element))
 		{
-			this.table.get (element).remove (element.getDataStore ());
+			this.table.get (element).remove (element.getDomainModel ());
 			this.table.remove (element);
 		}
 	}
 
 	/**
 	 * Remove all of the <code>Element</code> instances which are associated
-	 * with the specified <code>DataStore</code>.
+	 * with the specified <code>DomainModel</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>
+	 * @param  model The <code>DomainModel</code>
 	 */
 
-	public void removeAll (final DataStore datastore)
+	public void removeAll (final DomainModel model)
 	{
-		this.log.trace ("removeAll: datastore={}", datastore);
+		this.log.trace ("removeAll: model={}", model);
 
-		Iterator<Map.Entry<Element, Map<DataStore, Element>>> i = this.table.entrySet ().iterator ();
+		Iterator<Map.Entry<Element, Map<DomainModel, Element>>> i = this.table.entrySet ().iterator ();
 
 		while (i.hasNext ())
 		{
-			Map.Entry<Element,Map<DataStore,Element>> key = i.next ();
+			Map.Entry<Element, Map<DomainModel, Element>> entry = i.next ();
 
-			if (key.getKey ().getDataStore () == datastore)
+			if (entry.getKey ().getDomainModel () == model)
 			{
-				key.getValue ().remove (datastore);
+				entry.getValue ().remove (model);
 				i.remove ();
 			}
 		}
