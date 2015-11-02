@@ -16,12 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-
-import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Create <code>Activity</code> instances. This class creates instances for the
@@ -54,34 +54,39 @@ public class ActivityBuilder implements Builder<Activity>
 	protected final ActivityReferenceBuilder referenceBuilder;
 
 	/** Helper to operate on <code>Activity</code> instances*/
-	protected final DataStoreProxy<Activity> activityProxy;
+	protected final Persister<Activity> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	protected final Supplier<Activity> supplier;
 
 	/** The loaded or previously built <code>SubActivity</code> instance */
-	protected Activity oldActivity;
+	protected Activity activity;
 
 	/**
 	 * Create the <code>AbstractActivityBuilder</code>.
 	 *
-	 * @param  datastore                The <code>DataStore</code>, not null
-	 * @param  type                     The <code>ActivityType</code>, not null
-	 *
-	 * @throws IllegalArgumentException If the <code>ActivityType</code> does
-	 *                                  not exist in the <code>DataStore</code>
+	 * @param  supplier         Method reference to the constructor of the
+	 *                          implementation class, not null
+	 * @param  persister        The <code>Persister</code> used to store the
+	 *                          <code>Activity</code>, not null
+	 * @param  referenceBuilder Builder for the internal
+	 *                          <code>ActivityReference</code> instance, not
+	 *                          null
 	 */
 
-	protected ActivityBuilder (final DataStore datastore, final ActivityType type)
+	protected ActivityBuilder (final Supplier<Activity> supplier, final Persister<Activity> persister, final ActivityReferenceBuilder referenceBuilder)
 	{
-		assert datastore != null : "datastore is NULL";
-		assert type != null : "type is NULL";
+		assert supplier != null : "supplier is null";
+		assert persister != null : "persister is NULL";
+		assert referenceBuilder != null : "referenceBuilder is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.referenceBuilder = new ActivityReferenceBuilder (datastore)
-				.setType (type);
+		this.referenceBuilder = referenceBuilder;
+		this.persister = persister;
+		this.supplier = supplier;
 
-		this.activityProxy = DataStoreProxy.getInstance (Activity.class, Activity.getActivityClass (type), Activity.SELECTOR_ID, datastore);
-
-		this.oldActivity = null;
+		this.activity = null;
 	}
 
 	/**
@@ -97,12 +102,12 @@ public class ActivityBuilder implements Builder<Activity>
 	{
 		this.log.trace ("build:");
 
-		Activity result = this.activityProxy.create ();
+		Activity result = this.supplier.get ();
 		result.setReference (this.referenceBuilder.build ());
 
-		this.oldActivity = this.activityProxy.insert (this.oldActivity, result);
+		this.activity = this.persister.insert (this.activity, result);
 
-		return this.oldActivity;
+		return this.activity;
 	}
 
 	/**
@@ -116,7 +121,11 @@ public class ActivityBuilder implements Builder<Activity>
 	{
 		this.log.trace ("clear:");
 
-		this.oldActivity = null;
+		ActivityType type = this.referenceBuilder.getType ();
+
+		this.activity = null;
+		this.referenceBuilder.clear ();
+		this.referenceBuilder.setType (type);
 
 		return this;
 	}
@@ -150,8 +159,8 @@ public class ActivityBuilder implements Builder<Activity>
 			throw new IllegalArgumentException ("Invalid ActivityType");
 		}
 
+		this.activity = activity;
 		this.referenceBuilder.load (activity.getReference ());
-		this.oldActivity = activity;
 
 		return this;
 	}

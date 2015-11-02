@@ -16,10 +16,13 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Create new <code>ActivityType</code> instances.  This class extends
@@ -37,10 +40,16 @@ public final class ActivityTypeBuilder implements Builder<ActivityType>
 	private final Logger log;
 
 	/** Helper to substitute <code>ActivitySource</code> instances */
-	private final DataStoreProxy<ActivitySource> sourceProxy;
+	private final Retriever<ActivitySource> sourceRetriever;
 
 	/** Helper to operate on <code>ActivityType</code> instances*/
-	private final DataStoreProxy<ActivityType> typeProxy;
+	private final Persister<ActivityType> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<ActivityType> supplier;
+
+	/** The loaded of previously created <code>ActivityType</code> */
+	private ActivityType type;
 
 	/** The <code>DataStore</code> id number for the <code>ActivityType</code> */
 	private Long id;
@@ -54,16 +63,27 @@ public final class ActivityTypeBuilder implements Builder<ActivityType>
 	/**
 	 * Create the <code>ActivityTypeBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  supplier        Method reference to the constructor of the
+	 *                         implementation class, not null
+	 * @param  persister       The <code>Persister</code> used to store the
+	 *                         <code>ActivityType</code>, not null
+	 * @param  sourceRetriever <code>Retriever</code> for
+	 *                         <code>ActivitySource</code> instances, not null
 	 */
 
-	protected ActivityTypeBuilder (final DataStore datastore)
+	protected ActivityTypeBuilder (final Supplier<ActivityType> supplier, final Persister<ActivityType> persister, final Retriever<ActivitySource> sourceRetriever)
 	{
+		assert supplier != null : "supplier is NULL";
+		assert persister != null : "persister is NULL";
+		assert sourceRetriever != null : "sourceRetriever is NULL";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.sourceProxy = DataStoreProxy.getInstance (ActivitySource.class, ActivitySource.SELECTOR_NAME, datastore);
-		this.typeProxy = DataStoreProxy.getInstance (ActivityType.class, ActivityType.SELECTOR_NAME, datastore);
+		this.sourceRetriever = sourceRetriever;
+		this.persister = persister;
+		this.supplier = supplier;
 
+		this.type = null;
 		this.id = null;
 		this.name = null;
 		this.source = null;
@@ -94,12 +114,14 @@ public final class ActivityTypeBuilder implements Builder<ActivityType>
 			throw new IllegalStateException ("source is NULL");
 		}
 
-		ActivityType result = this.typeProxy.create ();
+		ActivityType result = this.supplier.get ();
 		result.setId (this.id);
 		result.setName (this.name);
 		result.setSource (this.source);
 
-		return this.typeProxy.insert (result);
+		this.type = this.persister.insert (this.type, result);
+
+		return this.type;
 	}
 
 	/**
@@ -113,6 +135,7 @@ public final class ActivityTypeBuilder implements Builder<ActivityType>
 	{
 		this.log.trace ("clear:");
 
+		this.type = null;
 		this.id = null;
 		this.name = null;
 		this.source = null;
@@ -144,6 +167,7 @@ public final class ActivityTypeBuilder implements Builder<ActivityType>
 			throw new NullPointerException ();
 		}
 
+		this.type = type;
 		this.id = type.getId ();
 		this.setName (type.getName ());
 		this.setActivitySource (type.getSource ());
@@ -226,7 +250,7 @@ public final class ActivityTypeBuilder implements Builder<ActivityType>
 			throw new NullPointerException ("source is NULL");
 		}
 
-		this.source = this.sourceProxy.fetch (source);
+		this.source = this.sourceRetriever.fetch (source);
 
 		if (this.source == null)
 		{

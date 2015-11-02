@@ -16,10 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Create new <code>ActivitySource</code> instances.  This class extends
@@ -37,7 +39,13 @@ public final class ActivitySourceBuilder implements Builder<ActivitySource>
 	private final Logger log;
 
 	/** Helper to operate on <code>ActivitySource</code> instances*/
-	private final DataStoreProxy<ActivitySource> sourceProxy;
+	private final Persister<ActivitySource> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<ActivitySource> supplier;
+
+	/** The loaded of previously created <code>ActivitySource</code> */
+	private ActivitySource source;
 
 	/** The <code>DataStore</code> id number for the <code>ActivitySource</code> */
 	private Long id;
@@ -48,15 +56,23 @@ public final class ActivitySourceBuilder implements Builder<ActivitySource>
 	/**
 	 * Create the <code>ActivitySourceBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  supplier  Method reference to the constructor of the
+	 *                   implementation class, not null
+	 * @param  persister The <code>Persister</code> used to store the
+	 *                   <code>ActivitySource</code>, not null
 	 */
 
-	protected ActivitySourceBuilder (final DataStore datastore)
+	protected ActivitySourceBuilder (final Supplier<ActivitySource> supplier, final Persister<ActivitySource> persister)
 	{
+		assert supplier != null : "supplier is NULL";
+		assert persister != null : "persister is NULL";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.sourceProxy = DataStoreProxy.getInstance (ActivitySource.class, ActivitySource.SELECTOR_NAME, datastore);
+		this.persister = persister;
+		this.supplier = supplier;
 
+		this.source = null;
 		this.id = null;
 		this.name = null;
 	}
@@ -80,11 +96,13 @@ public final class ActivitySourceBuilder implements Builder<ActivitySource>
 			throw new IllegalStateException ("name is NULL");
 		}
 
-		ActivitySource result = this.sourceProxy.create ();
+		ActivitySource result = this.supplier.get ();
 		result.setId (this.id);
 		result.setName (this.name);
 
-		return this.sourceProxy.insert (result);
+		this.source = this.persister.insert (this.source, result);
+
+		return this.source;
 	}
 
 	/**
@@ -98,6 +116,7 @@ public final class ActivitySourceBuilder implements Builder<ActivitySource>
 	{
 		this.log.trace ("clear:");
 
+		this.source = null;
 		this.id = null;
 		this.name = null;
 
@@ -129,6 +148,7 @@ public final class ActivitySourceBuilder implements Builder<ActivitySource>
 			throw new NullPointerException ();
 		}
 
+		this.source = source;
 		this.id = source.getId ();
 		this.setName (source.getName ());
 

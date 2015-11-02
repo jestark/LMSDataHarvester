@@ -16,10 +16,13 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Create <code>SubActivity</code> instances.  This class creates instances for
@@ -48,13 +51,16 @@ public class SubActivityBuilder implements Builder<SubActivity>
 	protected final Logger log;
 
 	/** Helper to operate on <code>SubActivity</code> instances*/
-	protected final DataStoreProxy<SubActivity> subActivityProxy;
+	protected final Persister<SubActivity> persister;
 
 	/** The parent */
 	protected final ParentActivity parent;
 
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<SubActivity> supplier;
+
 	/** The loaded or previously built <code>SubActivity</code> instance */
-	protected SubActivity oldSubActivity;
+	protected SubActivity subActivity;
 
 	/** The <code>DataStore</code> id number for the <code>SubActivity</code> */
 	protected Long id;
@@ -65,13 +71,11 @@ public class SubActivityBuilder implements Builder<SubActivity>
 	/**
 	 * Create the <code>SubActivityBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  parent    The code <code>ParentActivity</code>, not null
 	 */
 
-	protected SubActivityBuilder (final DataStore datastore, final ParentActivity parent)
+	protected SubActivityBuilder (final Supplier<SubActivity> supplier, final Persister<SubActivity> persister, final ParentActivity parent)
 	{
-		assert datastore != null : "datastore is NULL";
+		assert persister != null : "persister is NULL";
 		assert parent != null : "parent is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
@@ -79,7 +83,7 @@ public class SubActivityBuilder implements Builder<SubActivity>
 		// The ParentActivity class exists as compromise for JPA.  As such it
 		// does not have metadata, so we have to use instance of here instead
 		// of a proper OO method.
-		if (parent instanceof Activity)
+/*		if (parent instanceof Activity)
 		{
 			this.parent = DataStoreProxy.getInstance (Activity.class,
 					Activity.getActivityClass (parent.getType ()),
@@ -101,25 +105,28 @@ public class SubActivityBuilder implements Builder<SubActivity>
 					datastore)
 				.fetch ((SubActivity) parent);
 		}
+*/
+		this.parent = null;
 
-		if (this.parent == null)
-		{
-			this.log.error ("The Parent Activity does not exist in the DataStore");
-			throw new IllegalStateException ("Parent is not in the DataStore");
-		}
+//		if (this.parent == null)
+//		{
+//			this.log.error ("The Parent Activity does not exist in the DataStore");
+//			throw new IllegalStateException ("Parent is not in the DataStore");
+//		}
 
-		Class<? extends SubActivity> sclass = SubActivity.getSubActivityClass (this.parent.getClass ());
+//		Class<? extends SubActivity> sclass = SubActivity.getSubActivityClass (this.parent.getClass ());
 
-		if (sclass == null)
-		{
-			throw new IllegalStateException ("No registered Subactivity classes corresponding to the specified parent");
-		}
+//		if (sclass == null)
+//		{
+//			throw new IllegalStateException ("No registered Subactivity classes corresponding to the specified parent");
+//		}
 
-		this.subActivityProxy = DataStoreProxy.getInstance (SubActivity.class, sclass, SubActivity.SELECTOR_ID, datastore);
+		this.persister = persister;
+		this.supplier = supplier;
 
+		this.subActivity = null;
 		this.id = null;
 		this.name = null;
-		this.oldSubActivity = null;
 	}
 
 	/**
@@ -141,14 +148,14 @@ public class SubActivityBuilder implements Builder<SubActivity>
 			throw new IllegalStateException ("name is NULL");
 		}
 
-		SubActivity result = this.subActivityProxy.create ();
+		SubActivity result = this.supplier.get ();
 		result.setId (this.id);
 		result.setParent (this.parent);
 		result.setName (this.name);
 
-		this.oldSubActivity = this.subActivityProxy.insert (this.oldSubActivity, result);
+		this.subActivity = this.persister.insert (this.subActivity, result);
 
-		return this.oldSubActivity;
+		return this.subActivity;
 	}
 
 	/**
@@ -162,9 +169,9 @@ public class SubActivityBuilder implements Builder<SubActivity>
 	{
 		this.log.trace ("clear:");
 
+		this.subActivity = null;
 		this.id = null;
 		this.name = null;
-		this.oldSubActivity = null;
 
 		return this;
 	}
@@ -175,32 +182,32 @@ public class SubActivityBuilder implements Builder<SubActivity>
 	 * the specified <code>SubActivity</code> instance.  The  parameters are
 	 * validated as they are set.
 	 *
-	 * @param  subactivity              The <code>SubActivity</code>, not null
+	 * @param  subActivity              The <code>SubActivity</code>, not null
 	 *
 	 * @throws IllegalArgumentException If any of the fields in the
 	 *                                  <code>SubActivity</code> instance to be
 	 *                                  loaded are not valid
 	 */
 
-	public SubActivityBuilder load (final SubActivity subactivity)
+	public SubActivityBuilder load (final SubActivity subActivity)
 	{
-		this.log.trace ("load: activity={}", subactivity);
+		this.log.trace ("load: activity={}", subActivity);
 
-		if (subactivity == null)
+		if (subActivity == null)
 		{
 			this.log.error ("Attempting to load a NULL SubActivity");
 			throw new NullPointerException ();
 		}
 
-		if (! (this.getParent ()).equals (subactivity.getParent ()))
+		if (! (this.getParent ()).equals (subActivity.getParent ()))
 		{
 			this.log.error ("Can not load:  Parent activity instances are not equal");
 			throw new IllegalArgumentException ("Parent activity instances are different");
 		}
 
-		this.id = subactivity.getId ();
-		this.setName (subactivity.getName ());
-		this.oldSubActivity = subactivity;
+		this.subActivity = subActivity;
+		this.id = subActivity.getId ();
+		this.setName (subActivity.getName ());
 
 		return this;
 	}

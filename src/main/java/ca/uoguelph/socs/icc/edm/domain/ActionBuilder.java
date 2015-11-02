@@ -16,10 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Create new <code>Action</code> instances.  This class extends
@@ -37,7 +39,13 @@ public final class ActionBuilder implements Builder<Action>
 	private final Logger log;
 
 	/** Helper to operate on <code>Action</code> instances*/
-	private final DataStoreProxy<Action> actionProxy;
+	private final Persister<Action> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<Action> supplier;
+
+	/** The loaded of previously created <code>Action</code> */
+	private Action action;
 
 	/** The <code>DataStore</code> id number for the <code>Action</code> */
 	private Long id;
@@ -48,15 +56,23 @@ public final class ActionBuilder implements Builder<Action>
 	/**
 	 * Create the <code>ActionBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  supplier  Method reference to the constructor of the
+	 *                   implementation class, not null
+	 * @param  persister The <code>Persister</code> used to store the
+	 *                   <code>Action</code>, not null
 	 */
 
-	protected ActionBuilder (final DataStore datastore)
+	protected ActionBuilder (final Supplier<Action> supplier, final Persister<Action> persister)
 	{
+		assert supplier != null : "supplier is NULL";
+		assert persister != null : "persister is NULL";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.actionProxy = DataStoreProxy.getInstance (Action.class, Action.SELECTOR_NAME, datastore);
+		this.persister = persister;
+		this.supplier = supplier;
 
+		this.action = null;
 		this.id = null;
 		this.name = null;
 	}
@@ -80,11 +96,13 @@ public final class ActionBuilder implements Builder<Action>
 			throw new IllegalStateException ("name is NULL");
 		}
 
-		Action result = this.actionProxy.create ();
+		Action result = this.supplier.get ();
 		result.setId (this.id);
 		result.setName (this.name);
 
-		return this.actionProxy.insert (result);
+		this.action = this.persister.insert (this.action, result);
+
+		return this.action;
 	}
 
 	/**
@@ -98,6 +116,7 @@ public final class ActionBuilder implements Builder<Action>
 	{
 		this.log.trace ("clear:");
 
+		this.action = null;
 		this.id = null;
 		this.name = null;
 
@@ -128,6 +147,7 @@ public final class ActionBuilder implements Builder<Action>
 			throw new NullPointerException ();
 		}
 
+		this.action = action;
 		this.id = action.getId ();
 		this.setName (action.getName ());
 

@@ -16,10 +16,13 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Create new <code>ActivityReference</code> instances.  This is an internal
@@ -36,17 +39,20 @@ final class ActivityReferenceBuilder implements Builder<ActivityReference>
 	/** The Logger */
 	private final Logger log;
 
-	/** Helper to operate on <code>ActivityReference</code> instances*/
-	private final DataStoreProxy<ActivityReference> referenceProxy;
-
 	/** Helper to substitute <code>Course</code> instances */
-	private final DataStoreProxy<Course> courseProxy;
+	private final Retriever<Course> courseRetriever;
 
 	/** Helper to substitute <code>ActivityType</code> instances */
-	private final DataStoreProxy<ActivityType> typeProxy;
+	private final Retriever<ActivityType> typeRetriever;
 
-	/** The loaded or previously built <code>SubActivity</code> instance */
-	private ActivityReference oldReference;
+	/** Helper to operate on <code>ActivityReference</code> instances*/
+	private final Persister<ActivityReference> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<ActivityReference> supplier;
+
+	/** The loaded or previously built <code>ActivityReference</code> */
+	private ActivityReference reference;
 
 	/** The <code>DataStore</code> id number for the <code>Activity</code> */
 	private Long id;
@@ -60,23 +66,34 @@ final class ActivityReferenceBuilder implements Builder<ActivityReference>
 	/**
 	 * Create the <code>ActivityReferenceBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  supplier        Method reference to the constructor of the
+	 *                         implementation class, not null
+	 * @param  persister       The <code>Persister</code> used to store the
+	 *                         <code>ActivityReference</code>, not null
+	 * @param  typeRetriever   <code>Retriever</code> for
+	 *                         <code>ActivityType</code> instances, not null
+	 * @param  courseRetriever <code>Retriever</code> for <code>Course</code>
+	 *                         instances, not null
 	 */
 
-	protected ActivityReferenceBuilder (final DataStore datastore)
+	protected ActivityReferenceBuilder (final Supplier<ActivityReference> supplier, final Persister<ActivityReference> persister, final Retriever<ActivityType> typeRetriever, final Retriever<Course> courseRetriever)
 	{
-		assert datastore != null : "datastore is NULL";
+		assert supplier != null : "supplier is NULL";
+		assert persister != null : "persister is NULL";
+		assert typeRetriever != null : "typeRetriever is NULL";
+		assert courseRetriever != null : "courseRetriever is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.typeProxy = DataStoreProxy.getInstance (ActivityType.class, ActivityType.SELECTOR_NAME, datastore);
-		this.courseProxy = DataStoreProxy.getInstance (Course.class, Course.SELECTOR_OFFERING, datastore);
-		this.referenceProxy = DataStoreProxy.getInstance (ActivityReference.class, ActivityReference.SELECTOR_ID, datastore);
+		this.typeRetriever = typeRetriever;
+		this.courseRetriever = courseRetriever;
+		this.persister = persister;
+		this.supplier = supplier;
 
 		this.id = null;
 		this.course = null;
 		this.type = null;
-		this.oldReference = null;
+		this.reference = null;
 	}
 
 	/**
@@ -98,14 +115,14 @@ final class ActivityReferenceBuilder implements Builder<ActivityReference>
 			throw new IllegalStateException ("course is NULL");
 		}
 
-		ActivityReference result = referenceProxy.create ();
+		ActivityReference result = this.supplier.get ();
 		result.setId (this.id);
 		result.setType (this.type);
 		result.setCourse (this.course);
 
-		this.oldReference = this.referenceProxy.insert (this.oldReference, result);
+		this.reference = this.persister.insert (this.reference, result);
 
-		return this.oldReference;
+		return this.reference;
 	}
 
 	/**
@@ -122,7 +139,7 @@ final class ActivityReferenceBuilder implements Builder<ActivityReference>
 		this.id = null;
 		this.course = null;
 		this.type = null;
-		this.oldReference = null;
+		this.reference = null;
 
 		return this;
 	}
@@ -153,7 +170,7 @@ final class ActivityReferenceBuilder implements Builder<ActivityReference>
 		this.id = reference.getId ();
 		this.setType (reference.getType ());
 		this.setCourse (reference.getCourse ());
-		this.oldReference = reference;
+		this.reference = reference;
 
 		return this;
 	}
@@ -190,7 +207,7 @@ final class ActivityReferenceBuilder implements Builder<ActivityReference>
 			throw new NullPointerException ("Course is NULL");
 		}
 
-		this.course = this.courseProxy.fetch (course);
+		this.course = this.courseRetriever.fetch (course);
 
 		if (this.course == null)
 		{
@@ -233,7 +250,7 @@ final class ActivityReferenceBuilder implements Builder<ActivityReference>
 			throw new NullPointerException ("type is NULL");
 		}
 
-		this.type = this.typeProxy.fetch (type);
+		this.type = this.typeRetriever.fetch (type);
 
 		if (this.type == null)
 		{

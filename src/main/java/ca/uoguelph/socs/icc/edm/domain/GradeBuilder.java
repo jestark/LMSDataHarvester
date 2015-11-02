@@ -16,10 +16,13 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Create new <code>Grade</code> instances.  This class extends
@@ -37,17 +40,20 @@ public final class GradeBuilder implements Builder<Grade>
 	/** The Logger */
 	private final Logger log;
 
-	/** The <code>DataStore</code> */
-	private final DataStore datastore;
+	/** Helper to substitute <code>Activity</code> instances */
+	private final Retriever<Activity> activityRetriever;
 
 	/** Helper to substitute <code>Enrolment</code> instances */
-	private final DataStoreProxy<Enrolment> enrolmentProxy;
+	private final Retriever<Enrolment> enrolmentRetriever;
 
 	/** Helper to operate on <code>Grade</code> instances */
-	private final DataStoreProxy<Grade> gradeProxy;
+	private final Persister<Grade> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<Grade> supplier;
 
 	/** The loaded or previously built <code>Grade</code> instance */
-	private Grade oldGrade;
+	private Grade grade;
 
 	/** The associated <code>Activity</code> */
 	private Activity activity;
@@ -56,27 +62,39 @@ public final class GradeBuilder implements Builder<Grade>
 	private Enrolment enrolment;
 
 	/** The value of the <code>Grade</code> */
-	private Integer grade;
+	private Integer value;
 
 	/**
 	 * Create the <code>GradeBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  supplier           Method reference to the constructor of the
+	 *                            implementation class, not null
+	 * @param  persister          The <code>Persister</code> used to store the
+	 *                            <code>Enrolment</code>, not null
+	 * @param  activityRetriever  <code>Retriever</code> for <code>Role</code>
+	 *                            instances, not null
+	 * @param  enrolmentRetriever <code>Retriever</code> for
+	 *                            <code>Enrolment</code> instances, not null
 	 */
 
-	protected GradeBuilder (final DataStore datastore)
+	protected GradeBuilder (final Supplier<Grade> supplier, final Persister<Grade> persister, final Retriever<Activity> activityRetriever, final Retriever<Enrolment> enrolmentRetriever)
 	{
+		assert supplier != null : "supplier is NULL";
+		assert persister != null : "persister is NULL";
+		assert activityRetriever != null : "activityRetriever is NULL";
+		assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.datastore = datastore;
+		this.activityRetriever = activityRetriever;
+		this.enrolmentRetriever = enrolmentRetriever;
+		this.persister = persister;
+		this.supplier = supplier;
 
-		this.enrolmentProxy = DataStoreProxy.getInstance (Enrolment.class, Enrolment.SELECTOR_ID, datastore);
-		this.gradeProxy = DataStoreProxy.getInstance (Grade.class, Grade.SELECTOR_PKEY, datastore);
-
+		this.grade = null;
 		this.activity = null;
 		this.enrolment = null;
-		this.grade = null;
-		this.oldGrade = null;
+		this.value = null;
 	}
 
 	/**
@@ -104,35 +122,35 @@ public final class GradeBuilder implements Builder<Grade>
 			throw new IllegalStateException ("enrolment is NULL");
 		}
 
-		if (this.grade == null)
+		if (this.value == null)
 		{
 			this.log.error ("Attempting to create an Grade without a Grade");
 			throw new IllegalStateException ("grade is NULL");
 		}
 
-		if ((this.oldGrade == null)
-				|| (this.oldGrade.getActivity () != this.activity)
-				|| (this.oldGrade.getEnrolment () != this.enrolment))
+		if ((this.grade == null)
+				|| (this.grade.getActivity () != this.activity)
+				|| (this.grade.getEnrolment () != this.enrolment))
 		{
-			Grade result = this.gradeProxy.create ();
+			Grade result = this.supplier.get ();
 			result.setActivityReference (this.activity.getReference ());
 			result.setEnrolment (this.enrolment);
-			result.setGrade (this.grade);
+			result.setGrade (this.value);
 
-			this.oldGrade = this.gradeProxy.insert (result);
+			this.grade = this.persister.insert (this.grade, result);
 
-			if (! this.oldGrade.getGrade ().equals (this.grade))
+			if (! this.grade.equalsAll (result))
 			{
-				this.log.error ("Grade is already in the datastore with a value of: {} vs. the specified value: {}", this.oldGrade.getGrade (), this.grade);
+				this.log.error ("Grade is already in the datastore with a value of: {} vs. the specified value: {}", this.grade.getGrade (), this.value);
 				throw new IllegalStateException ("Grade already exists but with a different value");
 			}
 		}
 		else
 		{
-			this.oldGrade.setGrade (this.grade);
+			this.grade.setGrade (this.value);
 		}
 
-		return oldGrade;
+		return this.grade;
 	}
 
 	/**
@@ -146,10 +164,10 @@ public final class GradeBuilder implements Builder<Grade>
 	{
 		this.log.trace ("clear:");
 
+		this.grade = null;
 		this.activity = null;
 		this.enrolment = null;
-		this.grade = null;
-		this.oldGrade = null;
+		this.value = null;
 
 		return this;
 	}
@@ -178,11 +196,10 @@ public final class GradeBuilder implements Builder<Grade>
 			throw new NullPointerException ();
 		}
 
+		this.grade = grade;
 		this.setActivity (grade.getActivity ());
 		this.setEnrolment (grade.getEnrolment ());
 		this.setGrade (grade.getGrade ());
-
-		this.oldGrade = grade;
 
 		return this;
 	}
@@ -222,11 +239,7 @@ public final class GradeBuilder implements Builder<Grade>
 			throw new NullPointerException ("The specified activity is NULL");
 		}
 
-		this.activity = DataStoreProxy.getInstance (Activity.class,
-				Activity.getActivityClass (activity.getType ()),
-				Activity.SELECTOR_ID,
-				this.datastore)
-			.fetch (activity);
+		this.activity = this.activityRetriever.fetch (activity);
 
 		if (this.activity == null)
 		{
@@ -276,7 +289,7 @@ public final class GradeBuilder implements Builder<Grade>
 			throw new NullPointerException ("The specified Enrolment is NULL");
 		}
 
-		this.enrolment = this.enrolmentProxy.fetch (enrolment);
+		this.enrolment = this.enrolmentRetriever.fetch (enrolment);
 
 		if (this.enrolment == null)
 		{
@@ -298,7 +311,7 @@ public final class GradeBuilder implements Builder<Grade>
 
 	public Integer getGrade ()
 	{
-		return this.grade;
+		return this.value;
 	}
 
 	/**
@@ -334,7 +347,7 @@ public final class GradeBuilder implements Builder<Grade>
 			throw new IllegalArgumentException ("Grade is greater than 100%");
 		}
 
-		this.grade = grade;
+		this.value = grade;
 
 		return this;
 	}

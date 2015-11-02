@@ -16,10 +16,13 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Create new <code>LogReference</code> instances.  This is an internal class
@@ -36,11 +39,20 @@ final class LogReferenceBuilder implements Builder<LogReference>
 	/** The Logger */
 	private final Logger log;
 
-	/** The <code>DataStore</code> */
-	private final DataStore datastore;
-
 	/** Helper to substitute <code>LogEntry</code> instances*/
-	private final DataStoreProxy<LogEntry> entryProxy;
+	private final Retriever<LogEntry> entryRetriever;
+
+	/** Helper to substitute <code>SubActivity</code> instances*/
+	private final Retriever<SubActivity> subActivityRetriever;
+
+	/** Helper to operate on <code>LogReference</code> instances */
+	private final Persister<LogReference> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<LogReference> supplier;
+
+	/** The loaded of previously created <code>LogReference</code> */
+	private LogReference reference;
 
 	/** The associated <code>LogEnty</code>*/
 	private LogEntry entry;
@@ -54,14 +66,19 @@ final class LogReferenceBuilder implements Builder<LogReference>
 	 * @param  datastore The <code>DataStore</code>, not null
 	 */
 
-	protected LogReferenceBuilder (final DataStore datastore)
+	protected LogReferenceBuilder (final Supplier<LogReference> supplier, final Persister<LogReference> persister, final Retriever<LogEntry> entryRetriever, final Retriever<SubActivity> subActivityRetriever)
 	{
+		assert persister != null : "persister is NULL";
+		assert entryRetriever != null : "entryRetriever is NULL";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.datastore = datastore;
+		this.entryRetriever = entryRetriever;
+		this.subActivityRetriever = subActivityRetriever;
+		this.persister = persister;
+		this.supplier = supplier;
 
-		this.entryProxy = DataStoreProxy.getInstance (LogEntry.class, LogEntry.SELECTOR_ID, datastore);
-
+		this.reference = null;
 		this.entry = null;
 		this.subActivity = null;
 	}
@@ -91,16 +108,13 @@ final class LogReferenceBuilder implements Builder<LogReference>
 			throw new IllegalStateException ("subActivity is NULL");
 		}
 
-		DataStoreProxy<LogReference> referenceProxy = new TableProxy<> (this.datastore.getProfile ()
-				.getCreator (LogReference.class,
-					LogReference.getLogClass (this.subActivity.getClass ())),
-				this.datastore);
-
-		LogReference result = referenceProxy.create ();
+		LogReference result = this.supplier.get ();
 		result.setEntry (this.entry);
 		result.setSubActivity (this.subActivity);
 
-		return referenceProxy.insert (result);
+		this.reference = persister.insert (this.reference, result);
+
+		return this.reference;
 	}
 
 	/**
@@ -114,6 +128,7 @@ final class LogReferenceBuilder implements Builder<LogReference>
 	{
 		this.log.trace ("clear:");
 
+		this.reference = null;
 		this.entry = null;
 		this.subActivity = null;
 
@@ -144,6 +159,7 @@ final class LogReferenceBuilder implements Builder<LogReference>
 			throw new NullPointerException ();
 		}
 
+		this.reference = reference;
 		this.setEntry (reference.getEntry ());
 		this.setSubActivity (reference.getSubActivity ());
 
@@ -183,7 +199,7 @@ final class LogReferenceBuilder implements Builder<LogReference>
 			throw new NullPointerException ("entry is NULL");
 		}
 
-		this.entry = this.entryProxy.fetch (entry);
+		this.entry = this.entryRetriever.fetch (entry);
 
 		if (this.entry == null)
 		{
@@ -231,11 +247,7 @@ final class LogReferenceBuilder implements Builder<LogReference>
 			throw new NullPointerException ("subActivity is NULL");
 		}
 
-		this.subActivity = DataStoreProxy.getInstance (SubActivity.class,
-				subActivity.getClass (),
-				SubActivity.SELECTOR_ID,
-				datastore)
-			.fetch (subActivity);
+		this.subActivity = this.subActivityRetriever.fetch (subActivity);
 
 		if (this.subActivity == null)
 		{

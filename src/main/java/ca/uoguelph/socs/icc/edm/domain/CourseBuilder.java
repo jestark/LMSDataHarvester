@@ -16,10 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Create new <code>Course</code> instances.  This class extends
@@ -37,7 +39,13 @@ public final class CourseBuilder implements Builder<Course>
 	private final Logger log;
 
 	/** Helper to operate on <code>Course</code> instances*/
-	private final DataStoreProxy<Course> courseProxy;
+	private final Persister<Course> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<Course> supplier;
+
+	/** The loaded of previously created <code>Course</code> */
+	private Course course;
 
 	/** The <code>DataStore</code> id number for the <code>Course</code> */
 	private Long id;
@@ -54,15 +62,23 @@ public final class CourseBuilder implements Builder<Course>
 	/**
 	 * Create the <code>CourseBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  supplier  Method reference to the constructor of the
+	 *                   implementation class, not null
+	 * @param  persister The <code>Persister</code> used to store the
+	 *                   <code>Course</code>, not null
 	 */
 
-	protected CourseBuilder (final DataStore datastore)
+	protected CourseBuilder (final Supplier<Course> supplier, final Persister<Course> persister)
 	{
+		assert supplier != null : "supplier is NULL";
+		assert persister != null : "persister is NULL";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.courseProxy = DataStoreProxy.getInstance (Course.class, Course.SELECTOR_OFFERING, datastore);
+		this.persister = persister;
+		this.supplier = supplier;
 
+		this.course = null;
 		this.id = null;
 		this.name = null;
 		this.semester = null;
@@ -100,13 +116,15 @@ public final class CourseBuilder implements Builder<Course>
 			throw new IllegalStateException ("year is NULL");
 		}
 
-		Course result = this.courseProxy.create ();
+		Course result = this.supplier.get ();
 		result.setId (this.id);
 		result.setName (this.name);
 		result.setSemester (this.semester);
 		result.setYear (this.year);
 
-		return this.courseProxy.insert (result);
+		this.course = this.persister.insert (this.course, result);
+
+		return this.course;
 	}
 
 	/**
@@ -120,6 +138,7 @@ public final class CourseBuilder implements Builder<Course>
 	{
 		this.log.trace ("clear:");
 
+		this.course = null;
 		this.id = null;
 		this.name = null;
 		this.semester = null;
@@ -152,6 +171,7 @@ public final class CourseBuilder implements Builder<Course>
 			throw new NullPointerException ();
 		}
 
+		this.course = course;
 		this.id = course.getId ();
 		this.setName (course.getName ());
 		this.setSemester (course.getSemester ());

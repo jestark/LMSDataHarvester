@@ -16,10 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Create new <code>Role</code> instances.  This class extends
@@ -37,7 +39,13 @@ public final class RoleBuilder implements Builder<Role>
 	private final Logger log;
 
 	/** Helper to operate on <code>Role</code> instances*/
-	private final DataStoreProxy<Role> roleProxy;
+	private final Persister<Role> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<Role> supplier;
+
+	/** The loaded of previously created <code>Role</code> */
+	private Role role;
 
 	/** The <code>DataStore</code> id number for the <code>Role</code> */
 	private Long id;
@@ -48,15 +56,23 @@ public final class RoleBuilder implements Builder<Role>
 	/**
 	 * Create the <code>RoleBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  supplier  Method reference to the constructor of the
+	 *                   implementation class, not null
+	 * @param  persister The <code>Persister</code> used to store the
+	 *                   <code>Role</code>, not null
 	 */
 
-	protected RoleBuilder (final DataStore datastore)
+	protected RoleBuilder (final Supplier<Role> supplier, final Persister<Role> persister)
 	{
+		assert supplier != null : "supplier is NULL";
+		assert persister != null : "persister is NULL";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.roleProxy = DataStoreProxy.getInstance (Role.class, Role.SELECTOR_NAME, datastore);
+		this.persister = persister;
+		this.supplier = supplier;
 
+		this.role = null;
 		this.id = null;
 		this.name = null;
 	}
@@ -80,11 +96,13 @@ public final class RoleBuilder implements Builder<Role>
 			throw new IllegalStateException ("name is NULL");
 		}
 
-		Role result = this.roleProxy.create ();
+		Role result = this.supplier.get ();
 		result.setId (this.id);
 		result.setName (this.name);
 
-		return this.roleProxy.insert (result);
+		this.role = this.persister.insert (this.role, result);
+
+		return this.role;
 	}
 
 	/**
@@ -98,6 +116,7 @@ public final class RoleBuilder implements Builder<Role>
 	{
 		this.log.trace ("clear:");
 
+		this.role = null;
 		this.id = null;
 		this.name = null;
 
@@ -128,6 +147,7 @@ public final class RoleBuilder implements Builder<Role>
 			throw new NullPointerException ();
 		}
 
+		this.role = role;
 		this.id = role.getId ();
 		this.setName (role.getName ());
 

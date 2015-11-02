@@ -18,10 +18,13 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Create new <code>LogEntry</code> instances.  This class implements
@@ -38,23 +41,26 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 	/** The Logger */
 	private final Logger log;
 
-	/** The <code>DataStore</code> */
-	private final DataStore datastore;
-
-	/** The <code>LogReferenceBuilder</code> */
-	private final LogReferenceBuilder refBuilder;
+	/** Helper to substitute <code>Action</code> instances */
+	private final Retriever<Action> actionRetriever;
 
 	/** Helper to substitute <code>Action</code> instances */
-	private final DataStoreProxy<Action> actionProxy;
+	private final Retriever<Activity> activityRetriever;
 
 	/** Helper to substitute <code>Enrolment</code> instances */
-	private final DataStoreProxy<Enrolment> enrolmentProxy;
-
-	/** Helper to operate on <code>LogEntry</code> instances */
-	private final DataStoreProxy<LogEntry> entryProxy;
+	private final Retriever<Enrolment> enrolmentRetriever;
 
 	/** Helper to substitute <code>Network</code> instances */
-	private final DataStoreProxy<Network> networkProxy;
+	private final Retriever<Network> networkRetriever;
+
+	/** Helper to operate on <code>LogEntry</code> instances */
+	private final Persister<LogEntry> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<LogEntry> supplier;
+
+	/** The loaded or previously created <code>LogEntry</code> */
+	private LogEntry entry;
 
 	/** The <code>DataStore</code> ID number for the <code>LogEntry</code> */
 	private Long id;
@@ -71,38 +77,54 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 	/** The associated <code>Network</code> */
 	private Network network;
 
-	/** The associated <code>SubActivity</code> */
-	private SubActivity subActivity;
-
 	/** The time that the entry was logged */
 	private Date time;
+
+	/** The <code>LogReferenceBuilder</code> */
+	private LogReferenceBuilder referenceBuilder;
 
 	/**
 	 * Create the <code>LogEntryBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  supplier           Method reference to the constructor of the
+	 *                            implementation class, not null
+	 * @param  persister          The <code>Persister</code> used to store the
+	 *                            <code>LogEntry</code>, not null
+	 * @param  actionRetriever    <code>Retriever</code> for
+	 *                            <code>Action</code> instances, not null
+	 * @param  activityRetriever  <code>Retriever</code> for
+	 *                            <code>Activity</code> instances, not null
+	 * @param  enrolmentRetriever <code>Retriever</code> for
+	 *                            <code>Enrolment</code> instances, not null
+	 * @param  networkRetriever   <code>Retriever</code> for
+	 *                            <code>Network</code> instances, not null
 	 */
 
-	protected LogEntryBuilder (final DataStore datastore)
+	protected LogEntryBuilder (final Supplier<LogEntry> supplier, final Persister<LogEntry> persister, final Retriever<Action> actionRetriever, final Retriever<Activity> activityRetriever, final Retriever<Enrolment> enrolmentRetriever, final Retriever<Network> networkRetriever)
 	{
+		assert persister != null : "persister is NULL";
+		assert actionRetriever != null : "actionRetriever is NULL";
+		assert activityRetriever != null : "activityRetriever is NULL";
+		assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
+		assert networkRetriever != null : "networkRetriever is NULL";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.datastore = datastore;
+		this.actionRetriever = actionRetriever;
+		this.activityRetriever = activityRetriever;
+		this.enrolmentRetriever = enrolmentRetriever;
+		this.networkRetriever = networkRetriever;
+		this.persister = persister;
+		this.supplier = supplier;
 
-		this.refBuilder = new LogReferenceBuilder (datastore);
-
-		this.actionProxy = DataStoreProxy.getInstance (Action.class, Action.SELECTOR_NAME, datastore);
-		this.enrolmentProxy = DataStoreProxy.getInstance (Enrolment.class, Enrolment.SELECTOR_ID, datastore);
-		this.entryProxy = DataStoreProxy.getInstance (LogEntry.class, LogEntry.SELECTOR_ID, datastore);
-		this.networkProxy = DataStoreProxy.getInstance (Network.class, Network.SELECTOR_NAME, datastore);
-
+		this.entry = null;
 		this.id = null;
 		this.action = null;
 		this.activity = null;
 		this.enrolment = null;
 		this.network = null;
-		this.subActivity = null;
 		this.time = null;
+		this.referenceBuilder = null;
 	}
 
 	/**
@@ -142,7 +164,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 			throw new IllegalStateException ("time is NULL");
 		}
 
-		LogEntry result = this.entryProxy.create ();
+		LogEntry result = this.supplier.get ();
 		result.setId (this.id);
 		result.setAction (this.action);
 		result.setActivityReference (this.activity.getReference ());
@@ -150,17 +172,16 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 		result.setNetwork (this.network);
 		result.setTime (this.time);
 
-		result = this.entryProxy.insert (result);
+		this.entry = this.persister.insert (this.entry, result);
 
 		// Create the reference
-		if (this.subActivity != null)
+		if (this.referenceBuilder != null)
 		{
-			this.refBuilder.setSubActivity (this.subActivity)
-				.setEntry (result)
+			this.referenceBuilder.setEntry (this.entry)
 				.build ();
 		}
 
-		return result;
+		return this.entry;
 	}
 
 	/**
@@ -179,8 +200,8 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 		this.activity = null;
 		this.enrolment = null;
 		this.network = null;
-		this.subActivity = null;
 		this.time = null;
+		this.referenceBuilder = null;
 
 		return this;
 	}
@@ -209,13 +230,18 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 			throw new NullPointerException ();
 		}
 
+		this.entry = entry;
 		this.id = entry.getId ();
 		this.setAction (entry.getAction ());
 		this.setActivity (entry.getActivity ());
 		this.setEnrolment (entry.getEnrolment ());
 		this.setNetwork (entry.getNetwork ());
-//		this.setSubActivity (entry.getSubActivity ());
 		this.setTime (entry.getTime ());
+
+		if (entry.getReference () != null)
+		{
+			this.referenceBuilder = null;
+		}
 
 		return this;
 	}
@@ -253,7 +279,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 			throw new NullPointerException ("Action is NULL");
 		}
 
-		this.action = this.actionProxy.fetch (action);
+		this.action = this.actionRetriever.fetch (action);
 
 		if (this.action == null)
 		{
@@ -297,11 +323,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 			throw new NullPointerException ("Activity is NULL");
 		}
 
-		this.activity = DataStoreProxy.getInstance (Activity.class,
-				Activity.getActivityClass (activity.getType ()),
-				Activity.SELECTOR_ID,
-				datastore)
-			.fetch (activity);
+		this.activity = activityRetriever.fetch (activity);
 
 		if (this.activity == null)
 		{
@@ -345,7 +367,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 			throw new NullPointerException ("Enrolment is NULL");
 		}
 
-		this.enrolment = this.enrolmentProxy.fetch (enrolment);
+		this.enrolment = this.enrolmentRetriever.fetch (enrolment);
 
 		if (this.enrolment == null)
 		{
@@ -389,7 +411,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 			throw new NullPointerException ();
 		}
 
-		this.network = this.networkProxy.fetch (network);
+		this.network = this.networkRetriever.fetch (network);
 
 		if (this.network == null)
 		{
@@ -409,7 +431,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 
 	public SubActivity getSubActivity ()
 	{
-		return this.subActivity;
+		return (this.referenceBuilder != null) ? this.referenceBuilder.getSubActivity () : null;
 	}
 
 	/**
@@ -430,7 +452,7 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 
 		if (subActivity != null)
 		{
-			this.subActivity = DataStoreProxy.getInstance (SubActivity.class,
+/*			this.subActivity = DataStoreProxy.getInstance (SubActivity.class,
 					subActivity.getClass (),
 					SubActivity.SELECTOR_ID,
 					datastore)
@@ -441,10 +463,10 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 				this.log.error ("The specified SubActivity does not exist in the DataStore");
 				throw new IllegalArgumentException ("SubActivity is not in the DataStore");
 			}
-		}
+*/		}
 		else
 		{
-			this.subActivity = null;
+			this.referenceBuilder = null;
 		}
 
 		return this;

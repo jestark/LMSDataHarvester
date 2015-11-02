@@ -16,10 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Create new <code>Network</code> instances.  This class extends
@@ -37,7 +39,13 @@ public final class NetworkBuilder implements Builder<Network>
 	private final Logger log;
 
 	/** Helper to operate on <code>Network</code> instances*/
-	private final DataStoreProxy<Network> networkProxy;
+	private final Persister<Network> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<Network> supplier;
+
+	/** The loaded of previously created <code>Action</code> */
+	private Network network;
 
 	/** The <code>DataStore</code> id number for the <code>Network</code> */
 	private Long id;
@@ -48,15 +56,23 @@ public final class NetworkBuilder implements Builder<Network>
 	/**
 	 * Create the <code>NetworkBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  supplier  Method reference to the constructor of the
+	 *                   implementation class, not null
+	 * @param  persister The <code>Persister</code> used to store the
+	 *                   <code>Network</code>, not null
 	 */
 
-	protected NetworkBuilder (final DataStore datastore)
+	protected NetworkBuilder (final Supplier<Network> supplier, final Persister<Network> persister)
 	{
+		assert supplier != null : "supplier is NULL";
+		assert persister != null : "persister is NULL";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.networkProxy = DataStoreProxy.getInstance (Network.class, Network.SELECTOR_NAME, datastore);
+		this.persister = persister;
+		this.supplier = supplier;
 
+		this.network = null;
 		this.id = null;
 		this.name = null;
 	}
@@ -80,11 +96,13 @@ public final class NetworkBuilder implements Builder<Network>
 			throw new IllegalStateException ("name is NULL");
 		}
 
-		Network result = this.networkProxy.create ();
+		Network result = this.supplier.get ();
 		result.setId (this.id);
 		result.setName (this.name);
 
-		return this.networkProxy.insert (result);
+		this.network = this.persister.insert (this.network, result);
+
+		return this.network;
 	}
 
 	/**
@@ -98,6 +116,7 @@ public final class NetworkBuilder implements Builder<Network>
 	{
 		this.log.trace ("clear:");
 
+		this.network = null;
 		this.id = null;
 		this.name = null;
 
@@ -127,6 +146,7 @@ public final class NetworkBuilder implements Builder<Network>
 			throw new NullPointerException ();
 		}
 
+		this.network = network;
 		this.id = network.getId ();
 		this.setName (network.getName ());
 

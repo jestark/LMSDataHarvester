@@ -16,7 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import java.util.function.Supplier;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Create <code>Activity</code> instances.  This class extends
@@ -36,23 +38,18 @@ public class NamedActivityBuilder extends ActivityBuilder
 	/**
 	 * Create the <code>NamedActivityBuilder</code>.
 	 *
-	 * @param  datastore                The <code>DataStore</code>, not null
-	 * @param  type                     The <code>ActivityType</code>, not null
-	 *
-	 * @throws IllegalArgumentException if there is no implementation class
-	 *                                  registered for the specified
-	 *                                  <code>ActivityType</code>
+	 * @param  supplier         Method reference to the constructor of the
+	 *                          implementation class, not null
+	 * @param  persister        The <code>Persister</code> used to store the
+	 *                          <code>Activity</code>, not null
+	 * @param  referenceBuilder Builder for the internal
+	 *                          <code>ActivityReference</code> instance, not
+	 *                          null
 	 */
 
-	protected NamedActivityBuilder (final DataStore datastore, final ActivityType type)
+	protected NamedActivityBuilder (final Supplier<Activity> supplier, final Persister<Activity> persister, final ActivityReferenceBuilder referenceBuilder)
 	{
-		super (datastore, type);
-
-		if (! Activity.hasActivityClass (type))
-		{
-			this.log.error ("No Activity implementation class registered for type: {}", type.getName ());
-			throw new IllegalArgumentException ("No implementation class for type");
-		}
+		super (supplier, persister, referenceBuilder);
 	}
 
 	/**
@@ -74,13 +71,13 @@ public class NamedActivityBuilder extends ActivityBuilder
 			throw new IllegalStateException ("name is NULL");
 		}
 
-		NamedActivity result = (NamedActivity) this.activityProxy.create ();
+		NamedActivity result = (NamedActivity) this.supplier.get ();
 		result.setReference (this.referenceBuilder.build ());
 		result.setName (this.name);
 
-		this.oldActivity = this.activityProxy.insert (this.oldActivity, result);
+		this.activity = this.persister.insert (this.activity, result);
 
-		return this.oldActivity;
+		return this.activity;
 	}
 
 	/**

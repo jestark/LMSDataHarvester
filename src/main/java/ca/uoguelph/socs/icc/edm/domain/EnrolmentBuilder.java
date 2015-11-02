@@ -16,10 +16,13 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Create new <code>Enrolment</code> instances.  This class extends
@@ -38,16 +41,19 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 	private final Logger log;
 
 	/** Helper to substitute <code>Course</code> instances */
-	private DataStoreProxy<Course> courseProxy;
-
-	/** Helper to operate on <code>Enrolment</code> instances */
-	private DataStoreProxy<Enrolment> enrolmentProxy;
+	private Retriever<Course> courseRetriever;
 
 	/** Helper to substitute <code>Activity</code> instances */
-	private DataStoreProxy<Role> roleProxy;
+	private Retriever<Role> roleRetriever;
 
-	/** The loaded or previously built <code>Enrolment</code> instance */
-	private Enrolment oldEnrolment;
+	/** Helper to operate on <code>Enrolment</code> instances */
+	private Persister<Enrolment> persister;
+
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<Enrolment> supplier;
+
+	/** The loaded or previously built <code>Enrolment</code> */
+	private Enrolment enrolment;
 
 	/** The <code>DataStore</code> ID number for the <code>Enrolment</code> */
 	private Long id;
@@ -67,23 +73,36 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 	/**
 	 * Create the <code>EnrolmentBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  supplier        Method reference to the constructor of the
+	 *                         implementation class, not null
+	 * @param  persister       The <code>Persister</code> used to store the
+	 *                         <code>Enrolment</code>, not null
+	 * @param  roleRetriever   <code>Retriever</code> for <code>Role</code>
+	 *                         instances, not null
+	 * @param  courseRetriever <code>Retriever</code> for <code>Course</code>
+	 *                         instances, not null
 	 */
 
-	protected EnrolmentBuilder (final DataStore datastore)
+	protected EnrolmentBuilder (final Supplier<Enrolment> supplier, final Persister<Enrolment> persister, final Retriever<Course> courseRetriever, final Retriever<Role> roleRetriever)
 	{
+		assert supplier != null : "supplier is NULL";
+		assert persister != null : "persister is NULL";
+		assert courseRetriever != null : "courseRetriever is NULL";
+		assert roleRetriever != null : "roleRetriever is NULL";
+
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.courseProxy = DataStoreProxy.getInstance (Course.class, Course.SELECTOR_OFFERING, datastore);
-		this.enrolmentProxy = DataStoreProxy.getInstance (Enrolment.class, Enrolment.SELECTOR_ID, datastore);
-		this.roleProxy = DataStoreProxy.getInstance (Role.class, Role.SELECTOR_NAME, datastore);
+		this.courseRetriever = courseRetriever;
+		this.roleRetriever = roleRetriever;
+		this.persister = persister;
+		this.supplier = supplier;
 
+		this.enrolment = null;
 		this.id = null;
 		this.course = null;
 		this.role = null;
 		this.finalGrade = null;
 		this.usable = null;
-		this.oldEnrolment = null;
 	}
 
 	/**
@@ -117,27 +136,27 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 			throw new IllegalStateException ("usable is NULL");
 		}
 
-		if ((this.oldEnrolment == null)
-				|| (! this.enrolmentProxy.contains (this.oldEnrolment))
-				|| (this.oldEnrolment.getCourse () != this.course)
-				|| (this.oldEnrolment.getRole () != this.role))
+		if ((this.enrolment == null)
+				|| (! this.persister.contains (this.enrolment))
+				|| (this.enrolment.getCourse () != this.course)
+				|| (this.enrolment.getRole () != this.role))
 		{
-			Enrolment result = this.enrolmentProxy.create ();
+			Enrolment result = this.supplier.get ();
 			result.setId (this.id);
 			result.setCourse (this.course);
 			result.setRole (this.role);
 			result.setFinalGrade (this.finalGrade);
 			result.setUsable (this.usable);
 
-			this.oldEnrolment = this.enrolmentProxy.insert (this.oldEnrolment, result);
+			this.enrolment = this.persister.insert (this.enrolment, result);
 		}
 		else
 		{
-			this.oldEnrolment.setFinalGrade (this.finalGrade);
-			this.oldEnrolment.setUsable (this.usable);
+			this.enrolment.setFinalGrade (this.finalGrade);
+			this.enrolment.setUsable (this.usable);
 		}
 
-		return this.oldEnrolment;
+		return this.enrolment;
 	}
 
 	/**
@@ -151,12 +170,12 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 	{
 		this.log.trace ("clear:");
 
+		this.enrolment = null;
 		this.id = null;
 		this.course = null;
 		this.role = null;
 		this.finalGrade = null;
 		this.usable = null;
-		this.oldEnrolment = null;
 
 		return this;
 	}
@@ -184,12 +203,12 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 			throw new NullPointerException ();
 		}
 
+		this.enrolment = enrolment;
 		this.id = enrolment.getId ();
 		this.setCourse (enrolment.getCourse ());
 		this.setFinalGrade (enrolment.getFinalGrade ());
 		this.setRole (enrolment.getRole ());
 		this.setUsable (enrolment.isUsable ());
-		this.oldEnrolment = enrolment;
 
 		return this;
 	}
@@ -225,7 +244,7 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 			throw new NullPointerException ("Course is NULL");
 		}
 
-		this.course = this.courseProxy.fetch (course);
+		this.course = this.courseRetriever.fetch (course);
 
 		if (this.course == null)
 		{
@@ -268,7 +287,7 @@ public final class EnrolmentBuilder implements Builder<Enrolment>
 			throw new NullPointerException ("Role is NULL");
 		}
 
-		this.role = this.roleProxy.fetch (role);
+		this.role = this.roleRetriever.fetch (role);
 
 		if (this.role == null)
 		{

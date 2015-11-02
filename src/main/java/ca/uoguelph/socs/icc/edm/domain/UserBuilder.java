@@ -19,11 +19,14 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Set;
 import java.util.HashSet;
 
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Create and modify <code>User</code> instances.  This class extends
@@ -42,16 +45,19 @@ public final class UserBuilder implements Builder<User>
 	private final Logger log;
 
 	/** Helper to substitute <code>Enrolment</code> instances */
-	private final DataStoreProxy<Enrolment> enrolmentProxy;
+	private final Retriever<Enrolment> enrolmentRetriever;
 
 	/** Helper to operate on <code>User</code> instances */
-	private final DataStoreProxy<User> userProxy;
+	private final Persister<User> persister;
 
 	/** Query instance to look up <code>User</code> instances by <code>Enrolment</code> */
 	private final Query<User> enrolmentQuery;
 
+	/** Method reference to the constructor of the implementation class */
+	private final Supplier<User> supplier;
+
 	/** The loaded or previously built <code>User</code> instance */
-	private User oldUser;
+	private User user;
 
 	/** The <code>DataStore</code> id number for the <code>User</code> */
 	private Long id;
@@ -71,23 +77,32 @@ public final class UserBuilder implements Builder<User>
 	/**
 	 * Create an instance of the <code>UserBuilder</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  supplier           Method reference to the constructor of the
+	 *                            implementation class, not null
+	 * @param  persister          The <code>Persister</code> used to store the
+	 *                            <code>User</code>, not null
+	 * @param  enrolmentRetriever <code>Retriever</code> for
+	 *                            <code>Enrolment</code> instances, not null
+	 * @param  enrolmentQuery     <code>Query</code> to check if an
+	 *                            <code>Enrolment</code> instances is already
+	 *                            associated with another <code>User</code>
+	 *                            instance, not null
 	 */
 
-	protected UserBuilder (final DataStore datastore)
+	protected UserBuilder (final Supplier<User> supplier, final Persister<User> persister, final Retriever<Enrolment> enrolmentRetriever, final Query<User> enrolmentQuery)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.enrolmentProxy = DataStoreProxy.getInstance (Enrolment.class, Enrolment.SELECTOR_ID, datastore);
-		this.userProxy = DataStoreProxy.getInstance (User.class, User.SELECTOR_USERNAME, datastore);
+		this.enrolmentRetriever = enrolmentRetriever;
+		this.enrolmentQuery = enrolmentQuery;
+		this.persister = persister;
+		this.supplier = supplier;
 
+		this.user = null;
 		this.id = null;
 		this.firstname = null;
 		this.lastname = null;
 		this.username = null;
-		this.oldUser = null;
-
-		this.enrolmentQuery = datastore.getQuery (User.class, User.SELECTOR_ENROLMENTS);
 
 		this.enrolments = new HashSet<Enrolment> ();
 	}
@@ -124,11 +139,11 @@ public final class UserBuilder implements Builder<User>
 			throw new IllegalStateException ("username is NULL");
 		}
 
-		if ((this.oldUser == null)
-				|| (! this.userProxy.contains (this.oldUser))
-				|| (! this.username.equals (this.oldUser.getUsername ())))
+		if ((this.user == null)
+				|| (! this.persister.contains (this.user))
+				|| (! this.username.equals (this.user.getUsername ())))
 		{
-			User result = this.userProxy.create ();
+			User result = this.supplier.get ();
 			result.setId (this.id);
 			result.setFirstname (this.firstname);
 			result.setLastname (this.lastname);
@@ -136,31 +151,25 @@ public final class UserBuilder implements Builder<User>
 
 			this.enrolments.forEach (x -> result.addEnrolment (x));
 
-			this.oldUser = this.userProxy.insert (result);
+			this.user = this.persister.insert (this.user, result);
 
-			if (! this.oldUser.getFirstname ().equals (this.firstname))
+			if (! this.user.equalsAll (result))
 			{
-				this.log.error ("User is already in the datastore with a first name of: {}, vs. the specified value: {}", this.oldUser.getFirstname (), this.firstname);
-				throw new IllegalArgumentException ("User is already in the datastore with a different first name");
-			}
-
-			if (! this.oldUser.getLastname ().equals (this.lastname))
-			{
-				this.log.error ("User is already in the datastore with a last name of: {}, vs. the specified value: {}", this.oldUser.getLastname (), this.lastname);
-				throw new IllegalArgumentException ("User is already in the datastore with a different last name");
+				this.log.error ("User is already in the datastore with a name of: {} vs. the specified value of: {}", this.user.getName (), result.getName ());
+				throw new IllegalArgumentException ("User is already in the datastore with a different name");
 			}
 		}
 		else
 		{
-			this.oldUser.setFirstname (this.firstname);
-			this.oldUser.setLastname (this.lastname);
+			this.user.setFirstname (this.firstname);
+			this.user.setLastname (this.lastname);
 
 			this.enrolments.stream ()
-				.filter (x -> ! this.oldUser.getEnrolments ().contains (x))
-				.forEach (x -> this.oldUser.addEnrolment (x));
+				.filter (x -> ! this.user.getEnrolments ().contains (x))
+				.forEach (x -> this.user.addEnrolment (x));
 		}
 
-		return this.oldUser;
+		return this.user;
 	}
 
 	/**
@@ -174,11 +183,11 @@ public final class UserBuilder implements Builder<User>
 	{
 		this.log.trace ("clear:");
 
+		this.user = null;
 		this.id = null;
 		this.firstname = null;
 		this.lastname = null;
 		this.username = null;
-		this.oldUser = null;
 
 		this.enrolments.clear ();
 
@@ -211,11 +220,11 @@ public final class UserBuilder implements Builder<User>
 
 		this.clear ();
 
+		this.user = user;
 		this.id = user.getId ();
 		this.setUsername (user.getUsername ());
 		this.setLastname (user.getLastname ());
 		this.setFirstname (user.getFirstname ());
-		this.oldUser = user;
 
 		user.getEnrolments ().forEach (x -> this.addEnrolment (x));
 
@@ -378,7 +387,7 @@ public final class UserBuilder implements Builder<User>
 			throw new NullPointerException ();
 		}
 
-		Enrolment add = this.enrolmentProxy.fetch (enrolment);
+		Enrolment add = this.enrolmentRetriever.fetch (enrolment);
 
 		if (add == null)
 		{
@@ -426,7 +435,7 @@ public final class UserBuilder implements Builder<User>
 			throw new NullPointerException ();
 		}
 
-		Enrolment del = this.enrolmentProxy.fetch (enrolment);
+		Enrolment del = this.enrolmentRetriever.fetch (enrolment);
 
 		if (del == null)
 		{
