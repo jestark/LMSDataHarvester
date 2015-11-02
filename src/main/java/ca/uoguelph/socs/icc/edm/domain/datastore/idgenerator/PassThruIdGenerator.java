@@ -35,36 +35,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 
 public class PassThruIdGenerator extends IdGenerator
 {
-	/** Singleton Instance of the <code>PassThruIdGenerator</code> */
-	private static final PassThruIdGenerator INSTANCE;
-
-	/**
-	 * Static initializer to register the <code>IdGenerator</code> with the
-	 * factory.
-	 */
-
-	static
-	{
-		IdGenerator.registerGenerator (PassThruIdGenerator.class, PassThruIdGenerator::getInstance);
-		INSTANCE = new PassThruIdGenerator ();
-	}
-
-	/**
-	 * Get an instance of the <code>PassThruIdGenerator</code>.
-	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 *
-	 * @return           The <code>PassThruIdGenerator</code> instance
-	 */
-
-	public static PassThruIdGenerator getInstance (final DataStore datastore, final Class<? extends Element> element)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert element != null : "element is NULL";
-
-		return PassThruIdGenerator.INSTANCE;
-	}
-
 	/**
 	 * Create the <code>PassThruIdGenerator</code>.
 	 */

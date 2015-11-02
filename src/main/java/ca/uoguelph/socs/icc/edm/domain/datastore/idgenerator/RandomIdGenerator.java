@@ -45,16 +45,6 @@ public class RandomIdGenerator extends IdGenerator
 	private SecureRandom generator;
 
 	/**
-	 * Static initializer to register the <code>IdGenerator</code> with the
-	 * <code>IdGeneratorFactory</code>.
-	 */
-
-	static
-	{
-		IdGenerator.registerGenerator (RandomIdGenerator.class, RandomIdGenerator::new);
-	}
-
-	/**
 	 * Create a new <code>RandomIdGenerator</code>, with a <code>List</code> of
 	 * previously used Ids.
 	 *

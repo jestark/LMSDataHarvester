@@ -33,37 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public class NullIdGenerator extends IdGenerator
 {
-	/** Singleton Instance of the <code>NullIdGenerator</code> */
-	private static final NullIdGenerator INSTANCE;
-
-	/**
-	 * Static initializer to register the <code>IdGenerator</code> with the
-	 * factory.
-	 */
-
-	static
-	{
-		IdGenerator.registerGenerator (NullIdGenerator.class, NullIdGenerator::getInstance);
-		INSTANCE = new NullIdGenerator ();
-	}
-
-	/**
-	 * Get an instance of the <code>NullIdGenerator</code>.
-	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code>, not null
-	 *
-	 * @return           The <code>NullIdGenerator</code> instance
-	 */
-
-	public static NullIdGenerator getInstance (final DataStore datastore, final Class<? extends Element> element)
-	{
-		assert datastore != null : "datastore is NULL";
-		assert element != null : "element is NULL";
-
-		return NullIdGenerator.INSTANCE;
-	}
-
 	/**
 	 * Create the <code>NullIdGenerator</code>.
 	 */

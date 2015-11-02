@@ -34,16 +34,6 @@ public class SequentialIdGenerator extends IdGenerator
 	private long currentid;
 
 	/**
-	 * Static initializer to register the <code>IdGenerator</code> with the
-	 * <code>IdGeneratorFactory</code>.
-	 */
-
-	static
-	{
-		IdGenerator.registerGenerator (SequentialIdGenerator.class, SequentialIdGenerator::new);
-	}
-
-	/**
 	 * Create a new <code>SequentialIdGenerator</code>, with a specified
 	 * starting value for the sequence.  The first value returned by the
 	 * <code>IdGenerator</code> will be one greater than the specified starting
