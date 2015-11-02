@@ -18,6 +18,9 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.util.Date;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
@@ -104,6 +107,7 @@ public class MoodleLogData extends LogEntry
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return this.id;
@@ -120,7 +124,7 @@ public class MoodleLogData extends LogEntry
 	 */
 
 	@Override
-	protected void setId (final Long id)
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}
@@ -296,6 +300,7 @@ public class MoodleLogData extends LogEntry
 	 */
 
 	@Override
+	@CheckReturnValue
 	public LogReference getReference ()
 	{
 		return null;

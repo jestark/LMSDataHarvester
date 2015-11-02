@@ -18,6 +18,9 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.io.Serializable;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
@@ -77,6 +80,7 @@ public class ActivityTypeData extends ActivityType implements Serializable
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return this.id;
@@ -93,7 +97,7 @@ public class ActivityTypeData extends ActivityType implements Serializable
 	 */
 
 	@Override
-	protected void setId (final Long id)
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}

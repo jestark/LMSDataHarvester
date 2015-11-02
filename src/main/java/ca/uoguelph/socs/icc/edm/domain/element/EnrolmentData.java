@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
@@ -108,6 +111,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return this.id;
@@ -124,7 +128,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 	 */
 
 	@Override
-	protected void setId (final Long id)
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}
@@ -285,6 +289,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Integer getFinalGrade ()
 	{
 		return this.finalGrade;
@@ -301,7 +306,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 	 */
 
 	@Override
-	protected void setFinalGrade (final Integer finalGrade)
+	protected void setFinalGrade (final @Nullable Integer finalGrade)
 	{
 		assert ((finalGrade == null) || (finalGrade >= 0)) : "Grade can not be negative";
 		assert ((finalGrade == null) || (finalGrade <= 100)) : "Grade can not be greater than 100%";

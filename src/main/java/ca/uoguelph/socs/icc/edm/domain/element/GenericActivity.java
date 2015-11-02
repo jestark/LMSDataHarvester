@@ -21,6 +21,9 @@ import java.util.Set;
 
 import java.util.Collections;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
@@ -75,6 +78,7 @@ public class GenericActivity extends Activity
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return (this.getReference () != null) ? this.getReference ().getId () : null;
@@ -94,7 +98,7 @@ public class GenericActivity extends Activity
 	 */
 
 	@Override
-	protected void setId (final Long id)
+	protected void setId (final @Nullable Long id)
 	{
 	}
 

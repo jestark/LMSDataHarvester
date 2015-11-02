@@ -22,6 +22,9 @@ import java.util.Set;
 import java.util.Collections;
 import java.util.HashSet;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
@@ -82,6 +85,7 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return this.id;
@@ -98,7 +102,7 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 	 */
 
 	@Override
-	protected void setId (final Long id)
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}

@@ -21,6 +21,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -121,7 +124,7 @@ public class Wiki extends NamedActivity
 	 */
 
 	@Override
-	protected void setId (final Long id)
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}

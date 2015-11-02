@@ -24,6 +24,9 @@ import java.util.Collections;
 
 import java.util.stream.Collectors;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
@@ -110,6 +113,7 @@ public class ForumDiscussion extends SubActivity
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return this.id;
@@ -130,7 +134,7 @@ public class ForumDiscussion extends SubActivity
 	 */
 
 	@Override
-	protected void setId (final Long id)
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}

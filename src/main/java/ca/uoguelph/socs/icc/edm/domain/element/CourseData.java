@@ -26,6 +26,9 @@ import java.util.HashSet;
 
 import java.util.stream.Collectors;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.Course;
@@ -100,6 +103,7 @@ public class CourseData extends Course implements Serializable
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return this.id;
@@ -116,7 +120,7 @@ public class CourseData extends Course implements Serializable
 	 */
 
 	@Override
-	protected void setId (Long id)
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}

@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
@@ -162,6 +165,7 @@ public class MoodleActivityReference extends ActivityReference
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return this.id;
@@ -182,7 +186,7 @@ public class MoodleActivityReference extends ActivityReference
 	 */
 
 	@Override
-	protected void setId (final Long id)
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}
@@ -202,7 +206,7 @@ public class MoodleActivityReference extends ActivityReference
 				throw new IllegalStateException ("instance ID is NULL");
 			}
 
-			this.activity = this.getDataStore ()
+			this.activity = this.getDomainModel ()
 				.getQuery (Activity.class,
 						Activity.getActivityClass (this.getType ()),
 						Activity.SELECTOR_ID)
@@ -215,10 +219,10 @@ public class MoodleActivityReference extends ActivityReference
 			}
 
 			// Type is transient on the loaded activity, so copy it in here
-			this.getDataStore ()
-				.getProfile ()
-				.getMetaData (Activity.class)
-				.setValue (Activity.REFERENCE, this.activity, this);
+//			this.getDataStore ()
+//				.getProfile ()
+//				.getMetaData (Activity.class)
+//				.setValue (Activity.REFERENCE, this.activity, this);
 		}
 
 		return this.propagateDomainModel (this.activity);

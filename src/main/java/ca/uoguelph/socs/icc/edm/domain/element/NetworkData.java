@@ -18,6 +18,9 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.io.Serializable;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import ca.uoguelph.socs.icc.edm.domain.Network;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
@@ -70,6 +73,8 @@ public class NetworkData extends Network implements Serializable
 	 * @return a Long integer containing <code>DataStore</code> identifier
 	 */
 
+	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return this.id;
@@ -85,7 +90,8 @@ public class NetworkData extends Network implements Serializable
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
 
-	protected void setId (final Long id)
+	@Override
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}
@@ -111,6 +117,7 @@ public class NetworkData extends Network implements Serializable
 	 * @param name The name of the <code>Network</code>
 	 */
 
+	@Override
 	protected void setName (final String name)
 	{
 		assert name != null : "name is NULL";

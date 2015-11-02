@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
@@ -90,6 +93,7 @@ public class ActivityReferenceData extends ActivityReference
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return this.id;
@@ -111,7 +115,7 @@ public class ActivityReferenceData extends ActivityReference
 	 */
 
 	@Override
-	protected void setId (final Long id)
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}

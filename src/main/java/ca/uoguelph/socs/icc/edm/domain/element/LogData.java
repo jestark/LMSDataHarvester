@@ -18,6 +18,9 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.util.Date;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
@@ -103,6 +106,7 @@ public class LogData extends LogEntry
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return this.id;
@@ -119,7 +123,7 @@ public class LogData extends LogEntry
 	 */
 
 	@Override
-	protected void setId (final Long id)
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}
@@ -281,6 +285,7 @@ public class LogData extends LogEntry
 	 */
 
 	@Override
+	@CheckReturnValue
 	protected LogReference getReference ()
 	{
 		return (this.reference != null) ? this.propagateDomainModel (this.reference) : null;
@@ -313,6 +318,7 @@ public class LogData extends LogEntry
 	 */
 
 	@Override
+	@CheckReturnValue
 	public SubActivity getSubActivity ()
 	{
 		return (this.reference != null) ? this.getReference ().getSubActivity () : null;

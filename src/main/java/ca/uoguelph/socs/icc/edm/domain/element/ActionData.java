@@ -18,6 +18,9 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.io.Serializable;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import ca.uoguelph.socs.icc.edm.domain.Action;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
@@ -71,6 +74,7 @@ public class ActionData extends Action implements Serializable
 	 */
 
 	@Override
+	@CheckReturnValue
 	public Long getId ()
 	{
 		return this.id;
@@ -87,7 +91,7 @@ public class ActionData extends Action implements Serializable
 	 */
 
 	@Override
-	protected void setId (final Long id)
+	protected void setId (final @Nullable Long id)
 	{
 		this.id = id;
 	}
