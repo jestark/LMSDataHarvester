@@ -23,6 +23,8 @@ import java.util.function.BiPredicate;
 
 import java.util.stream.Stream;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
@@ -40,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @param  <V> The type of the value stored in the <code>Element</code>
  */
 
-final class RelationshipReference<T extends Element, V>
+final class MultiReference<T extends Element, V> implements Reference
 {
 	/** Method reference to getting values */
 	final Function<T, Collection<V>> get;
@@ -59,7 +61,7 @@ final class RelationshipReference<T extends Element, V>
 	 * @param  remove Method reference to remove a value, not null
 	 */
 
-	public RelationshipReference (final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
+	public MultiReference (final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
 	{
 		assert get != null : "get method reference is NULL";
 		assert add != null : "add method reference is NULL";
@@ -68,6 +70,47 @@ final class RelationshipReference<T extends Element, V>
 		this.get = get;
 		this.add = add;
 		this.remove = remove;
+	}
+
+	/**
+	 * Determine if the value contained in the <code>Element</code> has the
+	 * specified value.
+	 * <p>
+	 * This method is equivalent to calling the <code>contains</code> method on
+	 * the value.
+	 *
+	 * @param  element  The <code>Element</code> containing the value, not null
+	 * @param  value    The value to test, not null
+	 *
+	 * @return <code>true</code> if the <code>Element</code> contains the
+	 *         specified value, <code>false</code> otherwise.
+	 */
+
+	@Override
+	public boolean hasValue (final T element, final V value)
+	{
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (value, "value");
+
+		return this.get.apply (element).contains (value);
+	}
+
+	/**
+	 * Get the a <code>Stream</code> containing values from the specified
+	 * <code>Element</code> instance.
+	 *
+	 * @param  element  The <code>Element</code>, not null
+	 *
+	 * @return          A <code>Stream</code> containing the values from the
+	 *                  <code>Element</code>
+	 */
+
+	@Override
+	public Stream<V> stream (final T element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		return this.get.apply (element).stream ();
 	}
 
 	/**
@@ -116,44 +159,5 @@ final class RelationshipReference<T extends Element, V>
 		assert this.remove != null : "element is Read-Only";
 
 		return this.remove.test (element, value);
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> has the
-	 * specified value.
-	 * <p>
-	 * This method is equivalent to calling the <code>contains</code> method on
-	 * the value.
-	 *
-	 * @param  element  The <code>Element</code> containing the value, not null
-	 * @param  value    The value to test, not null
-	 *
-	 * @return <code>true</code> if the <code>Element</code> contains the
-	 *         specified value, <code>false</code> otherwise.
-	 */
-
-	public boolean hasValue (final T element, final V value)
-	{
-		assert element != null : "element is NULL";
-		assert value != null : "value is NULL";
-
-		return this.get.apply (element).contains (value);
-	}
-
-	/**
-	 * Get the a <code>Stream</code> containing values from the specified
-	 * <code>Element</code> instance.
-	 *
-	 * @param  element  The <code>Element</code>, not null
-	 *
-	 * @return          A <code>Stream</code> containing the values from the
-	 *                  <code>Element</code>
-	 */
-
-	public Stream<V> stream (final T element)
-	{
-		assert element != null : "element is NULL";
-
-		return this.get.apply (element).stream ();
 	}
 }

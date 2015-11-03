@@ -21,17 +21,19 @@ import java.util.function.Function;
 
 import java.util.stream.Stream;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * References to the methods for a <code>Property</code> in an
  * <code>Element</code> implementation.  This is a helper class to contain the
- * method references for the <code>Element</code> implementation classes.
- * Since a <code>Property</code> can be read-only or read-write, this class
- * contains an indicator to determine if the <code>Property</code> is writable
- * in the implementation class.  A write is attempted on a read-only
- * <code>Property</code> the result will be a
- * <code>NullPointerException</code>.
+ * method references for the <code>Element</code> implementation classes.  A
+ * write is attempted on a read-only <code>Property</code> the result will be a
+ * <code>IllegalStateException</code>.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -39,7 +41,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @param  <V> The type of the value stored in the <code>Element</code>
  */
 
-final class PropertyReference<T extends Element, V>
+final class SingleReference<T extends Element, V> implements Accessor<T, V>
 {
 	/** Method reference to getting values */
 	final Function<T, V> get;
@@ -54,55 +56,12 @@ final class PropertyReference<T extends Element, V>
 	 * @param  set Method reference to set the value, may be null
 	 */
 
-	public PropertyReference (final Function<T, V> get, final BiConsumer<T, V> set)
+	public SingleReference (final Function<T, V> get, final BiConsumer<T, V> set)
 	{
 		assert get != null : "get method reference is NULL";
 
 		this.get = get;
 		this.set = set;
-	}
-
-	/**
-	 * Determine if the value for the reference can be written.
-	 *
-	 * @return <code>true</code> if the value can be written, <code>false</code>
-	 *         otherwise
-	 */
-
-	public boolean isWritable ()
-	{
-		return this.set != null;
-	}
-
-	/**
-	 * Get the value from the specified <code>Element</code> instance.
-	 *
-	 * @param  element  The <code>Element</code>, not null
-	 *
-	 * @return          The value from the <code>Element</code>
-	 */
-
-	public V getValue (final T element)
-	{
-		assert element != null : "element is NULL";
-
-		return this.get.apply (element);
-	}
-
-	/**
-	 * Enter the specified value into the specified <code>Element</code>
-	 * instance.
-	 *
-	 * @param  element  The <code>Element</code>, not null
-	 * @param  value    The value to be set, may be null
-	 */
-
-	public void setValue (final T element, final V value)
-	{
-		assert element != null : "element is NULL";
-		assert this.isWritable () : "element is Read-Only";
-
-		this.set.accept (element, value);
 	}
 
 	/**
@@ -119,10 +78,11 @@ final class PropertyReference<T extends Element, V>
 	 *         specified value, <code>false</code> otherwise.
 	 */
 
+	@Override
 	public boolean hasValue (final T element, final V value)
 	{
-		assert element != null : "element is NULL";
-		assert value != null : "value is NULL";
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (value, "value");
 
 		return this.get.apply (element).equals (value);
 	}
@@ -137,12 +97,47 @@ final class PropertyReference<T extends Element, V>
 	 *                  <code>Element</code>
 	 */
 
+	@Override
 	public Stream<V> stream (final T element)
 	{
-		assert element != null : "element is NULL";
+		Preconditions.checkNotNull (element, "element");
 
 		V value = this.get.apply (element);
 
 		return (value != null) ? Stream.of (value) : Stream.empty ();
+	}
+
+	/**
+	 * Get the value from the specified <code>Element</code> instance.
+	 *
+	 * @param  element  The <code>Element</code>, not null
+	 *
+	 * @return          The value from the <code>Element</code>
+	 */
+
+	@Override
+	@CheckReturnValue
+	public V getValue (final T element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		return this.get.apply (element);
+	}
+
+	/**
+	 * Enter the specified value into the specified <code>Element</code>
+	 * instance.
+	 *
+	 * @param  element  The <code>Element</code>, not null
+	 * @param  value    The value to be set, may be null
+	 */
+
+	@Override
+	public void setValue (final T element, final @Nullable V value)
+	{
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkState (this.set != null, "value is Read-Only");
+
+		this.set.accept (element, value);
 	}
 }
