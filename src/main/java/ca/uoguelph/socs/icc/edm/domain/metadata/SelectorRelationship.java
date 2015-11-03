@@ -62,9 +62,9 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	{
 		assert datastore != null : "datastore is NULL";
 
-		return datastore.getQuery (datastore.getProfile ()
-				.getMetaData (this.value),
-				this.selector);
+		return null; // datastore.getQuery (Container.getInstance ()
+//				.getMetaData (this.value),
+//				this.selector);
 	}
 
 	/**

@@ -30,9 +30,10 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.Element;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * Builder for the meta-data <code>Definition</code>.
@@ -42,16 +43,13 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @param   <T> The <code>Element</code> type
  */
 
-public final class DefinitionBuilder<T extends Element>
+public final class MetaDataBuilder<T extends Element>
 {
 	/** The Logger */
 	private final Logger log;
 
-	/** The <code>Element</code> type */
-	private final Class<T> type;
-
 	/** The <code>MetaData</code> definition for the parent <code>Element</code> */
-	private final Definition<? super T> parent;
+	private final MetaData<? super T> parent;
 
 	/** Set of all of the associated <code>Property</code> instances */
 	private final Set<Property<?>> allprops;
@@ -59,17 +57,17 @@ public final class DefinitionBuilder<T extends Element>
 	/** The <code>Set</code> of <code>Property</code> instances */
 	private final Set<Property<?>> properties;
 
-	/** The <code>Relationship</code> instances for the interface */
-	private final Map<Class<?>, Relationship<T, ?>> relationships;
-
 	/** The <code>Set</code> of <code>Selector</code> instances */
 	private final Set<Selector> selectors;
 
-	/** <code>Property</code> to <code>PropertyReference</code> mapping */
-	private final Map<Property<?>, PropertyReference<T, ?>> prefs;
+	/** <code>Property</code> to <code>Accessor</code> mapping */
+	private final Map<Property<?>, Accessor<T, ?>> accessors;
 
-	/** <code>Property</code> to <code>RelationshipReference</code> mapping */
-	private final Map<Property<?>, RelationshipReference<T, ?>> rrefs;
+	/** <code>Property</code> to <code>Reference</code> mapping */
+	private final Map<Property<?>, Reference<T, ?>> references;
+
+	/** The <code>Relationship</code> instances for the interface */
+	private final Map<Property<?>, Relationship<T, ?>> relationships;
 
 	/**
 	 * Create the <code>MetaDataBuilder</code>.
@@ -77,22 +75,20 @@ public final class DefinitionBuilder<T extends Element>
 	 * @param  type The <code>Element</code> interface class, not null
 	 */
 
-	protected DefinitionBuilder (final Class<T> type, final Definition<? super T> parent)
+	protected MetaDataBuilder (final @Nullable MetaData<? super T> parent)
 	{
-		assert type != null : "type is NULL";
-		assert ! ((type == Element.class) ^ (parent == null));
+		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.log = LoggerFactory.getLogger (DefinitionBuilder.class);
-
-		this.type = type;
 		this.parent = parent;
 
 		this.allprops = (parent != null) ? parent.getProperties () : new HashSet<> ();
+
 		this.properties = new HashSet<> ();
 		this.selectors = new HashSet<> ();
+
+		this.accessors = new HashMap<> ();
+		this.references = new HashMap<> ();
 		this.relationships = new HashMap<> ();
-		this.prefs = new HashMap<> ();
-		this.rrefs = new HashMap<> ();
 	}
 
 	/**
@@ -109,10 +105,10 @@ public final class DefinitionBuilder<T extends Element>
 	 * @param  get      Method reference to get the value, not null
 	 * @param  set      Method reference to set the value, may be null
 	 *
-	 * @return          This <code>DefinitionBuilder</code>
+	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V> DefinitionBuilder<T> addProperty (final Property<V> property, final Function<T, V> get, final BiConsumer<T, V> set)
+	public <V> MetaDataBuilder<T> addProperty (final Property<V> property, final Function<T, V> get, final BiConsumer<T, V> set)
 	{
 		this.log.trace ("addProperty: property={}, get={}, set={}", property, get, set);
 
@@ -122,7 +118,7 @@ public final class DefinitionBuilder<T extends Element>
 
 		this.allprops.add (property);
 		this.properties.add (property);
-		this.prefs.put (property, new PropertyReference<T, V> (get, set));
+		this.prefs.put (property, new SingleReference<T, V> (get, set));
 
 		return this;
 	}
@@ -138,10 +134,10 @@ public final class DefinitionBuilder<T extends Element>
 	 * @param  property The <code>Property</code>, not null
 	 * @param  get      Method reference to get the value, not null
 	 *
-	 * @return          This <code>DefinitionBuilder</code>
+	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V> DefinitionBuilder<T> addProperty (final Property<V> property, final Function<T, V> get)
+	public <V> MetaDataBuilder<T> addProperty (final Property<V> property, final Function<T, V> get)
 	{
 		this.log.trace ("addProperty: property={} get={}", property, get);
 
@@ -160,10 +156,10 @@ public final class DefinitionBuilder<T extends Element>
 	 * @param  get      Method reference to get the value, not null
 	 * @param  set      Method reference to set the value, may be null
 	 *
-	 * @return          This <code>DefinitionBuilder</code>
+	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V extends Element> DefinitionBuilder<T> addRelationship (final Property<V> property, final Function<T, V> get, final BiConsumer<T, V> set)
+	public <V extends Element> MetaDataBuilder<T> addRelationship (final Property<V> property, final Function<T, V> get, final BiConsumer<T, V> set)
 	{
 		this.log.trace ("addRelationship: property={}, get={}, set={}", property, get, set);
 
@@ -172,7 +168,7 @@ public final class DefinitionBuilder<T extends Element>
 		assert set != null : "set is NULL";
 		assert ! this.properties.contains (property) : "property is already registered";
 
-		PropertyReference<T, V> pref = new PropertyReference<T, V> (get, set);
+		SingleReference<T, V> pref = new SingleReference<T, V> (get, set);
 
 		this.allprops.add (property);
 		this.properties.add (property);
@@ -195,10 +191,10 @@ public final class DefinitionBuilder<T extends Element>
 	 * @param  remove   Method reference to remove a value from the
 	 *                  <code>Collection</code>, not null
 	 *
-	 * @return          This <code>DefinitionBuilder</code>
+	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V extends Element> DefinitionBuilder<T> addRelationship (final Property<V> property, final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
+	public <V extends Element> MetaDataBuilder<T> addRelationship (final Property<V> property, final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
 	{
 		this.log.trace ("addRelationship: property={}, get={}, add={}, remove={}", property, get, add, remove);
 
@@ -206,7 +202,7 @@ public final class DefinitionBuilder<T extends Element>
 		assert get != null : "get is NULL";
 		assert ! this.properties.contains (property) : "property is already registered";
 
-		RelationshipReference<T, V> rref = new RelationshipReference<T, V> (get, add, remove);
+		MultiReference<T, V> rref = new MultiReference<T, V> (get, add, remove);
 
 		this.allprops.add (property);
 		this.properties.add (property);
@@ -226,10 +222,10 @@ public final class DefinitionBuilder<T extends Element>
 	 * @param  property The <code>Property</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 *
-	 * @return          This <code>DefinitionBuilder</code>
+	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V extends Element> DefinitionBuilder<T> addRelationship (final Class<V> value, final Property<T> property, final Selector selector)
+	public <V extends Element> MetaDataBuilder<T> addRelationship (final Class<V> value, final Property<T> property, final Selector selector)
 	{
 		this.log.trace ("addRelationship: property={}, selector={}", property, selector);
 
@@ -248,10 +244,10 @@ public final class DefinitionBuilder<T extends Element>
 	 *
 	 * @param  selector The <code>Selector</code>, not null
 	 *
-	 * @return          This <code>DefinitionBuilder</code>
+	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public DefinitionBuilder<T> addSelector (final Selector selector)
+	public MetaDataBuilder<T> addSelector (final Selector selector)
 	{
 		this.log.trace ("addSelector: selector={}", selector);
 
@@ -275,9 +271,7 @@ public final class DefinitionBuilder<T extends Element>
 	{
 		this.log.trace ("build:");
 
-		Definition<T> defn = new Definition<T> (this.type, this.parent, this.properties, this.selectors, this.relationships, this.prefs, this.rrefs);
-		Container.getInstance ().registerMetaData (defn);
-
-		return defn;
+		return new MetaData<T> (this.parent, this.properties, this.selectors,
+				this.accessors, this.references, this.relationships);
 	}
 }

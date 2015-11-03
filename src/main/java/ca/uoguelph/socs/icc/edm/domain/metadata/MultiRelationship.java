@@ -38,7 +38,7 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	private final Property<V> property;
 
 	/** The <code>RelationshipReference</code> used to manipulate the element */
-	private final RelationshipReference<T, V> reference;
+	private final MultiReference<T, V> reference;
 
 	/**
 	 * Create the <code>MultiRelationship</code>.
@@ -48,7 +48,7 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	 * @param  reference The <code>RelationshipReference</code>, not null
 	 */
 
-	protected MultiRelationship (final Class<T> type, final Property<V> property, final RelationshipReference<T, V> reference)
+	protected MultiRelationship (final Class<T> type, final Property<V> property, final MultiReference<T, V> reference)
 	{
 		super (type, property.getPropertyType ());
 
@@ -184,8 +184,7 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 		assert datastore != null : "datastore is null";
 		assert element != null : "element is NULL";
 
-		return this.reference.getValue (element)
-			.stream ()
+		return this.reference.stream (element)
 			.allMatch (x -> this.getInverse (x.getClass ()).canInsert (datastore, x));
 	}
 
@@ -210,8 +209,7 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 		assert element != null : "element is NULL";
 		assert datastore.contains (element) : "element is not in the datastore";
 
-		return datastore.contains (element) && this.reference.getValue (element)
-			.stream ()
+		return datastore.contains (element) && this.reference.stream (element)
 			.allMatch (x -> this.getInverse (x.getClass ()).canRemove ());
 	}
 
@@ -239,8 +237,7 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 		assert element != null : "element is NULL";
 		assert datastore.contains (element) : "element is not in the datastore";
 
-		return datastore.contains (element) && this.reference.getValue (element)
-			.stream ()
+		return datastore.contains (element) && this.reference.stream (element)
 			.allMatch (x -> this.getInverse (x.getClass ()).insert (datastore, x, element));
 	}
 
@@ -268,8 +265,7 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 		assert element != null : "element is NULL";
 		assert datastore.contains (element) : "element is not in the datastore";
 
-		return datastore.contains (element) && this.reference.getValue (element)
-			.stream ()
+		return datastore.contains (element) && this.reference.stream (element)
 			.allMatch (x -> this.getInverse (x.getClass ()).remove (x, element));
 	}
 }

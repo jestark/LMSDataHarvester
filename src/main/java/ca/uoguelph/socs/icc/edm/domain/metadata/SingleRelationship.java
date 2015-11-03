@@ -36,7 +36,7 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	private final Property<V> property;
 
 	/** The assocated <code>PropertyReference</code> */
-	private final PropertyReference<T, V> reference;
+	private final SingleReference<T, V> reference;
 
 	/**
 	 * Create the <code>SingleRelationShip</code>.
@@ -46,7 +46,7 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	 * @param  reference The <code>PropertyReference</code>, not null
 	 */
 
-	protected SingleRelationship (final Class<T> type, final Property<V> property, final PropertyReference<T, V> reference)
+	protected SingleRelationship (final Class<T> type, final Property<V> property, final SingleReference<T, V> reference)
 	{
 		super (type, property.getPropertyType ());
 
