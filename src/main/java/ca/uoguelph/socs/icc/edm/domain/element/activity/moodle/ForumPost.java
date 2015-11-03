@@ -33,8 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/forum
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -83,8 +81,7 @@ public class ForumPost extends SubActivity
 
 	static
 	{
-		Implementation.getInstance (SubActivity.class, ForumPost.class, ForumPost::new);
-		SubActivity.registerImplementation (ForumDiscussion.class, ForumPost.class);
+		SubActivity.registerImplementation (ForumDiscussion.class, ForumPost.class, ForumPost::new);
 	}
 
 	/**

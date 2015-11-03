@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Objects;
 
+import java.util.function.Supplier;
+
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -28,7 +30,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -48,7 +49,7 @@ public abstract class NamedActivity extends Activity
 	private static final long serialVersionUID = 1L;
 
 	/** The <code>MetaData</code> for the <code>NamedActivity</code> */
-	private static final MetaData<NamedActivity> METADATA;
+	protected static final MetaData<NamedActivity> METADATA;
 
 	/** The <code>Grade</code> instances associated with the <code>Activity</code> */
 	public static final Property<Grade> GRADES;
@@ -66,11 +67,26 @@ public abstract class NamedActivity extends Activity
 		GRADES = Property.getInstance (Grade.class, "grade", Property.Flags.MULTIVALUED);
 		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
 
-		METADATA = Definition.getBuilder (NamedActivity.class, Activity.class)
+		METADATA = MetaData.builder (Activity.METADATA)
 			.addProperty (Activity.NAME, NamedActivity::getName, NamedActivity::setName)
 			.addRelationship (GRADES, NamedActivity::getGrades, NamedActivity::addGrade, NamedActivity::removeGrade)
 			.addRelationship (SUBACTIVITIES, NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity)
 			.build ();
+	}
+
+	/**
+	 * Register an implementation.  This method handles the registration of an
+	 * implementation class such that instances of it can be returned a
+	 * <code>Builder</code> or a <code>Query</code>.
+	 *
+	 * @param  <T>      The implementation type
+	 * @param  impl     The Implementation <code>Class</code>, not null
+	 * @param  supplier Method reference to create a new instance, not null
+	 */
+
+	protected static <T extends NamedActivity> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
+	{
+
 	}
 
 	/**

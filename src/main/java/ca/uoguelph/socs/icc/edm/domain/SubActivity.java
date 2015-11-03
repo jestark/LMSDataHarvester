@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.Objects;
 
+import java.util.function.Supplier;
+
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -55,7 +57,7 @@ public abstract class SubActivity extends ParentActivity implements Serializable
 	private static final Map<Class<? extends ParentActivity>, Class<? extends SubActivity>> subactivities;
 
 	/** The <code>MetaData</code> for the <code>SubActivity</code> */
-	private static final MetaData<SubActivity> METADATA;
+	protected static final MetaData<SubActivity> METADATA;
 
 	/** The name of the <code>SubActivity</code> */
 	public static final Property<String> NAME;
@@ -84,7 +86,7 @@ public abstract class SubActivity extends ParentActivity implements Serializable
 		REFERENCES = Property.getInstance (LogReference.class, "references", Property.Flags.MULTIVALUED);
 		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", Property.Flags.MULTIVALUED);
 
-		METADATA = Definition.getBuilder (SubActivity.class, Element.class)
+		METADATA = MetaData.builder (Element.METADATA)
 			.addProperty (NAME, SubActivity::getName, SubActivity::setName)
 			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
 			.addRelationship (REFERENCES, SubActivity::getReferences, SubActivity::addReference, SubActivity::removeReference)

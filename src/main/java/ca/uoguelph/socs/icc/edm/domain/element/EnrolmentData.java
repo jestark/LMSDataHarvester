@@ -34,8 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>Enrolment</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Enrolment</code>
@@ -83,7 +81,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 
 	static
 	{
-		Implementation.getInstance (Enrolment.class, EnrolmentData.class, EnrolmentData::new);
+		Enrolment.registerImplementation (EnrolmentData.class, EnrolmentData::new);
 	}
 
 	/**

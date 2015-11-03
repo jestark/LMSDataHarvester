@@ -23,8 +23,6 @@ import javax.annotation.Nullable;
 
 import ca.uoguelph.socs.icc.edm.domain.Role;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>Role</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Role</code>
@@ -53,7 +51,7 @@ public class RoleData extends Role implements Serializable
 
 	static
 	{
-		Implementation.getInstance (Role.class, RoleData.class, RoleData::new);
+		Role.registerImplementation (RoleData.class, RoleData::new);
 	}
 
 	/**

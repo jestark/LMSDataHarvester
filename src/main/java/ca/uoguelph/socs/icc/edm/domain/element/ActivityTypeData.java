@@ -24,8 +24,6 @@ import javax.annotation.Nullable;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
  * that instances of this class will be accessed though the
@@ -58,7 +56,7 @@ public class ActivityTypeData extends ActivityType implements Serializable
 
 	static
 	{
-		Implementation.getInstance (ActivityType.class, ActivityTypeData.class, ActivityTypeData::new);
+		ActivityType.registerImplementation (ActivityTypeData.class, ActivityTypeData::new);
 	}
 
 	/**

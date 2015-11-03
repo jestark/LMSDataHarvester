@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.Date;
 import java.util.Objects;
 
+import java.util.function.Supplier;
+
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -31,7 +33,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -67,7 +68,7 @@ public abstract class LogEntry extends Element implements Serializable
 	private static final long serialVersionUID = 1L;
 
 	/** The <code>MetaData</code> for the <code>LogEntry</code> */
-	private static final MetaData<LogEntry> METADATA;
+	protected static final MetaData<LogEntry> METADATA;
 
 	/** The associated <code>Action</code> */
 	public static final Property<Action> ACTION;
@@ -118,7 +119,7 @@ public abstract class LogEntry extends Element implements Serializable
 		SELECTOR_COURSE = Selector.getInstance (COURSE, false);
 		SELECTOR_NETWORK = Selector.getInstance (NETWORK, false);
 
-		METADATA = Definition.getBuilder (LogEntry.class, Element.class)
+		METADATA = MetaData.builder (Element.METADATA)
 			.addProperty (COURSE, LogEntry::getCourse)
 			.addProperty (TIME, LogEntry::getTime, LogEntry::setTime)
 			.addRelationship (ACTION, LogEntry::getAction, LogEntry::setAction)
@@ -130,6 +131,21 @@ public abstract class LogEntry extends Element implements Serializable
 			.addSelector (SELECTOR_COURSE)
 			.addSelector (SELECTOR_NETWORK)
 			.build ();
+	}
+
+	/**
+	 * Register an implementation.  This method handles the registration of an
+	 * implementation class such that instances of it can be returned a
+	 * <code>Builder</code> or a <code>Query</code>.
+	 *
+	 * @param  <T>      The implementation type
+	 * @param  impl     The Implementation <code>Class</code>, not null
+	 * @param  supplier Method reference to create a new instance, not null
+	 */
+
+	protected static <T extends LogEntry> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
+	{
+
 	}
 
 	/**

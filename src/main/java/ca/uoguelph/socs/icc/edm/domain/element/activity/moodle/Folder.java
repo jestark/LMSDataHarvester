@@ -35,8 +35,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.NamedActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/folder
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -81,8 +79,7 @@ public class Folder extends NamedActivity
 
 	static
 	{
-		Implementation.getInstance (NamedActivity.class, Folder.class, Folder::new);
-		Activity.registerImplementation ("moodle", "folder", Folder.class);
+		Activity.registerImplementation ("moodle", "folder", Folder.class, Folder::new);
 	}
 
 	/**

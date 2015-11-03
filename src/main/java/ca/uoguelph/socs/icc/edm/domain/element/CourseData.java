@@ -35,8 +35,6 @@ import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>Course</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Course</code>
@@ -77,7 +75,7 @@ public class CourseData extends Course implements Serializable
 
 	static
 	{
-		Implementation.getInstance (Course.class, CourseData.class, CourseData::new);
+		Course.registerImplementation (CourseData.class, CourseData::new);
 	}
 
 	/**

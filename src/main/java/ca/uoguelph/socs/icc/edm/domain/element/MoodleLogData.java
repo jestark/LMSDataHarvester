@@ -34,8 +34,6 @@ import ca.uoguelph.socs.icc.edm.domain.Network;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 public class MoodleLogData extends LogEntry
 {
 	/** Serial version id, required by the Serializable interface */
@@ -78,7 +76,7 @@ public class MoodleLogData extends LogEntry
 
 	static
 	{
-		Implementation.getInstance (LogEntry.class, MoodleLogData.class, MoodleLogData::new);
+		LogEntry.registerImplementation (MoodleLogData.class, MoodleLogData::new);
 	}
 
 	/**

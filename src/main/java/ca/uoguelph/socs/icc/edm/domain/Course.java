@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Objects;
 
+import java.util.function.Supplier;
+
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -28,7 +30,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -62,7 +63,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public abstract class Course extends Element
 {
 	/** The <code>MetaData</code> for the <code>Course</code> */
-	private static final MetaData<Course> METADATA;
+	protected static final MetaData<Course> METADATA;
 
 	/** The name of the <code>Course</code> */
 	public static final Property<String> NAME;
@@ -98,7 +99,7 @@ public abstract class Course extends Element
 
 		SELECTOR_OFFERING = Selector.getInstance ("offering", true, NAME, SEMESTER, YEAR);
 
-		METADATA = Definition.getBuilder (Course.class, Element.class)
+		METADATA = MetaData.builder (Element.METADATA)
 			.addProperty (NAME, Course::getName, Course::setName)
 			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
 			.addProperty (YEAR, Course::getYear, Course::setYear)
@@ -106,6 +107,21 @@ public abstract class Course extends Element
 			.addRelationship (ENROLMENTS, Course::getEnrolments, Course::addEnrolment, Course::removeEnrolment)
 			.addSelector (SELECTOR_OFFERING)
 			.build ();
+	}
+
+	/**
+	 * Register an implementation.  This method handles the registration of an
+	 * implementation class such that instances of it can be returned a
+	 * <code>Builder</code> or a <code>Query</code>.
+	 *
+	 * @param  <T>      The implementation type
+	 * @param  impl     The Implementation <code>Class</code>, not null
+	 * @param  supplier Method reference to create a new instance, not null
+	 */
+
+	protected static <T extends Course> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
+	{
+
 	}
 
 	/**

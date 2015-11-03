@@ -31,8 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.Network;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>LogEntry</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>LogEntry</code>
@@ -80,7 +78,7 @@ public class LogData extends LogEntry
 
 	static
 	{
-		Implementation.getInstance (LogEntry.class, LogData.class, LogData::new);
+		LogEntry.registerImplementation (LogData.class, LogData::new);
 	}
 
 	/**

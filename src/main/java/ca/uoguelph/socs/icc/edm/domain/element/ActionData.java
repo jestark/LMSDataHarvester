@@ -23,8 +23,6 @@ import javax.annotation.Nullable;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>Action</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>Action</code>
@@ -53,7 +51,7 @@ public class ActionData extends Action implements Serializable
 
 	static
 	{
-		Implementation.getInstance (Action.class, ActionData.class, ActionData::new);
+		Action.registerImplementation (ActionData.class, ActionData::new);
 	}
 
 	/**
@@ -110,8 +108,7 @@ public class ActionData extends Action implements Serializable
 
 	/**
 	 * Set the name of the <code>Action</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Action</code> instance
-	 * is loaded.
+	 * used initialize a new <code>Action</code> instance.
 	 *
 	 * @param  name The name of the <code>Action</code>
 	 */

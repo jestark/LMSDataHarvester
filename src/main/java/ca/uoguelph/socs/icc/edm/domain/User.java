@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Set;
 import java.util.Objects;
 
+import java.util.function.Supplier;
+
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -27,7 +29,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -60,7 +61,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public abstract class User extends Element
 {
 	/** The <code>MetaData</code> for the <code>User</code> */
-	private static final MetaData<User> METADATA;
+	protected static final MetaData<User> METADATA;
 
 	/** The first name of the <code>User</code> */
 	public static final Property<String> FIRSTNAME;
@@ -96,7 +97,7 @@ public abstract class User extends Element
 		SELECTOR_ENROLMENTS = Selector.getInstance (ENROLMENTS, true);
 		SELECTOR_USERNAME = Selector.getInstance (USERNAME, true);
 
-		METADATA = Definition.getBuilder (User.class, Element.class)
+		METADATA = MetaData.builder (Element.METADATA)
 			.addProperty (FIRSTNAME, User::getFirstname, User::setFirstname)
 			.addProperty (LASTNAME, User::getLastname, User::setLastname)
 			.addProperty (USERNAME, User::getUsername, User::setUsername)
@@ -104,6 +105,21 @@ public abstract class User extends Element
 			.addSelector (SELECTOR_USERNAME)
 			.addSelector (SELECTOR_ENROLMENTS)
 			.build ();
+	}
+
+	/**
+	 * Register an implementation.  This method handles the registration of an
+	 * implementation class such that instances of it can be returned a
+	 * <code>Builder</code> or a <code>Query</code>.
+	 *
+	 * @param  <T>      The implementation type
+	 * @param  impl     The Implementation <code>Class</code>, not null
+	 * @param  supplier Method reference to create a new instance, not null
+	 */
+
+	protected static <T extends User> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
+	{
+
 	}
 
 	/**

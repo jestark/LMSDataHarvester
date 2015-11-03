@@ -24,8 +24,6 @@ import javax.annotation.Nullable;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
  * that instances of this class will be accessed though the
@@ -63,7 +61,7 @@ public class MoodleActivityType extends ActivityType implements Serializable
 
 	static
 	{
-		Implementation.getInstance (ActivityType.class, MoodleActivityType.class, MoodleActivityType::new);
+		ActivityType.registerImplementation (MoodleActivityType.class, MoodleActivityType::new);
 
 		source = new ActivitySourceData ();
 		((ActivitySourceData) source).setName ("moodle");

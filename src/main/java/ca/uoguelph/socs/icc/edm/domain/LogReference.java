@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.Objects;
 
+import java.util.function.Supplier;
+
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -32,7 +34,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -55,7 +56,7 @@ public abstract class LogReference extends Element implements Serializable
 	private static final Map<Class<? extends SubActivity>, Class<? extends LogReference>> references;
 
 	/** The <code>MetaData</code> for the <code>LogReference</code> */
-	private static final MetaData<LogReference> METADATA;
+	protected static final MetaData<LogReference> METADATA;
 
 	/** The associated <code>LogEntry</code>*/
 	public static final Property<LogEntry> ENTRY;
@@ -83,7 +84,7 @@ public abstract class LogReference extends Element implements Serializable
 
 		SELECTOR_ENTRY = Selector.getInstance (ENTRY, true);
 
-		METADATA = Definition.getBuilder (LogReference.class, Element.class)
+		METADATA = MetaData.builder (Element.METADATA)
 			.addRelationship (ENTRY, LogReference::getEntry, LogReference::setEntry)
 			.addRelationship (SUBACTIVITY, LogReference::getSubActivity, LogReference::setSubActivity)
 			.addSelector (SELECTOR_ENTRY)

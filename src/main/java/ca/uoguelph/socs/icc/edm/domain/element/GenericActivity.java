@@ -31,8 +31,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>Activity</code> interface, for
  * <code>Activity</code> instances which do not contain additional data.  It is
@@ -56,7 +54,7 @@ public class GenericActivity extends Activity
 
 	static
 	{
-		Implementation.getInstance (Activity.class, GenericActivity.class, GenericActivity::new);
+		Activity.registerImplementation (GenericActivity.class, GenericActivity::new);
 	}
 
 	/**

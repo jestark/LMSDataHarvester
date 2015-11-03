@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of <code>ActivityReference</code>.
  *
@@ -66,7 +64,7 @@ public class ActivityReferenceData extends ActivityReference
 
 	static
 	{
-		Implementation.getInstance (ActivityReference.class, ActivityReferenceData.class, ActivityReferenceData::new);
+		ActivityReference.registerImplementation (ActivityReferenceData.class, ActivityReferenceData::new);
 	}
 
 	/**

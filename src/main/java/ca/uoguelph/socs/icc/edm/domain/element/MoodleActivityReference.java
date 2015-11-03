@@ -33,10 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Moodle specific implementation of <code>ActivityReference</code>.
  * Rather than have the primary key of the tables containing the module
@@ -87,7 +83,7 @@ public class MoodleActivityReference extends ActivityReference
 
 	static
 	{
-		Implementation.getInstance (ActivityReference.class, MoodleActivityReference.class, MoodleActivityReference::new);
+		ActivityReference.registerImplementation (MoodleActivityReference.class, MoodleActivityReference::new);
 	}
 
 	/**

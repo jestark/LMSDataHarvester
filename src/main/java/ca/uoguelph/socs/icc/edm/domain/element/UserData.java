@@ -30,8 +30,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
  * instances of this class will be accessed though the <code>User</code>
@@ -69,7 +67,7 @@ public class UserData extends User implements Serializable
 
 	static
 	{
-		Implementation.getInstance (User.class, UserData.class, UserData::new);
+		User.registerImplementation (UserData.class, UserData::new);
 	}
 
 	/**

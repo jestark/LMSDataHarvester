@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.Objects;
 
+import java.util.function.Supplier;
+
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -42,7 +44,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
 import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
@@ -100,7 +101,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 	private static final Map<ActivityType, Class<? extends Activity>> activities;
 
 	/** The <code>MetaData</code> for the <code>Activity</code> */
-	private static final MetaData<Activity> METADATA;
+	protected static final MetaData<Activity> METADATA;
 
 	/** The name of the <code>Activity</code> */
 	public static final Property<String> NAME;
@@ -123,7 +124,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
 		REFERENCE = Property.getInstance (ActivityReference.class, "reference", Property.Flags.REQUIRED);
 
-		METADATA = Definition.getBuilder (Activity.class, Element.class)
+		METADATA = MetaData.builder (Element.METADATA)
 			.addProperty (NAME, Activity::getName)
 			.addRelationship (REFERENCE, Activity::getReference, Activity::setReference)
 			.build ();
@@ -143,6 +144,46 @@ public abstract class Activity extends ParentActivity implements Serializable
 
 			// Activity.store = new DomainModel (DataStore.getInstance (MemDataStore.class, activityProf));
 		}
+	}
+
+	/**
+	 * Register an association between an <code>ActivityType</code> and the
+	 * class implementing the <code>Activity</code> interface for that
+	 * <code>ActivityType</code>.
+	 *
+	 * @param  source A <code>String</code> representation of the
+	 *                <code>ActivitySource</code>, not null
+	 * @param  type   A <code>String</code> representation of the
+	 *                <code>ActivityType</code>, not null
+	 * @param  impl   The implementation class, not null
+	 */
+
+	protected static <T extends Activity> void registerImplementation (final String source, final String type, final Class<T> impl, Supplier<T> supplier)
+	{
+		assert source != null : "source is NULL";
+		assert type != null : "type is NULL";
+		assert impl != null : "impl is NULL";
+		assert source.length () > 0 : "source is empty";
+
+		if (Activity.store == null)
+		{
+			Activity. initDataStore ();
+		}
+
+		Activity.store.getTransaction ().begin ();
+
+		ActivityType atype = ActivityType.builder (Activity.store)
+			.setActivitySource (ActivitySource.builder (Activity.store)
+					.setName (source)
+					.build ())
+			.setName (type)
+			.build ();
+
+		Activity.store.getTransaction ().commit ();
+
+		assert ! Activity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
+
+		Activity.activities.put (atype, impl);
 	}
 
 	/**
@@ -178,46 +219,6 @@ public abstract class Activity extends ParentActivity implements Serializable
 		assert type != null : "type is NULL";
 
 		return (Activity.activities.containsKey (type)) ? Activity.activities.get (type) : GenericActivity.class;
-	}
-
-	/**
-	 * Register an association between an <code>ActivityType</code> and the
-	 * class implementing the <code>Activity</code> interface for that
-	 * <code>ActivityType</code>.
-	 *
-	 * @param  source A <code>String</code> representation of the
-	 *                <code>ActivitySource</code>, not null
-	 * @param  type   A <code>String</code> representation of the
-	 *                <code>ActivityType</code>, not null
-	 * @param  impl   The implementation class, not null
-	 */
-
-	protected static final void registerImplementation (final String source, final String type, final Class<? extends Activity> impl)
-	{
-		assert source != null : "source is NULL";
-		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
-		assert source.length () > 0 : "source is empty";
-
-		if (Activity.store == null)
-		{
-			Activity. initDataStore ();
-		}
-
-		Activity.store.getTransaction ().begin ();
-
-		ActivityType atype = ActivityType.builder (Activity.store)
-			.setActivitySource (ActivitySource.builder (Activity.store)
-					.setName (source)
-					.build ())
-			.setName (type)
-			.build ();
-
-		Activity.store.getTransaction ().commit ();
-
-		assert ! Activity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
-
-		Activity.activities.put (atype, impl);
 	}
 
 	/**

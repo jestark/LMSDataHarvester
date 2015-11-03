@@ -35,8 +35,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.NamedActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/page
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -81,8 +79,7 @@ public class Page extends NamedActivity
 
 	static
 	{
-		Implementation.getInstance (NamedActivity.class, Page.class, Page::new);
-		Activity.registerImplementation ("moodle", "page", Page.class);
+		Activity.registerImplementation ("moodle", "page", Page.class, Page::new);
 	}
 
 	/**

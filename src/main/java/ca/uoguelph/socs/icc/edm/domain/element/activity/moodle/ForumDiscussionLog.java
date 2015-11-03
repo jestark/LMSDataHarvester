@@ -20,8 +20,6 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>LogEntry</code> interface for logs referencing
  * the <code>SubActivity</code> implemented by that
@@ -59,8 +57,7 @@ class ForumDiscussionLog extends LogReference
 
 	static
 	{
-		Implementation.getInstance (LogReference.class, ForumDiscussionLog.class, ForumDiscussionLog::new);
-		LogReference.registerImplementation (ForumDiscussion.class, ForumDiscussionLog.class);
+		LogReference.registerImplementation (ForumDiscussion.class, ForumDiscussionLog.class, ForumDiscussionLog::new);
 	}
 
 	/**

@@ -17,9 +17,12 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 import java.util.ArrayDeque;
+import java.util.EnumMap;
 
 import java.util.stream.Collectors;
 
@@ -27,9 +30,68 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.TranslationTable;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
+
+final class RelationshipProcessor
+{
+	public static enum Priority
+	{
+		DEPENDS,
+		RECOMMENDS,
+		DEFERRED;
+	}
+
+	private final Logger log;
+
+	private final MetaData<Element> metadata;
+
+	private final Map<Priority, List<Property<?>>> properties;
+
+	private static Priority determinePriority (final Property<?> property)
+	{
+		return (property.hasFlags (Property.Flags.REQUIRED)
+				|| property.hasFlags (Property.Flags.MUTABLE))
+			? Priority.DEPENDS
+			: (property.hasFlags (Property.Flags.RECOMMENDED))
+			? Priority.RECOMMENDS : Priority.DEFERRED;
+	}
+
+	public RelationshipProcessor (final MetaData<Element> metadata)
+	{
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.metadata = metadata;
+
+		this.properties = this.metadata.getProperties ()
+			.stream ()
+			.filter (p -> p.hasFlags (Property.Flags.RELATIONSHIP))
+			.collect (Collectors.groupingBy (p -> determinePriority (p),
+					() -> new EnumMap<Priority, List<Property<?>>> (Priority.class),
+					Collectors.toList ()));
+	}
+
+	public boolean hasPriority (final Priority priority)
+	{
+		assert priority != null : "Priority is NULL";
+
+		return ! this.properties.get (priority).isEmpty ();
+	}
+
+	@SuppressWarnings ("unchecked")
+	public List<Element> getByPriority (final Priority priority, final Element element)
+	{
+		assert priority != null : "Priority is NULL";
+		assert element != null : "element is NULL";
+
+		return (List<Element>) this.properties.get (priority).stream ()
+			.flatMap (p -> this.metadata.getStream (p, element))
+			.collect (Collectors.toList ());
+	}
+}
 
 /**
  * Insert <code>Element</code> instances along with their relationships.  This
@@ -59,10 +121,13 @@ public final class InsertProcessor
 	private final DataStore datastore;
 
 	/** The <code>TranslationTable</code> */
-	private final TranslationTable ttable;
+	private final Retriever<Element> retriever;
+
+	/** */
+	private final Queue<Element> recommended;
 
 	/** The delayed processing queue*/
-	private final Queue<Element> queue;
+	private final Queue<Element> deferred;
 
 	/**
 	 * Create the <code>InsertProcessor</code>
@@ -71,15 +136,44 @@ public final class InsertProcessor
 	 * @param  ttable    The <code>TranslationTable</code>, not null
 	 */
 
-	protected InsertProcessor (final DataStore datastore, final TranslationTable ttable)
+	protected InsertProcessor (final DataStore datastore, final Retriever<Element> retriever)
 	{
 		this.log = LoggerFactory.getLogger (InsertProcessor.class);
 
-		this.ttable = ttable;
+		this.retriever = retriever;
 		this.datastore = datastore;
-		this.queue = new ArrayDeque<Element> ();
+
+		this.deferred = new ArrayDeque<Element> ();
+		this.recommended = new ArrayDeque<Element> ();
 	}
 
+/*	private List<Element> processQueue (final Queue<Element> queue)
+	{
+		this.log.trace ("processQueue: queue={}", queue);
+
+		while (! queue.isEmpty ())
+		{
+
+		}
+
+		return null;
+	}
+
+	private void processDependencies (final Element element)
+	{
+		this.log.trace ("element={}", element);
+
+		assert element != null : "element is NULL";
+
+		this.log.debug ("Processing Relationships for Element: {}", element);
+
+		RelationshipProcessor p = new RelationshipProcessor (datastore.getProfile ()
+			.getCreator (Element.class, element.getClass ()));
+
+		this.recommended.addAll (p.getByPrior);
+		this.deferred.addAll (p.getByPriority (RelationshipProcessor.Priority.DEFERRED));
+	}
+*/
 	/**
 	 * Clear the delayed processing queue
 	 */
@@ -88,7 +182,8 @@ public final class InsertProcessor
 	{
 		this.log.trace ("clear:");
 
-		this.queue.clear ();
+		this.recommended.clear ();
+		this.deferred.clear ();
 	}
 
 	/**
@@ -112,75 +207,12 @@ public final class InsertProcessor
 	 *                               <code>MULTIVALUED</code>
 	 */
 
-	public <T extends Element> T processElement (final T element)
+	public <T extends Element> T insert (final T element)
 	{
-		this.log.trace ("processElement: element={}", element);
+		this.log.trace ("insert: element={}", element);
 
-		if ((element != null) && (! this.ttable.contains (element, this.datastore)))
+/*		if (! this.ttable.contains (element, this.datastore))
 		{
-			MetaData<Element> metadata = datastore.getProfile ().getCreator (Element.class, element.getClass ());
-
-			this.log.debug ("Processing Relationships for Element: {}", element);
-
-			for (Property<?> p : metadata.getProperties ())
-			{
-				if (p.isRelationship ())
-				{
-					if (p.isRequired ())
-					{
-						if (p.isMultivalued ())
-						{
-							throw new IllegalStateException ("Required Property is Multi-valued");
-						}
-						else if (metadata.getValue (p, element) == null)
-						{
-							this.log.error ("Required property {} is NULL", p.getName ());
-							throw new IllegalStateException ("Encountered a Required property which is NULL");
-						}
-						else
-						{
-							this.log.debug ("Processing required relationship: {}", p.getName ());
-							this.processElement ((Element) metadata.getValue (p, element));
-						}
-					}
-					else if (p.isMutable ())
-					{
-						if (p.isMultivalued ())
-						{
-							this.log.debug ("Processing Multi-Valued Mutable relationship: {}", p.getName ());
-							metadata.getValues (p, element)
-								.forEach (x -> this.processElement ((Element) x));
-						}
-						else if (metadata.getValue (p, element) != null)
-						{
-							this.log.debug ("Processing Single-Valued Mutable relationship: {}", p.getName ());
-							this.processElement ((Element) metadata.getValue (p, element));
-						}
-						else
-						{
-							this.log.debug ("Skipping NULL Single-Valued Mutable relationship: {}", p.getName ());
-						}
-					}
-					else
-					{
-						if (p.isMultivalued ())
-						{
-							this.log.debug ("Queuing Multi-Valued relationship: {}", p.getName ());
-							metadata.getValues (p, element)
-								.forEach (x -> this.queue.add ((Element) x));
-						}
-						else if (metadata.getValue (p, element) != null)
-						{
-							this.log.debug ("Queuing Single-Valued relationship: {}", p.getName ());
-							this.queue.add ((Element) metadata.getValue (p, element));
-						}
-						else
-						{
-							this.log.debug ("Skipping NULL Single-Valued relationship: {}", p.getName ());
-						}
-					}
-				}
-			}
 
 			this.log.debug ("Copying Element into destination DataStore: {}", element);
 
@@ -193,44 +225,43 @@ public final class InsertProcessor
 			}
 		}
 
-		return this.ttable.get (element, this.datastore);
+*/		return null; // this.ttable.get (element, this.datastore);
 	}
 
 	/**
 	 * Insert all of the <code>Element</code> instances in the specified
 	 * <code>Collection</code> into the <code>DataStore</code>.
 	 *
-	 * @param  inputs The <code>Collection</code> of <code>Element</code>
-	 *                instances to insert, not null
+	 * @param  elements The <code>Collection</code> of <code>Element</code>
+	 *                  instances to insert, not null
 	 *
-	 * @return        A <code>Collection</code> containing all of the
-	 *                <code>Element</code> instances in the
-	 *                <code>DataStore</code> in the same order as the input
-	 *                <code>Collection</code>
+	 * @return          A <code>Collection</code> containing all of the
+	 *                  <code>Element</code> instances in the
+	 *                  <code>DataStore</code> in the same order as the input
+	 *                  <code>Collection</code>
 	 */
 
-	public <T extends Element> Collection<T> processElements (final Collection<T> inputs)
+	public <T extends Element> Collection<T> insert (final Collection<T> elements)
 	{
-		this.log.trace ("processElements: inputs={}", inputs);
+		this.log.trace ("insert: elements={}", elements);
 
-		assert inputs != null : "inputs is NULL";
+		assert elements != null : "elements is NULL";
 
-		return inputs.stream ()
-			.map (x -> this.processElement (x))
-			.collect (Collectors.toList ());
+		return null;
 	}
 
 	/**
 	 * Process all of the queued <code>Element</code> instances.
 	 */
 
-	public void processQueue ()
+	public void processDeferred ()
 	{
-		this.log.trace ("processQueue:");
+		this.log.trace ("processDeferred:");
 
-		while (! this.queue.isEmpty ())
-		{
-			this.processElement (this.queue.remove ());
-		}
+	}
+
+	public void processRecommended ()
+	{
+		this.log.trace ("processRecommended");
 	}
 }

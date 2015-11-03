@@ -25,7 +25,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -42,6 +41,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Element
 {
+	/** The <code>MetaData</code> for the <code>Element</code>*/
+	protected static final MetaData<Element> METADATA;
+
 	/** The <code>DataStore</code> identifier of the <code>Element</code> */
 	public static final Property<Long> ID;
 
@@ -70,7 +72,7 @@ public abstract class Element
 		SELECTOR_ID = Selector.getInstance (ID, true);
 		SELECTOR_ALL = Selector.getInstance ("all", false);
 
-		Definition.getBuilder (Element.class, null)
+		MetaData.builder ()
 			.addProperty (ID, Element::getId, Element::setId)
 			.addProperty (MODEL, Element::getDomainModel, Element::setDomainModel)
 			.addSelector (SELECTOR_ID)

@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Set;
 import java.util.Objects;
 
+import java.util.function.Supplier;
+
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -27,7 +29,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -57,7 +58,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public abstract class Role extends Element
 {
 	/** The <code>MetaData</code> for the <code>Role</code> */
-	private static final MetaData<Role> METADATA;
+	protected static final MetaData<Role> METADATA;
 
 	/** The name of the <code>Role</code> */
 	public static final Property<String> NAME;
@@ -76,11 +77,26 @@ public abstract class Role extends Element
 
 		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
-		METADATA = Definition.getBuilder (Role.class, Element.class)
+		METADATA = MetaData.builder (Element.METADATA)
 			.addProperty (NAME, Role::getName, Role::setName)
 			.addRelationship (Enrolment.class, Enrolment.ROLE, Enrolment.SELECTOR_ROLE)
 			.addSelector (SELECTOR_NAME)
 			.build ();
+	}
+
+	/**
+	 * Register an implementation.  This method handles the registration of an
+	 * implementation class such that instances of it can be returned a
+	 * <code>Builder</code> or a <code>Query</code>.
+	 *
+	 * @param  <T>      The implementation type
+	 * @param  impl     The Implementation <code>Class</code>, not null
+	 * @param  supplier Method reference to create a new instance, not null
+	 */
+
+	protected static <T extends Role> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
+	{
+
 	}
 
 	/**

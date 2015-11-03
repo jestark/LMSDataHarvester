@@ -33,8 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/workshop
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -83,8 +81,7 @@ public class WorkshopSubmission extends SubActivity
 
 	static
 	{
-		Implementation.getInstance (SubActivity.class, WorkshopSubmission.class, WorkshopSubmission::new);
-		SubActivity.registerImplementation (Workshop.class, WorkshopSubmission.class);
+		SubActivity.registerImplementation (Workshop.class, WorkshopSubmission.class, WorkshopSubmission::new);
 	}
 
 	/**

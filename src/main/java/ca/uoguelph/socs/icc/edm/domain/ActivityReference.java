@@ -23,6 +23,8 @@ import java.util.Set;
 
 import java.util.Objects;
 
+import java.util.function.Supplier;
+
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -31,7 +33,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -52,7 +53,7 @@ public abstract class ActivityReference extends Element implements Serializable
 	private static final long serialVersionUID = 1L;
 
 	/** The <code>MetaData</code> for the <code>ActivityReference</code> */
-	private static final MetaData<ActivityReference> METADATA;
+	protected static final MetaData<ActivityReference> METADATA;
 
 	/** The associated <code>Activity</code> */
 	public static final Property<Activity> ACTIVITY;
@@ -84,13 +85,28 @@ public abstract class ActivityReference extends Element implements Serializable
 
 		SELECTOR_TYPE = Selector.getInstance (TYPE, false);
 
-		METADATA = Definition.getBuilder (ActivityReference.class, Element.class)
+		METADATA = MetaData.builder (Element.METADATA)
 			.addRelationship (ACTIVITY, ActivityReference::getActivity, ActivityReference::setActivity)
 			.addRelationship (COURSE, ActivityReference::getCourse, ActivityReference::setCourse)
 			.addRelationship (TYPE, ActivityReference::getType, ActivityReference::setType)
 			.addRelationship (LOGENTRIES, ActivityReference::getLog, ActivityReference::addLog, ActivityReference::removeLog)
 			.addSelector (SELECTOR_TYPE)
 			.build ();
+	}
+
+	/**
+	 * Register an implementation.  This method handles the registration of an
+	 * implementation class such that instances of it can be returned a
+	 * <code>Builder</code> or a <code>Query</code>.
+	 *
+	 * @param  <T>      The implementation type
+	 * @param  impl     The Implementation <code>Class</code>, not null
+	 * @param  supplier Method reference to create a new instance, not null
+	 */
+
+	protected static <T extends ActivityReference> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
+	{
+
 	}
 
 	/**

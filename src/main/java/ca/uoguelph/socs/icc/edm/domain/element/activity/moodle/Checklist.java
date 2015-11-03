@@ -35,8 +35,6 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.NamedActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Implementation;
-
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/checklist
  * <code>ActivitySource</code>/<code>ActivityType</code>.  It is expected that
@@ -81,8 +79,7 @@ public class Checklist extends NamedActivity
 
 	static
 	{
-		Implementation.getInstance (NamedActivity.class, Checklist.class, Checklist::new);
-		Activity.registerImplementation ("moodle", "checklist", Checklist.class);
+		Activity.registerImplementation ("moodle", "checklist", Checklist.class, Checklist::new);
 	}
 
 	/**
