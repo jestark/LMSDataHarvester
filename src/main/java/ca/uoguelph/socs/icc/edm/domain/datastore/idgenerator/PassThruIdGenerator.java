@@ -17,10 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Accessor;
 
 /**
  * An <code>IdGenerator</code> which passes through the original value in the
@@ -33,15 +30,17 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
  * @version 1.0
  */
 
-public class PassThruIdGenerator extends IdGenerator
+public class PassThruIdGenerator<T extends Element> extends IdGenerator<T>
 {
 	/**
 	 * Create the <code>PassThruIdGenerator</code>.
+	 *
+	 * @param  accessor The <code>Accessor</code> for the ID, not null
 	 */
 
-	private PassThruIdGenerator ()
+	protected PassThruIdGenerator (final Accessor<T, Long> accessor)
 	{
-		// Does nothing
+		super (accessor);
 	}
 
 	/**
@@ -50,15 +49,13 @@ public class PassThruIdGenerator extends IdGenerator
 	 * make it do nothing, since this <code>IdGenerator</code> is supposed to
 	 * leave the existing ID unchanged.
 	 *
-	 * @param  <T>      The type of the <code>Element</code>
 	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code>, not null
 	 */
 
 	@Override
-	public <T extends Element> void setId (final MetaData<T> metadata, final T element)
+	public void setId (final T element)
 	{
-		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
 
 		// Does nothing

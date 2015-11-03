@@ -16,18 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
-import java.util.List;
-import java.util.Map;
-
-import java.util.HashMap;
-
-import java.util.function.BiFunction;
-
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Accessor;
 
 /**
  * An ID number generator.  This class and its subclasses provide ID numbers
@@ -40,8 +30,23 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
  * @version 1.1
  */
 
-public abstract class IdGenerator
+public abstract class IdGenerator<T extends Element>
 {
+	private Accessor<T, Long> accessor;
+
+	/**
+	 * Create the <code>IdGenerator</code>.
+	 *
+	 * @param  accessor The <code>Accessor</code> for the ID, not null
+	 */
+
+	protected IdGenerator (final Accessor<T, Long> accessor)
+	{
+		assert accessor != null : "accessor is NULL";
+
+		this.accessor = accessor;
+	}
+
 	/**
 	 * Assign an ID number to the specified <code>Element</code> instance.
 	 * This method writes the next available ID number into the specified
@@ -49,16 +54,14 @@ public abstract class IdGenerator
 	 * instance.
 	 *
 	 * @param  <T>      The type of the <code>Element</code>
-	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  element  The <code>Element</code>, not null
 	 */
 
-	public <T extends Element> void setId (final MetaData<T> metadata, final T element)
+	public void setId (final T element)
 	{
-		assert metadata != null : "metadata is NULL";
 		assert element != null : "element is NULL";
 
-		metadata.setValue (Element.ID, element, this.nextId ());
+		accessor.setValue (element, this.nextId ());
 	}
 
 	/**

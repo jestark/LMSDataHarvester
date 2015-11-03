@@ -23,6 +23,7 @@ import java.util.HashSet;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Accessor;
 
 /**
  * An <code>IdGenerator</code> which returns unique random ID numbers.  The ID
@@ -36,7 +37,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public class RandomIdGenerator extends IdGenerator
+public class RandomIdGenerator<T extends Element> extends IdGenerator<T>
 {
 	/** The <code>Set</code> of previously used id numbers. */
 	private Set<Long> usedids;
@@ -48,12 +49,15 @@ public class RandomIdGenerator extends IdGenerator
 	 * Create a new <code>RandomIdGenerator</code>, with a <code>List</code> of
 	 * previously used Ids.
 	 *
+	 * @param  accessor  The <code>Accessor</code> for the ID, not null
 	 * @param  datastore The <code>DataStore</code>, not null
 	 * @param  element   The <code>Element</code>, not null
 	 */
 
-	private RandomIdGenerator (final DataStore datastore, final Class<? extends Element> element)
+	protected RandomIdGenerator (final Accessor<T, Long> accessor, final DataStore datastore, final Class<? extends Element> element)
 	{
+		super (accessor);
+
 		assert datastore != null : "datastore is NULL";
 		assert element != null : "element is NULL";
 

@@ -17,8 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Accessor;
 
 /**
  * An <code>IdGenerator</code> which always returns a null reference.  This
@@ -31,15 +30,17 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public class NullIdGenerator extends IdGenerator
+public class NullIdGenerator<T extends Element> extends IdGenerator<T>
 {
 	/**
 	 * Create the <code>NullIdGenerator</code>.
+	 *
+	 * @param  accessor The <code>Accessor</code> for the ID, not null
 	 */
 
-	private NullIdGenerator ()
+	protected NullIdGenerator (final Accessor<T, Long> accessor)
 	{
-		// Does nothing
+		super (accessor);
 	}
 
 	/**

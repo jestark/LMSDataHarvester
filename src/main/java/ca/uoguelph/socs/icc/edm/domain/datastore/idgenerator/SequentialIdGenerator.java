@@ -18,6 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Accessor;
 
 /**
  * An <code>IdGenerator</code> which return ID numbers from a sequence.  ID
@@ -28,7 +29,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
  * @version 1.0
  */
 
-public class SequentialIdGenerator extends IdGenerator
+public class SequentialIdGenerator<T extends Element> extends IdGenerator<T>
 {
 	/** The next value to be returned by the generator. */
 	private long currentid;
@@ -39,12 +40,15 @@ public class SequentialIdGenerator extends IdGenerator
 	 * <code>IdGenerator</code> will be one greater than the specified starting
 	 * value.
 	 *
+	 * @param  accessor  The <code>Accessor</code> for the ID, not null
 	 * @param  datastore The <code>DataStore</code>, not null
 	 * @param  element   The <code>Element</code>, not null
 	 */
 
-	private SequentialIdGenerator (final DataStore datastore, final Class<? extends Element> element)
+	protected SequentialIdGenerator (final Accessor<T, Long> accessor, final DataStore datastore, final Class<? extends Element> element)
 	{
+		super (accessor);
+
 		assert datastore != null : "datastore is NULL";
 		assert element != null : "element is NULL";
 
