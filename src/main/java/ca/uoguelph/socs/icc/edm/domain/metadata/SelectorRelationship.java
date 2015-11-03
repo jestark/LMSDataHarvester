@@ -16,9 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
@@ -58,11 +58,11 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 		this.selector = selector;
 	}
 
-	private Query<V> getQuery (final DataStore datastore)
+	private Query<V> getQuery (final DomainModel model)
 	{
-		assert datastore != null : "datastore is NULL";
+		assert model != null : "model is NULL";
 
-		return null; // datastore.getQuery (Container.getInstance ()
+		return null; // model.getQuery (Container.getInstance ()
 //				.getMetaData (this.value),
 //				this.selector);
 	}
@@ -78,23 +78,23 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	 * either the <code>Selector</code> is not expected to return a unique
 	 * instance of the <code>Element</code>, or
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> instance to test, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> instance to test, not null
 	 *
-	 * @return           <code>true</code> if the relationship can be safely
-	 *                   inserted, <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship can be safely
+	 *                 inserted, <code>false</code> otherwise
 	 */
 
 	@Override
-	protected boolean canInsert (final DataStore datastore, final T element)
+	protected boolean canInsert (final DomainModel model, final T element)
 	{
 		this.log.trace ("canInsert: element={}", element);
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
 
-		return datastore.contains (element) && ((! this.selector.isUnique ()) || this.getQuery (datastore)
+		return model.contains (element) && ((! this.selector.isUnique ()) || this.getQuery (model)
 			.setValue (this.property, element)
 			.queryAll ()
 			.size () <= 1);
@@ -128,6 +128,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	 * This method is a same as <code>canInsert</code> as there is nothing to
 	 * insert in a uni-directional relationship.
 	 *
+	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to operate on, not null
 	 * @param  value   The <code>Element</code> to be inserted, not null
 	 *
@@ -136,18 +137,18 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	 */
 
 	@Override
-	protected boolean insert (final DataStore datastore, final T element, final V value)
+	protected boolean insert (final DomainModel model, final T element, final V value)
 	{
 		this.log.trace ("insert: element={}, value={}", element, value);
 		this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
-		assert datastore.contains (value) : "value is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
+		assert model.contains (value) : "value is not in the model";
 
-		return this.canInsert (datastore, element);
+		return this.canInsert (model, element);
 	}
 
 	/**
@@ -184,19 +185,19 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	 * For a uni-directional relationship this will always be true as there is
 	 * nothing to connect.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship can be created,
-	 *                   <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship can be created,
+	 *                 <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean canConnect (final DataStore datastore, final T element)
+	public boolean canConnect (final DomainModel model, final T element)
 	{
 		this.log.trace ("canConnect: element={}", element);
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
 
 		return true;
@@ -209,25 +210,25 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	 * <p>
 	 * For a uni-directional relationship, the <code>Element</code> may be
 	 * removed if the other side is not dependant on it, or if there are no
-	 * associated <code>Element</code> instances in the <code>DataStore</code>.
+	 * associated <code>Element</code> instances in the <code>DomainModel</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship can be broken,
-	 *                   <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship can be broken,
+	 *                 <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean canDisconnect (final DataStore datastore, final T element)
+	public boolean canDisconnect (final DomainModel model, final T element)
 	{
 		this.log.trace ("canDisconnect: element={}", element);
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
 
-		return datastore.contains (element) && this.getQuery (datastore)
+		return model.contains (element) && this.getQuery (model)
 			.setValue (this.property, element)
 			.queryAll ()
 			.stream ()
@@ -241,24 +242,24 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	 * For a uni-directional relationship, there is nothing to do, so this is a
 	 * no-op.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship was successfully
-	 *                   created <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship was successfully
+	 *                 created <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean connect (final DataStore datastore, final T element)
+	public boolean connect (final DomainModel model, final T element)
 	{
 		this.log.trace ("connect: element={}", element);
 		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
 
-		return datastore.contains (element);
+		return model.contains (element);
 	}
 
 	/**
@@ -268,24 +269,24 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	 * relationship from the <code>Element</code> instance for the
 	 * <code>Element</code> on the other side of the relationship.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship was successfully
-	 *                   broken <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship was successfully
+	 *                 broken <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean disconnect (final DataStore datastore, final T element)
+	public boolean disconnect (final DomainModel model, final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
 		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
 
-		return datastore.contains (element) && this.getQuery (datastore)
+		return model.contains (element) && this.getQuery (model)
 			.setValue (this.property, element)
 			.queryAll ()
 			.stream ()

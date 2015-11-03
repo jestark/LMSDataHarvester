@@ -19,37 +19,36 @@ package ca.uoguelph.socs.icc.edm.domain.metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Abstract representation of a relationship between to <code>Element</code>
- * classes.  To ensure the integrity of the <code>DataStore</code>, the
+ * classes.  To ensure the integrity of the <code>DomainModel</code>, the
  * relationships between <code>Element</code> instances are subject to
  * constraints.  The constrains are that both of the <code>Elements</code>
- * involved in a relationship must exist in the same <code>DataStore</code> and
+ * involved in a relationship must exist in the same <code>DomainModel</code> and
  * a relationship between any two <code>Element</code> instances must be valid
- * for all of the <code>Element</code> instances in the <code>DataStore</code>.
- * Specifically, the <code>DataStore</code> must prevent an existing
+ * for all of the <code>Element</code> instances in the <code>DomainModel</code>.
+ * Specifically, the <code>DomainModel</code> must prevent an existing
  * relationship between two <code>Element</code> instances from being
  * overwritten by the addition of a third <code>Element</code> instance.
  * <p>
- * To ensure its integrity, the <code>DataStore</code> must process the
+ * To ensure its integrity, the <code>DomainModel</code> must process the
  * relationships for each <code>Element</code> instance as it is added or
  * removed.  When an <code>Element</code> instance is added to the
- * <code>DataStore</code>, its relationships are checked to ensure that they
+ * <code>DomainModel</code>, its relationships are checked to ensure that they
  * will not overwrite any existing relationships, then the <code>Element</code>
- * instance is inserted into the <code>DataStore</code> and finally the
+ * instance is inserted into the <code>DomainModel</code> and finally the
  * relationships on the associated <code>Element</code> instances are updated
  * to point at the new <code>Element</code> instance as necessary.  Similarly,
  * when an <code>Element</code> instance is removed from the
- * <code>DataStore</code>, its relationships are checked to ensure that the
+ * <code>DomainModel</code>, its relationships are checked to ensure that the
  * removal of the <code>Element</code> instance will not cause other
- * <code>Element</code> instances in the <code>DataStore</code> to become
+ * <code>Element</code> instances in the <code>DomainModel</code> to become
  * invalid, then the relationships between the <code>Element</code> instance to
  * be removed and other <code>Element</code> instances in the
- * <code>DataStore</code> are broken, and finally the <code>Element</code>
+ * <code>DomainModel</code> are broken, and finally the <code>Element</code>
  * instance is removed.
  * <p>
  * An instance of this class models one side of the relationship between two
@@ -108,7 +107,7 @@ public abstract class Relationship<T extends Element, V extends Element>
 	 * @return           The <code>Relationship</code>
 	 */
 
-	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Class<T> type, final Property<V> property, final PropertyReference<T, V> reference)
+	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Class<T> type, final Property<V> property, final SingleReference<T, V> reference)
 	{
 		assert type != null : "type is NULL";
 		assert property != null : "property is null";
@@ -131,7 +130,7 @@ public abstract class Relationship<T extends Element, V extends Element>
 	 * @return           The <code>Relationship</code>
 	 */
 
-	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Class<T> type, final Property<V> property, final RelationshipReference<T, V> reference)
+	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Class<T> type, final Property<V> property, final MultiReference<T, V> reference)
 	{
 		assert type != null : "type is NULL";
 		assert property != null : "property is NULL";
@@ -227,14 +226,14 @@ public abstract class Relationship<T extends Element, V extends Element>
 	 * for the relationship, of if the <code>Element</code> instance does not
 	 * currently have a value for the relationship.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> instance to test, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> instance to test, not null
 	 *
-	 * @return           <code>true</code> if the relationship can be safely
-	 *                   inserted, <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship can be safely
+	 *                 inserted, <code>false</code> otherwise
 	 */
 
-	protected abstract boolean canInsert (final DataStore datastore, final T element);
+	protected abstract boolean canInsert (final DomainModel model, final T element);
 
 	/**
 	 * Determine if a value can be safely removed from the <code>Element</code>
@@ -252,15 +251,15 @@ public abstract class Relationship<T extends Element, V extends Element>
 	 * Insert the specified value into the specified <code>Element</code> to
 	 * create the relationship.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to operate on, not null
-	 * @param  value     The <code>Element</code> to be inserted, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to operate on, not null
+	 * @param  value   The <code>Element</code> to be inserted, not null
 	 *
-	 * @return           <code>true</code> if the value was successfully
-	 *                   inserted, <code>false</code> otherwise
+	 * @return         <code>true</code> if the value was successfully
+	 *                 inserted, <code>false</code> otherwise
 	 */
 
-	protected abstract boolean insert (final DataStore datastore, final T element, final V value);
+	protected abstract boolean insert (final DomainModel model, final T element, final V value);
 
 	/**
 	 * Remove the specified value from the specified <code>Element</code> to
@@ -280,28 +279,28 @@ public abstract class Relationship<T extends Element, V extends Element>
 	 * <code>Relationship</code> instance can be safely connected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship can be created,
-	 *                   <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship can be created,
+	 *                 <code>false</code> otherwise
 	 */
 
-	public abstract boolean canConnect (final DataStore datastore, final T element);
+	public abstract boolean canConnect (final DomainModel model, final T element);
 
 	/**
 	 * Determine if the relationship represented by this
 	 * <code>Relationship</code> instance can be safely disconnected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship can be broken,
-	 *                   <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship can be broken,
+	 *                 <code>false</code> otherwise
 	 */
 
-	public abstract boolean canDisconnect (final DataStore datastore, final T element);
+	public abstract boolean canDisconnect (final DomainModel model, final T element);
 
 	/**
 	 * Connect the relationship represented by this <code>Relationship</code>
@@ -310,14 +309,14 @@ public abstract class Relationship<T extends Element, V extends Element>
 	 * instance for the <code>Element</code> on the other side of the
 	 * relationship.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship was successfully
-	 *                   created <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship was successfully
+	 *                 created <code>false</code> otherwise
 	 */
 
-	public abstract boolean connect (final DataStore datastore, final T element);
+	public abstract boolean connect (final DomainModel model, final T element);
 
 	/**
 	 * Disconnect the relationship represented by this
@@ -326,12 +325,12 @@ public abstract class Relationship<T extends Element, V extends Element>
 	 * relationship from the <code>Element</code> instance for the
 	 * <code>Element</code> on the other side of the relationship.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship was successfully
-	 *                   broken <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship was successfully
+	 *                 broken <code>false</code> otherwise
 	 */
 
-	public abstract boolean disconnect (final DataStore datastore, final T element);
+	public abstract boolean disconnect (final DomainModel model, final T element);
 }

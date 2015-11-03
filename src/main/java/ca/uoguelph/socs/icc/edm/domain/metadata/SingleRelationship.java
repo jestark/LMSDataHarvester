@@ -16,9 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Representation of a relationship for an <code>Element</code> with a
@@ -67,23 +66,23 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	 * created with another <code>Element</code> if the existing value is
 	 * <code>null</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> instance to test, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> instance to test, not null
 	 *
-	 * @return           <code>true</code> if the relationship can be safely
-	 *                   inserted, <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship can be safely
+	 *                 inserted, <code>false</code> otherwise
 	 */
 
 	@Override
-	protected boolean canInsert (final DataStore datastore, final T element)
+	protected boolean canInsert (final DomainModel model, final T element)
 	{
 		this.log.trace ("canInsert: element={}", element);
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
 
-		return datastore.contains (element) && this.reference.getValue (element) == null;
+		return model.contains (element) && this.reference.getValue (element) == null;
 	}
 
 	/**
@@ -116,29 +115,29 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	 * field is not-null then the operation will fail, returning
 	 * <code>false</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to operate on, not null
-	 * @param  value     The <code>Element</code> to be inserted, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to operate on, not null
+	 * @param  value   The <code>Element</code> to be inserted, not null
 	 *
-	 * @return           <code>true</code> if the value was successfully
-	 *                   inserted, <code>false</code> otherwise
+	 * @return         <code>true</code> if the value was successfully
+	 *                 inserted, <code>false</code> otherwise
 	 */
 
 	@Override
-	protected boolean insert (final DataStore datastore, final T element, final V value)
+	protected boolean insert (final DomainModel model, final T element, final V value)
 	{
 		this.log.trace ("insert: element={}, value={}", element, value);
 		this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
-		assert datastore.contains (value) : "value is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
+		assert model.contains (value) : "value is not in the model";
 
 		boolean result = false;
 
-		if (datastore.contains (element) && this.reference.getValue (element) == null)
+		if (model.contains (element) && this.reference.getValue (element) == null)
 		{
 			this.reference.setValue (element, value);
 			result = true;
@@ -190,25 +189,25 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	 * <code>Relationship</code> instance can be safely connected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship can be created,
-	 *                   <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship can be created,
+	 *                 <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean canConnect (final DataStore datastore, final T element)
+	public boolean canConnect (final DomainModel model, final T element)
 	{
 		this.log.trace ("canConnect: element={}", element);
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
 
 		V value = this.reference.getValue (element);
 
 		return (value == null) || (this.getInverse (value.getClass ())
-			.canInsert (datastore, value));
+			.canInsert (model, value));
 	}
 
 	/**
@@ -216,19 +215,19 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	 * <code>Relationship</code> instance can be safely disconnected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship can be broken,
-	 *                   <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship can be broken,
+	 *                 <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean canDisconnect (final DataStore datastore, final T element)
+	public boolean canDisconnect (final DomainModel model, final T element)
 	{
 		this.log.trace ("canDisconnect: element={}", element);
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
 
 		return this.getInverse (this.reference.getValue (element).getClass ()).canRemove ();
@@ -241,28 +240,28 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	 * instance for the <code>Element</code> on the other side of the
 	 * relationship.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship was successfully
-	 *                   created <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship was successfully
+	 *                 created <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean connect (final DataStore datastore, final T element)
+	public boolean connect (final DomainModel model, final T element)
 	{
 		this.log.trace ("connect: element={}", element);
 		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
 
 		V value = this.reference.getValue (element);
 
 		return (value == null)
-			|| (datastore.contains (element)
-			&& this.getInverse (value.getClass ()).insert (datastore, value, element));
+			|| (model.contains (element)
+			&& this.getInverse (value.getClass ()).insert (model, value, element));
 	}
 
 	/**
@@ -272,27 +271,27 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	 * relationship from the <code>Element</code> instance for the
 	 * <code>Element</code> on the other side of the relationship.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship was successfully
-	 *                   broken <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship was successfully
+	 *                 broken <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean disconnect (final DataStore datastore, final T element)
+	public boolean disconnect (final DomainModel model, final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
 		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
 
 		V value = this.reference.getValue (element);
 
 		return (value == null)
-			|| (datastore.contains (element)
+			|| (model.contains (element)
 			&& this.getInverse (value.getClass ()).remove (value, element));
 	}
 }

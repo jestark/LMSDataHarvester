@@ -18,9 +18,8 @@ package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Collection;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * Representation of a relationship for an <code>Element</code> with a
@@ -34,9 +33,6 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 final class MultiRelationship<T extends Element, V extends Element> extends Relationship<T, V>
 {
-	/** The <code>Property</code> for the relationship that id being manipulated */
-	private final Property<V> property;
-
 	/** The <code>RelationshipReference</code> used to manipulate the element */
 	private final MultiReference<T, V> reference;
 
@@ -44,7 +40,6 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	 * Create the <code>MultiRelationship</code>.
 	 *
 	 * @param  type      The <code>Element</code> interface class, not null
-	 * @param  property  The <code>Property</code>, not null
 	 * @param  reference The <code>RelationshipReference</code>, not null
 	 */
 
@@ -54,7 +49,6 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 
 		assert reference != null : "reference is NULL";
 
-		this.property = property;
 		this.reference = reference;
 	}
 
@@ -75,15 +69,15 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	 */
 
 	@Override
-	protected boolean canInsert (final DataStore datastore, final T element)
+	protected boolean canInsert (final DomainModel model, final T element)
 	{
 		this.log.trace ("canInsert: element={}", element);
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
 
-		return datastore.contains (element);
+		return model.contains (element);
 	}
 
 	/**
@@ -116,6 +110,7 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	 * times, depending of the implementation of the <code>Element</code>.  The
 	 * called must ensure that this does not happen.
 	 *
+	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to operate on, not null
 	 * @param  value   The <code>Element</code> to be inserted, not null
 	 *
@@ -124,18 +119,18 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	 */
 
 	@Override
-	protected boolean insert (final DataStore datastore, final T element, final V value)
+	protected boolean insert (final DomainModel model, final T element, final V value)
 	{
 		this.log.trace ("insert: element={}, value={}", element, value);
 		this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
-		assert datastore.contains (value) : "value is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
+		assert model.contains (value) : "value is not in the model";
 
-		return datastore.contains (element) && this.reference.addValue (element, value);
+		return model.contains (element) && this.reference.addValue (element, value);
 	}
 
 	/**
@@ -169,23 +164,23 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	 * <code>Relationship</code> instance can be safely connected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship can be created,
-	 *                   <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship can be created,
+	 *                 <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean canConnect (final DataStore datastore, final T element)
+	public boolean canConnect (final DomainModel model, final T element)
 	{
 		this.log.trace ("canConnect: element={}", element);
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
 
 		return this.reference.stream (element)
-			.allMatch (x -> this.getInverse (x.getClass ()).canInsert (datastore, x));
+			.allMatch (x -> this.getInverse (x.getClass ()).canInsert (model, x));
 	}
 
 	/**
@@ -193,23 +188,23 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	 * <code>Relationship</code> instance can be safely disconnected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship can be broken,
-	 *                   <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship can be broken,
+	 *                 <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean canDisconnect (final DataStore datastore, final T element)
+	public boolean canDisconnect (final DomainModel model, final T element)
 	{
 		this.log.trace ("canDisconnect: element={}", element);
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
 
-		return datastore.contains (element) && this.reference.stream (element)
+		return model.contains (element) && this.reference.stream (element)
 			.allMatch (x -> this.getInverse (x.getClass ()).canRemove ());
 	}
 
@@ -220,25 +215,25 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	 * instance for the <code>Element</code> on the other side of the
 	 * relationship.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship was successfully
-	 *                   created <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship was successfully
+	 *                 created <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean connect (final DataStore datastore, final T element)
+	public boolean connect (final DomainModel model, final T element)
 	{
 		this.log.trace ("connect: element={}", element);
 		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
 
-		return datastore.contains (element) && this.reference.stream (element)
-			.allMatch (x -> this.getInverse (x.getClass ()).insert (datastore, x, element));
+		return model.contains (element) && this.reference.stream (element)
+			.allMatch (x -> this.getInverse (x.getClass ()).insert (model, x, element));
 	}
 
 	/**
@@ -248,24 +243,24 @@ final class MultiRelationship<T extends Element, V extends Element> extends Rela
 	 * relationship from the <code>Element</code> instance for the
 	 * <code>Element</code> on the other side of the relationship.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code> to process, not null
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> to process, not null
 	 *
-	 * @return           <code>true</code> if the relationship was successfully
-	 *                   broken <code>false</code> otherwise
+	 * @return         <code>true</code> if the relationship was successfully
+	 *                 broken <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean disconnect (final DataStore datastore, final T element)
+	public boolean disconnect (final DomainModel model, final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
 		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert datastore != null : "datastore is null";
+		assert model != null : "model is null";
 		assert element != null : "element is NULL";
-		assert datastore.contains (element) : "element is not in the datastore";
+		assert model.contains (element) : "element is not in the model";
 
-		return datastore.contains (element) && this.reference.stream (element)
+		return model.contains (element) && this.reference.stream (element)
 			.allMatch (x -> this.getInverse (x.getClass ()).remove (x, element));
 	}
 }
