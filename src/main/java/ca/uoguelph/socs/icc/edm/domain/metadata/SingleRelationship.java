@@ -16,6 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -24,13 +27,187 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * cardinality of one.
  *
  * @author  James E. Stark
- * @version 1.0
+ * @version 2.0
  * @param   <T> The type of the owning <code>Element</code>
  * @param   <V> The type of the associated <code>Element</code>
  */
 
-final class SingleRelationship<T extends Element, V extends Element> extends Relationship<T, V>
+final class SingleRelationship<T extends Element, V extends Element> implements Relationship<T, V>
 {
+	/**
+	 * Representation of a inverse relationship for an <code>Element</code> with
+	 * a cardinality of one.
+	 *
+	 * @version 1.0
+	 * @param   <T> The type of the owning <code>Element</code>
+	 * @param   <V> The type of the associated <code>Element</code>
+	 */
+
+	static final class SingleInverse<T extends Element, V extends Element> implements Relationship.Inverse<T, V>
+	{
+		/** The Logger */
+		private final Logger log;
+
+		/** The <code>Property</code> for the relationship that id being manipulated */
+		private final Property<V> property;
+
+		/** The assocated <code>PropertyReference</code> */
+		private final SingleReference<T, V> reference;
+
+		/**
+		 * Create the <code>SingleInverse</code>.
+		 *
+		 * @param  property  The <code>Property</code>, not null
+		 * @param  reference The <code>SingleReference</code>, not null
+		 */
+
+		protected SingleInverse (final Property<V> property, final SingleReference<T, V> reference)
+		{
+			assert property != null : "property is NULL";
+			assert reference != null : "reference is NULL";
+
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			this.property = property;
+			this.reference = reference;
+		}
+
+		/**
+		 * Determine if a value can be inserted into the <code>Element</code> to
+		 * create a relationship.  It is generally safe to insert a value into an
+		 * <code>Element</code> if the <code>Element</code> allows multiple values
+		 * for the relationship, of if the <code>Element</code> instance does not
+		 * currently have a value for the relationship.
+		 * <p>
+		 * For the single-valued relationship, a new relationship can only be
+		 * created with another <code>Element</code> if the existing value is
+		 * <code>null</code>.
+		 *
+		 * @param  model   The <code>DomainModel</code>, not null
+		 * @param  element The <code>Element</code> instance to test, not null
+		 *
+		 * @return         <code>true</code> if the relationship can be safely
+		 *                 inserted, <code>false</code> otherwise
+		 */
+
+		@Override
+		public boolean canInsert (final DomainModel model, final T element)
+		{
+			this.log.trace ("canInsert: element={}", element);
+
+			assert model != null : "model is null";
+			assert element != null : "element is NULL";
+			assert model.contains (element) : "element is not in the model";
+
+			return model.contains (element) && this.reference.getValue (element) == null;
+		}
+
+		/**
+		 * Determine if a value can be safely removed from the <code>Element</code>
+		 * to break the relationship.  It is generally safe to remove a
+		 * relationship if the <code>Element</code> represented does not require
+		 * the relationship for unique identification.
+		 * <p>
+		 * For the single valued relationship, a relationship can be broken if it
+		 * is not required, as specified in the associated <code>Property</code>.
+		 *
+		 * @return <code>true</code> if the relationship can be safely removed,
+		 *         <code>false</code> otherwise
+		 */
+
+		@Override
+		public boolean canRemove ()
+		{
+			this.log.trace ("canRemove:");
+
+			return ! this.property.hasFlags (Property.Flags.REQUIRED);
+		}
+
+		/**
+		 * Insert the specified value into the specified <code>Element</code> to
+		 * create the relationship.
+		 * <p>
+		 * This method sets the value of the associated field to the specified
+		 * value, if the value of the associated field is <code>null</code>. If the
+		 * field is not-null then the operation will fail, returning
+		 * <code>false</code>.
+		 *
+		 * @param  model   The <code>DomainModel</code>, not null
+		 * @param  element The <code>Element</code> to operate on, not null
+		 * @param  value   The <code>Element</code> to be inserted, not null
+		 *
+		 * @return         <code>true</code> if the value was successfully
+		 *                 inserted, <code>false</code> otherwise
+		 */
+
+		@Override
+		public boolean insert (final DomainModel model, final T element, final V value)
+		{
+			this.log.trace ("insert: element={}, value={}", element, value);
+//			this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+
+			assert model != null : "model is null";
+			assert element != null : "element is NULL";
+			assert value != null : "value is NULL";
+			assert model.contains (element) : "element is not in the model";
+			assert model.contains (value) : "value is not in the model";
+
+			boolean result = false;
+
+			if (model.contains (element) && this.reference.getValue (element) == null)
+			{
+				this.reference.setValue (element, value);
+				result = true;
+			}
+
+			return result;
+		}
+
+		/**
+		 * Remove the specified value from the specified <code>Element</code> to
+		 * break the relationship.
+		 * <p>
+		 * This method sets the value of the associated field to <code>null</code>,
+		 * if the value of the associated is equal to the specified value and the
+		 * field if not required to uniquely identify the <code>Element</code>
+		 * instance.
+		 *
+		 * @param  element The <code>Element</code> to operate on, not null
+		 * @param  value   The <code>Element</code> to be removed, not null
+		 *
+		 * @return         <code>true</code> if the value was successfully
+		 *                 removed, <code>false</code> otherwise
+		 */
+
+		@Override
+		public boolean remove (final T element, final V value)
+		{
+			this.log.trace ("remove: element={}, value={}", element, value);
+//			this.log.debug ("removing Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+
+			assert element != null : "element is NULL";
+			assert value != null : "value is NULL";
+			assert value == this.reference.getValue (element) : "The value to be removed is not equal to the value in the element";
+
+			boolean result = false;
+
+			if ((! this.property.hasFlags (Property.Flags.REQUIRED))
+					&& (value == this.reference.getValue (element)))
+			{
+				this.reference.setValue (element, null);
+				result = true;
+			}
+
+			return result;
+		}
+	}
+
+	/** The Logger */
+	private final Logger log;
+
+	/** The other side of the <code>Relationship</code> */
+	private final Relationship.Inverse<V, T> inverse;
+
 	/** The <code>Property</code> for the relationship that id being manipulated */
 	private final Property<V> property;
 
@@ -40,148 +217,23 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	/**
 	 * Create the <code>SingleRelationShip</code>.
 	 *
-	 * @param  type      The <code>Element</code> interface class, not null
+	 * @param  inverse   The <code>Inverse</code> relationship, not null
 	 * @param  property  The <code>Property</code>, not null
-	 * @param  reference The <code>PropertyReference</code>, not null
+	 * @param  reference The <code>SingleReference</code>, not null
 	 */
 
-	protected SingleRelationship (final Class<T> type, final Property<V> property, final SingleReference<T, V> reference)
+	protected SingleRelationship (final Relationship.Inverse<V, T> inverse,
+			final Property<V> property, final SingleReference<T, V> reference)
 	{
-		super (type, property.getPropertyType ());
-
+		assert inverse != null : "inverse is NULL";
+		assert property != null : "Property is NULL";
 		assert reference != null : "reference is NULL";
 
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.inverse = inverse;
 		this.property = property;
 		this.reference = reference;
-	}
-
-	/**
-	 * Determine if a value can be inserted into the <code>Element</code> to
-	 * create a relationship.  It is generally safe to insert a value into an
-	 * <code>Element</code> if the <code>Element</code> allows multiple values
-	 * for the relationship, of if the <code>Element</code> instance does not
-	 * currently have a value for the relationship.
-	 * <p>
-	 * For the single-valued relationship, a new relationship can only be
-	 * created with another <code>Element</code> if the existing value is
-	 * <code>null</code>.
-	 *
-	 * @param  model   The <code>DomainModel</code>, not null
-	 * @param  element The <code>Element</code> instance to test, not null
-	 *
-	 * @return         <code>true</code> if the relationship can be safely
-	 *                 inserted, <code>false</code> otherwise
-	 */
-
-	@Override
-	protected boolean canInsert (final DomainModel model, final T element)
-	{
-		this.log.trace ("canInsert: element={}", element);
-
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert model.contains (element) : "element is not in the model";
-
-		return model.contains (element) && this.reference.getValue (element) == null;
-	}
-
-	/**
-	 * Determine if a value can be safely removed from the <code>Element</code>
-	 * to break the relationship.  It is generally safe to remove a
-	 * relationship if the <code>Element</code> represented does not require
-	 * the relationship for unique identification.
-	 * <p>
-	 * For the single valued relationship, a relationship can be broken if it
-	 * is not required, as specified in the associated <code>Property</code>.
-	 *
-	 * @return <code>true</code> if the relationship can be safely removed,
-	 *         <code>false</code> otherwise
-	 */
-
-	@Override
-	protected boolean canRemove ()
-	{
-		this.log.trace ("canRemove:");
-
-		return ! this.property.hasFlags (Property.Flags.REQUIRED);
-	}
-
-	/**
-	 * Insert the specified value into the specified <code>Element</code> to
-	 * create the relationship.
-	 * <p>
-	 * This method sets the value of the associated field to the specified
-	 * value, if the value of the associated field is <code>null</code>. If the
-	 * field is not-null then the operation will fail, returning
-	 * <code>false</code>.
-	 *
-	 * @param  model   The <code>DomainModel</code>, not null
-	 * @param  element The <code>Element</code> to operate on, not null
-	 * @param  value   The <code>Element</code> to be inserted, not null
-	 *
-	 * @return         <code>true</code> if the value was successfully
-	 *                 inserted, <code>false</code> otherwise
-	 */
-
-	@Override
-	protected boolean insert (final DomainModel model, final T element, final V value)
-	{
-		this.log.trace ("insert: element={}, value={}", element, value);
-		this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
-
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert value != null : "value is NULL";
-		assert model.contains (element) : "element is not in the model";
-		assert model.contains (value) : "value is not in the model";
-
-		boolean result = false;
-
-		if (model.contains (element) && this.reference.getValue (element) == null)
-		{
-			this.reference.setValue (element, value);
-			result = true;
-		}
-
-		return result;
-	}
-
-	/**
-	 * Remove the specified value from the specified <code>Element</code> to
-	 * break the relationship.
-	 * <p>
-	 * This method sets the value of the associated field to <code>null</code>,
-	 * if the value of the associated is equal to the specified value and the
-	 * field if not required to uniquely identify the <code>Element</code>
-	 * instance.
-	 *
-	 * @param  element The <code>Element</code> to operate on, not null
-	 * @param  value   The <code>Element</code> to be removed, not null
-	 *
-	 * @return         <code>true</code> if the value was successfully
-	 *                 removed, <code>false</code> otherwise
-	 */
-
-	@Override
-	protected boolean remove (final T element, final V value)
-	{
-		this.log.trace ("remove: element={}, value={}", element, value);
-		this.log.debug ("removing Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
-
-		assert element != null : "element is NULL";
-		assert value != null : "value is NULL";
-		assert value == this.reference.getValue (element) : "The value to be removed is not equal to the value in the element";
-
-		boolean result = false;
-
-		if ((! this.property.hasFlags (Property.Flags.REQUIRED))
-				&& (value == this.reference.getValue (element)))
-		{
-			this.reference.setValue (element, null);
-			result = true;
-		}
-
-		return result;
 	}
 
 	/**
@@ -204,10 +256,9 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 		assert model != null : "model is null";
 		assert element != null : "element is NULL";
 
-		V value = this.reference.getValue (element);
+		final V value = this.reference.getValue (element);
 
-		return (value == null) || (this.getInverse (value.getClass ())
-			.canInsert (model, value));
+		return value == null || this.inverse.canInsert (model, value);
 	}
 
 	/**
@@ -230,7 +281,7 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 		assert model != null : "model is null";
 		assert element != null : "element is NULL";
 
-		return this.getInverse (this.reference.getValue (element).getClass ()).canRemove ();
+		return this.inverse.canRemove ();
 	}
 
 	/**
@@ -251,17 +302,16 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	public boolean connect (final DomainModel model, final T element)
 	{
 		this.log.trace ("connect: element={}", element);
-		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+//		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
 		assert model != null : "model is null";
 		assert element != null : "element is NULL";
 		assert model.contains (element) : "element is not in the model";
 
-		V value = this.reference.getValue (element);
+		final V value = this.reference.getValue (element);
 
-		return (value == null)
-			|| (model.contains (element)
-			&& this.getInverse (value.getClass ()).insert (model, value, element));
+		return value == null ||
+			(model.contains (element) && this.inverse.insert (model, value, element));
 	}
 
 	/**
@@ -282,16 +332,15 @@ final class SingleRelationship<T extends Element, V extends Element> extends Rel
 	public boolean disconnect (final DomainModel model, final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
-		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+//		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
 		assert model != null : "model is null";
 		assert element != null : "element is NULL";
 		assert model.contains (element) : "element is not in the model";
 
-		V value = this.reference.getValue (element);
+		final V value = this.reference.getValue (element);
 
-		return (value == null)
-			|| (model.contains (element)
-			&& this.getInverse (value.getClass ()).remove (value, element));
+		return value == null
+			|| (model.contains (element) && this.inverse.remove (value, element));
 	}
 }

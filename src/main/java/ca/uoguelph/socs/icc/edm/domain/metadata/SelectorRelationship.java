@@ -16,6 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -29,13 +32,185 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
  * to perform the necessary checks.
  *
  * @author  James E. Stark
- * @version 1.0
+ * @version 2.0
  * @param   <T> The type of the owning <code>Element</code>
  * @param   <V> The type of the associated <code>Element</code>
  */
 
-final class SelectorRelationship<T extends Element, V extends Element> extends Relationship<T, V>
+final class SelectorRelationship<T extends Element, V extends Element> implements Relationship<T, V>
 {
+	/**
+	 * Representation of a inverse uni-directional relationship.
+	 *
+	 * @version 1.0
+	 * @param   <T> The type of the owning <code>Element</code>
+	 * @param   <V> The type of the associated <code>Element</code>
+	 */
+
+	static final class SelectorInverse<T extends Element, V extends Element> implements Relationship.Inverse<T, V>
+	{
+		/** The Logger */
+		private final Logger log;
+
+		/** The <code>Element</code> interface class */
+		private final Class<V> value;
+
+		/** The <code>Property</code> for owning <code>Element</code> */
+		private final Property<T> property;
+
+		/** The <code>Selector</code> for the associated <code>Element</code> */
+		private final Selector selector;
+
+		/**
+		 * Create the <code>SelectorInverse</code>.
+		 *
+		 * @param  value    The <code>Element</code> interface class, not null
+		 * @param  property The <code>Property</code>, not null
+		 * @param  selector The <code>Selector</code>, not null
+		 */
+
+		protected SelectorInverse (final Class<V> value, final Property<T> property, final Selector selector)
+		{
+			assert value != null : "value is NULL";
+			assert property != null : "property is NULL";
+			assert selector != null : "selector is NULL";
+
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			this.value = value;
+			this.property = property;
+			this.selector = selector;
+		}
+
+		private Query<V> getQuery (final DomainModel model)
+		{
+			assert model != null : "model is NULL";
+
+			return null; // model.getQuery (Container.getInstance ()
+//					.getMetaData (this.value),
+//					this.selector);
+		}
+
+		/**
+		 * Determine if a value can be inserted into the <code>Element</code> to
+		 * create a relationship.  It is generally safe to insert a value into
+		 * an <code>Element</code> if the <code>Element</code> allows multiple
+		 * values for the relationship, of if the <code>Element</code> instance
+		 * does not currently have a value for the relationship.
+		 * <p>
+		 * For a uni-directional relationship, a relationship can be added if
+		 * either the <code>Selector</code> is not expected to return a unique
+		 * instance of the <code>Element</code>, or
+		 *
+		 * @param  model   The <code>DomainModel</code>, not null
+		 * @param  element The <code>Element</code> instance to test, not null
+		 *
+		 * @return         <code>true</code> if the relationship can be safely
+		 *                 inserted, <code>false</code> otherwise
+		 */
+
+		@Override
+		public boolean canInsert (final DomainModel model, final T element)
+		{
+			this.log.trace ("canInsert: element={}", element);
+
+			assert model != null : "model is null";
+			assert element != null : "element is NULL";
+			assert model.contains (element) : "element is not in the model";
+
+			return model.contains (element) && ((! this.selector.isUnique ()) || this.getQuery (model)
+				.setValue (this.property, element)
+				.queryAll ()
+				.size () <= 1);
+		}
+
+		/**
+		 * Determine if a value can be safely removed from the
+		 * <code>Element</code> to break the relationship.  It is generally safe
+		 * to remove a relationship if the <code>Element</code> represented does
+		 * not require the relationship for unique identification.
+		 * <p>
+		 * For the uni-directional relationship, a relationship can always be
+		 * broken.
+		 *
+		 * @return <code>true</code> if the relationship can be safely removed,
+		 *         <code>false</code> otherwise
+		 */
+
+		@Override
+		public boolean canRemove ()
+		{
+			this.log.trace ("canRemove:");
+
+			return true;
+		}
+
+		/**
+		 * Insert the specified value into the specified <code>Element</code> to
+		 * create the relationship.
+		 * <p>
+		 * This method is a same as <code>canInsert</code> as there is nothing
+		 * to insert in a uni-directional relationship.
+		 *
+		 * @param  model   The <code>DomainModel</code>, not null
+		 * @param  element The <code>Element</code> to operate on, not null
+		 * @param  value   The <code>Element</code> to be inserted, not null
+		 *
+		 * @return         <code>true</code> if the value was successfully
+		 *                 inserted, <code>false</code> otherwise
+		 */
+
+		@Override
+		public boolean insert (final DomainModel model, final T element, final V value)
+		{
+			this.log.trace ("insert: element={}, value={}", element, value);
+			this.log.debug ("inserting Relationship: {} -> {}", this.property.getName (), this.value.getSimpleName ());
+
+			assert model != null : "model is null";
+			assert element != null : "element is NULL";
+			assert value != null : "value is NULL";
+			assert model.contains (element) : "element is not in the model";
+			assert model.contains (value) : "value is not in the model";
+
+			return this.canInsert (model, element);
+		}
+
+		/**
+		 * Remove the specified value from the specified <code>Element</code> to
+		 * break the relationship.
+		 * <p>
+		 * This method is a no-op (unconditionally returning <code>true</code>)
+		 * as there is nothing to remove from a uni-directional relationship.
+		 *
+		 * @param  element The <code>Element</code> to operate on, not null
+		 * @param  value   The <code>Element</code> to be removed, not null
+		 *
+		 * @return         <code>true</code> if the value was successfully
+		 *                 removed, <code>false</code> otherwise
+		 */
+
+		@Override
+		public boolean remove (final T element, final V value)
+		{
+			this.log.trace ("remove: element={}, value={}");
+			this.log.debug ("removing Relationship: {} -> {}", this.property.getName (), this.value.getSimpleName ());
+
+			assert element != null : "element is NULL";
+			assert value != null : "value is NULL";
+
+			return true;
+		}
+	}
+
+	/** The Logger */
+	private final Logger log;
+
+	/** The other side of the <code>Relationship</code> */
+	private final Relationship.Inverse<V, T> inverse;
+
+	/** The <code>Element</code> interface class */
+	private final Class<V> value;
+
 	/** The <code>Property</code> for owning <code>Element</code> */
 	private final Property<T> property;
 
@@ -45,15 +220,24 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	/**
 	 * Create the <code>SingleRelationship</code>.
 	 *
+	 * @param  inverse  The <code>Inverse</code> relationship, not null
 	 * @param  value    The <code>Element</code> interface class, not null
 	 * @param  property The <code>Property</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
-	protected SelectorRelationship (final Class<V> value, final Property<T> property, final Selector selector)
+	protected SelectorRelationship (final Relationship.Inverse<V, T> inverse,
+			final Class<V> value, final Property<T> property, final Selector selector)
 	{
-		super (property.getPropertyType (), value);
+		assert inverse != null : "inverse is NULL";
+		assert value != null : "value is NULL";
+		assert property != null : "property is NULL";
+		assert selector != null : "selector is NULL";
 
+		this.log = LoggerFactory.getLogger (this.getClass ());
+
+		this.inverse = inverse;
+		this.value = value;
 		this.property = property;
 		this.selector = selector;
 	}
@@ -65,116 +249,6 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 		return null; // model.getQuery (Container.getInstance ()
 //				.getMetaData (this.value),
 //				this.selector);
-	}
-
-	/**
-	 * Determine if a value can be inserted into the <code>Element</code> to
-	 * create a relationship.  It is generally safe to insert a value into an
-	 * <code>Element</code> if the <code>Element</code> allows multiple values
-	 * for the relationship, of if the <code>Element</code> instance does not
-	 * currently have a value for the relationship.
-	 * <p>
-	 * For a uni-directional relationship, a relationship can be added if
-	 * either the <code>Selector</code> is not expected to return a unique
-	 * instance of the <code>Element</code>, or
-	 *
-	 * @param  model   The <code>DomainModel</code>, not null
-	 * @param  element The <code>Element</code> instance to test, not null
-	 *
-	 * @return         <code>true</code> if the relationship can be safely
-	 *                 inserted, <code>false</code> otherwise
-	 */
-
-	@Override
-	protected boolean canInsert (final DomainModel model, final T element)
-	{
-		this.log.trace ("canInsert: element={}", element);
-
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert model.contains (element) : "element is not in the model";
-
-		return model.contains (element) && ((! this.selector.isUnique ()) || this.getQuery (model)
-			.setValue (this.property, element)
-			.queryAll ()
-			.size () <= 1);
-	}
-
-	/**
-	 * Determine if a value can be safely removed from the <code>Element</code>
-	 * to break the relationship.  It is generally safe to remove a
-	 * relationship if the <code>Element</code> represented does not require
-	 * the relationship for unique identification.
-	 * <p>
-	 * For the uni-directional relationship, a relationship can always be
-	 * broken.
-	 *
-	 * @return <code>true</code> if the relationship can be safely removed,
-	 *         <code>false</code> otherwise
-	 */
-
-	@Override
-	protected boolean canRemove ()
-	{
-		this.log.trace ("canRemove:");
-
-		return true;
-	}
-
-	/**
-	 * Insert the specified value into the specified <code>Element</code> to
-	 * create the relationship.
-	 * <p>
-	 * This method is a same as <code>canInsert</code> as there is nothing to
-	 * insert in a uni-directional relationship.
-	 *
-	 * @param  model   The <code>DomainModel</code>, not null
-	 * @param  element The <code>Element</code> to operate on, not null
-	 * @param  value   The <code>Element</code> to be inserted, not null
-	 *
-	 * @return         <code>true</code> if the value was successfully
-	 *                 inserted, <code>false</code> otherwise
-	 */
-
-	@Override
-	protected boolean insert (final DomainModel model, final T element, final V value)
-	{
-		this.log.trace ("insert: element={}, value={}", element, value);
-		this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
-
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert value != null : "value is NULL";
-		assert model.contains (element) : "element is not in the model";
-		assert model.contains (value) : "value is not in the model";
-
-		return this.canInsert (model, element);
-	}
-
-	/**
-	 * Remove the specified value from the specified <code>Element</code> to
-	 * break the relationship.
-	 * <p>
-	 * This method is a no-op (unconditionally returning <code>true</code>) as
-	 * there is nothing to remove from a uni-directional relationship.
-	 *
-	 * @param  element The <code>Element</code> to operate on, not null
-	 * @param  value   The <code>Element</code> to be removed, not null
-	 *
-	 * @return         <code>true</code> if the value was successfully
-	 *                 removed, <code>false</code> otherwise
-	 */
-
-	@Override
-	protected boolean remove (final T element, final V value)
-	{
-		this.log.trace ("remove: element={}, value={}");
-		this.log.debug ("removing Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
-
-		assert element != null : "element is NULL";
-		assert value != null : "value is NULL";
-
-		return true;
 	}
 
 	/**
@@ -232,7 +306,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 			.setValue (this.property, element)
 			.queryAll ()
 			.stream ()
-			.allMatch (x -> this.getInverse (x.getClass ()).canRemove ());
+			.allMatch (x -> this.inverse.canRemove ());
 	}
 
 	/**
@@ -253,7 +327,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	public boolean connect (final DomainModel model, final T element)
 	{
 		this.log.trace ("connect: element={}", element);
-		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+		this.log.debug ("Connecting Relationship: {} -> {}", this.property.getName (), this.value.getSimpleName ());
 
 		assert model != null : "model is null";
 		assert element != null : "element is NULL";
@@ -280,7 +354,7 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 	public boolean disconnect (final DomainModel model, final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
-		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+		this.log.debug ("Disconnecting Relationship: {} -> {}", this.property.getName (), this.value.getSimpleName ());
 
 		assert model != null : "model is null";
 		assert element != null : "element is NULL";
@@ -290,7 +364,6 @@ final class SelectorRelationship<T extends Element, V extends Element> extends R
 			.setValue (this.property, element)
 			.queryAll ()
 			.stream ()
-			.allMatch (x -> this.getInverse (x.getClass ())
-					.remove (x, element));
+			.allMatch (x -> this.inverse.remove (x, element));
 	}
 }

@@ -16,9 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -26,13 +23,13 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * Abstract representation of a relationship between to <code>Element</code>
  * classes.  To ensure the integrity of the <code>DomainModel</code>, the
  * relationships between <code>Element</code> instances are subject to
- * constraints.  The constrains are that both of the <code>Elements</code>
- * involved in a relationship must exist in the same <code>DomainModel</code> and
- * a relationship between any two <code>Element</code> instances must be valid
- * for all of the <code>Element</code> instances in the <code>DomainModel</code>.
- * Specifically, the <code>DomainModel</code> must prevent an existing
- * relationship between two <code>Element</code> instances from being
- * overwritten by the addition of a third <code>Element</code> instance.
+ * constraints.  Both of the <code>Elements</code> involved in a relationship
+ * must exist in the same <code>DomainModel</code> and a relationship between
+ * any two <code>Element</code> instances must be valid for all of the
+ * <code>Element</code> instances in the <code>DomainModel</code>. Specifically,
+ * the <code>DomainModel</code> must prevent an existing relationship between
+ * two <code>Element</code> instances from being overwritten by the addition of
+ * a third <code>Element</code> instance.
  * <p>
  * To ensure its integrity, the <code>DomainModel</code> must process the
  * relationships for each <code>Element</code> instance as it is added or
@@ -51,15 +48,13 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * <code>DomainModel</code> are broken, and finally the <code>Element</code>
  * instance is removed.
  * <p>
- * An instance of this class models one side of the relationship between two
+ * An instance of this interface models one side of the relationship between two
  * <code>Element</code> classes.  While each instance of this class knows the
  * cardinality and navigability of the side of the relationship that it
  * represents it does not know those characteristics for the other side.  When
  * an operation is to be performed on a relationship the request is made to the
- * owning side (via the public interface).  The owning side will perform its
- * own safety checks, retrieve the <code>Relationship</code> instance for the
- * other side and pass on the request (via the protected interface) to perform
- * the actual operation.
+ * owning side.  The owning side will perform its own safety checks then pass
+ * on the request to the other side to perform the actual operation.
  * <p>
  * All of the possible relationships can be represented through a combination
  * of any two of the <code>Relationship</code> implementations:
@@ -78,201 +73,84 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * relationship that does not see the other side.
  *
  * @author  James E. Stark
- * @version 1.0
+ * @version 2.0
  * @param   <T> The type of the owning <code>Element</code>
  * @param   <V> The type of the associated <code>Element</code>
  */
 
-public abstract class Relationship<T extends Element, V extends Element>
+public interface Relationship<T extends Element, V extends Element>
 {
-	/** The logger */
-	protected final Logger log;
-
-	/** The owning <code>Element</code> interface class */
-	protected final Class<T> type;
-
-	/** The associated <code>Element</code> interface class */
-	protected final Class<V> value;
-
 	/**
-	 * Get a <code>Relationship</code> instance with a cardinality of one.
+	 * Abstract representation of the inverse relationship.  All relationships
+	 * are modelled bi-directionally, with instances of the
+	 * <code>Relationship</code> interface modelling the owning side (the side
+	 * from which an operation is initiated).  Implementations of this interface
+	 * model the other side, which does the actual work of adding or breaking
+	 * the relationship.  This is an internal interface, who's instances should
+	 * only be called from instances of the <code>Relationship</code> interface.
 	 *
-	 * @param  <T>       The type of the owning <code>Element</code>
-	 * @param  <V>       The type of the associated <code>Element</code>
-	 * @param  type      The owning <code>Element</code> interface class, not
-	 *                   null
-	 * @param  property  The <code>Property</code>, not null
-	 * @param  reference The <code>PropertyReference</code>, not null
-	 *
-	 * @return           The <code>Relationship</code>
+	 * @version 1.0
+	 * @param   <T> The type of the owning <code>Element</code>
+	 * @param   <V> The type of the associated <code>Element</code>
 	 */
 
-	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Class<T> type, final Property<V> property, final SingleReference<T, V> reference)
+	public static interface Inverse<T extends Element, V extends Element>
 	{
-		assert type != null : "type is NULL";
-		assert property != null : "property is null";
-		assert reference != null : "reference is NULL";
+		/**
+		 * Determine if a value can be inserted into the <code>Element</code> to
+		 * create a relationship.  It is generally safe to insert a value into
+		 * an <code>Element</code> if the <code>Element</code> allows multiple
+		 * values for the relationship, of if the <code>Element</code> instance
+		 * does not currently have a value for the relationship.
+		 *
+		 * @param  model   The <code>DomainModel</code>, not null
+		 * @param  element The <code>Element</code> instance to test, not null
+		 *
+		 * @return         <code>true</code> if the relationship can be safely
+		 *                 inserted, <code>false</code> otherwise
+		 */
 
-		return new SingleRelationship<T, V> (type, property, reference);
+		public abstract boolean canInsert (final DomainModel model, final T element);
+
+		/**
+		 * Determine if a value can be safely removed from the
+		 * <code>Element</code> to break the relationship.  It is generally safe
+		 * to remove a relationship if the <code>Element</code> represented does
+		 * not require the relationship for unique identification.
+		 *
+		 * @return <code>true</code> if the relationship can be safely removed,
+		 *         <code>false</code> otherwise
+		 */
+
+		public abstract boolean canRemove ();
+
+		/**
+		 * Insert the specified value into the specified <code>Element</code> to
+		 * create the relationship.
+		 *
+		 * @param  model   The <code>DomainModel</code>, not null
+		 * @param  element The <code>Element</code> to operate on, not null
+		 * @param  value   The <code>Element</code> to be inserted, not null
+		 *
+		 * @return         <code>true</code> if the value was successfully
+		 *                 inserted, <code>false</code> otherwise
+		 */
+
+		public abstract boolean insert (final DomainModel model, final T element, final V value);
+
+		/**
+		 * Remove the specified value from the specified <code>Element</code> to
+		 * break the relationship.
+		 *
+		 * @param  element The <code>Element</code> to operate on, not null
+		 * @param  value   The <code>Element</code> to be removed, not null
+		 *
+		 * @return         <code>true</code> if the value was successfully
+		 *                 removed, <code>false</code> otherwise
+		 */
+
+		public abstract boolean remove (final T element, final V value);
 	}
-
-	/**
-	 * Get a <code>Relationship</code> instance with a cardinality greater than
-	 * one.
-	 *
-	 * @param  <T>       The type of the owning <code>Element</code>
-	 * @param  <V>       The type of the associated <code>Element</code>
-	 * @param  type      The owning <code>Element</code> interface class, not
-	 *                   null
-	 * @param  property  The <code>Property</code>, not null
-	 * @param  reference The <code>RelationshipReference</code>, not null
-	 *
-	 * @return           The <code>Relationship</code>
-	 */
-
-	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Class<T> type, final Property<V> property, final MultiReference<T, V> reference)
-	{
-		assert type != null : "type is NULL";
-		assert property != null : "property is NULL";
-		assert reference != null : "reference is NULL";
-
-		return new MultiRelationship<T, V> (type, property, reference);
-	}
-
-	/**
-	 * Get a <code>Relationship</code> instance for the non-navigable side of a
-	 * uni-directional relationship.  The supplied <code>Property</code>
-	 * represents the owning <code>Element</code>, while the supplied
-	 * <code>Selector</code> is used to get queries for the associated
-	 * <code>Element</code>.
-	 *
-	 * @param  <T>      The type of the owning <code>Element</code>
-	 * @param  <V>      The type of the associated <code>Element</code>
-	 * @param  value    The <code>Element</code> interface class, not null
-	 * @param  property The <code>Property</code>, not null
-	 * @param  selector The <code>Selector</code>, not null
-	 *
-	 * @return          The <code>Relationship</code>
-	 */
-
-	protected static final <T extends Element, V extends Element> Relationship<T, V> getInstance (final Class<V> value, final Property<T> property, final Selector selector)
-	{
-		assert value != null : "value is NULL";
-		assert property != null : "property is NULL";
-		assert selector != null : "selector is NULL";
-
-		return new SelectorRelationship<T, V> (value, property, selector);
-	}
-
-	/**
-	 * Create the <code>Relationship</code>
-	 *
-	 * @param  type  The owning <code>Element</code> interface class, not null
-	 * @param  value The associated <code>Element</code> interface class, not
-	 *               null
-	 */
-
-	protected Relationship (final Class<T> type, final Class<V> value)
-	{
-		this.log = LoggerFactory.getLogger (this.getClass ());
-
-		this.type = type;
-		this.value = value;
-	}
-
-	/**
-	 * Get the inverse <code>Relationship</code> instance.  This method finds
-	 * and returns the <code>Relationship</code> instance corresponding to the
-	 * other side of the relationship for the specified <code>Element</code>
-	 * implementation class.
-	 *
-	 * @param  impl The <code>Element</code> implementation class, not null
-	 *
-	 * @return      The inverse <code>Relationship</code>
-	 */
-
-	protected final Relationship<? super V, T> getInverse (final Class<? extends Element> impl)
-	{
-		this.log.trace ("getInverse: impl={}", impl);
-
-		assert impl != null : "impl is NULL";
-		assert this.value.isAssignableFrom (impl) : "impl is not an implementation class for this relationship";
-
-		Relationship<? super V, T> inverse = null;
-
-		if (Container.getInstance ().containsMetaData (impl))
-		{
-			inverse = Container.getInstance ().getCreator (this.value, impl).getRelationship (this.type);
-
-			if (inverse == null)
-			{
-				this.log.error ("Failed to retrieve Relationship for {} from {}", this.type.getSimpleName (), impl.getSimpleName ());
-				throw new IllegalStateException ("No inverse relationship for element");
-			}
-		}
-		else
-		{
-			this.log.error ("Element does not have a regitered MetaData instance: {}", impl.getSimpleName ());
-			throw new IllegalStateException ("No MetaData registered for element");
-		}
-
-		return inverse;
-	}
-
-	/**
-	 * Determine if a value can be inserted into the <code>Element</code> to
-	 * create a relationship.  It is generally safe to insert a value into an
-	 * <code>Element</code> if the <code>Element</code> allows multiple values
-	 * for the relationship, of if the <code>Element</code> instance does not
-	 * currently have a value for the relationship.
-	 *
-	 * @param  model   The <code>DomainModel</code>, not null
-	 * @param  element The <code>Element</code> instance to test, not null
-	 *
-	 * @return         <code>true</code> if the relationship can be safely
-	 *                 inserted, <code>false</code> otherwise
-	 */
-
-	protected abstract boolean canInsert (final DomainModel model, final T element);
-
-	/**
-	 * Determine if a value can be safely removed from the <code>Element</code>
-	 * to break the relationship.  It is generally safe to remove a
-	 * relationship if the <code>Element</code> represented does not require
-	 * the relationship for unique identification.
-	 *
-	 * @return <code>true</code> if the relationship can be safely removed,
-	 *         <code>false</code> otherwise
-	 */
-
-	protected abstract boolean canRemove ();
-
-	/**
-	 * Insert the specified value into the specified <code>Element</code> to
-	 * create the relationship.
-	 *
-	 * @param  model   The <code>DomainModel</code>, not null
-	 * @param  element The <code>Element</code> to operate on, not null
-	 * @param  value   The <code>Element</code> to be inserted, not null
-	 *
-	 * @return         <code>true</code> if the value was successfully
-	 *                 inserted, <code>false</code> otherwise
-	 */
-
-	protected abstract boolean insert (final DomainModel model, final T element, final V value);
-
-	/**
-	 * Remove the specified value from the specified <code>Element</code> to
-	 * break the relationship.
-	 *
-	 * @param  element The <code>Element</code> to operate on, not null
-	 * @param  value   The <code>Element</code> to be removed, not null
-	 *
-	 * @return         <code>true</code> if the value was successfully
-	 *                 removed, <code>false</code> otherwise
-	 */
-
-	protected abstract boolean remove (final T element, final V value);
 
 	/**
 	 * Determine if the relationship represented by this
