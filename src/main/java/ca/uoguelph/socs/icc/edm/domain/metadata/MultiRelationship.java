@@ -51,15 +51,15 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 		private final Logger log;
 
 		/** The <code>RelationshipReference</code> used to manipulate the element */
-		private final MultiReference<T, V> reference;
+		private final MultiAccessor<T, V> reference;
 
 		/**
 		 * Create the <code>MultiInverse</code>
 		 *
-		 * @param  reference The <code>MultiReference</code>, not null
+		 * @param  reference The <code>MultiAccessor</code>, not null
 		 */
 
-		protected MultiInverse (final MultiReference<T, V> reference)
+		protected MultiInverse (final MultiAccessor<T, V> reference)
 		{
 			assert reference != null : "reference is NULL";
 
@@ -90,7 +90,9 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 		public boolean insert (final T element, final V value)
 		{
 			this.log.trace ("insert: element={}, value={}", element, value);
-//			this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+			this.log.debug ("inserting Relationship: {} -> {}",
+					this.reference.getElementClass ().getSimpleName (),
+					this.reference.getProperty ().getName ());
 
 			assert element != null : "element";
 			assert value != null : "value is NULL";
@@ -121,7 +123,9 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 		public boolean remove (final T element, final V value)
 		{
 			this.log.trace ("remove: element={}, value={}", element, value);
-//			this.log.debug ("removing Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+			this.log.debug ("removing Relationship: {} -> {}",
+					this.reference.getElementClass ().getSimpleName (),
+					this.reference.getProperty ().getName ());
 
 			assert element != null : "element is NULL";
 			assert value != null : "value is NULL";
@@ -137,7 +141,7 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	private final Relationship.Inverse<V, T> inverse;
 
 	/** The <code>MultiRelationship</code> used to manipulate the element */
-	private final MultiReference<T, V> reference;
+	private final MultiAccessor<T, V> reference;
 
 	/**
 	 * Create the <code>MultiRelationship</code>.
@@ -146,7 +150,7 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	 * @param  reference The <code>RelationshipReference</code>, not null
 	 */
 
-	protected MultiRelationship (final Relationship.Inverse<V, T> inverse, final MultiReference<T, V> reference)
+	protected MultiRelationship (final Relationship.Inverse<V, T> inverse, final MultiAccessor<T, V> reference)
 	{
 		assert inverse != null : "inverse is NULL";
 		assert reference != null : "reference is NULL";
@@ -174,7 +178,9 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	public boolean connect (final T element)
 	{
 		this.log.trace ("connect: element={}", element);
-//		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+		this.log.debug ("Connecting Relationship: {} -> {}",
+				this.reference.getElementClass ().getSimpleName (),
+				this.reference.getProperty ().getName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";
@@ -201,7 +207,9 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	public boolean disconnect (final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
-//		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+		this.log.debug ("Disconnecting Relationship: {} -> {}",
+				this.reference.getElementClass ().getSimpleName (),
+				this.reference.getProperty ().getName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";

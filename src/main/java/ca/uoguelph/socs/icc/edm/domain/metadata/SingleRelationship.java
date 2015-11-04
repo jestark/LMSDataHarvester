@@ -52,16 +52,16 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 		private final Property<V> property;
 
 		/** The assocated <code>PropertyReference</code> */
-		private final SingleReference<T, V> reference;
+		private final Accessor<T, V> reference;
 
 		/**
 		 * Create the <code>SingleInverse</code>.
 		 *
 		 * @param  property  The <code>Property</code>, not null
-		 * @param  reference The <code>SingleReference</code>, not null
+		 * @param  reference The <code>Accessor</code>, not null
 		 */
 
-		protected SingleInverse (final Property<V> property, final SingleReference<T, V> reference)
+		protected SingleInverse (final Property<V> property, final Accessor<T, V> reference)
 		{
 			assert property != null : "property is NULL";
 			assert reference != null : "reference is NULL";
@@ -92,7 +92,9 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 		public boolean insert (final T element, final V value)
 		{
 			this.log.trace ("insert: element={}, value={}", element, value);
-//			this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+			this.log.debug ("inserting Relationship: {} -> {}",
+					this.reference.getElementClass ().getSimpleName (),
+					this.reference.getProperty ().getName ());
 
 			assert element != null : "element";
 			assert value != null : "value is NULL";
@@ -131,7 +133,9 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 		public boolean remove (final T element, final V value)
 		{
 			this.log.trace ("remove: element={}, value={}", element, value);
-//			this.log.debug ("removing Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+			this.log.debug ("removing Relationship: {} -> {}",
+					this.reference.getElementClass ().getSimpleName (),
+					this.reference.getProperty ().getName ());
 
 			assert element != null : "element is NULL";
 			assert value != null : "value is NULL";
@@ -160,18 +164,18 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	private final Property<V> property;
 
 	/** The assocated <code>PropertyReference</code> */
-	private final SingleReference<T, V> reference;
+	private final Accessor<T, V> reference;
 
 	/**
 	 * Create the <code>SingleRelationShip</code>.
 	 *
 	 * @param  inverse   The <code>Inverse</code> relationship, not null
 	 * @param  property  The <code>Property</code>, not null
-	 * @param  reference The <code>SingleReference</code>, not null
+	 * @param  reference The <code>Accessor</code>, not null
 	 */
 
 	protected SingleRelationship (final Relationship.Inverse<V, T> inverse,
-			final Property<V> property, final SingleReference<T, V> reference)
+			final Property<V> property, final Accessor<T, V> reference)
 	{
 		assert inverse != null : "inverse is NULL";
 		assert property != null : "Property is NULL";
@@ -201,7 +205,9 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	public boolean connect (final T element)
 	{
 		this.log.trace ("connect: element={}", element);
-//		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+		this.log.debug ("Connecting Relationship: {} -> {}",
+				this.reference.getElementClass ().getSimpleName (),
+				this.reference.getProperty ().getName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";
@@ -231,7 +237,9 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	public boolean disconnect (final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
-//		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
+		this.log.debug ("Disconnecting Relationship: {} -> {}",
+				this.reference.getElementClass ().getSimpleName (),
+				this.reference.getProperty ().getName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";

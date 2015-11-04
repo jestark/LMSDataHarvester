@@ -107,7 +107,9 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		public boolean insert (final T element, final V value)
 		{
 			this.log.trace ("insert: element={}, value={}", element, value);
-			this.log.debug ("inserting Relationship: {} -> {}", this.property.getName (), this.value.getSimpleName ());
+			this.log.debug ("inserting Relationship: {} -> {}",
+					this.property.getName (),
+					this.value.getSimpleName ());
 
 			assert element != null : "element";
 			assert value != null : "value is NULL";
@@ -139,7 +141,9 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		public boolean remove (final T element, final V value)
 		{
 			this.log.trace ("remove: element={}, value={}");
-			this.log.debug ("removing Relationship: {} -> {}", this.property.getName (), this.value.getSimpleName ());
+			this.log.debug ("removing Relationship: {} -> {}",
+					this.property.getName (),
+					this.value.getSimpleName ());
 
 			assert element != null : "element is NULL";
 			assert value != null : "value is NULL";
@@ -212,7 +216,9 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	public boolean connect (final T element)
 	{
 		this.log.trace ("connect: element={}", element);
-		this.log.debug ("Connecting Relationship: {} -> {}", this.property.getName (), this.value.getSimpleName ());
+		this.log.debug ("Connecting Relationship: {} -> {}",
+				this.property.getName (),
+				this.value.getSimpleName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";
@@ -238,7 +244,9 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	public boolean disconnect (final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
-		this.log.debug ("Disconnecting Relationship: {} -> {}", this.property.getName (), this.value.getSimpleName ());
+		this.log.debug ("Disconnecting Relationship: {} -> {}",
+				this.property.getName (),
+				this.value.getSimpleName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";
