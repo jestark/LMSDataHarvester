@@ -83,7 +83,6 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 		 * created with another <code>Element</code> if the existing value is
 		 * <code>null</code>.
 		 *
-		 * @param  model   The <code>DomainModel</code>, not null
 		 * @param  element The <code>Element</code> instance to test, not null
 		 *
 		 * @return         <code>true</code> if the relationship can be safely
@@ -91,15 +90,16 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 		 */
 
 		@Override
-		public boolean canInsert (final DomainModel model, final T element)
+		public boolean canInsert (final T element)
 		{
 			this.log.trace ("canInsert: element={}", element);
 
-			assert model != null : "model is null";
-			assert element != null : "element is NULL";
-			assert model.contains (element) : "element is not in the model";
+			assert element != null : "element";
+			assert element.getDomainModel () != null : "missing DomainModel";
+			assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-			return model.contains (element) && this.reference.getValue (element) == null;
+			return element.getDomainModel ().contains (element)
+				&& this.reference.getValue (element) == null;
 		}
 
 		/**
@@ -132,7 +132,6 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 		 * field is not-null then the operation will fail, returning
 		 * <code>false</code>.
 		 *
-		 * @param  model   The <code>DomainModel</code>, not null
 		 * @param  element The <code>Element</code> to operate on, not null
 		 * @param  value   The <code>Element</code> to be inserted, not null
 		 *
@@ -141,20 +140,20 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 		 */
 
 		@Override
-		public boolean insert (final DomainModel model, final T element, final V value)
+		public boolean insert (final T element, final V value)
 		{
 			this.log.trace ("insert: element={}, value={}", element, value);
 //			this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-			assert model != null : "model is null";
-			assert element != null : "element is NULL";
+			assert element != null : "element";
 			assert value != null : "value is NULL";
-			assert model.contains (element) : "element is not in the model";
-			assert model.contains (value) : "value is not in the model";
+			assert element.getDomainModel () != null : "missing DomainModel";
+			assert element.getDomainModel ().contains (element) : "element is not in the model";
+			assert element.getDomainModel ().contains (value) : "value is not in the model";
 
 			boolean result = false;
 
-			if (model.contains (element) && this.reference.getValue (element) == null)
+			if (element.getDomainModel ().contains (element) && this.reference.getValue (element) == null)
 			{
 				this.reference.setValue (element, value);
 				result = true;
@@ -241,7 +240,6 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	 * <code>Relationship</code> instance can be safely connected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship can be created,
@@ -249,16 +247,16 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	 */
 
 	@Override
-	public boolean canConnect (final DomainModel model, final T element)
+	public boolean canConnect (final T element)
 	{
 		this.log.trace ("canConnect: element={}", element);
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
 
 		final V value = this.reference.getValue (element);
 
-		return value == null || this.inverse.canInsert (model, value);
+		return value == null || this.inverse.canInsert (value);
 	}
 
 	/**
@@ -266,7 +264,6 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	 * <code>Relationship</code> instance can be safely disconnected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship can be broken,
@@ -274,12 +271,12 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	 */
 
 	@Override
-	public boolean canDisconnect (final DomainModel model, final T element)
+	public boolean canDisconnect (final T element)
 	{
 		this.log.trace ("canDisconnect: element={}", element);
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
 
 		return this.inverse.canRemove ();
 	}
@@ -291,7 +288,6 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	 * instance for the <code>Element</code> on the other side of the
 	 * relationship.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship was successfully
@@ -299,19 +295,20 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	 */
 
 	@Override
-	public boolean connect (final DomainModel model, final T element)
+	public boolean connect (final T element)
 	{
 		this.log.trace ("connect: element={}", element);
 //		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert model.contains (element) : "element is not in the model";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
+		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
 		final V value = this.reference.getValue (element);
 
-		return value == null ||
-			(model.contains (element) && this.inverse.insert (model, value, element));
+		return value == null
+			|| (element.getDomainModel ().contains (element)
+					&& this.inverse.insert (value, element));
 	}
 
 	/**
@@ -321,7 +318,6 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	 * relationship from the <code>Element</code> instance for the
 	 * <code>Element</code> on the other side of the relationship.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship was successfully
@@ -329,18 +325,19 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	 */
 
 	@Override
-	public boolean disconnect (final DomainModel model, final T element)
+	public boolean disconnect (final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
 //		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert model.contains (element) : "element is not in the model";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
+		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
 		final V value = this.reference.getValue (element);
 
 		return value == null
-			|| (model.contains (element) && this.inverse.remove (value, element));
+			|| (element.getDomainModel ().contains (element)
+					&& this.inverse.remove (value, element));
 	}
 }

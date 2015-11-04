@@ -85,15 +85,15 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 		 */
 
 		@Override
-		public boolean canInsert (final DomainModel model, final T element)
+		public boolean canInsert (final T element)
 		{
 			this.log.trace ("canInsert: element={}", element);
 
-			assert model != null : "model is null";
-			assert element != null : "element is NULL";
-			assert model.contains (element) : "element is not in the model";
+			assert element != null : "element";
+			assert element.getDomainModel () != null : "missing DomainModel";
+			assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-			return model.contains (element);
+			return element.getDomainModel ().contains (element);
 		}
 
 		/**
@@ -128,7 +128,6 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 		 * <code>Element</code>.  The called must ensure that this does not
 		 * happen.
 		 *
-		 * @param  model   The <code>DomainModel</code>, not null
 		 * @param  element The <code>Element</code> to operate on, not null
 		 * @param  value   The <code>Element</code> to be inserted, not null
 		 *
@@ -137,18 +136,19 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 		 */
 
 		@Override
-		public boolean insert (final DomainModel model, final T element, final V value)
+		public boolean insert (final T element, final V value)
 		{
 			this.log.trace ("insert: element={}, value={}", element, value);
 //			this.log.debug ("inserting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-			assert model != null : "model is null";
-			assert element != null : "element is NULL";
+			assert element != null : "element";
 			assert value != null : "value is NULL";
-			assert model.contains (element) : "element is not in the model";
-			assert model.contains (value) : "value is not in the model";
+			assert element.getDomainModel () != null : "missing DomainModel";
+			assert element.getDomainModel ().contains (element) : "element is not in the model";
+			assert element.getDomainModel ().contains (value) : "value is not in the model";
 
-			return model.contains (element) && this.reference.addValue (element, value);
+			return element.getDomainModel ().contains (element)
+				&& this.reference.addValue (element, value);
 		}
 
 		/**
@@ -211,7 +211,6 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	 * <code>Relationship</code> instance can be safely connected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship can be created,
@@ -219,15 +218,15 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	 */
 
 	@Override
-	public boolean canConnect (final DomainModel model, final T element)
+	public boolean canConnect (final T element)
 	{
 		this.log.trace ("canConnect: element={}", element);
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
 
 		return this.reference.stream (element)
-			.allMatch (x -> this.inverse.canInsert (model, x));
+			.allMatch (x -> this.inverse.canInsert (x));
 	}
 
 	/**
@@ -235,7 +234,6 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	 * <code>Relationship</code> instance can be safely disconnected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship can be broken,
@@ -243,16 +241,15 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	 */
 
 	@Override
-	public boolean canDisconnect (final DomainModel model, final T element)
+	public boolean canDisconnect (final T element)
 	{
 		this.log.trace ("canDisconnect: element={}", element);
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert model.contains (element) : "element is not in the model";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
 
-		return model.contains (element) && this.reference.stream (element)
-			.allMatch (x -> this.inverse.canRemove ());
+		return element.getDomainModel ().contains (element)
+			&& this.reference.stream (element).allMatch (x -> this.inverse.canRemove ());
 	}
 
 	/**
@@ -262,7 +259,6 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	 * instance for the <code>Element</code> on the other side of the
 	 * relationship.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship was successfully
@@ -270,17 +266,17 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	 */
 
 	@Override
-	public boolean connect (final DomainModel model, final T element)
+	public boolean connect (final T element)
 	{
 		this.log.trace ("connect: element={}", element);
 //		this.log.debug ("Connecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert model.contains (element) : "element is not in the model";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
+		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-		return model.contains (element) && this.reference.stream (element)
-			.allMatch (x -> this.inverse.insert (model, x, element));
+		return element.getDomainModel ().contains (element) && this.reference.stream (element)
+			.allMatch (x -> this.inverse.insert (x, element));
 	}
 
 	/**
@@ -290,7 +286,6 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	 * relationship from the <code>Element</code> instance for the
 	 * <code>Element</code> on the other side of the relationship.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship was successfully
@@ -298,16 +293,16 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	 */
 
 	@Override
-	public boolean disconnect (final DomainModel model, final T element)
+	public boolean disconnect (final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
 //		this.log.debug ("Disconnecting Relationship: {} -> {}", this.type.getSimpleName (), this.value.getSimpleName ());
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert model.contains (element) : "element is not in the model";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
+		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-		return model.contains (element) && this.reference.stream (element)
+		return element.getDomainModel ().contains (element) && this.reference.stream (element)
 			.allMatch (x -> this.inverse.remove (x, element));
 	}
 }

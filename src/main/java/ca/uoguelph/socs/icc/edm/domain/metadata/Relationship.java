@@ -103,14 +103,13 @@ public interface Relationship<T extends Element, V extends Element>
 		 * values for the relationship, of if the <code>Element</code> instance
 		 * does not currently have a value for the relationship.
 		 *
-		 * @param  model   The <code>DomainModel</code>, not null
 		 * @param  element The <code>Element</code> instance to test, not null
 		 *
 		 * @return         <code>true</code> if the relationship can be safely
 		 *                 inserted, <code>false</code> otherwise
 		 */
 
-		public abstract boolean canInsert (final DomainModel model, final T element);
+		public abstract boolean canInsert (final T element);
 
 		/**
 		 * Determine if a value can be safely removed from the
@@ -128,7 +127,6 @@ public interface Relationship<T extends Element, V extends Element>
 		 * Insert the specified value into the specified <code>Element</code> to
 		 * create the relationship.
 		 *
-		 * @param  model   The <code>DomainModel</code>, not null
 		 * @param  element The <code>Element</code> to operate on, not null
 		 * @param  value   The <code>Element</code> to be inserted, not null
 		 *
@@ -136,7 +134,7 @@ public interface Relationship<T extends Element, V extends Element>
 		 *                 inserted, <code>false</code> otherwise
 		 */
 
-		public abstract boolean insert (final DomainModel model, final T element, final V value);
+		public abstract boolean insert (final T element, final V value);
 
 		/**
 		 * Remove the specified value from the specified <code>Element</code> to
@@ -157,28 +155,26 @@ public interface Relationship<T extends Element, V extends Element>
 	 * <code>Relationship</code> instance can be safely connected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship can be created,
 	 *                 <code>false</code> otherwise
 	 */
 
-	public abstract boolean canConnect (final DomainModel model, final T element);
+	public abstract boolean canConnect (final T element);
 
 	/**
 	 * Determine if the relationship represented by this
 	 * <code>Relationship</code> instance can be safely disconnected for the
 	 * specified <code>Element</code> instance.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship can be broken,
 	 *                 <code>false</code> otherwise
 	 */
 
-	public abstract boolean canDisconnect (final DomainModel model, final T element);
+	public abstract boolean canDisconnect (final T element);
 
 	/**
 	 * Connect the relationship represented by this <code>Relationship</code>
@@ -194,7 +190,7 @@ public interface Relationship<T extends Element, V extends Element>
 	 *                 created <code>false</code> otherwise
 	 */
 
-	public abstract boolean connect (final DomainModel model, final T element);
+	public abstract boolean connect (final T element);
 
 	/**
 	 * Disconnect the relationship represented by this
@@ -203,12 +199,11 @@ public interface Relationship<T extends Element, V extends Element>
 	 * relationship from the <code>Element</code> instance for the
 	 * <code>Element</code> on the other side of the relationship.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship was successfully
 	 *                 broken <code>false</code> otherwise
 	 */
 
-	public abstract boolean disconnect (final DomainModel model, final T element);
+	public abstract boolean disconnect (final T element);
 }

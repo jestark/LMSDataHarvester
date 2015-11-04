@@ -82,10 +82,8 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 			this.selector = selector;
 		}
 
-		private Query<V> getQuery (final DomainModel model)
+		private Query<V> getQuery ()
 		{
-			assert model != null : "model is NULL";
-
 			return null; // model.getQuery (Container.getInstance ()
 //					.getMetaData (this.value),
 //					this.selector);
@@ -102,7 +100,6 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		 * either the <code>Selector</code> is not expected to return a unique
 		 * instance of the <code>Element</code>, or
 		 *
-		 * @param  model   The <code>DomainModel</code>, not null
 		 * @param  element The <code>Element</code> instance to test, not null
 		 *
 		 * @return         <code>true</code> if the relationship can be safely
@@ -110,15 +107,15 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		 */
 
 		@Override
-		public boolean canInsert (final DomainModel model, final T element)
+		public boolean canInsert (final T element)
 		{
 			this.log.trace ("canInsert: element={}", element);
 
-			assert model != null : "model is null";
-			assert element != null : "element is NULL";
-			assert model.contains (element) : "element is not in the model";
+			assert element != null : "element";
+			assert element.getDomainModel () != null : "missing DomainModel";
+			assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-			return model.contains (element) && ((! this.selector.isUnique ()) || this.getQuery (model)
+			return element.getDomainModel ().contains (element) && ((! this.selector.isUnique ()) || this.getQuery ()
 				.setValue (this.property, element)
 				.queryAll ()
 				.size () <= 1);
@@ -152,7 +149,6 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		 * This method is a same as <code>canInsert</code> as there is nothing
 		 * to insert in a uni-directional relationship.
 		 *
-		 * @param  model   The <code>DomainModel</code>, not null
 		 * @param  element The <code>Element</code> to operate on, not null
 		 * @param  value   The <code>Element</code> to be inserted, not null
 		 *
@@ -161,18 +157,18 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		 */
 
 		@Override
-		public boolean insert (final DomainModel model, final T element, final V value)
+		public boolean insert (final T element, final V value)
 		{
 			this.log.trace ("insert: element={}, value={}", element, value);
 			this.log.debug ("inserting Relationship: {} -> {}", this.property.getName (), this.value.getSimpleName ());
 
-			assert model != null : "model is null";
-			assert element != null : "element is NULL";
+			assert element != null : "element";
 			assert value != null : "value is NULL";
-			assert model.contains (element) : "element is not in the model";
-			assert model.contains (value) : "value is not in the model";
+			assert element.getDomainModel () != null : "missing DomainModel";
+			assert element.getDomainModel ().contains (element) : "element is not in the model";
+			assert element.getDomainModel ().contains (value) : "value is not in the model";
 
-			return this.canInsert (model, element);
+			return this.canInsert (element);
 		}
 
 		/**
@@ -242,10 +238,8 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		this.selector = selector;
 	}
 
-	private Query<V> getQuery (final DomainModel model)
+	private Query<V> getQuery ()
 	{
-		assert model != null : "model is NULL";
-
 		return null; // model.getQuery (Container.getInstance ()
 //				.getMetaData (this.value),
 //				this.selector);
@@ -259,7 +253,6 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	 * For a uni-directional relationship this will always be true as there is
 	 * nothing to connect.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship can be created,
@@ -267,12 +260,12 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	 */
 
 	@Override
-	public boolean canConnect (final DomainModel model, final T element)
+	public boolean canConnect (final T element)
 	{
 		this.log.trace ("canConnect: element={}", element);
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
 
 		return true;
 	}
@@ -286,7 +279,6 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	 * removed if the other side is not dependant on it, or if there are no
 	 * associated <code>Element</code> instances in the <code>DomainModel</code>.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship can be broken,
@@ -294,15 +286,15 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	 */
 
 	@Override
-	public boolean canDisconnect (final DomainModel model, final T element)
+	public boolean canDisconnect (final T element)
 	{
 		this.log.trace ("canDisconnect: element={}", element);
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert model.contains (element) : "element is not in the model";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
+		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-		return model.contains (element) && this.getQuery (model)
+		return element.getDomainModel ().contains (element) && this.getQuery ()
 			.setValue (this.property, element)
 			.queryAll ()
 			.stream ()
@@ -316,7 +308,6 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	 * For a uni-directional relationship, there is nothing to do, so this is a
 	 * no-op.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship was successfully
@@ -324,16 +315,16 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	 */
 
 	@Override
-	public boolean connect (final DomainModel model, final T element)
+	public boolean connect (final T element)
 	{
 		this.log.trace ("connect: element={}", element);
 		this.log.debug ("Connecting Relationship: {} -> {}", this.property.getName (), this.value.getSimpleName ());
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert model.contains (element) : "element is not in the model";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
+		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-		return model.contains (element);
+		return element.getDomainModel ().contains (element);
 	}
 
 	/**
@@ -343,7 +334,6 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	 * relationship from the <code>Element</code> instance for the
 	 * <code>Element</code> on the other side of the relationship.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship was successfully
@@ -351,16 +341,16 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	 */
 
 	@Override
-	public boolean disconnect (final DomainModel model, final T element)
+	public boolean disconnect (final T element)
 	{
 		this.log.trace ("disconnect: element={}", element);
 		this.log.debug ("Disconnecting Relationship: {} -> {}", this.property.getName (), this.value.getSimpleName ());
 
-		assert model != null : "model is null";
-		assert element != null : "element is NULL";
-		assert model.contains (element) : "element is not in the model";
+		assert element != null : "element";
+		assert element.getDomainModel () != null : "missing DomainModel";
+		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-		return model.contains (element) && this.getQuery (model)
+		return element.getDomainModel ().contains (element) && this.getQuery ()
 			.setValue (this.property, element)
 			.queryAll ()
 			.stream ()
