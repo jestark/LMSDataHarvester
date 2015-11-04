@@ -69,55 +69,6 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 		}
 
 		/**
-		 * Determine if a value can be inserted into the <code>Element</code> to
-		 * create a relationship.  It is generally safe to insert a value into
-		 * an <code>Element</code> if the <code>Element</code> allows multiple
-		 * values for the relationship, of if the <code>Element</code> instance
-		 * does not currently have a value for the relationship.
-		 * <p>
-		 * For the multi-valued relationship, a new relationship can always be
-		 * inserted
-		 *
-		 * @param  element The <code>Element</code> instance to test, not null
-		 *
-		 * @return         <code>true</code> if the relationship can be safely
-		 *                 inserted, <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean canInsert (final T element)
-		{
-			this.log.trace ("canInsert: element={}", element);
-
-			assert element != null : "element";
-			assert element.getDomainModel () != null : "missing DomainModel";
-			assert element.getDomainModel ().contains (element) : "element is not in the model";
-
-			return element.getDomainModel ().contains (element);
-		}
-
-		/**
-		 * Determine if a value can be safely removed from the
-		 * <code>Element</code> to break the relationship.  It is generally safe
-		 * to remove a relationship if the <code>Element</code> represented does
-		 * not require the relationship for unique identification.
-		 * <p>
-		 * For the multi-valued relationship, a relationship can always be
-		 * broken.
-		 *
-		 * @return <code>true</code> if the relationship can be safely removed,
-		 *         <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean canRemove ()
-		{
-			this.log.trace ("canRemove:");
-
-			return true;
-		}
-
-		/**
 		 * Insert the specified value into the specified <code>Element</code> to
 		 * create the relationship.
 		 * <p>
@@ -204,52 +155,6 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 
 		this.inverse = inverse;
 		this.reference = reference;
-	}
-
-	/**
-	 * Determine if the relationship represented by this
-	 * <code>Relationship</code> instance can be safely connected for the
-	 * specified <code>Element</code> instance.
-	 *
-	 * @param  element The <code>Element</code> to process, not null
-	 *
-	 * @return         <code>true</code> if the relationship can be created,
-	 *                 <code>false</code> otherwise
-	 */
-
-	@Override
-	public boolean canConnect (final T element)
-	{
-		this.log.trace ("canConnect: element={}", element);
-
-		assert element != null : "element";
-		assert element.getDomainModel () != null : "missing DomainModel";
-
-		return this.reference.stream (element)
-			.allMatch (x -> this.inverse.canInsert (x));
-	}
-
-	/**
-	 * Determine if the relationship represented by this
-	 * <code>Relationship</code> instance can be safely disconnected for the
-	 * specified <code>Element</code> instance.
-	 *
-	 * @param  element The <code>Element</code> to process, not null
-	 *
-	 * @return         <code>true</code> if the relationship can be broken,
-	 *                 <code>false</code> otherwise
-	 */
-
-	@Override
-	public boolean canDisconnect (final T element)
-	{
-		this.log.trace ("canDisconnect: element={}", element);
-
-		assert element != null : "element";
-		assert element.getDomainModel () != null : "missing DomainModel";
-
-		return element.getDomainModel ().contains (element)
-			&& this.reference.stream (element).allMatch (x -> this.inverse.canRemove ());
 	}
 
 	/**

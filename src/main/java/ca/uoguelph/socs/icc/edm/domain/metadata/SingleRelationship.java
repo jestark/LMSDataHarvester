@@ -73,57 +73,6 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 		}
 
 		/**
-		 * Determine if a value can be inserted into the <code>Element</code> to
-		 * create a relationship.  It is generally safe to insert a value into an
-		 * <code>Element</code> if the <code>Element</code> allows multiple values
-		 * for the relationship, of if the <code>Element</code> instance does not
-		 * currently have a value for the relationship.
-		 * <p>
-		 * For the single-valued relationship, a new relationship can only be
-		 * created with another <code>Element</code> if the existing value is
-		 * <code>null</code>.
-		 *
-		 * @param  element The <code>Element</code> instance to test, not null
-		 *
-		 * @return         <code>true</code> if the relationship can be safely
-		 *                 inserted, <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean canInsert (final T element)
-		{
-			this.log.trace ("canInsert: element={}", element);
-
-			assert element != null : "element";
-			assert element.getDomainModel () != null : "missing DomainModel";
-			assert element.getDomainModel ().contains (element) : "element is not in the model";
-
-			return element.getDomainModel ().contains (element)
-				&& this.reference.getValue (element) == null;
-		}
-
-		/**
-		 * Determine if a value can be safely removed from the <code>Element</code>
-		 * to break the relationship.  It is generally safe to remove a
-		 * relationship if the <code>Element</code> represented does not require
-		 * the relationship for unique identification.
-		 * <p>
-		 * For the single valued relationship, a relationship can be broken if it
-		 * is not required, as specified in the associated <code>Property</code>.
-		 *
-		 * @return <code>true</code> if the relationship can be safely removed,
-		 *         <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean canRemove ()
-		{
-			this.log.trace ("canRemove:");
-
-			return ! this.property.hasFlags (Property.Flags.REQUIRED);
-		}
-
-		/**
 		 * Insert the specified value into the specified <code>Element</code> to
 		 * create the relationship.
 		 * <p>
@@ -233,52 +182,6 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 		this.inverse = inverse;
 		this.property = property;
 		this.reference = reference;
-	}
-
-	/**
-	 * Determine if the relationship represented by this
-	 * <code>Relationship</code> instance can be safely connected for the
-	 * specified <code>Element</code> instance.
-	 *
-	 * @param  element The <code>Element</code> to process, not null
-	 *
-	 * @return         <code>true</code> if the relationship can be created,
-	 *                 <code>false</code> otherwise
-	 */
-
-	@Override
-	public boolean canConnect (final T element)
-	{
-		this.log.trace ("canConnect: element={}", element);
-
-		assert element != null : "element";
-		assert element.getDomainModel () != null : "missing DomainModel";
-
-		final V value = this.reference.getValue (element);
-
-		return value == null || this.inverse.canInsert (value);
-	}
-
-	/**
-	 * Determine if the relationship represented by this
-	 * <code>Relationship</code> instance can be safely disconnected for the
-	 * specified <code>Element</code> instance.
-	 *
-	 * @param  element The <code>Element</code> to process, not null
-	 *
-	 * @return         <code>true</code> if the relationship can be broken,
-	 *                 <code>false</code> otherwise
-	 */
-
-	@Override
-	public boolean canDisconnect (final T element)
-	{
-		this.log.trace ("canDisconnect: element={}", element);
-
-		assert element != null : "element";
-		assert element.getDomainModel () != null : "missing DomainModel";
-
-		return this.inverse.canRemove ();
 	}
 
 	/**

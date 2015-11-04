@@ -90,59 +90,6 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		}
 
 		/**
-		 * Determine if a value can be inserted into the <code>Element</code> to
-		 * create a relationship.  It is generally safe to insert a value into
-		 * an <code>Element</code> if the <code>Element</code> allows multiple
-		 * values for the relationship, of if the <code>Element</code> instance
-		 * does not currently have a value for the relationship.
-		 * <p>
-		 * For a uni-directional relationship, a relationship can be added if
-		 * either the <code>Selector</code> is not expected to return a unique
-		 * instance of the <code>Element</code>, or
-		 *
-		 * @param  element The <code>Element</code> instance to test, not null
-		 *
-		 * @return         <code>true</code> if the relationship can be safely
-		 *                 inserted, <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean canInsert (final T element)
-		{
-			this.log.trace ("canInsert: element={}", element);
-
-			assert element != null : "element";
-			assert element.getDomainModel () != null : "missing DomainModel";
-			assert element.getDomainModel ().contains (element) : "element is not in the model";
-
-			return element.getDomainModel ().contains (element) && ((! this.selector.isUnique ()) || this.getQuery ()
-				.setValue (this.property, element)
-				.queryAll ()
-				.size () <= 1);
-		}
-
-		/**
-		 * Determine if a value can be safely removed from the
-		 * <code>Element</code> to break the relationship.  It is generally safe
-		 * to remove a relationship if the <code>Element</code> represented does
-		 * not require the relationship for unique identification.
-		 * <p>
-		 * For the uni-directional relationship, a relationship can always be
-		 * broken.
-		 *
-		 * @return <code>true</code> if the relationship can be safely removed,
-		 *         <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean canRemove ()
-		{
-			this.log.trace ("canRemove:");
-
-			return true;
-		}
-
-		/**
 		 * Insert the specified value into the specified <code>Element</code> to
 		 * create the relationship.
 		 * <p>
@@ -168,7 +115,10 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 			assert element.getDomainModel ().contains (element) : "element is not in the model";
 			assert element.getDomainModel ().contains (value) : "value is not in the model";
 
-			return this.canInsert (element);
+			return element.getDomainModel ().contains (element) && ((! this.selector.isUnique ()) || this.getQuery ()
+				.setValue (this.property, element)
+				.queryAll ()
+				.size () <= 1);
 		}
 
 		/**
@@ -243,62 +193,6 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		return null; // model.getQuery (Container.getInstance ()
 //				.getMetaData (this.value),
 //				this.selector);
-	}
-
-	/**
-	 * Determine if the relationship represented by this
-	 * <code>Relationship</code> instance can be safely connected for the
-	 * specified <code>Element</code> instance.
-	 * <p>
-	 * For a uni-directional relationship this will always be true as there is
-	 * nothing to connect.
-	 *
-	 * @param  element The <code>Element</code> to process, not null
-	 *
-	 * @return         <code>true</code> if the relationship can be created,
-	 *                 <code>false</code> otherwise
-	 */
-
-	@Override
-	public boolean canConnect (final T element)
-	{
-		this.log.trace ("canConnect: element={}", element);
-
-		assert element != null : "element";
-		assert element.getDomainModel () != null : "missing DomainModel";
-
-		return true;
-	}
-
-	/**
-	 * Determine if the relationship represented by this
-	 * <code>Relationship</code> instance can be safely disconnected for the
-	 * specified <code>Element</code> instance.
-	 * <p>
-	 * For a uni-directional relationship, the <code>Element</code> may be
-	 * removed if the other side is not dependant on it, or if there are no
-	 * associated <code>Element</code> instances in the <code>DomainModel</code>.
-	 *
-	 * @param  element The <code>Element</code> to process, not null
-	 *
-	 * @return         <code>true</code> if the relationship can be broken,
-	 *                 <code>false</code> otherwise
-	 */
-
-	@Override
-	public boolean canDisconnect (final T element)
-	{
-		this.log.trace ("canDisconnect: element={}", element);
-
-		assert element != null : "element";
-		assert element.getDomainModel () != null : "missing DomainModel";
-		assert element.getDomainModel ().contains (element) : "element is not in the model";
-
-		return element.getDomainModel ().contains (element) && this.getQuery ()
-			.setValue (this.property, element)
-			.queryAll ()
-			.stream ()
-			.allMatch (x -> this.inverse.canRemove ());
 	}
 
 	/**

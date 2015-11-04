@@ -97,33 +97,6 @@ public interface Relationship<T extends Element, V extends Element>
 	public static interface Inverse<T extends Element, V extends Element>
 	{
 		/**
-		 * Determine if a value can be inserted into the <code>Element</code> to
-		 * create a relationship.  It is generally safe to insert a value into
-		 * an <code>Element</code> if the <code>Element</code> allows multiple
-		 * values for the relationship, of if the <code>Element</code> instance
-		 * does not currently have a value for the relationship.
-		 *
-		 * @param  element The <code>Element</code> instance to test, not null
-		 *
-		 * @return         <code>true</code> if the relationship can be safely
-		 *                 inserted, <code>false</code> otherwise
-		 */
-
-		public abstract boolean canInsert (final T element);
-
-		/**
-		 * Determine if a value can be safely removed from the
-		 * <code>Element</code> to break the relationship.  It is generally safe
-		 * to remove a relationship if the <code>Element</code> represented does
-		 * not require the relationship for unique identification.
-		 *
-		 * @return <code>true</code> if the relationship can be safely removed,
-		 *         <code>false</code> otherwise
-		 */
-
-		public abstract boolean canRemove ();
-
-		/**
 		 * Insert the specified value into the specified <code>Element</code> to
 		 * create the relationship.
 		 *
@@ -149,32 +122,6 @@ public interface Relationship<T extends Element, V extends Element>
 
 		public abstract boolean remove (final T element, final V value);
 	}
-
-	/**
-	 * Determine if the relationship represented by this
-	 * <code>Relationship</code> instance can be safely connected for the
-	 * specified <code>Element</code> instance.
-	 *
-	 * @param  element The <code>Element</code> to process, not null
-	 *
-	 * @return         <code>true</code> if the relationship can be created,
-	 *                 <code>false</code> otherwise
-	 */
-
-	public abstract boolean canConnect (final T element);
-
-	/**
-	 * Determine if the relationship represented by this
-	 * <code>Relationship</code> instance can be safely disconnected for the
-	 * specified <code>Element</code> instance.
-	 *
-	 * @param  element The <code>Element</code> to process, not null
-	 *
-	 * @return         <code>true</code> if the relationship can be broken,
-	 *                 <code>false</code> otherwise
-	 */
-
-	public abstract boolean canDisconnect (final T element);
 
 	/**
 	 * Connect the relationship represented by this <code>Relationship</code>
