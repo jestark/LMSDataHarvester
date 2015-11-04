@@ -39,124 +39,11 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 final class SelectorRelationship<T extends Element, V extends Element> implements Relationship<T, V>
 {
-	/**
-	 * Representation of a inverse uni-directional relationship.
-	 *
-	 * @version 1.0
-	 * @param   <T> The type of the owning <code>Element</code>
-	 * @param   <V> The type of the associated <code>Element</code>
-	 */
-
-	static final class SelectorInverse<T extends Element, V extends Element> implements Relationship.Inverse<T, V>
-	{
-		/** The Logger */
-		private final Logger log;
-
-		/** The <code>Element</code> interface class */
-		private final Class<V> value;
-
-		/** The <code>Property</code> for owning <code>Element</code> */
-		private final Property<T> property;
-
-		/** The <code>Selector</code> for the associated <code>Element</code> */
-		private final Selector selector;
-
-		/**
-		 * Create the <code>SelectorInverse</code>.
-		 *
-		 * @param  value    The <code>Element</code> interface class, not null
-		 * @param  property The <code>Property</code>, not null
-		 * @param  selector The <code>Selector</code>, not null
-		 */
-
-		protected SelectorInverse (final Class<V> value, final Property<T> property, final Selector selector)
-		{
-			assert value != null : "value is NULL";
-			assert property != null : "property is NULL";
-			assert selector != null : "selector is NULL";
-
-			this.log = LoggerFactory.getLogger (this.getClass ());
-
-			this.value = value;
-			this.property = property;
-			this.selector = selector;
-		}
-
-		private Query<V> getQuery ()
-		{
-			return null; // model.getQuery (Container.getInstance ()
-//					.getMetaData (this.value),
-//					this.selector);
-		}
-
-		/**
-		 * Insert the specified value into the specified <code>Element</code> to
-		 * create the relationship.
-		 * <p>
-		 * This method is a same as <code>canInsert</code> as there is nothing
-		 * to insert in a uni-directional relationship.
-		 *
-		 * @param  element The <code>Element</code> to operate on, not null
-		 * @param  value   The <code>Element</code> to be inserted, not null
-		 *
-		 * @return         <code>true</code> if the value was successfully
-		 *                 inserted, <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean insert (final T element, final V value)
-		{
-			this.log.trace ("insert: element={}, value={}", element, value);
-			this.log.debug ("inserting Relationship: {} -> {}",
-					this.property.getName (),
-					this.value.getSimpleName ());
-
-			assert element != null : "element";
-			assert value != null : "value is NULL";
-			assert element.getDomainModel () != null : "missing DomainModel";
-			assert element.getDomainModel ().contains (element) : "element is not in the model";
-			assert element.getDomainModel ().contains (value) : "value is not in the model";
-
-			return element.getDomainModel ().contains (element) && ((! this.selector.isUnique ()) || this.getQuery ()
-				.setValue (this.property, element)
-				.queryAll ()
-				.size () <= 1);
-		}
-
-		/**
-		 * Remove the specified value from the specified <code>Element</code> to
-		 * break the relationship.
-		 * <p>
-		 * This method is a no-op (unconditionally returning <code>true</code>)
-		 * as there is nothing to remove from a uni-directional relationship.
-		 *
-		 * @param  element The <code>Element</code> to operate on, not null
-		 * @param  value   The <code>Element</code> to be removed, not null
-		 *
-		 * @return         <code>true</code> if the value was successfully
-		 *                 removed, <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean remove (final T element, final V value)
-		{
-			this.log.trace ("remove: element={}, value={}");
-			this.log.debug ("removing Relationship: {} -> {}",
-					this.property.getName (),
-					this.value.getSimpleName ());
-
-			assert element != null : "element is NULL";
-			assert value != null : "value is NULL";
-
-			return true;
-		}
-	}
-
 	/** The Logger */
 	private final Logger log;
 
 	/** The other side of the <code>Relationship</code> */
-	private final Relationship.Inverse<V, T> inverse;
+	private final InverseRelationship<V, T> inverse;
 
 	/** The <code>Element</code> interface class */
 	private final Class<V> value;
@@ -168,6 +55,29 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	private final Selector selector;
 
 	/**
+	 * Create the <code>SelectorRelationship</code> from the specified values.
+	 *
+	 * @param  inverse   The <code>Inverse</code> relationship, not null
+	 * @param  value    The <code>Element</code> interface class, not null
+	 * @param  property The <code>Property</code>, not null
+	 * @param  selector The <code>Selector</code>, not null
+	 */
+
+	public static <T extends Element, V extends Element> SelectorRelationship<T, V> of (
+			final InverseRelationship<V, T> inverse,
+			final Class<V> value,
+			final Property<T> property,
+			final Selector selector)
+	{
+		assert inverse != null : "inverse is NULL";
+		assert value != null : "value is NULL";
+		assert property != null : "property is NULL";
+		assert selector != null : "selector is NULL";
+
+		return new SelectorRelationship<T, V> (inverse, value, property, selector);
+	}
+
+	/**
 	 * Create the <code>SingleRelationship</code>.
 	 *
 	 * @param  inverse  The <code>Inverse</code> relationship, not null
@@ -176,14 +86,11 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
-	protected SelectorRelationship (final Relationship.Inverse<V, T> inverse,
-			final Class<V> value, final Property<T> property, final Selector selector)
+	private SelectorRelationship (final InverseRelationship<V, T> inverse,
+			final Class<V> value,
+			final Property<T> property,
+			final Selector selector)
 	{
-		assert inverse != null : "inverse is NULL";
-		assert value != null : "value is NULL";
-		assert property != null : "property is NULL";
-		assert selector != null : "selector is NULL";
-
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.inverse = inverse;

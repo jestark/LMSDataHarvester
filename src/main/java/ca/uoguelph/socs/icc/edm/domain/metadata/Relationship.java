@@ -81,49 +81,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 public interface Relationship<T extends Element, V extends Element>
 {
 	/**
-	 * Abstract representation of the inverse relationship.  All relationships
-	 * are modelled bi-directionally, with instances of the
-	 * <code>Relationship</code> interface modelling the owning side (the side
-	 * from which an operation is initiated).  Implementations of this interface
-	 * model the other side, which does the actual work of adding or breaking
-	 * the relationship.  This is an internal interface, who's instances should
-	 * only be called from instances of the <code>Relationship</code> interface.
-	 *
-	 * @version 1.0
-	 * @param   <T> The type of the owning <code>Element</code>
-	 * @param   <V> The type of the associated <code>Element</code>
-	 */
-
-	public static interface Inverse<T extends Element, V extends Element>
-	{
-		/**
-		 * Insert the specified value into the specified <code>Element</code> to
-		 * create the relationship.
-		 *
-		 * @param  element The <code>Element</code> to operate on, not null
-		 * @param  value   The <code>Element</code> to be inserted, not null
-		 *
-		 * @return         <code>true</code> if the value was successfully
-		 *                 inserted, <code>false</code> otherwise
-		 */
-
-		public abstract boolean insert (final T element, final V value);
-
-		/**
-		 * Remove the specified value from the specified <code>Element</code> to
-		 * break the relationship.
-		 *
-		 * @param  element The <code>Element</code> to operate on, not null
-		 * @param  value   The <code>Element</code> to be removed, not null
-		 *
-		 * @return         <code>true</code> if the value was successfully
-		 *                 removed, <code>false</code> otherwise
-		 */
-
-		public abstract boolean remove (final T element, final V value);
-	}
-
-	/**
 	 * Connect the relationship represented by this <code>Relationship</code>
 	 * instance for the specified <code>Element</code> instance.  This method
 	 * will write the inverse relationship into the <code>Element</code>

@@ -27,164 +27,52 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * cardinality of one.
  *
  * @author  James E. Stark
- * @version 2.0
+ * @version 1.0
  * @param   <T> The type of the owning <code>Element</code>
  * @param   <V> The type of the associated <code>Element</code>
  */
 
 final class SingleRelationship<T extends Element, V extends Element> implements Relationship<T, V>
 {
-	/**
-	 * Representation of a inverse relationship for an <code>Element</code> with
-	 * a cardinality of one.
-	 *
-	 * @version 1.0
-	 * @param   <T> The type of the owning <code>Element</code>
-	 * @param   <V> The type of the associated <code>Element</code>
-	 */
-
-	static final class SingleInverse<T extends Element, V extends Element> implements Relationship.Inverse<T, V>
-	{
-		/** The Logger */
-		private final Logger log;
-
-		/** The <code>Property</code> for the relationship that id being manipulated */
-		private final Property<V> property;
-
-		/** The assocated <code>PropertyReference</code> */
-		private final Accessor<T, V> reference;
-
-		/**
-		 * Create the <code>SingleInverse</code>.
-		 *
-		 * @param  property  The <code>Property</code>, not null
-		 * @param  reference The <code>Accessor</code>, not null
-		 */
-
-		protected SingleInverse (final Property<V> property, final Accessor<T, V> reference)
-		{
-			assert property != null : "property is NULL";
-			assert reference != null : "reference is NULL";
-
-			this.log = LoggerFactory.getLogger (this.getClass ());
-
-			this.property = property;
-			this.reference = reference;
-		}
-
-		/**
-		 * Insert the specified value into the specified <code>Element</code> to
-		 * create the relationship.
-		 * <p>
-		 * This method sets the value of the associated field to the specified
-		 * value, if the value of the associated field is <code>null</code>. If the
-		 * field is not-null then the operation will fail, returning
-		 * <code>false</code>.
-		 *
-		 * @param  element The <code>Element</code> to operate on, not null
-		 * @param  value   The <code>Element</code> to be inserted, not null
-		 *
-		 * @return         <code>true</code> if the value was successfully
-		 *                 inserted, <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean insert (final T element, final V value)
-		{
-			this.log.trace ("insert: element={}, value={}", element, value);
-			this.log.debug ("inserting Relationship: {} -> {}",
-					this.reference.getElementClass ().getSimpleName (),
-					this.reference.getProperty ().getName ());
-
-			assert element != null : "element";
-			assert value != null : "value is NULL";
-			assert element.getDomainModel () != null : "missing DomainModel";
-			assert element.getDomainModel ().contains (element) : "element is not in the model";
-			assert element.getDomainModel ().contains (value) : "value is not in the model";
-
-			boolean result = false;
-
-			if (element.getDomainModel ().contains (element) && this.reference.getValue (element) == null)
-			{
-				this.reference.setValue (element, value);
-				result = true;
-			}
-
-			return result;
-		}
-
-		/**
-		 * Remove the specified value from the specified <code>Element</code> to
-		 * break the relationship.
-		 * <p>
-		 * This method sets the value of the associated field to <code>null</code>,
-		 * if the value of the associated is equal to the specified value and the
-		 * field if not required to uniquely identify the <code>Element</code>
-		 * instance.
-		 *
-		 * @param  element The <code>Element</code> to operate on, not null
-		 * @param  value   The <code>Element</code> to be removed, not null
-		 *
-		 * @return         <code>true</code> if the value was successfully
-		 *                 removed, <code>false</code> otherwise
-		 */
-
-		@Override
-		public boolean remove (final T element, final V value)
-		{
-			this.log.trace ("remove: element={}, value={}", element, value);
-			this.log.debug ("removing Relationship: {} -> {}",
-					this.reference.getElementClass ().getSimpleName (),
-					this.reference.getProperty ().getName ());
-
-			assert element != null : "element is NULL";
-			assert value != null : "value is NULL";
-			assert value == this.reference.getValue (element) : "The value to be removed is not equal to the value in the element";
-
-			boolean result = false;
-
-			if ((! this.property.hasFlags (Property.Flags.REQUIRED))
-					&& (value == this.reference.getValue (element)))
-			{
-				this.reference.setValue (element, null);
-				result = true;
-			}
-
-			return result;
-		}
-	}
-
 	/** The Logger */
 	private final Logger log;
 
 	/** The other side of the <code>Relationship</code> */
-	private final Relationship.Inverse<V, T> inverse;
-
-	/** The <code>Property</code> for the relationship that id being manipulated */
-	private final Property<V> property;
+	private final InverseRelationship<V, T> inverse;
 
 	/** The assocated <code>PropertyReference</code> */
 	private final Accessor<T, V> reference;
 
 	/**
-	 * Create the <code>SingleRelationShip</code>.
+	 * Create the <code>SingleRelationship</code> from the specified values.
 	 *
 	 * @param  inverse   The <code>Inverse</code> relationship, not null
-	 * @param  property  The <code>Property</code>, not null
 	 * @param  reference The <code>Accessor</code>, not null
 	 */
 
-	protected SingleRelationship (final Relationship.Inverse<V, T> inverse,
-			final Property<V> property, final Accessor<T, V> reference)
+	public static <T extends Element, V extends Element> SingleRelationship<T, V> of (
+			final InverseRelationship<V, T> inverse,
+			final Accessor<T, V> reference)
 	{
 		assert inverse != null : "inverse is NULL";
-		assert property != null : "Property is NULL";
 		assert reference != null : "reference is NULL";
 
+		return new SingleRelationship<T, V> (inverse, reference);
+	}
+
+	/**
+	 * Create the <code>SingleRelationShip</code>.
+	 *
+	 * @param  inverse   The <code>Inverse</code> relationship, not null
+	 * @param  reference The <code>Accessor</code>, not null
+	 */
+
+	private SingleRelationship (final InverseRelationship<V, T> inverse,
+			final Accessor<T, V> reference)
+	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.inverse = inverse;
-		this.property = property;
 		this.reference = reference;
 	}
 
