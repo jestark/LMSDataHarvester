@@ -37,6 +37,24 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 public interface Reference<T extends Element, V>
 {
 	/**
+	 * Get the <code>Element</code> interface class upon which this
+	 * <code>Reference</code> operates.
+	 *
+	 * @return The <code>Element</code> interface class
+	 */
+
+	public abstract Class<T> getElementClass ();
+
+	/**
+	 * Get the <code>Property</code> representing the value which this
+	 * <code>Reference</code> accesses.
+	 *
+	 * @return the <code>Property</code>
+	 */
+
+	public abstract Property<V> getProperty ();
+
+	/**
 	 * Determine if the value contained in the <code>Element</code> has the
 	 * specified value.  If the <code>Reference</code> is a singe value, then
 	 * this method is equivalent to calling the <code>equals</code> method on

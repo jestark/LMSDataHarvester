@@ -37,31 +37,89 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  *
  * @author  James E. Stark
  * @version 1.0
- * @param  <T> The implementation type of the <code>Element</code>
+ * @param  <T> The type of the <code>Element</code>
  * @param  <V> The type of the value stored in the <code>Element</code>
  */
 
 final class SingleReference<T extends Element, V> implements Accessor<T, V>
 {
+	/** The <code>Element</code> interface class */
+	final Class<T> element;
+
+	/** The <code>Property</code> representing the value */
+	final Property<V> property;
+
 	/** Method reference to getting values */
 	final Function<T, V> get;
 
 	/** Method reference for setting values */
-	final BiConsumer<T, V> set;
+	final @Nullable BiConsumer<T, V> set;
 
 	/**
-	 * Create the <code>Reference</code>.
+	 * Create the <code>Single</code> reference for the specified values.
+	 *
+	 * @param  element  The <code>Element</code> interface class, not null
+	 * @param  property The <code>Property</code>, not null
+	 * @param  get      Method reference to get the value, not null
+	 * @param  set      Method reference to set the value, may be null
+	 */
+
+	public static <T extends Element, V> SingleReference<T, V> of (
+			final Class<T> element,
+			final Property<V> property,
+			final Function<T, V> get,
+			final @Nullable BiConsumer<T, V> set)
+	{
+		assert element != null : "element is NULL";
+		assert property != null : "property is NULL";
+		assert get != null : "get is NULL";
+
+		return new SingleReference<T, V> (element, property, get, set);
+	}
+
+	/**
+	 * Create the <code>SingleReference</code>.
 	 *
 	 * @param  get Method reference to get the value, not null
 	 * @param  set Method reference to set the value, may be null
 	 */
 
-	public SingleReference (final Function<T, V> get, final BiConsumer<T, V> set)
+	private SingleReference (
+			final Class<T> element,
+			final Property<V> property,
+			final Function<T, V> get,
+			final @Nullable BiConsumer<T, V> set)
 	{
-		assert get != null : "get method reference is NULL";
-
+		this.element = element;
+		this.property = property;
 		this.get = get;
 		this.set = set;
+	}
+
+	/**
+	 * Get the <code>Element</code> interface class upon which this
+	 * <code>Reference</code> operates.
+	 *
+	 * @return The <code>Element</code> interface class
+	 */
+
+	@Override
+	public Class<T> getElementClass ()
+	{
+		return this.element;
+	}
+
+	/**
+	 * Get the <code>Property</code> representing the value which this
+	 * <code>Reference</code> accesses.
+	 *
+	 * @return the <code>Property</code>
+	 */
+
+	@Override
+	public Property<V> getProperty ()
+	{
+		return this.property;
 	}
 
 	/**

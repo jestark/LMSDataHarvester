@@ -38,12 +38,18 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  *
  * @author  James E. Stark
  * @version 1.0
- * @param  <T> The implementation type of the <code>Element</code>
+ * @param  <T> The type of the <code>Element</code>
  * @param  <V> The type of the value stored in the <code>Element</code>
  */
 
-final class MultiReference<T extends Element, V> implements Reference
+final class MultiReference<T extends Element, V extends Element> implements MultiAccessor<T, V>
 {
+	/** The <code>Element</code> interface class */
+	final Class<T> element;
+
+	/** The <code>Property</code> representing the value */
+	final Property<V> property;
+
 	/** Method reference to getting values */
 	final Function<T, Collection<V>> get;
 
@@ -54,22 +60,79 @@ final class MultiReference<T extends Element, V> implements Reference
 	final BiPredicate<T, V> remove;
 
 	/**
-	 * Create the <code>RelationshipReference</code>.
+	 * Create the <code>MultiReference</code> for the specified values.
 	 *
-	 * @param  get    Method reference to get the values, not null
-	 * @param  add    Method reference to add a value, not null
-	 * @param  remove Method reference to remove a value, not null
+	 * @param  element  The <code>Element</code> interface class, not null
+	 * @param  property The <code>Property</code>, not null
+	 * @param  get      Method reference to get the value, not null
+	 * @param  add      Method reference to add a value, not null
+	 * @param  remove   Method reference to remove a value, not null
 	 */
 
-	public MultiReference (final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
+	public static <T extends Element, V extends Element> MultiReference<T, V> of (
+			final Class<T> element,
+			final Property<V> property,
+			final Function<T, Collection<V>> get,
+			final BiPredicate<T, V> add,
+			final BiPredicate<T, V> remove)
 	{
+		assert element != null : "element is NULL";
+		assert property != null : "property is NULL";
 		assert get != null : "get method reference is NULL";
 		assert add != null : "add method reference is NULL";
 		assert remove != null : "remove method reference is NULL";
 
+		return new MultiReference<T, V> (element, property, get, add, remove);
+	}
+
+	/**
+	 * Create the <code>MultiReference</code>.
+	 *
+	 * @param  element  The <code>Element</code> interface class, not null
+	 * @param  property The <code>Property</code>, not null
+	 * @param  get      Method reference to get the values, not null
+	 * @param  add      Method reference to add a value, not null
+	 * @param  remove   Method reference to remove a value, not null
+	 */
+
+	private MultiReference (
+			final Class<T> element,
+			final Property<V> property,
+			final Function<T, Collection<V>> get,
+			final BiPredicate<T, V> add,
+			final BiPredicate<T, V> remove)
+	{
+		this.element = element;
+		this.property = property;
 		this.get = get;
 		this.add = add;
 		this.remove = remove;
+	}
+
+	/**
+	 * Get the <code>Element</code> interface class upon which this
+	 * <code>Reference</code> operates.
+	 *
+	 * @return The <code>Element</code> interface class
+	 */
+
+	@Override
+	public Class<T> getElementClass ()
+	{
+		return this.element;
+	}
+
+	/**
+	 * Get the <code>Property</code> representing the value which this
+	 * <code>Reference</code> accesses.
+	 *
+	 * @return the <code>Property</code>
+	 */
+
+	@Override
+	public Property<V> getProperty ()
+	{
+		return this.property;
 	}
 
 	/**
@@ -121,6 +184,7 @@ final class MultiReference<T extends Element, V> implements Reference
 	 * @return          The value from the <code>Element</code>
 	 */
 
+	@Override
 	public Collection<V> getValue (final T element)
 	{
 		assert element != null : "element is NULL";
@@ -135,6 +199,7 @@ final class MultiReference<T extends Element, V> implements Reference
 	 * @param  value    The value to be added, not null
 	 */
 
+	@Override
 	public boolean addValue (final T element, final V value)
 	{
 		assert element != null : "element is NULL";
@@ -152,6 +217,7 @@ final class MultiReference<T extends Element, V> implements Reference
 	 * @param  value    The value to be removed, not null
 	 */
 
+	@Override
 	public boolean removeValue (final T element, final V value)
 	{
 		assert element != null : "element is NULL";

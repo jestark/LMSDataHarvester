@@ -16,15 +16,15 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
+import java.util.Collection;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * A representation of an Accessor/Mutator.  This interface defines an accessor
- * and mutator for the value in the <code>Element</code> which is represented
- * by an associated <code>Property</code>.
+ * and mutator for a <code>Collection</code> of values in the
+ * <code>Element</code> which is represented by the associated
+ * <code>Property</code>.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -34,7 +34,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @see     Property
  */
 
-public interface Accessor<T extends Element, V> extends Reference<T, V>
+public interface MultiAccessor<T extends Element, V extends Element> extends Reference<T, V>
 {
 	/**
 	 * Get the value from the specified <code>Element</code> instance.
@@ -44,16 +44,24 @@ public interface Accessor<T extends Element, V> extends Reference<T, V>
 	 * @return          The value from the <code>Element</code>
 	 */
 
-	@CheckReturnValue
-	public abstract V getValue (T element);
+	public abstract Collection<V> getValue (T element);
 
 	/**
-	 * Enter the specified value into the specified <code>Element</code>
+	 * Add the specified value to the specified <code>Element</code> instance.
+	 *
+	 * @param  element  The <code>Element</code>, not null
+	 * @param  value    The value to be added, not null
+	 */
+
+	public abstract boolean addValue (T element, V value);
+
+	/**
+	 * Remove the specified value from the specified <code>Element</code>
 	 * instance.
 	 *
 	 * @param  element  The <code>Element</code>, not null
-	 * @param  value    The value to be set, may be null
+	 * @param  value    The value to be removed, not null
 	 */
 
-	public abstract void setValue (T element, @Nullable V value);
+	public abstract boolean removeValue (T element, V value);
 }
