@@ -19,8 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Set;
 import java.util.Objects;
 
-import java.util.function.Supplier;
-
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -60,6 +58,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class User extends Element
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	/** The <code>MetaData</code> for the <code>User</code> */
 	protected static final MetaData<User> METADATA;
 
@@ -97,7 +98,7 @@ public abstract class User extends Element
 		SELECTOR_ENROLMENTS = Selector.getInstance (ENROLMENTS, true);
 		SELECTOR_USERNAME = Selector.getInstance (USERNAME, true);
 
-		METADATA = MetaData.builder (Element.METADATA)
+		METADATA = MetaData.builder (User.class, Element.METADATA)
 			.addProperty (FIRSTNAME, User::getFirstname, User::setFirstname)
 			.addProperty (LASTNAME, User::getLastname, User::setLastname)
 			.addProperty (USERNAME, User::getUsername, User::setUsername)
@@ -105,21 +106,6 @@ public abstract class User extends Element
 			.addSelector (SELECTOR_USERNAME)
 			.addSelector (SELECTOR_ENROLMENTS)
 			.build ();
-	}
-
-	/**
-	 * Register an implementation.  This method handles the registration of an
-	 * implementation class such that instances of it can be returned a
-	 * <code>Builder</code> or a <code>Query</code>.
-	 *
-	 * @param  <T>      The implementation type
-	 * @param  impl     The Implementation <code>Class</code>, not null
-	 * @param  supplier Method reference to create a new instance, not null
-	 */
-
-	protected static <T extends User> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
-	{
-
 	}
 
 	/**
@@ -250,9 +236,9 @@ public abstract class User extends Element
 	 */
 
 	@Override
-	public Set<Property<?>> properties ()
+	public Stream<Property<?>> properties ()
 	{
-		return User.METADATA.getProperties ();
+		return User.METADATA.properties ();
 	}
 
 	/**
@@ -264,9 +250,9 @@ public abstract class User extends Element
 	 */
 
 	@Override
-	public Set<Selector> selectors ()
+	public Stream<Selector> selectors ()
 	{
-		return User.METADATA.getSelectors ();
+		return User.METADATA.selectors ();
 	}
 
 	/**
@@ -286,7 +272,8 @@ public abstract class User extends Element
 	@Override
 	public <V> boolean hasValue (final Property<V> property, final V value)
 	{
-		return User.METADATA.hasValue (property, this, value);
+		return User.METADATA.getReference (property)
+			.hasValue (this, value);
 	}
 
 	/**
@@ -309,7 +296,8 @@ public abstract class User extends Element
 	@Override
 	public <V> Stream<V> stream (final Property<V> property)
 	{
-		return User.METADATA.getStream (property, this);
+		return User.METADATA.getReference (property)
+			.stream (this);
 	}
 
 	/**

@@ -16,10 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.Set;
 import java.util.Objects;
-
-import java.util.function.Supplier;
 
 import java.util.stream.Stream;
 
@@ -57,6 +54,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Role extends Element
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	/** The <code>MetaData</code> for the <code>Role</code> */
 	protected static final MetaData<Role> METADATA;
 
@@ -77,26 +77,11 @@ public abstract class Role extends Element
 
 		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
-		METADATA = MetaData.builder (Element.METADATA)
+		METADATA = MetaData.builder (Role.class, Element.METADATA)
 			.addProperty (NAME, Role::getName, Role::setName)
 			.addRelationship (Enrolment.class, Enrolment.ROLE, Enrolment.SELECTOR_ROLE)
 			.addSelector (SELECTOR_NAME)
 			.build ();
-	}
-
-	/**
-	 * Register an implementation.  This method handles the registration of an
-	 * implementation class such that instances of it can be returned a
-	 * <code>Builder</code> or a <code>Query</code>.
-	 *
-	 * @param  <T>      The implementation type
-	 * @param  impl     The Implementation <code>Class</code>, not null
-	 * @param  supplier Method reference to create a new instance, not null
-	 */
-
-	protected static <T extends Role> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
-	{
-
 	}
 
 	/**
@@ -201,9 +186,9 @@ public abstract class Role extends Element
 	 */
 
 	@Override
-	public Set<Property<?>> properties ()
+	public Stream<Property<?>> properties ()
 	{
-		return Role.METADATA.getProperties ();
+		return Role.METADATA.properties ();
 	}
 
 	/**
@@ -215,9 +200,9 @@ public abstract class Role extends Element
 	 */
 
 	@Override
-	public Set<Selector> selectors ()
+	public Stream<Selector> selectors ()
 	{
-		return Role.METADATA.getSelectors ();
+		return Role.METADATA.selectors ();
 	}
 
 	/**
@@ -237,7 +222,8 @@ public abstract class Role extends Element
 	@Override
 	public <V> boolean hasValue (final Property<V> property, final V value)
 	{
-		return Role.METADATA.hasValue (property, this, value);
+		return Role.METADATA.getReference (property)
+			.hasValue (this, value);
 	}
 
 	/**
@@ -260,7 +246,8 @@ public abstract class Role extends Element
 	@Override
 	public <V> Stream<V> stream (final Property<V> property)
 	{
-		return Role.METADATA.getStream (property, this);
+		return Role.METADATA.getReference (property)
+			.stream (this);
 	}
 
 	/**

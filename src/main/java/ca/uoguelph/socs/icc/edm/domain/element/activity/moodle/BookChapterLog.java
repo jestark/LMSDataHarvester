@@ -39,13 +39,13 @@ import ca.uoguelph.socs.icc.edm.domain.LogReference;
  * </ul>
  *
  * @author  James E. Stark
- * @version 1.1
+ * @version 1.0
  */
 
 class BookChapterLog extends LogReference
 {
 	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID;
 
 	/** The associated <code>SubActivity</code> */
 	private SubActivity subActivity;
@@ -57,11 +57,13 @@ class BookChapterLog extends LogReference
 
 	static
 	{
-		LogReference.registerImplementation (BookChapter.class, BookChapterLog.class, BookChapterLog::new);
+		serialVersionUID = 1L;
+
+		LogReference.registerImplementation (BookChapter.class, BookChapterLog.class);
 	}
 
 	/**
-	 * Create the <code>LogEntry</code> instance with Null values.
+	 * Create the <code>LogReference</code> instance with Null values.
 	 */
 
 	protected BookChapterLog ()
@@ -86,8 +88,7 @@ class BookChapterLog extends LogReference
 	/**
 	 * Set the <code>SubActivity</code> upon which the logged
 	 * <code>Action</code> was performed.  This method is intended to be used
-	 * by a <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded.
+	 * to initialize a new <code>LogReference</code> instance.
 	 *
 	 * @param  subActivity The <code>SubActivity</code>, not null
 	 */

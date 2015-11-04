@@ -19,11 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.io.Serializable;
 
 import java.util.List;
-import java.util.Set;
-
 import java.util.Objects;
-
-import java.util.function.Supplier;
 
 import java.util.stream.Stream;
 
@@ -47,7 +43,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.0
  */
 
-public abstract class ActivityReference extends Element implements Serializable
+public abstract class ActivityReference extends Element
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -85,28 +81,13 @@ public abstract class ActivityReference extends Element implements Serializable
 
 		SELECTOR_TYPE = Selector.getInstance (TYPE, false);
 
-		METADATA = MetaData.builder (Element.METADATA)
+		METADATA = MetaData.builder (ActivityReference.class, Element.METADATA)
 			.addRelationship (ACTIVITY, ActivityReference::getActivity, ActivityReference::setActivity)
 			.addRelationship (COURSE, ActivityReference::getCourse, ActivityReference::setCourse)
 			.addRelationship (TYPE, ActivityReference::getType, ActivityReference::setType)
 			.addRelationship (LOGENTRIES, ActivityReference::getLog, ActivityReference::addLog, ActivityReference::removeLog)
 			.addSelector (SELECTOR_TYPE)
 			.build ();
-	}
-
-	/**
-	 * Register an implementation.  This method handles the registration of an
-	 * implementation class such that instances of it can be returned a
-	 * <code>Builder</code> or a <code>Query</code>.
-	 *
-	 * @param  <T>      The implementation type
-	 * @param  impl     The Implementation <code>Class</code>, not null
-	 * @param  supplier Method reference to create a new instance, not null
-	 */
-
-	protected static <T extends ActivityReference> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
-	{
-
 	}
 
 	/**
@@ -213,9 +194,9 @@ public abstract class ActivityReference extends Element implements Serializable
 	 */
 
 	@Override
-	public Set<Property<?>> properties ()
+	public Stream<Property<?>> properties ()
 	{
-		return ActivityReference.METADATA.getProperties ();
+		return ActivityReference.METADATA.properties ();
 	}
 
 	/**
@@ -227,9 +208,9 @@ public abstract class ActivityReference extends Element implements Serializable
 	 */
 
 	@Override
-	public Set<Selector> selectors ()
+	public Stream<Selector> selectors ()
 	{
-		return ActivityReference.METADATA.getSelectors ();
+		return ActivityReference.METADATA.selectors ();
 	}
 
 	/**
@@ -249,7 +230,8 @@ public abstract class ActivityReference extends Element implements Serializable
 	@Override
 	public <V> boolean hasValue (final Property<V> property, final V value)
 	{
-		return ActivityReference.METADATA.hasValue (property, this, value);
+		return ActivityReference.METADATA.getReference (property)
+			.hasValue (this, value);
 	}
 
 	/**
@@ -272,7 +254,8 @@ public abstract class ActivityReference extends Element implements Serializable
 	@Override
 	public <V> Stream<V> stream (final Property<V> property)
 	{
-		return ActivityReference.METADATA.getStream (property, this);
+		return ActivityReference.METADATA.getReference (property)
+			.stream (this);
 	}
 
 	/**

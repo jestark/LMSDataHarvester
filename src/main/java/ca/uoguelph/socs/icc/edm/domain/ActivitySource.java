@@ -19,8 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Set;
 import java.util.Objects;
 
-import java.util.function.Supplier;
-
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -61,6 +59,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class ActivitySource extends Element
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	/** The <code>MetaData</code> for the <code>ActivitySource</code> */
 	protected static final MetaData<ActivitySource> METADATA;
 
@@ -85,26 +86,11 @@ public abstract class ActivitySource extends Element
 
 		SELECTOR_NAME = Selector.getInstance (NAME, true);
 
-		METADATA = MetaData.builder (Element.METADATA)
+		METADATA = MetaData.builder (ActivitySource.class, Element.METADATA)
 			.addProperty (NAME, ActivitySource::getName, ActivitySource::setName)
 			.addRelationship (TYPES, ActivitySource::getTypes, ActivitySource::addType, ActivitySource::removeType)
 			.addSelector (SELECTOR_NAME)
 			.build ();
-	}
-
-	/**
-	 * Register an implementation.  This method handles the registration of an
-	 * implementation class such that instances of it can be returned a
-	 * <code>Builder</code> or a <code>Query</code>.
-	 *
-	 * @param  <T>      The implementation type
-	 * @param  impl     The Implementation <code>Class</code>, not null
-	 * @param  supplier Method reference to create a new instance, not null
-	 */
-
-	protected static <T extends ActivitySource> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
-	{
-
 	}
 
 	/**
@@ -211,9 +197,9 @@ public abstract class ActivitySource extends Element
 	 */
 
 	@Override
-	public Set<Property<?>> properties ()
+	public Stream<Property<?>> properties ()
 	{
-		return ActivitySource.METADATA.getProperties ();
+		return ActivitySource.METADATA.properties ();
 	}
 
 	/**
@@ -225,9 +211,9 @@ public abstract class ActivitySource extends Element
 	 */
 
 	@Override
-	public Set<Selector> selectors ()
+	public Stream<Selector> selectors ()
 	{
-		return ActivitySource.METADATA.getSelectors ();
+		return ActivitySource.METADATA.selectors ();
 	}
 
 	/**
@@ -247,7 +233,8 @@ public abstract class ActivitySource extends Element
 	@Override
 	public <V> boolean hasValue (final Property<V> property, final V value)
 	{
-		return ActivitySource.METADATA.hasValue (property, this, value);
+		return ActivitySource.METADATA.getReference (property)
+			.hasValue (this, value);
 	}
 
 	/**
@@ -270,7 +257,8 @@ public abstract class ActivitySource extends Element
 	@Override
 	public <V> Stream<V> stream (final Property<V> property)
 	{
-		return ActivitySource.METADATA.getStream (property, this);
+		return ActivitySource.METADATA.getReference (property)
+			.stream (this);
 	}
 
 	/**

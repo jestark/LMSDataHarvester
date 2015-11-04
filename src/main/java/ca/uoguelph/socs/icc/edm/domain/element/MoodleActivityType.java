@@ -43,7 +43,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 public class MoodleActivityType extends ActivityType implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID;
 
 	/** The source of the activity type */
 	private static final ActivitySource source;
@@ -55,13 +55,13 @@ public class MoodleActivityType extends ActivityType implements Serializable
 	private String name;
 
 	/**
-	 * Static initializer to register the <code>MoodleActivityType</code> class
-	 * with the factories.
+	 * Static initializer to create the static <code>ActivitySource</code>
+	 * instance.
 	 */
 
 	static
 	{
-		ActivityType.registerImplementation (MoodleActivityType.class, MoodleActivityType::new);
+		serialVersionUID = 1L;
 
 		source = new ActivitySourceData ();
 		((ActivitySourceData) source).setName ("moodle");
@@ -81,7 +81,7 @@ public class MoodleActivityType extends ActivityType implements Serializable
 	 * Get the <code>DataStore</code> identifier for the
 	 * <code>ActivityType</code> instance.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -93,10 +93,8 @@ public class MoodleActivityType extends ActivityType implements Serializable
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>ActivityType</code>
-	 * instance is loaded, or by the <code>ActivityTypeBuilder</code>
-	 * implementation to set the <code>DataStore</code> identifier, prior to
-	 * storing a new <code>ActivityType</code> instance.
+	 * be used to initialize the <code>DataStore</code> identifier on a new
+	 * <code>ActivityType</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -122,8 +120,7 @@ public class MoodleActivityType extends ActivityType implements Serializable
 
 	/**
 	 * Set the name of the <code>ActivityType</code>.  This method is intended
-	 * to be used by a <code>DataStore</code> when the
-	 * <code>ActivityType</code> instance is loaded.
+	 * to be used to initialize a new  <code>ActivityType</code> instance.
 	 *
 	 * @param  name The name of the <code>ActivityType</code>
 	 */

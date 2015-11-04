@@ -58,16 +58,6 @@ public class ActivityReferenceData extends ActivityReference
 	private List<LogEntry> log;
 
 	/**
-	 * Static initializer to register the <code>ActivityReferenceData</code>
-	 * class with the factories.
-	 */
-
-	static
-	{
-		ActivityReference.registerImplementation (ActivityReferenceData.class, ActivityReferenceData::new);
-	}
-
-	/**
 	 * Create the <code>ActivityReferenceData</code> with null values.
 	 */
 
@@ -81,13 +71,10 @@ public class ActivityReferenceData extends ActivityReference
 	}
 
 	/**
-	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
-	 * instance.  Some <code>Element</code> interfaces are dependent on other
-	 * <code>Element</code> interfaces for their identification.  The dependent
-	 * interface implementations should return the <code>DataStore</code>
-	 * identifier from the interface on which they depend.
+	 * Get the <code>DataStore</code> identifier for the
+	 * <code>ActivityReference</code> instance.
 	 *
-	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -99,15 +86,8 @@ public class ActivityReferenceData extends ActivityReference
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Element</code>
-	 * instance is loaded, or by the <code>ElementBuilder</code> implementation
-	 * to set the <code>DataStore</code> identifier, prior to storing a new
-	 * <code>Element</code> instance.
-	 * <p>
-	 * <code>Element</code> implementations which are dependent on other
-	 * <code>Element</code> interfaces for their <code>DataStore</code>
-	 * identifier should throw an <code>UnsupportedOperationException</code>
-	 * when this method is called.
+	 * be used to initialize the <code>DataStore</code> identifier on a new
+	 * <code>ActivityReference</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -133,9 +113,8 @@ public class ActivityReferenceData extends ActivityReference
 
 	/**
 	 * Set the <code>Course</code> with which the <code>Activity</code> is
-	 * associated.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
+	 * associated.  This method is intended to be used to initialize a new
+	 * <code>ActivityReference</code> instance.
 	 *
 	 * @param  course The <code>Course</code>, not null
 	 */
@@ -162,9 +141,8 @@ public class ActivityReferenceData extends ActivityReference
 
 	/**
 	 * Set the <code>ActvityType</code> with which the <code>Activity</code> is
-	 * associated.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
+	 * associated.  This method is intended to be used to initialize a new
+	 * <code>ActivityReference</code> instance.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null
 	 */
@@ -223,8 +201,8 @@ public class ActivityReferenceData extends ActivityReference
 	/**
 	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
 	 * associated with the <code>ActivityReference</code> instance.  This
-	 * method is intended to be used by a <code>DataStore</code> when the
-	 * <code>ActivityReference</code> instance is loaded.
+	 * method is intended to be used to initialize a new
+	 * <code>ActivityReference</code> instance.
 	 *
 	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
 	 *             not null

@@ -45,16 +45,6 @@ public class NetworkData extends Network implements Serializable
 	private String name;
 
 	/**
-	 * Static initializer to register the <code>NetworkData</code> class with
-	 * the factories.
-	 */
-
-	static
-	{
-		Network.registerImplementation (NetworkData.class, NetworkData::new);
-	}
-
-	/**
 	 * Create the <code>Network</code> with null values.
 	 */
 
@@ -68,7 +58,7 @@ public class NetworkData extends Network implements Serializable
 	 * Get the <code>DataStore</code> identifier for the <code>Network</code>
 	 * instance.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -80,9 +70,7 @@ public class NetworkData extends Network implements Serializable
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Network</code>
-	 * instance is loaded, or by the <code>NetworkBuilder</code> implementation
-	 * to set the <code>DataStore</code> identifier, prior to storing a new
+	 * be used to initialize the <code>DataStore</code> identifier on a new
 	 * <code>Network</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
@@ -109,8 +97,7 @@ public class NetworkData extends Network implements Serializable
 
 	/**
 	 * Set the name of the <code>Network</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Network</code> instance
-	 * is loaded.
+	 * used to initialize a new <code>Network</code> instance.
 	 *
 	 * @param name The name of the <code>Network</code>
 	 */

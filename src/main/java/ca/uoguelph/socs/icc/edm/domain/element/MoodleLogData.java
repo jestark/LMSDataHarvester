@@ -34,6 +34,15 @@ import ca.uoguelph.socs.icc.edm.domain.Network;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.User;
 
+/**
+ * Moodle specific implementation of the <code>LogEntry</code> interface.  This
+ * class attempts to shoe-horn the moodle log data into something that resembles
+ * a <code>LogEntry</code>.  Unfortunately, due to the way that Moodle stores
+ * it's data the result is that all of the <code>LogEntry</code> properties
+ * except time are unimplementated, with additional translation being required
+ * to convert the Moodle log data to an actual <code>LogEntry</code>.
+ */
+
 public class MoodleLogData extends LogEntry
 {
 	/** Serial version id, required by the Serializable interface */
@@ -70,16 +79,6 @@ public class MoodleLogData extends LogEntry
 	private String url;
 
 	/**
-	 * Static initializer to register the <code>LogData</code> class with the
-	 * factories.
-	 */
-
-	static
-	{
-		LogEntry.registerImplementation (MoodleLogData.class, MoodleLogData::new);
-	}
-
-	/**
 	 * Create the <code>MoodleLogData</code>
 	 */
 
@@ -101,7 +100,7 @@ public class MoodleLogData extends LogEntry
 	 * Get the <code>DataStore</code> identifier for the <code>LogEntry</code>
 	 * instance.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -113,10 +112,8 @@ public class MoodleLogData extends LogEntry
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>LogEntry</code>
-	 * instance is loaded, or by the <code>LogEntryBuilder</code>
-	 * implementation to set the <code>DataStore</code> identifier, prior to
-	 * storing a new <code>LogEntry</code> instance.
+	 * be used to initialize the <code>DataStore</code> identifier on a new
+	 * <code>LogEntry</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -142,9 +139,8 @@ public class MoodleLogData extends LogEntry
 
 	/**
 	 * Set the <code>Action</code> which was performed upon the logged
-	 * <code>Activity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded.
+	 * <code>Activity</code>.  This operation is unsupported since the Moodle
+	 * database does not have <code>Action</code> instances
 	 *
 	 * @param  action The <code>Action</code>, not null
 	 */
@@ -185,9 +181,9 @@ public class MoodleLogData extends LogEntry
 
 	/**
 	 * Set the <code>ActivityReference</code> upon which the logged action was
-	 * performed.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded.
+	 * performed.  Since the Moodle database tracks <code>Activity</code>
+	 * references in ways that violate referential integrity, and are generally
+	 * un-mappable, this operation is unsupported.
 	 *
 	 * @param  activity The <code>ActivityReference</code>, not null
 	 */
@@ -214,7 +210,8 @@ public class MoodleLogData extends LogEntry
 
 	/**
 	 * Set the <code>Course</code> for which the <code>Action</code> was
-	 * logged.
+	 * logged.  This method is intended to be used to initialize a new
+	 * <code>MoodleLogData</code> instance.
 	 *
 	 * @param  course The <code>Course</code>, not null
 	 */
@@ -241,9 +238,9 @@ public class MoodleLogData extends LogEntry
 
 	/**
 	 * Set the <code>Enrolment</code> instance for the <code>User</code> which
-	 * performed the logged action.   This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded.
+	 * performed the logged action.  Since the moodle database has a different
+	 * concept of an <code>Enrolment</code> than the <code>LogEnty</code>
+	 * interface, this operation is unsupported.
 	 *
 	 * @param  enrolment The <code>Enrolment</code>, not null
 	 */
@@ -271,9 +268,8 @@ public class MoodleLogData extends LogEntry
 
 	/**
 	 * Set the <code>Network</code> from which the logged <code>Action</code>
-	 * originated.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded.
+	 * originated.  This operation is unsupported since the Moodle database has
+	 * no concept of a <code>Network</code>.
 	 *
 	 * @param  network The <code>Network</code>, not null
 	 */
@@ -306,10 +302,9 @@ public class MoodleLogData extends LogEntry
 
 	/**
 	 * Set the reference to the <code>SubActivity</code> to the
-	 * <code>LogEntry</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded, or by the <code>LogEntryBuilder</code> when the
-	 * <code>LogEntry</code> is created.
+	 * <code>LogEntry</code>.  Moodle stores references to the
+	 * <code>SubActivity</code> in a text field, which requires a fair amount of
+	 * translation processing.  Hense, this operation is unsupported
 	 *
 	 * @param  reference The <code>LogReference</code> instance, not null
 	 */
@@ -350,8 +345,7 @@ public class MoodleLogData extends LogEntry
 
 	/**
 	 * Set the time of the logged <code>Action</code>.  This method is intended
-	 * to be used by a <code>DataStore</code> when the <code>LogEntry</code>
-	 * instance is loaded.
+	 * to be used to initialize a new <code>LogEntry</code> instance.
 	 *
 	 * @param  time The time, not null
 	 */
@@ -376,7 +370,8 @@ public class MoodleLogData extends LogEntry
 	}
 
 	/**
-	 * Set the name of the logged <code>Action</code>.
+	 * Set the name of the logged <code>Action</code>. This method is intended
+	 * to be used to initialize a new <code>LogEntry</code> instance.
 	 *
 	 * @param  action The name of the logged <code>Action</code>, not null
 	 */
@@ -400,7 +395,8 @@ public class MoodleLogData extends LogEntry
 	}
 
 	/**
-	 * Set the ID number of the <code>Activity</code>.
+	 * Set the ID number of the <code>Activity</code>.  This method is intended
+	 * to be used to initialize a new <code>LogEntry</code> instance.
 	 *
 	 * @param  activityId The ID number of the <code>Activity</code>, not null
 	 */
@@ -424,7 +420,8 @@ public class MoodleLogData extends LogEntry
 	}
 
 	/**
-	 * Set the "info" string for the <code>LogEntry</code>.
+	 * Set the "info" string for the <code>LogEntry</code>.  This method is
+	 * intended to be used to initialize a new <code>LogEntry</code> instance.
 	 *
 	 * @param  info The info string, not null
 	 */
@@ -464,7 +461,8 @@ public class MoodleLogData extends LogEntry
 
 	/**
 	 * Set the name of the module (<code>ActivityType</code>) upon which the
-	 * logged <code>Action</code> was performed.
+	 * logged <code>Action</code> was performed.  This method is intended to be
+	 * used to initialize a new <code>LogEntry</code> instance.
 	 *
 	 * @return The name of the module
 	 */
@@ -476,7 +474,8 @@ public class MoodleLogData extends LogEntry
 
 	/**
 	 * Set the name of the module (<code>ActivityType</code>) upon which the
-	 * logged <code>Action</code> was performed.
+	 * logged <code>Action</code> was performed.  This method is intended to be
+	 * used to initialize a new <code>LogEntry</code> instance.
 	 *
 	 * @param  module The name of the module, not null
 	 */
@@ -502,7 +501,8 @@ public class MoodleLogData extends LogEntry
 
 	/**
 	 * Set the ID number of the <code>User</code> which performed the logged
-	 * <code>Action</code>.
+	 * <code>Action</code>.  This method is intended to be used to initialize a
+	 * new <code>LogEntry</code> instance.
 	 *
 	 * @param  userId The ID number of the <code>User</code>, not null
 	 */
@@ -526,7 +526,8 @@ public class MoodleLogData extends LogEntry
 	}
 
 	/**
-	 * Set the URL associated with the <code>LogEntry</code>
+	 * Set the URL associated with the <code>LogEntry</code>.  This method is
+	 * intended to be used to initialize a new <code>LogEntry</code> instance.
 	 *
 	 * @param url The URL, not null
 	 */

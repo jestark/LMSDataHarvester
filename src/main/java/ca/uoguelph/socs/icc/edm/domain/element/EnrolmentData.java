@@ -75,16 +75,6 @@ public class EnrolmentData extends Enrolment implements Serializable
 	protected List<LogEntry> log;
 
 	/**
-	 * Static initializer to register the <code>EnrolmentData</code> class with
-	 * the factories.
-	 */
-
-	static
-	{
-		Enrolment.registerImplementation (EnrolmentData.class, EnrolmentData::new);
-	}
-
-	/**
 	 * Create the <code>Enrolment</code> with null values.
 	 */
 
@@ -105,7 +95,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 	 * Get the <code>DataStore</code> identifier for the <code>Enrolment</code>
 	 * instance.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -117,10 +107,8 @@ public class EnrolmentData extends Enrolment implements Serializable
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Enrolment</code>
-	 * instance is loaded, or by the <code>EnrolmentBuilder</code>
-	 * implementation to set the <code>DataStore</code> identifier, prior to
-	 * storing a new <code>Enrolment</code> instance.
+	 * be used initialize the <code>DataStore</code> identifier on a new
+	 * <code>Enrolment</code> instance is loaded.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -146,8 +134,8 @@ public class EnrolmentData extends Enrolment implements Serializable
 
 	/**
 	 * Set the <code>Course</code> in which the <code>User</code> is enrolled.
-	 * This method is intended to be used by a <code>DataStore</code> when the
-	 * <code>Enrolment</code> instance is loaded.
+	 * This method is intended to be used to initialize a new
+	 * <code>Enrolment</code> instance.
 	 *
 	 * @param  course The <code>Course</code>, not null
 	 */
@@ -175,9 +163,8 @@ public class EnrolmentData extends Enrolment implements Serializable
 
 	/**
 	 * Set the <code>Role</code> of the <code>User</code> in the
-	 * <code>Course</code>. This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
-	 * loaded.
+	 * <code>Course</code>. This method is intended to be used to intiailize a
+	 * new <code>Enrolment</code> instance.
 	 *
 	 * @param  role The <code>Role</code>, not null
 	 */
@@ -227,8 +214,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 	/**
 	 * Initialize the <code>Set</code> of <code>Grade</code> instances
 	 * associated with the <code>Enrolment</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Enrolment</code> instance is loaded.
+	 * intended to be used to initialize a new <code>Enrolment</code> instance.
 	 *
 	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
 	 *                null
@@ -295,9 +281,8 @@ public class EnrolmentData extends Enrolment implements Serializable
 
 	/**
 	 * Set the final grade for the <code>User</code> in the
-	 * <code>Course</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
-	 * loaded.
+	 * <code>Course</code>.  This method is intended to be used to initialize a
+	 * new <code>Enrolment</code> instance.
 	 *
 	 * @param  finalGrade The final grade for the <code>User</code> in the
 	 *                    course, on the interval [0, 100]
@@ -328,9 +313,8 @@ public class EnrolmentData extends Enrolment implements Serializable
 
 	/**
 	 * Set the usable flag for the data related to the <code>User</code> in the
-	 * <code>Course</code>. This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Enrolment</code> instance is
-	 * loaded.
+	 * <code>Course</code>. This method is intended to be used to initialize a
+	 * new <code>Enrolment</code> instance.
 	 *
 	 * @param  usable Indication if the data may be used for research, not null
 	 */
@@ -362,8 +346,7 @@ public class EnrolmentData extends Enrolment implements Serializable
 	/**
 	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
 	 * associated with the <code>Enrolment</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Enrolment</code> instance is loaded.
+	 * intended to be used to initialize a new <code>Enrolment</code> instance.
 	 *
 	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
 	 *             not null

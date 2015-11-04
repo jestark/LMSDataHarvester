@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Objects;
 
-import java.util.function.Supplier;
-
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -62,6 +60,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Course extends Element
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	/** The <code>MetaData</code> for the <code>Course</code> */
 	protected static final MetaData<Course> METADATA;
 
@@ -99,7 +100,7 @@ public abstract class Course extends Element
 
 		SELECTOR_OFFERING = Selector.getInstance ("offering", true, NAME, SEMESTER, YEAR);
 
-		METADATA = MetaData.builder (Element.METADATA)
+		METADATA = MetaData.builder (Course.class, Element.METADATA)
 			.addProperty (NAME, Course::getName, Course::setName)
 			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
 			.addProperty (YEAR, Course::getYear, Course::setYear)
@@ -107,21 +108,6 @@ public abstract class Course extends Element
 			.addRelationship (ENROLMENTS, Course::getEnrolments, Course::addEnrolment, Course::removeEnrolment)
 			.addSelector (SELECTOR_OFFERING)
 			.build ();
-	}
-
-	/**
-	 * Register an implementation.  This method handles the registration of an
-	 * implementation class such that instances of it can be returned a
-	 * <code>Builder</code> or a <code>Query</code>.
-	 *
-	 * @param  <T>      The implementation type
-	 * @param  impl     The Implementation <code>Class</code>, not null
-	 * @param  supplier Method reference to create a new instance, not null
-	 */
-
-	protected static <T extends Course> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
-	{
-
 	}
 
 	/**
@@ -231,9 +217,9 @@ public abstract class Course extends Element
 	 */
 
 	@Override
-	public Set<Property<?>> properties ()
+	public Stream<Property<?>> properties ()
 	{
-		return Course.METADATA.getProperties ();
+		return Course.METADATA.properties ();
 	}
 
 	/**
@@ -245,9 +231,9 @@ public abstract class Course extends Element
 	 */
 
 	@Override
-	public Set<Selector> selectors ()
+	public Stream<Selector> selectors ()
 	{
-		return Course.METADATA.getSelectors ();
+		return Course.METADATA.selectors ();
 	}
 
 	/**
@@ -267,7 +253,8 @@ public abstract class Course extends Element
 	@Override
 	public <V> boolean hasValue (final Property<V> property, final V value)
 	{
-		return Course.METADATA.hasValue (property, this, value);
+		return Course.METADATA.getReference (property)
+			.hasValue (this, value);
 	}
 
 	/**
@@ -290,7 +277,8 @@ public abstract class Course extends Element
 	@Override
 	public <V> Stream<V> stream (final Property<V> property)
 	{
-		return Course.METADATA.getStream (property, this);
+		return Course.METADATA.getReference (property)
+			.stream (this);
 	}
 
 	/**

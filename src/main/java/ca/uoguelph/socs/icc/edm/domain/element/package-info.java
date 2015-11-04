@@ -15,7 +15,10 @@
  */
 
 /**
+ * Implementations for the <code>Element</code> interface classes.
  *
+ * @author  James E. Stark
+ * @version 1.0
  */
 
 @ParametersAreNonnullByDefault

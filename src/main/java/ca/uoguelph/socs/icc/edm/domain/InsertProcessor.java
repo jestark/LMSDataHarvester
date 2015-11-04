@@ -66,8 +66,7 @@ final class RelationshipProcessor
 
 		this.metadata = metadata;
 
-		this.properties = this.metadata.getProperties ()
-			.stream ()
+		this.properties = this.metadata.properties ()
 			.filter (p -> p.hasFlags (Property.Flags.RELATIONSHIP))
 			.collect (Collectors.groupingBy (p -> determinePriority (p),
 					() -> new EnumMap<Priority, List<Property<?>>> (Priority.class),
@@ -88,7 +87,7 @@ final class RelationshipProcessor
 		assert element != null : "element is NULL";
 
 		return (List<Element>) this.properties.get (priority).stream ()
-			.flatMap (p -> this.metadata.getStream (p, element))
+			.flatMap (p -> element.stream (p))
 			.collect (Collectors.toList ());
 	}
 }

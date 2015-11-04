@@ -45,16 +45,6 @@ public class ActionData extends Action implements Serializable
 	private String name;
 
 	/**
-	 * Static initializer to register the <code>ActionData</code> class with
-	 * the factories.
-	 */
-
-	static
-	{
-		Action.registerImplementation (ActionData.class, ActionData::new);
-	}
-
-	/**
 	 * Create the <code>Action</code> with null values.
 	 */
 
@@ -68,7 +58,7 @@ public class ActionData extends Action implements Serializable
 	 * Get the <code>DataStore</code> identifier for the <code>Action</code>
 	 * instance.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -80,9 +70,7 @@ public class ActionData extends Action implements Serializable
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Action</code>
-	 * instance is loaded, or by the <code>ActionBuilder</code> implementation
-	 * to set the <code>DataStore</code> identifier, prior to storing a new
+	 * be used to initialize the <code>DataStore</code> identifier on a new
 	 * <code>Action</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null

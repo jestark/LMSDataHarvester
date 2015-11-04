@@ -52,16 +52,6 @@ public class GradeData extends Grade implements Serializable
 	private ActivityReference activity;
 
 	/**
-	 * Static initializer to register the <code>GradedActivity</code> class
-	 * with the factories.
-	 */
-
-	static
-	{
-		Grade.registerImplementation (GradeData.class, GradeData::new);
-	}
-
-	/**
 	 * Create the <code>Grade</code> with null values.
 	 */
 
@@ -91,7 +81,7 @@ public class GradeData extends Grade implements Serializable
 
 	/**
 	 * Set the <code>DataStore</code> identifier.    This method is a no-op as
-	 * the associated <code>LogEntry</code> provides the ID.
+	 * the associated <code>Enrolment</code> provides the ID.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -128,8 +118,8 @@ public class GradeData extends Grade implements Serializable
 
 	/**
 	 * Set the <code>ActivityReference</code> which is associated with the
-	 * <code>Grade</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Grade</code> instance is loaded.
+	 * <code>Grade</code>.  This method is intended to be used to initialize a
+	 * new <code>Grade</code> instance.
 	 *
 	 * @param  activity The <code>ActivityReference</code>, not null
 	 */
@@ -157,8 +147,8 @@ public class GradeData extends Grade implements Serializable
 
 	/**
 	 * Set the <code>Enrolment</code> which is associated with the
-	 * <code>Grade</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Grade</code> instance is loaded.
+	 * <code>Grade</code>.  This method is intended to be used to initialize a
+	 * new <code>Grade</code> instance.
 	 *
 	 * @param  enrolment The <code>Enrolment</code>, not null
 	 */
@@ -187,8 +177,8 @@ public class GradeData extends Grade implements Serializable
 
 	/**
 	 * Set the numeric grade assigned to the <code>Enrolment</code> for the
-	 * <code>Activity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Grade</code> instance is loaded.
+	 * <code>Activity</code>.  This method is intended to be used to initialize
+	 * a new <code>Grade</code> instance.
 	 *
 	 * @param  grade The grade, on the interval [0, 100], not null
 	 */

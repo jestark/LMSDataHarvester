@@ -15,7 +15,17 @@
  */
 
 /**
+ * Implementations of the <code>Activity</code> and <code>SubActivity</code>
+ * interface classes, for the different moodle modules.  The classes in this
+ * package are auto-generates from a template, and supply the minimum
+ * information to implement <code>Activity</code>, <code>SubActivity</code>, or
+ * <code>LogReference</code>.
+ * <p>
+ * If necessary the <code>Activity</code> and <code>SubActivity</code>
+ * implementations can be modifies to contain additional information.
  *
+ * @author  James E. Stark
+ * @version 1.0
  */
 
 @ParametersAreNonnullByDefault

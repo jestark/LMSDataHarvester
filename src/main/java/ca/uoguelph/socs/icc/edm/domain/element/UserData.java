@@ -61,16 +61,6 @@ public class UserData extends User implements Serializable
 	private Set<Enrolment> enrolments;
 
 	/**
-	 * Static initializer to register the <code>UserData</code> class with the
-	 * factories.
-	 */
-
-	static
-	{
-		User.registerImplementation (UserData.class, UserData::new);
-	}
-
-	/**
 	 * Create the user with null values.
 	 */
 
@@ -88,7 +78,7 @@ public class UserData extends User implements Serializable
 	 * Get the <code>DataStore</code> identifier for the <code>User</code>
 	 * instance.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -100,9 +90,7 @@ public class UserData extends User implements Serializable
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>User</code> instance
-	 * is loaded, or by the <code>UserBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new
+	 * be used to initialize the <code>DataStore</code> on a new
 	 * <code>User</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
@@ -132,8 +120,7 @@ public class UserData extends User implements Serializable
 
 	/**
 	 * Set the username of the <code>User</code>.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>User</code> instance
-	 * is loaded.
+	 * be used to initialize a new <code>User</code> instance.
 	 *
 	 * @param  username The username, not null
 	 */
@@ -161,8 +148,7 @@ public class UserData extends User implements Serializable
 
 	/**
 	 * Set the first name of the <code>User</code>.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>User</code> instance
-	 * is loaded.
+	 * be used to initialize a new <code>User</code> instance.
 	 *
 	 * @param  firstname The first name, not null
 	 */
@@ -189,8 +175,7 @@ public class UserData extends User implements Serializable
 
 	/**
 	 * Set the last name of the <code>User</code>.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>User</code> instance
-	 * is loaded.
+	 * be used to initialize a new <code>User</code> instance.
 	 *
 	 * @param  lastname The last name, not null
 	 */
@@ -258,8 +243,7 @@ public class UserData extends User implements Serializable
 	/**
 	 * Initialize the <code>Set</code> of <code>Enrolment</code> instances
 	 * associated with the <code>User</code> instance.  This method is intended
-	 * to be used by a <code>DataStore</code> when the <code>User</code>
-	 * instance is loaded.
+	 * to be used to initialize a new <code>User</code> instance.
 	 *
 	 * @param  enrolments The <code>Set</code> of <code>Enrolment</code>
 	 *                    instances, not null

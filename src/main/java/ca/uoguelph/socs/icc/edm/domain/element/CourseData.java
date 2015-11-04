@@ -69,16 +69,6 @@ public class CourseData extends Course implements Serializable
 	private Set<Enrolment> enrolments;
 
 	/**
-	 * Static initializer to register the <code>CourseData</code> class with
-	 * the factories.
-	 */
-
-	static
-	{
-		Course.registerImplementation (CourseData.class, CourseData::new);
-	}
-
-	/**
 	 * Create the <code>Course</code> with null values.
 	 */
 
@@ -97,7 +87,7 @@ public class CourseData extends Course implements Serializable
 	 * Get the <code>DataStore</code> identifier for the <code>Course</code>
 	 * instance.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -109,9 +99,7 @@ public class CourseData extends Course implements Serializable
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Course</code>
-	 * instance is loaded, or by the <code>CourseBuilder</code> implementation
-	 * to set the <code>DataStore</code> identifier, prior to storing a new
+	 * be used to initialize the <code>DataStore</code> identifier on a new
 	 * <code>Course</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
@@ -138,8 +126,7 @@ public class CourseData extends Course implements Serializable
 
 	/**
 	 * Set the name of the <code>Course</code>.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Course</code> instance
-	 * is loaded.
+	 * used to initialize a new <code>Course</code> instance.
 	 *
 	 * @param  name The name of the <code>Course</code>
 	 */
@@ -167,8 +154,8 @@ public class CourseData extends Course implements Serializable
 
 	/**
 	 * Set the <code>Semester</code> in which the <code>Course</code> was
-	 * offered.  This method is intended to be used by a <code>DataStore</code>
-	 * when the <code>Course</code> instance is loaded.
+	 * offered.  This method is intended to be used to initialize a new
+	 * <code>Course</code> instance.
 	 *
 	 * @param  semester The <code>Semester</code> in which the
 	 *                  <code>Course</code> was offered
@@ -196,8 +183,7 @@ public class CourseData extends Course implements Serializable
 
 	/**
 	 * Set the year in which the <code>Course</code> was offered.  This method
-	 * is intended to be used by a <code>DataStore</code> when the
-	 * <code>Course</code> instance is loaded.
+	 * is intended to be used to initialize a new <code>Course</code> instance.
 	 *
 	 * @param  year The year in which the <code>Course</code> was offered
 	 */
@@ -245,8 +231,7 @@ public class CourseData extends Course implements Serializable
 	/**
 	 * Initialize the <code>List</code> of <code>ActivityReferences</code>
 	 * instances associated with the <code>Course</code> instance.  This method
-	 * is intended to be used by a <code>DataStore</code> when the
-	 * <code>Course</code> instance is loaded.
+	 * is intended to be used to initialize a new <code>Course</code> instance.
 	 *
 	 * @param  activities The <code>List</code> of <code>Activity</code>
 	 *                    instances, not null
@@ -315,8 +300,7 @@ public class CourseData extends Course implements Serializable
 	/**
 	 * Initialize the <code>List</code> of <code>Enrolment</code> instances
 	 * associated with the <code>Course</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Course</code> instance is loaded.
+	 * intended to be used to intialize a new <code>Course</code> instance.
 	 *
 	 * @param  enrolments The <code>List</code> of <code>Enrolment</code>
 	 *                    instances, not null

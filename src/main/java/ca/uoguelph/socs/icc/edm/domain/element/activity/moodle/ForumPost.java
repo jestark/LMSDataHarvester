@@ -51,13 +51,13 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
  * </ul>
  *
  * @author  James E. Stark
- * @version 1.3
+ * @version 1.0
  */
 
 public class ForumPost extends SubActivity
 {
 	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID;
 
 	/** The primary key for the <code>ForumPost</code> */
 	private Long id;
@@ -81,7 +81,9 @@ public class ForumPost extends SubActivity
 
 	static
 	{
-		SubActivity.registerImplementation (ForumDiscussion.class, ForumPost.class, ForumPost::new);
+		serialVersionUID = 1L;
+
+		SubActivity.registerImplementation (ForumDiscussion.class, ForumPost.class);
 	}
 
 	/**
@@ -101,12 +103,8 @@ public class ForumPost extends SubActivity
 	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
 	 * instance.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -118,14 +116,8 @@ public class ForumPost extends SubActivity
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Activity</code>
-	 * instance is loaded, or by the <code>ActivityBuilder</code>
-	 * implementation to set the <code>DataStore</code> identifier, prior to
-	 * storing a new <code>Activity</code> instance.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
+	 * be used to initialize the <code>DataStore</code> identifier on a new
+	 * <code>SubActivity</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -137,13 +129,10 @@ public class ForumPost extends SubActivity
 	}
 
 	/**
-	 * Get the name of the <code>Activity</code>.  Not all
-	 * <code>Activity</code> instances have names.  For those
-	 * <code>Activity</code> instances which do not have names, the name of the
-	 * associated <code>ActivityType</code> will be returned.
+	 * Get the name of the <code>SubActivity</code>.
 	 *
 	 * @return A <code>String</code> containing the name of the
-	 *         <code>Activity</code>
+	 *         <code>SubActivity</code>
 	 */
 
 	@Override
@@ -154,8 +143,7 @@ public class ForumPost extends SubActivity
 
 	/**
 	 * Set the name of the <code>SubActivity</code>.  This method is intended
-	 * to be used by a <code>DataStore</code> when the <code>SubActivity</code>
-	 * instance is loaded.
+	 * to be used to initialize a new <code>SubActivity</code> instance.
 	 *
 	 * @param  name The name of the <code>SubActivity</code>, not null
 	 */
@@ -171,10 +159,6 @@ public class ForumPost extends SubActivity
 	/**
 	 * Get the parent <code>Activity</code> instance for the
 	 * <code>SubActivity</code>.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the parent class.
 	 *
 	 * @return The parent <code>Activity</code>
 	 */
@@ -187,13 +171,8 @@ public class ForumPost extends SubActivity
 
 	/**
 	 * Set the <code>Activity</code> instance which contains the
-	 * <code>SubActivity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the parent class.
+	 * <code>SubActivity</code>.  This method is intended to be used to
+	 * initialize a new <code>SubActivity</code> instance.
 	 *
 	 * @param  activity The <code>Activity</code> containing this
 	 *                  <code>SubActivity</code> instance
@@ -209,7 +188,7 @@ public class ForumPost extends SubActivity
 
 	/**
 	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
-	 * which act upon the <code>Activity</code>.
+	 * which act upon the <code>SubActivity</code>.
 	 *
 	 * @return A <code>List</code> of <code>LogEntry</code> instances
 	 */
@@ -241,8 +220,8 @@ public class ForumPost extends SubActivity
 	/**
 	 * Initialize the <code>List</code> of <code>LogReference</code> instances
 	 * associated with the <code>SubActivity</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>SubActivity</code> instance is loaded.
+	 * intended to be used to initialize a new <code>SubActivity</code>
+	 * instance.
 	 *
 	 * @param  references The <code>List</code> of <code>LogReference</code>
 	 *                    instances, not null
@@ -262,8 +241,8 @@ public class ForumPost extends SubActivity
 	 *
 	 * @param  reference    The <code>LogReference</code> to add, not null
 	 *
-	 * @return              <code>True</code> if the <code>LogReference</code>
-	 *                      was successfully added, <code>False</code>
+	 * @return              <code>true</code> if the <code>LogReference</code>
+	 *                      was successfully added, <code>false</code>
 	 *                      otherwise
 	 */
 
@@ -297,10 +276,6 @@ public class ForumPost extends SubActivity
 	/**
 	 * Get the <code>List</code> of <code>SubActivity</code> instances
 	 * associated with the <code>Activity</code>.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
 	 *
 	 * @return The <code>List</code> of <code>SubActivity</code> instances
 	 */
@@ -315,13 +290,8 @@ public class ForumPost extends SubActivity
 
 	/**
 	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
-	 * for the <code>Activity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
+	 * for the <code>Activity</code>.  This method is intended to be used to
+	 * initialize a new <code>SubActivity</code> instance.
 	 *
 	 * @param  subActivities The <code>List</code> of <code>SubActivity</code>
 	 *                       instances, not null
@@ -341,8 +311,8 @@ public class ForumPost extends SubActivity
 	 *
 	 * @param  subActivity The <code>SubActivity</code> to add, not null
 	 *
-	 * @return             <code>True</code> if the <code>SubActivity</code>
-	 *                     was successfully added, <code>False</code> otherwise
+	 * @return             <code>true</code> if the <code>SubActivity</code>
+	 *                     was successfully added, <code>false</code> otherwise
 	 */
 
 	@Override
@@ -359,8 +329,8 @@ public class ForumPost extends SubActivity
 	 *
 	 * @param  subactivity The <code>SubActivity</code> to remove, not null
 	 *
-	 * @return             <code>True</code> if the <code>SubActivity</code>
-	 *                     was successfully removed, <code>False</code>
+	 * @return             <code>true</code> if the <code>SubActivity</code>
+	 *                     was successfully removed, <code>false</code>
 	 *                     otherwise
 	 */
 

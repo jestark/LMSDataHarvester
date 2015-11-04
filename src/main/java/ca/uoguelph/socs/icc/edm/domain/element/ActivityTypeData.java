@@ -50,16 +50,6 @@ public class ActivityTypeData extends ActivityType implements Serializable
 	private ActivitySource source;
 
 	/**
-	 * Static initializer to register the <code>ActivityTypeData</code> class
-	 * with the factories.
-	 */
-
-	static
-	{
-		ActivityType.registerImplementation (ActivityTypeData.class, ActivityTypeData::new);
-	}
-
-	/**
 	 * Create the <code>ActivityType</code> with null values.
 	 */
 
@@ -74,7 +64,7 @@ public class ActivityTypeData extends ActivityType implements Serializable
 	 * Get the <code>DataStore</code> identifier for the
 	 * <code>ActivityType</code> instance.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -86,10 +76,8 @@ public class ActivityTypeData extends ActivityType implements Serializable
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>ActivityType</code>
-	 * instance is loaded, or by the <code>ActivityTypeBuilder</code>
-	 * implementation to set the <code>DataStore</code> identifier, prior to
-	 * storing a new <code>ActivityType</code> instance.
+	 * be used to initialize the <code>DataStore</code> identifier on a new
+	 * <code>ActivityType</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -115,8 +103,7 @@ public class ActivityTypeData extends ActivityType implements Serializable
 
 	/**
 	 * Set the name of the <code>ActivityType</code>.  This method is intended
-	 * to be used by a <code>DataStore</code> when the
-	 * <code>ActivityType</code> instance is loaded.
+	 * to be used to initialize a new <code>ActivityType</code> instance.
 	 *
 	 * @param  name The name of the <code>ActivityType</code>
 	 */
@@ -143,7 +130,7 @@ public class ActivityTypeData extends ActivityType implements Serializable
 
 	/**
 	 * Set the <code>ActivitySource</code> for the <code>ActivityType</code>.
-	 * This method is intended to be used by a <code>DataStore</code> when the
+	 * This method is intended to be used to initialize a new
 	 * <code>ActivityType</code> instance is loaded.
 	 *
 	 * @param  source The <code>ActivitySource</code> for the

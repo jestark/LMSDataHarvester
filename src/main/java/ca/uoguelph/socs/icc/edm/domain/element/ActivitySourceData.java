@@ -54,16 +54,6 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 	private Set<ActivityType> types;
 
 	/**
-	 * Static initializer to register the <code>ActivitySourceData</code> class
-	 * with the factories.
-	 */
-
-	static
-	{
-		ActivitySource.registerImplementation (ActivitySourceData.class, ActivitySourceData::new);
-	}
-
-	/**
 	 * Create the <code>ActivitySource</code> with null values.
 	 */
 
@@ -91,10 +81,8 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>ActivitySource</code>
-	 * instance is loaded, or by the <code>ActivitySourceBuilder</code>
-	 * implementation to set the <code>DataStore</code> identifier, prior to
-	 * storing a new <code>ActivitySource</code> instance.
+	 * be used to initialize the <code>DataStore</code> identifier on a new
+	 * <code>ActivitySource</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -120,8 +108,8 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 
 	/**
 	 * Set the name of the <code>ActivitySource</code>.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>ActivitySource</code> instance is loaded.
+	 * intended to be used to initialize a new <code>ActivitySource</code>
+	 * instance.
 	 *
 	 * @param name The name of the <code>ActivitySource</code>
 	 */
@@ -153,9 +141,8 @@ public class ActivitySourceData extends ActivitySource implements Serializable
 
 	/**
 	 * Initialize the <code>Set</code> of dependent <code>ActivityType</code>
-	 * instances.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>ActivitySource</code> instance is
-	 * loaded.
+	 * instances.  This method is intended to be used to initialize a new
+	 * <code>ActivitySource</code> instance.
 	 *
 	 * @param  types The <code>Set</code> of <code>ActivityType</code>
 	 *               instances to be associated with the

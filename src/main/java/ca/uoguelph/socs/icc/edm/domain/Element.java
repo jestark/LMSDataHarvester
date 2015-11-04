@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.Set;
+import java.io.Serializable;
 
 import java.util.stream.Stream;
 
@@ -41,6 +41,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class Element
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	/** The <code>MetaData</code> for the <code>Element</code>*/
 	protected static final MetaData<Element> METADATA;
 
@@ -72,7 +75,7 @@ public abstract class Element
 		SELECTOR_ID = Selector.getInstance (ID, true);
 		SELECTOR_ALL = Selector.getInstance ("all", false);
 
-		MetaData.builder ()
+		METADATA = MetaData.builder (Element.class)
 			.addProperty (ID, Element::getId, Element::setId)
 			.addProperty (MODEL, Element::getDomainModel, Element::setDomainModel)
 			.addSelector (SELECTOR_ID)
@@ -168,7 +171,7 @@ public abstract class Element
 	 *         associated with the <code>Element</code> interface class
 	 */
 
-	public abstract Set<Property<?>> properties ();
+	public abstract Stream<Property<?>> properties ();
 
 	/**
 	 * Get the <code>Set</code> of <code>Selector</code> instances associated
@@ -178,7 +181,7 @@ public abstract class Element
 	 *         associated with the <code>Element</code> interface class
 	 */
 
-	public abstract Set<Selector> selectors ();
+	public abstract Stream<Selector> selectors ();
 
 	/**
 	 * Determine if the value contained in the <code>Element</code> represented

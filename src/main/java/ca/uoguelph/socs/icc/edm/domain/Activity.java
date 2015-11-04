@@ -25,8 +25,6 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.Objects;
 
-import java.util.function.Supplier;
-
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -86,10 +84,9 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @author  James E. Stark
  * @version 1.0
  * @see     ActivityBuilder
- * @see     ActivityLoader
  */
 
-public abstract class Activity extends ParentActivity implements Serializable
+public abstract class Activity extends ParentActivity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -124,7 +121,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
 		REFERENCE = Property.getInstance (ActivityReference.class, "reference", Property.Flags.REQUIRED);
 
-		METADATA = MetaData.builder (Element.METADATA)
+		METADATA = MetaData.builder (Activity.class, Element.METADATA)
 			.addProperty (NAME, Activity::getName)
 			.addRelationship (REFERENCE, Activity::getReference, Activity::setReference)
 			.build ();
@@ -158,7 +155,7 @@ public abstract class Activity extends ParentActivity implements Serializable
 	 * @param  impl   The implementation class, not null
 	 */
 
-	protected static <T extends Activity> void registerImplementation (final String source, final String type, final Class<T> impl, Supplier<T> supplier)
+	protected static <T extends Activity> void registerImplementation (final String source, final String type, final Class<T> impl)
 	{
 		assert source != null : "source is NULL";
 		assert type != null : "type is NULL";
@@ -327,9 +324,9 @@ public abstract class Activity extends ParentActivity implements Serializable
 	 */
 
 	@Override
-	public Set<Property<?>> properties ()
+	public Stream<Property<?>> properties ()
 	{
-		return Activity.METADATA.getProperties ();
+		return Activity.METADATA.properties ();
 	}
 
 	/**
@@ -341,9 +338,9 @@ public abstract class Activity extends ParentActivity implements Serializable
 	 */
 
 	@Override
-	public Set<Selector> selectors ()
+	public Stream<Selector> selectors ()
 	{
-		return Activity.METADATA.getSelectors ();
+		return Activity.METADATA.selectors ();
 	}
 
 	/**
@@ -363,7 +360,8 @@ public abstract class Activity extends ParentActivity implements Serializable
 	@Override
 	public <V> boolean hasValue (final Property<V> property, final V value)
 	{
-		return Activity.METADATA.hasValue (property, this, value);
+		return Activity.METADATA.getReference (property)
+			.hasValue (this, value);
 	}
 
 	/**
@@ -386,7 +384,8 @@ public abstract class Activity extends ParentActivity implements Serializable
 	@Override
 	public <V> Stream<V> stream (final Property<V> property)
 	{
-		return Activity.METADATA.getStream (property, this);
+		return Activity.METADATA.getReference (property)
+			.stream (this);
 	}
 
 	/**

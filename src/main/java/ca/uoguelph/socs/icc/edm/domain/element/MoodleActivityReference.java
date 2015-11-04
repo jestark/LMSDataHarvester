@@ -77,16 +77,6 @@ public class MoodleActivityReference extends ActivityReference
 	private List<LogEntry> log;
 
 	/**
-	 * Static initializer to register the <code>MoodleActivity</code>
-	 * class with the factories.
-	 */
-
-	static
-	{
-		ActivityReference.registerImplementation (MoodleActivityReference.class, MoodleActivityReference::new);
-	}
-
-	/**
 	 * Create the <code>Activity</code> with null values.
 	 */
 
@@ -152,12 +142,8 @@ public class MoodleActivityReference extends ActivityReference
 	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Activity</code>
 	 * instance.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * child class.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -169,14 +155,8 @@ public class MoodleActivityReference extends ActivityReference
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to be
-	 * used by a <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded, or by the <code>ActivityBuilder</code> implementation to set the
-	 * <code>DataStore</code> identifier, prior to storing a new
-	 * <code>Activity</code> instance.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * child class.
+	 * used to initialize the <code>DataStore</code> on a new
+	 * <code>ActivityReference</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -188,11 +168,14 @@ public class MoodleActivityReference extends ActivityReference
 	}
 
 	/**
-	 * Get a reference to the <code>Activity</code>.
+	 * Get a reference to the <code>Activity</code>.  This method uses the
+	 * <code>instanceid</code> to load the <code>Activity</code> from the moodle
+	 * database before returning it.
 	 *
 	 * @return The <code>Activity</code>
 	 */
 
+	@Override
 	public Activity getActivity ()
 	{
 		if (this.activity == null)
@@ -214,16 +197,22 @@ public class MoodleActivityReference extends ActivityReference
 				throw new IllegalStateException (String.format ("Failed to load data for Activity: %s/%d", this.type.getName (), this.instanceId));
 			}
 
-			// Type is transient on the loaded activity, so copy it in here
-//			this.getDataStore ()
-//				.getProfile ()
-//				.getMetaData (Activity.class)
-//				.setValue (Activity.REFERENCE, this.activity, this);
+			ActivityReference.METADATA.getRelationship (ActivityReference.ACTIVITY)
+				.connect (this.getDomainModel (), this);
 		}
 
 		return this.propagateDomainModel (this.activity);
 	}
 
+	/**
+	 * Set the reference to the <code>Activity</code> which contains the actual
+	 * data.  This operation is unsupported due the way that Moodle stores the
+	 * <code>Activity</code> in the database.
+	 *
+	 * @param  activity The <code>Activity</code>, not null
+	 */
+
+	@Override
 	protected void setActivity (final Activity activity)
 	{
 		throw new UnsupportedOperationException ();
@@ -232,10 +221,6 @@ public class MoodleActivityReference extends ActivityReference
 	/**
 	 * Get the <code>Course</code> with which the <code>Activity</code> is
 	 * associated.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * child class.
 	 *
 	 * @return The <code>Course</code> instance
 	 */
@@ -248,12 +233,8 @@ public class MoodleActivityReference extends ActivityReference
 
 	/**
 	 * Set the <code>Course</code> with which the <code>Activity</code> is
-	 * associated.  This method is intended to be used by a <code>DataStore</code>
-	 * when the <code>Activity</code> instance is loaded.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * child class.
+	 * associated.  This method is intended to be used to initialize a new
+	 * <code>Activity</code> instance.
 	 *
 	 * @param  course The <code>Course</code>, not null
 	 */
@@ -268,10 +249,6 @@ public class MoodleActivityReference extends ActivityReference
 
 	/**
 	 * Get the <code>ActivityType</code> for the <code>Activity</code>.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * child class.
 	 *
 	 * @return The <code>ActivityType</code> instance
 	 */
@@ -284,12 +261,8 @@ public class MoodleActivityReference extends ActivityReference
 
 	/**
 	 * Set the <code>ActvityType</code> with which the <code>Activity</code> is
-	 * associated.  This method is intended to be used by a <code>DataStore</code>
-	 * when the <code>Activity</code> instance is loaded.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of the
-	 * child class.
+	 * associated.  This method is intended to be used to initialize a new 
+	 * <code>ActivityReference</code> instance.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null
 	 */
@@ -320,8 +293,8 @@ public class MoodleActivityReference extends ActivityReference
 	/**
 	 * Initialize the <code>List</code> of <code>LogEntry</code> instances
 	 * associated with the <code>ActivityReference</code> instance.  This
-	 * method is intended to be used by a <code>DataStore</code> when the
-	 * <code>ActivityReference</code> instance is loaded.
+	 * method is intended to be used to initialize a new
+	 * <code>ActivityReference</code> instance.
 	 *
 	 * @param  log The <code>List</code> of <code>LogEntry</code> instances,
 	 *             not null
@@ -375,7 +348,7 @@ public class MoodleActivityReference extends ActivityReference
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
 	 * containing the instance specific data for the <code>Activity</code>.
 	 *
-	 * @return A <code>Long</code> containing the identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	public Long getInstanceId ()
@@ -386,8 +359,8 @@ public class MoodleActivityReference extends ActivityReference
 	/**
 	 * Set the <code>DataStore</code> identifier for the <code>Element</code>
 	 * containing the instance specific data for the <code>Activity</code>.  This
-	 * method is intended to be used by a <code>DataStore</code> when the
-	 * <code>Activity</code> instance is loaded.
+	 * method is intended to be used to initialize a new
+	 * <code>ActivityReference</code> instance.
 	 *
 	 * @param  instanceId The identifier
 	 */

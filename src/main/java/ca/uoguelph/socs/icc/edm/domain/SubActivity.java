@@ -16,16 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.io.Serializable;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import java.util.HashMap;
 import java.util.Objects;
-
-import java.util.function.Supplier;
 
 import java.util.stream.Stream;
 
@@ -35,7 +31,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Definition;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -48,7 +43,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.0
  */
 
-public abstract class SubActivity extends ParentActivity implements Serializable
+public abstract class SubActivity extends ParentActivity
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -86,12 +81,29 @@ public abstract class SubActivity extends ParentActivity implements Serializable
 		REFERENCES = Property.getInstance (LogReference.class, "references", Property.Flags.MULTIVALUED);
 		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", Property.Flags.MULTIVALUED);
 
-		METADATA = MetaData.builder (Element.METADATA)
+		METADATA = MetaData.builder (SubActivity.class, Element.METADATA)
 			.addProperty (NAME, SubActivity::getName, SubActivity::setName)
 			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
 			.addRelationship (REFERENCES, SubActivity::getReferences, SubActivity::addReference, SubActivity::removeReference)
 			.addRelationship (SUBACTIVITIES, SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity)
 			.build ();
+	}
+
+	/**
+	 * Register an association between an <code>Activity</code> implementation
+	 * class and a <code>SubActivity</code> implementation class.
+	 *
+	 * @param  activity    The <code>Activity</code> implementation, not null
+	 * @param  subactivity The <code>SubActivity</code> implementation, not null
+	 */
+
+	protected static final <T extends SubActivity> void registerImplementation (final Class<? extends ParentActivity> activity, final Class<T> subactivity)
+	{
+		assert activity != null : "activity is NULL";
+		assert subactivity != null : "subactivity is NULL";
+		assert (! SubActivity.subactivities.containsKey (activity)) : "activity is already registered";
+
+		SubActivity.subactivities.put (activity, subactivity);
 	}
 
 	/**
@@ -111,23 +123,6 @@ public abstract class SubActivity extends ParentActivity implements Serializable
 		assert SubActivity.subactivities.containsKey (activity) : "Activity is not registered";
 
 		return SubActivity.subactivities.get (activity);
-	}
-
-	/**
-	 * Register an association between an <code>Activity</code> implementation
-	 * class and a <code>SubActivity</code> implementation class.
-	 *
-	 * @param  activity    The <code>Activity</code> implementation, not null
-	 * @param  subactivity The <code>SubActivity</code> implementation, not null
-	 */
-
-	protected static final void registerImplementation (final Class<? extends ParentActivity> activity, final Class<? extends SubActivity> subactivity)
-	{
-		assert activity != null : "activity is NULL";
-		assert subactivity != null : "subactivity is NULL";
-		assert (! SubActivity.subactivities.containsKey (activity)) : "activity is already registered";
-
-		SubActivity.subactivities.put (activity, subactivity);
 	}
 
 	/**
@@ -235,9 +230,9 @@ public abstract class SubActivity extends ParentActivity implements Serializable
 	 */
 
 	@Override
-	public Set<Property<?>> properties ()
+	public Stream<Property<?>> properties ()
 	{
-		return SubActivity.METADATA.getProperties ();
+		return SubActivity.METADATA.properties ();
 	}
 
 	/**
@@ -249,9 +244,9 @@ public abstract class SubActivity extends ParentActivity implements Serializable
 	 */
 
 	@Override
-	public Set<Selector> selectors ()
+	public Stream<Selector> selectors ()
 	{
-		return SubActivity.METADATA.getSelectors ();
+		return SubActivity.METADATA.selectors ();
 	}
 
 	/**
@@ -271,7 +266,8 @@ public abstract class SubActivity extends ParentActivity implements Serializable
 	@Override
 	public <V> boolean hasValue (final Property<V> property, final V value)
 	{
-		return SubActivity.METADATA.hasValue (property, this, value);
+		return SubActivity.METADATA.getReference (property)
+			.hasValue (this, value);
 	}
 
 	/**
@@ -294,7 +290,8 @@ public abstract class SubActivity extends ParentActivity implements Serializable
 	@Override
 	public <V> Stream<V> stream (final Property<V> property)
 	{
-		return SubActivity.METADATA.getStream (property, this);
+		return SubActivity.METADATA.getReference (property)
+			.stream (this);
 	}
 
 	/**

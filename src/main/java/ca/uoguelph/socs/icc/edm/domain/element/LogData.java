@@ -72,16 +72,6 @@ public class LogData extends LogEntry
 	private LogReference reference;
 
 	/**
-	 * Static initializer to register the <code>LogData</code> class with the
-	 * factories.
-	 */
-
-	static
-	{
-		LogEntry.registerImplementation (LogData.class, LogData::new);
-	}
-
-	/**
 	 * Create the <code>LogEntry</code> with null values.
 	 */
 
@@ -100,7 +90,7 @@ public class LogData extends LogEntry
 	 * Get the <code>DataStore</code> identifier for the <code>LogEntry</code>
 	 * instance.
 	 *
-	 * @return a Long integer containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -112,10 +102,8 @@ public class LogData extends LogEntry
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>LogEntry</code>
-	 * instance is loaded, or by the <code>LogEntryBuilder</code>
-	 * implementation to set the <code>DataStore</code> identifier, prior to
-	 * storing a new <code>LogEntry</code> instance.
+	 * be used to initialize the <code>DataStore</code> identifier on a new
+	 * <code>LogEntry</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -141,9 +129,8 @@ public class LogData extends LogEntry
 
 	/**
 	 * Set the <code>Action</code> which was performed upon the logged
-	 * <code>Activity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded.
+	 * <code>Activity</code>.  This method is intended to be used to initialize
+	 * a new <code>LogEntry</code> instance.
 	 *
 	 * @param  action The <code>Action</code>, not null
 	 */
@@ -184,9 +171,8 @@ public class LogData extends LogEntry
 
 	/**
 	 * Set the <code>ActivityReference</code> upon which the logged action was
-	 * performed.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded.
+	 * performed.  This method is intended to be used to initialize a new
+	 * <code>LogEntry</code> instance.
 	 *
 	 * @param  activity The <code>ActivityReference</code>, not null
 	 */
@@ -226,9 +212,8 @@ public class LogData extends LogEntry
 
 	/**
 	 * Set the <code>Enrolment</code> instance for the <code>User</code> which
-	 * performed the logged action.   This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded.
+	 * performed the logged action.  This method is intended to be used to
+	 * initialize a new <code>LogEntry</code> instance.
 	 *
 	 * @param  enrolment The <code>Enrolment</code>, not null
 	 */
@@ -256,9 +241,8 @@ public class LogData extends LogEntry
 
 	/**
 	 * Set the <code>Network</code> from which the logged <code>Action</code>
-	 * originated.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded.
+	 * originated.  This method is intended to be used to initialize a new
+	 * <code>LogEntry</code> instance.
 	 *
 	 * @param  network The <code>Network</code>, not null
 	 */
@@ -291,10 +275,8 @@ public class LogData extends LogEntry
 
 	/**
 	 * Set the reference to the <code>SubActivity</code> to the
-	 * <code>LogEntry</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded, or by the <code>LogEntryBuilder</code> when the
-	 * <code>LogEntry</code> is created.
+	 * <code>LogEntry</code>.  This method is intended to be used to initialize
+	 * a new <code>LogEntry</code> instance.
 	 *
 	 * @param  reference The <code>LogReference</code> instance, not null
 	 */
@@ -336,8 +318,7 @@ public class LogData extends LogEntry
 
 	/**
 	 * Set the time of the logged <code>Action</code>.  This method is intended
-	 * to be used by a <code>DataStore</code> when the <code>LogEntry</code>
-	 * instance is loaded.
+	 * to be used to initialize a new <code>LogEntry</code> instance.
 	 *
 	 * @param  time The time, not null
 	 */

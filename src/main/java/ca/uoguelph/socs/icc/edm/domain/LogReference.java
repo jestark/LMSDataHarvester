@@ -16,15 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.io.Serializable;
-
 import java.util.Map;
-import java.util.Set;
 
 import java.util.HashMap;
 import java.util.Objects;
-
-import java.util.function.Supplier;
 
 import java.util.stream.Stream;
 
@@ -47,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.1
  */
 
-public abstract class LogReference extends Element implements Serializable
+public abstract class LogReference extends Element
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -84,11 +79,29 @@ public abstract class LogReference extends Element implements Serializable
 
 		SELECTOR_ENTRY = Selector.getInstance (ENTRY, true);
 
-		METADATA = MetaData.builder (Element.METADATA)
+		METADATA = MetaData.builder (LogReference.class, Element.METADATA)
 			.addRelationship (ENTRY, LogReference::getEntry, LogReference::setEntry)
 			.addRelationship (SUBACTIVITY, LogReference::getSubActivity, LogReference::setSubActivity)
 			.addSelector (SELECTOR_ENTRY)
 			.build ();
+	}
+
+	/**
+	 * Register an association between an <code>SubActivity</code>
+	 * implementation class and a <code>LogReference</code> implementation
+	 * class.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> implementation, not null
+	 * @param  log         The <code>LogReference</code> implementation, not null
+	 */
+
+	protected static void registerImplementation (final Class<? extends SubActivity> subactivity, final Class<? extends LogReference> log)
+	{
+		assert subactivity != null : "subactivity is NULL";
+		assert log != null : "log is NULL";
+		assert (! LogReference.references.containsKey (subactivity)) : "subactivity is already registered";
+
+		LogReference.references.put (subactivity, log);
 	}
 
 	/**
@@ -108,24 +121,6 @@ public abstract class LogReference extends Element implements Serializable
 		assert LogReference.references.containsKey (subactivity) : "subactivity is not registered";
 
 		return LogReference.references.get (subactivity);
-	}
-
-	/**
-	 * Register an association between an <code>SubActivity</code>
-	 * implementation class and a <code>LogReference</code> implementation
-	 * class.
-	 *
-	 * @param  subactivity The <code>SubActivity</code> implementation, not null
-	 * @param  log         The <code>LogReference</code> implementation, not null
-	 */
-
-	protected static void registerImplementation (final Class<? extends SubActivity> subactivity, final Class<? extends LogReference> log)
-	{
-		assert subactivity != null : "subactivity is NULL";
-		assert log != null : "log is NULL";
-		assert (! LogReference.references.containsKey (subactivity)) : "subactivity is already registered";
-
-		LogReference.references.put (subactivity, log);
 	}
 
 	/**
@@ -211,9 +206,9 @@ public abstract class LogReference extends Element implements Serializable
 	 */
 
 	@Override
-	public Set<Property<?>> properties ()
+	public Stream<Property<?>> properties ()
 	{
-		return LogReference.METADATA.getProperties ();
+		return LogReference.METADATA.properties ();
 	}
 
 	/**
@@ -225,9 +220,9 @@ public abstract class LogReference extends Element implements Serializable
 	 */
 
 	@Override
-	public Set<Selector> selectors ()
+	public Stream<Selector> selectors ()
 	{
-		return LogReference.METADATA.getSelectors ();
+		return LogReference.METADATA.selectors ();
 	}
 
 	/**
@@ -247,7 +242,8 @@ public abstract class LogReference extends Element implements Serializable
 	@Override
 	public <V> boolean hasValue (final Property<V> property, final V value)
 	{
-		return LogReference.METADATA.hasValue (property, this, value);
+		return LogReference.METADATA.getReference (property)
+			.hasValue (this, value);
 	}
 
 	/**
@@ -270,7 +266,8 @@ public abstract class LogReference extends Element implements Serializable
 	@Override
 	public <V> Stream<V> stream (final Property<V> property)
 	{
-		return LogReference.METADATA.getStream (property, this);
+		return LogReference.METADATA.getReference (property)
+			.stream (this);
 	}
 
 	/**

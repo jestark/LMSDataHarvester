@@ -16,14 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.io.Serializable;
-
-import java.util.Set;
-
 import java.util.Date;
 import java.util.Objects;
-
-import java.util.function.Supplier;
 
 import java.util.stream.Stream;
 
@@ -62,7 +56,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @see     LogEntryLoader
  */
 
-public abstract class LogEntry extends Element implements Serializable
+public abstract class LogEntry extends Element
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -119,7 +113,7 @@ public abstract class LogEntry extends Element implements Serializable
 		SELECTOR_COURSE = Selector.getInstance (COURSE, false);
 		SELECTOR_NETWORK = Selector.getInstance (NETWORK, false);
 
-		METADATA = MetaData.builder (Element.METADATA)
+		METADATA = MetaData.builder (LogEntry.class, Element.METADATA)
 			.addProperty (COURSE, LogEntry::getCourse)
 			.addProperty (TIME, LogEntry::getTime, LogEntry::setTime)
 			.addRelationship (ACTION, LogEntry::getAction, LogEntry::setAction)
@@ -131,21 +125,6 @@ public abstract class LogEntry extends Element implements Serializable
 			.addSelector (SELECTOR_COURSE)
 			.addSelector (SELECTOR_NETWORK)
 			.build ();
-	}
-
-	/**
-	 * Register an implementation.  This method handles the registration of an
-	 * implementation class such that instances of it can be returned a
-	 * <code>Builder</code> or a <code>Query</code>.
-	 *
-	 * @param  <T>      The implementation type
-	 * @param  impl     The Implementation <code>Class</code>, not null
-	 * @param  supplier Method reference to create a new instance, not null
-	 */
-
-	protected static <T extends LogEntry> void registerImplementation (final Class<T> impl, final Supplier<T> supplier)
-	{
-
 	}
 
 	/**
@@ -274,9 +253,9 @@ public abstract class LogEntry extends Element implements Serializable
 	 */
 
 	@Override
-	public Set<Property<?>> properties ()
+	public Stream<Property<?>> properties ()
 	{
-		return LogEntry.METADATA.getProperties ();
+		return LogEntry.METADATA.properties ();
 	}
 
 	/**
@@ -288,9 +267,9 @@ public abstract class LogEntry extends Element implements Serializable
 	 */
 
 	@Override
-	public Set<Selector> selectors ()
+	public Stream<Selector> selectors ()
 	{
-		return LogEntry.METADATA.getSelectors ();
+		return LogEntry.METADATA.selectors ();
 	}
 
 	/**
@@ -310,7 +289,8 @@ public abstract class LogEntry extends Element implements Serializable
 	@Override
 	public <V> boolean hasValue (final Property<V> property, final V value)
 	{
-		return LogEntry.METADATA.hasValue (property, this, value);
+		return LogEntry.METADATA.getReference (property)
+			.hasValue (this, value);
 	}
 
 	/**
@@ -333,7 +313,8 @@ public abstract class LogEntry extends Element implements Serializable
 	@Override
 	public <V> Stream<V> stream (final Property<V> property)
 	{
-		return LogEntry.METADATA.getStream (property, this);
+		return LogEntry.METADATA.getReference (property)
+			.stream (this);
 	}
 
 	/**
