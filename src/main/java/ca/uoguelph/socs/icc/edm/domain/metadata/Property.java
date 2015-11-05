@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Objects;
 
+import javax.annotation.CheckReturnValue;
+
 import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -124,7 +126,7 @@ public final class Property<T>
 	 * @return      The <code>Property</code>
 	 */
 
-	public static <V> Property<V> getInstance (final Class<V> type, final String name)
+	public static <V> Property<V> of (final Class<V> type, final String name)
 	{
 		assert type != null : "type is NULL";
 		assert name != null : "name is NULL";
@@ -148,7 +150,7 @@ public final class Property<T>
 	 * @return      The <code>Property</code>
 	 */
 
-	public static <V> Property<V> getInstance (final Class<V> type, final String name, final Flags... flags)
+	public static <V> Property<V> of (final Class<V> type, final String name, final Flags... flags)
 	{
 		assert type != null : "type is NULL";
 		assert name != null : "name is NULL";
@@ -221,6 +223,25 @@ public final class Property<T>
 	public int hashCode ()
 	{
 		return Objects.hash (this.name, this.type);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>Property</code>
+	 * instance.
+	 *
+	 * @return A <code>String</code> representation of the <code>Property</code>
+	 *         instance
+	 */
+
+	@Override
+	@CheckReturnValue
+	public String toString ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("name", this.name)
+			.add ("type", this.type)
+			.add ("flags", this.flags)
+			.toString ();
 	}
 
 	/**
@@ -299,23 +320,5 @@ public final class Property<T>
 	public Class<T> getPropertyType ()
 	{
 		return this.type;
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>Property</code>
-	 * instance.
-	 *
-	 * @return A <code>String</code> representation of the <code>Property</code>
-	 *         instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		return MoreObjects.toStringHelper (this)
-			.add ("name", this.name)
-			.add ("type", this.type)
-			.add ("flags", this.flags)
-			.toString ();
 	}
 }

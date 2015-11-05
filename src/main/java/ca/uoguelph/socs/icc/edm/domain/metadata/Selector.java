@@ -24,6 +24,8 @@ import java.util.Objects;
 
 import java.util.stream.Collectors;
 
+import javax.annotation.CheckReturnValue;
+
 import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -68,7 +70,7 @@ public final class Selector
 	 * @return            The <code>Selector</code>
 	 */
 
-	public static Selector getInstance (final String name, final boolean unique, final Property<?>... properties)
+	public static Selector of (final String name, final boolean unique, final Property<?>... properties)
 	{
 		assert name != null : "name is NULL";
 		assert name.length () > 0 : "name is empty";
@@ -87,11 +89,11 @@ public final class Selector
 	 * @return          The <code>Selector</code>
 	 */
 
-	public static Selector getInstance (final Property<?> property, final boolean unique)
+	public static Selector of (final Property<?> property, final boolean unique)
 	{
 		assert property != null : "property is NULL";
 
-		return Selector.getInstance (property.getName (), unique, property);
+		return Selector.of (property.getName (), unique, property);
 	}
 
 	/**
@@ -104,7 +106,7 @@ public final class Selector
 	 *                    instances represented by the <code>Selector</code>
 	 */
 
-	protected Selector (final String name, final boolean unique, final Set<Property<?>> properties)
+	private Selector (final String name, final boolean unique, final Set<Property<?>> properties)
 	{
 		this.name = name;
 		this.unique = unique;
@@ -206,6 +208,7 @@ public final class Selector
 	 */
 
 	@Override
+	@CheckReturnValue
 	public String toString ()
 	{
 		return MoreObjects.toStringHelper (this)
