@@ -17,12 +17,16 @@
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import java.util.function.Function;
 import java.util.function.BiPredicate;
 
 import java.util.stream.Stream;
 
+import javax.annotation.CheckReturnValue;
+
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -107,6 +111,55 @@ final class MultiReference<T extends Element, V extends Element> implements Mult
 		this.get = get;
 		this.add = add;
 		this.remove = remove;
+	}
+
+	/**
+	 * Compare two <code>MultiReference</code> instances to determine if
+	 * they are equal.
+	 *
+	 * @param  obj The <code>MultiReference</code> instance to compare to
+	 *             the one represented by the called instance
+	 *
+	 * @return     <code>true</code> if the two <code>MultiReference</code>
+	 *             instances are equal, <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		return (obj == this) ? true : (obj instanceof MultiReference)
+				&& Objects.equals (this.element, ((MultiReference) obj).element)
+				&& Objects.equals (this.property, ((MultiReference) obj).property);
+	}
+
+	/**
+	 * Compute a hashCode for the <code>MultiReference</code> instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		return Objects.hash (this.element, this.property);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the
+	 * <code>MultiReference</code> instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>MultiReference</code> instance
+	 */
+
+	@Override
+	@CheckReturnValue
+	public String toString ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("element", this.element)
+			.add ("property", this.property)
+			.toString ();
 	}
 
 	/**

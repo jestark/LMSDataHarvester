@@ -16,6 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import java.util.Objects;
+
+import javax.annotation.CheckReturnValue;
+
+import com.google.common.base.MoreObjects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +80,56 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 
 		this.inverse = inverse;
 		this.reference = reference;
+	}
+
+	/**
+	 * Compare two <code>SingleRelationship</code> instances to determine if
+	 * they are equal.
+	 *
+	 * @param  obj The <code>SingleRelationship</code> instance to compare to
+	 *             the one represented by the called instance
+	 *
+	 * @return     <code>true</code> if the two <code>SingleRelationship</code>
+	 *             instances are equal, <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		return (obj == this) ? true : (obj instanceof SingleRelationship)
+				&& Objects.equals (this.inverse, ((SingleRelationship) obj).inverse)
+				&& Objects.equals (this.reference, ((SingleRelationship) obj).reference);
+	}
+
+	/**
+	 * Compute a hashCode for the <code>SingleRelationship</code> instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		return Objects.hash (this.inverse, this.reference);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the
+	 * <code>SingleRelationship</code> instance, including the identifying
+	 * fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>SingleRelationship</code> instance
+	 */
+
+	@Override
+	@CheckReturnValue
+	public String toString ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("reference", this.reference)
+			.add ("inverse", this.inverse)
+			.toString ();
 	}
 
 	/**

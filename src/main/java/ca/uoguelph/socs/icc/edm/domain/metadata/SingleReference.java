@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import java.util.Objects;
+
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -24,6 +26,7 @@ import java.util.stream.Stream;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -94,6 +97,55 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 		this.property = property;
 		this.get = get;
 		this.set = set;
+	}
+
+	/**
+	 * Compare two <code>SingleReference</code> instances to determine if
+	 * they are equal.
+	 *
+	 * @param  obj The <code>SingleReference</code> instance to compare to
+	 *             the one represented by the called instance
+	 *
+	 * @return     <code>true</code> if the two <code>SingleReference</code>
+	 *             instances are equal, <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		return (obj == this) ? true : (obj instanceof SingleReference)
+				&& Objects.equals (this.element, ((SingleReference) obj).element)
+				&& Objects.equals (this.property, ((SingleReference) obj).property);
+	}
+
+	/**
+	 * Compute a hashCode for the <code>SingleReference</code> instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		return Objects.hash (this.element, this.property);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the
+	 * <code>SingleReference</code> instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>SingleReference</code> instance
+	 */
+
+	@Override
+	@CheckReturnValue
+	public String toString ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("element", this.element)
+			.add ("property", this.property)
+			.toString ();
 	}
 
 	/**

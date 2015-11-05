@@ -17,6 +17,11 @@
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Collection;
+import java.util.Objects;
+
+import javax.annotation.CheckReturnValue;
+
+import com.google.common.base.MoreObjects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +80,56 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 
 		this.inverse = inverse;
 		this.reference = reference;
+	}
+
+	/**
+	 * Compare two <code>MultiRelationship</code> instances to determine if
+	 * they are equal.
+	 *
+	 * @param  obj The <code>MultiRelationship</code> instance to compare to
+	 *             the one represented by the called instance
+	 *
+	 * @return     <code>true</code> if the two <code>MultiRelationship</code>
+	 *             instances are equal, <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		return (obj == this) ? true : (obj instanceof MultiRelationship)
+				&& Objects.equals (this.inverse, ((MultiRelationship) obj).inverse)
+				&& Objects.equals (this.reference, ((MultiRelationship) obj).reference);
+	}
+
+	/**
+	 * Compute a hashCode for the <code>MultiRelationship</code> instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		return Objects.hash (this.inverse, this.reference);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the
+	 * <code>MultiRelationship</code> instance, including the identifying
+	 * fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>MultiRelationship</code> instance
+	 */
+
+	@Override
+	@CheckReturnValue
+	public String toString ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("reference", this.reference)
+			.add ("inverse", this.inverse)
+			.toString ();
 	}
 
 	/**

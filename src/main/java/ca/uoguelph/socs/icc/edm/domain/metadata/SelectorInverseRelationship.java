@@ -16,6 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import java.util.Objects;
+
+import javax.annotation.CheckReturnValue;
+
+import com.google.common.base.MoreObjects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,6 +97,58 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 		return null; // model.getQuery (Container.getInstance ()
 //				.getMetaData (this.value),
 //				this.selector);
+	}
+
+	/**
+	 * Compare two <code>SelectorInverseRelationship</code> instances to determine
+	 * if they are equal.
+	 *
+	 * @param  obj The <code>SelectorInverseRelationship</code> instance to
+	 *             compare to the one represented by the called instance
+	 *
+	 * @return     <code>true</code> if the two
+	 *             <code>SelectorInverseRelationship</code> instances are equal,
+	 *             <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		return (obj == this) ? true : (obj instanceof SelectorInverseRelationship)
+				&& Objects.equals (this.property, ((SelectorInverseRelationship) obj).property)
+				&& Objects.equals (this.selector, ((SelectorInverseRelationship) obj).selector);
+	}
+
+	/**
+	 * Compute a hashCode for the <code>SelectorInverseRelationship</code>
+	 * instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		return Objects.hash (this.property, this.selector);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the
+	 * <code>SelectorInverseRelationship</code> instance, including the
+	 * identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>SelectorInverseRelationship</code> instance
+	 */
+
+	@Override
+	@CheckReturnValue
+	public String toString ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("property", this.property)
+			.add ("selector", this.selector)
+			.toString ();
 	}
 
 	/**

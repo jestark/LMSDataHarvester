@@ -16,6 +16,12 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
+import java.util.Objects;
+
+import javax.annotation.CheckReturnValue;
+
+import com.google.common.base.MoreObjects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +84,7 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	}
 
 	/**
-	 * Create the <code>SingleRelationship</code>.
+	 * Create the <code>SelectorRelationship</code>.
 	 *
 	 * @param  inverse  The <code>Inverse</code> relationship, not null
 	 * @param  value    The <code>Element</code> interface class, not null
@@ -104,6 +110,58 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		return null; // model.getQuery (Container.getInstance ()
 //				.getMetaData (this.value),
 //				this.selector);
+	}
+
+	/**
+	 * Compare two <code>SelectorRelationship</code> instances to determine if
+	 * they are equal.
+	 *
+	 * @param  obj The <code>SelectorRelationship</code> instance to compare to
+	 *             the one represented by the called instance
+	 *
+	 * @return     <code>true</code> if the two <code>SelectorRelationship</code>
+	 *             instances are equal, <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		return (obj == this) ? true : (obj instanceof SelectorRelationship)
+				&& Objects.equals (this.inverse, ((SelectorRelationship) obj).inverse)
+				&& Objects.equals (this.property, ((SelectorRelationship) obj).property)
+				&& Objects.equals (this.selector, ((SelectorRelationship) obj).selector);
+	}
+
+	/**
+	 * Compute a hashCode for the <code>SelectorRelationship</code> instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		return Objects.hash (this.inverse, this.property, this.selector);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the
+	 * <code>SelectorRelationship</code> instance, including the identifying
+	 * fields.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>SelectorRelationship</code> instance
+	 */
+
+	@Override
+	@CheckReturnValue
+	public String toString ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("property", this.property)
+			.add ("selector", this.selector)
+			.add ("inverse", this.inverse)
+			.toString ();
 	}
 
 	/**
