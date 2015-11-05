@@ -48,7 +48,7 @@ public final class Profile
 	private final Map<Class<? extends Element>, Class<? extends Element>> implementations;
 
 	/** The <code>IdGenerator</code> to be used with each <code>Element</code> */
-	private final Map<Class<? extends Element>, Class<? extends IdGenerator>> generators;
+	private final Map<Class<? extends Element>, Class<?>> generators;
 
 	/**
 	 * Create the <code>Profile</code>.  This constructor is not intended
@@ -65,7 +65,10 @@ public final class Profile
 	 *                         <code>Element</code>, not null
 	 */
 
-	protected Profile (final String name, final boolean mutable, final Map<Class<? extends Element>, Class<? extends Element>> implementations, final Map<Class<? extends Element>, Class<? extends IdGenerator>> generators)
+	protected Profile (final String name,
+			final boolean mutable,
+			final Map<Class<? extends Element>, Class<? extends Element>> implementations,
+			final Map<Class<? extends Element>, Class<?>> generators)
 	{
 		assert name != null : "name is NULL";
 		assert implementations != null : "implementations is NULL";
@@ -142,73 +145,6 @@ public final class Profile
 	}
 
 	/**
-	 * Get the <code>MetaData</code> instance for the specified
-	 * <code>Element</code>.  This method will look up the default
-	 * implementation class for the specified <code>Element</code> and return
-	 * the associated <code>MetaData</code> instance.
-	 *
-	 * @param  <T>  The <code>Element</code> interface type
-	 * @param  type The <code>Element</code> interface class, not null
-	 *
-	 * @return      The associated <code>MetaData</code> instance
-	 */
-
-	public <T extends Element> MetaData<T> getMetaData (final Class<T> type)
-	{
-		this.log.trace ("getMetadata: type={}", type);
-
-		assert type != null : "type is NULL";
-		assert Container.getInstance ().containsMetaData (type) : "No MetaData for specified type";
-
-		return Container.getInstance ().getMetaData (type);
-	}
-
-	/**
-	 * Get the <code>Creator</code> instance for the specified
-	 * <code>Element</code> implementation.
-	 *
-	 * @param  <T>  The <code>Element</code> interface type
-	 * @param  type The <code>Element</code> interface class, not null
-	 * @param  impl The <code>Element</code> implementation class, not null
-	 *
-	 * @return      The associated <code>Creator</code> instance
-	 */
-
-	public <T extends Element> Creator<T> getCreator (final Class<T> type, Class<? extends T> impl)
-	{
-		this.log.trace ("getCreator: type={}, impl={}", type, impl);
-
-		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
-		assert Container.getInstance ().containsCreator (impl) : "element is not registered";
-
-		return Container.getInstance ().getCreator (type, impl);
-	}
-
-	/**
-	 * Get the <code>Creator</code> instance for the specified
-	 * <code>Element</code>.  This method will look up the default
-	 * implementation class for the specified <code>Element</code> and return
-	 * the associated <code>Creator</code> instance.
-	 *
-	 * @param  <T>  The <code>Element</code> interface type
-	 * @param  type The <code>Element</code> interface class, not null
-	 *
-	 * @return      The associated <code>Creator</code> instance
-	 */
-
-	public <T extends Element> Creator<T> getCreator (final Class<T> type)
-	{
-		this.log.trace ("getCreator: type={}", type);
-
-		assert type != null : "type is NULL";
-		assert this.implementations.containsKey (type) : "No implementation class for specified type";
-		assert Container.getInstance ().containsCreator (this.implementations.get (type)) : "No Creator for specified type";
-
-		return  Container.getInstance ().getCreator (type, this.implementations.get (type));
-	}
-
-	/**
 	 * Get the <code>IdGenerator</code> associated with the specified
 	 * <code>Element</code> class, for the <code>DataStore</code>.  This method
 	 * searches for the appropriate <code>IdGenerator</code> for the specified
@@ -223,24 +159,24 @@ public final class Profile
 	 *                               parents
 	 */
 
-	public Class<? extends IdGenerator> getGenerator (Class<? extends Element> element)
+	public Class<?> getGenerator (final Class<? extends Element> element)
 	{
 		this.log.trace ("getGenerator: element={}", element);
 
 		assert element != null : "element is NULL";
 
-		while (! this.generators.containsKey (element))
+		Class<?> key = element;
+
+		while (! this.generators.containsKey (key))
 		{
-			if (Container.getInstance ().containsMetaData (element))
+			key = key.getSuperclass ();
+
+			if (! Element.class.isAssignableFrom (key))
 			{
-				element = Container.getInstance ().getMetaData (element).getParentClass ();
-			}
-			else
-			{
-				throw new IllegalStateException ("No MetaData registered for Element Class: " + element.getSimpleName ());
+				throw new IllegalStateException (String.format ("No Generator registered for: %s", element.getSimpleName ()));
 			}
 		}
 
-		return this.generators.get (element);
+		return this.generators.get (key);
 	}
 }

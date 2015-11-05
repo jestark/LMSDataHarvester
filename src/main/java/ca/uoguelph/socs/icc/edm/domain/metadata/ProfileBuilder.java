@@ -51,7 +51,7 @@ public final class ProfileBuilder
 	private final Map<Class<? extends Element>, Class<? extends Element>> implementations;
 
 	/** Map of <code>IdGenerator</code> classes to <code>Element</code> classes */
-	private final Map<Class<? extends Element>, Class<? extends IdGenerator>> generators;
+	private final Map<Class<? extends Element>, Class<?>> generators;
 
 	/**
 	 * Create the <code>DomainModelBuilder</code>.
@@ -292,7 +292,7 @@ public final class ProfileBuilder
 	 * @return         The associated <code>IdGenerator</code>
 	 */
 
-	public Class<? extends IdGenerator> getGenerator (final Class<? extends Element> element)
+	public Class<?> getGenerator (final Class<? extends Element> element)
 	{
 		this.log.trace ("getGenerator: element={}", element);
 
@@ -318,7 +318,7 @@ public final class ProfileBuilder
 	 *                                  <code>Element</code>
 	 */
 
-	public ProfileBuilder setGenerator (final Class<? extends Element> element, final Class<? extends IdGenerator> generator)
+	public ProfileBuilder setGenerator (final Class<? extends Element> element, final Class<?> generator)
 	{
 		this.log.trace ("setGenerator: element={}, generator={}", element, generator);
 
