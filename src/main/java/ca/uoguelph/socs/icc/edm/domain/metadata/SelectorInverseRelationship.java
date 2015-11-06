@@ -43,51 +43,41 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 	/** The Logger */
 	private final Logger log;
 
-	/** The <code>Element</code> interface class */
-	private final Class<V> value;
-
 	/** The <code>Property</code> for owning <code>Element</code> */
 	private final Property<T> property;
 
 	/** The <code>Selector</code> for the associated <code>Element</code> */
-	private final Selector selector;
+	private final Selector<V> selector;
 
 	/**
 	 * Create the <code>SelectorInverseRelationship</code> from the specified
 	 * values.
 	 *
-	 * @param  value    The <code>Element</code> interface class, not null
 	 * @param  property The <code>Property</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
 	public static <T extends Element, V extends Element> SelectorInverseRelationship<T, V> of (
-			final Class<V> value,
 			final Property<T> property,
-			final Selector selector)
+			final Selector<V> selector)
 	{
-		assert value != null : "value is NULL";
 		assert property != null : "property is NULL";
 		assert selector != null : "selector is NULL";
 
-		return new SelectorInverseRelationship<T, V> (value, property, selector);
+		return new SelectorInverseRelationship<T, V> (property, selector);
 	}
 
 	/**
 	 * Create the <code>SelectorInverse</code>.
 	 *
-	 * @param  value    The <code>Element</code> interface class, not null
 	 * @param  property The <code>Property</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
-	private SelectorInverseRelationship (final Class<V> value,
-			final Property<T> property,
-			final Selector selector)
+	private SelectorInverseRelationship (final Property<T> property, final Selector<V> selector)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.value = value;
 		this.property = property;
 		this.selector = selector;
 	}
@@ -170,8 +160,7 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 	{
 		this.log.trace ("insert: element={}, value={}", element, value);
 		this.log.debug ("inserting Relationship: {} -> {}",
-				this.property.getName (),
-				this.value.getSimpleName ());
+				this.property.getName (), this.selector.getName ());
 
 		assert element != null : "element";
 		assert value != null : "value is NULL";
@@ -179,10 +168,12 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 		assert element.getDomainModel ().contains (element) : "element is not in the model";
 		assert element.getDomainModel ().contains (value) : "value is not in the model";
 
-		return element.getDomainModel ().contains (element) && ((! this.selector.isUnique ()) || this.getQuery ()
-			.setValue (this.property, element)
-			.queryAll ()
-			.size () <= 1);
+		return element.getDomainModel ().contains (element)
+			&& ((this.selector.getCardinality () == Selector.Cardinality.MULTIPLE)
+					|| this.getQuery ()
+					.setValue (this.property, element)
+					.queryAll ()
+					.size () <= 1);
 	}
 
 	/**
@@ -204,8 +195,7 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 	{
 		this.log.trace ("remove: element={}, value={}");
 		this.log.debug ("removing Relationship: {} -> {}",
-				this.property.getName (),
-				this.value.getSimpleName ());
+				this.property.getName (), this.selector.getName ());
 
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";

@@ -51,56 +51,47 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	/** The other side of the <code>Relationship</code> */
 	private final InverseRelationship<V, T> inverse;
 
-	/** The <code>Element</code> interface class */
-	private final Class<V> value;
-
 	/** The <code>Property</code> for owning <code>Element</code> */
 	private final Property<T> property;
 
 	/** The <code>Selector</code> for the associated <code>Element</code> */
-	private final Selector selector;
+	private final Selector<V> selector;
 
 	/**
 	 * Create the <code>SelectorRelationship</code> from the specified values.
 	 *
 	 * @param  inverse   The <code>Inverse</code> relationship, not null
-	 * @param  value    The <code>Element</code> interface class, not null
 	 * @param  property The <code>Property</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
 	public static <T extends Element, V extends Element> SelectorRelationship<T, V> of (
 			final InverseRelationship<V, T> inverse,
-			final Class<V> value,
 			final Property<T> property,
-			final Selector selector)
+			final Selector<V> selector)
 	{
 		assert inverse != null : "inverse is NULL";
-		assert value != null : "value is NULL";
 		assert property != null : "property is NULL";
 		assert selector != null : "selector is NULL";
 
-		return new SelectorRelationship<T, V> (inverse, value, property, selector);
+		return new SelectorRelationship<T, V> (inverse, property, selector);
 	}
 
 	/**
 	 * Create the <code>SelectorRelationship</code>.
 	 *
 	 * @param  inverse  The <code>Inverse</code> relationship, not null
-	 * @param  value    The <code>Element</code> interface class, not null
 	 * @param  property The <code>Property</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
 	private SelectorRelationship (final InverseRelationship<V, T> inverse,
-			final Class<V> value,
 			final Property<T> property,
-			final Selector selector)
+			final Selector<V> selector)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.inverse = inverse;
-		this.value = value;
 		this.property = property;
 		this.selector = selector;
 	}
@@ -182,8 +173,7 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	{
 		this.log.trace ("connect: element={}", element);
 		this.log.debug ("Connecting Relationship: {} -> {}",
-				this.property.getName (),
-				this.value.getSimpleName ());
+				this.property.getName (), this.selector.getName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";
@@ -210,8 +200,7 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	{
 		this.log.trace ("disconnect: element={}", element);
 		this.log.debug ("Disconnecting Relationship: {} -> {}",
-				this.property.getName (),
-				this.value.getSimpleName ());
+				this.property.getName (), this.selector.getName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";
