@@ -58,7 +58,7 @@ public final class MetaDataBuilder<T extends Element>
 	private final Set<Property<?>> properties;
 
 	/** The <code>Set</code> of <code>Selector</code> instances */
-	private final Set<Selector> selectors;
+	private final Set<Selector<? extends Element>> selectors;
 
 	/** <code>Property</code> to <code>Accessor</code> mapping */
 	private final Map<Property<?>, Accessor<T, ?>> accessors;
@@ -247,7 +247,7 @@ public final class MetaDataBuilder<T extends Element>
 	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V extends Element> MetaDataBuilder<T> addRelationship (final MetaData<V> metadata, final Property<V> local, final Selector remote)
+	public <V extends Element> MetaDataBuilder<T> addRelationship (final MetaData<V> metadata, final Property<V> local, final Selector<T> remote)
 	{
 		this.log.trace ("addRelationship: metadata={}, local={}, remote={}", metadata, local, remote);
 
@@ -266,7 +266,7 @@ public final class MetaDataBuilder<T extends Element>
 	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public MetaDataBuilder<T> addSelector (final Selector selector)
+	public MetaDataBuilder<T> addSelector (final Selector<T> selector)
 	{
 		this.log.trace ("addSelector: selector={}", selector);
 

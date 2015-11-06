@@ -64,7 +64,7 @@ public final class MetaData<T extends Element>
 	private final Set<Property<?>> properties;
 
 	/** The <code>Selector</code> instances for the interface */
-	private final Set<Selector> selectors;
+	private final Set<Selector<? extends Element>> selectors;
 
 	/** The <code>Accessor</code> instances for the interface */
 	private final Map<Property<?>, Accessor<T, ?>> accessors;
@@ -124,7 +124,7 @@ public final class MetaData<T extends Element>
 	protected MetaData (final Class<T> element,
 			final MetaData<? super T> parent,
 			final Set<Property<?>> properties,
-			final Set<Selector> selectors,
+			final Set<Selector<? extends Element>> selectors,
 			final Map<Property<?>, Accessor<T, ?>> accessors,
 			final Map<Property<?>, MultiAccessor<T, ?>> multiaccessors)
 	{
@@ -346,9 +346,9 @@ public final class MetaData<T extends Element>
 	 * @return A <code>Stream</code> of <code>Selector</code> instances
 	 */
 
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
-		Stream<Selector> result = this.selectors.stream ();
+		Stream<Selector<? extends Element>> result = this.selectors.stream ();
 
 		return (this.parent != null) ? Stream.concat (this.parent.selectors (), result)
 			: result;
