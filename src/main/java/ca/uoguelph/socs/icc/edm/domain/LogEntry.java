@@ -85,14 +85,20 @@ public abstract class LogEntry extends Element
 	/** The time that the <code>LogEntry</code> was created */
 	public static final Property<Date> TIME;
 
+	/** Select the <code>LogEntry</code> instance by its id */
+	public static final Selector<LogEntry> SELECTOR_ID;
+
+	/** Select all of the <code>LogEntry</code> instances */
+	public static final Selector<LogEntry> SELECTOR_ALL;
+
 	/** Select all <code>LogEntry</code> instances by <code>Action</code> */
-	public static final Selector SELECTOR_ACTION;
+	public static final Selector<LogEntry> SELECTOR_ACTION;
 
 	/** Select all <code>LogEntry</code> instances by <code>Course</code> */
-	public static final Selector SELECTOR_COURSE;
+	public static final Selector<LogEntry> SELECTOR_COURSE;
 
 	/** Select all <code>LogEntry</code> instances by <code>Network</code> */
-	public static final Selector SELECTOR_NETWORK;
+	public static final Selector<LogEntry> SELECTOR_NETWORK;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -101,26 +107,34 @@ public abstract class LogEntry extends Element
 
 	static
 	{
-		ACTION = Property.getInstance (Action.class, "action", Property.Flags.REQUIRED);
-		ACTIVITY = Property.getInstance (ActivityReference.class, "activity", Property.Flags.REQUIRED);
-		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
-		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
-		REFERENCE = Property.getInstance (LogReference.class, "reference", Property.Flags.RECOMMENDED);
-		NETWORK = Property.getInstance (Network.class, "network", Property.Flags.REQUIRED);
-		TIME = Property.getInstance (Date.class, "time", Property.Flags.REQUIRED);
+		ACTION = Property.of (Action.class, "action", Property.Flags.REQUIRED);
+		ACTIVITY = Property.of (ActivityReference.class, "activity", Property.Flags.REQUIRED);
+		COURSE = Property.of (Course.class, "course", Property.Flags.REQUIRED);
+		ENROLMENT = Property.of (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
+		REFERENCE = Property.of (LogReference.class, "reference", Property.Flags.RECOMMENDED);
+		NETWORK = Property.of (Network.class, "network", Property.Flags.REQUIRED);
+		TIME = Property.of (Date.class, "time", Property.Flags.REQUIRED);
 
-		SELECTOR_ACTION = Selector.getInstance (ACTION, false);
-		SELECTOR_COURSE = Selector.getInstance (COURSE, false);
-		SELECTOR_NETWORK = Selector.getInstance (NETWORK, false);
+		SELECTOR_ID = Selector.of (LogEntry.class, Selector.Cardinality.KEY, ID);
+		SELECTOR_ALL = Selector.of (LogEntry.class, Selector.Cardinality.MULTIPLE, "all");
+		SELECTOR_ACTION = Selector.of (LogEntry.class, Selector.Cardinality.MULTIPLE, ACTION);
+		SELECTOR_COURSE = Selector.of (LogEntry.class, Selector.Cardinality.MULTIPLE, COURSE);
+		SELECTOR_NETWORK = Selector.of (LogEntry.class, Selector.Cardinality.MULTIPLE, NETWORK);
 
 		METADATA = MetaData.builder (LogEntry.class, Element.METADATA)
+			.addProperty (ACTION, LogEntry::getAction, LogEntry::setAction)
+			.addProperty (ACTIVITY, LogEntry::getActivityReference, LogEntry::setActivityReference)
 			.addProperty (COURSE, LogEntry::getCourse)
+			.addProperty (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
+			.addProperty (NETWORK, LogEntry::getNetwork, LogEntry::setNetwork)
+			.addProperty (REFERENCE, LogEntry::getReference, LogEntry::setReference)
 			.addProperty (TIME, LogEntry::getTime, LogEntry::setTime)
-			.addRelationship (ACTION, LogEntry::getAction, LogEntry::setAction)
-			.addRelationship (ACTIVITY, LogEntry::getActivityReference, LogEntry::setActivityReference)
-			.addRelationship (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
-			.addRelationship (REFERENCE, LogEntry::getReference, LogEntry::setReference)
-			.addRelationship (NETWORK, LogEntry::getNetwork, LogEntry::setNetwork)
+			.addRelationship (Action.METADATA, ACTION, SELECTOR_ACTION)
+			.addRelationship (ActivityReference.METADATA, ACTIVITY, ActivityReference.LOGENTRIES)
+			.addRelationship (Enrolment.METADATA, ENROLMENT, Enrolment.LOGENTRIES)
+			.addRelationship (Network.METADATA, NETWORK, SELECTOR_NETWORK)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_ACTION)
 			.addSelector (SELECTOR_COURSE)
 			.addSelector (SELECTOR_NETWORK)
@@ -267,7 +281,7 @@ public abstract class LogEntry extends Element
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return LogEntry.METADATA.selectors ();
 	}

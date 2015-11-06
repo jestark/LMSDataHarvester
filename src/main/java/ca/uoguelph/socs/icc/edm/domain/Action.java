@@ -66,8 +66,14 @@ public abstract class Action extends Element
 	/** The name of the <code>Action</code> */
 	public static final Property<String> NAME;
 
+	/** Select the <code>Action</code> instance by its id */
+	public static final Selector<Action> SELECTOR_ID;
+
+	/** Select all of the <code>Action</code> instances */
+	public static final Selector<Action> SELECTOR_ALL;
+
 	/** Select an <code>Action</code> instance by its name */
-	public static final Selector SELECTOR_NAME;
+	public static final Selector<Action> SELECTOR_NAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -76,14 +82,17 @@ public abstract class Action extends Element
 
 	static
 	{
-		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
+		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
 
-		SELECTOR_NAME = Selector.getInstance (NAME, true);
+		SELECTOR_ID = Selector.of (Action.class, Selector.Cardinality.KEY, ID);
+		SELECTOR_ALL = Selector.of (Action.class, Selector.Cardinality.MULTIPLE, "all");
+		SELECTOR_NAME = Selector.of (Action.class, Selector.Cardinality.SINGLE, NAME);
 
 		METADATA = MetaData.builder (Action.class, Element.METADATA)
 			.addProperty (NAME, Action::getName, Action::setName)
-			.addRelationship (LogEntry.class, LogEntry.ACTION, LogEntry.SELECTOR_ACTION)
 			.addSelector (SELECTOR_NAME)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.build ();
 	}
 
@@ -203,7 +212,7 @@ public abstract class Action extends Element
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return Action.METADATA.selectors ();
 	}

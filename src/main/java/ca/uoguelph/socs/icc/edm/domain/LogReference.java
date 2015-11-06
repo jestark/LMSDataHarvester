@@ -59,8 +59,11 @@ public abstract class LogReference extends Element
 	/** The associated <code>SubActivity</code> */
 	public static final Property<SubActivity> SUBACTIVITY;
 
-	/** Select an <code>LogReference</code> instance by its <code>LogEntry</code> */
-	public static final Selector SELECTOR_ENTRY;
+	/** Select the <code>LogReference</code> instance by its id */
+	public static final Selector<LogReference> SELECTOR_ID;
+
+	/** Select all of the <code>LogReference</code> instances */
+	public static final Selector<LogReference> SELECTOR_ALL;
 
 	/** The associated <code>LogEntry</code> */
 	protected LogEntry entry;
@@ -74,15 +77,19 @@ public abstract class LogReference extends Element
 	{
 		references = new HashMap<> ();
 
-		ENTRY = Property.getInstance (LogEntry.class, "entry", Property.Flags.REQUIRED);
-		SUBACTIVITY = Property.getInstance (SubActivity.class, "subactivity", Property.Flags.REQUIRED);
+		ENTRY = Property.of (LogEntry.class, "entry", Property.Flags.REQUIRED);
+		SUBACTIVITY = Property.of (SubActivity.class, "subactivity", Property.Flags.REQUIRED);
 
-		SELECTOR_ENTRY = Selector.getInstance (ENTRY, true);
+		SELECTOR_ID = Selector.of (LogReference.class, Selector.Cardinality.KEY, ID);
+		SELECTOR_ALL = Selector.of (LogReference.class, Selector.Cardinality.MULTIPLE, "all");
 
 		METADATA = MetaData.builder (LogReference.class, Element.METADATA)
-			.addRelationship (ENTRY, LogReference::getEntry, LogReference::setEntry)
-			.addRelationship (SUBACTIVITY, LogReference::getSubActivity, LogReference::setSubActivity)
-			.addSelector (SELECTOR_ENTRY)
+			.addProperty (ENTRY, LogReference::getEntry, LogReference::setEntry)
+			.addProperty (SUBACTIVITY, LogReference::getSubActivity, LogReference::setSubActivity)
+			.addRelationship (LogEntry.METADATA, ENTRY, LogEntry.REFERENCE)
+			.addRelationship (SubActivity.METADATA, SUBACTIVITY, SubActivity.REFERENCES)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.build ();
 	}
 
@@ -220,7 +227,7 @@ public abstract class LogReference extends Element
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return LogReference.METADATA.selectors ();
 	}

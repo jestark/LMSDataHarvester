@@ -66,6 +66,12 @@ public abstract class SubActivity extends ParentActivity
 	/** The <code>SubActivity</code> instances for the <code>SubActivity</code> */
 	public static final Property<SubActivity> SUBACTIVITIES;
 
+	/** Select the <code>SubActivity</code> instance by its id */
+	public static final Selector<SubActivity> SELECTOR_ID;
+
+	/** Select all of the <code>SubActivity</code> instances */
+	public static final Selector<SubActivity> SELECTOR_ALL;
+
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
 	 * <code>Selector</code> instances for the <code>SubActivity</code>.
@@ -75,17 +81,23 @@ public abstract class SubActivity extends ParentActivity
 	{
 		subactivities = new HashMap<> ();
 
-		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
-		PARENT = Property.getInstance (ParentActivity.class, "parent", Property.Flags.REQUIRED);
+		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
+		PARENT = Property.of (ParentActivity.class, "parent", Property.Flags.REQUIRED);
 
-		REFERENCES = Property.getInstance (LogReference.class, "references", Property.Flags.MULTIVALUED);
-		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", Property.Flags.MULTIVALUED);
+		REFERENCES = Property.of (LogReference.class, "references", Property.Flags.MULTIVALUED);
+		SUBACTIVITIES = Property.of (SubActivity.class, "subactivities", Property.Flags.MULTIVALUED);
+
+		SELECTOR_ID = Selector.of (SubActivity.class, Selector.Cardinality.KEY, ID);
+		SELECTOR_ALL = Selector.of (SubActivity.class, Selector.Cardinality.MULTIPLE, "all");
 
 		METADATA = MetaData.builder (SubActivity.class, Element.METADATA)
 			.addProperty (NAME, SubActivity::getName, SubActivity::setName)
-			.addRelationship (PARENT, SubActivity::getParent, SubActivity::setParent)
-			.addRelationship (REFERENCES, SubActivity::getReferences, SubActivity::addReference, SubActivity::removeReference)
-			.addRelationship (SUBACTIVITIES, SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity)
+			.addProperty (PARENT, SubActivity::getParent, SubActivity::setParent)
+			.addProperty (REFERENCES, SubActivity::getReferences, SubActivity::addReference, SubActivity::removeReference)
+			.addProperty (SUBACTIVITIES, SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity)
+//			.addRelationship ()
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.build ();
 	}
 
@@ -244,7 +256,7 @@ public abstract class SubActivity extends ParentActivity
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return SubActivity.METADATA.selectors ();
 	}

@@ -72,8 +72,11 @@ public abstract class Grade extends Element
 	/** The assigned grade */
 	public static final Property<Integer> GRADE;
 
+	/** Select all of the <code>Grade</code> instances */
+	public static final Selector<Grade> SELECTOR_ALL;
+
 	/** Select a <code>Grade</code> based the <code>Activity</code> and <code>Enrolment</code> */
-	public static final Selector SELECTOR_PKEY;
+	public static final Selector<Grade> SELECTOR_PKEY;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -82,16 +85,20 @@ public abstract class Grade extends Element
 
 	static
 	{
-		ACTIVITY = Property.getInstance (ActivityReference.class, "activity", Property.Flags.REQUIRED);
-		ENROLMENT = Property.getInstance (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
-		GRADE = Property.getInstance (Integer.class, "grade", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		ACTIVITY = Property.of (ActivityReference.class, "activity", Property.Flags.REQUIRED);
+		ENROLMENT = Property.of (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
+		GRADE = Property.of (Integer.class, "grade", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
 
-		SELECTOR_PKEY = Selector.getInstance ("pkey", true, Grade.ACTIVITY, Grade.ENROLMENT);
+		SELECTOR_ALL = Selector.of (Grade.class, Selector.Cardinality.MULTIPLE, "all");
+		SELECTOR_PKEY = Selector.of (Grade.class, Selector.Cardinality.SINGLE, "pkey", Grade.ACTIVITY, Grade.ENROLMENT);
 
 		METADATA = MetaData.builder (Grade.class, Element.METADATA)
+			.addProperty (ACTIVITY, Grade::getActivityReference, Grade::setActivityReference)
+			.addProperty (ENROLMENT, Grade::getEnrolment, Grade::setEnrolment)
 			.addProperty (GRADE, Grade::getGrade, Grade::setGrade)
-			.addRelationship (ACTIVITY, Grade::getActivityReference, Grade::setActivityReference)
-			.addRelationship (ENROLMENT, Grade::getEnrolment, Grade::setEnrolment)
+//			.addRelationship (NamedActivity.METADATA, ACTIVITY, NamedActivity.GRADES)
+			.addRelationship (Enrolment.METADATA, ENROLMENT, Enrolment.GRADES)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_PKEY)
 			.build ();
 	}
@@ -239,7 +246,7 @@ public abstract class Grade extends Element
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return Grade.METADATA.selectors ();
 	}

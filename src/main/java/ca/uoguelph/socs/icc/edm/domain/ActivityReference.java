@@ -63,8 +63,14 @@ public abstract class ActivityReference extends Element
 	/** The <code>LogEntry</code> instances associated with the <code>Activity</code> */
 	public static final Property<LogEntry> LOGENTRIES;
 
+	/** Select the <code>ActivityReference</code> instance by its id */
+	public static final Selector<ActivityReference> SELECTOR_ID;
+
+	/** Select all of the <code>ActivityReference</code> instances */
+	public static final Selector<ActivityReference> SELECTOR_ALL;
+
 	/** Select all <code>Activity</code> instances by <code>ActivityType</code> */
-	public static final Selector SELECTOR_TYPE;
+	public static final Selector<ActivityReference> SELECTOR_TYPE;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -73,19 +79,25 @@ public abstract class ActivityReference extends Element
 
 	static
 	{
-		ACTIVITY = Property.getInstance (Activity.class, "activity", Property.Flags.RECOMMENDED);
-		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
-		TYPE = Property.getInstance (ActivityType.class, "type", Property.Flags.REQUIRED);
+		ACTIVITY = Property.of (Activity.class, "activity", Property.Flags.RECOMMENDED);
+		COURSE = Property.of (Course.class, "course", Property.Flags.REQUIRED);
+		TYPE = Property.of (ActivityType.class, "type", Property.Flags.REQUIRED);
 
-		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
+		LOGENTRIES = Property.of (LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
 
-		SELECTOR_TYPE = Selector.getInstance (TYPE, false);
+		SELECTOR_ID = Selector.of (ActivityReference.class, Selector.Cardinality.KEY, ID);
+		SELECTOR_ALL = Selector.of (ActivityReference.class, Selector.Cardinality.MULTIPLE, "all");
+		SELECTOR_TYPE = Selector.of (ActivityReference.class, Selector.Cardinality.MULTIPLE, TYPE);
 
 		METADATA = MetaData.builder (ActivityReference.class, Element.METADATA)
-			.addRelationship (ACTIVITY, ActivityReference::getActivity, ActivityReference::setActivity)
-			.addRelationship (COURSE, ActivityReference::getCourse, ActivityReference::setCourse)
-			.addRelationship (TYPE, ActivityReference::getType, ActivityReference::setType)
-			.addRelationship (LOGENTRIES, ActivityReference::getLog, ActivityReference::addLog, ActivityReference::removeLog)
+			.addProperty (ACTIVITY, ActivityReference::getActivity, ActivityReference::setActivity)
+			.addProperty (COURSE, ActivityReference::getCourse, ActivityReference::setCourse)
+			.addProperty (TYPE, ActivityReference::getType, ActivityReference::setType)
+			.addProperty (LOGENTRIES, ActivityReference::getLog, ActivityReference::addLog, ActivityReference::removeLog)
+			.addRelationship (Course.METADATA, COURSE, Course.ACTIVITIES)
+			.addRelationship (ActivityType.METADATA, TYPE, SELECTOR_TYPE)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_TYPE)
 			.build ();
 	}
@@ -208,7 +220,7 @@ public abstract class ActivityReference extends Element
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return ActivityReference.METADATA.selectors ();
 	}

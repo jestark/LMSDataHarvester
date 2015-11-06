@@ -53,12 +53,6 @@ public abstract class Element
 	/** The <code>DomainModel</code> which contains the <code>Element</code> */
 	public static final Property<DomainModel> MODEL;
 
-	/** Select the <code>Activity</code> instance by its id */
-	public static final Selector SELECTOR_ID;
-
-	/** Select all of the <code>Activity</code> instances */
-	public static final Selector SELECTOR_ALL;
-
 	/** The <code>DomainModel</code> */
 	private DomainModel model;
 
@@ -69,17 +63,12 @@ public abstract class Element
 
 	static
 	{
-		ID = Property.getInstance (Long.class, "id");
-		MODEL = Property.getInstance (DomainModel.class, "domainmodel");
-
-		SELECTOR_ID = Selector.getInstance (ID, true);
-		SELECTOR_ALL = Selector.getInstance ("all", false);
+		ID = Property.of (Long.class, "id");
+		MODEL = Property.of (DomainModel.class, "domainmodel");
 
 		METADATA = MetaData.builder (Element.class)
 			.addProperty (ID, Element::getId, Element::setId)
 			.addProperty (MODEL, Element::getDomainModel, Element::setDomainModel)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.build ();
 	}
 
@@ -181,7 +170,7 @@ public abstract class Element
 	 *         associated with the <code>Element</code> interface class
 	 */
 
-	public abstract Stream<Selector> selectors ();
+	public abstract Stream<Selector<? extends Element>> selectors ();
 
 	/**
 	 * Determine if the value contained in the <code>Element</code> represented

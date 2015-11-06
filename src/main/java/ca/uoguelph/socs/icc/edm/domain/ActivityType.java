@@ -72,8 +72,14 @@ public abstract class ActivityType extends Element
 	/** The associated <code>ActivitySource</code> */
 	public static final Property<ActivitySource> SOURCE;
 
+	/** Select the <code>ActivityType</code> instance by its id */
+	public static final Selector<ActivityType> SELECTOR_ID;
+
+	/** Select all of the <code>ActivityType</code> instances */
+	public static final Selector<ActivityType> SELECTOR_ALL;
+
 	/** Select an <code>ActivityType</code> instance by name and <code>ActivitySource</code> */
-	public static final Selector SELECTOR_NAME;
+	public static final Selector<ActivityType> SELECTOR_NAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -82,15 +88,19 @@ public abstract class ActivityType extends Element
 
 	static
 	{
-		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
-		SOURCE = Property.getInstance (ActivitySource.class, "source", Property.Flags.REQUIRED);
+		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
+		SOURCE = Property.of (ActivitySource.class, "source", Property.Flags.REQUIRED);
 
-		SELECTOR_NAME = Selector.getInstance ("name", true, NAME, SOURCE);
+		SELECTOR_ID = Selector.of (ActivityType.class, Selector.Cardinality.KEY, ID);
+		SELECTOR_ALL = Selector.of (ActivityType.class, Selector.Cardinality.MULTIPLE, "all");
+		SELECTOR_NAME = Selector.of (ActivityType.class, Selector.Cardinality.SINGLE, "name", NAME, SOURCE);
 
 		METADATA = MetaData.builder (ActivityType.class, Element.METADATA)
 			.addProperty (NAME, ActivityType::getName, ActivityType::setName)
-			.addRelationship (SOURCE, ActivityType::getSource, ActivityType::setSource)
-			.addRelationship (ActivityReference.class, ActivityReference.TYPE, ActivityReference.SELECTOR_TYPE)
+			.addProperty (SOURCE, ActivityType::getSource, ActivityType::setSource)
+			.addRelationship (ActivitySource.METADATA, SOURCE, ActivitySource.TYPES)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
 			.build ();
 	}
@@ -214,7 +224,7 @@ public abstract class ActivityType extends Element
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return ActivityType.METADATA.selectors ();
 	}

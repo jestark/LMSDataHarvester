@@ -81,8 +81,14 @@ public abstract class Course extends Element
 	/** The <code>Enrolment</code> instances associated with the <code>Course</code> */
 	public static final Property<Enrolment> ENROLMENTS;
 
+	/** Select the <code>Course</code> instance by its id */
+	public static final Selector<Course> SELECTOR_ID;
+
+	/** Select all of the <code>Course</code> instances */
+	public static final Selector<Course> SELECTOR_ALL;
+
 	/** Select an <code>Course</code> instance by its name and date of offering */
-	public static final Selector SELECTOR_OFFERING;
+	public static final Selector<Course> SELECTOR_OFFERING;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -91,22 +97,26 @@ public abstract class Course extends Element
 
 	static
 	{
-		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
-		SEMESTER = Property.getInstance (Semester.class, "semester", Property.Flags.REQUIRED);
-		YEAR = Property.getInstance (Integer.class, "year", Property.Flags.REQUIRED);
+		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
+		SEMESTER = Property.of (Semester.class, "semester", Property.Flags.REQUIRED);
+		YEAR = Property.of (Integer.class, "year", Property.Flags.REQUIRED);
 
-		ACTIVITIES = Property.getInstance (ActivityReference.class, "activities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
-		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
+		ACTIVITIES = Property.of (ActivityReference.class, "activities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
+		ENROLMENTS = Property.of (Enrolment.class, "enrolments", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
 
-		SELECTOR_OFFERING = Selector.getInstance ("offering", true, NAME, SEMESTER, YEAR);
+		SELECTOR_ID = Selector.of (Course.class, Selector.Cardinality.KEY, ID);
+		SELECTOR_ALL = Selector.of (Course.class, Selector.Cardinality.MULTIPLE, "all");
+		SELECTOR_OFFERING = Selector.of (Course.class, Selector.Cardinality.SINGLE, "offering", NAME, SEMESTER, YEAR);
 
 		METADATA = MetaData.builder (Course.class, Element.METADATA)
 			.addProperty (NAME, Course::getName, Course::setName)
 			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
 			.addProperty (YEAR, Course::getYear, Course::setYear)
-			.addRelationship (ACTIVITIES, Course::getActivityReferences, Course::addActivityReference, Course::removeActivityReference)
-			.addRelationship (ENROLMENTS, Course::getEnrolments, Course::addEnrolment, Course::removeEnrolment)
+			.addProperty (ACTIVITIES, Course::getActivityReferences, Course::addActivityReference, Course::removeActivityReference)
+			.addProperty (ENROLMENTS, Course::getEnrolments, Course::addEnrolment, Course::removeEnrolment)
 			.addSelector (SELECTOR_OFFERING)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.build ();
 	}
 
@@ -231,7 +241,7 @@ public abstract class Course extends Element
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return Course.METADATA.selectors ();
 	}

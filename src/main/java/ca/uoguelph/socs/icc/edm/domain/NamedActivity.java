@@ -55,6 +55,12 @@ public abstract class NamedActivity extends Activity
 	/** The <code>SubActivity</code> instances for the <code>Activity</code> */
 	public static final Property<SubActivity> SUBACTIVITIES;
 
+	/** Select the <code>NamedActivity</code> instance by its id */
+	public static final Selector<NamedActivity> SELECTOR_ID;
+
+	/** Select all of the <code>NamedActivity</code> instances */
+	public static final Selector<NamedActivity> SELECTOR_ALL;
+
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
 	 * <code>Selector</code> instances for the <code>NamedActivity</code>.
@@ -62,13 +68,18 @@ public abstract class NamedActivity extends Activity
 
 	static
 	{
-		GRADES = Property.getInstance (Grade.class, "grade", Property.Flags.MULTIVALUED);
-		SUBACTIVITIES = Property.getInstance (SubActivity.class, "subactivities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
+		GRADES = Property.of (Grade.class, "grade", Property.Flags.MULTIVALUED);
+		SUBACTIVITIES = Property.of (SubActivity.class, "subactivities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
+
+		SELECTOR_ID = Selector.of (NamedActivity.class, Selector.Cardinality.KEY, ID);
+		SELECTOR_ALL = Selector.of (NamedActivity.class, Selector.Cardinality.MULTIPLE, "all");
 
 		METADATA = MetaData.builder (NamedActivity.class, Activity.METADATA)
 			.addProperty (Activity.NAME, NamedActivity::getName, NamedActivity::setName)
-			.addRelationship (GRADES, NamedActivity::getGrades, NamedActivity::addGrade, NamedActivity::removeGrade)
-			.addRelationship (SUBACTIVITIES, NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity)
+			.addProperty (GRADES, NamedActivity::getGrades, NamedActivity::addGrade, NamedActivity::removeGrade)
+			.addProperty (SUBACTIVITIES, NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.build ();
 	}
 
@@ -191,7 +202,7 @@ public abstract class NamedActivity extends Activity
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return NamedActivity.METADATA.selectors ();
 	}

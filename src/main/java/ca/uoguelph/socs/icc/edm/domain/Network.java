@@ -51,8 +51,14 @@ public abstract class Network extends Element
 	/** The name of the <code>Network</code> */
 	public static final Property<String> NAME;
 
+	/** Select the <code>Network</code> instance by its id */
+	public static final Selector<Network> SELECTOR_ID;
+
+	/** Select all of the <code>Network</code> instances */
+	public static final Selector<Network> SELECTOR_ALL;
+
 	/** Select an <code>Network</code> instance by its name */
-	public static final Selector SELECTOR_NAME;
+	public static final Selector<Network> SELECTOR_NAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -61,13 +67,16 @@ public abstract class Network extends Element
 
 	static
 	{
-		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
+		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
 
-		SELECTOR_NAME = Selector.getInstance (NAME, true);
+		SELECTOR_ID = Selector.of (Network.class, Selector.Cardinality.KEY, ID);
+		SELECTOR_ALL = Selector.of (Network.class, Selector.Cardinality.MULTIPLE, "all");
+		SELECTOR_NAME = Selector.of (Network.class, Selector.Cardinality.SINGLE, NAME);
 
 		METADATA = MetaData.builder (Network.class, Element.METADATA)
 			.addProperty (NAME, Network::getName, Network::setName)
-			.addRelationship (LogEntry.class, LogEntry.NETWORK, LogEntry.SELECTOR_NETWORK)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
 			.build ();
 	}
@@ -188,7 +197,7 @@ public abstract class Network extends Element
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return Network.METADATA.selectors ();
 	}

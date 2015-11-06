@@ -76,11 +76,17 @@ public abstract class User extends Element
 	/** The <code>Enrolment</code> instances associated with the <code>User</code> */
 	public static final Property<Enrolment> ENROLMENTS;
 
+	/** Select the <code>User</code> instance by its id */
+	public static final Selector<User> SELECTOR_ID;
+
+	/** Select all of the <code>User</code> instances */
+	public static final Selector<User> SELECTOR_ALL;
+
 	/** Select the <code>User</code> instance for a <code>Enrolment</code> */
-	public static final Selector SELECTOR_ENROLMENTS;
+	public static final Selector<User> SELECTOR_ENROLMENTS;
 
 	/** Select an <code>User</code> instance by its username */
-	public static final Selector SELECTOR_USERNAME;
+	public static final Selector<User> SELECTOR_USERNAME;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -89,20 +95,25 @@ public abstract class User extends Element
 
 	static
 	{
-		FIRSTNAME = Property.getInstance (String.class, "firstname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
-		LASTNAME = Property.getInstance (String.class, "lastname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
-		USERNAME = Property.getInstance (String.class, "username", Property.Flags.REQUIRED);
+		FIRSTNAME = Property.of (String.class, "firstname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		LASTNAME = Property.of (String.class, "lastname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		USERNAME = Property.of (String.class, "username", Property.Flags.REQUIRED);
 
-		ENROLMENTS = Property.getInstance (Enrolment.class, "enrolments", Property.Flags.MUTABLE, Property.Flags.MULTIVALUED);
+		ENROLMENTS = Property.of (Enrolment.class, "enrolments", Property.Flags.MUTABLE, Property.Flags.MULTIVALUED);
 
-		SELECTOR_ENROLMENTS = Selector.getInstance (ENROLMENTS, true);
-		SELECTOR_USERNAME = Selector.getInstance (USERNAME, true);
+		SELECTOR_ID = Selector.of (User.class, Selector.Cardinality.KEY, ID);
+		SELECTOR_ALL = Selector.of (User.class, Selector.Cardinality.MULTIPLE, "all");
+		SELECTOR_USERNAME = Selector.of (User.class, Selector.Cardinality.SINGLE, USERNAME);
+		SELECTOR_ENROLMENTS = Selector.of (User.class, Selector.Cardinality.SINGLE, ENROLMENTS);
 
 		METADATA = MetaData.builder (User.class, Element.METADATA)
 			.addProperty (FIRSTNAME, User::getFirstname, User::setFirstname)
 			.addProperty (LASTNAME, User::getLastname, User::setLastname)
 			.addProperty (USERNAME, User::getUsername, User::setUsername)
-			.addRelationship (ENROLMENTS, User::getEnrolments, User::addEnrolment, User::removeEnrolment)
+			.addProperty (ENROLMENTS, User::getEnrolments, User::addEnrolment, User::removeEnrolment)
+			.addRelationship (Enrolment.METADATA, ENROLMENTS, SELECTOR_ENROLMENTS)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_USERNAME)
 			.addSelector (SELECTOR_ENROLMENTS)
 			.build ();
@@ -250,7 +261,7 @@ public abstract class User extends Element
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return User.METADATA.selectors ();
 	}

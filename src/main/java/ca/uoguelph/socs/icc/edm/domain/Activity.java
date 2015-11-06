@@ -35,6 +35,8 @@ import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.MemDataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+import ca.uoguelph.socs.icc.edm.domain.datastore.ProfileBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.SequentialIdGenerator;
 
@@ -44,8 +46,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
-import ca.uoguelph.socs.icc.edm.domain.metadata.ProfileBuilder;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
@@ -106,6 +106,12 @@ public abstract class Activity extends ParentActivity
 	/** The associated <code>ActivityReference</code> */
 	public static final Property<ActivityReference> REFERENCE;
 
+	/** Select the <code>Activity</code> instance by its id */
+	public static final Selector<Activity> SELECTOR_ID;
+
+	/** Select all of the <code>Activity</code> instances */
+	public static final Selector<Activity> SELECTOR_ALL;
+
 	/** The associated <code>ActivityReference</code> instance */
 	private ActivityReference reference;
 
@@ -118,12 +124,18 @@ public abstract class Activity extends ParentActivity
 	{
 		activities = new HashMap<> ();
 
-		NAME = Property.getInstance (String.class, "name", Property.Flags.REQUIRED);
-		REFERENCE = Property.getInstance (ActivityReference.class, "reference", Property.Flags.REQUIRED);
+		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
+		REFERENCE = Property.of (ActivityReference.class, "reference", Property.Flags.REQUIRED);
+
+		SELECTOR_ID = Selector.of (Activity.class, Selector.Cardinality.KEY, REFERENCE);
+		SELECTOR_ALL = Selector.of (Activity.class, Selector.Cardinality.MULTIPLE, "all");
 
 		METADATA = MetaData.builder (Activity.class, Element.METADATA)
 			.addProperty (NAME, Activity::getName)
-			.addRelationship (REFERENCE, Activity::getReference, Activity::setReference)
+			.addProperty (REFERENCE, Activity::getReference, Activity::setReference)
+			.addRelationship (ActivityReference.METADATA, REFERENCE, ActivityReference.ACTIVITY)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.build ();
 	}
 
@@ -131,13 +143,13 @@ public abstract class Activity extends ParentActivity
 	{
 		if (Activity.store == null)
 		{
-			Profile activityProf = new ProfileBuilder ()
-				.setName ("Activity")
-				.setMutable (true)
-				.setElementClass (ActivitySource.class, ActivitySourceData.class)
-				.setElementClass (ActivityType.class, ActivityTypeData.class)
-				.setGenerator (Element.class, SequentialIdGenerator.class)
-				.build ();
+//			Profile activityProf = new ProfileBuilder ()
+//				.setName ("Activity")
+//				.setMutable (true)
+//				.setElementClass (ActivitySource.class, ActivitySourceData.class)
+//				.setElementClass (ActivityType.class, ActivityTypeData.class)
+//				.setGenerator (Element.class, SequentialIdGenerator.class)
+//				.build ();
 
 			// Activity.store = new DomainModel (DataStore.getInstance (MemDataStore.class, activityProf));
 		}
@@ -338,7 +350,7 @@ public abstract class Activity extends ParentActivity
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return Activity.METADATA.selectors ();
 	}

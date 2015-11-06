@@ -107,8 +107,14 @@ public abstract class Enrolment extends Element
 	/** The <code>LogEntry</code> instances associated with the <code>Enrolment</code> */
 	public static final Property<LogEntry> LOGENTRIES;
 
+	/** Select the <code>Enrolment</code> instance by its id */
+	public static final Selector<Enrolment> SELECTOR_ID;
+
+	/** Select all of the <code>Enrolment</code> instances */
+	public static final Selector<Enrolment> SELECTOR_ALL;
+
 	/** Select all <code>Enrolment</code> by <code>Role</code>*/
-	public static final Selector SELECTOR_ROLE;
+	public static final Selector<Enrolment> SELECTOR_ROLE;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -117,24 +123,29 @@ public abstract class Enrolment extends Element
 
 	static
 	{
-		COURSE = Property.getInstance (Course.class, "course", Property.Flags.REQUIRED);
-		FINALGRADE = Property.getInstance (Integer.class, "finalgrade", Property.Flags.MUTABLE);
-		ROLE = Property.getInstance (Role.class, "role", Property.Flags.REQUIRED);
-		USABLE = Property.getInstance (Boolean.class, "usable", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		COURSE = Property.of (Course.class, "course", Property.Flags.REQUIRED);
+		FINALGRADE = Property.of (Integer.class, "finalgrade", Property.Flags.MUTABLE);
+		ROLE = Property.of (Role.class, "role", Property.Flags.REQUIRED);
+		USABLE = Property.of (Boolean.class, "usable", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
 
-		GRADES = Property.getInstance (Grade.class, "grades", Property.Flags.MULTIVALUED);
-		LOGENTRIES = Property.getInstance (LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
+		GRADES = Property.of (Grade.class, "grades", Property.Flags.MULTIVALUED);
+		LOGENTRIES = Property.of (LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
 
-		SELECTOR_ROLE = Selector.getInstance (ROLE, false);
+		SELECTOR_ID = Selector.of (Enrolment.class, Selector.Cardinality.KEY, ID);
+		SELECTOR_ALL = Selector.of (Enrolment.class, Selector.Cardinality.MULTIPLE, "all");
+		SELECTOR_ROLE = Selector.of (Enrolment.class, Selector.Cardinality.MULTIPLE, ROLE);
 
 		METADATA = MetaData.builder (Enrolment.class, Element.METADATA)
+			.addProperty (COURSE, Enrolment::getCourse, Enrolment::setCourse)
 			.addProperty (FINALGRADE, Enrolment::getFinalGrade, Enrolment::setFinalGrade)
+			.addProperty (ROLE, Enrolment::getRole, Enrolment::setRole)
 			.addProperty (USABLE, Enrolment::isUsable, Enrolment::setUsable)
-			.addRelationship (COURSE, Enrolment::getCourse, Enrolment::setCourse)
-			.addRelationship (ROLE, Enrolment::getRole, Enrolment::setRole)
-			.addRelationship (GRADES, Enrolment::getGrades, Enrolment::addGrade, Enrolment::removeGrade)
-			.addRelationship (LOGENTRIES, Enrolment::getLog, Enrolment::addLog, Enrolment::removeLog)
-			.addRelationship (User.class, User.ENROLMENTS, User.SELECTOR_ENROLMENTS)
+			.addProperty (GRADES, Enrolment::getGrades, Enrolment::addGrade, Enrolment::removeGrade)
+			.addProperty (LOGENTRIES, Enrolment::getLog, Enrolment::addLog, Enrolment::removeLog)
+			.addRelationship (Course.METADATA, COURSE, Course.ENROLMENTS)
+			.addRelationship (Role.METADATA, ROLE, SELECTOR_ROLE)
+			.addSelector (SELECTOR_ID)
+			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_ROLE)
 			.build ();
 	}
@@ -309,7 +320,7 @@ public abstract class Enrolment extends Element
 	 */
 
 	@Override
-	public Stream<Selector> selectors ()
+	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return Enrolment.METADATA.selectors ();
 	}
