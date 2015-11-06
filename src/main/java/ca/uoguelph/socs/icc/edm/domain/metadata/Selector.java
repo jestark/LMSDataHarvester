@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.metadata;
 import java.util.Set;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -32,20 +33,56 @@ import com.google.common.base.Preconditions;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * Definition of the <code>Set</code> of <code>Property</code> instances used
- * to load an <code>Element</code> from the <code>DataStore</code>.  A
- * <code>Selector</code> can uniquely identify a single <code>Element</code>
- * instance or it my match multiple instances of a particular
- * <code>Element</code> class.
+ * A representation of a set of <code>Element</code> instances.  This class
+ * contains a <code>Set</code> of <code>Property</code> instances which identify
+ * a set instances, for a given <code>Element</code> interface class, within the
+ * <code>DomainModel</code>.
+ * <p>
+ * The maximum expected size of the set of <code>Element</code> instances which
+ * are associated with a given <code>Selector</code> is specified by the
+ * <code>Cardinality</code> enum.  The <code>Cardinality</code> can have the
+ * following values:
+ *
+ * <ul>
+ * <li> MULTIPLE: Indicating that the <code>Selector</code> is expected to match
+ *                more then one <code>Element</code> instance
+ * <li> SINGLE:   Indicating that the <code>Selector</code> is expected to match
+ *                only one <code>Element</code> instance
+ * <li> KEY:      A special case of SINGLE, indicating that the
+ *                <code>Property</code> contained in the <code>Selector</code>
+ *                is the primary key for the <code>Element</code>.
+ * </ul>
+ * <p>
+ * If the cardinality is set to KEY, then the <code>Selector</code> must contain
+ * exactly one <code>Property</code> instance.  Otherwise, the difference
+ * between KEY and SINGLE is implementation dependant for the
+ * <code>DataStore</code>.
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     Definition
+ * @see     MetaData
  * @see     Property
  */
 
 public final class Selector<T extends Element>
 {
+	/**
+	 * A representation of the maximum cardinality of the set of
+	 * <code>Element</code> represented by the <code>Selector</code>.
+	 */
+
+	public static enum Cardinality
+	{
+		/** The <code>Selector</code> represents the primary key for the <code>Element</code> */
+		KEY,
+
+		/** The <code>Selector</code> represents a single <code>Eleemnt</code> instance */
+		SINGLE,
+
+		/** The <code>Selector</code> represents multiple <code>Eleemnt</code> instances */
+		MULTIPLE;
+	}
+
 	/** The <code>Element</code> type described by the <code>Selector</code> */
 	private final Class<T> element;
 
@@ -55,8 +92,8 @@ public final class Selector<T extends Element>
 	/** Are all of the associated <code>Property</code> instances immutable */
 	private final boolean constant;
 
-	/** Will this <code>Selector</code> yield only one <code>Element</code> */
-	private final boolean unique;
+	/** The <code>Cardinality</code> of the result set */
+	private final Cardinality cardinality;
 
 	/** The <code>Property</code> instances */
 	private final Set<Property<?>> properties;
@@ -65,66 +102,75 @@ public final class Selector<T extends Element>
 	 * Create the <code>Selector</code> using multiple <code>Property</code>
 	 * instances.
 	 *
-	 * @param  element    The <code>Element</code> interface class, not null
-	 * @param  name       The name of the <code>Selector</code>, not null
-	 * @param  unique     An indication if the <code>Selector</code> uniquely
-	 *                    identifies an <code>Element</code> instance
-	 * @param  properties The properties to be used to create the
-	 *                    <code>Selector</code>, not null
+	 * @param  element     The <code>Element</code> interface class, not null
+	 * @param  name        The name of the <code>Selector</code>, not null
+	 * @param  cardinality The <code>Cardinality</code> of the result, not null
+	 * @param  properties  The properties to be used to create the
+	 *                     <code>Selector</code>, not null
 	 *
-	 * @return            The <code>Selector</code>
+	 * @return             The <code>Selector</code>
 	 */
 
-	public static <T extends Element> Selector<T> of (final Class<T> element,
+	public static <T extends Element> Selector<T> of (
+			final Class<T> element,
+			final Cardinality cardinality,
 			final String name,
-			final boolean unique,
 			final Property<?>... properties)
 	{
 		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (cardinality, "cardinality");
 		Preconditions.checkNotNull (name, "name");
 		Preconditions.checkArgument (name.length () > 0);
+		Preconditions.checkArgument (cardinality != Cardinality.KEY || properties.length == 1,
+				"A KEY must have exactly one Property");
 
-		return new Selector<T> (element, name, unique, Arrays.stream (properties).collect (Collectors.toSet ()));
+		return new Selector<T> (element, cardinality, name, Arrays.stream (properties)
+				.filter (p -> p != null)
+				.collect (Collectors.toSet ()));
 	}
 
 	/**
 	 * Create the <code>Selector</code> using a single <code>Property</code>.
 	 *
-	 * @param  element  The <code>Element</code> interface class, not null
-	 * @param  unique   An indication if the <code>Selector</code> uniquely
-	 *                  identifies an <code>Element</code> instance
-	 * @param  property The property to be represented by the
-	 *                  <code>Selector</code>, not null
+	 * @param  element     The <code>Element</code> interface class, not null
+	 * @param  cardinality The <code>Cardinality</code> of the result, not null
+	 * @param  property    The property to be represented by the
+	 *                     <code>Selector</code>, not null
 	 *
-	 * @return          The <code>Selector</code>
+	 * @return             The <code>Selector</code>
 	 */
 
-	public static <T extends Element> Selector<T> of (final Class<T> element,
-			final Property<?> property,
-			final boolean unique)
+	public static <T extends Element> Selector<T> of (
+			final Class<T> element,
+			final Cardinality cardinality,
+			final Property<?> property)
 	{
 		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (cardinality, "cardinality");
 		Preconditions.checkNotNull (property, "property");
 
-		return Selector.of (element, property.getName (), unique, property);
+		return Selector.of (element, cardinality, property.getName (), property);
 	}
 
 	/**
 	 * Create the <code>Selector</code>.
 	 *
-	 * @param  element    The <code>Element</code> interface class, not null
-	 * @param  name       The name of the <code>Selector</code>
-	 * @param  unique     An indication if the <code>Selector</code> uniquely
-	 *                    identifies an <code>Element</code> instance
-	 * @param  properties The <code>Set</code> of <code>Property</code>
-	 *                    instances represented by the <code>Selector</code>
+	 * @param  element     The <code>Element</code> interface class, not null
+	 * @param  name        The name of the <code>Selector</code>
+	 * @param  cardinality The <code>Cardinality</code> of the result, not null
+	 * @param  properties  The <code>Set</code> of <code>Property</code>
+	 *                     instances represented by the <code>Selector</code>
 	 */
 
-	private Selector (final Class<T> element, final String name, final boolean unique, final Set<Property<?>> properties)
+	private Selector (
+			final Class<T> element,
+			final Cardinality cardinality,
+			final String name,
+			final Set<Property<?>> properties)
 	{
 		this.element = element;
 		this.name = name;
-		this.unique = unique;
+		this.cardinality = cardinality;
 		this.properties = properties;
 
 		this.constant = this.properties.stream ()
@@ -147,8 +193,8 @@ public final class Selector<T extends Element>
 	{
 		return (obj == this) ? true : (obj instanceof Selector)
 			&& Objects.equals (this.element, ((Selector) obj).element)
+			&& Objects.equals (this.cardinality, ((Selector) obj).cardinality)
 			&& Objects.equals (this.name, ((Selector) obj).name)
-			&& Objects.equals (this.unique, ((Selector) obj).unique)
 			&& Objects.equals (this.properties, ((Selector) obj).properties);
 	}
 
@@ -161,7 +207,7 @@ public final class Selector<T extends Element>
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.element, this.name, this.unique, this.properties);
+		return Objects.hash (this.element, this.cardinality, this.name, this.properties);
 	}
 
 	/**
@@ -178,8 +224,8 @@ public final class Selector<T extends Element>
 	{
 		return MoreObjects.toStringHelper (this)
 			.add ("element", this.element)
+			.add ("cardinality", this.cardinality)
 			.add ("name", this.name)
-			.add ("unique", this.unique)
 			.add ("properties", this.properties)
 			.toString ();
 	}
@@ -208,30 +254,15 @@ public final class Selector<T extends Element>
 	}
 
 	/**
-	 * Determine if all of the <code>Property</code> instances associated with
-	 * this <code>Selector</code> are immutable.
+	 * Get the <code>Cardinality</code> of the set of <code>Element</code>
+	 * instances represented by this<code>Selector</code>.
 	 *
-	 * @return <code>true</code> if all of the associated <code>Property</code>
-	 *         instances are immutable, <code>false</code> otherwise
+	 * @return The <code>Cardinality</code>
 	 */
 
-	public boolean isConstant ()
+	public Cardinality getCardinality ()
 	{
-		return this.constant;
-	}
-
-	/**
-	 * Determine if the <code>Selector</code> uniquely identifies an
-	 * <code>Element</code> instance.
-	 *
-	 * @return <code>true</code> if the <code>Selector</code> uniquely
-	 *         identifies an <code>Element</code> instance, <code>false</code>
-	 *         otherwise
-	 */
-
-	public boolean isUnique ()
-	{
-		return this.unique;
+		return this.cardinality;
 	}
 
 	/**
@@ -244,6 +275,19 @@ public final class Selector<T extends Element>
 
 	public Set<Property<?>> getProperties ()
 	{
-		return new HashSet<Property<?>> (this.properties);
+		return Collections.unmodifiableSet (this.properties);
+	}
+
+	/**
+	 * Determine if all of the <code>Property</code> instances associated with
+	 * this <code>Selector</code> are immutable.
+	 *
+	 * @return <code>true</code> if all of the associated <code>Property</code>
+	 *         instances are immutable, <code>false</code> otherwise
+	 */
+
+	public boolean isConstant ()
+	{
+		return this.constant;
 	}
 }
