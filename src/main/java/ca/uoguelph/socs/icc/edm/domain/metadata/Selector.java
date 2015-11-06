@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckReturnValue;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -43,8 +44,11 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @see     Property
  */
 
-public final class Selector
+public final class Selector<T extends Element>
 {
+	/** The <code>Element</code> type described by the <code>Selector</code> */
+	private final Class<T> element;
+
 	/** The name of the <code>Selector</code> */
 	private final String name;
 
@@ -61,6 +65,7 @@ public final class Selector
 	 * Create the <code>Selector</code> using multiple <code>Property</code>
 	 * instances.
 	 *
+	 * @param  element    The <code>Element</code> interface class, not null
 	 * @param  name       The name of the <code>Selector</code>, not null
 	 * @param  unique     An indication if the <code>Selector</code> uniquely
 	 *                    identifies an <code>Element</code> instance
@@ -70,17 +75,22 @@ public final class Selector
 	 * @return            The <code>Selector</code>
 	 */
 
-	public static Selector of (final String name, final boolean unique, final Property<?>... properties)
+	public static <T extends Element> Selector<T> of (final Class<T> element,
+			final String name,
+			final boolean unique,
+			final Property<?>... properties)
 	{
-		assert name != null : "name is NULL";
-		assert name.length () > 0 : "name is empty";
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (name, "name");
+		Preconditions.checkArgument (name.length () > 0);
 
-		return new Selector (name, unique, Arrays.stream (properties).collect (Collectors.toSet ()));
+		return new Selector<T> (element, name, unique, Arrays.stream (properties).collect (Collectors.toSet ()));
 	}
 
 	/**
 	 * Create the <code>Selector</code> using a single <code>Property</code>.
 	 *
+	 * @param  element  The <code>Element</code> interface class, not null
 	 * @param  unique   An indication if the <code>Selector</code> uniquely
 	 *                  identifies an <code>Element</code> instance
 	 * @param  property The property to be represented by the
@@ -89,16 +99,20 @@ public final class Selector
 	 * @return          The <code>Selector</code>
 	 */
 
-	public static Selector of (final Property<?> property, final boolean unique)
+	public static <T extends Element> Selector<T> of (final Class<T> element,
+			final Property<?> property,
+			final boolean unique)
 	{
-		assert property != null : "property is NULL";
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (property, "property");
 
-		return Selector.of (property.getName (), unique, property);
+		return Selector.of (element, property.getName (), unique, property);
 	}
 
 	/**
 	 * Create the <code>Selector</code>.
 	 *
+	 * @param  element    The <code>Element</code> interface class, not null
 	 * @param  name       The name of the <code>Selector</code>
 	 * @param  unique     An indication if the <code>Selector</code> uniquely
 	 *                    identifies an <code>Element</code> instance
@@ -106,8 +120,9 @@ public final class Selector
 	 *                    instances represented by the <code>Selector</code>
 	 */
 
-	private Selector (final String name, final boolean unique, final Set<Property<?>> properties)
+	private Selector (final Class<T> element, final String name, final boolean unique, final Set<Property<?>> properties)
 	{
+		this.element = element;
 		this.name = name;
 		this.unique = unique;
 		this.properties = properties;
@@ -131,6 +146,7 @@ public final class Selector
 	public boolean equals (final Object obj)
 	{
 		return (obj == this) ? true : (obj instanceof Selector)
+			&& Objects.equals (this.element, ((Selector) obj).element)
 			&& Objects.equals (this.name, ((Selector) obj).name)
 			&& Objects.equals (this.unique, ((Selector) obj).unique)
 			&& Objects.equals (this.properties, ((Selector) obj).properties);
@@ -145,7 +161,39 @@ public final class Selector
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.name, this.unique, this.properties);
+		return Objects.hash (this.element, this.name, this.unique, this.properties);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>Selector</code>
+	 * instance, including the identifying fields.
+	 *
+	 * @return A <code>String</code> representation of the <code>Selector</code>
+	 *         instance
+	 */
+
+	@Override
+	@CheckReturnValue
+	public String toString ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("element", this.element)
+			.add ("name", this.name)
+			.add ("unique", this.unique)
+			.add ("properties", this.properties)
+			.toString ();
+	}
+
+	/**
+	 * Get the <code>Element</code> interface class that is described by the
+	 * <code>Selector</code>.
+	 *
+	 * @return The <code>Element</code> interface class
+	 */
+
+	public Class<T> getElementClass ()
+	{
+		return this.element;
 	}
 
 	/**
@@ -197,24 +245,5 @@ public final class Selector
 	public Set<Property<?>> getProperties ()
 	{
 		return new HashSet<Property<?>> (this.properties);
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>Selector</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the <code>Selector</code>
-	 *         instance
-	 */
-
-	@Override
-	@CheckReturnValue
-	public String toString ()
-	{
-		return MoreObjects.toStringHelper (this)
-			.add ("name", this.name)
-			.add ("unique", this.unique)
-			.add ("properties", this.properties)
-			.toString ();
 	}
 }
