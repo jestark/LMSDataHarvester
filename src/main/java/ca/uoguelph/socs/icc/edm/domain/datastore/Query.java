@@ -19,12 +19,16 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 import java.util.List;
 import java.util.Set;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.google.common.base.Preconditions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Creator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -44,59 +48,35 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public final class Query<T extends Element>
 {
+	interface Backend<T extends Element>
+	{
+		public abstract Selector getSelector ();
+
+		public abstract <V> V getValue (Property<V> property);
+
+		public abstract <V> Backend<T> setValue (Property<V> property, V value);
+
+		public abstract Stream<T> stream ();
+	}
+
 	/** The logger for this Query instance */
 	private final Logger log;
 
-	/** The implementation type of the <code>Element</code> to fetch */
-	private final Class<? extends T> type;
-
-	/** The <code>Selector</code> defining the <code>Query</code> */
-	private final Selector selector;
-
-	/** The <code>DataStore</code> to query */
-	private final DataStore datastore;
-
-	/** <code>Filter</code> to be built by the <code>Query</code> */
-	private final Filter<T> values;
+	/** The <code>Backend</code> query that accesses the <code>DataStore</code> */
+	private final Backend<T> backend;
 
 	/**
 	 * Create the <code>Query</code>.
 	 *
-	 * @param  metadata  The <code>MetaData</code>, not null
-	 * @param  selector  The <code>Selector</code>, not null
-	 * @param  datastore The <code>DataStore</code>, not null
 	 */
 
-	protected Query (final MetaData<T> metadata, final Selector selector, final DataStore datastore)
+	protected Query (final Backend<T> backend)
 	{
-		assert metadata != null : "metadata is NULL";
-		assert selector != null : "selector is NULL";
-		assert datastore != null : "datastore is NULL";
+		assert backend != null;
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.selector = selector;
-		this.datastore = datastore;
-
-		this.type = metadata.getElementClass ();
-
-		this.values = new Filter<T> (metadata, this.selector);
-	}
-
-	/**
-	 * Check that the value associated with each <code>Property</code> in the
-	 * <code>Filter</code> has a non-null value.
-	 *
-	 * @return <code>true</code> all of the values are not <code>null</code>,
-	 *         <code>false</code> otherwise
-	 */
-
-	private boolean checkValues ()
-	{
-		return this.selector.getProperties ()
-			.stream ()
-			.map ((x) -> this.values.getValue (x))
-			.noneMatch ((x) -> x == null);
+		this.backend = backend;
 	}
 
 	/**
@@ -107,7 +87,7 @@ public final class Query<T extends Element>
 
 	public Selector getSelector ()
 	{
-		return this.selector;
+		return this.backend.getSelector ();
 	}
 
 	/**
@@ -121,10 +101,12 @@ public final class Query<T extends Element>
 
 	public final <V> V getValue (final Property<V> property)
 	{
-		assert property != null : "property is NULL";
-		assert (this.selector.getProperties ().contains (property)) : "invalid property";
+		Preconditions.checkNotNull (property, "property");
+		Preconditions.checkArgument (this.backend.getSelector ()
+				.getProperties ().contains (property),
+				"property (%s) is not associated with this query", property.getName ());
 
-		return this.values.getValue (property);
+		return this.backend.getValue (property);
 	}
 
 	/**
@@ -145,23 +127,13 @@ public final class Query<T extends Element>
 	{
 		this.log.trace ("setProperty: property={}, value={}", property, value);
 
-		if (property == null)
-		{
-			throw new NullPointerException ("property is NULL");
-		}
+		Preconditions.checkNotNull (property, "property");
+		Preconditions.checkNotNull (value, "value");
+		Preconditions.checkArgument (this.backend.getSelector ()
+				.getProperties ().contains (property),
+				"property (%s) is not associated with this query", property.getName ());
 
-		if (value == null)
-		{
-			throw new NullPointerException ("value is NULL");
-		}
-
-		if (! this.selector.getProperties ().contains (property))
-		{
-			this.log.error ("Property ({}) is not a member of the selector ({})", property.getName (), this.selector.getName ());
-			throw new IllegalArgumentException ("invalid property");
-		}
-
-		this.values.setValue (property, value);
+		this.backend.setValue (property, value);
 
 		return this;
 	}
@@ -180,14 +152,24 @@ public final class Query<T extends Element>
 	{
 		this.log.trace ("setAllProperties: element={}", element);
 
-		if (element == null)
-		{
-			throw new NullPointerException ();
-		}
+		Preconditions.checkNotNull (element, "element");
 
-		this.values.setAllValues (element);
+//		this.backend.getSelector ().getProperties ()
+//			.forEach (p -> this.backend.setValue (p, ));
 
 		return this;
+	}
+
+	private static <X extends Element> X reduce (final X x, final X y)
+	{
+		if (x == null)
+		{
+			return y;
+		}
+		else
+		{
+			throw new IllegalStateException ("Query returned multiple results");
+		}
 	}
 
 	/**
@@ -210,26 +192,10 @@ public final class Query<T extends Element>
 	{
 		this.log.trace ("query:");
 
-		if (! this.selector.isUnique ())
-		{
-			this.log.error ("Attempting to get a single result from a selector designed for multiple results");
-			throw new IllegalStateException ("This query will not return unique results");
-		}
+		Preconditions.checkState (this.backend.getSelector ().isUnique (), "Selector is not Unique");
 
-		final List<T> results = this.queryAll ();
-		T result = null;
-
-		if (results.size () > 1)
-		{
-			this.log.error ("Query returned multiple results: {}", results);
-			throw new IllegalStateException ("Query returned multiple results");
-		}
-		else if (results.size () == 1)
-		{
-			result = results.get (0);
-		}
-
-		return result;
+		return this.backend.stream ()
+			.reduce (null, Query::reduce);
 	}
 
 	/**
@@ -252,13 +218,18 @@ public final class Query<T extends Element>
 	{
 		this.log.trace ("queryAll:");
 
-		if (! this.checkValues ())
-		{
-			this.log.error ("Query is incomplete, some of the required values are null");
-			throw new IllegalStateException ("Some properties are missing values");
-		}
-
-		return this.datastore.fetch (this.type, this.values);
+		return this.backend.stream ()
+			.collect (Collectors.toList ());
 	}
 
+	/**
+	 *
+	 */
+
+	public Stream<T> stream ()
+	{
+		this.log.trace ("stream:");
+
+		return this.backend.stream ();
+	}
 }

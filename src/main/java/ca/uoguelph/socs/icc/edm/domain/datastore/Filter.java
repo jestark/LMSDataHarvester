@@ -20,6 +20,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
 
+import java.util.function.Function;
+
+import java.util.stream.Collectors;
+
 import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -39,9 +43,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public final class Filter<T extends Element>
 {
-	/** The <code>MetaData</code> for the <code>Element</code> implementation */
-	private final MetaData<T> metadata;
-
 	/** The <code>Selector</code> from which the <code>Filter</code> is created */
 	private final Selector selector;
 
@@ -56,19 +57,15 @@ public final class Filter<T extends Element>
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
-	public Filter (final MetaData<T> metadata, final Selector selector)
+	public Filter (final Selector selector)
 	{
-		assert metadata != null : "metadata is NULL";
 		assert selector != null : "selector is NULL";
 
-		this.metadata = metadata;
 		this.selector = selector;
 
-		this.values = new HashMap<Property<?>, Object> ();
-
-		selector.getProperties ()
+		this.values = selector.getProperties ()
 			.stream ()
-			.forEach ((x) -> this.values.put (x, null));
+			.collect (Collectors.toMap (Function.identity (), null));
 	}
 
 	/**
@@ -102,23 +99,19 @@ public final class Filter<T extends Element>
 	}
 
 	/**
-	 * Clear the <code>Filter</code>.
-	 */
-
-	public void clear ()
-	{
-		this.values.replaceAll ((k, v) -> null);
-	}
-
-	/**
-	 * Get the <code>MetaData</code>, used to create the <code>Filter</code>
+	 * Get a <code>String</code> representation of the <code>Filter</code>
+	 * instance, including the identifying fields.
 	 *
-	 * @return The <code>MetaData</code>
+	 * @return A <code>String</code> representation of the <code>Filter</code>
+	 *         instance
 	 */
 
-	public MetaData<T> getMetaData ()
+	@Override
+	public String toString ()
 	{
-		return this.metadata;
+		return MoreObjects.toStringHelper (this)
+			.add ("selector", this.selector)
+			.toString ();
 	}
 
 	/**
@@ -146,7 +139,7 @@ public final class Filter<T extends Element>
 		assert property != null : "property is NULL";
 		assert (this.values.containsKey (property)) : "invalid property";
 
-		return (property.getPropertyType ()).cast (this.values.get (property));
+		return property.getPropertyType ().cast (this.values.get (property));
 	}
 
 	/**
@@ -167,20 +160,6 @@ public final class Filter<T extends Element>
 	}
 
 	/**
-	 * Set all of the values in the <code>Filter</code> from the specified
-	 * <code>Element</code> instance.
-	 *
-	 * @param  element The <code>Element</code>, not null
-	 */
-
-	public void setAllValues (final T element)
-	{
-		assert element != null : "element is NULL";
-
-		this.values.replaceAll ((k, v) -> this.metadata.getValue (k, element));
-	}
-
-	/**
 	 * Test the specified <code>Element</code> instance against the values
 	 * which are loaded into the <code>Filter</code>.
 	 *
@@ -195,38 +174,8 @@ public final class Filter<T extends Element>
 	{
 		assert element != null : "element is NULL";
 
-		return this.values.keySet ()
-			.stream ()
-			.allMatch ((x) -> (x.hasFlags (Property.Flags.MULTIVALUED))
-					? this.metadata.getValues (x, element).contains (this.values.get (x))
-					: this.values.get (x).equals (this.metadata.getValue (x, element)));
-	}
-
-	/**
-	 * Return the number of different values in the <code>Filter</code>.
-	 *
-	 * @return The number of values
-	 */
-
-	public int size ()
-	{
-		return this.values.size ();
-	}
-
-	/**
-	 * Get a <code>String</code> representation of the <code>Filter</code>
-	 * instance, including the identifying fields.
-	 *
-	 * @return A <code>String</code> representation of the <code>Filter</code>
-	 *         instance
-	 */
-
-	@Override
-	public String toString ()
-	{
-		return MoreObjects.toStringHelper (this)
-			.add ("selector", this.selector)
-			.add ("values", this.values)
-			.toString ();
+		return false; //this.values.entrySet ()
+//			.stream ()
+//			.allMatch (x -> element.hasValue (x.getKey (), x.getKey ().getPropertyType ().cast (x.getValue ())));
 	}
 }
