@@ -54,17 +54,23 @@ public abstract class SubActivity extends ParentActivity
 	/** The <code>MetaData</code> for the <code>SubActivity</code> */
 	protected static final MetaData<SubActivity> METADATA;
 
+	/** The <code>DataStore</code> identifier of the <code>SubActivity</code> */
+	public static final Property<SubActivity, Long> ID;
+
+	/** The <code>DomainModel</code> which contains the <code>SubActivity</code> */
+	public static final Property<SubActivity, DomainModel> MODEL;
+
 	/** The name of the <code>SubActivity</code> */
-	public static final Property<String> NAME;
+	public static final Property<SubActivity, String> NAME;
 
 	/** The parent <code>Activity</code> */
-	public static final Property<ParentActivity> PARENT;
+	public static final Property<SubActivity, ParentActivity> PARENT;
 
 	/** The <code>LogEntry</code> instances associated with the <code>SubActivity</code> */
-	public static final Property<LogReference> REFERENCES;
+	public static final Property<SubActivity, LogReference> REFERENCES;
 
 	/** The <code>SubActivity</code> instances for the <code>SubActivity</code> */
-	public static final Property<SubActivity> SUBACTIVITIES;
+	public static final Property<SubActivity, SubActivity> SUBACTIVITIES;
 
 	/** Select the <code>SubActivity</code> instance by its id */
 	public static final Selector<SubActivity> SELECTOR_ID;
@@ -81,16 +87,20 @@ public abstract class SubActivity extends ParentActivity
 	{
 		subactivities = new HashMap<> ();
 
-		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
-		PARENT = Property.of (ParentActivity.class, "parent", Property.Flags.REQUIRED);
+		ID = Property.of (SubActivity.class, Long.class, "id");
+		MODEL = Property.of (SubActivity.class, DomainModel.class, "domainmodel");
+		NAME = Property.of (SubActivity.class, String.class, "name", Property.Flags.REQUIRED);
+		PARENT = Property.of (SubActivity.class, ParentActivity.class, "parent", Property.Flags.REQUIRED);
 
-		REFERENCES = Property.of (LogReference.class, "references", Property.Flags.MULTIVALUED);
-		SUBACTIVITIES = Property.of (SubActivity.class, "subactivities", Property.Flags.MULTIVALUED);
+		REFERENCES = Property.of (SubActivity.class, LogReference.class, "references", Property.Flags.MULTIVALUED);
+		SUBACTIVITIES = Property.of (SubActivity.class, SubActivity.class, "subactivities", Property.Flags.MULTIVALUED);
 
 		SELECTOR_ID = Selector.of (SubActivity.class, Selector.Cardinality.KEY, ID);
 		SELECTOR_ALL = Selector.of (SubActivity.class, Selector.Cardinality.MULTIPLE, "all");
 
-		METADATA = MetaData.builder (SubActivity.class, Element.METADATA)
+		METADATA = MetaData.builder (SubActivity.class)
+			.addProperty (ID, SubActivity::getId, SubActivity::setId)
+			.addProperty (MODEL, SubActivity::getDomainModel, SubActivity::setDomainModel)
 			.addProperty (NAME, SubActivity::getName, SubActivity::setName)
 			.addProperty (PARENT, SubActivity::getParent, SubActivity::setParent)
 			.addProperty (REFERENCES, SubActivity::getReferences, SubActivity::addReference, SubActivity::removeReference)
@@ -242,7 +252,7 @@ public abstract class SubActivity extends ParentActivity
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return SubActivity.METADATA.properties ();
 	}

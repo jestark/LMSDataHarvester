@@ -89,23 +89,29 @@ public abstract class Enrolment extends Element
 	/** The <code>MetaData</code> for the <code>Enrolment</code> */
 	protected static final MetaData<Enrolment> METADATA;
 
+	/** The <code>DataStore</code> identifier of the <code>Enrolment</code> */
+	public static final Property<Enrolment, Long> ID;
+
+	/** The <code>DomainModel</code> which contains the <code>Enrolment</code> */
+	public static final Property<Enrolment, DomainModel> MODEL;
+
 	/** The associated <code>Course</code> */
-	public static final Property<Course> COURSE;
+	public static final Property<Enrolment, Course> COURSE;
 
 	/** The final grade */
-	public static final Property<Integer> FINALGRADE;
+	public static final Property<Enrolment, Integer> FINALGRADE;
 
 	/** The associated <code>Role</code> */
-	public static final Property<Role> ROLE;
+	public static final Property<Enrolment, Role> ROLE;
 
 	/** Has consent been given to use this data for research */
-	public static final Property<Boolean> USABLE;
+	public static final Property<Enrolment, Boolean> USABLE;
 
 	/** The <code>Grade</code> instances assigned to the <code>Enrolment</code> */
-	public static final Property<Grade> GRADES;
+	public static final Property<Enrolment, Grade> GRADES;
 
 	/** The <code>LogEntry</code> instances associated with the <code>Enrolment</code> */
-	public static final Property<LogEntry> LOGENTRIES;
+	public static final Property<Enrolment, LogEntry> LOGENTRIES;
 
 	/** Select the <code>Enrolment</code> instance by its id */
 	public static final Selector<Enrolment> SELECTOR_ID;
@@ -123,19 +129,23 @@ public abstract class Enrolment extends Element
 
 	static
 	{
-		COURSE = Property.of (Course.class, "course", Property.Flags.REQUIRED);
-		FINALGRADE = Property.of (Integer.class, "finalgrade", Property.Flags.MUTABLE);
-		ROLE = Property.of (Role.class, "role", Property.Flags.REQUIRED);
-		USABLE = Property.of (Boolean.class, "usable", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		ID = Property.of (Enrolment.class, Long.class, "id");
+		MODEL = Property.of (Enrolment.class, DomainModel.class, "domainmodel");
+		COURSE = Property.of (Enrolment.class, Course.class, "course", Property.Flags.REQUIRED);
+		FINALGRADE = Property.of (Enrolment.class, Integer.class, "finalgrade", Property.Flags.MUTABLE);
+		ROLE = Property.of (Enrolment.class, Role.class, "role", Property.Flags.REQUIRED);
+		USABLE = Property.of (Enrolment.class, Boolean.class, "usable", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
 
-		GRADES = Property.of (Grade.class, "grades", Property.Flags.MULTIVALUED);
-		LOGENTRIES = Property.of (LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
+		GRADES = Property.of (Enrolment.class, Grade.class, "grades", Property.Flags.MULTIVALUED);
+		LOGENTRIES = Property.of (Enrolment.class, LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
 
 		SELECTOR_ID = Selector.of (Enrolment.class, Selector.Cardinality.KEY, ID);
 		SELECTOR_ALL = Selector.of (Enrolment.class, Selector.Cardinality.MULTIPLE, "all");
 		SELECTOR_ROLE = Selector.of (Enrolment.class, Selector.Cardinality.MULTIPLE, ROLE);
 
-		METADATA = MetaData.builder (Enrolment.class, Element.METADATA)
+		METADATA = MetaData.builder (Enrolment.class)
+			.addProperty (ID, Enrolment::getId, Enrolment::setId)
+			.addProperty (MODEL, Enrolment::getDomainModel, Enrolment::setDomainModel)
 			.addProperty (COURSE, Enrolment::getCourse, Enrolment::setCourse)
 			.addProperty (FINALGRADE, Enrolment::getFinalGrade, Enrolment::setFinalGrade)
 			.addProperty (ROLE, Enrolment::getRole, Enrolment::setRole)
@@ -306,7 +316,7 @@ public abstract class Enrolment extends Element
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return Enrolment.METADATA.properties ();
 	}

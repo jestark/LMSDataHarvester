@@ -64,17 +64,23 @@ public abstract class User extends Element
 	/** The <code>MetaData</code> for the <code>User</code> */
 	protected static final MetaData<User> METADATA;
 
+	/** The <code>DataStore</code> identifier of the <code>User</code> */
+	public static final Property<User, Long> ID;
+
+	/** The <code>DomainModel</code> which contains the <code>User</code> */
+	public static final Property<User, DomainModel> MODEL;
+
 	/** The first name of the <code>User</code> */
-	public static final Property<String> FIRSTNAME;
+	public static final Property<User, String> FIRSTNAME;
 
 	/** The last name of the <code>User</code> */
-	public static final Property<String> LASTNAME;
+	public static final Property<User, String> LASTNAME;
 
 	/** The username of the <code>User</code> */
-	public static final Property<String> USERNAME;
+	public static final Property<User, String> USERNAME;
 
 	/** The <code>Enrolment</code> instances associated with the <code>User</code> */
-	public static final Property<Enrolment> ENROLMENTS;
+	public static final Property<User, Enrolment> ENROLMENTS;
 
 	/** Select the <code>User</code> instance by its id */
 	public static final Selector<User> SELECTOR_ID;
@@ -95,18 +101,22 @@ public abstract class User extends Element
 
 	static
 	{
-		FIRSTNAME = Property.of (String.class, "firstname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
-		LASTNAME = Property.of (String.class, "lastname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
-		USERNAME = Property.of (String.class, "username", Property.Flags.REQUIRED);
+		ID = Property.of (User.class, Long.class, "id");
+		MODEL = Property.of (User.class, DomainModel.class, "domainmodel");
+		FIRSTNAME = Property.of (User.class, String.class, "firstname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		LASTNAME = Property.of (User.class, String.class, "lastname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		USERNAME = Property.of (User.class, String.class, "username", Property.Flags.REQUIRED);
 
-		ENROLMENTS = Property.of (Enrolment.class, "enrolments", Property.Flags.MUTABLE, Property.Flags.MULTIVALUED);
+		ENROLMENTS = Property.of (User.class, Enrolment.class, "enrolments", Property.Flags.MUTABLE, Property.Flags.MULTIVALUED);
 
 		SELECTOR_ID = Selector.of (User.class, Selector.Cardinality.KEY, ID);
 		SELECTOR_ALL = Selector.of (User.class, Selector.Cardinality.MULTIPLE, "all");
 		SELECTOR_USERNAME = Selector.of (User.class, Selector.Cardinality.SINGLE, USERNAME);
 		SELECTOR_ENROLMENTS = Selector.of (User.class, Selector.Cardinality.SINGLE, ENROLMENTS);
 
-		METADATA = MetaData.builder (User.class, Element.METADATA)
+		METADATA = MetaData.builder (User.class)
+			.addProperty (ID, User::getId, User::setId)
+			.addProperty (MODEL, User::getDomainModel, User::setDomainModel)
 			.addProperty (FIRSTNAME, User::getFirstname, User::setFirstname)
 			.addProperty (LASTNAME, User::getLastname, User::setLastname)
 			.addProperty (USERNAME, User::getUsername, User::setUsername)
@@ -247,7 +257,7 @@ public abstract class User extends Element
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return User.METADATA.properties ();
 	}

@@ -53,11 +53,17 @@ public abstract class LogReference extends Element
 	/** The <code>MetaData</code> for the <code>LogReference</code> */
 	protected static final MetaData<LogReference> METADATA;
 
+	/** The <code>DataStore</code> identifier of the <code>LogReference</code> */
+	public static final Property<LogReference, Long> ID;
+
+	/** The <code>DomainModel</code> which contains the <code>LogReference</code> */
+	public static final Property<LogReference, DomainModel> MODEL;
+
 	/** The associated <code>LogEntry</code>*/
-	public static final Property<LogEntry> ENTRY;
+	public static final Property<LogReference, LogEntry> ENTRY;
 
 	/** The associated <code>SubActivity</code> */
-	public static final Property<SubActivity> SUBACTIVITY;
+	public static final Property<LogReference, SubActivity> SUBACTIVITY;
 
 	/** Select the <code>LogReference</code> instance by its id */
 	public static final Selector<LogReference> SELECTOR_ID;
@@ -77,13 +83,15 @@ public abstract class LogReference extends Element
 	{
 		references = new HashMap<> ();
 
-		ENTRY = Property.of (LogEntry.class, "entry", Property.Flags.REQUIRED);
-		SUBACTIVITY = Property.of (SubActivity.class, "subactivity", Property.Flags.REQUIRED);
+		MODEL = Property.of (LogReference.class, DomainModel.class, "domainmodel");
+		ENTRY = Property.of (LogReference.class, LogEntry.class, "entry", Property.Flags.REQUIRED);
+		SUBACTIVITY = Property.of (LogReference.class, SubActivity.class, "subactivity", Property.Flags.REQUIRED);
 
 		SELECTOR_ID = Selector.of (LogReference.class, Selector.Cardinality.KEY, ID);
 		SELECTOR_ALL = Selector.of (LogReference.class, Selector.Cardinality.MULTIPLE, "all");
 
-		METADATA = MetaData.builder (LogReference.class, Element.METADATA)
+		METADATA = MetaData.builder (LogReference.class)
+			.addProperty (MODEL, LogReference::getDomainModel, LogReference::setDomainModel)
 			.addProperty (ENTRY, LogReference::getEntry, LogReference::setEntry)
 			.addProperty (SUBACTIVITY, LogReference::getSubActivity, LogReference::setSubActivity)
 			.addRelationship (LogEntry.METADATA, ENTRY, LogEntry.REFERENCE)
@@ -213,7 +221,7 @@ public abstract class LogReference extends Element
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return LogReference.METADATA.properties ();
 	}

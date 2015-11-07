@@ -63,14 +63,20 @@ public abstract class Grade extends Element
 	/** The <code>MetaData</code> for the <code>Grade</code> */
 	protected static final MetaData<Grade> METADATA;
 
+	/** The <code>DataStore</code> identifier of the <code>Grade</code> */
+	public static final Property<Grade, Long> ID;
+
+	/** The <code>DomainModel</code> which contains the <code>Grade</code> */
+	public static final Property<Grade, DomainModel> MODEL;
+
 	/** The associated <code>Activity</code> */
-	public static final Property<ActivityReference> ACTIVITY;
+	public static final Property<Grade, ActivityReference> ACTIVITY;
 
 	/** The associated <code>Enrolment</code> */
-	public static final Property<Enrolment> ENROLMENT;
+	public static final Property<Grade, Enrolment> ENROLMENT;
 
 	/** The assigned grade */
-	public static final Property<Integer> GRADE;
+	public static final Property<Grade, Integer> GRADE;
 
 	/** Select all of the <code>Grade</code> instances */
 	public static final Selector<Grade> SELECTOR_ALL;
@@ -85,14 +91,16 @@ public abstract class Grade extends Element
 
 	static
 	{
-		ACTIVITY = Property.of (ActivityReference.class, "activity", Property.Flags.REQUIRED);
-		ENROLMENT = Property.of (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
-		GRADE = Property.of (Integer.class, "grade", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		MODEL = Property.of (Grade.class, DomainModel.class, "domainmodel");
+		ACTIVITY = Property.of (Grade.class, ActivityReference.class, "activity", Property.Flags.REQUIRED);
+		ENROLMENT = Property.of (Grade.class, Enrolment.class, "enrolment", Property.Flags.REQUIRED);
+		GRADE = Property.of (Grade.class, Integer.class, "grade", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
 
 		SELECTOR_ALL = Selector.of (Grade.class, Selector.Cardinality.MULTIPLE, "all");
 		SELECTOR_PKEY = Selector.of (Grade.class, Selector.Cardinality.SINGLE, "pkey", Grade.ACTIVITY, Grade.ENROLMENT);
 
-		METADATA = MetaData.builder (Grade.class, Element.METADATA)
+		METADATA = MetaData.builder (Grade.class)
+			.addProperty (MODEL, Grade::getDomainModel, Grade::setDomainModel)
 			.addProperty (ACTIVITY, Grade::getActivityReference, Grade::setActivityReference)
 			.addProperty (ENROLMENT, Grade::getEnrolment, Grade::setEnrolment)
 			.addProperty (GRADE, Grade::getGrade, Grade::setGrade)
@@ -232,7 +240,7 @@ public abstract class Grade extends Element
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return Grade.METADATA.properties ();
 	}

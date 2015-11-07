@@ -452,18 +452,18 @@ public final class LogEntryBuilder implements Builder<LogEntry>
 
 		if (subActivity != null)
 		{
-/*			this.subActivity = DataStoreProxy.getInstance (SubActivity.class,
-					subActivity.getClass (),
-					SubActivity.SELECTOR_ID,
-					datastore)
-				.fetch (subActivity);
-
-			if (this.subActivity == null)
-			{
-				this.log.error ("The specified SubActivity does not exist in the DataStore");
-				throw new IllegalArgumentException ("SubActivity is not in the DataStore");
-			}
-*/		}
+//			this.subActivity = DataStoreProxy.getInstance (SubActivity.class,
+//					subActivity.getClass (),
+//					SubActivity.SELECTOR_ID,
+//					datastore)
+//				.fetch (subActivity);
+//
+//			if (this.subActivity == null)
+//			{
+//				this.log.error ("The specified SubActivity does not exist in the DataStore");
+//				throw new IllegalArgumentException ("SubActivity is not in the DataStore");
+//			}
+		}
 		else
 		{
 			this.referenceBuilder = null;

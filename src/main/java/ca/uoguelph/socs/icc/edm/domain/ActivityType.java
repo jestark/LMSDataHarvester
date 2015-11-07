@@ -66,11 +66,17 @@ public abstract class ActivityType extends Element
 	/** The <code>MetaData</code> for the <code>ActivityType</code> */
 	protected static final MetaData<ActivityType> METADATA;
 
+	/** The <code>DataStore</code> identifier of the <code>ActivityType</code> */
+	public static final Property<ActivityType, Long> ID;
+
+	/** The <code>DomainModel</code> which contains the <code>ActivityType</code> */
+	public static final Property<ActivityType, DomainModel> MODEL;
+
 	/** The name of the <code>ActivityType</code> */
-	public static final Property<String> NAME;
+	public static final Property<ActivityType, String> NAME;
 
 	/** The associated <code>ActivitySource</code> */
-	public static final Property<ActivitySource> SOURCE;
+	public static final Property<ActivityType, ActivitySource> SOURCE;
 
 	/** Select the <code>ActivityType</code> instance by its id */
 	public static final Selector<ActivityType> SELECTOR_ID;
@@ -88,14 +94,18 @@ public abstract class ActivityType extends Element
 
 	static
 	{
-		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
-		SOURCE = Property.of (ActivitySource.class, "source", Property.Flags.REQUIRED);
+		ID = Property.of (ActivityType.class, Long.class, "id");
+		MODEL = Property.of (ActivityType.class, DomainModel.class, "domainmodel");
+		NAME = Property.of (ActivityType.class, String.class, "name", Property.Flags.REQUIRED);
+		SOURCE = Property.of (ActivityType.class, ActivitySource.class, "source", Property.Flags.REQUIRED);
 
 		SELECTOR_ID = Selector.of (ActivityType.class, Selector.Cardinality.KEY, ID);
 		SELECTOR_ALL = Selector.of (ActivityType.class, Selector.Cardinality.MULTIPLE, "all");
 		SELECTOR_NAME = Selector.of (ActivityType.class, Selector.Cardinality.SINGLE, "name", NAME, SOURCE);
 
-		METADATA = MetaData.builder (ActivityType.class, Element.METADATA)
+		METADATA = MetaData.builder (ActivityType.class)
+			.addProperty (ID, ActivityType::getId, ActivityType::setId)
+			.addProperty (MODEL, ActivityType::getDomainModel, ActivityType::setDomainModel)
 			.addProperty (NAME, ActivityType::getName, ActivityType::setName)
 			.addProperty (SOURCE, ActivityType::getSource, ActivityType::setSource)
 			.addRelationship (ActivitySource.METADATA, SOURCE, ActivitySource.TYPES)
@@ -210,7 +220,7 @@ public abstract class ActivityType extends Element
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return ActivityType.METADATA.properties ();
 	}

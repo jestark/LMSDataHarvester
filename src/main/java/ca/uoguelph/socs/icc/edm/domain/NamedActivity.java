@@ -50,16 +50,10 @@ public abstract class NamedActivity extends Activity
 	protected static final MetaData<NamedActivity> METADATA;
 
 	/** The <code>Grade</code> instances associated with the <code>Activity</code> */
-	public static final Property<Grade> GRADES;
+	public static final Property<NamedActivity, Grade> GRADES;
 
 	/** The <code>SubActivity</code> instances for the <code>Activity</code> */
-	public static final Property<SubActivity> SUBACTIVITIES;
-
-	/** Select the <code>NamedActivity</code> instance by its id */
-	public static final Selector<NamedActivity> SELECTOR_ID;
-
-	/** Select all of the <code>NamedActivity</code> instances */
-	public static final Selector<NamedActivity> SELECTOR_ALL;
+	public static final Property<NamedActivity, SubActivity> SUBACTIVITIES;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -68,18 +62,13 @@ public abstract class NamedActivity extends Activity
 
 	static
 	{
-		GRADES = Property.of (Grade.class, "grade", Property.Flags.MULTIVALUED);
-		SUBACTIVITIES = Property.of (SubActivity.class, "subactivities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
-
-		SELECTOR_ID = Selector.of (NamedActivity.class, Selector.Cardinality.KEY, ID);
-		SELECTOR_ALL = Selector.of (NamedActivity.class, Selector.Cardinality.MULTIPLE, "all");
+		GRADES = Property.of (NamedActivity.class, Grade.class, "grade", Property.Flags.MULTIVALUED);
+		SUBACTIVITIES = Property.of (NamedActivity.class, SubActivity.class, "subactivities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
 
 		METADATA = MetaData.builder (NamedActivity.class, Activity.METADATA)
 			.addProperty (Activity.NAME, NamedActivity::getName, NamedActivity::setName)
 			.addProperty (GRADES, NamedActivity::getGrades, NamedActivity::addGrade, NamedActivity::removeGrade)
 			.addProperty (SUBACTIVITIES, NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity)
-			.addSelector (SELECTOR_ID)
-			.addSelector (SELECTOR_ALL)
 			.build ();
 	}
 

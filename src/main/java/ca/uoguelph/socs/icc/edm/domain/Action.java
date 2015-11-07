@@ -63,8 +63,14 @@ public abstract class Action extends Element
 	/** The <code>MetaData</code> for the <code>Action</code>*/
 	protected static final MetaData<Action> METADATA;
 
+	/** The <code>DataStore</code> identifier of the <code>Action</code> */
+	public static final Property<Action, Long> ID;
+
+	/** The <code>DomainModel</code> which contains the <code>Action</code> */
+	public static final Property<Action, DomainModel> MODEL;
+
 	/** The name of the <code>Action</code> */
-	public static final Property<String> NAME;
+	public static final Property<Action, String> NAME;
 
 	/** Select the <code>Action</code> instance by its id */
 	public static final Selector<Action> SELECTOR_ID;
@@ -82,13 +88,17 @@ public abstract class Action extends Element
 
 	static
 	{
-		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
+		ID = Property.of (Action, Long.class, "id");
+		MODEL = Property.of (Action, DomainModel.class, "domainmodel");
+		NAME = Property.of (Action.class, String.class, "name", Property.Flags.REQUIRED);
 
 		SELECTOR_ID = Selector.of (Action.class, Selector.Cardinality.KEY, ID);
 		SELECTOR_ALL = Selector.of (Action.class, Selector.Cardinality.MULTIPLE, "all");
 		SELECTOR_NAME = Selector.of (Action.class, Selector.Cardinality.SINGLE, NAME);
 
-		METADATA = MetaData.builder (Action.class, Element.METADATA)
+		METADATA = MetaData.builder (Action.class)
+			.addProperty (ID, Action::getId, Action::setId)
+			.addProperty (MODEL, Action::getDomainModel, Action::setDomainModel)
 			.addProperty (NAME, Action::getName, Action::setName)
 			.addSelector (SELECTOR_NAME)
 			.addSelector (SELECTOR_ID)
@@ -198,7 +208,7 @@ public abstract class Action extends Element
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return Action.METADATA.properties ();
 	}

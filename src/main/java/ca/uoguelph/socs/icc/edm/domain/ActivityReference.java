@@ -51,17 +51,23 @@ public abstract class ActivityReference extends Element
 	/** The <code>MetaData</code> for the <code>ActivityReference</code> */
 	protected static final MetaData<ActivityReference> METADATA;
 
+	/** The <code>DataStore</code> identifier of the <code>ActivityReference</code> */
+	public static final Property<ActivityReference, Long> ID;
+
+	/** The <code>DomainModel</code> which contains the <code>ActivityReference</code> */
+	public static final Property<ActivityReference, DomainModel> MODEL;
+
 	/** The associated <code>Activity</code> */
-	public static final Property<Activity> ACTIVITY;
+	public static final Property<ActivityReference, Activity> ACTIVITY;
 
 	/** The associated <code>Course</code> */
-	public static final Property<Course> COURSE;
+	public static final Property<ActivityReference, Course> COURSE;
 
 	/** The associated <code>ActivityType</code> */
-	public static final Property<ActivityType> TYPE;
+	public static final Property<ActivityReference, ActivityType> TYPE;
 
 	/** The <code>LogEntry</code> instances associated with the <code>Activity</code> */
-	public static final Property<LogEntry> LOGENTRIES;
+	public static final Property<ActivityReference, LogEntry> LOGENTRIES;
 
 	/** Select the <code>ActivityReference</code> instance by its id */
 	public static final Selector<ActivityReference> SELECTOR_ID;
@@ -79,17 +85,21 @@ public abstract class ActivityReference extends Element
 
 	static
 	{
-		ACTIVITY = Property.of (Activity.class, "activity", Property.Flags.RECOMMENDED);
-		COURSE = Property.of (Course.class, "course", Property.Flags.REQUIRED);
-		TYPE = Property.of (ActivityType.class, "type", Property.Flags.REQUIRED);
+		ID = Property.of (ActivityReference.class, Long.class, "id");
+		MODEL = Property.of (ActivityReference.class, DomainModel.class, "domainmodel");
+		ACTIVITY = Property.of (ActivityReference.class, Activity.class, "activity", Property.Flags.RECOMMENDED);
+		COURSE = Property.of (ActivityReference.class, Course.class, "course", Property.Flags.REQUIRED);
+		TYPE = Property.of (ActivityReference.class, ActivityType.class, "type", Property.Flags.REQUIRED);
 
-		LOGENTRIES = Property.of (LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
+		LOGENTRIES = Property.of (ActivityReference.class, LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
 
 		SELECTOR_ID = Selector.of (ActivityReference.class, Selector.Cardinality.KEY, ID);
 		SELECTOR_ALL = Selector.of (ActivityReference.class, Selector.Cardinality.MULTIPLE, "all");
 		SELECTOR_TYPE = Selector.of (ActivityReference.class, Selector.Cardinality.MULTIPLE, TYPE);
 
-		METADATA = MetaData.builder (ActivityReference.class, Element.METADATA)
+		METADATA = MetaData.builder (ActivityReference.class)
+			.addProperty (ID, ActivityReference::getId, ActivityReference::setId)
+			.addProperty (MODEL, ActivityReference::getDomainModel, ActivityReference::setDomainModel)
 			.addProperty (ACTIVITY, ActivityReference::getActivity, ActivityReference::setActivity)
 			.addProperty (COURSE, ActivityReference::getCourse, ActivityReference::setCourse)
 			.addProperty (TYPE, ActivityReference::getType, ActivityReference::setType)
@@ -206,7 +216,7 @@ public abstract class ActivityReference extends Element
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return ActivityReference.METADATA.properties ();
 	}

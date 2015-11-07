@@ -100,11 +100,14 @@ public abstract class Activity extends ParentActivity
 	/** The <code>MetaData</code> for the <code>Activity</code> */
 	protected static final MetaData<Activity> METADATA;
 
+	/** The <code>DomainModel</code> which contains the <code>Activity</code> */
+	public static final Property<Activity, DomainModel> MODEL;
+
 	/** The name of the <code>Activity</code> */
-	public static final Property<String> NAME;
+	public static final Property<Activity, String> NAME;
 
 	/** The associated <code>ActivityReference</code> */
-	public static final Property<ActivityReference> REFERENCE;
+	public static final Property<Activity, ActivityReference> REFERENCE;
 
 	/** Select the <code>Activity</code> instance by its id */
 	public static final Selector<Activity> SELECTOR_ID;
@@ -124,13 +127,15 @@ public abstract class Activity extends ParentActivity
 	{
 		activities = new HashMap<> ();
 
-		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
-		REFERENCE = Property.of (ActivityReference.class, "reference", Property.Flags.REQUIRED);
+		MODEL = Property.of (Activity.class, DomainModel.class, "domainmodel");
+		NAME = Property.of (Activity.class, String.class, "name", Property.Flags.REQUIRED);
+		REFERENCE = Property.of (Activity.class, ActivityReference.class, "reference", Property.Flags.REQUIRED);
 
 		SELECTOR_ID = Selector.of (Activity.class, Selector.Cardinality.KEY, REFERENCE);
 		SELECTOR_ALL = Selector.of (Activity.class, Selector.Cardinality.MULTIPLE, "all");
 
-		METADATA = MetaData.builder (Activity.class, Element.METADATA)
+		METADATA = MetaData.builder (Activity.class)
+			.addProperty (MODEL, Activity::getDomainModel, Activity::setDomainModel)
 			.addProperty (NAME, Activity::getName)
 			.addProperty (REFERENCE, Activity::getReference, Activity::setReference)
 			.addRelationship (ActivityReference.METADATA, REFERENCE, ActivityReference.ACTIVITY)
@@ -336,7 +341,7 @@ public abstract class Activity extends ParentActivity
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return Activity.METADATA.properties ();
 	}

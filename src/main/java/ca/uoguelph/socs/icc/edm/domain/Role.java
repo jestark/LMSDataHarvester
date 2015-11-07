@@ -60,8 +60,14 @@ public abstract class Role extends Element
 	/** The <code>MetaData</code> for the <code>Role</code> */
 	protected static final MetaData<Role> METADATA;
 
+	/** The <code>DataStore</code> identifier of the <code>Role</code> */
+	public static final Property<Role, Long> ID;
+
+	/** The <code>DomainModel</code> which contains the <code>Role</code> */
+	public static final Property<Role, DomainModel> MODEL;
+
 	/** The name of the <code>Role</code> */
-	public static final Property<String> NAME;
+	public static final Property<Role, String> NAME;
 
 	/** Select the <code>Role</code> instance by its id */
 	public static final Selector<Role> SELECTOR_ID;
@@ -79,13 +85,17 @@ public abstract class Role extends Element
 
 	static
 	{
-		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
+		ID = Property.of (Role.class, Long.class, "id");
+		MODEL = Property.of (Role.class, DomainModel.class, "domainmodel");
+		NAME = Property.of (Role.class, String.class, "name", Property.Flags.REQUIRED);
 
 		SELECTOR_ID = Selector.of (Role.class, Selector.Cardinality.KEY, ID);
 		SELECTOR_ALL = Selector.of (Role.class, Selector.Cardinality.MULTIPLE, "all");
 		SELECTOR_NAME = Selector.of (Role.class, Selector.Cardinality.SINGLE, NAME);
 
-		METADATA = MetaData.builder (Role.class, Element.METADATA)
+		METADATA = MetaData.builder (Role.class)
+			.addProperty (ID, Role::getId, Role::setId)
+			.addProperty (MODEL, Role::getDomainModel, Role::setDomainModel)
 			.addProperty (NAME, Role::getName, Role::setName)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
@@ -195,7 +205,7 @@ public abstract class Role extends Element
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return Role.METADATA.properties ();
 	}

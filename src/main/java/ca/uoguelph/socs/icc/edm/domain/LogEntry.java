@@ -64,26 +64,32 @@ public abstract class LogEntry extends Element
 	/** The <code>MetaData</code> for the <code>LogEntry</code> */
 	protected static final MetaData<LogEntry> METADATA;
 
+	/** The <code>DataStore</code> identifier of the <code>LogEntry</code> */
+	public static final Property<LogEntry, Long> ID;
+
+	/** The <code>DomainModel</code> which contains the <code>LogEntry</code> */
+	public static final Property<LogEntry, DomainModel> MODEL;
+
 	/** The associated <code>Action</code> */
-	public static final Property<Action> ACTION;
+	public static final Property<LogEntry, Action> ACTION;
 
 	/** The associated <code>Activity</code> */
-	public static final Property<ActivityReference> ACTIVITY;
+	public static final Property<LogEntry, ActivityReference> ACTIVITY;
 
 	/** The associated <code>Course</code> (read only) */
-	public static final Property<Course> COURSE;
+	public static final Property<LogEntry, Course> COURSE;
 
 	/** The associated <code>Enrolment</code> */
-	public static final Property<Enrolment> ENROLMENT;
+	public static final Property<LogEntry, Enrolment> ENROLMENT;
 
 	/** The associated <code>LogReference</code> (<code>SubActivity</code>) */
-	public static final Property<LogReference> REFERENCE;
+	public static final Property<LogEntry, LogReference> REFERENCE;
 
 	/** The associated <code>Network</code> */
-	public static final Property<Network> NETWORK;
+	public static final Property<LogEntry, Network> NETWORK;
 
 	/** The time that the <code>LogEntry</code> was created */
-	public static final Property<Date> TIME;
+	public static final Property<LogEntry, Date> TIME;
 
 	/** Select the <code>LogEntry</code> instance by its id */
 	public static final Selector<LogEntry> SELECTOR_ID;
@@ -107,13 +113,15 @@ public abstract class LogEntry extends Element
 
 	static
 	{
-		ACTION = Property.of (Action.class, "action", Property.Flags.REQUIRED);
-		ACTIVITY = Property.of (ActivityReference.class, "activity", Property.Flags.REQUIRED);
-		COURSE = Property.of (Course.class, "course", Property.Flags.REQUIRED);
-		ENROLMENT = Property.of (Enrolment.class, "enrolment", Property.Flags.REQUIRED);
-		REFERENCE = Property.of (LogReference.class, "reference", Property.Flags.RECOMMENDED);
-		NETWORK = Property.of (Network.class, "network", Property.Flags.REQUIRED);
-		TIME = Property.of (Date.class, "time", Property.Flags.REQUIRED);
+		ID = Property.of (LogEntry.class, Long.class, "id");
+		MODEL = Property.of (LogEntry.class, DomainModel.class, "domainmodel");
+		ACTION = Property.of (LogEntry.class, Action.class, "action", Property.Flags.REQUIRED);
+		ACTIVITY = Property.of (LogEntry.class, ActivityReference.class, "activity", Property.Flags.REQUIRED);
+		COURSE = Property.of (LogEntry.class, Course.class, "course", Property.Flags.REQUIRED);
+		ENROLMENT = Property.of (LogEntry.class, Enrolment.class, "enrolment", Property.Flags.REQUIRED);
+		REFERENCE = Property.of (LogEntry.class, LogReference.class, "reference", Property.Flags.RECOMMENDED);
+		NETWORK = Property.of (LogEntry.class, Network.class, "network", Property.Flags.REQUIRED);
+		TIME = Property.of (LogEntry.class, Date.class, "time", Property.Flags.REQUIRED);
 
 		SELECTOR_ID = Selector.of (LogEntry.class, Selector.Cardinality.KEY, ID);
 		SELECTOR_ALL = Selector.of (LogEntry.class, Selector.Cardinality.MULTIPLE, "all");
@@ -121,7 +129,9 @@ public abstract class LogEntry extends Element
 		SELECTOR_COURSE = Selector.of (LogEntry.class, Selector.Cardinality.MULTIPLE, COURSE);
 		SELECTOR_NETWORK = Selector.of (LogEntry.class, Selector.Cardinality.MULTIPLE, NETWORK);
 
-		METADATA = MetaData.builder (LogEntry.class, Element.METADATA)
+		METADATA = MetaData.builder (LogEntry.class)
+			.addProperty (ID, LogEntry::getId, LogEntry::setId)
+			.addProperty (MODEL, LogEntry::getDomainModel, LogEntry::setDomainModel)
 			.addProperty (ACTION, LogEntry::getAction, LogEntry::setAction)
 			.addProperty (ACTIVITY, LogEntry::getActivityReference, LogEntry::setActivityReference)
 			.addProperty (COURSE, LogEntry::getCourse)
@@ -267,7 +277,7 @@ public abstract class LogEntry extends Element
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return LogEntry.METADATA.properties ();
 	}

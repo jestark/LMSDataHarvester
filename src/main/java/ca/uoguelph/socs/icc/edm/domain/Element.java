@@ -25,7 +25,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -44,33 +43,8 @@ public abstract class Element
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
-	/** The <code>MetaData</code> for the <code>Element</code>*/
-	protected static final MetaData<Element> METADATA;
-
-	/** The <code>DataStore</code> identifier of the <code>Element</code> */
-	public static final Property<Long> ID;
-
-	/** The <code>DomainModel</code> which contains the <code>Element</code> */
-	public static final Property<DomainModel> MODEL;
-
 	/** The <code>DomainModel</code> */
 	private DomainModel model;
-
-	/**
-	 * Initialize the <code>MetaData</code>, <code>Property</code> and
-	 * <code>Selector</code> instances for the <code>Element</code>.
-	 */
-
-	static
-	{
-		ID = Property.of (Long.class, "id");
-		MODEL = Property.of (DomainModel.class, "domainmodel");
-
-		METADATA = MetaData.builder (Element.class)
-			.addProperty (ID, Element::getId, Element::setId)
-			.addProperty (MODEL, Element::getDomainModel, Element::setDomainModel)
-			.build ();
-	}
 
 	/**
 	 * Create the <code>Element</code> instance.
@@ -160,7 +134,7 @@ public abstract class Element
 	 *         associated with the <code>Element</code> interface class
 	 */
 
-	public abstract Stream<Property<?>> properties ();
+	public abstract Stream<Property<? extends Element, ?>> properties ();
 
 	/**
 	 * Get the <code>Set</code> of <code>Selector</code> instances associated

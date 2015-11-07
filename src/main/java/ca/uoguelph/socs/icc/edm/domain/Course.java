@@ -66,20 +66,26 @@ public abstract class Course extends Element
 	/** The <code>MetaData</code> for the <code>Course</code> */
 	protected static final MetaData<Course> METADATA;
 
+	/** The <code>DataStore</code> identifier of the <code>Course</code> */
+	public static final Property<Course, Long> ID;
+
+	/** The <code>DomainModel</code> which contains the <code>Course</code> */
+	public static final Property<Course, DomainModel> MODEL;
+
 	/** The name of the <code>Course</code> */
-	public static final Property<String> NAME;
+	public static final Property<Course, String> NAME;
 
 	/** The <code>Semester</code> of offering for the <code>Course</code> */
-	public static final Property<Semester> SEMESTER;
+	public static final Property<Course, Semester> SEMESTER;
 
 	/** The year of offering for the <code>Course</code> */
-	public static final Property<Integer> YEAR;
+	public static final Property<Course, Integer> YEAR;
 
 	/** The <code>Activity</code> instances associated with the <code>Course</code> */
-	public static final Property<ActivityReference> ACTIVITIES;
+	public static final Property<Course, ActivityReference> ACTIVITIES;
 
 	/** The <code>Enrolment</code> instances associated with the <code>Course</code> */
-	public static final Property<Enrolment> ENROLMENTS;
+	public static final Property<Course, Enrolment> ENROLMENTS;
 
 	/** Select the <code>Course</code> instance by its id */
 	public static final Selector<Course> SELECTOR_ID;
@@ -97,18 +103,22 @@ public abstract class Course extends Element
 
 	static
 	{
-		NAME = Property.of (String.class, "name", Property.Flags.REQUIRED);
-		SEMESTER = Property.of (Semester.class, "semester", Property.Flags.REQUIRED);
-		YEAR = Property.of (Integer.class, "year", Property.Flags.REQUIRED);
+		ID = Property.of (Course.class, Long.class, "id");
+		MODEL = Property.of (Course.class, DomainModel.class, "domainmodel");
+		NAME = Property.of (Course.class, String.class, "name", Property.Flags.REQUIRED);
+		SEMESTER = Property.of (Course.class, Semester.class, "semester", Property.Flags.REQUIRED);
+		YEAR = Property.of (Course.class, Integer.class, "year", Property.Flags.REQUIRED);
 
-		ACTIVITIES = Property.of (ActivityReference.class, "activities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
-		ENROLMENTS = Property.of (Enrolment.class, "enrolments", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
+		ACTIVITIES = Property.of (Course.class, ActivityReference.class, "activities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
+		ENROLMENTS = Property.of (Course.class, Enrolment.class, "enrolments", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
 
 		SELECTOR_ID = Selector.of (Course.class, Selector.Cardinality.KEY, ID);
 		SELECTOR_ALL = Selector.of (Course.class, Selector.Cardinality.MULTIPLE, "all");
 		SELECTOR_OFFERING = Selector.of (Course.class, Selector.Cardinality.SINGLE, "offering", NAME, SEMESTER, YEAR);
 
-		METADATA = MetaData.builder (Course.class, Element.METADATA)
+		METADATA = MetaData.builder (Course.class)
+			.addProperty (ID, Course::getId, Course::setId)
+			.addProperty (MODEL, Course::getDomainModel, Course::setDomainModel)
 			.addProperty (NAME, Course::getName, Course::setName)
 			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
 			.addProperty (YEAR, Course::getYear, Course::setYear)
@@ -227,7 +237,7 @@ public abstract class Course extends Element
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return Course.METADATA.properties ();
 	}
