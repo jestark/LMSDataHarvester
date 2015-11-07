@@ -52,7 +52,7 @@ final class MultiReference<T extends Element, V extends Element> implements Mult
 	final Class<T> element;
 
 	/** The <code>Property</code> representing the value */
-	final Property<V> property;
+	final Property<T, V> property;
 
 	/** Method reference to getting values */
 	final Function<T, Collection<V>> get;
@@ -75,7 +75,7 @@ final class MultiReference<T extends Element, V extends Element> implements Mult
 
 	public static <T extends Element, V extends Element> MultiReference<T, V> of (
 			final Class<T> element,
-			final Property<V> property,
+			final Property<T, V> property,
 			final Function<T, Collection<V>> get,
 			final BiPredicate<T, V> add,
 			final BiPredicate<T, V> remove)
@@ -101,7 +101,7 @@ final class MultiReference<T extends Element, V extends Element> implements Mult
 
 	private MultiReference (
 			final Class<T> element,
-			final Property<V> property,
+			final Property<T, V> property,
 			final Function<T, Collection<V>> get,
 			final BiPredicate<T, V> add,
 			final BiPredicate<T, V> remove)
@@ -183,7 +183,7 @@ final class MultiReference<T extends Element, V extends Element> implements Mult
 	 */
 
 	@Override
-	public Property<V> getProperty ()
+	public Property<T, V> getProperty ()
 	{
 		return this.property;
 	}

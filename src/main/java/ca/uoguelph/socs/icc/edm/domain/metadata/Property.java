@@ -26,6 +26,7 @@ import java.util.Objects;
 import javax.annotation.CheckReturnValue;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -36,11 +37,12 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  *
  * @author  James E. Stark
  * @version 1.0
- * @param   <T> The type of the value for the <code>Property</code>
+ * @param   <T> The <code>Element</code> type of the <code>Property</code>
+ * @param   <V> The type of the value for the <code>Property</code>
  * @see     Definition
  */
 
-public final class Property<T>
+public final class Property<T extends Element, V>
 {
 	/**
 	 * Meta-data for the <code>Property</code> instance.  The four flags
@@ -113,48 +115,55 @@ public final class Property<T>
 	/** The name of the <code>Property</code> */
 	private final String name;
 
+	/** The <code>Element</code> type of the <code>Property</code> */
+	private final Class<T> eleemnt;
+
 	/** The Java type of the <code>Property</code> */
-	private final Class<T> type;
+	private final Class<V> type;
 
 	/**
  	 * Create the <code>Property</code>.
  	 *
-	 * @param  type The type of the value associated with the
-	 *              <code>Property</code>, not null
-	 * @param  name The name of the <code>Property</code>, not null
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  type    The type of the value associated with the
+	 *                 <code>Property</code>, not null
+	 * @param  name    The name of the <code>Property</code>, not null
 	 *
-	 * @return      The <code>Property</code>
+	 * @return         The <code>Property</code>
 	 */
 
-	public static <V> Property<V> of (final Class<V> type, final String name)
+	public static <T extends Element, V> Property<T, V> of (final Class<T> element, final Class<V> type, final String name)
 	{
-		assert type != null : "type is NULL";
-		assert name != null : "name is NULL";
-		assert name.length () > 0 : "name is empty";
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (type, "type");
+		Preconditions.checkNotNull (name, "name");
+		Preconditions.checkArgument (name.length () > 0, "name can not be empty");
 
 		Set<Flags> nflags = (Element.class.isAssignableFrom (type))
 				? EnumSet.of (Flags.RELATIONSHIP)
 				: EnumSet.noneOf (Property.Flags.class);
 
-		return new Property<V> (name, type, nflags);
+		return new Property<V> (name, element, type, nflags);
 	}
 
 	/**
 	 * Create the <code>Property</code>.
 	 *
-	 * @param  type  The type of the value associated with the
-	 *               <code>Property</code>, not null
-	 * @param  name  The name of the <code>Property</code>, not null
-	 * @param  flags The <code>Flags</code> for the <code>Property</code>
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  type    The type of the value associated with the
+	 *                 <code>Property</code>, not null
+	 * @param  name    The name of the <code>Property</code>, not null
+	 * @param  flags   The <code>Flags</code> for the <code>Property</code>
 	 *
-	 * @return      The <code>Property</code>
+	 * @return         The <code>Property</code>
 	 */
 
-	public static <V> Property<V> of (final Class<V> type, final String name, final Flags... flags)
+	public static <T extends Element, V> Property<T, V> of (final Class<T> element, final Class<V> type, final String name, final Flags... flags)
 	{
-		assert type != null : "type is NULL";
-		assert name != null : "name is NULL";
-		assert name.length () > 0 : "name is empty";
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (type, "type");
+		Preconditions.checkNotNull (name, "name");
+		Preconditions.checkArgument (name.length () > 0, "name can not be empty");
 
 		Set<Flags> nflags = (Element.class.isAssignableFrom (type))
 				? EnumSet.of (Flags.RELATIONSHIP)
@@ -165,31 +174,27 @@ public final class Property<T>
 			nflags.add (f);
 		}
 
-		assert (! nflags.contains (Flags.RELATIONSHIP)) && (! nflags.contains (Flags.RECOMMENDED))
+		Preconditions.checkArgument ((! nflags.contains (Flags.RELATIONSHIP)) && (! nflags.contains (Flags.RECOMMENDED))
 				|| nflags.contains (Flags.RELATIONSHIP) && (! nflags.contains (Flags.REQUIRED))
-				|| nflags.equals (EnumSet.of (Flags.REQUIRED))
-			: "The specified flags can not be used together";
+				|| nflags.equals (EnumSet.of (Flags.REQUIRED)),
+				"The specified flags can not be used together");
 
-		return new Property<V> (name, type, nflags);
+		return new Property<V> (name, element, type, nflags);
 	}
 
 	/**
 	 * Create the <code>Property</code>.
 	 *
-	 * @param  name     The name of the <code>Property</code>, not null
-	 * @param  type     The Java type of the <code>Property</code>, not null
-	 * @param  mutable  Indication if the <code>Attribute</code> can be changed
-	 * @param  required Indication if the <code>Attribute</code> is allowed to
-	 *                  be null
+	 * @param  name    The name of the <code>Property</code>, not null
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  type    The Java type of the <code>Property</code>, not null
+	 * @param  flags   The <code>Flags</code> for the <code>Property</code>
 	 */
 
-	private Property (final String name, final Class<T> type, final Set<Flags> flags)
+	private Property (final String name, final Class<T> element, final Class<V> type, final Set<Flags> flags)
 	{
-		assert name != null : "name is NULL";
-		assert name.length () > 0 : "name is an empty String";
-		assert type != null : "type is NULL";
-
 		this.name = name;
+		this.element = element;
 		this.type = type;
 		this.flags = flags;
 	}
@@ -209,8 +214,9 @@ public final class Property<T>
 	public boolean equals (final Object property)
 	{
 		return (property == this) ? true : (property instanceof Property)
-			&& Objects.equals (this.name, ((Property) property).getName ())
-			&& Objects.equals (this.type, ((Property) property).getPropertyType ());
+			&& Objects.equals (this.name, ((Property) property).name ())
+			&& Objects.equals (this.element, ((Property) property).element ())
+			&& Objects.equals (this.type, ((Property) property).type ());
 	}
 
 	/**
@@ -222,7 +228,7 @@ public final class Property<T>
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.name, this.type);
+		return Objects.hash (this.name, this.element, this.type);
 	}
 
 	/**
@@ -239,6 +245,7 @@ public final class Property<T>
 	{
 		return MoreObjects.toStringHelper (this)
 			.add ("name", this.name)
+			.add ("element", this.element)
 			.add ("type", this.type)
 			.add ("flags", this.flags)
 			.toString ();
@@ -311,13 +318,25 @@ public final class Property<T>
 	}
 
 	/**
-	 * Get the Java type of the <code>Property</code>.
+	 * Get the <code>Element</code> interface class for the
+	 * <code>Property</code>.
+	 *
+	 * @return The <code>Element</code> interface class
+	 */
+
+	public Class<T> getElementClass ()
+	{
+		return this.element;
+	}
+
+	/**
+	 * Get the Java type for the value represented by the <code>Property</code>.
 	 *
 	 * @return The <code>Class</code> representing the type of the
 	 *         <code>Property</code>
 	 */
 
-	public Class<T> getPropertyType ()
+	public Class<V> getValueClass ()
 	{
 		return this.type;
 	}

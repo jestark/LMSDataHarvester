@@ -55,16 +55,16 @@ public final class MetaDataBuilder<T extends Element>
 	private final MetaData<? super T> parent;
 
 	/** The <code>Set</code> of <code>Property</code> instances */
-	private final Set<Property<?>> properties;
+	private final Set<Property<? extends Element, ?>> properties;
 
 	/** The <code>Set</code> of <code>Selector</code> instances */
 	private final Set<Selector<? extends Element>> selectors;
 
 	/** <code>Property</code> to <code>Accessor</code> mapping */
-	private final Map<Property<?>, Accessor<T, ?>> accessors;
+	private final Map<Property<T, ?>, Accessor<T, ?>> accessors;
 
 	/** <code>Property</code> to <code>MultiAccessor</code> mapping */
-	private final Map<Property<?>, MultiAccessor<T, ?>> multiaccessors;
+	private final Map<Property<T, ?>, MultiAccessor<T, ?>> multiaccessors;
 
 	/**
 	 * Create the <code>MetaDataBuilder</code>.
@@ -86,7 +86,7 @@ public final class MetaDataBuilder<T extends Element>
 		this.multiaccessors = new HashMap<> ();
 	}
 
-	private boolean hasProperty (final Property<?> property)
+	private boolean hasProperty (final Property<T, ?> property)
 	{
 		assert property != null : "property is null";
 
@@ -94,25 +94,25 @@ public final class MetaDataBuilder<T extends Element>
 	}
 
 	@SuppressWarnings ("unchecked")
-	private <V extends Element> Accessor<T, V> getAccessor (final Property<V> property)
+	private <V extends Element> Accessor<T, V> getAccessor (final Property<T, V> property)
 	{
 		return (Accessor<T, V>) this.accessors.get (property);
 	}
 
 	@SuppressWarnings ("unchecked")
-	private <V extends Element> MultiAccessor<T, V> getMultiAccessor  (final Property<V> property)
+	private <V extends Element> MultiAccessor<T, V> getMultiAccessor  (final Property<T, V> property)
 	{
 		return (MultiAccessor<T, V>) this.multiaccessors.get (property);
 	}
 
-	private <V extends Element> InverseRelationship<T, V> createInverseRelationship (final Property<V> property)
+	private <V extends Element> InverseRelationship<T, V> createInverseRelationship (final Property<T, V> property)
 	{
 		return (property.hasFlags (Property.Flags.MULTIVALUED))
 			? MultiInverseRelationship.of (this.getMultiAccessor (property))
 			: SingleInverseRelationship.of (this.getAccessor (property));
 	}
 
-	private <V extends Element> Relationship<T, V> createRelationship (final InverseRelationship<V, T> inverse, final Property<V> property)
+	private <V extends Element> Relationship<T, V> createRelationship (final InverseRelationship<V, T> inverse, final Property<T, V> property)
 	{
 		return (property.hasFlags (Property.Flags.MULTIVALUED))
 			? MultiRelationship.of (inverse, this.getMultiAccessor (property))
@@ -136,7 +136,7 @@ public final class MetaDataBuilder<T extends Element>
 	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V> MetaDataBuilder<T> addProperty (final Property<V> property, final Function<T, V> get, final @Nullable BiConsumer<T, V> set)
+	public <V> MetaDataBuilder<T> addProperty (final Property<T, V> property, final Function<T, V> get, final @Nullable BiConsumer<T, V> set)
 	{
 		this.log.trace ("addProperty: property={}, get={}, set={}", property, get, set);
 
@@ -165,7 +165,7 @@ public final class MetaDataBuilder<T extends Element>
 	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V> MetaDataBuilder<T> addProperty (final Property<V> property, final Function<T, V> get)
+	public <V> MetaDataBuilder<T> addProperty (final Property<T, V> property, final Function<T, V> get)
 	{
 		this.log.trace ("addProperty: property={} get={}", property, get);
 
@@ -192,7 +192,7 @@ public final class MetaDataBuilder<T extends Element>
 	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V extends Element> MetaDataBuilder<T> addProperty (final Property<V> property, final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
+	public <V extends Element> MetaDataBuilder<T> addProperty (final Property<T, V> property, final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
 	{
 		this.log.trace ("addProperty: property={}, get={}, add={}, remove={}", property, get, add, remove);
 
@@ -220,7 +220,7 @@ public final class MetaDataBuilder<T extends Element>
 	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V extends Element> MetaDataBuilder<T> addRelationship (final MetaData<V> metadata, final Property<V> local, final Property<T> remote)
+	public <V extends Element> MetaDataBuilder<T> addRelationship (final MetaData<V> metadata, final Property<T, V> local, final Property<V, T> remote)
 	{
 		this.log.trace ("addRelationship:  metadata={}, local={}, remote={}", metadata, local, remote);
 
@@ -247,7 +247,7 @@ public final class MetaDataBuilder<T extends Element>
 	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V extends Element> MetaDataBuilder<T> addRelationship (final MetaData<V> metadata, final Property<V> local, final Selector<T> remote)
+	public <V extends Element> MetaDataBuilder<T> addRelationship (final MetaData<V> metadata, final Property<T, V> local, final Selector<T> remote)
 	{
 		this.log.trace ("addRelationship: metadata={}, local={}, remote={}", metadata, local, remote);
 

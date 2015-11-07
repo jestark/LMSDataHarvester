@@ -96,7 +96,7 @@ public final class Selector<T extends Element>
 	private final Cardinality cardinality;
 
 	/** The <code>Property</code> instances */
-	private final Set<Property<?>> properties;
+	private final Set<Property<T, ?>> properties;
 
 	 /**
 	 * Create the <code>Selector</code> using multiple <code>Property</code>
@@ -115,7 +115,7 @@ public final class Selector<T extends Element>
 			final Class<T> element,
 			final Cardinality cardinality,
 			final String name,
-			final Property<?>... properties)
+			final Property<T, ?>... properties)
 	{
 		Preconditions.checkNotNull (element, "element");
 		Preconditions.checkNotNull (cardinality, "cardinality");
@@ -143,7 +143,7 @@ public final class Selector<T extends Element>
 	public static <T extends Element> Selector<T> of (
 			final Class<T> element,
 			final Cardinality cardinality,
-			final Property<?> property)
+			final Property<T, ?> property)
 	{
 		Preconditions.checkNotNull (element, "element");
 		Preconditions.checkNotNull (cardinality, "cardinality");
@@ -166,7 +166,7 @@ public final class Selector<T extends Element>
 			final Class<T> element,
 			final Cardinality cardinality,
 			final String name,
-			final Set<Property<?>> properties)
+			final Set<Property<T, ?>> properties)
 	{
 		this.element = element;
 		this.name = name;
@@ -273,7 +273,7 @@ public final class Selector<T extends Element>
 	 *         instances for the <code>Element</code>
 	 */
 
-	public Set<Property<?>> getProperties ()
+	public Set<Property<T, ?>> getProperties ()
 	{
 		return Collections.unmodifiableSet (this.properties);
 	}

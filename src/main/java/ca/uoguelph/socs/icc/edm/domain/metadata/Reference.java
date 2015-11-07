@@ -52,7 +52,7 @@ public interface Reference<T extends Element, V>
 	 * @return the <code>Property</code>
 	 */
 
-	public abstract Property<V> getProperty ();
+	public abstract Property<T, V> getProperty ();
 
 	/**
 	 * Determine if the value contained in the <code>Element</code> has the

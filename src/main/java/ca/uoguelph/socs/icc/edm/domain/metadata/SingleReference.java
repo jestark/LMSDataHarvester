@@ -50,7 +50,7 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 	final Class<T> element;
 
 	/** The <code>Property</code> representing the value */
-	final Property<V> property;
+	final Property<T, V> property;
 
 	/** Method reference to getting values */
 	final Function<T, V> get;
@@ -69,7 +69,7 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 
 	public static <T extends Element, V> SingleReference<T, V> of (
 			final Class<T> element,
-			final Property<V> property,
+			final Property<T, V> property,
 			final Function<T, V> get,
 			final @Nullable BiConsumer<T, V> set)
 	{
@@ -89,7 +89,7 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 
 	private SingleReference (
 			final Class<T> element,
-			final Property<V> property,
+			final Property<T, V> property,
 			final Function<T, V> get,
 			final @Nullable BiConsumer<T, V> set)
 	{
@@ -169,7 +169,7 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 	 */
 
 	@Override
-	public Property<V> getProperty ()
+	public Property<T, V> getProperty ()
 	{
 		return this.property;
 	}

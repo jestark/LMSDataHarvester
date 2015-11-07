@@ -61,19 +61,19 @@ public final class MetaData<T extends Element>
 	private final @Nullable MetaData<? super T> parent;
 
 	/** The <code>Property</code> instances associated with the interface */
-	private final Set<Property<?>> properties;
+	private final Set<Property<? extends Element, ?>> properties;
 
 	/** The <code>Selector</code> instances for the interface */
 	private final Set<Selector<? extends Element>> selectors;
 
 	/** The <code>Accessor</code> instances for the interface */
-	private final Map<Property<?>, Accessor<T, ?>> accessors;
+	private final Map<Property<T, ?>, Accessor<T, ?>> accessors;
 
 	/** The <code>MultiAccessor</code> instances for the interface */
-	private final Map<Property<?>, MultiAccessor<T, ?>> multiaccessors;
+	private final Map<Property<T, ?>, MultiAccessor<T, ?>> multiaccessors;
 
 	/** The <code>Relationship</code> instances for the interface */
-	private final Map<Property<?>, Relationship<T, ?>> relationships;
+	private final Map<Property<T, ?>, Relationship<T, ?>> relationships;
 
 	/**
 	 * Get the <code>MetaDataBuilder</code> for the specified
@@ -123,10 +123,10 @@ public final class MetaData<T extends Element>
 
 	protected MetaData (final Class<T> element,
 			final MetaData<? super T> parent,
-			final Set<Property<?>> properties,
+			final Set<Property<? extends Element, ?>> properties,
 			final Set<Selector<? extends Element>> selectors,
-			final Map<Property<?>, Accessor<T, ?>> accessors,
-			final Map<Property<?>, MultiAccessor<T, ?>> multiaccessors)
+			final Map<Property<T, ?>, Accessor<T, ?>> accessors,
+			final Map<Property<T, ?>, MultiAccessor<T, ?>> multiaccessors)
 	{
 		assert element != null : "element is NULL";
 		assert properties != null : "properties is NULL";
@@ -218,7 +218,7 @@ public final class MetaData<T extends Element>
 	 *                 <code>false</code> otherwise
 	 */
 
-	public boolean hasProperty (final Property <?> property)
+	public boolean hasProperty (final Property<T, ?> property)
 	{
 		Preconditions.checkNotNull (property, "property");
 
@@ -234,7 +234,7 @@ public final class MetaData<T extends Element>
 	 * @return          The <code>Accessor</code>
 	 */
 
-	public <V> Accessor<? super T, V> getAccessor (final Property<V> property)
+	public <V> Accessor<? super T, V> getAccessor (final Property<T, V> property)
 	{
 		Preconditions.checkNotNull (property, "property");
 		Preconditions.checkArgument (this.hasProperty (property), "Property not associated with this element: %s", property.getName ());
@@ -262,7 +262,7 @@ public final class MetaData<T extends Element>
 	 * @return          The <code>Reference</code>
 	 */
 
-	public <V> Reference<? super T, V> getReference (final Property<V> property)
+	public <V> Reference<? super T, V> getReference (final Property<T, V> property)
 	{
 		Preconditions.checkNotNull (property, "property");
 		Preconditions.checkArgument (this.hasProperty (property), "Property not associated with this element: %s", property.getName ());
@@ -289,7 +289,7 @@ public final class MetaData<T extends Element>
 	 * @return          The <code>Relationship</code>
 	 */
 
-	public <V extends Element> Relationship<? super T, V> getRelationship (final Property<V> property)
+	public <V extends Element> Relationship<? super T, V> getRelationship (final Property<T, V> property)
 	{
 		Preconditions.checkNotNull (property, "property");
 		Preconditions.checkArgument (property.hasFlags (Property.Flags.RELATIONSHIP), "Property is not a relationship: %s", property.getName ());
@@ -314,7 +314,7 @@ public final class MetaData<T extends Element>
 	 * @return A <code>Stream</code> of <code>Property</code> instances
 	 */
 
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		Stream<Property<?>> result = this.properties.stream ();
 
