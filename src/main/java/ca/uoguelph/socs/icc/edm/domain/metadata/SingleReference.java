@@ -17,17 +17,14 @@
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.Objects;
-
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
@@ -40,18 +37,12 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  *
  * @author  James E. Stark
  * @version 1.0
- * @param  <T> The type of the <code>Element</code>
- * @param  <V> The type of the value stored in the <code>Element</code>
+ * @param   <T> The type of the <code>Element</code>
+ * @param   <V> The type of the value stored in the <code>Element</code>
  */
 
-final class SingleReference<T extends Element, V> implements Accessor<T, V>
+final class SingleReference<T extends Element, V> implements Reference<T, V>
 {
-	/** The <code>Element</code> interface class */
-	final Class<T> element;
-
-	/** The <code>Property</code> representing the value */
-	final Property<T, V> property;
-
 	/** Method reference to getting values */
 	final Function<T, V> get;
 
@@ -61,23 +52,29 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 	/**
 	 * Create the <code>Single</code> reference for the specified values.
 	 *
-	 * @param  element  The <code>Element</code> interface class, not null
-	 * @param  property The <code>Property</code>, not null
-	 * @param  get      Method reference to get the value, not null
-	 * @param  set      Method reference to set the value, may be null
+	 * @param  get     Method reference to get the value, not null
 	 */
 
-	public static <T extends Element, V> SingleReference<T, V> of (
-			final Class<T> element,
-			final Property<T, V> property,
-			final Function<T, V> get,
-			final @Nullable BiConsumer<T, V> set)
+	public static <T extends Element, V> SingleReference<T, V> of (final Function<T, V> get)
 	{
-		assert element != null : "element is NULL";
-		assert property != null : "property is NULL";
 		assert get != null : "get is NULL";
 
-		return new SingleReference<T, V> (element, property, get, set);
+		return new SingleReference<T, V> (get, null);
+	}
+
+	/**
+	 * Create the <code>Single</code> reference for the specified values.
+	 *
+	 * @param  get      Method reference to get the value, not null
+	 * @param  set      Method reference to set the value, not null
+	 */
+
+	public static <T extends Element, V> SingleReference<T, V> of (final Function<T, V> get, final BiConsumer<T, V> set)
+	{
+		assert get != null : "get is NULL";
+		assert set != null : "set is NULL";
+
+		return new SingleReference<T, V> (get, set);
 	}
 
 	/**
@@ -87,14 +84,8 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 	 * @param  set Method reference to set the value, may be null
 	 */
 
-	private SingleReference (
-			final Class<T> element,
-			final Property<T, V> property,
-			final Function<T, V> get,
-			final @Nullable BiConsumer<T, V> set)
+	private SingleReference (final Function<T, V> get, final @Nullable BiConsumer<T, V> set)
 	{
-		this.element = element;
-		this.property = property;
 		this.get = get;
 		this.set = set;
 	}
@@ -114,8 +105,8 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 	public boolean equals (final Object obj)
 	{
 		return (obj == this) ? true : (obj instanceof SingleReference)
-				&& Objects.equals (this.element, ((SingleReference) obj).element)
-				&& Objects.equals (this.property, ((SingleReference) obj).property);
+				&& Objects.equals (this.get, ((SingleReference) obj).get)
+				&& Objects.equals (this.set, ((SingleReference) obj).set);
 	}
 
 	/**
@@ -127,7 +118,7 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.element, this.property);
+		return Objects.hash (this.get, this.set);
 	}
 
 	/**
@@ -143,35 +134,22 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 	public String toString ()
 	{
 		return MoreObjects.toStringHelper (this)
-			.add ("element", this.element)
-			.add ("property", this.property)
+			.add ("get", this.get)
+			.add ("set", this.set)
 			.toString ();
 	}
 
 	/**
-	 * Get the <code>Element</code> interface class upon which this
-	 * <code>Reference</code> operates.
+	 * Determine if value is read-only or if it is read-write.
 	 *
-	 * @return The <code>Element</code> interface class
+	 * @return <code>true</code> is the value is read-write, <code>false</code>
+	 *         if the value is read-only
 	 */
 
 	@Override
-	public Class<T> getElementClass ()
+	public boolean isWritable ()
 	{
-		return this.element;
-	}
-
-	/**
-	 * Get the <code>Property</code> representing the value which this
-	 * <code>Reference</code> accesses.
-	 *
-	 * @return the <code>Property</code>
-	 */
-
-	@Override
-	public Property<T, V> getProperty ()
-	{
-		return this.property;
+		return this.set != null;
 	}
 
 	/**
@@ -189,16 +167,15 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 	 */
 
 	@Override
-	public boolean hasValue (final T element, final V value)
+	public boolean hasValue (final T element, final @Nullable V value)
 	{
-		Preconditions.checkNotNull (element, "element");
-		Preconditions.checkNotNull (value, "value");
+		assert element != null : "element is NULL";
 
 		return this.get.apply (element).equals (value);
 	}
 
 	/**
-	 * Get the a <code>Stream</code> containing value from the specified
+	 * Get a <code>Stream</code> containing the value from the specified
 	 * <code>Element</code> instance.
 	 *
 	 * @param  element  The <code>Element</code>, not null
@@ -210,7 +187,7 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 	@Override
 	public Stream<V> stream (final T element)
 	{
-		Preconditions.checkNotNull (element, "element");
+		assert element != null : "element is NULL";
 
 		V value = this.get.apply (element);
 
@@ -225,29 +202,67 @@ final class SingleReference<T extends Element, V> implements Accessor<T, V>
 	 * @return          The value from the <code>Element</code>
 	 */
 
-	@Override
 	@CheckReturnValue
 	public V getValue (final T element)
 	{
-		Preconditions.checkNotNull (element, "element");
+		assert element != null : "element is NULL";
 
 		return this.get.apply (element);
 	}
 
 	/**
-	 * Enter the specified value into the specified <code>Element</code>
-	 * instance.
+	 * Add the specified value to the <code>Element</code>.  This method
+	 * unconditionally replaces the value stored in the specified
+	 * <code>Element</code> with the specified value.
 	 *
-	 * @param  element  The <code>Element</code>, not null
-	 * @param  value    The value to be set, may be null
+	 * @param  element The <code>Element</code> instance, not null
+	 * @param  value   The value to be written into the <code>Element</code>,
+	 *                 not null
+	 *
+	 * @return         <code>true</code> if the value was written into the
+	 *                 <code>Element</code>, <code>false</code> otherwise
 	 */
 
 	@Override
-	public void setValue (final T element, final @Nullable V value)
+	public boolean setValue (final T element, final V value)
 	{
-		Preconditions.checkNotNull (element, "element");
-		Preconditions.checkState (this.set != null, "value is Read-Only");
+		assert element != null : "element is NULL";
+		assert value != null : "value is NULL";
+		assert this.set != null : "value is Read-Only";
 
 		this.set.accept (element, value);
+
+		return true;
+	}
+
+	/**
+	 * Remove the specified value from the specified <code>Element</code>
+	 * instance.  This method sets the corresponding value to <code>null</code>
+	 * if it is currently equal to the specified value.
+	 *
+	 * @param  element The <code>Element</code> instance, not null
+	 * @param  value   The value to be removed from the <code>Element</code>,
+	 *                 not null
+	 *
+	 * @return         <code>true</code> if the value was removed from the
+	 *                 <code>Element</code>, <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean clearValue (final T element, final V value)
+	{
+		assert element != null : "element is NULL";
+		assert value != null : "value is NULL";
+		assert this.set != null : "value is Read-Only";
+
+		boolean result = false;
+
+		if (this.get.apply (element).equals (value))
+		{
+			this.set.accept (element, null);
+			result = true;
+		}
+
+		return result;
 	}
 }

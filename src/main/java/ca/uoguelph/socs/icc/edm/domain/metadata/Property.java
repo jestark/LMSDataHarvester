@@ -16,14 +16,19 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
-import java.util.Set;
-
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
+import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -39,10 +44,9 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @version 1.0
  * @param   <T> The <code>Element</code> type of the <code>Property</code>
  * @param   <V> The type of the value for the <code>Property</code>
- * @see     Definition
  */
 
-public final class Property<T extends Element, V>
+public class Property<T extends Element, V>
 {
 	/**
 	 * Meta-data for the <code>Property</code> instance.  The four flags
@@ -55,11 +59,6 @@ public final class Property<T extends Element, V>
 	 * The flags contained in this Enum, along with the relationship may be
 	 * used with the following constraints:
 	 * <ol>
-	 *  <li> To be <code>MULTIVALUED</code> a <code>Property</code> must
-	 *       represent a relationship between two <code>Element</code>
-	 *       instances.
-	 *  <li> <code>MULTIVALUED</code> <code>Property</code> instances may not
-	 *       be <code>REQUIRED</code>.
 	 *  <li> A <code>Property</code> that represents a relationship can not be
 	 *       <code>REQUIRED</code> and <code>MUTABLE</code>.
 	 *  <li> To be <code>RECOMMENDED</code> the <code>Property</code> must
@@ -99,75 +98,118 @@ public final class Property<T extends Element, V>
 		 * mutable <code>Property</code> instances are treated as dependencies.
 		 */
 
-		MUTABLE,
-
-		/**
-		 * Indicates that the <code>Property</code> represents a collection of
-		 * values
-		 */
-
-		MULTIVALUED;
+		MUTABLE;
 	}
 
-	/** The flags for the <code>Property</code> */
-	private final Set<Flags> flags;
+	/** The <code>Element</code> interface class */
+	private final Class<T> element;
+
+	/** The value */
+	private final Class<V> value;
 
 	/** The name of the <code>Property</code> */
 	private final String name;
 
-	/** The <code>Element</code> type of the <code>Property</code> */
-	private final Class<T> eleemnt;
+	/** The <code>Reference</code> for operating on the <code>Element</code> */
+	private final Reference<T, V> reference;
 
-	/** The Java type of the <code>Property</code> */
-	private final Class<V> type;
+	/** The flags for the <code>Property</code> */
+	private final Set<Flags> flags;
 
 	/**
- 	 * Create the <code>Property</code>.
- 	 *
+	 * Create a Read-Only <code>Property</code>.
+	 *
 	 * @param  element The <code>Element</code> interface class, not null
-	 * @param  type    The type of the value associated with the
-	 *                 <code>Property</code>, not null
+	 * @param  value   The value class, not null
 	 * @param  name    The name of the <code>Property</code>, not null
+	 * @param  get     Method reference to retrieve the value, not null
 	 *
 	 * @return         The <code>Property</code>
 	 */
 
-	public static <T extends Element, V> Property<T, V> of (final Class<T> element, final Class<V> type, final String name)
+	public static <T extends Element, V> Property<T, V> of (
+			final Class<T> element,
+			final Class<V> value,
+			final String name,
+			final Function<T, V> get)
 	{
 		Preconditions.checkNotNull (element, "element");
-		Preconditions.checkNotNull (type, "type");
+		Preconditions.checkNotNull (value, "value");
 		Preconditions.checkNotNull (name, "name");
+		Preconditions.checkNotNull (get, "get");
 		Preconditions.checkArgument (name.length () > 0, "name can not be empty");
 
-		Set<Flags> nflags = (Element.class.isAssignableFrom (type))
-				? EnumSet.of (Flags.RELATIONSHIP)
-				: EnumSet.noneOf (Property.Flags.class);
+		Set<Flags> nflags = (Element.class.isAssignableFrom (value))
+			? EnumSet.of (Flags.RELATIONSHIP)
+			: EnumSet.noneOf (Property.Flags.class);
 
-		return new Property<V> (name, element, type, nflags);
+		return new Property<T, V> (element, value, name, SingleReference.of (get), nflags);
 	}
 
 	/**
-	 * Create the <code>Property</code>.
+	 * Create a Single-Valued <code>Property</code>.
 	 *
 	 * @param  element The <code>Element</code> interface class, not null
-	 * @param  type    The type of the value associated with the
-	 *                 <code>Property</code>, not null
+	 * @param  value   The value class, not null
 	 * @param  name    The name of the <code>Property</code>, not null
+	 * @param  get     Method reference to retrieve the value, not null
+	 * @param  set     Method reference to set the value, not null
+	 *
+	 * @return         The <code>Property</code>
+	 */
+
+	public static <T extends Element, V> Property<T, V> of (
+			final Class<T> element,
+			final Class<V> value,
+			final String name,
+			final Function<T, V> get,
+			final BiConsumer<T, V> set)
+	{
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (value, "value");
+		Preconditions.checkNotNull (name, "name");
+		Preconditions.checkNotNull (get, "get");
+		Preconditions.checkNotNull (set, "set");
+		Preconditions.checkArgument (name.length () > 0, "name can not be empty");
+
+		Set<Flags> nflags = (Element.class.isAssignableFrom (value))
+			? EnumSet.of (Flags.RELATIONSHIP)
+			: EnumSet.noneOf (Property.Flags.class);
+
+		return new Property<T, V> (element, value, name, SingleReference.of (get, set), nflags);
+	}
+
+	/**
+	 * Create a Single-Valued <code>Property</code>, with the specified flags.
+	 *
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  value   The value class, not null
+	 * @param  name    The name of the <code>Property</code>, not null
+	 * @param  get     Method reference to retrieve the value, not null
+	 * @param  set     Method reference to set the value, not null
 	 * @param  flags   The <code>Flags</code> for the <code>Property</code>
 	 *
 	 * @return         The <code>Property</code>
 	 */
 
-	public static <T extends Element, V> Property<T, V> of (final Class<T> element, final Class<V> type, final String name, final Flags... flags)
+	public static <T extends Element, V> Property<T, V> of (
+			final Class<T> element,
+			final Class<V> value,
+			final String name,
+			final Function<T, V> get,
+			final BiConsumer<T, V> set,
+			final Flags... flags)
 	{
 		Preconditions.checkNotNull (element, "element");
-		Preconditions.checkNotNull (type, "type");
+		Preconditions.checkNotNull (value, "value");
 		Preconditions.checkNotNull (name, "name");
+		Preconditions.checkNotNull (get, "get");
+		Preconditions.checkNotNull (set, "set");
 		Preconditions.checkArgument (name.length () > 0, "name can not be empty");
 
-		Set<Flags> nflags = (Element.class.isAssignableFrom (type))
-				? EnumSet.of (Flags.RELATIONSHIP)
-				: EnumSet.noneOf (Property.Flags.class);
+		Set<Flags> nflags = (Element.class.isAssignableFrom (value))
+			? EnumSet.of (Flags.RELATIONSHIP)
+			: EnumSet.noneOf (Property.Flags.class);
 
 		for (Flags f : flags)
 		{
@@ -179,23 +221,114 @@ public final class Property<T extends Element, V>
 				|| nflags.equals (EnumSet.of (Flags.REQUIRED)),
 				"The specified flags can not be used together");
 
-		return new Property<V> (name, element, type, nflags);
+		return new Property<T, V> (element, value, name, SingleReference.of (get, set), nflags);
+	}
+
+	/**
+	 * Create a Multi-Valued <code>Property</code>.
+	 *
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  value   The value class, not null
+	 * @param  name    The name of the <code>Property</code>, not null
+	 * @param  get     Method reference to retrieve the value, not null
+	 * @param  add     Method reference to add the value, not null
+	 * @param  remove  Method reference to remove the value, not null
+	 *
+	 * @return         The <code>Property</code>
+	 */
+
+	public static <T extends Element, V extends Element> Property<T, V> of (
+			final Class<T> element,
+			final Class<V> value,
+			final String name,
+			final Function<T, Collection<V>> get,
+			final BiPredicate<T, V> add,
+			final BiPredicate<T, V> remove)
+	{
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (value, "value");
+		Preconditions.checkNotNull (name, "name");
+		Preconditions.checkNotNull (get, "get");
+		Preconditions.checkNotNull (add, "add");
+		Preconditions.checkNotNull (remove, "remove");
+		Preconditions.checkArgument (name.length () > 0, "name can not be empty");
+
+		Set<Flags> nflags = (Element.class.isAssignableFrom (value))
+			? EnumSet.of (Flags.RELATIONSHIP)
+			: EnumSet.noneOf (Property.Flags.class);
+
+		return new Property<T, V> (element, value, name, MultiReference.of (get, add, remove), nflags);
+	}
+
+	/**
+	 * Create a Multi-Valued <code>Property</code>, with the specified flags.
+	 *
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  value   The value class, not null
+	 * @param  name    The name of the <code>Property</code>, not null
+	 * @param  get     Method reference to retrieve the value, not null
+	 * @param  add     Method reference to add the value, not null
+	 * @param  remove  Method reference to remove the value, not null
+	 * @param  flags   The <code>Flags</code> for the <code>Property</code>
+	 *
+	 * @return         The <code>Property</code>
+	 */
+
+	public static <T extends Element, V extends Element> Property<T, V> of (
+			final Class<T> element,
+			final Class<V> value,
+			final String name,
+			final Function<T, Collection<V>> get,
+			final BiPredicate<T, V> add,
+			final BiPredicate<T, V> remove,
+			final Flags... flags)
+	{
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (value, "value");
+		Preconditions.checkNotNull (name, "name");
+		Preconditions.checkNotNull (get, "get");
+		Preconditions.checkNotNull (add, "add");
+		Preconditions.checkNotNull (remove, "remove");
+		Preconditions.checkArgument (name.length () > 0, "name can not be empty");
+
+		Set<Flags> nflags = (Element.class.isAssignableFrom (value))
+			? EnumSet.of (Flags.RELATIONSHIP)
+			: EnumSet.noneOf (Property.Flags.class);
+
+		for (Flags f : flags)
+		{
+			nflags.add (f);
+		}
+
+		Preconditions.checkArgument ((! nflags.contains (Flags.RELATIONSHIP)) && (! nflags.contains (Flags.RECOMMENDED))
+				|| nflags.contains (Flags.RELATIONSHIP) && (! nflags.contains (Flags.REQUIRED))
+				|| nflags.equals (EnumSet.of (Flags.REQUIRED)),
+				"The specified flags can not be used together");
+
+		return new Property<T, V> (element, value, name, MultiReference.of (get, add, remove), nflags);
 	}
 
 	/**
 	 * Create the <code>Property</code>.
 	 *
-	 * @param  name    The name of the <code>Property</code>, not null
-	 * @param  element The <code>Element</code> interface class, not null
-	 * @param  type    The Java type of the <code>Property</code>, not null
-	 * @param  flags   The <code>Flags</code> for the <code>Property</code>
+	 * @param  element   The <code>Element</code> interface class, not null
+	 * @param  value     The value class, not null
+	 * @param  reference The <code>Reference</code>, not null
+	 * @param  name      The name of the <code>Property</code>, not null
+	 * @param  flags     The <code>Flags</code> for the <code>Property</code>
 	 */
 
-	private Property (final String name, final Class<T> element, final Class<V> type, final Set<Flags> flags)
+	private Property (
+			final Class<T> element,
+			final Class<V> value,
+			final String name,
+			final Reference<T, V> reference,
+			final Set<Flags> flags)
 	{
-		this.name = name;
 		this.element = element;
-		this.type = type;
+		this.value = value;
+		this.name = name;
+		this.reference = reference;
 		this.flags = flags;
 	}
 
@@ -214,9 +347,12 @@ public final class Property<T extends Element, V>
 	public boolean equals (final Object property)
 	{
 		return (property == this) ? true : (property instanceof Property)
-			&& Objects.equals (this.name, ((Property) property).name ())
-			&& Objects.equals (this.element, ((Property) property).element ())
-			&& Objects.equals (this.type, ((Property) property).type ());
+			&& Objects.equals (this.element, ((Property) property).element)
+			&& Objects.equals (this.value, ((Property) property).value)
+			&& Objects.equals (this.name, ((Property) property).name)
+			&& Objects.equals (this.flags, ((Property) property).flags)
+			&& Objects.equals (this.reference, ((Property) property).reference);
+
 	}
 
 	/**
@@ -228,7 +364,7 @@ public final class Property<T extends Element, V>
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.name, this.element, this.type);
+		return Objects.hash (this.element, this.value, this.name, this.flags, this.reference);
 	}
 
 	/**
@@ -244,10 +380,11 @@ public final class Property<T extends Element, V>
 	public String toString ()
 	{
 		return MoreObjects.toStringHelper (this)
-			.add ("name", this.name)
 			.add ("element", this.element)
-			.add ("type", this.type)
+			.add ("value", this.value)
+			.add ("name", this.name)
 			.add ("flags", this.flags)
+			.add ("reference", this.reference)
 			.toString ();
 	}
 
@@ -338,6 +475,104 @@ public final class Property<T extends Element, V>
 
 	public Class<V> getValueClass ()
 	{
-		return this.type;
+		return this.value;
+	}
+
+	/**
+	 * Determine if the value contained in the <code>Element</code> represented
+	 * by the specified <code>Property</code> has the specified value.  If the
+	 * <code>Property</code> represents a singe value, then this method will be
+	 * equivalent to calling the <code>equals</code> method on the value
+	 * represented by the <code>Property</code>.  This method is equivalent to
+	 * calling the <code>contains</code> method for <code>Property</code>
+	 * instances that represent collections.
+	 *
+	 * @param  element The <code>Element</code> instance, not null
+	 * @param  value   The value to be tested against the <code>Element</code>
+	 *
+	 * @return <code>true</code> if the value represented by the
+	 *         <code>Property</code> equals/contains the specified value,
+	 *         <code>false</code> otherwise.
+	 */
+
+	public boolean hasValue (final T element, final @Nullable V value)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		return this.reference.hasValue (element, value);
+	}
+
+	/**
+	 * Get a <code>Stream</code> containing all of the values in this
+	 * <code>Element</code> instance which are represented by the specified
+	 * <code>Property</code>.  This method will return a <code>Stream</code>
+	 * containing zero or more values.  For a single-valued
+	 * <code>Property</code>, the returned <code>Stream</code> will contain
+	 * exactly zero or one values.  An empty <code>Stream</code> will be
+	 * returned if the associated value is null.  A <code>Stream</code>
+	 * containing all of the values in the associated collection will be
+	 * returned for multi-valued <code>Property</code> instances.
+	 *
+	 * @param  element  The <code>Element</code>, not null
+	 *
+	 * @return          The <code>Stream</code>
+	 */
+
+	public Stream<V> stream (final T element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		return this.reference.stream (element);
+	}
+
+	/**
+	 * Add the specified value to the <code>Element</code>.  For a single valued
+	 * <code>Property</code>, this method will replace the existing value with
+	 * the specified value.  The specified value will be added to the associated
+	 * collection for multi-valued <code>Property</code> instances.
+	 *
+	 * @param  element The <code>Element</code> instance, not null
+	 * @param  value   The value to be written into the <code>Element</code>,
+	 *                 not null
+	 *
+	 * @return         <code>true</code> if the value was written into the
+	 *                 <code>Element</code>, <code>false</code> otherwise
+	 */
+
+	protected boolean setValue (final T element, final V value)
+	{
+		assert element != null : "element is NULL";
+		assert value != null : "value is NULL";
+
+		return this.reference.setValue (element, value);
+	}
+
+	/**
+	 * Remove the specified value from the specified <code>Element</code>
+	 * instance.  For a single valued <code>Property</code> this method will
+	 * set the corresponding value to <code>null</code> if it is currently equal
+	 * to the specified value.  In the case of a multi-valued
+	 * <code>Property</code>, the specified value will be removed from the
+	 * associated <code>Collection</code>.
+	 * <p>
+	 * Note that this method will not clear the value if the
+	 * <code>Property</code> instance has the REQUIRED flag.
+	 *
+	 * @param  element The <code>Element</code> instance, not null
+	 * @param  value   The value to be removed from the <code>Element</code>,
+	 *                 not null
+	 *
+	 * @return         <code>true</code> if the value was removed from the
+	 *                 <code>Element</code>, <code>false</code> otherwise
+	 */
+
+	protected boolean clearValue (final T element, final V value)
+	{
+		assert element != null : "element is NULL";
+		assert value != null : "value is NULL";
+
+		return (! this.flags.contains (Flags.REQUIRED))
+			? this.reference.clearValue (element, value)
+			: false;
 	}
 }
