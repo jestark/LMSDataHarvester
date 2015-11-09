@@ -50,20 +50,18 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * <p>
  * An instance of this interface models one side of the relationship between two
  * <code>Element</code> classes.  While each instance of this class knows the
- * cardinality and navigability of the side of the relationship that it
- * represents it does not know those characteristics for the other side.  When
- * an operation is to be performed on a relationship the request is made to the
- * owning side.  The owning side will perform its own safety checks then pass
- * on the request to the other side to perform the actual operation.
+ * navigability of the side of the relationship that it represents it does not
+ * know those characteristics for the other side.  When an operation is to be
+ * performed on a relationship the request is made to the owning side.  The
+ * owning side will perform its own safety checks then pass on the request to
+ * the other side to perform the actual operation.
  * <p>
  * All of the possible relationships can be represented through a combination
- * of any two of the <code>Relationship</code> implementations:
+ * of the <code>Relationship</code> implementations:
  *
  * <ul>
- * 	<li><code>SingleRelationship</code> represents a side of a relationship
- * 	    which is navigable with a cardinality of one
- * 	<li><code>MultiRelationship</code> represents a side of a relationship
- * 	    which is navigable with a cardinality greater then one
+ * 	<li><code>PropertyRelationship</code> represents a side of a relationship
+ * 	    which is navigable
  * 	<li><code>SelectorRelationship</code> represents a side of a relationship
  * 	    which is not navigable
  * </ul>
@@ -73,7 +71,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * relationship that does not see the other side.
  *
  * @author  James E. Stark
- * @version 2.0
+ * @version 1.0
  * @param   <T> The type of the owning <code>Element</code>
  * @param   <V> The type of the associated <code>Element</code>
  */
@@ -87,7 +85,6 @@ public interface Relationship<T extends Element, V extends Element>
 	 * instance for the <code>Element</code> on the other side of the
 	 * relationship.
 	 *
-	 * @param  model   The <code>DomainModel</code>, not null
 	 * @param  element The <code>Element</code> to process, not null
 	 *
 	 * @return         <code>true</code> if the relationship was successfully

@@ -29,8 +29,10 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * Representation of a relationship for an <code>Element</code> with a
- * cardinality of one.
+ * Representation of a navigable relationship, for an <code>Element</code>
+ * interface class.  This class represents a relationship which is rooted on a
+ * <code>Property</code> instance, within the associated <code>Element</code>
+ * interface class.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -38,7 +40,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @param   <V> The type of the associated <code>Element</code>
  */
 
-final class SingleRelationship<T extends Element, V extends Element> implements Relationship<T, V>
+final class PropertyRelationship<T extends Element, V extends Element> implements Relationship<T, V>
 {
 	/** The Logger */
 	private final Logger log;
@@ -46,34 +48,34 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	/** The other side of the <code>Relationship</code> */
 	private final InverseRelationship<V, T> inverse;
 
-	/** The assocated <code>Property</code> */
+	/** The <code>Property</code> */
 	private final Property<T, V> property;
 
 	/**
-	 * Create the <code>SingleRelationship</code> from the specified values.
+	 * Create the <code>PropertyRelationship</code> from the specified values.
 	 *
 	 * @param  inverse   The <code>Inverse</code> relationship, not null
 	 * @param  property The <code>Property</code>, not null
 	 */
 
-	public static <T extends Element, V extends Element> SingleRelationship<T, V> of (
+	public static <T extends Element, V extends Element> PropertyRelationship<T, V> of (
 			final InverseRelationship<V, T> inverse,
 			final Property<T, V> property)
 	{
 		assert inverse != null : "inverse is NULL";
 		assert property != null : "property is NULL";
 
-		return new SingleRelationship<T, V> (inverse, property);
+		return new PropertyRelationship<T, V> (inverse, property);
 	}
 
 	/**
-	 * Create the <code>SingleRelationShip</code>.
+	 * Create the <code>PropertyRelationShip</code>.
 	 *
 	 * @param  inverse   The <code>Inverse</code> relationship, not null
 	 * @param  property  The <code>Property</code>, not null
 	 */
 
-	private SingleRelationship (final InverseRelationship<V, T> inverse,
+	private PropertyRelationship (final InverseRelationship<V, T> inverse,
 			final Property<T, V> property)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
@@ -83,26 +85,27 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	}
 
 	/**
-	 * Compare two <code>SingleRelationship</code> instances to determine if
+	 * Compare two <code>PropertyRelationship</code> instances to determine if
 	 * they are equal.
 	 *
-	 * @param  obj The <code>SingleRelationship</code> instance to compare to
+	 * @param  obj The <code>PropertyRelationship</code> instance to compare to
 	 *             the one represented by the called instance
 	 *
-	 * @return     <code>true</code> if the two <code>SingleRelationship</code>
-	 *             instances are equal, <code>false</code> otherwise
+	 * @return     <code>true</code> if the two
+	 *             <code>PropertyRelationship</code> instances are equal,
+	 *             <code>false</code> otherwise
 	 */
 
 	@Override
 	public boolean equals (final Object obj)
 	{
-		return (obj == this) ? true : (obj instanceof SingleRelationship)
-				&& Objects.equals (this.inverse, ((SingleRelationship) obj).inverse)
-				&& Objects.equals (this.property, ((SingleRelationship) obj).property);
+		return (obj == this) ? true : (obj instanceof PropertyRelationship)
+				&& Objects.equals (this.inverse, ((PropertyRelationship) obj).inverse)
+				&& Objects.equals (this.property, ((PropertyRelationship) obj).property);
 	}
 
 	/**
-	 * Compute a hashCode for the <code>SingleRelationship</code> instance.
+	 * Compute a hashCode for the <code>PropertyRelationship</code> instance.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
 	 */
@@ -115,11 +118,11 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 
 	/**
 	 * Get a <code>String</code> representation of the
-	 * <code>SingleRelationship</code> instance, including the identifying
+	 * <code>PropertyRelationship</code> instance, including the identifying
 	 * fields.
 	 *
 	 * @return A <code>String</code> representation of the
-	 *         <code>SingleRelationship</code> instance
+	 *         <code>PropertyRelationship</code> instance
 	 */
 
 	@Override

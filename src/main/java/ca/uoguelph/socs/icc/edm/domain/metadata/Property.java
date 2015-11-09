@@ -253,11 +253,8 @@ public class Property<T extends Element, V>
 		Preconditions.checkNotNull (remove, "remove");
 		Preconditions.checkArgument (name.length () > 0, "name can not be empty");
 
-		Set<Flags> nflags = (Element.class.isAssignableFrom (value))
-			? EnumSet.of (Flags.RELATIONSHIP)
-			: EnumSet.noneOf (Property.Flags.class);
-
-		return new Property<T, V> (element, value, name, MultiReference.of (get, add, remove), nflags);
+		return new Property<T, V> (element, value, name,
+				MultiReference.of (get, add, remove), EnumSet.of (Flags.RELATIONSHIP));
 	}
 
 	/**
@@ -291,19 +288,14 @@ public class Property<T extends Element, V>
 		Preconditions.checkNotNull (remove, "remove");
 		Preconditions.checkArgument (name.length () > 0, "name can not be empty");
 
-		Set<Flags> nflags = (Element.class.isAssignableFrom (value))
-			? EnumSet.of (Flags.RELATIONSHIP)
-			: EnumSet.noneOf (Property.Flags.class);
+		Set<Flags> nflags = EnumSet.of (Flags.RELATIONSHIP);
 
 		for (Flags f : flags)
 		{
 			nflags.add (f);
 		}
 
-		Preconditions.checkArgument ((! nflags.contains (Flags.RELATIONSHIP)) && (! nflags.contains (Flags.RECOMMENDED))
-				|| nflags.contains (Flags.RELATIONSHIP) && (! nflags.contains (Flags.REQUIRED))
-				|| nflags.equals (EnumSet.of (Flags.REQUIRED)),
-				"The specified flags can not be used together");
+		Preconditions.checkArgument (! nflags.contains (Flags.REQUIRED), "Multi-Valued Properties can not be REQUIRED");
 
 		return new Property<T, V> (element, value, name, MultiReference.of (get, add, remove), nflags);
 	}
@@ -530,6 +522,10 @@ public class Property<T extends Element, V>
 	 * <code>Property</code>, this method will replace the existing value with
 	 * the specified value.  The specified value will be added to the associated
 	 * collection for multi-valued <code>Property</code> instances.
+	 * <p>
+	 * Note: for this method to set the value, the <code>Property</code>
+	 * instance must not have REQUIRED flag, or the value must be
+	 * <code>null</code>.
 	 *
 	 * @param  element The <code>Element</code> instance, not null
 	 * @param  value   The value to be written into the <code>Element</code>,
@@ -543,8 +539,14 @@ public class Property<T extends Element, V>
 	{
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
+		assert ((! this.flags.contains (Flags.REQUIRED))
+				|| this.reference.hasValue (element, null))
+			: "The Property is REQUIRED and the value is non NULL";
 
-		return this.reference.setValue (element, value);
+		return ((! this.flags.contains (Flags.REQUIRED))
+				|| this.reference.hasValue (element, null))
+			? this.reference.setValue (element, value)
+			: false;
 	}
 
 	/**
@@ -570,6 +572,7 @@ public class Property<T extends Element, V>
 	{
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
+		assert (! this.flags.contains (Flags.REQUIRED)) : "The Property is REQUIRED";
 
 		return (! this.flags.contains (Flags.REQUIRED))
 			? this.reference.clearValue (element, value)

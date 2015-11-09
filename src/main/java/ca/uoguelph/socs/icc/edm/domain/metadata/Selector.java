@@ -102,7 +102,6 @@ public final class Selector<T extends Element>
 	 * Create the <code>Selector</code> using multiple <code>Property</code>
 	 * instances.
 	 *
-	 * @param  element     The <code>Element</code> interface class, not null
 	 * @param  name        The name of the <code>Selector</code>, not null
 	 * @param  cardinality The <code>Cardinality</code> of the result, not null
 	 * @param  properties  The properties to be used to create the
@@ -112,27 +111,24 @@ public final class Selector<T extends Element>
 	 */
 
 	public static <T extends Element> Selector<T> of (
-			final Class<T> element,
 			final Cardinality cardinality,
-			final String name,
-			final Property<T, ?>... properties)
+			final Property<T, ?> first,
+			final Property<T, ?>... rest)
 	{
-		Preconditions.checkNotNull (element, "element");
 		Preconditions.checkNotNull (cardinality, "cardinality");
-		Preconditions.checkNotNull (name, "name");
-		Preconditions.checkArgument (name.length () > 0);
-		Preconditions.checkArgument (cardinality != Cardinality.KEY || properties.length == 1,
-				"A KEY must have exactly one Property");
+		Preconditions.checkNotNull (first, "first");
+		Preconditions.checkArgument (cardinality != Cardinality.KEY, "A KEY must have exactly one Property");
 
-		return new Selector<T> (element, cardinality, name, Arrays.stream (properties)
-				.filter (p -> p != null)
-				.collect (Collectors.toSet ()));
+		Set<Property<T, ?>> properties = new HashSet<> ();
+		properties.add (first);
+		properties.addAll (Arrays.asList (rest));
+
+		return new Selector<T> (first.getElementClass (), cardinality, first.getName (), properties);
 	}
 
 	/**
 	 * Create the <code>Selector</code> using a single <code>Property</code>.
 	 *
-	 * @param  element     The <code>Element</code> interface class, not null
 	 * @param  cardinality The <code>Cardinality</code> of the result, not null
 	 * @param  property    The property to be represented by the
 	 *                     <code>Selector</code>, not null
@@ -141,15 +137,16 @@ public final class Selector<T extends Element>
 	 */
 
 	public static <T extends Element> Selector<T> of (
-			final Class<T> element,
 			final Cardinality cardinality,
 			final Property<T, ?> property)
 	{
-		Preconditions.checkNotNull (element, "element");
 		Preconditions.checkNotNull (cardinality, "cardinality");
 		Preconditions.checkNotNull (property, "property");
 
-		return Selector.of (element, cardinality, property.getName (), property);
+		Set<Property<T, ?>> properties = new HashSet<> ();
+		properties.add (property);
+
+		return new Selector<T> (property.getElementClass (), cardinality, property.getName (), properties);
 	}
 
 	/**

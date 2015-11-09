@@ -31,7 +31,11 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
 /**
- * Representation of a inverse uni-directional relationship.
+ * Representation of a non-navigable inverse relationship.  This class
+ * represents the non-navigable side of a uni-directional relationship.  As such
+ * the relationship is rooted in the <code>Selector</code>, from the navigable
+ * side, using the associated <code>Property</code> (from the navigable side)
+ * as a reference.
  *
  * @version 1.0
  * @param   <T> The type of the owning <code>Element</code>

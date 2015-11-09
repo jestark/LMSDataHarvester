@@ -29,44 +29,46 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * Representation of a inverse relationship for an <code>Element</code> with
- * a cardinality greater than one.
+ * Representation of a inverse navigable relationship for an
+ * <code>Element</code> interface class.  This class represents an inverse
+ * relationship which is rooted on a <code>Property</code> instance, within the
+ * associated <code>Element</code> interface class.
  *
  * @version 1.0
  * @param   <T> The type of the owning <code>Element</code>
  * @param   <V> The type of the associated <code>Element</code>
  */
 
-final class MultiInverseRelationship<T extends Element, V extends Element> implements InverseRelationship<T, V>
+final class PropertyInverseRelationship<T extends Element, V extends Element> implements InverseRelationship<T, V>
 {
 	/** The Logger */
 	private final Logger log;
 
-	/** The <code>Property</code> used to manipulate the element */
+	/** The assocated <code>Property</code> */
 	private final Property<T, V> property;
 
 	/**
-	 * Create the <code>MultiInverseRelationship</code> from the specified
+	 * Create the <code>PropertyInverseRelationship</code> from the specified
 	 * values.
 	 *
 	 * @param  property The <code>Property</code>, not null
 	 */
 
-	public static <T extends Element, V extends Element> MultiInverseRelationship<T, V> of (
+	public static <T extends Element, V extends Element> PropertyInverseRelationship<T, V> of (
 			final Property<T, V> property)
 	{
 		assert property != null : "property is NULL";
 
-		return new MultiInverseRelationship<T, V> (property);
+		return new PropertyInverseRelationship<T, V> (property);
 	}
 
 	/**
-	 * Create the <code>MultiInverseRelationship</code>
+	 * Create the <code>PropertyInverse</code>.
 	 *
 	 * @param  property The <code>Property</code>, not null
 	 */
 
-	private MultiInverseRelationship (final Property<T, V> property)
+	private PropertyInverseRelationship (final Property<T, V> property)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
@@ -74,26 +76,26 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 	}
 
 	/**
-	 * Compare two <code>MultiInverseRelationship</code> instances to determine
-	 * if they are equal.
+	 * Compare two <code>PropertyInverseRelationship</code> instances to
+	 * determine if they are equal.
 	 *
-	 * @param  obj The <code>MultiInverseRelationship</code> instance to
+	 * @param  obj The <code>PropertyInverseRelationship</code> instance to
 	 *             compare to the one represented by the called instance
 	 *
 	 * @return     <code>true</code> if the two
-	 *             <code>MultiInverseRelationship</code> instances are equal,
+	 *             <code>PropertyInverseRelationship</code> instances are equal,
 	 *             <code>false</code> otherwise
 	 */
 
 	@Override
 	public boolean equals (final Object obj)
 	{
-		return (obj == this) ? true : (obj instanceof MultiInverseRelationship)
-				&& Objects.equals (this.property, ((MultiInverseRelationship) obj).property);
+		return (obj == this) ? true : (obj instanceof PropertyInverseRelationship)
+				&& Objects.equals (this.property, ((PropertyInverseRelationship) obj).property);
 	}
 
 	/**
-	 * Compute a hashCode for the <code>MultiInverseRelationship</code>
+	 * Compute a hashCode for the <code>PropertyInverseRelationship</code>
 	 * instance.
 	 *
 	 * @return An <code>Integer</code> containing the hash code
@@ -107,11 +109,11 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 
 	/**
 	 * Get a <code>String</code> representation of the
-	 * <code>MultiInverseRelationship</code> instance, including the identifying
-	 * fields.
+	 * <code>PropertyInverseRelationship</code> instance, including the 
+	 * identifying fields.
 	 *
 	 * @return A <code>String</code> representation of the
-	 *         <code>MultiInverseRelationship</code> instance
+	 *         <code>PropertyInverseRelationship</code> instance
 	 */
 
 	@Override
@@ -126,13 +128,6 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 	/**
 	 * Insert the specified value into the specified <code>Element</code> to
 	 * create the relationship.
-	 * <p>
-	 * This method adds the specified value to the <code>Collection</code>
-	 * which contains all of the values for the relationship.  Note that it
-	 * may be possible to add the same value to an <code>Element</code>
-	 * multiple times, depending of the implementation of the
-	 * <code>Element</code>.  The called must ensure that this does not
-	 * happen.
 	 *
 	 * @param  element The <code>Element</code> to operate on, not null
 	 * @param  value   The <code>Element</code> to be inserted, not null
@@ -156,16 +151,12 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 		assert element.getDomainModel ().contains (value) : "value is not in the model";
 
 		return element.getDomainModel ().contains (element)
-			&& this.property.setValue (element, value);
+				&& this.property.setValue (element, value);
 	}
 
 	/**
 	 * Remove the specified value from the specified <code>Element</code> to
 	 * break the relationship.
-	 * <p>
-	 * This method removes the specified value from the
-	 * <code>Collection</code> which contains all of the values for the
-	 * relationship.
 	 *
 	 * @param  element The <code>Element</code> to operate on, not null
 	 * @param  value   The <code>Element</code> to be removed, not null
@@ -184,6 +175,7 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
+		assert this.property.hasValue (element, value) : "The Element does not have the value to be removed";
 
 		return this.property.clearValue (element, value);
 	}
