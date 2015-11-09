@@ -51,6 +51,164 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public final class MetaData<T extends Element>
 {
+	/**
+	 * Builder for the <code>MetaData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @param   <T> The <code>Element</code> type
+	 */
+
+	public static final class Builder<T extends Element>
+	{
+		/** The Logger */
+		private final Logger log;
+
+		/** The <code>Element</code> type */
+		private final Class<T> type;
+
+		/** The <code>MetaData</code> definition for the parent <code>Element</code> */
+		private final MetaData<? super T> parent;
+
+		/** The <code>Set</code> of <code>Property</code> instances */
+		private final Set<Property<? extends Element, ?>> properties;
+
+		/** The <code>Set</code> of <code>Selector</code> instances */
+		private final Set<Selector<? extends Element>> selectors;
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  type The <code>Element</code> interface class, not null
+		 */
+
+		private Builder (final Class<T> type, final @Nullable MetaData<? super T> parent)
+		{
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			this.type = type;
+			this.parent = parent;
+
+			this.properties = new HashSet<> ();
+			this.selectors = new HashSet<> ();
+		}
+
+		private boolean hasProperty (final Property<? super T, ?> property)
+		{
+			assert property != null : "property is null";
+
+			return this.properties.contains (property); // || ((this.parent != null) && this.parent.hasProperty (property));
+		}
+
+		/**
+		 *
+		 * @param  <V>      The <code>Element</code> type of the property
+		 * @param  property The <code>Property</code>, not null
+		 *
+		 * @return          This <code>MetaData.Builder</code>
+		 */
+
+		public <V> Builder<T> addProperty (final Property<T, V> property)
+		{
+			this.log.trace ("addProperty: property={}", property);
+
+			assert property != null : "property is NULL";
+
+			this.properties.add (property);
+
+			return this;
+		}
+
+		/**
+		 * Add a bi-directional <code>Relationship</code> instance for the specified
+		 * <code>Property</code> instances.  This method creates a relationship
+		 * between the local <code>MetaData</code> instance (which is being built by
+		 * this builder) and the specified remote <code>MetaData</code> instance.
+		 *
+		 * @param  <V>      The <code>Element</code> type
+		 * @param  local    The local <code>Property</code>, not null
+		 * @param  metadata The remote <code>MetaData</code>, not null
+		 * @param  remote   The remote <code>Property</code>, not null
+		 *
+		 * @return          This <code>MetaData.Builder</code>
+		 */
+
+		public <V extends Element> Builder<T> addRelationship (final Property<T, V> local, final MetaData<V> metadata, final Property<V, T> remote)
+		{
+			this.log.trace ("addRelationship: local={}, metadata={}, remote={}",local, metadata, remote);
+
+			assert local != null : "local is NULL";
+			assert metadata != null : "metadata is NULL";
+			assert remote != null : "remote is NULL";
+
+			return this;
+		}
+
+		/**
+		 * Add a uni-directional <code>Relationship</code> instance for the
+		 * specified <code>Property</code>.  This method creates a relationship
+		 * between the local <code>MetaData</code> instance (which is being
+		 * built by this builder) and the specified remote <code>MetaData</code>
+		 * instance.  Since the remote side does not have a
+		 * <code>Property</code> to describe its side of the relationship, a
+		 * <code>Selector</code> is used instead.
+		 *
+		 * @param  <V>      The <code>Element</code> type
+		 * @param  local    The local <code>Property</code>, not null
+		 * @param  metadata The remote <code>MetaData</code>, not null
+		 * @param  remote   The remote <code>Selector</code>, not null
+		 *
+		 * @return          This <code>MetaData.Builder</code>
+		 */
+
+		public <V extends Element> Builder<T> addRelationship (final Property<T, V> local, final MetaData<V> metadata, final Selector<T> remote)
+		{
+			this.log.trace ("addRelationship: local={}, metadata={}, remote={}", local, metadata, remote);
+
+			assert local != null : "local is NULL";
+			assert metadata != null : "metadata is NULL";
+			assert remote != null : "remote is NULL";
+
+			return this;
+		}
+
+		/**
+		 * Add the specified <code>Selector</code>.
+		 *
+		 * @param  selector The <code>Selector</code>, not null
+		 *
+		 * @return          This <code>MetaData.Builder</code>
+		 */
+
+		public Builder<T> addSelector (final Selector<T> selector)
+		{
+			this.log.trace ("addSelector: selector={}", selector);
+
+			assert selector != null : "selector is NULL";
+			assert ! this.selectors.contains (selector) : "selector is already registered";
+			assert selector.getProperties ().stream ()
+				.allMatch (p -> this.hasProperty (p)) : "Properties in selector missing from definition";
+
+			this.selectors.add (selector);
+
+			return this;
+		}
+
+		/**
+		 * Build the <code>MetaData</code> for the <code>Element</code>
+		 * implementation class.
+		 *
+		 * @return The <code>MetaData</code>
+		 */
+
+		public MetaData<T> build ()
+		{
+			this.log.trace ("build:");
+
+			return new MetaData<T> (this.type, this.parent, this.properties, this.selectors);
+		}
+	}
+
 	/** The Logger */
 	private final Logger log;
 
@@ -79,9 +237,9 @@ public final class MetaData<T extends Element>
 	 * @return         The <code>MetaDataBuilder</code> instance
 	 */
 
-	public static <T extends Element> MetaDataBuilder<T> builder (final Class<T> element)
+	public static <T extends Element> Builder<T> builder (final Class<T> element)
 	{
-		return new MetaDataBuilder<T> (element, null);
+		return new Builder<T> (element, null);
 	}
 
 	/**
@@ -95,9 +253,9 @@ public final class MetaData<T extends Element>
 	 * @return         The <code>MetaDataBuilder</code> instance
 	 */
 
-	public static <T extends Element> MetaDataBuilder<T> builder (final Class<T> element, final MetaData<? super T> parent)
+	public static <T extends Element> Builder<T> builder (final Class<T> element, final MetaData<? super T> parent)
 	{
-		return new MetaDataBuilder<T> (element, parent);
+		return new Builder<T> (element, parent);
 	}
 
 	/**
@@ -111,7 +269,7 @@ public final class MetaData<T extends Element>
 	 *                        instances, not null
 	 */
 
-	protected MetaData (final Class<T> element,
+	private MetaData (final Class<T> element,
 			final MetaData<? super T> parent,
 			final Set<Property<? extends Element, ?>> properties,
 			final Set<Selector<? extends Element>> selectors)
