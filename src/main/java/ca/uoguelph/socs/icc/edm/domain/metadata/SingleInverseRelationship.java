@@ -42,35 +42,35 @@ final class SingleInverseRelationship<T extends Element, V extends Element> impl
 	/** The Logger */
 	private final Logger log;
 
-	/** The assocated <code>PropertyReference</code> */
-	private final Accessor<T, V> reference;
+	/** The assocated <code>Property</code> */
+	private final Property<T, V> property;
 
 	/**
 	 * Create the <code>SingleInverseRelationship</code> from the specified
 	 * values.
 	 *
-	 * @param  reference The <code>Accessor</code>, not null
+	 * @param  property The <code>Property</code>, not null
 	 */
 
 	public static <T extends Element, V extends Element> SingleInverseRelationship<T, V> of (
-			final Accessor<T, V> reference)
+			final Property<T, V> property)
 	{
-		assert reference != null : "reference is NULL";
+		assert property != null : "property is NULL";
 
-		return new SingleInverseRelationship<T, V> (reference);
+		return new SingleInverseRelationship<T, V> (property);
 	}
 
 	/**
 	 * Create the <code>SingleInverse</code>.
 	 *
-	 * @param  reference The <code>Accessor</code>, not null
+	 * @param  property The <code>Property</code>, not null
 	 */
 
-	private SingleInverseRelationship (final Accessor<T, V> reference)
+	private SingleInverseRelationship (final Property<T, V> property)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.reference = reference;
+		this.property = property;
 	}
 
 	/**
@@ -89,7 +89,7 @@ final class SingleInverseRelationship<T extends Element, V extends Element> impl
 	public boolean equals (final Object obj)
 	{
 		return (obj == this) ? true : (obj instanceof SingleInverseRelationship)
-				&& Objects.equals (this.reference, ((SingleInverseRelationship) obj).reference);
+				&& Objects.equals (this.property, ((SingleInverseRelationship) obj).property);
 	}
 
 	/**
@@ -102,7 +102,7 @@ final class SingleInverseRelationship<T extends Element, V extends Element> impl
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.reference);
+		return Objects.hash (this.property);
 	}
 
 	/**
@@ -119,7 +119,7 @@ final class SingleInverseRelationship<T extends Element, V extends Element> impl
 	public String toString ()
 	{
 		return MoreObjects.toStringHelper (this)
-			.add ("reference", this.reference)
+			.add ("property", this.property)
 			.toString ();
 	}
 
@@ -144,8 +144,8 @@ final class SingleInverseRelationship<T extends Element, V extends Element> impl
 	{
 		this.log.trace ("insert: element={}, value={}", element, value);
 		this.log.debug ("inserting Relationship: {} -> {}",
-				this.reference.getElementClass ().getSimpleName (),
-				this.reference.getProperty ().getName ());
+				this.property.getElementClass ().getSimpleName (),
+				this.property.getValueClass ().getSimpleName ());
 
 		assert element != null : "element";
 		assert value != null : "value is NULL";
@@ -153,15 +153,10 @@ final class SingleInverseRelationship<T extends Element, V extends Element> impl
 		assert element.getDomainModel ().contains (element) : "element is not in the model";
 		assert element.getDomainModel ().contains (value) : "value is not in the model";
 
-		boolean result = false;
-
-		if (element.getDomainModel ().contains (element) && this.reference.getValue (element) == null)
-		{
-			this.reference.setValue (element, value);
-			result = true;
-		}
-
-		return result;
+		return (element.getDomainModel ().contains (element)
+				&& this.property.hasValue (element, null))
+			? this.property.setValue (element, value)
+			: false;
 	}
 
 	/**
@@ -185,22 +180,13 @@ final class SingleInverseRelationship<T extends Element, V extends Element> impl
 	{
 		this.log.trace ("remove: element={}, value={}", element, value);
 		this.log.debug ("removing Relationship: {} -> {}",
-				this.reference.getElementClass ().getSimpleName (),
-				this.reference.getProperty ().getName ());
+				this.property.getElementClass ().getSimpleName (),
+				this.property.getValueClass ().getSimpleName ());
 
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
-		assert value == this.reference.getValue (element) : "The value to be removed is not equal to the value in the element";
+		assert this.property.hasValue (element, value) : "The value to be removed is not equal to the value in the element";
 
-		boolean result = false;
-
-		if ((! this.reference.getProperty ().hasFlags (Property.Flags.REQUIRED))
-				&& (value == this.reference.getValue (element)))
-		{
-			this.reference.setValue (element, null);
-			result = true;
-		}
-
-		return result;
+		return this.property.clearValue (element, value);
 	}
 }

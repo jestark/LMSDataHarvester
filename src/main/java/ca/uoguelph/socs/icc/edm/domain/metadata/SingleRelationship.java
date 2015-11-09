@@ -46,40 +46,40 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	/** The other side of the <code>Relationship</code> */
 	private final InverseRelationship<V, T> inverse;
 
-	/** The assocated <code>PropertyReference</code> */
-	private final Accessor<T, V> reference;
+	/** The assocated <code>Property</code> */
+	private final Property<T, V> property;
 
 	/**
 	 * Create the <code>SingleRelationship</code> from the specified values.
 	 *
 	 * @param  inverse   The <code>Inverse</code> relationship, not null
-	 * @param  reference The <code>Accessor</code>, not null
+	 * @param  property The <code>Property</code>, not null
 	 */
 
 	public static <T extends Element, V extends Element> SingleRelationship<T, V> of (
 			final InverseRelationship<V, T> inverse,
-			final Accessor<T, V> reference)
+			final Property<T, V> property)
 	{
 		assert inverse != null : "inverse is NULL";
-		assert reference != null : "reference is NULL";
+		assert property != null : "property is NULL";
 
-		return new SingleRelationship<T, V> (inverse, reference);
+		return new SingleRelationship<T, V> (inverse, property);
 	}
 
 	/**
 	 * Create the <code>SingleRelationShip</code>.
 	 *
 	 * @param  inverse   The <code>Inverse</code> relationship, not null
-	 * @param  reference The <code>Accessor</code>, not null
+	 * @param  property  The <code>Property</code>, not null
 	 */
 
 	private SingleRelationship (final InverseRelationship<V, T> inverse,
-			final Accessor<T, V> reference)
+			final Property<T, V> property)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.inverse = inverse;
-		this.reference = reference;
+		this.property = property;
 	}
 
 	/**
@@ -98,7 +98,7 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	{
 		return (obj == this) ? true : (obj instanceof SingleRelationship)
 				&& Objects.equals (this.inverse, ((SingleRelationship) obj).inverse)
-				&& Objects.equals (this.reference, ((SingleRelationship) obj).reference);
+				&& Objects.equals (this.property, ((SingleRelationship) obj).property);
 	}
 
 	/**
@@ -110,7 +110,7 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.inverse, this.reference);
+		return Objects.hash (this.inverse, this.property);
 	}
 
 	/**
@@ -127,7 +127,7 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	public String toString ()
 	{
 		return MoreObjects.toStringHelper (this)
-			.add ("reference", this.reference)
+			.add ("property", this.property)
 			.add ("inverse", this.inverse)
 			.toString ();
 	}
@@ -150,18 +150,15 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	{
 		this.log.trace ("connect: element={}", element);
 		this.log.debug ("Connecting Relationship: {} -> {}",
-				this.reference.getElementClass ().getSimpleName (),
-				this.reference.getProperty ().getName ());
+				this.property.getElementClass ().getSimpleName (),
+				this.property.getValueClass ().getSimpleName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";
 		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-		final V value = this.reference.getValue (element);
-
-		return value == null
-			|| (element.getDomainModel ().contains (element)
-					&& this.inverse.insert (value, element));
+		return element.getDomainModel ().contains (element) && this.property.stream (element)
+			.allMatch (x -> this.inverse.insert (x, element));
 	}
 
 	/**
@@ -182,17 +179,14 @@ final class SingleRelationship<T extends Element, V extends Element> implements 
 	{
 		this.log.trace ("disconnect: element={}", element);
 		this.log.debug ("Disconnecting Relationship: {} -> {}",
-				this.reference.getElementClass ().getSimpleName (),
-				this.reference.getProperty ().getName ());
+				this.property.getElementClass ().getSimpleName (),
+				this.property.getValueClass ().getSimpleName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";
 		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-		final V value = this.reference.getValue (element);
-
-		return value == null
-			|| (element.getDomainModel ().contains (element)
-					&& this.inverse.remove (value, element));
+		return element.getDomainModel ().contains (element) && this.property.stream (element)
+			.allMatch (x -> this.inverse.remove (x, element));
 	}
 }

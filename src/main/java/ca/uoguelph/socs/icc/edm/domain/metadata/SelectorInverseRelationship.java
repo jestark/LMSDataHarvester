@@ -82,7 +82,7 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 		this.selector = selector;
 	}
 
-	private Query<V> getQuery ()
+	private Query<T> getQuery ()
 	{
 		return null; // model.getQuery (Container.getInstance ()
 //				.getMetaData (this.value),
@@ -171,7 +171,7 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 		return element.getDomainModel ().contains (element)
 			&& ((this.selector.getCardinality () == Selector.Cardinality.MULTIPLE)
 					|| this.getQuery ()
-					.setValue (this.property, element)
+					.setValue (this.property, value)
 					.queryAll ()
 					.size () <= 1);
 	}

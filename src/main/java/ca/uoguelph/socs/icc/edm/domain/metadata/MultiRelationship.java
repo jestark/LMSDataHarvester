@@ -16,7 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
-import java.util.Collection;
 import java.util.Objects;
 
 import javax.annotation.CheckReturnValue;
@@ -47,39 +46,39 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	/** The other side of the <code>Relationship</code> */
 	private final InverseRelationship<V, T> inverse;
 
-	/** The <code>MultiRelationship</code> used to manipulate the element */
-	private final MultiAccessor<T, V> reference;
+	/** The <code>Property</code> */
+	private final Property<T, V> property;
 
 	/**
 	 * Create the <code>MultiRelationship</code> from the specified values.
 	 *
 	 * @param  inverse   The <code>Inverse</code> relationship, not null
-	 * @param  reference The <code>MultiAccessor</code>, not null
+	 * @param  property The <code>Property</code>, not null
 	 */
 
 	public static <T extends Element, V extends Element> MultiRelationship<T, V> of (
 			final InverseRelationship<V, T> inverse,
-			final MultiAccessor<T, V> reference)
+			final Property<T, V> property)
 	{
 		assert inverse != null : "inverse is NULL";
-		assert reference != null : "reference is NULL";
+		assert property != null : "property is NULL";
 
-		return new MultiRelationship<T, V> (inverse, reference);
+		return new MultiRelationship<T, V> (inverse, property);
 	}
 
 	/**
 	 * Create the <code>MultiRelationship</code>.
 	 *
-	 * @param  inverse   The <code>Inverse</code> relationship, not null
-	 * @param  reference The <code>RelationshipReference</code>, not null
+	 * @param  inverse  The <code>Inverse</code> relationship, not null
+	 * @param  property The <code>Property</code>, not null
 	 */
 
-	private MultiRelationship (final InverseRelationship<V, T> inverse, final MultiAccessor<T, V> reference)
+	private MultiRelationship (final InverseRelationship<V, T> inverse, final Property<T, V> property)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.inverse = inverse;
-		this.reference = reference;
+		this.property = property;
 	}
 
 	/**
@@ -98,7 +97,7 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	{
 		return (obj == this) ? true : (obj instanceof MultiRelationship)
 				&& Objects.equals (this.inverse, ((MultiRelationship) obj).inverse)
-				&& Objects.equals (this.reference, ((MultiRelationship) obj).reference);
+				&& Objects.equals (this.property, ((MultiRelationship) obj).property);
 	}
 
 	/**
@@ -110,7 +109,7 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.inverse, this.reference);
+		return Objects.hash (this.inverse, this.property);
 	}
 
 	/**
@@ -127,7 +126,7 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	public String toString ()
 	{
 		return MoreObjects.toStringHelper (this)
-			.add ("reference", this.reference)
+			.add ("property", this.property)
 			.add ("inverse", this.inverse)
 			.toString ();
 	}
@@ -150,14 +149,14 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	{
 		this.log.trace ("connect: element={}", element);
 		this.log.debug ("Connecting Relationship: {} -> {}",
-				this.reference.getElementClass ().getSimpleName (),
-				this.reference.getProperty ().getName ());
+				this.property.getElementClass ().getSimpleName (),
+				this.property.getValueClass ().getSimpleName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";
 		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-		return element.getDomainModel ().contains (element) && this.reference.stream (element)
+		return element.getDomainModel ().contains (element) && this.property.stream (element)
 			.allMatch (x -> this.inverse.insert (x, element));
 	}
 
@@ -179,14 +178,14 @@ final class MultiRelationship<T extends Element, V extends Element> implements R
 	{
 		this.log.trace ("disconnect: element={}", element);
 		this.log.debug ("Disconnecting Relationship: {} -> {}",
-				this.reference.getElementClass ().getSimpleName (),
-				this.reference.getProperty ().getName ());
+				this.property.getElementClass ().getSimpleName (),
+				this.property.getValueClass ().getSimpleName ());
 
 		assert element != null : "element";
 		assert element.getDomainModel () != null : "missing DomainModel";
 		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-		return element.getDomainModel ().contains (element) && this.reference.stream (element)
+		return element.getDomainModel ().contains (element) && this.property.stream (element)
 			.allMatch (x -> this.inverse.remove (x, element));
 	}
 }

@@ -16,7 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
-import java.util.Collection;
 import java.util.Objects;
 
 import javax.annotation.CheckReturnValue;
@@ -43,35 +42,35 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 	/** The Logger */
 	private final Logger log;
 
-	/** The <code>RelationshipReference</code> used to manipulate the element */
-	private final MultiAccessor<T, V> reference;
+	/** The <code>Property</code> used to manipulate the element */
+	private final Property<T, V> property;
 
 	/**
 	 * Create the <code>MultiInverseRelationship</code> from the specified
 	 * values.
 	 *
-	 * @param  reference The <code>MultiAccessor</code>, not null
+	 * @param  property The <code>Property</code>, not null
 	 */
 
 	public static <T extends Element, V extends Element> MultiInverseRelationship<T, V> of (
-			final MultiAccessor<T, V> reference)
+			final Property<T, V> property)
 	{
-		assert reference != null : "reference is NULL";
+		assert property != null : "property is NULL";
 
-		return new MultiInverseRelationship<T, V> (reference);
+		return new MultiInverseRelationship<T, V> (property);
 	}
 
 	/**
 	 * Create the <code>MultiInverseRelationship</code>
 	 *
-	 * @param  reference The <code>MultiAccessor</code>, not null
+	 * @param  property The <code>Property</code>, not null
 	 */
 
-	private MultiInverseRelationship (final MultiAccessor<T, V> reference)
+	private MultiInverseRelationship (final Property<T, V> property)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.reference = reference;
+		this.property = property;
 	}
 
 	/**
@@ -90,7 +89,7 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 	public boolean equals (final Object obj)
 	{
 		return (obj == this) ? true : (obj instanceof MultiInverseRelationship)
-				&& Objects.equals (this.reference, ((MultiInverseRelationship) obj).reference);
+				&& Objects.equals (this.property, ((MultiInverseRelationship) obj).property);
 	}
 
 	/**
@@ -103,7 +102,7 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.reference);
+		return Objects.hash (this.property);
 	}
 
 	/**
@@ -120,7 +119,7 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 	public String toString ()
 	{
 		return MoreObjects.toStringHelper (this)
-			.add ("reference", this.reference)
+			.add ("property", this.property)
 			.toString ();
 	}
 
@@ -147,8 +146,8 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 	{
 		this.log.trace ("insert: element={}, value={}", element, value);
 		this.log.debug ("inserting Relationship: {} -> {}",
-				this.reference.getElementClass ().getSimpleName (),
-				this.reference.getProperty ().getName ());
+				this.property.getElementClass ().getSimpleName (),
+				this.property.getValueClass ().getSimpleName ());
 
 		assert element != null : "element";
 		assert value != null : "value is NULL";
@@ -157,7 +156,7 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 		assert element.getDomainModel ().contains (value) : "value is not in the model";
 
 		return element.getDomainModel ().contains (element)
-			&& this.reference.addValue (element, value);
+			&& this.property.setValue (element, value);
 	}
 
 	/**
@@ -180,12 +179,12 @@ final class MultiInverseRelationship<T extends Element, V extends Element> imple
 	{
 		this.log.trace ("remove: element={}, value={}", element, value);
 		this.log.debug ("removing Relationship: {} -> {}",
-				this.reference.getElementClass ().getSimpleName (),
-				this.reference.getProperty ().getName ());
+				this.property.getElementClass ().getSimpleName (),
+				this.property.getValueClass ().getSimpleName ());
 
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
 
-		return this.reference.removeValue (element, value);
+		return this.property.clearValue (element, value);
 	}
 }

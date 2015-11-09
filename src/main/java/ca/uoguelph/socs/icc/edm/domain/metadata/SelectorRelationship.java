@@ -52,7 +52,7 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	private final InverseRelationship<V, T> inverse;
 
 	/** The <code>Property</code> for owning <code>Element</code> */
-	private final Property<T, V> property;
+	private final Property<V, T> property;
 
 	/** The <code>Selector</code> for the associated <code>Element</code> */
 	private final Selector<V> selector;
@@ -67,7 +67,7 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 
 	public static <T extends Element, V extends Element> SelectorRelationship<T, V> of (
 			final InverseRelationship<V, T> inverse,
-			final Property<T, V> property,
+			final Property<V, T> property,
 			final Selector<V> selector)
 	{
 		assert inverse != null : "inverse is NULL";
@@ -86,7 +86,7 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	 */
 
 	private SelectorRelationship (final InverseRelationship<V, T> inverse,
-			final Property<T, V> property,
+			final Property<V, T> property,
 			final Selector<V> selector)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
