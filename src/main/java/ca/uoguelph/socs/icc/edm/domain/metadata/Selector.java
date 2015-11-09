@@ -83,6 +83,148 @@ public final class Selector<T extends Element>
 		MULTIPLE;
 	}
 
+	/**
+	 * A builder for <code>Selector</code> instances.  This builder is intended
+	 * to be used to construct the more complex <code>Selector</code> instances
+	 * which are not based on a single <code>Property</code> instance.
+	 * <p>
+	 * A <code>Selector</code> must have a <code>Cardinality</code> and a name.
+	 * The name may be set explicitly, or it may be derived from the first
+	 * <code>Property</code> which is added to the <code>Selector</code>.  If
+	 * The <code>Selector</code> has a cardinality of KEY, then it must contain
+	 * exactly one <code>Property</code>.  Otherwise everything is optional.
+	 */
+
+	public static final class Builder<T extends Element>
+	{
+		/** The <code>Element</code> interface class */
+		private final Class<T> element;
+
+		/** The <code>Set</code> of <code>Property</code> instances */
+		private final Set<Property<T, ?>> properties;
+
+		/** The <code>Cardinality</code> of the <code>selector</code> */
+		private Cardinality cardinality;
+
+		/** The name of the <code>Selector</code> */
+		private String name;
+
+		/**
+		 * Create the <code>Selector.Builder</code>
+		 *
+		 * @param  element The <code>Element</code> interface class, not null
+		 */
+
+		private Builder (final Class<T> element)
+		{
+			assert element != null : "element is NULL";
+
+			this.element = element;
+			this.cardinality = null;
+			this.name = null;
+
+			this.properties = new HashSet<> ();
+		}
+
+		/**
+		 * Remove all of the <code>Property</code> instances from the
+		 * <code>Selector.Builder</code>.
+		 *
+		 * @return This <code>Selector.Builder</code>
+		 */
+
+		public Builder<T> clear ()
+		{
+			this.properties.clear ();
+
+			return this;
+		}
+
+		/**
+		 * Set the <code>Cardinality</code> of the <code>Selector</code>.
+		 *
+		 * @param  cardinality The <code>Cardinality</code>, not null
+		 *
+		 * @return             This <code>Selector.Builder</code>
+		 */
+
+		public Builder<T> setCardinality (final Cardinality cardinality)
+		{
+			Preconditions.checkNotNull (cardinality);
+
+			this.cardinality = cardinality;
+
+			return this;
+		}
+
+		/**
+		 * Set the name of the <code>Selector</code>.
+		 *
+		 * @param  name The name, not null
+		 *
+		 * @return      This <code>Selector.Builder</code>
+		 */
+
+		public Builder<T> setName (final String name)
+		{
+			Preconditions.checkNotNull (name);
+			Preconditions.checkArgument (name.length () > 0, "name can not be empty");
+
+			this.name = name;
+
+			return this;
+		}
+
+		/**
+		 * Add a <code>Property</code> to the <code>Selector</code>.  If the
+		 * <code>Selector</code> is un-named, then the name of the
+		 * <code>Property</code> will be set as the name of the
+		 * <code>Selector</code>.
+		 *
+		 * @param  property The <code>Property</code>, not null
+		 *
+		 * @return          This <code>Selector.Builder</code>
+		 */
+
+		public Builder<T> addProperty (final Property<T, ?> property)
+		{
+			Preconditions.checkNotNull (property);
+
+			this.properties.add (property);
+
+			if (this.name == null)
+			{
+				this.name = property.getName ();
+			}
+
+			return this;
+		}
+
+		/**
+		 * Build the <code>Selector</code>.
+		 *
+		 * @return The <code>Selector</code>
+		 *
+		 * @throws IllegalStateException if the name is not set
+		 * @throws IllegalStateException if the cardinality is not set
+		 * @throws IllegalStateException if the cardinality is set to KEY and
+		 *                               the number of associated
+		 *                               <code>Property</code> instances is not
+		 *                               exactly one.
+		 */
+
+		public Selector<T> build ()
+		{
+			Preconditions.checkState (this.name != null, "name");
+			Preconditions.checkState (this.cardinality != null, "cardinality");
+			Preconditions.checkState ((this.cardinality != Cardinality.KEY)
+					|| this.properties.size () == 1,
+					"A KEY must have exactly one Property");
+
+			return new Selector<T> (this.element, this.cardinality, this.name, this.properties);
+		}
+	}
+
 	/** The <code>Element</code> type described by the <code>Selector</code> */
 	private final Class<T> element;
 
@@ -98,32 +240,20 @@ public final class Selector<T extends Element>
 	/** The <code>Property</code> instances */
 	private final Set<Property<T, ?>> properties;
 
-	 /**
-	 * Create the <code>Selector</code> using multiple <code>Property</code>
-	 * instances.
+	/**
+	 * Get a <code>Selector.Builder</code> instance for the specified
+	 * <code>Element</code> interface class.
 	 *
-	 * @param  name        The name of the <code>Selector</code>, not null
-	 * @param  cardinality The <code>Cardinality</code> of the result, not null
-	 * @param  properties  The properties to be used to create the
-	 *                     <code>Selector</code>, not null
+	 * @param  element The <code>Element</code> interface class, not null
 	 *
-	 * @return             The <code>Selector</code>
+	 * @return         The <code>Selector.Builder</code> instance
 	 */
 
-	public static <T extends Element> Selector<T> of (
-			final Cardinality cardinality,
-			final Property<T, ?> first,
-			final Property<T, ?>... rest)
+	public static <T extends Element> Builder<T> builder (final Class<T> element)
 	{
-		Preconditions.checkNotNull (cardinality, "cardinality");
-		Preconditions.checkNotNull (first, "first");
-		Preconditions.checkArgument (cardinality != Cardinality.KEY, "A KEY must have exactly one Property");
+		Preconditions.checkNotNull (element);
 
-		Set<Property<T, ?>> properties = new HashSet<> ();
-		properties.add (first);
-		properties.addAll (Arrays.asList (rest));
-
-		return new Selector<T> (first.getElementClass (), cardinality, first.getName (), properties);
+		return new Builder<T> (element);
 	}
 
 	/**
