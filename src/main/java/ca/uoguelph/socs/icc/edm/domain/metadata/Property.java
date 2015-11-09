@@ -46,7 +46,7 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @param   <V> The type of the value for the <code>Property</code>
  */
 
-public class Property<T extends Element, V>
+public final class Property<T extends Element, V>
 {
 	/**
 	 * Meta-data for the <code>Property</code> instance.  The four flags
@@ -471,13 +471,13 @@ public class Property<T extends Element, V>
 	}
 
 	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
+	 * Determine if the value contained in the specified <code>Element</code>
+	 * has the specified value.  If the <code>Property</code> represents a
+	 * single value, then this method will be equivalent to calling the
+	 * <code>equals</code> method on the value represented by the
+	 * <code>Property</code>.  This method is equivalent to calling the
+	 * <code>contains</code> method for <code>Property</code> instances that
+	 * represent collections.
 	 *
 	 * @param  element The <code>Element</code> instance, not null
 	 * @param  value   The value to be tested against the <code>Element</code>
@@ -495,10 +495,9 @@ public class Property<T extends Element, V>
 	}
 
 	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
+	 * Get a <code>Stream</code> containing all of the values in the specified
+	 * <code>Element</code> instance.  This method will return a
+	 * <code>Stream</code> containing zero or more values.  For a single-valued
 	 * <code>Property</code>, the returned <code>Stream</code> will contain
 	 * exactly zero or one values.  An empty <code>Stream</code> will be
 	 * returned if the associated value is null.  A <code>Stream</code>
