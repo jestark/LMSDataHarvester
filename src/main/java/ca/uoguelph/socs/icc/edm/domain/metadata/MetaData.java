@@ -66,12 +66,6 @@ public final class MetaData<T extends Element>
 	/** The <code>Selector</code> instances for the interface */
 	private final Set<Selector<? extends Element>> selectors;
 
-	/** The <code>Accessor</code> instances for the interface */
-	private final Map<Property<T, ?>, Accessor<T, ?>> accessors;
-
-	/** The <code>MultiAccessor</code> instances for the interface */
-	private final Map<Property<T, ?>, MultiAccessor<T, ?>> multiaccessors;
-
 	/** The <code>Relationship</code> instances for the interface */
 	private final Map<Property<T, ?>, Relationship<T, ?>> relationships;
 
@@ -115,24 +109,16 @@ public final class MetaData<T extends Element>
 	 *                        instances, not null
 	 * @param  selectors      The <code>Set</code> of <code>Selector</code>
 	 *                        instances, not null
-	 * @param  accessors      The <code>Map</code> of <code>Accessor</code>
-	 *                        instances, not null
-	 * @param  multiaccessors The <code>Map</code> of <code>MultiAccessor</code>
-	 *                        instances, not null
 	 */
 
 	protected MetaData (final Class<T> element,
 			final MetaData<? super T> parent,
 			final Set<Property<? extends Element, ?>> properties,
-			final Set<Selector<? extends Element>> selectors,
-			final Map<Property<T, ?>, Accessor<T, ?>> accessors,
-			final Map<Property<T, ?>, MultiAccessor<T, ?>> multiaccessors)
+			final Set<Selector<? extends Element>> selectors)
 	{
 		assert element != null : "element is NULL";
 		assert properties != null : "properties is NULL";
 		assert selectors != null : "selectors is NULL";
-		assert accessors != null : "accessors is NULL";
-		assert multiaccessors != null : "references is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
@@ -141,9 +127,6 @@ public final class MetaData<T extends Element>
 
 		this.selectors = new HashSet<> (selectors);
 		this.properties = new HashSet<> (properties);
-
-		this.accessors = new HashMap<> (accessors);
-		this.multiaccessors = new HashMap<> (multiaccessors);
 
 		this.relationships = new HashMap<> ();
 	}
@@ -208,79 +191,6 @@ public final class MetaData<T extends Element>
 	}
 
 	/**
-	 * Determine if the specified <code>Property</code> is associated with the
-	 * <code>Element</code> represented by this <code>MetaData</code> instance.
-	 *
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return         <code>true</code> if the <code>Property</code> is
-	 *                 associated with the <code>Element</code>,
-	 *                 <code>false</code> otherwise
-	 */
-
-	public boolean hasProperty (final Property<T, ?> property)
-	{
-		Preconditions.checkNotNull (property, "property");
-
-		return this.properties.contains (property) || (this.parent != null && this.parent.hasProperty (property));
-	}
-
-	/**
-	 * Get the <code>Accessor</code> associated with the specified
-	 * <code>Property</code>.
-	 *
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Accessor</code>
-	 */
-
-	public <V> Accessor<? super T, V> getAccessor (final Property<T, V> property)
-	{
-		Preconditions.checkNotNull (property, "property");
-		Preconditions.checkArgument (this.hasProperty (property), "Property not associated with this element: %s", property.getName ());
-		Preconditions.checkArgument (! property.hasFlags (Property.Flags.MULTIVALUED), "Property is Multi-Valued: %s", property.getName ());
-
-		@SuppressWarnings ("unchecked")
-		Accessor<? super T, V> accessor = (Accessor<? super T, V>) this.accessors.get (property);
-
-		if ((accessor == null) && (this.parent != null))
-		{
-			accessor = this.parent.getAccessor (property);
-		}
-
-		assert accessor != null : String.format ("No Accessor found for Property: %s", property.getName ());
-
-		return accessor;
-	}
-
-	/**
-	 * Get the <code>Reference</code> associated with the specified
-	 * <code>Property</code>.
-	 *
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Reference</code>
-	 */
-
-	public <V> Reference<? super T, V> getReference (final Property<T, V> property)
-	{
-		Preconditions.checkNotNull (property, "property");
-		Preconditions.checkArgument (this.hasProperty (property), "Property not associated with this element: %s", property.getName ());
-
-		@SuppressWarnings ("unchecked")
-		Reference<? super T, V> reference = (Reference<? super T, V>) ((property.hasFlags (Property.Flags.MULTIVALUED)) ? this.multiaccessors.get (property) : this.accessors.get (property));
-
-		if ((reference == null) && (this.parent != null))
-		{
-			reference = this.parent.getReference (property);
-		}
-
-		assert reference != null : String.format ("No Reference found for Property: %s", property.getName ());
-
-		return reference;
-	}
-
-	/**
 	 * Get the <code>Relationship</code> associated with the specified
 	 * <code>Property</code>.
 	 *
@@ -289,22 +199,13 @@ public final class MetaData<T extends Element>
 	 * @return          The <code>Relationship</code>
 	 */
 
-	public <V extends Element> Relationship<? super T, V> getRelationship (final Property<T, V> property)
+	@SuppressWarnings ("unchecked")
+	public <V extends Element> Relationship<T, V> getRelationship (final Property<T, V> property)
 	{
 		Preconditions.checkNotNull (property, "property");
 		Preconditions.checkArgument (property.hasFlags (Property.Flags.RELATIONSHIP), "Property is not a relationship: %s", property.getName ());
 
-		@SuppressWarnings ("unchecked")
-		Relationship<? super T, V> relationship = (Relationship<? super T, V>) this.relationships.get (property);
-
-		if ((relationship == null) && (this.parent != null))
-		{
-			relationship = this.parent.getRelationship (property);
-		}
-
-		assert relationship != null : String.format ("Relationship does not exist for Property: %s", property.getName ());
-
-		return relationship;
+		return (Relationship<T, V>) this.relationships.get (property);
 	}
 
 	/**
@@ -316,7 +217,7 @@ public final class MetaData<T extends Element>
 
 	public Stream<Property<? extends Element, ?>> properties ()
 	{
-		Stream<Property<?>> result = this.properties.stream ();
+		Stream<Property<? extends Element, ?>> result = this.properties.stream ();
 
 		return (this.parent != null) ? Stream.concat (this.parent.properties (), result)
 			: result;

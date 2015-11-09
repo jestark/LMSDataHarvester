@@ -60,12 +60,6 @@ public final class MetaDataBuilder<T extends Element>
 	/** The <code>Set</code> of <code>Selector</code> instances */
 	private final Set<Selector<? extends Element>> selectors;
 
-	/** <code>Property</code> to <code>Accessor</code> mapping */
-	private final Map<Property<T, ?>, Accessor<T, ?>> accessors;
-
-	/** <code>Property</code> to <code>MultiAccessor</code> mapping */
-	private final Map<Property<T, ?>, MultiAccessor<T, ?>> multiaccessors;
-
 	/**
 	 * Create the <code>MetaDataBuilder</code>.
 	 *
@@ -81,42 +75,13 @@ public final class MetaDataBuilder<T extends Element>
 
 		this.properties = new HashSet<> ();
 		this.selectors = new HashSet<> ();
-
-		this.accessors = new HashMap<> ();
-		this.multiaccessors = new HashMap<> ();
 	}
 
-	private boolean hasProperty (final Property<T, ?> property)
+	private boolean hasProperty (final Property<? super T, ?> property)
 	{
 		assert property != null : "property is null";
 
-		return this.properties.contains (property) || ((this.parent != null) && this.parent.hasProperty (property));
-	}
-
-	@SuppressWarnings ("unchecked")
-	private <V extends Element> Accessor<T, V> getAccessor (final Property<T, V> property)
-	{
-		return (Accessor<T, V>) this.accessors.get (property);
-	}
-
-	@SuppressWarnings ("unchecked")
-	private <V extends Element> MultiAccessor<T, V> getMultiAccessor  (final Property<T, V> property)
-	{
-		return (MultiAccessor<T, V>) this.multiaccessors.get (property);
-	}
-
-	private <V extends Element> InverseRelationship<T, V> createInverseRelationship (final Property<T, V> property)
-	{
-		return (property.hasFlags (Property.Flags.MULTIVALUED))
-			? MultiInverseRelationship.of (this.getMultiAccessor (property))
-			: SingleInverseRelationship.of (this.getAccessor (property));
-	}
-
-	private <V extends Element> Relationship<T, V> createRelationship (final InverseRelationship<V, T> inverse, final Property<T, V> property)
-	{
-		return (property.hasFlags (Property.Flags.MULTIVALUED))
-			? MultiRelationship.of (inverse, this.getMultiAccessor (property))
-			: SingleRelationship.of (inverse, this.getAccessor (property));
+		return this.properties.contains (property); // || ((this.parent != null) && this.parent.hasProperty (property));
 	}
 
 	/**
@@ -130,78 +95,17 @@ public final class MetaDataBuilder<T extends Element>
 	 *
 	 * @param  <V>      The <code>Element</code> type of the property
 	 * @param  property The <code>Property</code>, not null
-	 * @param  get      Method reference to get the value, not null
-	 * @param  set      Method reference to set the value, may be null
 	 *
 	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V> MetaDataBuilder<T> addProperty (final Property<T, V> property, final Function<T, V> get, final @Nullable BiConsumer<T, V> set)
+	public <V> MetaDataBuilder<T> addProperty (final Property<T, V> property)
 	{
-		this.log.trace ("addProperty: property={}, get={}, set={}", property, get, set);
+		this.log.trace ("addProperty: property={}", property);
 
 		assert property != null : "property is NULL";
-		assert get != null : "get is NULL";
-		assert ! this.properties.contains (property) : "property is already registered";
 
 		this.properties.add (property);
-		this.accessors.put (property, SingleReference.of (this.type, property, get, set));
-
-		return this;
-	}
-
-	/**
-	 * Set the method references for getting and setting the value associated
-	 * with the specified <code>Property</code>.  All of the
-	 * <code>Property</code> instances associated with the <code>Element</code>
-	 * must have references attached to them in the implementation.
-	 * <p>
-	 * This method creates read-only single-valued references.
-	 *
-	 * @param  <V>      The <code>Element</code> type of the property
-	 * @param  property The <code>Property</code>, not null
-	 * @param  get      Method reference to get the value, not null
-	 *
-	 * @return          This <code>MetaDataBuilder</code>
-	 */
-
-	public <V> MetaDataBuilder<T> addProperty (final Property<T, V> property, final Function<T, V> get)
-	{
-		this.log.trace ("addProperty: property={} get={}", property, get);
-
-		return this.addProperty (property, get, null);
-	}
-
-	/**
-	 * Set the method references for getting, adding and removing values for the
-	 * specified <code>Property</code>.  All of the <code>Property</code>
-	 * instances associated with the <code>Element</code> must have references
-	 * attached to them in the implementation.
-	 * <p>
-	 * This methods sets the references for a Multi-valued
-	 * <code>Property</code>.
-	 *
-	 * @param  <V>      The <code>Element</code> type of the property
-	 * @param  property The <code>Property</code>, not null
-	 * @param  get      Method reference to get the collection, not null
-	 * @param  add      Method reference to add a value to the
-	 *                  <code>Collection</code>, not null
-	 * @param  remove   Method reference to remove a value from the
-	 *                  <code>Collection</code>, not null
-	 *
-	 * @return          This <code>MetaDataBuilder</code>
-	 */
-
-	public <V extends Element> MetaDataBuilder<T> addProperty (final Property<T, V> property, final Function<T, Collection<V>> get, final BiPredicate<T, V> add, final BiPredicate<T, V> remove)
-	{
-		this.log.trace ("addProperty: property={}, get={}, add={}, remove={}", property, get, add, remove);
-
-		assert property != null : "property is NULL";
-		assert get != null : "get is NULL";
-		assert ! this.properties.contains (property) : "property is already registered";
-
-		this.properties.add (property);
-		this.multiaccessors.put (property, MultiReference.of (this.type, property, get, add, remove));
 
 		return this;
 	}
@@ -213,19 +117,19 @@ public final class MetaDataBuilder<T extends Element>
 	 * this builder) and the specified remote <code>MetaData</code> instance.
 	 *
 	 * @param  <V>      The <code>Element</code> type
-	 * @param  metadata The <code>MetaData</code> for the remote side, not null
 	 * @param  local    The <code>Property</code> for the local side, not null
+	 * @param  metadata The <code>MetaData</code> for the remote side, not null
 	 * @param  remote   The <code>Property</code> for the remote side, not null
 	 *
 	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V extends Element> MetaDataBuilder<T> addRelationship (final MetaData<V> metadata, final Property<T, V> local, final Property<V, T> remote)
+	public <V extends Element> MetaDataBuilder<T> addRelationship (final Property<T, V> local, final MetaData<V> metadata, final Property<V, T> remote)
 	{
-		this.log.trace ("addRelationship:  metadata={}, local={}, remote={}", metadata, local, remote);
+		this.log.trace ("addRelationship: local={}, metadata={}, remote={}",local, metadata, remote);
 
-		assert metadata != null : "metadata is NULL";
 		assert local != null : "local is NULL";
+		assert metadata != null : "metadata is NULL";
 		assert remote != null : "remote is NULL";
 
 		return this;
@@ -240,19 +144,19 @@ public final class MetaDataBuilder<T extends Element>
 	 * it's side of the relationship, a <code>Selector</code> is used instead.
 	 *
 	 * @param  <V>      The <code>Element</code> type
-	 * @param  metadata The <code>MetaData</code> for the remote side, not null
 	 * @param  local    The <code>Property</code> for the local side, not null
+	 * @param  metadata The <code>MetaData</code> for the remote side, not null
 	 * @param  remote   The <code>Selector</code> for the remote side, not null
 	 *
 	 * @return          This <code>MetaDataBuilder</code>
 	 */
 
-	public <V extends Element> MetaDataBuilder<T> addRelationship (final MetaData<V> metadata, final Property<T, V> local, final Selector<T> remote)
+	public <V extends Element> MetaDataBuilder<T> addRelationship (final Property<T, V> local, final MetaData<V> metadata, final Selector<T> remote)
 	{
-		this.log.trace ("addRelationship: metadata={}, local={}, remote={}", metadata, local, remote);
+		this.log.trace ("addRelationship: local={}, metadata={}, remote={}", local, metadata, remote);
 
-		assert metadata != null : "metadata is NULL";
 		assert local != null : "local is NULL";
+		assert metadata != null : "metadata is NULL";
 		assert remote != null : "remote is NULL";
 
 		return this;
@@ -291,7 +195,6 @@ public final class MetaDataBuilder<T extends Element>
 	{
 		this.log.trace ("build:");
 
-		return new MetaData<T> (this.type, this.parent, this.properties, this.selectors,
-				this.accessors, this.multiaccessors);
+		return new MetaData<T> (this.type, this.parent, this.properties, this.selectors);
 	}
 }
