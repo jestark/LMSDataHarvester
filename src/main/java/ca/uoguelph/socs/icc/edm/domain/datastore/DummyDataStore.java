@@ -27,10 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
-import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
-
 /**
  * A <code>DataStore</code> implementation that does nothing.  This
  * <code>DataStore</code> implementation is highly efficient in terms of memory
@@ -47,24 +43,24 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
  * @version 1.0
  */
 
-public final class NullDataStore implements DataStore
+public final class DummyDataStore implements DataStore
 {
 	/** The logger */
 	private final Logger log;
 
-	/** The transaction manager for the <code>NullDataDtore</code> */
+	/** The transaction manager for the <code>DummyDataDtore</code> */
 	private Transaction transaction;
 
 	/** Indication if the <code>DataStore</code> is open */
 	private boolean open;
 
 	/**
-	 * Create the <code>NullDataStore</code>.
+	 * Create the <code>DummyDataStore</code>.
 	 *
 	 * @param  profile The <code>Profile</code> data, not null
 	 */
 
-	protected NullDataStore (final Profile profile)
+	protected DummyDataStore (final Profile profile)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
@@ -147,7 +143,7 @@ public final class NullDataStore implements DataStore
 	}
 
 	/**
-	 * Close the <code>NullDataStore</code>.
+	 * Close the <code>DummyDataStore</code>.
 	 */
 
 	@Override
@@ -160,7 +156,7 @@ public final class NullDataStore implements DataStore
 
 	/**
 	 * Determine if the specifed <code>Element</code> instance exists in the
-	 * <code>DataStore</code>.  For the <code>NullDataStore</code> this will
+	 * <code>DataStore</code>.  For the <code>DummyDataStore</code> this will
 	 * always return true (even though it would actually be false).
 	 *
 	 * @param  element The <code>Element</code> instance to check, not null
@@ -183,7 +179,7 @@ public final class NullDataStore implements DataStore
 
 	/**
 	 * Insert the specified <code>Element</code> instance into the
-	 * <code>DataStore</code>.  For the <code>NullDataStore</code> this does
+	 * <code>DataStore</code>.  For the <code>DummyDataStore</code> this does
 	 * nothing as there is no actual storage.
 	 *
 	 * @param  element  The <code>Element</code> instance to insert, not null
@@ -204,7 +200,7 @@ public final class NullDataStore implements DataStore
 
 	/**
 	 * Remove the specified <code>Element</code> instance from the
-	 * <code>DataStore</code>.  For the <code>NullDataStore</code> this does
+	 * <code>DataStore</code>.  For the <code>DummyDataStore</code> this does
 	 * nothing as there is no actual storage.
 	 *
 	 * @param  element  The <code>Element</code> instance to remove, not null
