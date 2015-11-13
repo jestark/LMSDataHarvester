@@ -17,7 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Accessor;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Mutator;
 
 /**
  * An ID number generator.  This class and its subclasses provide ID numbers
@@ -32,19 +32,19 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Accessor;
 
 public abstract class IdGenerator<T extends Element>
 {
-	private Accessor<T, Long> accessor;
+	private Mutator<T, Long> mutator;
 
 	/**
 	 * Create the <code>IdGenerator</code>.
 	 *
-	 * @param  accessor The <code>Accessor</code> for the ID, not null
+	 * @param  mutator The <code>Mutator</code> for the ID, not null
 	 */
 
-	protected IdGenerator (final Accessor<T, Long> accessor)
+	protected IdGenerator (final Mutator<T, Long> mutator)
 	{
-		assert accessor != null : "accessor is NULL";
+		assert mutator != null : "mutator is NULL";
 
-		this.accessor = accessor;
+		this.mutator = mutator;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public abstract class IdGenerator<T extends Element>
 	{
 		assert element != null : "element is NULL";
 
-		accessor.setValue (element, this.nextId ());
+		mutator.setValue (element, this.nextId ());
 	}
 
 	/**
