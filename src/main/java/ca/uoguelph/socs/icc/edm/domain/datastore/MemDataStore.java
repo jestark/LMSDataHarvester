@@ -16,23 +16,30 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Singleton;
+
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
+
+import com.google.auto.factory.AutoFactory;
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Preconditions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.DomainModelFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
@@ -42,8 +49,54 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.0
  */
 
+@AutoFactory (implementing = { DataStore.DataStoreFactory.class })
 public final class MemDataStore implements DataStore
 {
+	/**
+	 * Dagger component used to create the <code>DomainModel</code> and
+	 * <code>MemDataStore</code> instances.
+	 */
+
+	@Component (modules = { MemDataStoreModule.class })
+	@Singleton
+	public static interface MemDataStoreComponent  extends DataStore.DataStoreComponent
+	{
+		/**
+		 * Get a reference to the <code>DomainModelFactory</code>.
+		 *
+		 * @return The <code>DomainModelFactory</code>
+		 */
+
+		@Override
+		public abstract DomainModelFactory getDomainModelFactory ();
+	}
+
+	/**
+	 * Dagger module to get <code>DataStoreFactory</code> instances.  This
+	 * module exists to translate the <code>MemDataStoreFactory</code> instance
+	 * created by <code>AutoFactory</code> to a
+	 * <code>DataStore.DataStoreFactory</code> instance usable by the
+	 * <code>DomainModel</code>.  This is usually automatic but Dagger needs it
+	 * to be done explicitly.
+	 */
+
+	@Module
+	static final class MemDataStoreModule
+	{
+		/**
+		 * Get a reference to the <code>DomainStoreFactory</code>.
+		 *
+		 * @return The <code>DataStoreFactory</code>
+		 */
+
+		@Provides
+		@Singleton
+		DataStore.DataStoreFactory getFactory (final MemDataStoreFactory factory)
+		{
+			return factory;
+		}
+	}
+
 	/**
 	 *
 	 */
@@ -55,7 +108,7 @@ public final class MemDataStore implements DataStore
 		 *
 		 */
 
-		public static Key create (final Selector selector, final List<Object> keys)
+		public static Key create (final Selector<?> selector, final List<Object> keys)
 		{
 			return new AutoValue_MemDataStore_Key (selector, keys);
 		}
@@ -64,7 +117,7 @@ public final class MemDataStore implements DataStore
 		 *
 		 */
 
-		public abstract Selector getSelector ();
+		public abstract Selector<?> getSelector ();
 
 		/**
 		 *
@@ -72,6 +125,9 @@ public final class MemDataStore implements DataStore
 
 		public abstract List<Object> getKeys ();
 	}
+
+	/** The component for creating instances of the <code>DataStore</code>*/
+	private static final DataStore.DataStoreComponent COMPONENT;
 
 	/** The logger */
 	private final Logger log;
@@ -89,10 +145,49 @@ public final class MemDataStore implements DataStore
 	private boolean open;
 
 	/**
+	 * Static initializer to create a constance instance of the Dagger
+	 * component.
+	 */
+
+	static
+	{
+		COMPONENT = DaggerMemDataStore_MemDataStoreComponent.create ();
+	}
+
+	/**
+	 * Create a new <code>MemDataStore</code> instance and return it
+	 * encapsulated in a new <code>DomainModel</code> instance.
+	 *
+	 * @param  profile The <code>Profile</code>, not null
+	 *
+	 * @return         The <code>DomainModel</code>
+	 */
+
+	public static DomainModel create (final Profile profile)
+	{
+		Preconditions.checkNotNull (profile, "profile");
+
+		return MemDataStore.COMPONENT.getDomainModelFactory ()
+			.create (profile);
+	}
+
+	/**
+	 * Get the instance of the <code>DataStoreComponent</code> which is used to
+	 * create <code>MemDataStore</code> instances.
+	 *
+	 * @return The <code>DataStoreComponent</code>
+	 */
+
+	public static DataStore.DataStoreComponent getComponent ()
+	{
+		return MemDataStore.COMPONENT;
+	}
+
+	/**
 	 * Create the <code>MemDataStore</code>.
 	 */
 
-	protected MemDataStore ()
+	protected MemDataStore (final Profile profile)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
@@ -133,14 +228,14 @@ public final class MemDataStore implements DataStore
 	 * @return          The key for the index <code>Map</code>
 	 */
 
-	private <T extends Element> Key buildIndex (final Selector selector, final T element)
+	private <T extends Element> Key buildIndex (final Selector<?> selector, final T element)
 	{
 		this.log.trace ("buildIndex: selector={}, element={}", selector, element);
 
 		assert selector != null : "selector is NULL";
 		assert element != null : "element is NULL";
 
-		return Key.create (selector, selector.getProperties ()
+		return return Key.create (selector, selector.getProperties ()
 			.stream ()
 			.flatMap ((x) -> element.stream (x))
 			.collect (Collectors.toList ()));
@@ -308,8 +403,8 @@ public final class MemDataStore implements DataStore
 		this.elements.add (new Wrapper<T> (element));
 
 		this.log.debug ("building indexes");
-		element.selectors ().stream ()
-			.filter (x -> x.isUnique () && x.isConstant ())
+		element.selectors ()
+			.filter (x -> x.getCardinality () != Selector.Cardinality.MULTIPLE && x.isConstant ())
 			.forEach (x -> this.index.put (this.buildIndex (x, element), element));
 
 		return element;
@@ -335,8 +430,8 @@ public final class MemDataStore implements DataStore
 		this.elements.remove (new Wrapper<T> (element));
 
 		this.log.debug ("removing indexes");
-		element.selectors ().stream ()
-			.filter (x -> x.isUnique () && x.isConstant ())
+		element.selectors ()
+			.filter (x -> x.getCardinality () != Selector.Cardinality.MULTIPLE && x.isConstant ())
 			.forEach ((x) -> this.index.remove (this.buildIndex (x, element)));
 	}
 }

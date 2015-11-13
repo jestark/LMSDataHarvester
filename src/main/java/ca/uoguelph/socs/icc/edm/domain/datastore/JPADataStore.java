@@ -22,22 +22,27 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.inject.Singleton;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
+
+import com.google.auto.factory.AutoFactory;
+import com.google.common.base.Preconditions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.DomainModelFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
-
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * Implementation of the <code>DataStore</code> using the Java Persistence API.
@@ -49,8 +54,57 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
  * @see     JPATransaction
  */
 
+@AutoFactory (implementing = { DataStore.DataStoreFactory.class })
 public final class JPADataStore implements DataStore
 {
+	/**
+	 * Dagger component used to create the <code>DomainModel</code> and
+	 * <code>JPADataStore</code> instances.
+	 */
+
+	@Component (modules = { JPADataStoreModule.class })
+	@Singleton
+	public static interface JPADataStoreComponent extends DataStore.DataStoreComponent
+	{
+		/**
+		 * Get a reference to the <code>DomainModelFactory</code>.
+		 *
+		 * @return The <code>DomainModelFactory</code>
+		 */
+
+		@Override
+		public abstract DomainModelFactory getDomainModelFactory ();
+	}
+
+	/**
+	 * Dagger module to get <code>DataStoreFactory</code> instances.  This
+	 * module exists to translate the <code>JPADataStoreFactory</code> instance
+	 * created by <code>AutoFactory</code> to a
+	 * <code>DataStore.DataStoreFactory</code> instance usable by the
+	 * <code>DomainModel</code>.  This is usually automatic but Dagger needs it
+	 * to be done explicitly.
+	 */
+
+	@Module
+	static final class JPADataStoreModule
+	{
+		/**
+		 * Get a reference to the <code>DomainStoreFactory</code>.
+		 *
+		 * @return The <code>DataStoreFactory</code>
+		 */
+
+		@Provides
+		@Singleton
+		DataStore.DataStoreFactory getFactory (final JPADataStoreFactory factory)
+		{
+			return factory;
+		}
+	}
+
+	/** The component for creating instances of the <code>DataStore</code>*/
+	private static final DataStore.DataStoreComponent COMPONENT;
+
 	/** The logger */
 	private final Logger log;
 
@@ -64,43 +118,74 @@ public final class JPADataStore implements DataStore
 	private final Transaction transaction;
 
 	/**
-	 * Create the <code>JPADataStore</code>.
+	 * Static initializer to create a constance instance of the Dagger
+	 * component.
+	 */
+
+	static
+	{
+		COMPONENT = DaggerJPADataStore_JPADataStoreComponent.create ();
+	}
+
+	/**
+	 * Create a new <code>JPADataStore</code> instance and return it
+	 * encapsulated in a new <code>DomainModel</code> instance.
 	 *
 	 * @param  profile The <code>Profile</code>, not null
+	 *
+	 * @return         The <code>DomainModel</code>
+	 */
+
+	public static DomainModel create (final Profile profile)
+	{
+		Preconditions.checkNotNull (profile, "profile");
+
+		return JPADataStore.COMPONENT.getDomainModelFactory ()
+			.create (profile);
+	}
+
+	/**
+	 * Get the instance of the <code>DataStoreComponent</code> which is used to
+	 * create <code>JPADataStore</code> instances.
+	 *
+	 * @return The <code>DataStoreComponent</code>
+	 */
+
+	public static DataStore.DataStoreComponent getComponent ()
+	{
+		return JPADataStore.COMPONENT;
+	}
+
+	/**
+	 * Create the <code>JPADataStore</code>.
+	 *
+	 * @param  unitName   The JPA unit name, not null
+	 * @param  parameters parameters for the JPA <code>EntityManager</code>,
+	 *                    not null
 	 */
 
 	protected JPADataStore (final Profile profile)
 	{
-		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.log.debug ("Creating the JPA EntityManagerFactory");
-		this.emf = Persistence.createEntityManagerFactory (profile.getName ());
+		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		try
 		{
+			this.log.debug ("Creating the JPA EntityManagerFactory");
+			this.emf = Persistence.createEntityManagerFactory (profile.getName ());
+
 			this.log.debug ("Creating the JPA EntityManager");
 			this.em = this.emf.createEntityManager ();
 
 			this.transaction = new JPATransaction (this.em.getTransaction ());
 		}
-		catch (RuntimeException ex)
+		catch (Exception ex)
 		{
 			this.log.debug ("Close EntityManagerFactory due to initialization failure");
-			this.emf.close ();
+			this.close ();
 
 			throw ex;
 		}
-	}
-
-	/**
-	 * Override the <code>finalize</code> method from <code>Object</code> to
-	 * ensure that all of the connections to the database have been closed.
-	 */
-
-	@Override
-	protected void finalize () throws Throwable
-	{
-		this.close ();
 	}
 
 	/**
@@ -274,6 +359,7 @@ public final class JPADataStore implements DataStore
 		this.log.debug ("Persisting the Element");
 		this.em.persist (element);
 
+		@SuppressWarnings ("unchecked") // but there should be a better way...
 		T result = this.em.find (((Class<? extends T>) element.getClass ()), element.getId ());
 
 		return result;

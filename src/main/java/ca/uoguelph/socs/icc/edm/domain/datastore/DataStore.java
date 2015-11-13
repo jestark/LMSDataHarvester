@@ -18,18 +18,59 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.List;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModelFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * Representation of a <code>DataStore</code>.
  *
  * @author  James E. Stark
- * @version 2.0
+ * @version 1.0
  * @see     Transaction
  */
 
 public interface DataStore
 {
+	/**
+	 * Common interface to represent the Dagger component used to create
+	 * <code>DomainModel</code>/<code>DataStore</code> instances.  This
+	 * interface exists to give a common root to the Dagger components across
+	 * all of the <code>DataStore</code> implementations.  It is not a Dagger
+	 * component itself.
+	 */
+
+	public interface DataStoreComponent
+	{
+		/**
+		 * Get a reference to the <code>DomainModelFactory</code>.
+		 *
+		 * @return The <code>DomainModelFactory</code>
+		 */
+
+		public abstract DomainModelFactory getDomainModelFactory ();
+	}
+
+	/**
+	 * Common interface for the <code>AutoFactory</code> generated
+	 * <code>DataStore</code> factories.  This interface exists to be injected
+	 * into a new <code>DomainModel</code> instance, which can then use it to
+	 * create a new <code>DataStore</code> instance.
+	 */
+
+	public interface DataStoreFactory
+	{
+		/**
+		 * Get a new instance of the <code>DataStore</code> using the specified
+		 * <code>Profile</code>.
+		 *
+		 * @param  profile The <code>Profile</code>, not null
+		 *
+		 * @return         The <code>DataStore</code>
+		 */
+
+		public abstract DataStore getDataStore (Profile profile);
+	}
+
 	/**
 	 * Retrieve a <code>List</code> of <code>Element</code> instances which
 	 * match the specified <code>Filter</code>.

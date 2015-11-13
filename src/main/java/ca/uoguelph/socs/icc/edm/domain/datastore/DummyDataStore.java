@@ -16,15 +16,25 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
-import java.util.Map;
-import java.util.List;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Singleton;
+
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
+
+import com.google.auto.factory.AutoFactory;
+import com.google.common.base.Preconditions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.DomainModelFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
@@ -43,8 +53,57 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
  * @version 1.0
  */
 
+@AutoFactory (implementing = { DataStore.DataStoreFactory.class })
 public final class DummyDataStore implements DataStore
 {
+	/**
+	 * Dagger component used to create the <code>DomainModel</code> and
+	 * <code>DummyDataStore</code> instances.
+	 */
+
+	@Component (modules = { DummyDataStoreModule.class })
+	@Singleton
+	public static interface DummyDataStoreComponent extends DataStore.DataStoreComponent
+	{
+		/**
+		 * Get a reference to the <code>DomainModelFactory</code>.
+		 *
+		 * @return The <code>DomainModelFactory</code>
+		 */
+
+		@Override
+		public abstract DomainModelFactory getDomainModelFactory ();
+	}
+
+	/**
+	 * Dagger module to get <code>DataStoreFactory</code> instances.  This
+	 * module exists to translate the <code>DummyDataStoreFactory</code>
+	 * instance created by <code>AutoFactory</code> to a
+	 * <code>DataStore.DataStoreFactory</code> instance usable by the
+	 * <code>DomainModel</code>.  This is usually automatic but Dagger needs it
+	 * to be done explicitly.
+	 */
+
+	@Module
+	static final class DummyDataStoreModule
+	{
+		/**
+		 * Get a reference to the <code>DomainStoreFactory</code>.
+		 *
+		 * @return The <code>DataStoreFactory</code>
+		 */
+
+		@Provides
+		@Singleton
+		DataStore.DataStoreFactory getFactory (final DummyDataStoreFactory factory)
+		{
+			return factory;
+		}
+	}
+
+	/** The component for creating instances of the <code>DataStore</code>*/
+	private static final DataStore.DataStoreComponent COMPONENT;
+
 	/** The logger */
 	private final Logger log;
 
@@ -53,6 +112,45 @@ public final class DummyDataStore implements DataStore
 
 	/** Indication if the <code>DataStore</code> is open */
 	private boolean open;
+
+	/**
+	 * Static initializer to create a constance instance of the Dagger
+	 * component.
+	 */
+
+	static
+	{
+		COMPONENT = DaggerDummyDataStore_DummyDataStoreComponent.create ();
+	}
+
+	/**
+	 * Create a new <code>DummyDataStore</code> instance and return it
+	 * encapsulated in a new <code>DomainModel</code> instance.
+	 *
+	 * @param  profile The <code>Profile</code>, not null
+	 *
+	 * @return         The <code>DomainModel</code>
+	 */
+
+	public static DomainModel create (final Profile profile)
+	{
+		Preconditions.checkNotNull (profile, "profile");
+
+		return DummyDataStore.COMPONENT.getDomainModelFactory ()
+			.create (profile);
+	}
+
+	/**
+	 * Get the instance of the <code>DataStoreComponent</code> which is used to
+	 * create <code>DummyDataStore</code> instances.
+	 *
+	 * @return The <code>DataStoreComponent</code>
+	 */
+
+	public static DataStore.DataStoreComponent getComponent ()
+	{
+		return DummyDataStore.COMPONENT;
+	}
 
 	/**
 	 * Create the <code>DummyDataStore</code>.

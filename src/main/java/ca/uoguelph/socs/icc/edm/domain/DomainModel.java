@@ -21,12 +21,16 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.auto.factory.AutoFactory;
+import com.google.auto.factory.Provided;
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Profile;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
@@ -35,9 +39,10 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * interface to the <code>DataStore</code>.
  *
  * @author  James E. Stark
- * @version 1.1
+ * @version 1.0
  */
 
+@AutoFactory
 public final class DomainModel
 {
 	/** The log */
@@ -57,12 +62,12 @@ public final class DomainModel
 	 *                   not null
 	 */
 
-	public DomainModel (final Profile profile, final DataStore datastore)
+	public DomainModel (final Profile profile, final @Provided DataStore.DataStoreFactory factory)
 	{
 		this.log = LoggerFactory.getLogger (DomainModel.class);
 
 		this.profile = profile;
-		this.datastore = datastore;
+		this.datastore = factory.getDataStore (profile);
 	}
 
 	/**
@@ -144,7 +149,7 @@ public final class DomainModel
 	 * @return          The <code>Query</code>
 	 */
 
-	public <T extends Element> Query<T> getQuery (final Class<T> element, final Selector selector)
+	public <T extends Element> Query<T> getQuery (final Class<T> element, final Selector<T> selector)
 	{
 		assert element != null : "element is NULL";
 		assert selector != null : "selector is NULL";
@@ -165,7 +170,7 @@ public final class DomainModel
 	 * @return          The <code>Query</code>
 	 */
 
-	public <T extends Element> Query<T> getQuery (final Class<T> type, Class<? extends T> impl, final Selector selector)
+	public <T extends Element> Query<T> getQuery (final Class<T> type, Class<? extends T> impl, final Selector<T> selector)
 	{
 		assert type != null : "type is NULL";
 		assert impl != null : "impl is NULL";
@@ -186,7 +191,7 @@ public final class DomainModel
 	 * @return          The <code>Query</code>
 	 */
 
-	public <T extends Element> Query<T> getQuery (final MetaData<T> metadata, final Selector selector)
+	public <T extends Element> Query<T> getQuery (final MetaData<T> metadata, final Selector<T> selector)
 	{
 		assert metadata != null : "metadata is NULL";
 		assert selector != null : "selector is NULL";
