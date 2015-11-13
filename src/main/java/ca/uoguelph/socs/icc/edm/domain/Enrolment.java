@@ -129,34 +129,53 @@ public abstract class Enrolment extends Element
 
 	static
 	{
-		ID = Property.of (Enrolment.class, Long.class, "id");
-		MODEL = Property.of (Enrolment.class, DomainModel.class, "domainmodel");
-		COURSE = Property.of (Enrolment.class, Course.class, "course", Property.Flags.REQUIRED);
-		FINALGRADE = Property.of (Enrolment.class, Integer.class, "finalgrade", Property.Flags.MUTABLE);
-		ROLE = Property.of (Enrolment.class, Role.class, "role", Property.Flags.REQUIRED);
-		USABLE = Property.of (Enrolment.class, Boolean.class, "usable", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		ID = Property.of (Enrolment.class, Long.class, "id",
+				Enrolment::getId, Enrolment::setId);
 
-		GRADES = Property.of (Enrolment.class, Grade.class, "grades", Property.Flags.MULTIVALUED);
-		LOGENTRIES = Property.of (Enrolment.class, LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
+		MODEL = Property.of (Enrolment.class, DomainModel.class, "domainmodel",
+				Enrolment::getDomainModel, Enrolment::setDomainModel);
 
-		SELECTOR_ID = Selector.of (Enrolment.class, Selector.Cardinality.KEY, ID);
-		SELECTOR_ALL = Selector.of (Enrolment.class, Selector.Cardinality.MULTIPLE, "all");
-		SELECTOR_ROLE = Selector.of (Enrolment.class, Selector.Cardinality.MULTIPLE, ROLE);
+		COURSE = Property.of (Enrolment.class, Course.class, "course",
+				Enrolment::getCourse, Enrolment::setCourse,
+				Property.Flags.REQUIRED);
+
+		FINALGRADE = Property.of (Enrolment.class, Integer.class, "finalgrade",
+				Enrolment::getFinalGrade, Enrolment::setFinalGrade,
+				Property.Flags.MUTABLE);
+
+		ROLE = Property.of (Enrolment.class, Role.class, "role",
+				Enrolment::getRole, Enrolment::setRole,
+				Property.Flags.REQUIRED);
+
+		USABLE = Property.of (Enrolment.class, Boolean.class, "usable",
+				Enrolment::isUsable, Enrolment::setUsable,
+				Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+
+		GRADES = Property.of (Enrolment.class, Grade.class, "grades",
+				Enrolment::getGrades, Enrolment::addGrade, Enrolment::removeGrade);
+
+		LOGENTRIES = Property.of (Enrolment.class, LogEntry.class, "logentries",
+				Enrolment::getLog, Enrolment::addLog, Enrolment::removeLog);
+
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
+		SELECTOR_ROLE = Selector.of (Selector.Cardinality.MULTIPLE, ROLE);
+
+		SELECTOR_ALL =  Selector.builder (Enrolment.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
 
 		METADATA = MetaData.builder (Enrolment.class)
-			.addProperty (ID, Enrolment::getId, Enrolment::setId)
-			.addProperty (MODEL, Enrolment::getDomainModel, Enrolment::setDomainModel)
-			.addProperty (COURSE, Enrolment::getCourse, Enrolment::setCourse)
-			.addProperty (FINALGRADE, Enrolment::getFinalGrade, Enrolment::setFinalGrade)
-			.addProperty (ROLE, Enrolment::getRole, Enrolment::setRole)
-			.addProperty (USABLE, Enrolment::isUsable, Enrolment::setUsable)
-			.addProperty (GRADES, Enrolment::getGrades, Enrolment::addGrade, Enrolment::removeGrade)
-			.addProperty (LOGENTRIES, Enrolment::getLog, Enrolment::addLog, Enrolment::removeLog)
-			.addRelationship (Course.METADATA, COURSE, Course.ENROLMENTS)
-			.addRelationship (Role.METADATA, ROLE, SELECTOR_ROLE)
+			.addProperty (ID)
+			.addProperty (MODEL)
+			.addProperty (FINALGRADE)
+			.addProperty (USABLE)
+			.addProperty (GRADES)
+			.addProperty (LOGENTRIES)
+			.addRelationship (COURSE, Course.METADATA, Course.ENROLMENTS)
+			.addRelationship (ROLE, Role.METADATA, SELECTOR_ROLE)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
-			.addSelector (SELECTOR_ROLE)
 			.build ();
 	}
 
@@ -333,51 +352,6 @@ public abstract class Enrolment extends Element
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return Enrolment.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return Enrolment.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return Enrolment.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

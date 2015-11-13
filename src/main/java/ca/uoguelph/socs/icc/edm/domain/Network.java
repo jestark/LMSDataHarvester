@@ -73,18 +73,28 @@ public abstract class Network extends Element
 
 	static
 	{
-		ID = Property.of (Network.class, Long.class, "id");
-		MODEL = Property.of (Network.class, DomainModel.class, "domainmodel");
-		NAME = Property.of (Network.class, String.class, "name", Property.Flags.REQUIRED);
+		ID = Property.of (Network.class, Long.class, "id",
+				Network::getId, Network::setId);
 
-		SELECTOR_ID = Selector.of (Network.class, Selector.Cardinality.KEY, ID);
-		SELECTOR_ALL = Selector.of (Network.class, Selector.Cardinality.MULTIPLE, "all");
-		SELECTOR_NAME = Selector.of (Network.class, Selector.Cardinality.SINGLE, NAME);
+		MODEL = Property.of (Network.class, DomainModel.class, "domainmodel",
+				Network::getDomainModel, Network::setDomainModel);
+
+		NAME = Property.of (Network.class, String.class, "name",
+				Network::getName, Network::setName,
+				Property.Flags.REQUIRED);
+
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
+		SELECTOR_NAME = Selector.of (Selector.Cardinality.SINGLE, NAME);
+
+		SELECTOR_ALL = Selector.builder (Network.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
 
 		METADATA = MetaData.builder (Network.class)
-			.addProperty (ID, Network::getId, Network::setId)
-			.addProperty (MODEL, Network::getDomainModel, Network::setDomainModel)
-			.addProperty (NAME, Network::getName, Network::setName)
+			.addProperty (ID)
+			.addProperty (MODEL)
+			.addProperty (NAME)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
@@ -210,51 +220,6 @@ public abstract class Network extends Element
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return Network.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return Network.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return Network.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

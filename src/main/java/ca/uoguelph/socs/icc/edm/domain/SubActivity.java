@@ -87,24 +87,40 @@ public abstract class SubActivity extends ParentActivity
 	{
 		subactivities = new HashMap<> ();
 
-		ID = Property.of (SubActivity.class, Long.class, "id");
-		MODEL = Property.of (SubActivity.class, DomainModel.class, "domainmodel");
-		NAME = Property.of (SubActivity.class, String.class, "name", Property.Flags.REQUIRED);
-		PARENT = Property.of (SubActivity.class, ParentActivity.class, "parent", Property.Flags.REQUIRED);
+		ID = Property.of ( SubActivity.class, Long.class, "id",
+				SubActivity::getId, SubActivity::setId);
 
-		REFERENCES = Property.of (SubActivity.class, LogReference.class, "references", Property.Flags.MULTIVALUED);
-		SUBACTIVITIES = Property.of (SubActivity.class, SubActivity.class, "subactivities", Property.Flags.MULTIVALUED);
+		MODEL = Property.of (SubActivity.class, DomainModel.class, "domainmodel",
+				SubActivity::getDomainModel, SubActivity::setDomainModel);
 
-		SELECTOR_ID = Selector.of (SubActivity.class, Selector.Cardinality.KEY, ID);
-		SELECTOR_ALL = Selector.of (SubActivity.class, Selector.Cardinality.MULTIPLE, "all");
+		NAME = Property.of (SubActivity.class, String.class, "name",
+				SubActivity::getName, SubActivity::setName,
+				Property.Flags.REQUIRED);
+
+		PARENT = Property.of (SubActivity.class, ParentActivity.class, "parent",
+				SubActivity::getParent, SubActivity::setParent,
+				Property.Flags.REQUIRED);
+
+		REFERENCES = Property.of (SubActivity.class, LogReference.class, "references",
+				SubActivity::getReferences, SubActivity::addReference, SubActivity::removeReference);
+
+		SUBACTIVITIES = Property.of (SubActivity.class, SubActivity.class, "subactivities",
+				SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity);
+
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
+
+		SELECTOR_ALL = Selector.builder (SubActivity.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
 
 		METADATA = MetaData.builder (SubActivity.class)
-			.addProperty (ID, SubActivity::getId, SubActivity::setId)
-			.addProperty (MODEL, SubActivity::getDomainModel, SubActivity::setDomainModel)
-			.addProperty (NAME, SubActivity::getName, SubActivity::setName)
-			.addProperty (PARENT, SubActivity::getParent, SubActivity::setParent)
-			.addProperty (REFERENCES, SubActivity::getReferences, SubActivity::addReference, SubActivity::removeReference)
-			.addProperty (SUBACTIVITIES, SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity)
+			.addProperty (ID)
+			.addProperty (MODEL)
+			.addProperty (NAME)
+			.addProperty (PARENT)
+			.addProperty (REFERENCES)
+			.addProperty (SUBACTIVITIES)
 //			.addRelationship ()
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
@@ -269,51 +285,6 @@ public abstract class SubActivity extends ParentActivity
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return SubActivity.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return SubActivity.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return SubActivity.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

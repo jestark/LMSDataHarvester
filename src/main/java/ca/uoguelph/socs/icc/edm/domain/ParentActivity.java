@@ -28,6 +28,9 @@ import java.util.Set;
 
 public abstract class ParentActivity extends Element
 {
+	/** Serial version id, required by the Serializable interface */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Get the <code>Course</code> with which the <code>Activity</code> is
 	 * associated.

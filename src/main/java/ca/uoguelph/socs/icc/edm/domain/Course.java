@@ -103,30 +103,58 @@ public abstract class Course extends Element
 
 	static
 	{
-		ID = Property.of (Course.class, Long.class, "id");
-		MODEL = Property.of (Course.class, DomainModel.class, "domainmodel");
-		NAME = Property.of (Course.class, String.class, "name", Property.Flags.REQUIRED);
-		SEMESTER = Property.of (Course.class, Semester.class, "semester", Property.Flags.REQUIRED);
-		YEAR = Property.of (Course.class, Integer.class, "year", Property.Flags.REQUIRED);
+		ID = Property.of (Course.class, Long.class, "id",
+				Course::getId, Course::setId);
 
-		ACTIVITIES = Property.of (Course.class, ActivityReference.class, "activities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
-		ENROLMENTS = Property.of (Course.class, Enrolment.class, "enrolments", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
+		MODEL = Property.of (Course.class, DomainModel.class, "domainmodel",
+				Course::getDomainModel, Course::setDomainModel);
 
-		SELECTOR_ID = Selector.of (Course.class, Selector.Cardinality.KEY, ID);
-		SELECTOR_ALL = Selector.of (Course.class, Selector.Cardinality.MULTIPLE, "all");
-		SELECTOR_OFFERING = Selector.of (Course.class, Selector.Cardinality.SINGLE, "offering", NAME, SEMESTER, YEAR);
+		NAME = Property.of (Course.class, String.class, "name",
+				Course::getName, Course::setName,
+				Property.Flags.REQUIRED);
+
+		SEMESTER = Property.of (Course.class, Semester.class, "semester",
+				Course::getSemester, Course::setSemester,
+				Property.Flags.REQUIRED);
+
+		YEAR = Property.of (Course.class, Integer.class, "year",
+				Course::getYear, Course::setYear,
+				Property.Flags.REQUIRED);
+
+		ACTIVITIES = Property.of (Course.class, ActivityReference.class, "activities",
+				Course::getActivityReferences, Course::addActivityReference, Course::removeActivityReference,
+				Property.Flags.RECOMMENDED);
+
+		ENROLMENTS = Property.of (Course.class, Enrolment.class, "enrolments",
+				Course::getEnrolments, Course::addEnrolment, Course::removeEnrolment,
+				Property.Flags.RECOMMENDED);
+
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
+
+		SELECTOR_ALL =  Selector.builder (Course.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
+
+		SELECTOR_OFFERING =  Selector.builder (Course.class)
+			.setCardinality (Selector.Cardinality.SINGLE)
+			.setName ("offering")
+			.addProperty (NAME)
+			.addProperty (SEMESTER)
+			.addProperty (YEAR)
+			.build ();
 
 		METADATA = MetaData.builder (Course.class)
-			.addProperty (ID, Course::getId, Course::setId)
-			.addProperty (MODEL, Course::getDomainModel, Course::setDomainModel)
-			.addProperty (NAME, Course::getName, Course::setName)
-			.addProperty (SEMESTER, Course::getSemester, Course::setSemester)
-			.addProperty (YEAR, Course::getYear, Course::setYear)
-			.addProperty (ACTIVITIES, Course::getActivityReferences, Course::addActivityReference, Course::removeActivityReference)
-			.addProperty (ENROLMENTS, Course::getEnrolments, Course::addEnrolment, Course::removeEnrolment)
-			.addSelector (SELECTOR_OFFERING)
+			.addProperty (ID)
+			.addProperty (MODEL)
+			.addProperty (NAME)
+			.addProperty (SEMESTER)
+			.addProperty (YEAR)
+			.addProperty (ACTIVITIES)
+			.addProperty (ENROLMENTS)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
+			.addSelector (SELECTOR_OFFERING)
 			.build ();
 	}
 
@@ -254,51 +282,6 @@ public abstract class Course extends Element
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return Course.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return Course.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return Course.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

@@ -53,9 +53,6 @@ public abstract class LogReference extends Element
 	/** The <code>MetaData</code> for the <code>LogReference</code> */
 	protected static final MetaData<LogReference> METADATA;
 
-	/** The <code>DataStore</code> identifier of the <code>LogReference</code> */
-	public static final Property<LogReference, Long> ID;
-
 	/** The <code>DomainModel</code> which contains the <code>LogReference</code> */
 	public static final Property<LogReference, DomainModel> MODEL;
 
@@ -83,19 +80,28 @@ public abstract class LogReference extends Element
 	{
 		references = new HashMap<> ();
 
-		MODEL = Property.of (LogReference.class, DomainModel.class, "domainmodel");
-		ENTRY = Property.of (LogReference.class, LogEntry.class, "entry", Property.Flags.REQUIRED);
-		SUBACTIVITY = Property.of (LogReference.class, SubActivity.class, "subactivity", Property.Flags.REQUIRED);
+		MODEL = Property.of (LogReference.class, DomainModel.class, "domainmodel",
+				LogReference::getDomainModel, LogReference::setDomainModel);
 
-		SELECTOR_ID = Selector.of (LogReference.class, Selector.Cardinality.KEY, ID);
-		SELECTOR_ALL = Selector.of (LogReference.class, Selector.Cardinality.MULTIPLE, "all");
+		ENTRY = Property.of (LogReference.class, LogEntry.class, "entry",
+				LogReference::getEntry, LogReference::setEntry,
+				Property.Flags.REQUIRED);
+
+		SUBACTIVITY = Property.of (LogReference.class, SubActivity.class, "subactivity",
+				LogReference::getSubActivity, LogReference::setSubActivity,
+				Property.Flags.REQUIRED);
+
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ENTRY);
+
+		SELECTOR_ALL = Selector.builder (LogReference.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
 
 		METADATA = MetaData.builder (LogReference.class)
-			.addProperty (MODEL, LogReference::getDomainModel, LogReference::setDomainModel)
-			.addProperty (ENTRY, LogReference::getEntry, LogReference::setEntry)
-			.addProperty (SUBACTIVITY, LogReference::getSubActivity, LogReference::setSubActivity)
-			.addRelationship (LogEntry.METADATA, ENTRY, LogEntry.REFERENCE)
-			.addRelationship (SubActivity.METADATA, SUBACTIVITY, SubActivity.REFERENCES)
+			.addProperty (MODEL)
+			.addRelationship (ENTRY, LogEntry.METADATA, LogEntry.REFERENCE)
+			.addRelationship (SUBACTIVITY, SubActivity.METADATA, SubActivity.REFERENCES)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.build ();
@@ -238,51 +244,6 @@ public abstract class LogReference extends Element
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return LogReference.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return LogReference.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return LogReference.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

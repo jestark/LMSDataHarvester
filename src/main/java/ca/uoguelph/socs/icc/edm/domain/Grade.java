@@ -63,9 +63,6 @@ public abstract class Grade extends Element
 	/** The <code>MetaData</code> for the <code>Grade</code> */
 	protected static final MetaData<Grade> METADATA;
 
-	/** The <code>DataStore</code> identifier of the <code>Grade</code> */
-	public static final Property<Grade, Long> ID;
-
 	/** The <code>DomainModel</code> which contains the <code>Grade</code> */
 	public static final Property<Grade, DomainModel> MODEL;
 
@@ -91,21 +88,38 @@ public abstract class Grade extends Element
 
 	static
 	{
-		MODEL = Property.of (Grade.class, DomainModel.class, "domainmodel");
-		ACTIVITY = Property.of (Grade.class, ActivityReference.class, "activity", Property.Flags.REQUIRED);
-		ENROLMENT = Property.of (Grade.class, Enrolment.class, "enrolment", Property.Flags.REQUIRED);
-		GRADE = Property.of (Grade.class, Integer.class, "grade", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+		MODEL = Property.of (Grade.class, DomainModel.class, "domainmodel",
+				Grade::getDomainModel, Grade::setDomainModel);
 
-		SELECTOR_ALL = Selector.of (Grade.class, Selector.Cardinality.MULTIPLE, "all");
-		SELECTOR_PKEY = Selector.of (Grade.class, Selector.Cardinality.SINGLE, "pkey", Grade.ACTIVITY, Grade.ENROLMENT);
+		ACTIVITY = Property.of (Grade.class, ActivityReference.class, "activity",
+				Grade::getActivityReference, Grade::setActivityReference,
+				Property.Flags.REQUIRED);
+
+		ENROLMENT = Property.of (Grade.class, Enrolment.class, "enrolment",
+				Grade::getEnrolment, Grade::setEnrolment,
+				Property.Flags.REQUIRED);
+
+		GRADE = Property.of (Grade.class, Integer.class, "grade",
+				Grade::getGrade, Grade::setGrade,
+				Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+
+		SELECTOR_ALL =  Selector.builder (Grade.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
+
+		SELECTOR_PKEY = Selector.builder (Grade.class)
+			.setCardinality (Selector.Cardinality.SINGLE)
+			.setName ("pkey")
+			.addProperty (Grade.ACTIVITY)
+			.addProperty (Grade.ENROLMENT)
+			.build ();
 
 		METADATA = MetaData.builder (Grade.class)
-			.addProperty (MODEL, Grade::getDomainModel, Grade::setDomainModel)
-			.addProperty (ACTIVITY, Grade::getActivityReference, Grade::setActivityReference)
-			.addProperty (ENROLMENT, Grade::getEnrolment, Grade::setEnrolment)
-			.addProperty (GRADE, Grade::getGrade, Grade::setGrade)
+			.addProperty (MODEL)
+			.addProperty (GRADE)
 //			.addRelationship (NamedActivity.METADATA, ACTIVITY, NamedActivity.GRADES)
-			.addRelationship (Enrolment.METADATA, ENROLMENT, Enrolment.GRADES)
+			.addRelationship (ENROLMENT, Enrolment.METADATA, Enrolment.GRADES)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_PKEY)
 			.build ();
@@ -257,51 +271,6 @@ public abstract class Grade extends Element
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return Grade.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return Grade.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return Grade.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

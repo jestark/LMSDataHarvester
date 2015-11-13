@@ -101,31 +101,47 @@ public abstract class User extends Element
 
 	static
 	{
-		ID = Property.of (User.class, Long.class, "id");
-		MODEL = Property.of (User.class, DomainModel.class, "domainmodel");
-		FIRSTNAME = Property.of (User.class, String.class, "firstname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
-		LASTNAME = Property.of (User.class, String.class, "lastname", Property.Flags.REQUIRED, Property.Flags.MUTABLE);
-		USERNAME = Property.of (User.class, String.class, "username", Property.Flags.REQUIRED);
+		ID = Property.of (User.class, Long.class, "id",
+				User::getId, User::setId);
 
-		ENROLMENTS = Property.of (User.class, Enrolment.class, "enrolments", Property.Flags.MUTABLE, Property.Flags.MULTIVALUED);
+		MODEL = Property.of (User.class, DomainModel.class, "domainmodel",
+				User::getDomainModel, User::setDomainModel);
 
-		SELECTOR_ID = Selector.of (User.class, Selector.Cardinality.KEY, ID);
-		SELECTOR_ALL = Selector.of (User.class, Selector.Cardinality.MULTIPLE, "all");
-		SELECTOR_USERNAME = Selector.of (User.class, Selector.Cardinality.SINGLE, USERNAME);
-		SELECTOR_ENROLMENTS = Selector.of (User.class, Selector.Cardinality.SINGLE, ENROLMENTS);
+		FIRSTNAME = Property.of (User.class, String.class, "firstname",
+				User::getFirstname, User::setFirstname,
+				Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+
+		LASTNAME = Property.of (User.class, String.class, "lastname",
+				User::getLastname, User::setLastname,
+				Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+
+		USERNAME = Property.of (User.class, String.class, "username",
+				User::getUsername, User::setUsername,
+				Property.Flags.REQUIRED);
+
+		ENROLMENTS = Property.of (User.class, Enrolment.class, "enrolments",
+				User::getEnrolments, User::addEnrolment, User::removeEnrolment,
+				Property.Flags.MUTABLE);
+
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
+		SELECTOR_USERNAME = Selector.of (Selector.Cardinality.SINGLE, USERNAME);
+		SELECTOR_ENROLMENTS = Selector.of (Selector.Cardinality.SINGLE, ENROLMENTS);
+
+		SELECTOR_ALL =  Selector.builder (User.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
 
 		METADATA = MetaData.builder (User.class)
-			.addProperty (ID, User::getId, User::setId)
-			.addProperty (MODEL, User::getDomainModel, User::setDomainModel)
-			.addProperty (FIRSTNAME, User::getFirstname, User::setFirstname)
-			.addProperty (LASTNAME, User::getLastname, User::setLastname)
-			.addProperty (USERNAME, User::getUsername, User::setUsername)
-			.addProperty (ENROLMENTS, User::getEnrolments, User::addEnrolment, User::removeEnrolment)
-			.addRelationship (Enrolment.METADATA, ENROLMENTS, SELECTOR_ENROLMENTS)
+			.addProperty (ID)
+			.addProperty (MODEL)
+			.addProperty (FIRSTNAME)
+			.addProperty (LASTNAME)
+			.addProperty (USERNAME)
+			.addRelationship (ENROLMENTS, Enrolment.METADATA, SELECTOR_ENROLMENTS)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_USERNAME)
-			.addSelector (SELECTOR_ENROLMENTS)
 			.build ();
 	}
 
@@ -274,51 +290,6 @@ public abstract class User extends Element
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return User.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return User.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return User.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

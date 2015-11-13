@@ -62,13 +62,16 @@ public abstract class NamedActivity extends Activity
 
 	static
 	{
-		GRADES = Property.of (NamedActivity.class, Grade.class, "grade", Property.Flags.MULTIVALUED);
-		SUBACTIVITIES = Property.of (NamedActivity.class, SubActivity.class, "subactivities", Property.Flags.RECOMMENDED, Property.Flags.MULTIVALUED);
+		GRADES = Property.of (NamedActivity.class, Grade.class, "grade",
+				NamedActivity::getGrades, NamedActivity::addGrade, NamedActivity::removeGrade);
+
+		SUBACTIVITIES = Property.of (NamedActivity.class, SubActivity.class, "subactivities",
+				NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity,
+				Property.Flags.RECOMMENDED);
 
 		METADATA = MetaData.builder (NamedActivity.class, Activity.METADATA)
-			.addProperty (Activity.NAME, NamedActivity::getName, NamedActivity::setName)
-			.addProperty (GRADES, NamedActivity::getGrades, NamedActivity::addGrade, NamedActivity::removeGrade)
-			.addProperty (SUBACTIVITIES, NamedActivity::getSubActivities, NamedActivity::addSubActivity, NamedActivity::removeSubActivity)
+			.addProperty (GRADES)
+			.addProperty (SUBACTIVITIES)
 			.build ();
 	}
 
@@ -177,7 +180,7 @@ public abstract class NamedActivity extends Activity
 	 */
 
 	@Override
-	public Stream<Property<?>> properties ()
+	public Stream<Property<? extends Element, ?>> properties ()
 	{
 		return NamedActivity.METADATA.properties ();
 	}
@@ -194,51 +197,6 @@ public abstract class NamedActivity extends Activity
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return NamedActivity.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return NamedActivity.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return NamedActivity.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

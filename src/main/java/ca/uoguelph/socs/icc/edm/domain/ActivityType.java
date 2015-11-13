@@ -94,21 +94,38 @@ public abstract class ActivityType extends Element
 
 	static
 	{
-		ID = Property.of (ActivityType.class, Long.class, "id");
-		MODEL = Property.of (ActivityType.class, DomainModel.class, "domainmodel");
-		NAME = Property.of (ActivityType.class, String.class, "name", Property.Flags.REQUIRED);
-		SOURCE = Property.of (ActivityType.class, ActivitySource.class, "source", Property.Flags.REQUIRED);
+		ID = Property.of (ActivityType.class, Long.class, "id",
+				ActivityType::getId, ActivityType::setId);
 
-		SELECTOR_ID = Selector.of (ActivityType.class, Selector.Cardinality.KEY, ID);
-		SELECTOR_ALL = Selector.of (ActivityType.class, Selector.Cardinality.MULTIPLE, "all");
-		SELECTOR_NAME = Selector.of (ActivityType.class, Selector.Cardinality.SINGLE, "name", NAME, SOURCE);
+		MODEL = Property.of (ActivityType.class, DomainModel.class, "domainmodel",
+				ActivityType::getDomainModel, ActivityType::setDomainModel);
+
+		NAME = Property.of (ActivityType.class, String.class, "name",
+				ActivityType::getName, ActivityType::setName,
+				Property.Flags.REQUIRED);
+
+		SOURCE = Property.of (ActivityType.class, ActivitySource.class, "source",
+				ActivityType::getSource, ActivityType::setSource,
+				Property.Flags.REQUIRED);
+
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
+
+		SELECTOR_ALL = Selector.builder (ActivityType.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
+
+		SELECTOR_NAME = Selector.builder (ActivityType.class)
+			.setCardinality (Selector.Cardinality.SINGLE)
+			.addProperty (NAME)
+			.addProperty (SOURCE)
+			.build ();
 
 		METADATA = MetaData.builder (ActivityType.class)
-			.addProperty (ID, ActivityType::getId, ActivityType::setId)
-			.addProperty (MODEL, ActivityType::getDomainModel, ActivityType::setDomainModel)
-			.addProperty (NAME, ActivityType::getName, ActivityType::setName)
-			.addProperty (SOURCE, ActivityType::getSource, ActivityType::setSource)
-			.addRelationship (ActivitySource.METADATA, SOURCE, ActivitySource.TYPES)
+			.addProperty (ID)
+			.addProperty (MODEL)
+			.addProperty (NAME)
+			.addRelationship (SOURCE, ActivitySource.METADATA, ActivitySource.TYPES)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
@@ -237,51 +254,6 @@ public abstract class ActivityType extends Element
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return ActivityType.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return ActivityType.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return ActivityType.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

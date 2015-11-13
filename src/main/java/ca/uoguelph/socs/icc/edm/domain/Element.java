@@ -38,7 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.0
  */
 
-public abstract class Element
+public abstract class Element implements Serializable
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
@@ -145,41 +145,6 @@ public abstract class Element
 	 */
 
 	public abstract Stream<Selector<? extends Element>> selectors ();
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	public abstract <V> boolean hasValue (final Property<V> property, final V value);
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	public abstract <V> Stream<V> stream (final Property<V> property);
 
 	/**
 	 * Get an <code>Builder</code> instance for the specified

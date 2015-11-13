@@ -113,41 +113,60 @@ public abstract class LogEntry extends Element
 
 	static
 	{
-		ID = Property.of (LogEntry.class, Long.class, "id");
-		MODEL = Property.of (LogEntry.class, DomainModel.class, "domainmodel");
-		ACTION = Property.of (LogEntry.class, Action.class, "action", Property.Flags.REQUIRED);
-		ACTIVITY = Property.of (LogEntry.class, ActivityReference.class, "activity", Property.Flags.REQUIRED);
-		COURSE = Property.of (LogEntry.class, Course.class, "course", Property.Flags.REQUIRED);
-		ENROLMENT = Property.of (LogEntry.class, Enrolment.class, "enrolment", Property.Flags.REQUIRED);
-		REFERENCE = Property.of (LogEntry.class, LogReference.class, "reference", Property.Flags.RECOMMENDED);
-		NETWORK = Property.of (LogEntry.class, Network.class, "network", Property.Flags.REQUIRED);
-		TIME = Property.of (LogEntry.class, Date.class, "time", Property.Flags.REQUIRED);
+		ID = Property.of (LogEntry.class, Long.class, "id",
+				LogEntry::getId, LogEntry::setId);
 
-		SELECTOR_ID = Selector.of (LogEntry.class, Selector.Cardinality.KEY, ID);
-		SELECTOR_ALL = Selector.of (LogEntry.class, Selector.Cardinality.MULTIPLE, "all");
-		SELECTOR_ACTION = Selector.of (LogEntry.class, Selector.Cardinality.MULTIPLE, ACTION);
-		SELECTOR_COURSE = Selector.of (LogEntry.class, Selector.Cardinality.MULTIPLE, COURSE);
-		SELECTOR_NETWORK = Selector.of (LogEntry.class, Selector.Cardinality.MULTIPLE, NETWORK);
+		MODEL = Property.of (LogEntry.class, DomainModel.class, "domainmodel",
+				LogEntry::getDomainModel, LogEntry::setDomainModel);
+
+		ACTION = Property.of (LogEntry.class, Action.class, "action",
+				LogEntry::getAction, LogEntry::setAction,
+				Property.Flags.REQUIRED);
+
+		ACTIVITY = Property.of (LogEntry.class, ActivityReference.class, "activity",
+				LogEntry::getActivityReference, LogEntry::setActivityReference,
+				Property.Flags.REQUIRED);
+
+		COURSE = Property.of (LogEntry.class, Course.class, "course",
+				LogEntry::getCourse);
+
+		ENROLMENT = Property.of (LogEntry.class, Enrolment.class, "enrolment",
+				LogEntry::getEnrolment, LogEntry::setEnrolment,
+				Property.Flags.REQUIRED);
+
+		NETWORK = Property.of (LogEntry.class, Network.class, "network",
+				LogEntry::getNetwork, LogEntry::setNetwork,
+				Property.Flags.REQUIRED);
+
+		REFERENCE = Property.of (LogEntry.class, LogReference.class, "reference",
+				LogEntry::getReference, LogEntry::setReference,
+				Property.Flags.RECOMMENDED);
+
+		TIME = Property.of (LogEntry.class, Date.class, "time",
+				LogEntry::getTime, LogEntry::setTime,
+				Property.Flags.REQUIRED);
+
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
+		SELECTOR_ACTION = Selector.of (Selector.Cardinality.MULTIPLE, ACTION);
+		SELECTOR_COURSE = Selector.of (Selector.Cardinality.MULTIPLE, COURSE);
+		SELECTOR_NETWORK = Selector.of (Selector.Cardinality.MULTIPLE, NETWORK);
+
+		SELECTOR_ALL = Selector.builder (LogEntry.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
 
 		METADATA = MetaData.builder (LogEntry.class)
-			.addProperty (ID, LogEntry::getId, LogEntry::setId)
-			.addProperty (MODEL, LogEntry::getDomainModel, LogEntry::setDomainModel)
-			.addProperty (ACTION, LogEntry::getAction, LogEntry::setAction)
-			.addProperty (ACTIVITY, LogEntry::getActivityReference, LogEntry::setActivityReference)
-			.addProperty (COURSE, LogEntry::getCourse)
-			.addProperty (ENROLMENT, LogEntry::getEnrolment, LogEntry::setEnrolment)
-			.addProperty (NETWORK, LogEntry::getNetwork, LogEntry::setNetwork)
-			.addProperty (REFERENCE, LogEntry::getReference, LogEntry::setReference)
-			.addProperty (TIME, LogEntry::getTime, LogEntry::setTime)
-			.addRelationship (Action.METADATA, ACTION, SELECTOR_ACTION)
-			.addRelationship (ActivityReference.METADATA, ACTIVITY, ActivityReference.LOGENTRIES)
-			.addRelationship (Enrolment.METADATA, ENROLMENT, Enrolment.LOGENTRIES)
-			.addRelationship (Network.METADATA, NETWORK, SELECTOR_NETWORK)
+			.addProperty (ID)
+			.addProperty (MODEL)
+			.addProperty (REFERENCE)
+			.addProperty (TIME)
+			.addRelationship (ACTION, Action.METADATA, SELECTOR_ACTION)
+			.addRelationship (ACTIVITY, ActivityReference.METADATA, ActivityReference.LOGENTRIES)
+			.addRelationship (ENROLMENT, Enrolment.METADATA, Enrolment.LOGENTRIES)
+			.addRelationship (NETWORK, Network.METADATA, SELECTOR_NETWORK)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
-			.addSelector (SELECTOR_ACTION)
-			.addSelector (SELECTOR_COURSE)
-			.addSelector (SELECTOR_NETWORK)
 			.build ();
 	}
 
@@ -294,51 +313,6 @@ public abstract class LogEntry extends Element
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return LogEntry.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return LogEntry.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return LogEntry.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

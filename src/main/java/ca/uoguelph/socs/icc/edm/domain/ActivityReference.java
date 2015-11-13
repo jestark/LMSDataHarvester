@@ -85,30 +85,44 @@ public abstract class ActivityReference extends Element
 
 	static
 	{
-		ID = Property.of (ActivityReference.class, Long.class, "id");
-		MODEL = Property.of (ActivityReference.class, DomainModel.class, "domainmodel");
-		ACTIVITY = Property.of (ActivityReference.class, Activity.class, "activity", Property.Flags.RECOMMENDED);
-		COURSE = Property.of (ActivityReference.class, Course.class, "course", Property.Flags.REQUIRED);
-		TYPE = Property.of (ActivityReference.class, ActivityType.class, "type", Property.Flags.REQUIRED);
+		ID = Property.of (ActivityReference.class, Long.class, "id",
+				ActivityReference::getId, ActivityReference::setId);
 
-		LOGENTRIES = Property.of (ActivityReference.class, LogEntry.class, "logentries", Property.Flags.MULTIVALUED);
+		MODEL = Property.of (ActivityReference.class, DomainModel.class, "domainmodel",
+				ActivityReference::getDomainModel, ActivityReference::setDomainModel);
 
-		SELECTOR_ID = Selector.of (ActivityReference.class, Selector.Cardinality.KEY, ID);
-		SELECTOR_ALL = Selector.of (ActivityReference.class, Selector.Cardinality.MULTIPLE, "all");
-		SELECTOR_TYPE = Selector.of (ActivityReference.class, Selector.Cardinality.MULTIPLE, TYPE);
+		ACTIVITY = Property.of (ActivityReference.class, Activity.class, "activity",
+				ActivityReference::getActivity, ActivityReference::setActivity,
+				Property.Flags.RECOMMENDED);
+
+		COURSE = Property.of (ActivityReference.class, Course.class, "course",
+				ActivityReference::getCourse, ActivityReference::setCourse,
+				Property.Flags.REQUIRED);
+
+		TYPE = Property.of (ActivityReference.class, ActivityType.class, "type",
+				ActivityReference::getType, ActivityReference::setType,
+				Property.Flags.REQUIRED);
+
+		LOGENTRIES = Property.of (ActivityReference.class, LogEntry.class, "logentries",
+				ActivityReference::getLog, ActivityReference::addLog, ActivityReference::removeLog);
+
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
+		SELECTOR_TYPE = Selector.of (Selector.Cardinality.MULTIPLE, TYPE);
+
+		SELECTOR_ALL = Selector.builder (ActivityReference.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
 
 		METADATA = MetaData.builder (ActivityReference.class)
-			.addProperty (ID, ActivityReference::getId, ActivityReference::setId)
-			.addProperty (MODEL, ActivityReference::getDomainModel, ActivityReference::setDomainModel)
-			.addProperty (ACTIVITY, ActivityReference::getActivity, ActivityReference::setActivity)
-			.addProperty (COURSE, ActivityReference::getCourse, ActivityReference::setCourse)
-			.addProperty (TYPE, ActivityReference::getType, ActivityReference::setType)
-			.addProperty (LOGENTRIES, ActivityReference::getLog, ActivityReference::addLog, ActivityReference::removeLog)
-			.addRelationship (Course.METADATA, COURSE, Course.ACTIVITIES)
-			.addRelationship (ActivityType.METADATA, TYPE, SELECTOR_TYPE)
+			.addProperty (ID)
+			.addProperty (MODEL)
+			.addProperty (ACTIVITY)
+			.addProperty (LOGENTRIES)
+			.addRelationship (COURSE, Course.METADATA, Course.ACTIVITIES)
+			.addRelationship (TYPE, ActivityType.METADATA, SELECTOR_TYPE)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
-			.addSelector (SELECTOR_TYPE)
 			.build ();
 	}
 
@@ -233,51 +247,6 @@ public abstract class ActivityReference extends Element
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return ActivityReference.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return ActivityReference.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return ActivityReference.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

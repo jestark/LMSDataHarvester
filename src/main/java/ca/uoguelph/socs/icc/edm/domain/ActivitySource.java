@@ -93,20 +93,32 @@ public abstract class ActivitySource extends Element
 
 	static
 	{
-		ID = Property.of (ActivitySource.class, Long.class, "id");
-		MODEL = Property.of (ActivitySource.class, DomainModel.class, "domainmodel");
-		NAME = Property.of (ActivitySource.class, String.class, "name", Property.Flags.REQUIRED);
-		TYPES = Property.of (ActivitySource.class, ActivityType.class, "types", Property.Flags.MULTIVALUED);
+		ID = Property.of (ActivitySource.class, Long.class, "id",
+				ActivitySource::getId, ActivitySource::setId);
 
-		SELECTOR_ID = Selector.of (ActivitySource.class, Selector.Cardinality.KEY, ID);
-		SELECTOR_ALL = Selector.of (ActivitySource.class, Selector.Cardinality.MULTIPLE, "all");
-		SELECTOR_NAME = Selector.of (ActivitySource.class, Selector.Cardinality.SINGLE, NAME);
+		MODEL = Property.of (ActivitySource.class, DomainModel.class, "domainmodel",
+				ActivitySource::getDomainModel, ActivitySource::setDomainModel);
+
+		NAME = Property.of (ActivitySource.class, String.class, "name",
+				ActivitySource::getName, ActivitySource::setName,
+				Property.Flags.REQUIRED);
+
+		TYPES = Property.of (ActivitySource.class, ActivityType.class, "types",
+				ActivitySource::getTypes, ActivitySource::addType, ActivitySource::removeType);
+
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
+		SELECTOR_NAME = Selector.of (Selector.Cardinality.SINGLE, NAME);
+
+		SELECTOR_ALL = Selector.builder (ActivitySource.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
 
 		METADATA = MetaData.builder (ActivitySource.class)
-			.addProperty (ID, ActivitySource::getId, ActivitySource::setId)
-			.addProperty (MODEL, ActivitySource::getDomainModel, ActivitySource::setDomainModel)
-			.addProperty (NAME, ActivitySource::getName, ActivitySource::setName)
-			.addProperty (TYPES, ActivitySource::getTypes, ActivitySource::addType, ActivitySource::removeType)
+			.addProperty (ID)
+			.addProperty (MODEL)
+			.addProperty (NAME)
+			.addProperty (TYPES)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_NAME)
@@ -234,51 +246,6 @@ public abstract class ActivitySource extends Element
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return ActivitySource.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return ActivitySource.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return ActivitySource.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**

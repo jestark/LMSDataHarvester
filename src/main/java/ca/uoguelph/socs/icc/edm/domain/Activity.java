@@ -92,7 +92,7 @@ public abstract class Activity extends ParentActivity
 	private static final long serialVersionUID = 1L;
 
 	/** Internal <code>DomainModel</code> for sources and types */
-	private static DomainModel store;
+	private static final DomainModel STORE;
 
 	/** <code>ActivityType</code> to implementation class map */
 	private static final Map<ActivityType, Class<? extends Activity>> activities;
@@ -127,37 +127,38 @@ public abstract class Activity extends ParentActivity
 	{
 		activities = new HashMap<> ();
 
-		MODEL = Property.of (Activity.class, DomainModel.class, "domainmodel");
-		NAME = Property.of (Activity.class, String.class, "name", Property.Flags.REQUIRED);
-		REFERENCE = Property.of (Activity.class, ActivityReference.class, "reference", Property.Flags.REQUIRED);
+		MODEL = Property.of (Activity.class, DomainModel.class, "domainmodel",
+				Activity::getDomainModel, Activity::setDomainModel);
 
-		SELECTOR_ID = Selector.of (Activity.class, Selector.Cardinality.KEY, REFERENCE);
-		SELECTOR_ALL = Selector.of (Activity.class, Selector.Cardinality.MULTIPLE, "all");
+		NAME = Property.of (Activity.class, String.class, "name",
+				Activity::getName);
+
+		REFERENCE = Property.of (Activity.class, ActivityReference.class, "reference",
+				Activity::getReference, Activity::setReference,
+				Property.Flags.REQUIRED);
+
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, REFERENCE);
+
+		SELECTOR_ALL = Selector.builder (Activity.class)
+			.setCardinality (Selector.Cardinality.MULTIPLE)
+			.setName ("all")
+			.build ();
 
 		METADATA = MetaData.builder (Activity.class)
-			.addProperty (MODEL, Activity::getDomainModel, Activity::setDomainModel)
-			.addProperty (NAME, Activity::getName)
-			.addProperty (REFERENCE, Activity::getReference, Activity::setReference)
-			.addRelationship (ActivityReference.METADATA, REFERENCE, ActivityReference.ACTIVITY)
+			.addProperty (MODEL)
+			.addProperty (NAME)
+			.addRelationship (REFERENCE, ActivityReference.METADATA, ActivityReference.ACTIVITY)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.build ();
-	}
 
-	private static synchronized final void initDataStore ()
-	{
-		if (Activity.store == null)
-		{
-//			Profile activityProf = new ProfileBuilder ()
-//				.setName ("Activity")
-//				.setMutable (true)
-//				.setElementClass (ActivitySource.class, ActivitySourceData.class)
-//				.setElementClass (ActivityType.class, ActivityTypeData.class)
-//				.setGenerator (Element.class, SequentialIdGenerator.class)
-//				.build ();
-
-			// Activity.store = new DomainModel (DataStore.getInstance (MemDataStore.class, activityProf));
-		}
+		STORE = MemDataStore.create (new ProfileBuilder ()
+				.setName ("Activity")
+				.setMutable (true)
+				.setElementClass (ActivitySource.class, ActivitySourceData.class)
+				.setElementClass (ActivityType.class, ActivityTypeData.class)
+				.setGenerator (Element.class, SequentialIdGenerator.class)
+				.build ());
 	}
 
 	/**
@@ -179,21 +180,16 @@ public abstract class Activity extends ParentActivity
 		assert impl != null : "impl is NULL";
 		assert source.length () > 0 : "source is empty";
 
-		if (Activity.store == null)
-		{
-			Activity. initDataStore ();
-		}
+		Activity.STORE.getTransaction ().begin ();
 
-		Activity.store.getTransaction ().begin ();
-
-		ActivityType atype = ActivityType.builder (Activity.store)
-			.setActivitySource (ActivitySource.builder (Activity.store)
+		ActivityType atype = ActivityType.builder (Activity.STORE)
+			.setActivitySource (ActivitySource.builder (Activity.STORE)
 					.setName (source)
 					.build ())
 			.setName (type)
 			.build ();
 
-		Activity.store.getTransaction ().commit ();
+		Activity.STORE.getTransaction ().commit ();
 
 		assert ! Activity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
 
@@ -358,51 +354,6 @@ public abstract class Activity extends ParentActivity
 	public Stream<Selector<? extends Element>> selectors ()
 	{
 		return Activity.METADATA.selectors ();
-	}
-
-	/**
-	 * Determine if the value contained in the <code>Element</code> represented
-	 * by the specified <code>Property</code> has the specified value.  If the
-	 * <code>Property</code> represents a singe value, then this method will be
-	 * equivalent to calling the <code>equals</code> method on the value
-	 * represented by the <code>Property</code>.  This method is equivalent to
-	 * calling the <code>contains</code> method for <code>Property</code>
-	 * instances that represent collections.
-	 *
-	 * @return <code>true</code> if the value represented by the
-	 *         <code>Property</code> equals/contains the specified value,
-	 *         <code>false</code> otherwise.
-	 */
-
-	@Override
-	public <V> boolean hasValue (final Property<V> property, final V value)
-	{
-		return Activity.METADATA.getReference (property)
-			.hasValue (this, value);
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the values in this
-	 * <code>Element</code> instance which are represented by the specified
-	 * <code>Property</code>.  This method will return a <code>Stream</code>
-	 * containing zero or more values.  For a single-valued
-	 * <code>Property</code>, the returned <code>Stream</code> will contain
-	 * exactly zero or one values.  An empty <code>Stream</code> will be
-	 * returned if the associated value is null.  A <code>Stream</code>
-	 * containing all of the values in the associated collection will be
-	 * returned for multi-valued <code>Property</code> instances.
-	 *
-	 * @param  <V>      The type of the values in the <code>Stream</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The <code>Stream</code>
-	 */
-
-	@Override
-	public <V> Stream<V> stream (final Property<V> property)
-	{
-		return Activity.METADATA.getReference (property)
-			.stream (this);
 	}
 
 	/**
