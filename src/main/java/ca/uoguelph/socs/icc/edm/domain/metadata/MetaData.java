@@ -16,10 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
-import java.util.Map;
 import java.util.Set;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -73,6 +71,9 @@ public final class MetaData<T extends Element>
 		/** The <code>Set</code> of <code>Property</code> instances */
 		private final Set<Property<? extends Element, ?>> properties;
 
+		/** The <code>Relationship</code> instances for the interface */
+		private final Set<Relationship<? super T, ?>> relationships;
+
 		/** The <code>Set</code> of <code>Selector</code> instances */
 		private final Set<Selector<? extends Element>> selectors;
 
@@ -90,6 +91,7 @@ public final class MetaData<T extends Element>
 			this.parent = parent;
 
 			this.properties = new HashSet<> ();
+			this.relationships = new HashSet<> ();
 			this.selectors = new HashSet<> ();
 		}
 
@@ -97,10 +99,11 @@ public final class MetaData<T extends Element>
 		{
 			assert property != null : "property is null";
 
-			return this.properties.contains (property); // || ((this.parent != null) && this.parent.hasProperty (property));
+			return this.properties.contains (property);
 		}
 
 		/**
+		 * Add this specified <code>Property</code>.
 		 *
 		 * @param  <V>      The <code>Element</code> type of the property
 		 * @param  property The <code>Property</code>, not null
@@ -124,6 +127,9 @@ public final class MetaData<T extends Element>
 		 * <code>Property</code> instances.  This method creates a relationship
 		 * between the local <code>MetaData</code> instance (which is being built by
 		 * this builder) and the specified remote <code>MetaData</code> instance.
+		 * <p>
+		 * This method will add the local <code>Property</code> to the
+		 * <code>MetaData</code> instance which being built.
 		 *
 		 * @param  <V>      The <code>Element</code> type
 		 * @param  local    The local <code>Property</code>, not null
@@ -133,13 +139,21 @@ public final class MetaData<T extends Element>
 		 * @return          This <code>MetaData.Builder</code>
 		 */
 
-		public <V extends Element> Builder<T> addRelationship (final Property<T, V> local, final MetaData<V> metadata, final Property<V, T> remote)
+		public <V extends Element> Builder<T> addRelationship (
+				final Property<T, V> local,
+				final MetaData<V> metadata,
+				final Property<V, T> remote)
 		{
 			this.log.trace ("addRelationship: local={}, metadata={}, remote={}",local, metadata, remote);
 
 			assert local != null : "local is NULL";
 			assert metadata != null : "metadata is NULL";
 			assert remote != null : "remote is NULL";
+
+			this.properties.add (local);
+
+			this.relationships.add (PropertyRelationship.of (PropertyInverseRelationship.of (remote), local));
+			metadata.relationships.add (PropertyRelationship.of (PropertyInverseRelationship.of (local), remote));
 
 			return this;
 		}
@@ -152,6 +166,10 @@ public final class MetaData<T extends Element>
 		 * instance.  Since the remote side does not have a
 		 * <code>Property</code> to describe its side of the relationship, a
 		 * <code>Selector</code> is used instead.
+		 * <p>
+		 * This method will add the local <code>Property</code> and the remote
+		 * <code>Selector</code> to the <code>MetaData</code> instance which
+		 * being built.
 		 *
 		 * @param  <V>      The <code>Element</code> type
 		 * @param  local    The local <code>Property</code>, not null
@@ -161,13 +179,22 @@ public final class MetaData<T extends Element>
 		 * @return          This <code>MetaData.Builder</code>
 		 */
 
-		public <V extends Element> Builder<T> addRelationship (final Property<T, V> local, final MetaData<V> metadata, final Selector<T> remote)
+		public <V extends Element> Builder<T> addRelationship (
+				final Property<T, V> local,
+				final MetaData<V> metadata,
+				final Selector<T> remote)
 		{
 			this.log.trace ("addRelationship: local={}, metadata={}, remote={}", local, metadata, remote);
 
 			assert local != null : "local is NULL";
 			assert metadata != null : "metadata is NULL";
 			assert remote != null : "remote is NULL";
+
+			this.properties.add (local);
+			this.selectors.add (remote);
+
+			this.relationships.add (PropertyRelationship.of (SelectorInverseRelationship.of (local, remote), local));
+			metadata.relationships.add (SelectorRelationship.of (PropertyInverseRelationship.of (local), local, remote));
 
 			return this;
 		}
@@ -205,7 +232,7 @@ public final class MetaData<T extends Element>
 		{
 			this.log.trace ("build:");
 
-			return new MetaData<T> (this.type, this.parent, this.properties, this.selectors);
+			return new MetaData<T> (this.type, this.parent, this.properties, this.relationships, this.selectors);
 		}
 	}
 
@@ -221,11 +248,11 @@ public final class MetaData<T extends Element>
 	/** The <code>Property</code> instances associated with the interface */
 	private final Set<Property<? extends Element, ?>> properties;
 
+	/** The <code>Relationship</code> instances for the interface */
+	private final Set<Relationship<? super T, ?>> relationships;
+
 	/** The <code>Selector</code> instances for the interface */
 	private final Set<Selector<? extends Element>> selectors;
-
-	/** The <code>Relationship</code> instances for the interface */
-	private final Map<Property<T, ?>, Relationship<T, ?>> relationships;
 
 	/**
 	 * Get the <code>MetaDataBuilder</code> for the specified
@@ -261,21 +288,25 @@ public final class MetaData<T extends Element>
 	/**
 	 * Create the <code>MetaData</code>.
 	 *
-	 * @param  element        The <code>Element</code> interface class, not null
-	 * @param  parent         The parent </code>Element</code> class, not null
-	 * @param  properties     The <code>Set</code> of <code>Property</code>
-	 *                        instances, not null
-	 * @param  selectors      The <code>Set</code> of <code>Selector</code>
-	 *                        instances, not null
+	 * @param  element       The <code>Element</code> interface class, not null
+	 * @param  parent        The parent </code>Element</code> class, not null
+	 * @param  properties    The <code>Set</code> of <code>Property</code>
+	 *                       instances, not null
+	 * @param  relationships The <code>Set</code> of <code>Relationship</code>
+	 *                       instances, not null
+	 * @param  selectors     The <code>Set</code> of <code>Selector</code>
+	 *                       instances, not null
 	 */
 
 	private MetaData (final Class<T> element,
 			final MetaData<? super T> parent,
 			final Set<Property<? extends Element, ?>> properties,
+			final Set<Relationship<? super T, ? extends Element>> relationships,
 			final Set<Selector<? extends Element>> selectors)
 	{
 		assert element != null : "element is NULL";
 		assert properties != null : "properties is NULL";
+		assert relationships != null : "properties is NULL";
 		assert selectors != null : "selectors is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
@@ -283,10 +314,9 @@ public final class MetaData<T extends Element>
 		this.element = element;
 		this.parent = parent;
 
-		this.selectors = new HashSet<> (selectors);
 		this.properties = new HashSet<> (properties);
-
-		this.relationships = new HashMap<> ();
+		this.relationships = new HashSet<> (relationships);
+		this.selectors = new HashSet<> (selectors);
 	}
 
 	/**
@@ -349,21 +379,20 @@ public final class MetaData<T extends Element>
 	}
 
 	/**
-	 * Get the <code>Relationship</code> associated with the specified
-	 * <code>Property</code>.
+	 * Get the <code>Mutator</code> for the specified <code>Property</code>.
 	 *
-	 * @param  property The <code>Property</code>, not null
+	 * @return The <code>Mutator</code>
 	 *
-	 * @return          The <code>Relationship</code>
+	 * @throws IllegalStateException if the <code>Property</code> is read-only
 	 */
 
-	@SuppressWarnings ("unchecked")
-	public <V extends Element> Relationship<T, V> getRelationship (final Property<T, V> property)
+	public <V> Mutator<T, V> getMutator (Property<T, V> property)
 	{
 		Preconditions.checkNotNull (property, "property");
-		Preconditions.checkArgument (property.hasFlags (Property.Flags.RELATIONSHIP), "Property is not a relationship: %s", property.getName ());
+		Preconditions.checkArgument (this.properties.contains (property),
+				"Property is not contained by this MetaData instance");
 
-		return (Relationship<T, V>) this.relationships.get (property);
+		return property.mutator ();
 	}
 
 	/**
@@ -390,9 +419,7 @@ public final class MetaData<T extends Element>
 
 	public Stream<Relationship<? super T, ?>> relationships ()
 	{
-		Stream<Relationship<? super T, ?>> result = this.relationships.entrySet ()
-			.stream ()
-			.map (x -> x.getValue ());
+		Stream<Relationship<? super T, ?>> result = this.relationships.stream ();
 
 		return (this.parent != null) ? Stream.concat (this.parent.relationships (), result)
 			: result;

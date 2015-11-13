@@ -48,7 +48,7 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 	private final Logger log;
 
 	/** The <code>Property</code> for owning <code>Element</code> */
-	private final Property<T, V> property;
+	private final Property<V, T> property;
 
 	/** The <code>Selector</code> for the associated <code>Element</code> */
 	private final Selector<V> selector;
@@ -62,7 +62,7 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 	 */
 
 	public static <T extends Element, V extends Element> SelectorInverseRelationship<T, V> of (
-			final Property<T, V> property,
+			final Property<V, T> property,
 			final Selector<V> selector)
 	{
 		assert property != null : "property is NULL";
@@ -78,7 +78,7 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
-	private SelectorInverseRelationship (final Property<T, V> property, final Selector<V> selector)
+	private SelectorInverseRelationship (final Property<V, T> property, final Selector<V> selector)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
@@ -86,7 +86,7 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 		this.selector = selector;
 	}
 
-	private Query<T> getQuery ()
+	private Query<V> getQuery ()
 	{
 		return null; // model.getQuery (Container.getInstance ()
 //				.getMetaData (this.value),
@@ -175,7 +175,7 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 		return element.getDomainModel ().contains (element)
 			&& ((this.selector.getCardinality () == Selector.Cardinality.MULTIPLE)
 					|| this.getQuery ()
-					.setValue (this.property, value)
+					.setValue (this.property, element)
 					.queryAll ()
 					.size () <= 1);
 	}
