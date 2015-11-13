@@ -218,7 +218,7 @@ public final class Property<T extends Element, V>
 
 		Preconditions.checkArgument ((! nflags.contains (Flags.RELATIONSHIP)) && (! nflags.contains (Flags.RECOMMENDED))
 				|| nflags.contains (Flags.RELATIONSHIP) && (! nflags.contains (Flags.REQUIRED))
-				|| nflags.equals (EnumSet.of (Flags.REQUIRED)),
+				|| nflags.contains (Flags.REQUIRED) && (! nflags.contains (Flags.MUTABLE)) && (! nflags.contains (Flags.RECOMMENDED)),
 				"The specified flags can not be used together");
 
 		return new Property<T, V> (element, value, name, SingleReference.of (get, set), nflags);
@@ -381,6 +381,21 @@ public final class Property<T extends Element, V>
 	}
 
 	/**
+	 * Get the <code>Mutator</code> for the <code>Property</code>.
+	 *
+	 * @return The <code>Mutator</code>
+	 *
+	 * @throws IllegalStateException if the <code>Property</code> is read-only
+	 */
+
+	protected Mutator<T, V> mutator ()
+	{
+		Preconditions.checkState (this.reference.isWritable (), "Property is Read-Only");
+
+		return new Mutator<T, V> (this);
+	}
+
+	/**
 	 * Determine if the specified flag is set for this <code>Property</code>.
 	 *
 	 * @param  flag The flag to test
@@ -487,7 +502,7 @@ public final class Property<T extends Element, V>
 	 *         <code>false</code> otherwise.
 	 */
 
-	public boolean hasValue (final T element, final @Nullable V value)
+	public boolean hasValue (final T element, final @Nullable Object value)
 	{
 		Preconditions.checkNotNull (element, "element");
 

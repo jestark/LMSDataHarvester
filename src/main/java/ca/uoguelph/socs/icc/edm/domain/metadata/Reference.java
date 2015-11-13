@@ -62,7 +62,7 @@ interface Reference<T extends Element, V>
 	 *         specified value, <code>false</code> otherwise.
 	 */
 
-	public abstract boolean hasValue (T element, @Nullable V value);
+	public abstract boolean hasValue (T element, @Nullable Object value);
 
 	/**
 	 * Get a <code>Stream</code> containing all of the values from the specified

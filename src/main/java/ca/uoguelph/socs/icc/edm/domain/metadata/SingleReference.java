@@ -167,7 +167,7 @@ final class SingleReference<T extends Element, V> implements Reference<T, V>
 	 */
 
 	@Override
-	public boolean hasValue (final T element, final @Nullable V value)
+	public boolean hasValue (final T element, final @Nullable Object value)
 	{
 		assert element != null : "element is NULL";
 

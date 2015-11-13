@@ -57,7 +57,7 @@ public final class Mutator<T extends Element, V>
 	 * @param  property The <code>Property</code>, not null
 	 */
 
-	private Mutator (final Property<T, V> property)
+	protected Mutator (final Property<T, V> property)
 	{
 		assert property != null : "property is NULL";
 

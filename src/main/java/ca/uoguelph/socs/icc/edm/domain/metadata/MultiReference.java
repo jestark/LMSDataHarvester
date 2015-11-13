@@ -173,7 +173,7 @@ public final class MultiReference<T extends Element, V extends Element> implemen
 	 */
 
 	@Override
-	public boolean hasValue (final T element, final @Nullable V value)
+	public boolean hasValue (final T element, final @Nullable Object value)
 	{
 		assert element != null : "element is NULL";
 		assert value != null : "value is NULL";
