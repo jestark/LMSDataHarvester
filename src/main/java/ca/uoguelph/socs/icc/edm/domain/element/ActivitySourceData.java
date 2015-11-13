@@ -16,11 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
-import java.io.Serializable;
-import java.util.Set;
-
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
@@ -39,7 +37,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
  * @version 1.0
  */
 
-public class ActivitySourceData extends ActivitySource implements Serializable
+public class ActivitySourceData extends ActivitySource
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;

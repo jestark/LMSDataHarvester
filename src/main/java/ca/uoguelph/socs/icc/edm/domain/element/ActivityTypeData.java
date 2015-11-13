@@ -16,8 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
-import java.io.Serializable;
-
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
@@ -35,7 +33,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
  * @version 1.0
  */
 
-public class ActivityTypeData extends ActivityType implements Serializable
+public class ActivityTypeData extends ActivityType
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;

@@ -16,12 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
-import java.io.Serializable;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-
 import java.util.stream.Collectors;
 
 import javax.annotation.CheckReturnValue;
@@ -57,7 +54,7 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 public class WikiPage extends SubActivity
 {
 	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID;
+	private static final long serialVersionUID = 1L;
 
 	/** The primary key for the <code>WikiPage</code> */
 	private Long id;
@@ -81,8 +78,6 @@ public class WikiPage extends SubActivity
 
 	static
 	{
-		serialVersionUID = 1L;
-
 		SubActivity.registerImplementation (Wiki.class, WikiPage.class);
 	}
 
@@ -327,7 +322,7 @@ public class WikiPage extends SubActivity
 	 * Remove the specified <code>SubActivity</code> from the
 	 * <code>Activity</code>.
 	 *
-	 * @param  subactivity The <code>SubActivity</code> to remove, not null
+	 * @param  subActivity The <code>SubActivity</code> to remove, not null
 	 *
 	 * @return             <code>true</code> if the <code>SubActivity</code>
 	 *                     was successfully removed, <code>false</code>

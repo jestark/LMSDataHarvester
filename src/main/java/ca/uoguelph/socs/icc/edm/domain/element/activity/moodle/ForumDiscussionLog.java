@@ -45,7 +45,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogReference;
 class ForumDiscussionLog extends LogReference
 {
 	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID;
+	private static final long serialVersionUID = 1L;
 
 	/** The associated <code>SubActivity</code> */
 	private SubActivity subActivity;
@@ -57,8 +57,6 @@ class ForumDiscussionLog extends LogReference
 
 	static
 	{
-		serialVersionUID = 1L;
-
 		LogReference.registerImplementation (ForumDiscussion.class, ForumDiscussionLog.class);
 	}
 

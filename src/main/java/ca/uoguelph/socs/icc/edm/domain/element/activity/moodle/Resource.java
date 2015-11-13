@@ -56,7 +56,7 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 public class Resource extends NamedActivity
 {
 	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID;
+	private static final long serialVersionUID = 1L;
 
 	/** Copy of the id number to work around bad JPA behaviour */
 	private Long id;
@@ -77,8 +77,6 @@ public class Resource extends NamedActivity
 
 	static
 	{
-		serialVersionUID = 1L;
-
 		Activity.registerImplementation ("moodle", "resource", Resource.class);
 	}
 

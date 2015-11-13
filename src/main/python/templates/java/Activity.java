@@ -16,8 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element.activity.${ActivitySource};
 
-import java.io.Serializable;
-
 import java.util.List;
 import java.util.Set;
 
@@ -52,7 +50,7 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
  * </ul>
  *
  * @author  James E. Stark
- * @version 1.3
+ * @version 1.0
  */
 
 public class ${ClassName} extends NamedActivity
@@ -79,7 +77,7 @@ public class ${ClassName} extends NamedActivity
 
 	static
 	{
-		Activity.registerImplementation ("${ActivitySource}", "${ActivityType}", ${ClassName}.class, ${ClassName}::new);
+		Activity.registerImplementation ("${ActivitySource}", "${ActivityType}", ${ClassName}.class);
 	}
 
 	/**
@@ -96,12 +94,9 @@ public class ${ClassName} extends NamedActivity
 
 	/**
 	 * Get the <code>DataStore</code> identifier for the <code>Element</code>
-	 * instance.  Some <code>Element</code> interfaces are dependent on other
-	 * <code>Element</code> interfaces for their identification.  The dependent
-	 * interface implementations should return the <code>DataStore</code>
-	 * identifier from the interface on which they depend.
+	 * instance.
 	 *
-	 * @return A <code>Long</code> containing <code>DataStore</code> identifier
+	 * @return The <code>DataStore</code> identifier
 	 */
 
 	@Override
@@ -112,10 +107,8 @@ public class ${ClassName} extends NamedActivity
 
 	/**
 	 * Set the <code>DataStore</code> identifier.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Element</code>
-	 * instance is loaded, or by the <code>ElementBuilder</code> implementation
-	 * to set the <code>DataStore</code> identifier, prior to storing a new
-	 * <code>Element</code> instance.
+	 * be used to initialize the <code>DataStore</code> identifier for a new
+	 * <code>Activity</code> instance.
 	 *
 	 * @param  id The <code>DataStore</code> identifier, not null
 	 */
@@ -141,8 +134,7 @@ public class ${ClassName} extends NamedActivity
 
 	/**
 	 * Set the name of the <code>Activity</code>.  This method is intended to
-	 * be used by a <code>DataStore</code> when the <code>Activity</code>
-	 * instance is loaded.
+	 * be used to initialize a new <code>Activity</code> instance.
 	 *
 	 * @param  name The name of the <code>Activity</code>, not null
 	 */
@@ -176,8 +168,7 @@ public class ${ClassName} extends NamedActivity
 	/**
 	 * Initialize the <code>Set</code> of <code>Grade</code> instances
 	 * associated with the <code>Activity</code> instance.  This method is
-	 * intended to be used by a <code>DataStore</code> when the
-	 * <code>Activity</code> instance is loaded.
+	 * intended to be used to initialize a new <code>Activity</code> instance.
 	 *
 	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
 	 *                null
@@ -248,13 +239,8 @@ public class ${ClassName} extends NamedActivity
 
 	/**
 	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
-	 * for the <code>Activity</code>.  This method is intended to be used by a
-	 * <code>DataStore</code> when the <code>Activity</code> instance is
-	 * loaded.
-	 * <p>
-	 * This method is a redefinition of the same method in the superclass.  It
-	 * exists solely to allow JPA to map the relationship to the instances of
-	 * the child class.
+	 * for the <code>Activity</code>.  This method is intended to be used to
+	 * initialize a new <code>Activity</code> instance.
 	 *
 	 * @param  subActivities The <code>List</code> of <code>SubActivity</code>
 	 *                       instances, not null
@@ -269,8 +255,7 @@ public class ${ClassName} extends NamedActivity
 	}
 
 	/**
-	 * Add the specified <code>SubActivity</code> to the
-	 * <code>Activity</code>.
+	 * Add the specified <code>SubActivity</code> to the <code>Activity</code>.
 	 *
 	 * @param  subActivity The <code>SubActivity</code> to add, not null
 	 *

@@ -16,10 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import java.util.Collections;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;

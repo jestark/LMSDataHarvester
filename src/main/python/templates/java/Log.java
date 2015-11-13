@@ -39,7 +39,7 @@ import ca.uoguelph.socs.icc.edm.domain.LogReference;
  * </ul>
  *
  * @author  James E. Stark
- * @version 1.1
+ * @version 1.0
  */
 
 class ${ClassName} extends LogReference
@@ -57,11 +57,11 @@ class ${ClassName} extends LogReference
 
 	static
 	{
-		LogReference.registerImplementation (${SubActivityClass}.class, ${ClassName}.class, $ClassName::new);
+		LogReference.registerImplementation (${SubActivityClass}.class, ${ClassName}.class);
 	}
 
 	/**
-	 * Create the <code>LogEntry</code> instance with Null values.
+	 * Create the <code>LogReference</code> instance with Null values.
 	 */
 
 	protected ${ClassName} ()
@@ -86,8 +86,7 @@ class ${ClassName} extends LogReference
 	/**
 	 * Set the <code>SubActivity</code> upon which the logged
 	 * <code>Action</code> was performed.  This method is intended to be used
-	 * by a <code>DataStore</code> when the <code>LogEntry</code> instance is
-	 * loaded.
+	 * to initialize a new <code>LogReference</code> instance.
 	 *
 	 * @param  subActivity The <code>SubActivity</code>, not null
 	 */

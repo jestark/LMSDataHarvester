@@ -16,8 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
-import java.io.Serializable;
-
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
@@ -33,7 +31,7 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
  * @version 1.0
  */
 
-public class RoleData extends Role implements Serializable
+public class RoleData extends Role
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;

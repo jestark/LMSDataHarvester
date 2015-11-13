@@ -16,14 +16,11 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.CheckReturnValue;
@@ -45,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.Semester;
  * @version 1.0
  */
 
-public class CourseData extends Course implements Serializable
+public class CourseData extends Course
 {
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;

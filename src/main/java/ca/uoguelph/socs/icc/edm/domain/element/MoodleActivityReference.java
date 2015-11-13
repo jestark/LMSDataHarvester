@@ -16,10 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
-import java.util.List;
-
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.CheckReturnValue;
@@ -185,20 +184,20 @@ public class MoodleActivityReference extends ActivityReference
 				throw new IllegalStateException ("instance ID is NULL");
 			}
 
-			this.activity = this.getDomainModel ()
-				.getQuery (Activity.class,
-						Activity.getActivityClass (this.getType ()),
-						Activity.SELECTOR_ID)
-				.setValue (Activity.ID, this.instanceId)
-				.query ();
+//			this.activity = this.getDomainModel ()
+//				.getQuery (Activity.class,
+//						Activity.getActivityClass (this.getType ()),
+//						Activity.SELECTOR_ID)
+//				.setValue (Activity.ID, this.instanceId)
+//				.query ();
 
 			if (this.activity == null)
 			{
 				throw new IllegalStateException (String.format ("Failed to load data for Activity: %s/%d", this.type.getName (), this.instanceId));
 			}
 
-			ActivityReference.METADATA.getRelationship (ActivityReference.ACTIVITY)
-				.connect (this.getDomainModel (), this);
+//			ActivityReference.METADATA.getRelationship (ActivityReference.ACTIVITY)
+//				.connect (this);
 		}
 
 		return this.propagateDomainModel (this.activity);
@@ -261,7 +260,7 @@ public class MoodleActivityReference extends ActivityReference
 
 	/**
 	 * Set the <code>ActvityType</code> with which the <code>Activity</code> is
-	 * associated.  This method is intended to be used to initialize a new 
+	 * associated.  This method is intended to be used to initialize a new
 	 * <code>ActivityReference</code> instance.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null

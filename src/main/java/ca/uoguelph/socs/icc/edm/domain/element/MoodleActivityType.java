@@ -16,8 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
-import java.io.Serializable;
-
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
@@ -40,10 +38,10 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
  * @version 1.0
  */
 
-public class MoodleActivityType extends ActivityType implements Serializable
+public class MoodleActivityType extends ActivityType
 {
 	/** Serial version id, required by the Serializable interface */
-	private static final long serialVersionUID;
+	private static final long serialVersionUID = 1L;
 
 	/** The source of the activity type */
 	private static final ActivitySource source;
@@ -61,8 +59,6 @@ public class MoodleActivityType extends ActivityType implements Serializable
 
 	static
 	{
-		serialVersionUID = 1L;
-
 		source = new ActivitySourceData ();
 		((ActivitySourceData) source).setName ("moodle");
 	}
