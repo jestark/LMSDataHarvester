@@ -17,9 +17,12 @@
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * Representation of a <code>DataStore</code>.
@@ -72,16 +75,22 @@ public interface DataStore
 	}
 
 	/**
-	 * Retrieve a <code>List</code> of <code>Element</code> instances which
-	 * match the specified <code>Filter</code>.
+	 * Create a new <code>Query</code> instance for the specified
+	 * <code>Selector</code>.
 	 *
-	 * @param  <T>    The <code>Element</code> interface type
-	 * @param  filter The <code>Filter</code>, not null
+	 * @param  selector  The <code>Selector</code>, not null
+	 * @param  impl      The <code>Element</code> implementation class, not null
+	 * @param  model     The <code>DomaonModel</code>, not null
+	 * @param  reference
 	 *
-	 * @return        A <code>List</code> of <code>Element</code> instances
+	 * @return           The <code>Query</code>
 	 */
 
-	public abstract <T extends Element> List<T> fetch (Class<? extends T> type, Filter<T> filter);
+	public abstract <T extends Element> Query<T> createQuery (
+			Selector<T> selector,
+			Class<? extends T> impl,
+			DomainModel model,
+			BiConsumer<T, DomainModel> reference);
 
 	/**
 	 * Get a <code>List</code> containing all of the ID numbers in the
