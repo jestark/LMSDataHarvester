@@ -379,23 +379,6 @@ public final class MetaData<T extends Element>
 	}
 
 	/**
-	 * Get the <code>Mutator</code> for the specified <code>Property</code>.
-	 *
-	 * @return The <code>Mutator</code>
-	 *
-	 * @throws IllegalStateException if the <code>Property</code> is read-only
-	 */
-
-	public <V> Mutator<T, V> getMutator (Property<T, V> property)
-	{
-		Preconditions.checkNotNull (property, "property");
-		Preconditions.checkArgument (this.properties.contains (property),
-				"Property is not contained by this MetaData instance");
-
-		return property.mutator ();
-	}
-
-	/**
 	 * Get a <code>Stream</code> containing all of the <code>Property</code>
 	 * which are instances associated with the <code>Element</code>.
 	 *

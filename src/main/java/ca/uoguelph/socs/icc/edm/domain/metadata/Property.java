@@ -381,21 +381,6 @@ public final class Property<T extends Element, V>
 	}
 
 	/**
-	 * Get the <code>Mutator</code> for the <code>Property</code>.
-	 *
-	 * @return The <code>Mutator</code>
-	 *
-	 * @throws IllegalStateException if the <code>Property</code> is read-only
-	 */
-
-	protected Mutator<T, V> mutator ()
-	{
-		Preconditions.checkState (this.reference.isWritable (), "Property is Read-Only");
-
-		return new Mutator<T, V> (this);
-	}
-
-	/**
 	 * Determine if the specified flag is set for this <code>Property</code>.
 	 *
 	 * @param  flag The flag to test
