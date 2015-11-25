@@ -17,7 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.metadata.Mutator;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * An <code>IdGenerator</code> which always returns a null reference.  This
@@ -30,17 +30,19 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Mutator;
  * @version 1.0
  */
 
-public class NullIdGenerator<T extends Element> extends IdGenerator<T>
+public final class NullIdGenerator implements IdGenerator
 {
 	/**
 	 * Create the <code>NullIdGenerator</code>.
 	 *
-	 * @param  mutator The <code>Mutator</code> for the ID, not null
+	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  element   The <code>Element</code>, not null
 	 */
 
-	protected NullIdGenerator (final Mutator<T, Long> mutator)
+	NullIdGenerator (final DataStore datastore, final Class<? extends Element> element)
 	{
-		super (mutator);
+		assert datastore != null : "datastore is NULL";
+		assert element != null : "element is NULL";
 	}
 
 	/**
