@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 import java.util.Objects;
-
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -28,6 +28,11 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -77,12 +82,382 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     EnrolmentBuilder
- * @see     EnrolmentLoader
  */
 
 public abstract class Enrolment extends Element
 {
+	/**
+	 * Create new <code>Enrolment</code> instances.  This class extends
+	 * <code>AbstractBuilder</code>, adding the functionality required to
+	 * create <code>Enrolment</code> instances.  The "finalgrade" and "usable"
+	 * fields may be modified in place.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	public static final class Builder implements Element.Builder<Enrolment>
+	{
+		/** The Logger */
+		private final Logger log;
+
+		/** Helper to substitute <code>Course</code> instances */
+		private Retriever<Course> courseRetriever;
+
+		/** Helper to substitute <code>Activity</code> instances */
+		private Retriever<Role> roleRetriever;
+
+		/** Helper to operate on <code>Enrolment</code> instances */
+		private Persister<Enrolment> persister;
+
+		/** Method reference to the constructor of the implementation class */
+		private final Supplier<Enrolment> supplier;
+
+		/** The loaded or previously built <code>Enrolment</code> */
+		private Enrolment enrolment;
+
+		/** The <code>DataStore</code> ID number for the <code>Enrolment</code> */
+		private Long id;
+
+		/** The associated <code>Course</code> */
+		private Course course;
+
+		/** The associated <code>Role</code> */
+		private Role role;
+
+		/** The final grade */
+		private Integer finalGrade;
+
+		/** Indication if the data is usable for research */
+		private Boolean usable;
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  supplier        Method reference to the constructor of the
+		 *                         implementation class, not null
+		 * @param  persister       The <code>Persister</code> used to store the
+		 *                         <code>Enrolment</code>, not null
+		 * @param  roleRetriever   <code>Retriever</code> for <code>Role</code>
+		 *                         instances, not null
+		 * @param  courseRetriever <code>Retriever</code> for <code>Course</code>
+		 *                         instances, not null
+		 */
+
+		protected Builder (
+				final Supplier<Enrolment> supplier,
+				final Persister<Enrolment> persister,
+				final Retriever<Course> courseRetriever,
+				final Retriever<Role> roleRetriever)
+		{
+			assert supplier != null : "supplier is NULL";
+			assert persister != null : "persister is NULL";
+			assert courseRetriever != null : "courseRetriever is NULL";
+			assert roleRetriever != null : "roleRetriever is NULL";
+
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			this.courseRetriever = courseRetriever;
+			this.roleRetriever = roleRetriever;
+			this.persister = persister;
+			this.supplier = supplier;
+
+			this.enrolment = null;
+			this.id = null;
+			this.course = null;
+			this.role = null;
+			this.finalGrade = null;
+			this.usable = null;
+		}
+
+		/**
+		 * Create an instance of the <code>Enrolment</code>.
+		 *
+		 * @return                       The new <code>Enrolment</code> instance
+		 * @throws IllegalStateException If any if the fields is missing
+		 * @throws IllegalStateException If there isn't an active transaction
+		 */
+
+		@Override
+		public Enrolment build ()
+		{
+			this.log.trace ("build:");
+
+			if (this.course == null)
+			{
+				this.log.error ("Attempting to create an Enrolment without a Course");
+				throw new IllegalStateException ("course is NULL");
+			}
+
+			if (this.role == null)
+			{
+				this.log.error ("Attempting to create an Enrolment without a Role");
+				throw new IllegalStateException ("course is NULL");
+			}
+
+			if (this.usable == null)
+			{
+				this.log.error ("Attempting to create an Enrolment without setting the usability");
+				throw new IllegalStateException ("usable is NULL");
+			}
+
+			if ((this.enrolment == null)
+					|| (! this.persister.contains (this.enrolment))
+					|| (this.enrolment.getCourse () != this.course)
+					|| (this.enrolment.getRole () != this.role))
+			{
+				Enrolment result = this.supplier.get ();
+				result.setId (this.id);
+				result.setCourse (this.course);
+				result.setRole (this.role);
+				result.setFinalGrade (this.finalGrade);
+				result.setUsable (this.usable);
+
+				this.enrolment = this.persister.insert (this.enrolment, result);
+			}
+			else
+			{
+				this.enrolment.setFinalGrade (this.finalGrade);
+				this.enrolment.setUsable (this.usable);
+			}
+
+			return this.enrolment;
+		}
+
+		/**
+		 * Reset the builder.  This method will set all of the fields for the
+		 * <code>Element</code> to be built to <code>null</code>.
+		 *
+		 * @return This <code>Builder</code>
+		 */
+
+		public Builder clear ()
+		{
+			this.log.trace ("clear:");
+
+			this.enrolment = null;
+			this.id = null;
+			this.course = null;
+			this.role = null;
+			this.finalGrade = null;
+			this.usable = null;
+
+			return this;
+		}
+
+		/**
+		 * Load a <code>Enrolment</code> instance into the builder.  This method
+		 * resets the builder and initializes all of its parameters from
+		 * the specified <code>Enrolment</code> instance.  The  parameters are
+		 * validated as they are set.
+		 *
+		 * @param  enrolment                The <code>Enrolment</code>, not null
+		 *
+		 * @throws IllegalArgumentException If any of the fields in the
+		 *                                  <code>Enrolment</code> instance to
+		 *                                  be loaded are not valid
+		 */
+
+		public Builder load (final Enrolment enrolment)
+		{
+			this.log.trace ("load: enrolment={}", enrolment);
+
+			if (enrolment == null)
+			{
+				this.log.error ("Attempting to load a NULL Enrolment");
+				throw new NullPointerException ();
+			}
+
+			this.enrolment = enrolment;
+			this.id = enrolment.getId ();
+			this.setCourse (enrolment.getCourse ());
+			this.setFinalGrade (enrolment.getFinalGrade ());
+			this.setRole (enrolment.getRole ());
+			this.setUsable (enrolment.isUsable ());
+
+			return this;
+		}
+
+		/**
+		 * Get the <code>DataStore</code> identifier for the
+		 * <code>Enrolment</code> instance.
+		 *
+		 * @return The <code>DataStore</code> identifier
+		 */
+
+		@CheckReturnValue
+		public Long getId ()
+		{
+			return this.id;
+		}
+
+		/**
+		 * Get the <code>Course</code> in which the <code>User</code>
+		 * represented by the <code>Enrolment</code> instance is enrolled.
+		 *
+		 * @return The <code>Course</code> instance
+		 */
+
+		public Course getCourse ()
+		{
+			return this.course;
+		}
+
+		/**
+		 * Set the <code>Course</code> in which the <code>User</code> is
+		 * enrolled.
+		 *
+		 * @param  course                   The <code>Course</code>, not null
+		 *
+		 * @throws IllegalArgumentException if the <code>Course</code> is not in
+		 *                                  the <code>DataStore</code>
+		 */
+
+		public Builder setCourse (final Course course)
+		{
+			this.log.trace ("setCourse: course={}", course);
+
+			if (course == null)
+			{
+				this.log.error ("Course is NULL");
+				throw new NullPointerException ("Course is NULL");
+			}
+
+			this.course = this.courseRetriever.fetch (course);
+
+			if (this.course == null)
+			{
+				this.log.error ("This specified Course does not exist in the DataStore");
+				throw new IllegalArgumentException ("Course is not in the DataStore");
+			}
+
+			return this;
+		}
+
+		/**
+		 * Get the <code>Role</code> of the <code>User</code> represented by
+		 * this <code>Enrolment</code>, in the associated <code>Course</code>.
+		 *
+		 * @return The <code>Role</code> instance
+		 */
+
+		public Role getRole ()
+		{
+			return this.role;
+		}
+
+		/**
+		 * Set the <code>Role</code> of the <code>User</code> in the
+		 * <code>Course</code>.
+		 *
+		 * @param  role                      The <code>Role</code>, not null
+		 *
+		 * @throws IllegalArgumentException if the <code>Role</code> is not in
+		 *                                  the <code>DataStore</code>
+		 */
+
+		public Builder setRole (final Role role)
+		{
+			this.log.trace ("setRole: role={}", role);
+
+			if (role == null)
+			{
+				this.log.error ("Role is NULL");
+				throw new NullPointerException ("Role is NULL");
+			}
+
+			this.role = this.roleRetriever.fetch (role);
+
+			if (this.role == null)
+			{
+				this.log.error ("This specified Role does not exist in the DataStore");
+				throw new IllegalArgumentException ("Role is not in the DataStore");
+			}
+
+			return this;
+		}
+
+		/**
+		 * Get the final grade for the <code>User</code> represented by this
+		 * <code>Enrolment</code>, in the associated <code>Course</code>.  The
+		 * final grade will be null if no final grade was assigned for the
+		 * <code>User</code> associated with this <code>Enrolment</code>.
+		 *
+		 * @return An <code>Integer</code> containing the final grade, or null
+		 *         if there is no final grade
+		 */
+
+		public Integer getFinalGrade ()
+		{
+			return this.finalGrade;
+		}
+
+		/**
+		 * Set the final grade for the <code>User</code> in the
+		 * <code>Course</code>.
+		 *
+		 * @param  finalgrade The final grade for the <code>User</code> in the
+		 *                    course, on the interval [0, 100]
+		 *
+		 * @throws IllegalArgumentException If the value is less than zero or
+		 *                                  greater than 100
+		 */
+
+		public Builder setFinalGrade (final Integer finalgrade)
+		{
+			this.log.trace ("setFinalGrade: finalgrade={}", finalgrade);
+
+			if ((finalgrade != null) && ((finalgrade < 0) || (finalgrade > 100)))
+			{
+				this.log.error ("Grade must be between 0 and 100");
+				throw new IllegalArgumentException ("Grade must be between 0 and 100");
+			}
+
+			this.finalGrade = finalgrade;
+
+			return this;
+		}
+
+		/**
+		 * Determine if the <code>User</code> has given their consent for the
+		 * data associated with this <code>Enrolment</code> to be used for
+		 * research.
+		 *
+		 * @return <code>True</code> if the <code>User</code> has consented,
+		 *         <code>False</code> otherwise.
+		 */
+
+		public Boolean isUsable ()
+		{
+			return this.usable;
+		}
+
+		/**
+		 * Set the usable flag for the data related to the <code>User</code> in
+		 * the <code>Course</code>. This method is intended to be used by a
+		 * <code>DataStore</code> when the <code>Enrolment</code> instance is
+		 * loaded.
+		 *
+		 * @param  usable Indication if the data may be used for research, not
+		 *                null
+		 */
+
+		public Builder setUsable (final Boolean usable)
+		{
+			this.log.trace ("setUsable: usable={}", usable);
+
+			if (usable == null)
+			{
+				this.log.error ("usable is NULL");
+				throw new NullPointerException ("usable is NULL");
+			}
+
+			this.usable = usable;
+
+			return this;
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -180,12 +555,12 @@ public abstract class Enrolment extends Element
 	}
 
 	/**
-	 * Get an instance of the <code>EnrolmentBuilder</code> for the specified
+	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return                       The <code>EnrolmentBuilder</code> instance
+	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> does not
 	 *                               have a default implementation class for
@@ -194,7 +569,7 @@ public abstract class Enrolment extends Element
 	 *                               immutable
 	 */
 
-	public static EnrolmentBuilder builder (final DomainModel model)
+	public static Builder builder (final DomainModel model)
 	{
 		Preconditions.checkNotNull (model, "model");
 
@@ -355,19 +730,19 @@ public abstract class Enrolment extends Element
 	}
 
 	/**
-	 * Get an <code>EnrolmentBuilder</code> instance for the specified
+	 * Get an <code>Builder</code> instance for the specified
 	 * <code>DomainModel</code>.  This method creates an
-	 * <code>EnrolmentBuilder</code> on the specified <code>DomainModel</code>
+	 * <code>Builder</code> on the specified <code>DomainModel</code>
 	 * and initializes it with the contents of this <code>Enrolment</code>
 	 * instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
 	 *
-	 * @return       The initialized <code>EnrolmentBuilder</code>
+	 * @return       The initialized <code>Builder</code>
 	 */
 
 	@Override
-	public EnrolmentBuilder getBuilder (final DomainModel model)
+	public Builder getBuilder (final DomainModel model)
 	{
 		return Enrolment.builder (Preconditions.checkNotNull (model, "model"))
 			.load (this);

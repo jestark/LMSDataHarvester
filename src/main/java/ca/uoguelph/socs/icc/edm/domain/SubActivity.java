@@ -18,11 +18,10 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import java.util.HashMap;
 import java.util.Objects;
-
+import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -31,6 +30,11 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -45,6 +49,266 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class SubActivity extends ParentActivity
 {
+	/**
+	 * Create <code>SubActivity</code> instances.  This class creates instances
+	 * for the most general <code>SuabActivity</code> implementation and acts as
+	 * the common the builders which produce <code>SubActivity</code> instances
+	 * with additional parameters.
+	 * <p>
+	 * To create builders for <code>SubActivity</code> instances, the
+	 * parent <code>Activity</code> must be supplied when the builder is
+	 * created.  The parent <code>Activity</code> is needed to determine which
+	 * <code>SubActivity</code> implementation class is to be created by the
+	 * builder.  It is possible to specify a parent <code>Activity</code> which
+	 * does not match the selected builder.  In this case the builder will be
+	 * created successfully, but an exception will occur when a field is set in
+	 * the builder that does not exist in the implementation, or when the
+	 * implementation is built and a required field is determined to be missing.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	public static class Builder implements Element.Builder<SubActivity>
+	{
+		/** The Logger */
+		protected final Logger log;
+
+		/** Helper to operate on <code>SubActivity</code> instances*/
+		protected final Persister<SubActivity> persister;
+
+		/** The parent */
+		protected final ParentActivity parent;
+
+		/** Method reference to the constructor of the implementation class */
+		private final Supplier<SubActivity> supplier;
+
+		/** The loaded or previously built <code>SubActivity</code> instance */
+		protected SubActivity subActivity;
+
+		/** The <code>DataStore</code> id number for the <code>SubActivity</code> */
+		protected Long id;
+
+		/** The name of the <code>SubActivity</code> */
+		protected String name;
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 */
+
+		protected Builder (
+				final Supplier<SubActivity> supplier,
+				final Persister<SubActivity> persister,
+				final ParentActivity parent)
+		{
+			assert persister != null : "persister is NULL";
+			assert parent != null : "parent is NULL";
+
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			// The ParentActivity class exists as compromise for JPA.  As such it
+			// does not have metadata, so we have to use instance of here instead
+			// of a proper OO method.
+	//		if (parent instanceof Activity)
+	//		{
+	//			this.parent = DataStoreProxy.getInstance (Activity.class,
+	//					Activity.getActivityClass (parent.getType ()),
+	//					Activity.SELECTOR_ID,
+	//					datastore)
+	//				.fetch ((Activity) parent);
+	//
+	//			if (! (this.parent instanceof NamedActivity))
+	//			{
+	//				this.log.error ("Only NamedActivity instances can have sub-activities");
+	//				throw new IllegalArgumentException ("Not a NamedActivity");
+	//			}
+	//		}
+	//		else
+	//		{
+	//			this.parent = DataStoreProxy.getInstance (SubActivity.class,
+	//					((SubActivity) parent).getClass (),
+	//					SubActivity.SELECTOR_ID,
+	//					datastore)
+	//				.fetch ((SubActivity) parent);
+	//		}
+
+			this.parent = null;
+
+	//		if (this.parent == null)
+	//		{
+	//			this.log.error ("The Parent Activity does not exist in the DataStore");
+	//			throw new IllegalStateException ("Parent is not in the DataStore");
+	//		}
+
+	//		Class<? extends SubActivity> sclass = SubActivity.getSubActivityClass (this.parent.getClass ());
+
+	//		if (sclass == null)
+	//		{
+	//			throw new IllegalStateException ("No registered Subactivity classes corresponding to the specified parent");
+	//		}
+
+			this.persister = persister;
+			this.supplier = supplier;
+
+			this.subActivity = null;
+			this.id = null;
+			this.name = null;
+		}
+
+		/**
+		 * Create an instance of the <code>SubActivity</code>.
+		 *
+		 * @return                       The new <code>SubActivity</code>
+		 *                               instance
+		 * @throws IllegalStateException If any if the fields is missing
+		 * @throws IllegalStateException If there isn't an active transaction
+		 */
+
+		@Override
+		public SubActivity build ()
+		{
+			this.log.trace ("build:");
+
+			if (this.name == null)
+			{
+				this.log.error ("name is NULL");
+				throw new IllegalStateException ("name is NULL");
+			}
+
+			SubActivity result = this.supplier.get ();
+			result.setId (this.id);
+			result.setParent (this.parent);
+			result.setName (this.name);
+
+			this.subActivity = this.persister.insert (this.subActivity, result);
+
+			return this.subActivity;
+		}
+
+		/**
+		 * Reset the builder.  This method will set all of the fields for the
+		 * <code>Element</code> to be built to <code>null</code>.
+		 *
+		 * @return This <code>ActionBuilder</code>
+		 */
+
+		public Builder clear ()
+		{
+			this.log.trace ("clear:");
+
+			this.subActivity = null;
+			this.id = null;
+			this.name = null;
+
+			return this;
+		}
+
+		/**
+		 * Load a <code>SubActivity</code> instance into the builder.  This
+		 * method resets the builder and initializes all of its parameters from
+		 * the specified <code>SubActivity</code> instance.  The  parameters are
+		 * validated as they are set.
+		 *
+		 * @param  subActivity              The <code>SubActivity</code>, not
+		 *                                  null
+		 *
+		 * @throws IllegalArgumentException If any of the fields in the
+		 *                                  <code>SubActivity</code> instance to
+		 *                                  be loaded are not valid
+		 */
+
+		public Builder load (final SubActivity subActivity)
+		{
+			this.log.trace ("load: activity={}", subActivity);
+
+			if (subActivity == null)
+			{
+				this.log.error ("Attempting to load a NULL SubActivity");
+				throw new NullPointerException ();
+			}
+
+			if (! (this.getParent ()).equals (subActivity.getParent ()))
+			{
+				this.log.error ("Can not load:  Parent activity instances are not equal");
+				throw new IllegalArgumentException ("Parent activity instances are different");
+			}
+
+			this.subActivity = subActivity;
+			this.id = subActivity.getId ();
+			this.setName (subActivity.getName ());
+
+			return this;
+		}
+
+		/**
+		 * Get the <code>DataStore</code> identifier for the
+		 * <code>SubActivity</code> instance.
+		 *
+		 * @return The <code>DataStore</code> identifier
+		 */
+
+		@CheckReturnValue
+		public Long getId ()
+		{
+			return this.id;
+		}
+
+		/**
+		 * Get the name of the <code>Activity</code>.
+		 *
+		 * @return A <code>String</code> containing the name of the
+		 *         <code>SubActivity</code>
+		 */
+
+		public final String getName ()
+		{
+			return this.name;
+		}
+
+		/**
+		 * Set the name of the <code>SubActivity</code>.
+		 *
+		 * @param  name                     The name of the
+		 *                                  <code>SubActivity</code>, not null
+		 *
+		 * @throws IllegalArgumentException If the name is empty
+		 */
+
+		public final Builder setName (final String name)
+		{
+			this.log.trace ("setName: name={}", name);
+
+			if (name == null)
+			{
+				this.log.error ("Attempting to set a NULL name");
+				throw new NullPointerException ();
+			}
+
+			if (name.length () == 0)
+			{
+				this.log.error ("name is an empty string");
+				throw new IllegalArgumentException ("name is empty");
+			}
+
+			this.name = name;
+
+			return this;
+		}
+
+		/**
+		 * Get the parent <code>Activity</code> instance for the
+		 * <code>SubActivity</code> instance.
+		 *
+		 * @return The parent <code>Activity</code>
+		 */
+
+		public final ParentActivity getParent ()
+		{
+			return this.parent;
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -164,19 +428,19 @@ public abstract class SubActivity extends ParentActivity
 	}
 
 	/**
-	 * Get an instance of the <code>SubActivityBuilder</code> for the specified
+	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 * @param  parent                The parent <code>Activity</code>, not null
 	 *
-	 * @return                       The <code>SubActivityBuilder</code> instance
+	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> is
 	 *                               immutable
 	 */
 
-	public static SubActivityBuilder builder (final DomainModel model, final ParentActivity parent)
+	public static Builder builder (final DomainModel model, final ParentActivity parent)
 	{
 		Preconditions.checkNotNull (model, "model");
 		Preconditions.checkNotNull (parent, "parent");
@@ -288,19 +552,18 @@ public abstract class SubActivity extends ParentActivity
 	}
 
 	/**
-	 * Get an <code>SubActivityBuilder</code> instance for the specified
-	 * <code>DomainModel</code>.  This method creates an
-	 * <code>SubActivityBuilder</code> on the specified <code>DomainModel</code>
-	 * and initializes it with the contents of this <code>SubActivity</code>
-	 * instance.
+	 * Get an <code>Builder</code> instance for the specified
+	 * <code>DomainModel</code>.  This method creates a <code>Builder</code> on
+	 * the specified <code>DomainModel</code> and initializes it with the
+	 * contents of this <code>SubActivity</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
 	 *
-	 * @return       The initialized <code>SubActivityBuilder</code>
+	 * @return       The initialized <code>Builder</code>
 	 */
 
 	@Override
-	public SubActivityBuilder getBuilder (final DomainModel model)
+	public Builder getBuilder (final DomainModel model)
 	{
 		return SubActivity.builder (model, this.getParent ())
 			.load (this);

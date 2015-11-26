@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 import java.util.Objects;
-
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -28,6 +28,10 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -54,12 +58,300 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     CourseBuilder
- * @see     CourseLoader
  */
 
 public abstract class Course extends Element
 {
+	/**
+	 * Create new <code>Course</code> instances.  This class extends
+	 * <code>AbstractBuilder</code>, adding the functionality required to
+	 * create <code>Course</code> instances.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	public static final class Builder implements Element.Builder<Course>
+	{
+		/** The Logger */
+		private final Logger log;
+
+		/** Helper to operate on <code>Course</code> instances*/
+		private final Persister<Course> persister;
+
+		/** Method reference to the constructor of the implementation class */
+		private final Supplier<Course> supplier;
+
+		/** The loaded of previously created <code>Course</code> */
+		private Course course;
+
+		/** The <code>DataStore</code> id number for the <code>Course</code> */
+		private Long id;
+
+		/** The name of the <code>Course</code> */
+		private String name;
+
+		/** The <code>Semester</code> of offering */
+		private Semester semester;
+
+		/** The year of offering */
+		private Integer year;
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  supplier  Method reference to the constructor of the
+		 *                   implementation class, not null
+		 * @param  persister The <code>Persister</code> used to store the
+		 *                   <code>Course</code>, not null
+		 */
+
+		protected Builder (final Supplier<Course> supplier, final Persister<Course> persister)
+		{
+			assert supplier != null : "supplier is NULL";
+			assert persister != null : "persister is NULL";
+
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			this.persister = persister;
+			this.supplier = supplier;
+
+			this.course = null;
+			this.id = null;
+			this.name = null;
+			this.semester = null;
+			this.year = null;
+		}
+
+		/**
+		 * Create an instance of the <code>Course</code>.
+		 *
+		 * @return                       The new <code>Course</code> instance
+		 * @throws IllegalStateException If any if the fields is missing
+		 * @throws IllegalStateException If there isn't an active transaction
+		 */
+
+		@Override
+		public Course build ()
+		{
+			this.log.trace ("build:");
+
+			if (this.name == null)
+			{
+				this.log.error ("Attempting to create an Course without a name");
+				throw new IllegalStateException ("name is NULL");
+			}
+
+			if (this.semester == null)
+			{
+				this.log.error ("Attempting to create an Course without a semester");
+				throw new IllegalStateException ("semester is NULL");
+			}
+
+			if (this.year == null)
+			{
+				this.log.error ("Attempting to create an Course without a year");
+				throw new IllegalStateException ("year is NULL");
+			}
+
+			Course result = this.supplier.get ();
+			result.setId (this.id);
+			result.setName (this.name);
+			result.setSemester (this.semester);
+			result.setYear (this.year);
+
+			this.course = this.persister.insert (this.course, result);
+
+			return this.course;
+		}
+
+		/**
+		 * Reset the builder.  This method will set all of the fields for the
+		 * <code>Element</code> to be built to <code>null</code>.
+		 *
+		 * @return This <code>Builder</code>
+		 */
+
+		public Builder clear ()
+		{
+			this.log.trace ("clear:");
+
+			this.course = null;
+			this.id = null;
+			this.name = null;
+			this.semester = null;
+			this.year = null;
+
+			return this;
+		}
+
+		/**
+		 * Load a <code>Course</code> instance into the builder.  This method
+		 * resets the builder and initializes all of its parameters from
+		 * the specified <code>Course</code> instance.  The  parameters are
+		 * validated as they are set.
+		 *
+		 * @param  course                   The <code>Course</code>, not null
+		 *
+		 * @return                          This <code>Builder</code>
+		 * @throws IllegalArgumentException If any of the fields in the
+		 *                                  <code>Course</code> instance to be
+		 *                                  loaded are not valid
+		 */
+
+		public Builder load (final Course course)
+		{
+			this.log.trace ("load course={}", course);
+
+			if (course == null)
+			{
+				this.log.error ("Attempting to load a NULL Course");
+				throw new NullPointerException ();
+			}
+
+			this.course = course;
+			this.id = course.getId ();
+			this.setName (course.getName ());
+			this.setSemester (course.getSemester ());
+			this.setYear (course.getYear ());
+
+			return this;
+		}
+
+		/**
+		 * Get the <code>DataStore</code> identifier for the <code>Course</code>
+		 * instance.
+		 *
+		 * @return The <code>DataStore</code> identifier
+		 */
+
+		@CheckReturnValue
+		public Long getId ()
+		{
+			return this.id;
+		}
+
+		/**
+		 * Get the name of the <code>Course</code>.
+		 *
+		 * @return A <code>String</code> containing the name of the
+		 *         <code>Course</code>
+		 */
+
+		public String getName ()
+		{
+			return this.name;
+		}
+
+		/**
+		 * Set the name of the <code>Course</code>.
+		 *
+		 * @param  name                     The name of the <code>Course</code>,
+		 *                                  not null
+		 *
+		 * @return                          This <code>Builder</code>
+		 * @throws IllegalArgumentException If the name is empty
+		 */
+
+		public Builder setName (final String name)
+		{
+			this.log.trace ("setName: name={}", name);
+
+			if (name == null)
+			{
+				this.log.error ("name is NULL");
+				throw new NullPointerException ("name is NULL");
+			}
+
+			if (name.length () == 0)
+			{
+				this.log.error ("name is an empty string");
+				throw new IllegalArgumentException ("name is empty");
+			}
+
+			this.name = name;
+
+			return this;
+		}
+
+		/**
+		 * Get the <code>Semester</code> in which the <code>Course</code> was
+		 * offered.
+		 *
+		 * @return The <code>Semester</code> of offering
+		 */
+
+		public Semester getSemester ()
+		{
+			return this.semester;
+		}
+
+		/**
+		 * Set the <code>Semester</code> in which the <code>Course</code> was
+		 * offered.
+		 *
+		 * @param  semester The <code>Semester</code> of offering, not null
+		 *
+		 * @return          This <code>Builder</code>
+		 */
+
+		public Builder setSemester (final Semester semester)
+		{
+			this.log.trace ("setSemester: semester={}", semester);
+
+			if (semester == null)
+			{
+				this.log.error ("semester is NULL");
+				throw new NullPointerException ("semester is NULL");
+			}
+
+			this.semester = semester;
+
+			return this;
+		}
+
+		/**
+		 * Get the year in which the <code>Course</code> was offered.
+		 *
+		 * @return An <code>Integer</code> containing the year of offering
+		 */
+
+		public Integer getYear ()
+		{
+			return this.year;
+		}
+
+		/**
+		 * Set the year in which the <code>Course</code> was offered.
+		 *
+		 * @param  year                     The year of offering, not null
+		 *
+		 * @return                          This <code>Builder</code>
+		 * @throws IllegalArgumentException If the year is negative
+		 */
+
+		public Builder setYear (final Integer year)
+		{
+			this.log.trace ("setYear: year={}", year);
+
+			if (year == null)
+			{
+				this.log.error ("year is NULL");
+				throw new NullPointerException ("year is NULL");
+			}
+
+			if (year < 0)
+			{
+				this.log.error ("Year is negative");
+				throw new IllegalArgumentException ("Year is negative");
+			}
+
+			this.year = year;
+
+			return this;
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -159,12 +451,12 @@ public abstract class Course extends Element
 	}
 
 	/**
-	 * Get an instance of the <code>CourseBuilder</code> for the specified
+	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 *
-	 * @return                       The <code>CourseBuilder</code> instance
+	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> does not
 	 *                               have a default implementation class for
@@ -173,7 +465,7 @@ public abstract class Course extends Element
 	 *                               immutable
 	 */
 
-	public static CourseBuilder builder (final DomainModel model)
+	public static Builder builder (final DomainModel model)
 	{
 		Preconditions.checkNotNull (model, "model");
 
@@ -285,18 +577,18 @@ public abstract class Course extends Element
 	}
 
 	/**
-	 * Get an <code>CourseBuilder</code> instance for the specified
-	 * <code>DomainModel</code>.  This method creates an
-	 * <code>CourseBuilder</code> on the specified <code>DomainModel</code> and
-	 * initializes it with the contents of this <code>Course</code> instance.
+	 * Get an <code>Builder</code> instance for the specified
+	 * <code>DomainModel</code>.  This method creates a <code>Builder</code> on
+	 * the specified <code>DomainModel</code> and initializes it with the
+	 * contents of this <code>Course</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
 	 *
-	 * @return       The initialized <code>CourseBuilder</code>
+	 * @return       The initialized <code>Builder</code>
 	 */
 
 	@Override
-	public CourseBuilder getBuilder (final DomainModel model)
+	public Builder getBuilder (final DomainModel model)
 	{
 		return Course.builder (Preconditions.checkNotNull (model, "model"))
 			.load (this);

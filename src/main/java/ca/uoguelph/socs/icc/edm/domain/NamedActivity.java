@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 import java.util.Objects;
-
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -28,6 +28,10 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -43,6 +47,133 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 public abstract class NamedActivity extends Activity
 {
+	/**
+	 * Create <code>Activity</code> instances.  This class extends
+	 * <code>ActivityBuilder</code>, adding the necessary functionality to
+	 * handle <code>NamedActivity</code> instances.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	public class Builder extends Activity.Builder
+	{
+		/** The name of the <code>Activity</code> */
+		private String name;
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  supplier         Method reference to the constructor of the
+		 *                          implementation class, not null
+		 * @param  persister        The <code>Persister</code> used to store the
+		 *                          <code>Activity</code>, not null
+		 * @param  referenceBuilder Builder for the internal
+		 *                          <code>ActivityReference</code> instance, not
+		 *                          null
+		 */
+
+		protected Builder (
+				final Supplier<Activity> supplier,
+				final Persister<Activity> persister,
+				final ActivityReference.Builder referenceBuilder)
+		{
+			super (supplier, persister, referenceBuilder);
+		}
+
+		/**
+		 * Create an instance of the <code>NamedActivity</code>.
+		 *
+		 * @return                       The new <code>Activity</code> instance
+		 * @throws IllegalStateException If any if the fields is missing
+		 * @throws IllegalStateException If there isn't an active transaction
+		 */
+
+		@Override
+		public Activity build ()
+		{
+			this.log.trace ("build:");
+
+			if (this.name == null)
+			{
+				this.log.error ("name is NULL");
+				throw new IllegalStateException ("name is NULL");
+			}
+
+			NamedActivity result = (NamedActivity) this.supplier.get ();
+			result.setReference (this.referenceBuilder.build ());
+			result.setName (this.name);
+
+			this.activity = this.persister.insert (this.activity, result);
+
+			return this.activity;
+		}
+
+		/**
+		 * Load a <code>Activity</code> instance into the builder.  This method
+		 * resets the builder and initializes all of its parameters from
+		 * the specified <code>Activity</code> instance.  The  parameters are
+		 * validated as they are set.
+		 *
+		 * @param  activity                 The <code>Activity</code>, not null
+		 *
+		 * @throws IllegalArgumentException If any of the fields in the
+		 *                                  <code>Activity</code> instance to be
+		 *                                  loaded are not valid
+		 */
+
+		public Builder load (final Activity activity)
+		{
+			this.log.trace ("load: activity={}", activity);
+
+			super.load (activity);
+			this.setName (activity.getName ());
+
+			return this;
+		}
+
+		/**
+		 * Get the name of the <code>Activity</code>.
+		 *
+		 * @return The name of the <code>Activity</code>
+		 */
+
+		public String getName ()
+		{
+			return this.name;
+		}
+
+		/**
+		 * Set the name of the <code>Activity</code>.
+		 *
+		 * @param  name                     The name of the
+		 *                                  <code>Activity</code>, not null
+		 *
+		 * @throws IllegalArgumentException if the name is empty
+		 */
+
+		public Builder setName (final String name)
+		{
+			this.log.trace ("setName: name={}", name);
+
+			if (name == null)
+			{
+				this.log.error ("Attempting to set a NULL name");
+				throw new NullPointerException ();
+			}
+
+			if (name.length () == 0)
+			{
+				this.log.error ("name is an empty string");
+				throw new IllegalArgumentException ("name is empty");
+			}
+
+			this.name = name;
+
+			return this;
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -76,20 +207,20 @@ public abstract class NamedActivity extends Activity
 	}
 
 	/**
-	 * Get an instance of the <code>NamedActivityBuilder</code> for the
-	 * specified <code>DomainModel</code>.
+	 * Get an instance of the <code>Builder</code> for the specified
+	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 * @param  type                  The <code>ActivityType</code>, not null
 	 *
-	 * @return                       The <code>NamedActivityBuilder</code>
+	 * @return                       The <code>Builder</code>
 	 *                               instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> is
 	 *                               immutable
 	 */
 
-	public static NamedActivityBuilder builder (final DomainModel model, final ActivityType type)
+	public static Builder builder (final DomainModel model, final ActivityType type)
 	{
 		Preconditions.checkNotNull (model, "model");
 
@@ -200,19 +331,18 @@ public abstract class NamedActivity extends Activity
 	}
 
 	/**
-	 * Get an <code>NamedActivityBuilder</code> instance for the specified
-	 * <code>DomainModel</code>.  This method creates a
-	 * <code>NamedActivityBuilder</code> on the specified
-	 * <code>DomainModel</code> and initializes it with the contents of this
-	 * <code>NamedActivity</code> instance.
+	 * Get an <code>Builder</code> instance for the specified
+	 * <code>DomainModel</code>.  This method creates a <code>Builder</code> on
+	 * the specified <code>DomainModel</code> and initializes it with the
+	 * contents of this <code>NamedActivity</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
 	 *
-	 * @return       The initialized <code>NamedActivityBuilder</code>
+	 * @return       The initialized <code>Builder</code>
 	 */
 
 	@Override
-	public NamedActivityBuilder getBuilder (final DomainModel model)
+	public Builder getBuilder (final DomainModel model)
 	{
 		return NamedActivity.builder (Preconditions.checkNotNull (model, "model"), this.getType ())
 			.load (this);

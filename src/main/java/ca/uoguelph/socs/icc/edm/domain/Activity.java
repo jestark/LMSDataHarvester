@@ -17,14 +17,12 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.io.Serializable;
-
-import java.util.Map;
 import java.util.List;
-import java.util.Set;
-
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
-
+import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -33,17 +31,17 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.MemDataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
-import ca.uoguelph.socs.icc.edm.domain.datastore.ProfileBuilder;
-
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.SequentialIdGenerator;
-
+import ca.uoguelph.socs.icc.edm.domain.datastore.memory.MemDataStore;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
 import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -83,11 +81,197 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ActivityBuilder
  */
 
 public abstract class Activity extends ParentActivity
 {
+	/**
+	 * Create <code>Activity</code> instances. This class creates instances for
+	 * the generic <code>Activity</code> implementations which only contain the
+	 * associated <code>ActivityType</code> and <code>Course</code>, and acts as
+	 * the common base for all of the builders which produce
+	 * <code>Activity</code> instances with additional parameters.
+	 * <p>
+	 * To create builders for <code>Activity</code> instances, the
+	 * <code>ActivityType</code> must be supplied when the builder is created.
+	 * The <code>ActivityType</code> is needed to determine which
+	 * <code>Activity</code> implementation class is to be created by the
+	 * builder.  It is possible to specify an <code>ActivityType</code> which
+	 * does not match the selected builder.  In this case the builder will be
+	 * created successfully, but an exception will occur when a field is set in
+	 * the builder that does not exist in the implementation, or when the
+	 * implementation is built and a required field is determined to be missing.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	public static class Builder implements Element.Builder<Activity>
+	{
+		/** The Logger */
+		protected final Logger log;
+
+		/** Builder to create the <code>ActivityReferences</code> */
+		protected final ActivityReference.Builder referenceBuilder;
+
+		/** Helper to operate on <code>Activity</code> instances*/
+		protected final Persister<Activity> persister;
+
+		/** Method reference to the constructor of the implementation class */
+		protected final Supplier<Activity> supplier;
+
+		/** The loaded or previously built <code>SubActivity</code> instance */
+		protected Activity activity;
+
+		/**
+		 * Create the <code>AbstractBuilder</code>.
+		 *
+		 * @param  supplier         Method reference to the constructor of the
+		 *                          implementation class, not null
+		 * @param  persister        The <code>Persister</code> used to store the
+		 *                          <code>Activity</code>, not null
+		 * @param  referenceBuilder Builder for the internal
+		 *                          <code>ActivityReference</code> instance, not
+		 *                          null
+		 */
+
+		protected Builder (
+				final Supplier<Activity> supplier,
+				final Persister<Activity> persister,
+				final ActivityReference.Builder referenceBuilder)
+		{
+			assert supplier != null : "supplier is null";
+			assert persister != null : "persister is NULL";
+			assert referenceBuilder != null : "referenceBuilder is NULL";
+
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			this.referenceBuilder = referenceBuilder;
+			this.persister = persister;
+			this.supplier = supplier;
+
+			this.activity = null;
+		}
+
+		/**
+		 * Create an instance of the <code>Activity</code>.
+		 *
+		 * @return                       The new <code>Activity</code> instance
+		 * @throws IllegalStateException If any if the fields is missing
+		 * @throws IllegalStateException If there isn't an active transaction
+		 */
+
+		@Override
+		public Activity build ()
+		{
+			this.log.trace ("build:");
+
+			Activity result = this.supplier.get ();
+			result.setReference (this.referenceBuilder.build ());
+
+			this.activity = this.persister.insert (this.activity, result);
+
+			return this.activity;
+		}
+
+		/**
+		 * Reset the builder.  This method will set all of the fields for the
+		 * <code>Activity</code> to be built to <code>null</code>.
+		 *
+		 * @return This <code>ActionBuilder</code>
+		 */
+
+		public Builder clear ()
+		{
+			this.log.trace ("clear:");
+
+			ActivityType type = this.referenceBuilder.getType ();
+
+			this.activity = null;
+			this.referenceBuilder.clear ();
+			this.referenceBuilder.setType (type);
+
+			return this;
+		}
+
+		/**
+		 * Load a <code>Activity</code> instance into the builder.  This method
+		 * resets the builder and initializes all of its parameters from
+		 * the specified <code>Activity</code> instance.  The  parameters are
+		 * validated as they are set.
+		 *
+		 * @param  activity                 The <code>Activity</code>, not null
+		 *
+		 * @throws IllegalArgumentException If any of the fields in the
+		 *                                  <code>Activity</code> instance to be
+		 *                                  loaded are not valid
+		 */
+
+		public Builder load (final Activity activity)
+		{
+			this.log.trace ("load: activity={}", activity);
+
+			if (activity == null)
+			{
+				this.log.error ("Attempting to load a NULL Activity");
+				throw new NullPointerException ();
+			}
+
+			if (! (this.getType ()).equals (activity.getType ()))
+			{
+				this.log.error ("Invalid ActivityType:  required {}, received {}", this.getType (), activity.getType ());
+				throw new IllegalArgumentException ("Invalid ActivityType");
+			}
+
+			this.activity = activity;
+			this.referenceBuilder.load (activity.getReference ());
+
+			return this;
+		}
+
+		/**
+		 * Get the <code>ActivityType</code> for the <code>Activity</code>.
+		 *
+		 * @return The <code>ActivityType</code> instance
+		 */
+
+		public final ActivityType getType ()
+		{
+			return this.referenceBuilder.getType ();
+		}
+
+		/**
+		 * Get the <code>Course</code> with which the <code>Activity</code> is
+		 * associated.
+		 *
+		 * @return The <code>Course</code> instance
+		 */
+
+		public final Course getCourse ()
+		{
+			return this.referenceBuilder.getCourse ();
+		}
+
+		/**
+		 * Set the <code>Course</code> with which the <code>Activity</code> is
+		 * associated.
+		 *
+		 * @param  course                   The <code>Course</code>, not null
+		 *
+		 * @throws IllegalArgumentException If the <code>Course</code> does not
+		 *                                  exist in the <code>DataStore</code>
+		 */
+
+		public final Builder setCourse (final Course course)
+		{
+			this.log.trace ("setCourse: course={}", course);
+
+			this.referenceBuilder.setCourse (course);
+
+			return this;
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -152,7 +336,7 @@ public abstract class Activity extends ParentActivity
 			.addSelector (SELECTOR_ALL)
 			.build ();
 
-		STORE = MemDataStore.create (new ProfileBuilder ()
+		STORE = MemDataStore.create (Profile.builder ()
 				.setName ("Activity")
 				.setMutable (true)
 				.setElementClass (ActivitySource.class, ActivitySourceData.class)
@@ -232,13 +416,13 @@ public abstract class Activity extends ParentActivity
 	}
 
 	/**
-	 * Get an instance of the <code>ActivityBuilder</code> for the specified
+	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
 	 * @param  model                 The <code>DomainModel</code>, not null
 	 * @param  type                  The <code>ActivityType</code>, not null
 	 *
-	 * @return                       The <code>ActivityBuilder</code> instance
+	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> does not
 	 *                               have a default implementation class for
@@ -247,7 +431,7 @@ public abstract class Activity extends ParentActivity
 	 *                               immutable
 	 */
 
-	public static ActivityBuilder builder (final DomainModel model, final ActivityType type)
+	public static Builder builder (final DomainModel model, final ActivityType type)
 	{
 		Preconditions.checkNotNull (model, "model");
 		Preconditions.checkNotNull (type, "type");
@@ -357,18 +541,18 @@ public abstract class Activity extends ParentActivity
 	}
 
 	/**
-	 * Get an <code>ActivityBuilder</code> instance for the specified
-	 * <code>DomainModel</code>.  This method creates a <code>ActivityBuilder</code>
+	 * Get an <code>Builder</code> instance for the specified
+	 * <code>DomainModel</code>.  This method creates a <code>Builder</code>
 	 * on the specified <code>DomainModel</code> and initializes it with the
 	 * contents of this <code>Activity</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
 	 *
-	 * @return       The initialized <code>ActivityBuilder</code>
+	 * @return       The initialized <code>Builder</code>
 	 */
 
 	@Override
-	public ActivityBuilder getBuilder (final DomainModel model)
+	public Builder getBuilder (final DomainModel model)
 	{
 		return Activity.builder (Preconditions.checkNotNull (model, "model"), this.getType ())
 			.load (this);
