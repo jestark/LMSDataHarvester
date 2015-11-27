@@ -19,7 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Action;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Implementation of the <code>Action</code> interface.  It is expected that
@@ -33,11 +36,50 @@ import ca.uoguelph.socs.icc.edm.domain.Action;
 
 public class ActionData extends Action
 {
+	/**
+	 * <code>Builder</code> for <code>ActionData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.Action.Builder
+	 */
+
+	public static final class Builder extends Action.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister The <code>Persister</code> used to store the
+		 *                   <code>Role</code>, not null
+		 */
+
+		private Builder (final Persister<Action> persister)
+		{
+			super (persister);
+		}
+
+		/**
+		 * Create an instance of the <code>Action</code>.
+		 *
+		 * @return The new <code>Action</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected Action createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new ActionData (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key of the action */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The name of the action */
 	private String name;
@@ -50,6 +92,20 @@ public class ActionData extends Action
 	{
 		this.id= null;
 		this.name = null;
+	}
+
+	/**
+	 * Create an <code>Action</code> from the supplied <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected ActionData (final Builder builder)
+	{
+		super (builder);
+
+		this.id = builder.getId ();
+		this.name = Preconditions.checkNotNull (builder.getName (), "name");
 	}
 
 	/**

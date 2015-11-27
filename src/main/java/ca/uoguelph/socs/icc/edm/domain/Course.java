@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -27,9 +26,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
@@ -71,98 +67,35 @@ public abstract class Course extends Element
 	 * @version 1.0
 	 */
 
-	public static final class Builder implements Element.Builder<Course>
+	public static abstract class Builder extends Element.Builder<Course>
 	{
-		/** The Logger */
-		private final Logger log;
-
-		/** Helper to operate on <code>Course</code> instances*/
-		private final Persister<Course> persister;
-
-		/** Method reference to the constructor of the implementation class */
-		private final Supplier<Course> supplier;
-
-		/** The loaded of previously created <code>Course</code> */
-		private Course course;
-
 		/** The <code>DataStore</code> id number for the <code>Course</code> */
-		private Long id;
+		private @Nullable Long id;
 
 		/** The name of the <code>Course</code> */
-		private String name;
+		private @Nullable String name;
 
 		/** The <code>Semester</code> of offering */
-		private Semester semester;
+		private @Nullable Semester semester;
 
 		/** The year of offering */
-		private Integer year;
+		private @Nullable Integer year;
 
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  supplier  Method reference to the constructor of the
-		 *                   implementation class, not null
 		 * @param  persister The <code>Persister</code> used to store the
 		 *                   <code>Course</code>, not null
 		 */
 
-		protected Builder (final Supplier<Course> supplier, final Persister<Course> persister)
+		protected Builder (final Persister<Course> persister)
 		{
-			assert supplier != null : "supplier is NULL";
-			assert persister != null : "persister is NULL";
+			super (persister);
 
-			this.log = LoggerFactory.getLogger (this.getClass ());
-
-			this.persister = persister;
-			this.supplier = supplier;
-
-			this.course = null;
 			this.id = null;
 			this.name = null;
 			this.semester = null;
 			this.year = null;
-		}
-
-		/**
-		 * Create an instance of the <code>Course</code>.
-		 *
-		 * @return                       The new <code>Course</code> instance
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
-		 */
-
-		@Override
-		public Course build ()
-		{
-			this.log.trace ("build:");
-
-			if (this.name == null)
-			{
-				this.log.error ("Attempting to create an Course without a name");
-				throw new IllegalStateException ("name is NULL");
-			}
-
-			if (this.semester == null)
-			{
-				this.log.error ("Attempting to create an Course without a semester");
-				throw new IllegalStateException ("semester is NULL");
-			}
-
-			if (this.year == null)
-			{
-				this.log.error ("Attempting to create an Course without a year");
-				throw new IllegalStateException ("year is NULL");
-			}
-
-			Course result = this.supplier.get ();
-			result.setId (this.id);
-			result.setName (this.name);
-			result.setSemester (this.semester);
-			result.setYear (this.year);
-
-			this.course = this.persister.insert (this.course, result);
-
-			return this.course;
 		}
 
 		/**
@@ -172,11 +105,13 @@ public abstract class Course extends Element
 		 * @return This <code>Builder</code>
 		 */
 
+		@Override
 		public Builder clear ()
 		{
 			this.log.trace ("clear:");
 
-			this.course = null;
+			super.clear ();
+
 			this.id = null;
 			this.name = null;
 			this.semester = null;
@@ -191,25 +126,21 @@ public abstract class Course extends Element
 		 * the specified <code>Course</code> instance.  The  parameters are
 		 * validated as they are set.
 		 *
-		 * @param  course                   The <code>Course</code>, not null
+		 * @param  course The <code>Course</code>, not null
+		 * @return        This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>Course</code> instance to be
 		 *                                  loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final Course course)
 		{
 			this.log.trace ("load course={}", course);
 
-			if (course == null)
-			{
-				this.log.error ("Attempting to load a NULL Course");
-				throw new NullPointerException ();
-			}
+			super.load (course);
 
-			this.course = course;
 			this.id = course.getId ();
 			this.setName (course.getName ());
 			this.setSemester (course.getSemester ());
@@ -226,7 +157,7 @@ public abstract class Course extends Element
 		 */
 
 		@CheckReturnValue
-		public Long getId ()
+		public final Long getId ()
 		{
 			return this.id;
 		}
@@ -238,7 +169,8 @@ public abstract class Course extends Element
 		 *         <code>Course</code>
 		 */
 
-		public String getName ()
+		@CheckReturnValue
+		public final String getName ()
 		{
 			return this.name;
 		}
@@ -246,28 +178,18 @@ public abstract class Course extends Element
 		/**
 		 * Set the name of the <code>Course</code>.
 		 *
-		 * @param  name                     The name of the <code>Course</code>,
-		 *                                  not null
+		 * @param  name The name of the <code>Course</code>,not null
+		 * @return      This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If the name is empty
 		 */
 
-		public Builder setName (final String name)
+		public final Builder setName (final String name)
 		{
 			this.log.trace ("setName: name={}", name);
 
-			if (name == null)
-			{
-				this.log.error ("name is NULL");
-				throw new NullPointerException ("name is NULL");
-			}
-
-			if (name.length () == 0)
-			{
-				this.log.error ("name is an empty string");
-				throw new IllegalArgumentException ("name is empty");
-			}
+			Preconditions.checkNotNull (name);
+			Preconditions.checkArgument (name.length () > 0, "name is empty");
 
 			this.name = name;
 
@@ -281,7 +203,8 @@ public abstract class Course extends Element
 		 * @return The <code>Semester</code> of offering
 		 */
 
-		public Semester getSemester ()
+		@CheckReturnValue
+		public final Semester getSemester ()
 		{
 			return this.semester;
 		}
@@ -291,21 +214,14 @@ public abstract class Course extends Element
 		 * offered.
 		 *
 		 * @param  semester The <code>Semester</code> of offering, not null
-		 *
 		 * @return          This <code>Builder</code>
 		 */
 
-		public Builder setSemester (final Semester semester)
+		public final Builder setSemester (final Semester semester)
 		{
 			this.log.trace ("setSemester: semester={}", semester);
 
-			if (semester == null)
-			{
-				this.log.error ("semester is NULL");
-				throw new NullPointerException ("semester is NULL");
-			}
-
-			this.semester = semester;
+			this.semester = Preconditions.checkNotNull (semester);
 
 			return this;
 		}
@@ -316,7 +232,8 @@ public abstract class Course extends Element
 		 * @return An <code>Integer</code> containing the year of offering
 		 */
 
-		public Integer getYear ()
+		@CheckReturnValue
+		public final Integer getYear ()
 		{
 			return this.year;
 		}
@@ -324,27 +241,18 @@ public abstract class Course extends Element
 		/**
 		 * Set the year in which the <code>Course</code> was offered.
 		 *
-		 * @param  year                     The year of offering, not null
+		 * @param  year The year of offering, not null
+		 * @return      This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If the year is negative
 		 */
 
-		public Builder setYear (final Integer year)
+		public final Builder setYear (final Integer year)
 		{
 			this.log.trace ("setYear: year={}", year);
 
-			if (year == null)
-			{
-				this.log.error ("year is NULL");
-				throw new NullPointerException ("year is NULL");
-			}
-
-			if (year < 0)
-			{
-				this.log.error ("Year is negative");
-				throw new IllegalArgumentException ("Year is negative");
-			}
+			Preconditions.checkNotNull (year);
+			Preconditions.checkArgument (year > 0, "year must be greater than zero");
 
 			this.year = year;
 
@@ -454,9 +362,9 @@ public abstract class Course extends Element
 	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @return       The <code>Builder</code> instance
 	 *
-	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> does not
 	 *                               have a default implementation class for
@@ -482,6 +390,18 @@ public abstract class Course extends Element
 	}
 
 	/**
+	 * Create the <code>Course</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected Course (final Builder builder)
+	{
+		super (builder);
+	}
+
+	/**
 	 * Template method to create and initialize a <code>ToStringHelper</code>.
 	 *
 	 * @return The <code>ToStringHelper</code>
@@ -504,7 +424,6 @@ public abstract class Course extends Element
 	 *
 	 * @param  obj The <code>Course</code> instance to compare to the one
 	 *             represented by the called instance
-	 *
 	 * @return     <code>True</code> if the two <code>Course</code> instances
 	 *             are equal, <code>False</code> otherwise
 	 */
@@ -583,7 +502,6 @@ public abstract class Course extends Element
 	 * contents of this <code>Course</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
 	 * @return       The initialized <code>Builder</code>
 	 */
 
@@ -687,7 +605,6 @@ public abstract class Course extends Element
 	 * <code>Course</code>.
 	 *
 	 * @param  activity The <code>Activityreference</code> to add, not null
-	 *
 	 * @return          <code>True</code> if the <code>ActivityReference</code>
 	 *                  was successfully added, <code>False</code> otherwise
 	 */
@@ -699,7 +616,6 @@ public abstract class Course extends Element
 	 * <code>Course</code>.
 	 *
 	 * @param  activity The <code>ActivityReference</code> to remove,  not null
-	 *
 	 * @return          <code>True</code> if the <code>ActivityReference</code>
 	 *                  was successfully removed, <code>False</code> otherwise
 	 */
@@ -731,7 +647,6 @@ public abstract class Course extends Element
 	 * Add the specified <code>Enrolment</code> to the <code>Course</code>.
 	 *
 	 * @param  enrolment The <code>Enrolment</code> to add, not null
-	 *
 	 * @return           <code>True</code> if the <code>Enrolment</code> was
 	 *                   successfully added, <code>False</code> otherwise
 	 */
@@ -743,7 +658,6 @@ public abstract class Course extends Element
 	 * <code>Course</code>.
 	 *
 	 * @param  enrolment The <code>Enrolment</code> to remove, not null
-	 *
 	 * @return           <code>True</code> if the <code>Enrolment</code> was
 	 *                   successfully removed, <code>False</code> otherwise
 	 */

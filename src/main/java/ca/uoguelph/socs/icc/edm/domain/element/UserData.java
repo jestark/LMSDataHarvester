@@ -23,10 +23,15 @@ import java.util.Set;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
@@ -40,11 +45,60 @@ import ca.uoguelph.socs.icc.edm.domain.User;
 
 public class UserData extends User
 {
+	/**
+	 * <code>Builder</code> for <code>UserData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.User.Builder
+	 */
+
+	public static final class Builder extends User.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister          The <code>Persister</code> used to store
+		 *                            the <code>User</code>, not null
+		 * @param  enrolmentRetriever <code>Retriever</code> for
+		 *                            <code>Enrolment</code> instances, not null
+		 * @param  enrolmentQuery     <code>Query</code> to check if an
+		 *                            <code>Enrolment</code> instances is
+		 *                            already associated with another
+		 *                            <code>User</code> instance, not null
+		 */
+
+		protected Builder (
+				final Persister<User> persister,
+				final Retriever<Enrolment> enrolmentRetriever,
+				final Query<User> enrolmentQuery)
+
+		{
+			super (persister, enrolmentRetriever, enrolmentQuery);
+		}
+
+		/**
+		 * Create an instance of the <code>User</code>.
+		 *
+		 * @return The new <code>User</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected User createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new UserData (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key of the user. */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The username of the user. */
 	private String username;
@@ -70,6 +124,24 @@ public class UserData extends User
 		this.firstname= null;
 
 		this.enrolments = new HashSet<Enrolment> ();
+	}
+
+	/**
+	 * Create an <code>User</code> from the supplied <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected UserData (final Builder builder)
+	{
+		super (builder);
+
+		this.id = builder.getId ();
+		this.firstname = Preconditions.checkNotNull (builder.getFirstname (), "firstname");
+		this.lastname = Preconditions.checkNotNull (builder.getLastname (), "lastname");
+		this.username = Preconditions.checkNotNull (builder.getUsername (), "username");
+
+		this.enrolments = new HashSet<Enrolment> (builder.getEnrolments ());
 	}
 
 	/**

@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -27,9 +26,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
@@ -58,40 +54,26 @@ public abstract class ActivityReference extends Element
 	 * @version 1.0
 	 */
 
-	public static final class Builder implements Element.Builder<ActivityReference>
+	public static abstract class Builder extends Element.Builder<ActivityReference>
 	{
-		/** The Logger */
-		private final Logger log;
-
 		/** Helper to substitute <code>Course</code> instances */
 		private final Retriever<Course> courseRetriever;
 
 		/** Helper to substitute <code>ActivityType</code> instances */
 		private final Retriever<ActivityType> typeRetriever;
 
-		/** Helper to operate on <code>ActivityReference</code> instances*/
-		private final Persister<ActivityReference> persister;
-
-		/** Method reference to the constructor of the implementation class */
-		private final Supplier<ActivityReference> supplier;
-
-		/** The loaded or previously built <code>ActivityReference</code> */
-		private ActivityReference reference;
-
 		/** The <code>DataStore</code> id number for the <code>Activity</code> */
-		private Long id;
+		private @Nullable Long id;
 
 		/** The associated <code>ActivityType</code> */
-		private ActivityType type;
+		private @Nullable ActivityType type;
 
 		/** The associated <code>Course</code> */
-		private Course course;
+		private @Nullable Course course;
 
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  supplier        Method reference to the constructor of the
-		 *                         implementation class, not null
 		 * @param  persister       The <code>Persister</code> used to store the
 		 *                         <code>ActivityReference</code>, not null
 		 * @param  typeRetriever   <code>Retriever</code> for
@@ -100,53 +82,22 @@ public abstract class ActivityReference extends Element
 		 *                         instances, not null
 		 */
 
-		protected Builder (final Supplier<ActivityReference> supplier, final Persister<ActivityReference> persister, final Retriever<ActivityType> typeRetriever, final Retriever<Course> courseRetriever)
+		protected Builder (
+				final Persister<ActivityReference> persister,
+				final Retriever<ActivityType> typeRetriever,
+				final Retriever<Course> courseRetriever)
 		{
-			assert supplier != null : "supplier is NULL";
-			assert persister != null : "persister is NULL";
+			super (persister);
+
 			assert typeRetriever != null : "typeRetriever is NULL";
 			assert courseRetriever != null : "courseRetriever is NULL";
 
-			this.log = LoggerFactory.getLogger (this.getClass ());
-
 			this.typeRetriever = typeRetriever;
 			this.courseRetriever = courseRetriever;
-			this.persister = persister;
-			this.supplier = supplier;
 
 			this.id = null;
 			this.course = null;
 			this.type = null;
-			this.reference = null;
-		}
-
-		/**
-		 * Create an instance of the <code>Activity</code>.
-		 *
-		 * @return                       The new <code>Activity</code> instance
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
-		 */
-
-		@Override
-		public ActivityReference build ()
-		{
-			this.log.trace ("build:");
-
-			if (this.course == null)
-			{
-				this.log.error ("course is NULL");
-				throw new IllegalStateException ("course is NULL");
-			}
-
-			ActivityReference result = this.supplier.get ();
-			result.setId (this.id);
-			result.setType (this.type);
-			result.setCourse (this.course);
-
-			this.reference = this.persister.insert (this.reference, result);
-
-			return this.reference;
 		}
 
 		/**
@@ -156,45 +107,43 @@ public abstract class ActivityReference extends Element
 		 * @return This <code>ActionBuilder</code>
 		 */
 
+		@Override
 		public Builder clear ()
 		{
 			this.log.trace ("clear:");
 
+			super.clear ();
+
 			this.id = null;
 			this.course = null;
 			this.type = null;
-			this.reference = null;
 
 			return this;
 		}
 
 		/**
-		 * Load a <code>Activity</code> instance into the builder.  This method
-		 * resets the builder and initializes all of its parameters from
-		 * the specified <code>Activity</code> instance.  The  parameters are
-		 * validated as they are set.
+		 * Load a <code>ActivityReference</code> instance into the builder.
+		 * This method resets the builder and initializes all of its parameters
+		 * from the specified <code>Activity</code> instance.  The  parameters
+		 * are validated as they are set.
 		 *
-		 * @param  activity                 The <code>Activity</code>, not null
+		 * @param  reference The <code>ActivityReference</code>, not null
 		 *
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>Activity</code> instance to be
 		 *                                  loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final ActivityReference reference)
 		{
 			this.log.trace ("load: reference={}", reference);
 
-			if (reference == null)
-			{
-				this.log.error ("Attempting to load a NULL Activityreference");
-				throw new NullPointerException ();
-			}
+			super.load (reference);
 
 			this.id = reference.getId ();
 			this.setType (reference.getType ());
 			this.setCourse (reference.getCourse ());
-			this.reference = reference;
 
 			return this;
 		}
@@ -207,7 +156,7 @@ public abstract class ActivityReference extends Element
 		 */
 
 		@CheckReturnValue
-		public Long getId ()
+		public final Long getId ()
 		{
 			return this.id;
 		}
@@ -219,6 +168,7 @@ public abstract class ActivityReference extends Element
 		 * @return The <code>Course</code> instance
 		 */
 
+		@CheckReturnValue
 		public final Course getCourse ()
 		{
 			return this.course;
@@ -228,7 +178,7 @@ public abstract class ActivityReference extends Element
 		 * Set the <code>Course</code> with which the <code>Activity</code> is
 		 * associated.
 		 *
-		 * @param  course                   The <code>Course</code>, not null
+		 * @param  course The <code>Course</code>, not null
 		 *
 		 * @throws IllegalArgumentException If the <code>Course</code> does not
 		 *                                  exist in the <code>DataStore</code>
@@ -238,19 +188,7 @@ public abstract class ActivityReference extends Element
 		{
 			this.log.trace ("setCourse: course={}", course);
 
-			if (course == null)
-			{
-				this.log.error ("Course is NULL");
-				throw new NullPointerException ("Course is NULL");
-			}
-
-			this.course = this.courseRetriever.fetch (course);
-
-			if (this.course == null)
-			{
-				this.log.error ("This specified Course does not exist in the DataStore");
-				throw new IllegalArgumentException ("Course is not in the DataStore");
-			}
+			this.course = this.verifyRelationship (this.courseRetriever, course, "course");
 
 			return this;
 		}
@@ -261,6 +199,7 @@ public abstract class ActivityReference extends Element
 		 * @return The <code>ActivityType</code> instance
 		 */
 
+		@CheckReturnValue
 		public final ActivityType getType ()
 		{
 			return this.type;
@@ -269,8 +208,7 @@ public abstract class ActivityReference extends Element
 		/**
 		 * Set the <code>ActivityType</code> for the <code>Activity</code>.
 		 *
-		 * @param  type                     The <code>ActivityType</code>, not
-		 *                                  null
+		 * @param  type The <code>ActivityType</code>, not null
 		 *
 		 * @throws IllegalArgumentException If the <code>ActivityType</code>
 		 *                                  does not exist in the
@@ -281,19 +219,7 @@ public abstract class ActivityReference extends Element
 		{
 			this.log.trace ("setType: type={}", type);
 
-			if (type == null)
-			{
-				this.log.error ("type is NULL");
-				throw new NullPointerException ("type is NULL");
-			}
-
-			this.type = this.typeRetriever.fetch (type);
-
-			if (this.type == null)
-			{
-				this.log.error ("This specified ActivityType does not exist in the DataStore");
-				throw new IllegalArgumentException ("ActivityType is not in the DataStore");
-			}
+			this.type = this.verifyRelationship (this.typeRetriever, type, "type");
 
 			return this;
 		}
@@ -390,6 +316,18 @@ public abstract class ActivityReference extends Element
 	}
 
 	/**
+	 * Create the <code>ActivityReference</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected ActivityReference (final Builder builder)
+	{
+		super (builder);
+	}
+
+	/**
 	 * Template method to create and initialize a <code>ToStringHelper</code>.
 	 *
 	 * @return The <code>ToStringHelper</code>
@@ -410,7 +348,6 @@ public abstract class ActivityReference extends Element
 	 *
 	 * @param  obj The <code>Activity</code> instance to compare to the one
 	 *             represented by the called instance
-	 *
 	 * @return     <code>True</code> if the two <code>Activity</code> instances
 	 *             are equal, <code>False</code> otherwise
 	 */
@@ -463,8 +400,7 @@ public abstract class ActivityReference extends Element
 	 * for the associated <code>Activity</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
-	 * @return           The initialized <code>ActivityBuilder</code>
+	 * @return       The initialized <code>Builder</code>
 	 */
 
 	@Override
@@ -583,7 +519,6 @@ public abstract class ActivityReference extends Element
 	 * <code>ActivityReference</code>.
 	 *
 	 * @param  entry    The <code>LogEntry</code> to add, not null
-	 *
 	 * @return          <code>True</code> if the <code>LogEntry</code> was
 	 *                  successfully added, <code>False</code> otherwise
 	 */
@@ -595,7 +530,6 @@ public abstract class ActivityReference extends Element
 	 * <code>ActivityReference</code>.
 	 *
 	 * @param  entry    The <code>LogEntry</code> to remove, not null
-	 *
 	 * @return          <code>True</code> if the <code>LogEntry</code> was
 	 *                  successfully removed, <code>False</code> otherwise
 	 */

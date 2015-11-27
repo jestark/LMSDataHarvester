@@ -16,10 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -27,9 +27,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
@@ -73,37 +70,25 @@ public abstract class User extends Element
 	 * @version 1.0
 	 */
 
-	public static final class Builder implements Element.Builder<User>
+	public static abstract class Builder extends Element.Builder<User>
 	{
-		/** The Logger */
-		private final Logger log;
-
 		/** Helper to substitute <code>Enrolment</code> instances */
 		private final Retriever<Enrolment> enrolmentRetriever;
-
-		/** Helper to operate on <code>User</code> instances */
-		private final Persister<User> persister;
 
 		/** Query instance to look up <code>User</code> instances by <code>Enrolment</code> */
 		private final Query<User> enrolmentQuery;
 
-		/** Method reference to the constructor of the implementation class */
-		private final Supplier<User> supplier;
-
-		/** The loaded or previously built <code>User</code> instance */
-		private User user;
-
 		/** The <code>DataStore</code> id number for the <code>User</code> */
-		private Long id;
+		private @Nullable Long id;
 
-		/** The firstname of the <code>User</code> */
-		private String firstname;
+		/** The first name of the <code>User</code> */
+		private @Nullable String firstname;
 
 		/** The last name of the <code>User</code> */
-		private String lastname;
+		private @Nullable String lastname;
 
 		/** The username of the <code>User</code> */
-		private String username;
+		private @Nullable String username;
 
 		/** The associates <code>Enrolment</code> instances */
 		private final Set<Enrolment> enrolments;
@@ -111,8 +96,6 @@ public abstract class User extends Element
 		/**
 		 * Create an instance of the <code>Builder</code>.
 		 *
-		 * @param  supplier           Method reference to the constructor of the
-		 *                            implementation class, not null
 		 * @param  persister          The <code>Persister</code> used to store
 		 *                            the <code>User</code>, not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
@@ -124,19 +107,15 @@ public abstract class User extends Element
 		 */
 
 		protected Builder (
-				final Supplier<User> supplier,
 				final Persister<User> persister,
 				final Retriever<Enrolment> enrolmentRetriever,
 				final Query<User> enrolmentQuery)
 		{
-			this.log = LoggerFactory.getLogger (this.getClass ());
+			super (persister);
 
 			this.enrolmentRetriever = enrolmentRetriever;
 			this.enrolmentQuery = enrolmentQuery;
-			this.persister = persister;
-			this.supplier = supplier;
 
-			this.user = null;
 			this.id = null;
 			this.firstname = null;
 			this.lastname = null;
@@ -145,16 +124,7 @@ public abstract class User extends Element
 			this.enrolments = new HashSet<Enrolment> ();
 		}
 
-		/**
-		 * Create an instance of the <code>User</code>.
-		 *
-		 * @return                       The new <code>User</code> instance
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
-		 */
-
-		@Override
+/*		@Override
 		public User build ()
 		{
 			this.log.trace ("build:");
@@ -177,11 +147,11 @@ public abstract class User extends Element
 				throw new IllegalStateException ("username is NULL");
 			}
 
-			if ((this.user == null)
-					|| (! this.persister.contains (this.user))
-					|| (! this.username.equals (this.user.getUsername ())))
+			if ((this.element == null)
+					|| (! this.persister.contains (this.element))
+					|| (! this.username.equals (this.element.getUsername ())))
 			{
-				User result = this.supplier.get ();
+				User result = null; // this.supplier.get ();
 				result.setId (this.id);
 				result.setFirstname (this.firstname);
 				result.setLastname (this.lastname);
@@ -189,27 +159,27 @@ public abstract class User extends Element
 
 				this.enrolments.forEach (x -> result.addEnrolment (x));
 
-				this.user = this.persister.insert (this.user, result);
+				this.element = this.persister.insert (this.element, result);
 
-				if (! this.user.equalsAll (result))
+				if (! this.element.equalsAll (result))
 				{
-					this.log.error ("User is already in the datastore with a name of: {} vs. the specified value of: {}", this.user.getName (), result.getName ());
+					this.log.error ("User is already in the datastore with a name of: {} vs. the specified value of: {}", this.element.getName (), result.getName ());
 					throw new IllegalArgumentException ("User is already in the datastore with a different name");
 				}
 			}
 			else
 			{
-				this.user.setFirstname (this.firstname);
-				this.user.setLastname (this.lastname);
+				this.element.setFirstname (this.firstname);
+				this.element.setLastname (this.lastname);
 
 				this.enrolments.stream ()
-					.filter (x -> ! this.user.getEnrolments ().contains (x))
-					.forEach (x -> this.user.addEnrolment (x));
+					.filter (x -> ! this.element.getEnrolments ().contains (x))
+					.forEach (x -> this.element.addEnrolment (x));
 			}
 
-			return this.user;
+			return this.element;
 		}
-
+*/
 		/**
 		 * Reset the builder.  This method will set all of the fields for the
 		 * <code>Element</code> to be built to <code>null</code>.
@@ -217,11 +187,13 @@ public abstract class User extends Element
 		 * @return This <code>Builder</code>
 		 */
 
+		@Override
 		public Builder clear ()
 		{
 			this.log.trace ("clear:");
 
-			this.user = null;
+			super.clear ();
+
 			this.id = null;
 			this.firstname = null;
 			this.lastname = null;
@@ -238,27 +210,22 @@ public abstract class User extends Element
 		 * the specified <code>User</code> instance.  The  parameters are
 		 * validated as they are set.
 		 *
-		 * @param  user                     The <code>User</code>, not null
+		 * @param  user The <code>User</code>, not null
+		 * @return      This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>User</code> instance to be
 		 *                                  loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final User user)
 		{
 			this.log.trace ("load: user={}", user);
 
-			if (user == null)
-			{
-				this.log.error ("Attempting to load a NULL User");
-				throw new NullPointerException ();
-			}
-
 			this.clear ();
+			super.load (user);
 
-			this.user = user;
 			this.id = user.getId ();
 			this.setUsername (user.getUsername ());
 			this.setLastname (user.getLastname ());
@@ -277,7 +244,7 @@ public abstract class User extends Element
 		 */
 
 		@CheckReturnValue
-		public Long getId ()
+		public final Long getId ()
 		{
 			return this.id;
 		}
@@ -289,7 +256,8 @@ public abstract class User extends Element
 		 *         <code>User</code>
 		 */
 
-		public String getFirstname ()
+		@CheckReturnValue
+		public final String getFirstname ()
 		{
 			return this.firstname;
 		}
@@ -297,28 +265,18 @@ public abstract class User extends Element
 		/**
 		 * Set the first name of the <code>User</code>.
 		 *
-		 * @param  firstname                The first name of the
-		 *                                  <code>User</code>, not null
+		 * @param  firstname The first name of the <code>User</code>, not null
+		 * @return           This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If the first name is empty
 		 */
 
-		public Builder setFirstname (final String firstname)
+		public final Builder setFirstname (final String firstname)
 		{
 			this.log.trace ("setFirstname: firstname={}", firstname);
 
-			if (firstname == null)
-			{
-				this.log.error ("The specified first name is NULL");
-				throw new NullPointerException ("The specified first name is NULL");
-			}
-
-			if (firstname.length () == 0)
-			{
-				this.log.error ("firstname is an empty string");
-				throw new IllegalArgumentException ("firstname is empty");
-			}
+			Preconditions.checkNotNull (firstname);
+			Preconditions.checkArgument (firstname.length () > 0, "firstname is empty");
 
 			this.firstname = firstname;
 
@@ -331,7 +289,8 @@ public abstract class User extends Element
 		 * @return A String containing the surname of the <code>User</code>.
 		 */
 
-		public String getLastname ()
+		@CheckReturnValue
+		public final String getLastname ()
 		{
 			return this.lastname;
 		}
@@ -339,28 +298,18 @@ public abstract class User extends Element
 		/**
 		 * Set the last name of the <code>User</code>.
 		 *
-		 * @param  lastname                 The last name of the
-		 *                                  <code>User</code>, not null
+		 * @param  lastname The last name of the <code>User</code>, not null
+		 * @return          This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If the last name is empty
 		 */
 
-		public Builder setLastname (final String lastname)
+		public final Builder setLastname (final String lastname)
 		{
 			this.log.trace ("setLastname: lastname={}", lastname);
 
-			if (lastname == null)
-			{
-				this.log.error ("The specified last name is NULL");
-				throw new NullPointerException ("The specified last name is NULL");
-			}
-
-			if (lastname.length () == 0)
-			{
-				this.log.error ("lastname is an empty string");
-				throw new IllegalArgumentException ("lastname is empty");
-			}
+			Preconditions.checkNotNull (lastname);
+			Preconditions.checkArgument (lastname.length () > 0, "lastname is empty");
 
 			this.lastname = lastname;
 
@@ -377,7 +326,8 @@ public abstract class User extends Element
 		 *         <code>User</code>
 		 */
 
-		public String getUsername ()
+		@CheckReturnValue
+		public final String getUsername ()
 		{
 			return this.username;
 		}
@@ -385,28 +335,18 @@ public abstract class User extends Element
 		/**
 		 * Set the username of the <code>User</code>.
 		 *
-		 * @param  username                 The user name of the
-		 *                                  <code>User</code>, not null
+		 * @param  username The user name of the <code>User</code>, not null
+		 * @return          This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If the user name is empty
 		 */
 
-		public Builder setUsername (final String username)
+		public final Builder setUsername (final String username)
 		{
 			this.log.trace ("setUsername: username={}", username);
 
-			if (username == null)
-			{
-				this.log.error ("Specified username is NULL");
-				throw new NullPointerException ();
-			}
-
-			if (username.length () == 0)
-			{
-				this.log.error ("Specified username is empty (String has length 0)");
-				throw new IllegalArgumentException ("Username is empty");
-			}
+			Preconditions.checkNotNull (username);
+			Preconditions.checkArgument (username.length () > 0, "username is empty");
 
 			this.username = username;
 
@@ -414,43 +354,41 @@ public abstract class User extends Element
 		}
 
 		/**
+		 * Get the <code>Set</code> of <code>Enrolment<code> instances which are
+		 * associated with this <code>User</code>.  If there are no associated
+		 * <code>Enrolment</code> instances, then the <code>Set</code> will be
+		 * empty.
+		 *
+		 * @return A <code>Set</code> of <code>Enrolment</code> instances
+		 */
+
+		public final Set<Enrolment> getEnrolments ()
+		{
+			return Collections.unmodifiableSet (this.enrolments);
+		}
+
+		/**
 		 * Create an association between the <code>User</code> and the specified
 		 * <code>Enrolment</code>.  Note that only one <code>User</code> may be
 		 * associated with a given <code>Enrolment</code>.
 		 *
-		 * @param  enrolment                The <code>Enrolment</code> to be
-		 *                                  associated with the
-		 *                                  <code>User</code>, not null
+		 * @param  enrolment The <code>Enrolment</code> to be associated with
+		 *                   the <code>User</code>, not null
+		 * @return           This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If there is already a
 		 *                                  <code>User</code> associated with
 		 *                                  the <code>Enrolment</code>
 		 */
 
-		public Builder addEnrolment (final Enrolment enrolment)
+		public final Builder addEnrolment (final Enrolment enrolment)
 		{
 			this.log.trace ("addEnrolment: enrolment={}", enrolment);
 
-			if (enrolment == null)
-			{
-				this.log.error ("Specified enrolment is NULL");
-				throw new NullPointerException ();
-			}
+			Enrolment add = this.verifyRelationship (this.enrolmentRetriever, enrolment, "enrolment");
 
-			Enrolment add = this.enrolmentRetriever.fetch (enrolment);
-
-			if (add == null)
-			{
-				this.log.error ("Specified Enrolment does not exist in the DataStore");
-				throw new IllegalArgumentException ("Enrolment not in DataStore");
-			}
-
-			if (! this.enrolmentQuery.setValue (User.ENROLMENTS, add).queryAll ().isEmpty ())
-			{
-				this.log.error ("The Enrolment is already assigned to another user");
-				throw new IllegalArgumentException ("The Enrolment is already assigned to another User");
-			}
+			Preconditions.checkArgument (this.enrolmentQuery.setValue (User.ENROLMENTS, add).queryAll ().isEmpty (),
+					"The Enrolment is already assigned to another user");
 
 			this.enrolments.add (add);
 
@@ -467,34 +405,20 @@ public abstract class User extends Element
 		 * an existing association between the <code>User</code> and the
 		 * <code>Enrolment</code>.
 		 *
-		 * @param  enrolment                The <code>Enrolment</code> to remove
-		 *                                  from the <code>User</code>, not null
+		 * @param  enrolment The <code>Enrolment</code> to remove from the
+		 *                   <code>User</code>, not null
+		 * @return           This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If there is no association between
 		 *                                  the <code>User</code> and the
 		 *                                  <code>Enrolment</code>
 		 */
 
-		public Builder removeEnrolment (final Enrolment enrolment)
+		public final Builder removeEnrolment (final Enrolment enrolment)
 		{
 			this.log.trace ("removeEnrolment: enrolment={}", enrolment);
 
-			if (enrolment == null)
-			{
-				this.log.error ("Specified enrolment is NULL");
-				throw new NullPointerException ();
-			}
-
-			Enrolment del = this.enrolmentRetriever.fetch (enrolment);
-
-			if (del == null)
-			{
-				this.log.error ("Specified Enrolment does not exist in the DataStore");
-				throw new IllegalArgumentException ("Enrolment not in DataStore");
-			}
-
-			this.enrolments.remove (del);
+			this.enrolments.remove (this.verifyRelationship (this.enrolmentRetriever, enrolment, "enrolment"));
 
 			return this;
 		}
@@ -591,9 +515,9 @@ public abstract class User extends Element
 	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @return       The <code>Builder</code> instance
 	 *
-	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> does not
 	 *                               have a default implementation class for
@@ -619,6 +543,18 @@ public abstract class User extends Element
 	}
 
 	/**
+	 * Create the <code>User</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected User (final Builder builder)
+	{
+		super (builder);
+	}
+
+	/**
 	 * Template method to create and initialize a <code>ToStringHelper</code>.
 	 *
 	 * @return The <code>ToStringHelper</code>
@@ -641,7 +577,6 @@ public abstract class User extends Element
 	 *
 	 * @param  obj The <code>User</code> instance to compare to the one
 	 *             represented by the called instance
-	 *
 	 * @return     <code>True</code> if the two <code>User</code> instances
 	 *             are equal, <code>False</code> otherwise
 	 */
@@ -662,7 +597,6 @@ public abstract class User extends Element
 	 *
 	 * @param  element The <code>Element</code> instance to compare to this
 	 *                 instance
-	 *
 	 * @return         <code>True</code> if the two <code>User</code>
 	 *                 instances are equal, <code>False</code> otherwise
 	 */
@@ -741,7 +675,6 @@ public abstract class User extends Element
 	 * contents of this <code>User</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
 	 * @return       The initialized <code>Builder</code>
 	 */
 

@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -27,9 +26,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
@@ -57,92 +53,47 @@ public abstract class LogReference extends Element
 	 * @version 1.0
 	 */
 
-	public static final class Builder implements Element.Builder<LogReference>
+	public static abstract class Builder extends Element.Builder<LogReference>
 	{
-		/** The Logger */
-		private final Logger log;
-
 		/** Helper to substitute <code>LogEntry</code> instances*/
 		private final Retriever<LogEntry> entryRetriever;
 
 		/** Helper to substitute <code>SubActivity</code> instances*/
 		private final Retriever<SubActivity> subActivityRetriever;
 
-		/** Helper to operate on <code>LogReference</code> instances */
-		private final Persister<LogReference> persister;
-
-		/** Method reference to the constructor of the implementation class */
-		private final Supplier<LogReference> supplier;
-
-		/** The loaded of previously created <code>LogReference</code> */
-		private LogReference reference;
-
 		/** The associated <code>LogEnty</code>*/
-		private LogEntry entry;
+		private @Nullable LogEntry entry;
 
 		/** The associated <code>SubActivity</code>*/
-		private SubActivity subActivity;
+		private @Nullable SubActivity subActivity;
 
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  datastore The <code>DataStore</code>, not null
+		 * @param  persister            The <code>Persister</code> used to store
+		 *                              the <code>ActivityType</code>, not null
+		 * @param  entryRetriever       <code>Retriever</code> for
+		 *                              <code>ActivitySource</code> instances,
+		 *                              not null
+		 * @param  subActivityRetriever <code>Retriever</code> for
+		 *                              <code>ActivitySource</code> instances,
+		 *                              not null
 		 */
 
 		protected Builder (
-				final Supplier<LogReference> supplier,
 				final Persister<LogReference> persister,
 				final Retriever<LogEntry> entryRetriever,
 				final Retriever<SubActivity> subActivityRetriever)
 		{
-			assert persister != null : "persister is NULL";
-			assert entryRetriever != null : "entryRetriever is NULL";
+			super (persister);
 
-			this.log = LoggerFactory.getLogger (this.getClass ());
+			assert entryRetriever != null : "entryRetriever is NULL";
 
 			this.entryRetriever = entryRetriever;
 			this.subActivityRetriever = subActivityRetriever;
-			this.persister = persister;
-			this.supplier = supplier;
 
-			this.reference = null;
 			this.entry = null;
 			this.subActivity = null;
-		}
-
-		/**
-		 * Create an instance of the <code>LogReference</code>.
-		 *
-		 * @return                       The new <code>LogReference</code>
-		 *                               instance
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
-		 */
-
-		@Override
-		public LogReference build ()
-		{
-			this.log.trace ("build:");
-
-			if (this.entry == null)
-			{
-				this.log.error ("Attempting to create an LogReference without a LogEntry");
-				throw new IllegalStateException ("entry is NULL");
-			}
-
-			if (this.subActivity == null)
-			{
-				this.log.error ("Attempting to create an LogReference without a SubActivity");
-				throw new IllegalStateException ("subActivity is NULL");
-			}
-
-			LogReference result = this.supplier.get ();
-			result.setEntry (this.entry);
-			result.setSubActivity (this.subActivity);
-
-			this.reference = persister.insert (this.reference, result);
-
-			return this.reference;
 		}
 
 		/**
@@ -152,11 +103,13 @@ public abstract class LogReference extends Element
 		 * @return This <code>Builder</code>
 		 */
 
+		@Override
 		public Builder clear ()
 		{
 			this.log.trace ("clear:");
 
-			this.reference = null;
+			super.clear ();
+
 			this.entry = null;
 			this.subActivity = null;
 
@@ -169,26 +122,21 @@ public abstract class LogReference extends Element
 		 * the specified <code>LogReference</code> instance.  The  parameters
 		 * are validated as they are set.
 		 *
-		 * @param  reference                The <code>LogReference</code>, not
-		 *                                  null
+		 * @param  reference The <code>LogReference</code>, not null
+		 * @return           This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>LogReference</code> instance
 		 *                                  to be loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final LogReference reference)
 		{
 			this.log.trace ("load: reference={}", reference);
 
-			if (reference == null)
-			{
-				this.log.error ("Attempting to load a NULL LogReference");
-				throw new NullPointerException ();
-			}
+			super.load (reference);
 
-			this.reference = reference;
 			this.setEntry (reference.getEntry ());
 			this.setSubActivity (reference.getSubActivity ());
 
@@ -201,7 +149,8 @@ public abstract class LogReference extends Element
 		 * @return The associated <code>LogEntry</code>
 		 */
 
-		public LogEntry getEntry ()
+		@CheckReturnValue
+		public final LogEntry getEntry ()
 		{
 			return this.entry;
 		}
@@ -209,38 +158,23 @@ public abstract class LogReference extends Element
 		/**
 		 * Set the associated <code>LogEntry</code>.
 		 *
-		 * @param  entry                    The <code>LogEntry</code>, not null
+		 * @param  entry The <code>LogEntry</code>, not null
+		 * @return       This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException if the <code>LogEntry</code> is not
 		 *                                  in the <code>DataStore</code>
 		 * @throws IllegalArgumentException if the <code>LogEntry</code> already
 		 *                                  has a <code>LogReference</code>
 		 */
 
-		public Builder setEntry (final LogEntry entry)
+		public final Builder setEntry (final LogEntry entry)
 		{
 			this.log.trace ("setEntry: entry={}", entry);
 
-			if (entry == null)
-			{
-				this.log.error ("entry is NULL");
-				throw new NullPointerException ("entry is NULL");
-			}
+			this.entry = this.verifyRelationship (this.entryRetriever, entry, "entry");
 
-			this.entry = this.entryRetriever.fetch (entry);
-
-			if (this.entry == null)
-			{
-				this.log.error ("The specified LogEntry does not exist in the DataStore");
-				throw new IllegalArgumentException ("LogEntry is not in the DataStore");
-			}
-
-			if (this.entry.getReference () != null)
-			{
-				this.log.error ("The entry already has another reference assigned to it");
-				throw new IllegalArgumentException ("Entry already has a reference");
-			}
+			Preconditions.checkArgument (this.entry.getReference () != null,
+					"Entry already has a reference");
 
 			return this;
 		}
@@ -251,7 +185,8 @@ public abstract class LogReference extends Element
 		 * @return The associated <code>SubActivity</code>
 		 */
 
-		public SubActivity getSubActivity ()
+		@CheckReturnValue
+		public final SubActivity getSubActivity ()
 		{
 			return this.subActivity;
 		}
@@ -259,31 +194,18 @@ public abstract class LogReference extends Element
 		/**
 		 * Set the referenced <code>SubActivity</code>.
 		 *
-		 * @param  subActivity              The <code>SubActivity</code>, not
-		 *                                  null
+		 * @param  subActivity The <code>SubActivity</code>, not null
+		 * @return             This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException if the <code>SubActivity</code> is
 		 *                                  not in the <code>DataStore</code>
 		 */
 
-		public Builder setSubActivity (final SubActivity subActivity)
+		public final Builder setSubActivity (final SubActivity subActivity)
 		{
 			this.log.trace ("setSubActivity: subActivity={}", subActivity);
 
-			if (subActivity == null)
-			{
-				this.log.error ("subActivity is NULL");
-				throw new NullPointerException ("subActivity is NULL");
-			}
-
-			this.subActivity = this.subActivityRetriever.fetch (subActivity);
-
-			if (this.subActivity == null)
-			{
-				this.log.error ("The specified SubActivity does not exist in the DataStore");
-				throw new IllegalArgumentException ("SubActivity is not in the DataStore");
-			}
+			this.subActivity = this.verifyRelationship (this.subActivityRetriever, subActivity, "subActivity");
 
 			return this;
 		}
@@ -377,7 +299,6 @@ public abstract class LogReference extends Element
 	 *
 	 * @param  subactivity The <code>SubActivity</code> implementation class,
 	 *                     not null
-	 *
 	 * @return             The <code>LogReference</code> implementation class
 	 */
 
@@ -401,6 +322,20 @@ public abstract class LogReference extends Element
 	}
 
 	/**
+	 * Create the <code>LogReference</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected LogReference (final Builder builder)
+	{
+		super (builder);
+
+		this.entry = Preconditions.checkNotNull (builder.getEntry (), "entry");
+	}
+
+	/**
 	 * Template method to create and initialize a <code>ToStringHelper</code>.
 	 *
 	 * @return The <code>ToStringHelper</code>
@@ -421,7 +356,6 @@ public abstract class LogReference extends Element
 	 *
 	 * @param  obj The <code>LogReference</code> instance to compare to the one
 	 *             represented by the called instance
-	 *
 	 * @return     <code>True</code> if the two <code>LogReference</code>
 	 *             instances are equal, <code>False</code> otherwise
 	 */
@@ -498,7 +432,6 @@ public abstract class LogReference extends Element
 	 * contents of this <code>LogReference</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
 	 * @return       The initialized <code>Builder</code>
 	 */
 

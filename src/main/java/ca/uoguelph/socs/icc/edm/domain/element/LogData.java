@@ -21,6 +21,8 @@ import java.util.Date;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
@@ -30,6 +32,8 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.Network;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Implementation of the <code>LogEntry</code> interface.  It is expected that
@@ -47,11 +51,63 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 public class LogData extends LogEntry
 {
+	/**
+	 * <code>Builder</code> for <code>LogData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.LogEntry.Builder
+	 */
+
+	public static final class Builder extends LogEntry.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister          The <code>Persister</code> used to store the
+		 *                            <code>LogEntry</code>, not null
+		 * @param  actionRetriever    <code>Retriever</code> for
+		 *                            <code>Action</code> instances, not null
+		 * @param  activityRetriever  <code>Retriever</code> for
+		 *                            <code>Activity</code> instances, not null
+		 * @param  enrolmentRetriever <code>Retriever</code> for
+		 *                            <code>Enrolment</code> instances, not null
+		 * @param  networkRetriever   <code>Retriever</code> for
+		 *                            <code>Network</code> instances, not null
+		 */
+
+		private Builder (
+				final Persister<LogEntry> persister,
+				final Retriever<Action> actionRetriever,
+				final Retriever<Activity> activityRetriever,
+				final Retriever<Enrolment> enrolmentRetriever,
+				final Retriever<Network> networkRetriever)
+		{
+			super (persister, actionRetriever, activityRetriever, enrolmentRetriever, networkRetriever);
+		}
+
+		/**
+		 * Create an instance of the <code>LogEntry</code>.
+		 *
+		 * @return The new <code>LogEntry</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected LogEntry createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new LogData (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key for the log entry */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The enrolment which generated the log entry */
 	private Enrolment enrolment;
@@ -69,7 +125,7 @@ public class LogData extends LogEntry
 	private Date time;
 
 	/** The <code>SubActivity</code> which is associated with the log entry */
-	private LogReference reference;
+	private @Nullable LogReference reference;
 
 	/**
 	 * Create the <code>LogEntry</code> with null values.
@@ -84,6 +140,25 @@ public class LogData extends LogEntry
 		this.network = null;
 		this.reference = null;
 		this.time = new Date ();
+	}
+
+	/**
+	 * Create an <code>LogEntry</code> from the supplied <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected LogData (final Builder builder)
+	{
+		super (builder);
+
+		this.id = builder.getId ();
+		this.action = Preconditions.checkNotNull (builder.getAction (), "action");
+//		this.activity = Preconditions.checkNotNull (builder.getActivity (), "activity");
+		this.enrolment = Preconditions.checkNotNull (builder.getEnrolment (), "enrolment");
+		this.network = Preconditions.checkNotNull (builder.getNetwork (), "network");
+//		this.reference = builder.getReference ();
+		this.time = Preconditions.checkNotNull (builder.getTime (), "time");
 	}
 
 	/**
@@ -282,10 +357,8 @@ public class LogData extends LogEntry
 	 */
 
 	@Override
-	protected void setReference (final LogReference reference)
+	protected void setReference (final @Nullable LogReference reference)
 	{
-		assert reference != null : "reference is NULL";
-
 		this.reference = reference;
 	}
 

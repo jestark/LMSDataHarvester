@@ -18,7 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -26,9 +25,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
@@ -70,11 +66,8 @@ public abstract class LogEntry extends Element
 	 * @version 1.0
 	 */
 
-	public static final class Builder implements Element.Builder<LogEntry>
+	public static abstract class Builder extends Element.Builder<LogEntry>
 	{
-		/** The Logger */
-		private final Logger log;
-
 		/** Helper to substitute <code>Action</code> instances */
 		private final Retriever<Action> actionRetriever;
 
@@ -87,41 +80,30 @@ public abstract class LogEntry extends Element
 		/** Helper to substitute <code>Network</code> instances */
 		private final Retriever<Network> networkRetriever;
 
-		/** Helper to operate on <code>LogEntry</code> instances */
-		private final Persister<LogEntry> persister;
-
-		/** Method reference to the constructor of the implementation class */
-		private final Supplier<LogEntry> supplier;
-
-		/** The loaded or previously created <code>LogEntry</code> */
-		private LogEntry entry;
-
 		/** The <code>DataStore</code> ID number for the <code>LogEntry</code> */
-		private Long id;
+		private @Nullable Long id;
 
 		/** The associated <code>Action</code> */
-		private Action action;
+		private @Nullable Action action;
 
 		/** The associated <code>Activity</code> */
-		private Activity activity;
+		private @Nullable Activity activity;
 
 		/** The associated <code>Enrolment</code> */
-		private Enrolment enrolment;
+		private @Nullable Enrolment enrolment;
 
 		/** The associated <code>Network</code> */
-		private Network network;
+		private @Nullable Network network;
 
 		/** The time that the entry was logged */
-		private Date time;
+		private @Nullable Date time;
 
 		/** The <code>LogReferenceBuilder</code> */
-		private LogReference.Builder referenceBuilder;
+		private @Nullable LogReference.Builder referenceBuilder;
 
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  supplier           Method reference to the constructor of the
-		 *                            implementation class, not null
 		 * @param  persister          The <code>Persister</code> used to store the
 		 *                            <code>LogEntry</code>, not null
 		 * @param  actionRetriever    <code>Retriever</code> for
@@ -135,29 +117,24 @@ public abstract class LogEntry extends Element
 		 */
 
 		protected Builder (
-				final Supplier<LogEntry> supplier,
 				final Persister<LogEntry> persister,
 				final Retriever<Action> actionRetriever,
 				final Retriever<Activity> activityRetriever,
 				final Retriever<Enrolment> enrolmentRetriever,
 				final Retriever<Network> networkRetriever)
 		{
-			assert persister != null : "persister is NULL";
+			super (persister);
+
 			assert actionRetriever != null : "actionRetriever is NULL";
 			assert activityRetriever != null : "activityRetriever is NULL";
 			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
 			assert networkRetriever != null : "networkRetriever is NULL";
 
-			this.log = LoggerFactory.getLogger (this.getClass ());
-
 			this.actionRetriever = actionRetriever;
 			this.activityRetriever = activityRetriever;
 			this.enrolmentRetriever = enrolmentRetriever;
 			this.networkRetriever = networkRetriever;
-			this.persister = persister;
-			this.supplier = supplier;
 
-			this.entry = null;
 			this.id = null;
 			this.action = null;
 			this.activity = null;
@@ -170,15 +147,16 @@ public abstract class LogEntry extends Element
 		/**
 		 * Create an instance of the <code>LogEntry</code>.
 		 *
-		 * @return                       The new <code>LogEntry</code> instance
+		 * @return The new <code>LogEntry</code> instance
+		 *
 		 * @throws IllegalStateException If any if the fields is missing
 		 * @throws IllegalStateException If there isn't an active transaction
 		 */
 
-		@Override
-		public LogEntry build ()
+/*		@Override
+		protected LogEntry createElement ()
 		{
-			this.log.trace ("build:");
+			this.log.trace ("createElement:");
 
 			if (this.action == null)
 			{
@@ -212,18 +190,18 @@ public abstract class LogEntry extends Element
 			result.setNetwork (this.network);
 			result.setTime (this.time);
 
-			this.entry = this.persister.insert (this.entry, result);
+			this.element = this.persister.insert (this.element, result);
 
 			// Create the reference
 			if (this.referenceBuilder != null)
 			{
-				this.referenceBuilder.setEntry (this.entry)
+				this.referenceBuilder.setEntry (this.element)
 					.build ();
 			}
 
-			return this.entry;
+			return this.element;
 		}
-
+*/
 		/**
 		 * Reset the builder.  This method will set all of the fields for the
 		 * <code>Element</code> to be built to <code>null</code>.
@@ -231,9 +209,12 @@ public abstract class LogEntry extends Element
 		 * @return This <code>Builder</code>
 		 */
 
+		@Override
 		public Builder clear ()
 		{
 			this.log.trace ("clear:");
+
+			super.clear ();
 
 			this.id = null;
 			this.action = null;
@@ -252,25 +233,21 @@ public abstract class LogEntry extends Element
 		 * the specified <code>LogEntry</code> instance.  The  parameters are
 		 * validated as they are set.
 		 *
-		 * @param  entry                    The <code>LogEntry</code>, not null
+		 * @param  entry The <code>LogEntry</code>, not null
+		 * @return       This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>LogEntry</code> instance to be
 		 *                                  loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final LogEntry entry)
 		{
 			this.log.trace ("load: entry={}", entry);
 
-			if (entry == null)
-			{
-				this.log.error ("Attempting to load a NULL LogEntry");
-				throw new NullPointerException ();
-			}
+			super.load (entry);
 
-			this.entry = entry;
 			this.id = entry.getId ();
 			this.setAction (entry.getAction ());
 			this.setActivity (entry.getActivity ());
@@ -294,7 +271,7 @@ public abstract class LogEntry extends Element
 		 */
 
 		@CheckReturnValue
-		public Long getId ()
+		public final Long getId ()
 		{
 			return this.id;
 		}
@@ -306,7 +283,8 @@ public abstract class LogEntry extends Element
 		 * @return A reference to the logged <code>Action</code>
 		 */
 
-		public Action getAction ()
+		@CheckReturnValue
+		public final Action getAction ()
 		{
 			return this.action;
 		}
@@ -315,30 +293,18 @@ public abstract class LogEntry extends Element
 		 * Set the <code>Action</code> which was performed upon the logged
 		 * <code>Activity</code>.
 		 *
-		 * @param  action                   The <code>Action</code>, not null
+		 * @param  action The <code>Action</code>, not null
+		 * @return        This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException if the <code>Action</code> is not in
 		 *                                  the <code>DataStore</code>
 		 */
 
-		public Builder setAction (final Action action)
+		public final Builder setAction (final Action action)
 		{
 			this.log.trace ("setAction: action={}", action);
 
-			if (action == null)
-			{
-				this.log.error ("Action is NULL");
-				throw new NullPointerException ("Action is NULL");
-			}
-
-			this.action = this.actionRetriever.fetch (action);
-
-			if (this.action == null)
-			{
-				this.log.error ("The specified Action does not exist in the DataStore");
-				throw new IllegalArgumentException ("Action is not in the DataStore");
-			}
+			this.verifyRelationship (this.actionRetriever, action, "action");
 
 			return this;
 		}
@@ -350,7 +316,8 @@ public abstract class LogEntry extends Element
 		 * @return The associated <code>Activity</code>
 		 */
 
-		public Activity getActivity ()
+		@CheckReturnValue
+		public final Activity getActivity ()
 		{
 			return this.activity;
 		}
@@ -359,30 +326,18 @@ public abstract class LogEntry extends Element
 		 * Set the <code>Activity</code> upon which the logged <code>Action</code>
 		 * was performed.
 		 *
-		 * @param  activity                 The <code>Activity</code>, not null
+		 * @param  activity The <code>Activity</code>, not null
+		 * @return          This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException if the <code>Activity</code> is not
 		 *                                  in the <code>DataStore</code>
 		 */
 
-		public Builder setActivity (final Activity activity)
+		public final Builder setActivity (final Activity activity)
 		{
 			this.log.trace ("setActivity: activity={}", activity);
 
-			if (activity == null)
-			{
-				this.log.error ("Activity is NULL");
-				throw new NullPointerException ("Activity is NULL");
-			}
-
-			this.activity = activityRetriever.fetch (activity);
-
-			if (this.activity == null)
-			{
-				this.log.error ("The specified Activity does not exist in the DataStore");
-				throw new IllegalArgumentException ("Activity is not in the DataStore");
-			}
+			this.verifyRelationship (this.activityRetriever, activity, "activity");
 
 			return this;
 		}
@@ -394,7 +349,8 @@ public abstract class LogEntry extends Element
 		 * @return The associated <code>Enrolment</code>
 		 */
 
-		public Enrolment getEnrolment ()
+		@CheckReturnValue
+		public final Enrolment getEnrolment ()
 		{
 			return this.enrolment;
 		}
@@ -403,30 +359,18 @@ public abstract class LogEntry extends Element
 		 * Set the <code>Enrolment</code> instance for the <code>User</code> which
 		 * performed the logged action.
 		 *
-		 * @param  enrolment                The <code>Enrolment</code>, not null
+		 * @param  enrolment The <code>Enrolment</code>, not null
+		 * @return           This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException if the <code>Enrolment</code> is not
 		 *                                  in the <code>DataStore</code>
 		 */
 
-		public Builder setEnrolment (final Enrolment enrolment)
+		public final Builder setEnrolment (final Enrolment enrolment)
 		{
 			this.log.trace ("setEnrolment: enrolment={}", enrolment);
 
-			if (enrolment == null)
-			{
-				this.log.error ("Enrolment is NULL");
-				throw new NullPointerException ("Enrolment is NULL");
-			}
-
-			this.enrolment = this.enrolmentRetriever.fetch (enrolment);
-
-			if (this.enrolment == null)
-			{
-				this.log.error ("The specified Enrolment does not exist in the DataStore");
-				throw new IllegalArgumentException ("Enrolment is not in the DataStore");
-			}
+			this.enrolment = this.verifyRelationship (this.enrolmentRetriever, enrolment, "enrolment");
 
 			return this;
 		}
@@ -438,7 +382,8 @@ public abstract class LogEntry extends Element
 		 * @return The associated <code>Network</code>
 		 */
 
-		public Network getNetwork ()
+		@CheckReturnValue
+		public final Network getNetwork ()
 		{
 			return this.network;
 		}
@@ -447,30 +392,19 @@ public abstract class LogEntry extends Element
 		 * Set the <code>Network</code> from which the logged <code>Action</code>
 		 * originated.
 		 *
-		 * @param  network                  The <code>Network</code>, not null
+		 * @param  network The <code>Network</code>, not null
+		 * @return         This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException if the specified
 		 *                                  <code>Network</code> does not exist
 		 *                                  in the <code>Datastore</code>
 		 */
 
-		public Builder setNetwork (final Network network)
+		public final Builder setNetwork (final Network network)
 		{
 			this.log.trace ("setNetwork: network={}", network);
 
-			if (network == null)
-			{
-				throw new NullPointerException ();
-			}
-
-			this.network = this.networkRetriever.fetch (network);
-
-			if (this.network == null)
-			{
-				this.log.error ("The specified Network does not exist in the DataStore");
-				throw new IllegalArgumentException ("Network is not in the DataStore");
-			}
+			this.network = this.verifyRelationship (this.networkRetriever, network, "network");
 
 			return this;
 		}
@@ -482,7 +416,8 @@ public abstract class LogEntry extends Element
 		 * @return The associated <code>SubActivity</code>, may be null
 		 */
 
-		public SubActivity getSubActivity ()
+		@CheckReturnValue
+		public final SubActivity getSubActivity ()
 		{
 			return (this.referenceBuilder != null) ? this.referenceBuilder.getSubActivity () : null;
 		}
@@ -492,14 +427,14 @@ public abstract class LogEntry extends Element
 		 * <code>Action</code> was performed.  The <code>Subactivity</code> is
 		 * optional, so it may be null.
 		 *
-		 * @param  subActivity              The <code>SubActivity</code>
+		 * @param  subActivity The <code>SubActivity</code>
+		 * @return             This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException if the <code>SubActivity</code> is
 		 *                                  not in the <code>DataStore</code>
 		 */
 
-		public Builder setSubActivity (final SubActivity subActivity)
+		public final Builder setSubActivity (final SubActivity subActivity)
 		{
 			this.log.trace ("setSubActivity: subActivity={}", subActivity);
 
@@ -531,7 +466,8 @@ public abstract class LogEntry extends Element
 		 * @return The associated time
 		 */
 
-		public Date getTime ()
+		@CheckReturnValue
+		public final Date getTime ()
 		{
 			return (Date) this.time.clone ();
 		}
@@ -540,22 +476,14 @@ public abstract class LogEntry extends Element
 		 * Set the time of the logged <code>Action</code>.
 		 *
 		 * @param  time The time
-		 *
 		 * @return      This <code>Builder</code>
 		 */
 
-		public Builder setTime (final Date time)
+		public final Builder setTime (final Date time)
 		{
 			this.log.trace ("setTime: time={}", time);
 
-			if (time == null)
-			{
-				this.time = new Date ();
-			}
-			else
-			{
-				this.time = (Date) time.clone ();
-			}
+			this.time = (time == null) ? new Date () : (Date) time.clone ();
 
 			return this;
 		}
@@ -677,9 +605,9 @@ public abstract class LogEntry extends Element
 	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @return       The <code>Builder</code> instance
 	 *
-	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> does not
 	 *                               have a default implementation class for
@@ -702,6 +630,18 @@ public abstract class LogEntry extends Element
 	protected LogEntry ()
 	{
 		super ();
+	}
+
+	/**
+	 * Create the <code>LogEntry</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected LogEntry (final Builder builder)
+	{
+		super (builder);
 	}
 
 	/**
@@ -736,7 +676,6 @@ public abstract class LogEntry extends Element
 	 * <ul>
 	 *
 	 * @param  obj The <code>LogEntry</code> instance to compare with this one
-	 *
 	 * @return     <code>True</code> if the <code>LogEntry</code> instances
 	 *             should be considered to be equal, <code>False</code>
 	 *             otherwise
@@ -825,7 +764,6 @@ public abstract class LogEntry extends Element
 	 * contents of this <code>LogEntry</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
 	 * @return       The initialized <code>Builder</code>
 	 */
 

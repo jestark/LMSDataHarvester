@@ -19,6 +19,8 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
@@ -47,7 +49,7 @@ public class MoodleActivityType extends ActivityType
 	private static final ActivitySource source;
 
 	/** The primary key of the activity type */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The name of the activity type */
 	private String name;

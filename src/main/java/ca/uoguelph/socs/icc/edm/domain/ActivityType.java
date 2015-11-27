@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -25,9 +24,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
@@ -70,97 +66,44 @@ public abstract class ActivityType extends Element
 	 *
 	 * @author  James E. Stark
 	 * @version 1.0
-	 * @see     ActivityType
 	 */
 
-	public static final class Builder implements Element.Builder<ActivityType>
+	public static abstract class Builder extends Element.Builder<ActivityType>
 	{
-		/** The Logger */
-		private final Logger log;
-
 		/** Helper to substitute <code>ActivitySource</code> instances */
 		private final Retriever<ActivitySource> sourceRetriever;
 
-		/** Helper to operate on <code>ActivityType</code> instances*/
-		private final Persister<ActivityType> persister;
-
-		/** Method reference to the constructor of the implementation class */
-		private final Supplier<ActivityType> supplier;
-
-		/** The loaded of previously created <code>ActivityType</code> */
-		private ActivityType type;
-
 		/** The <code>DataStore</code> id number for the <code>ActivityType</code> */
-		private Long id;
+		private @Nullable Long id;
 
 		/** The name of the <code>ActivityType</code> */
-		private String name;
+		private @Nullable String name;
 
 		/** The <code>ActivitySource</code> */
-		private ActivitySource source;
+		private @Nullable ActivitySource source;
 
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  supplier        Method reference to the constructor of the
-		 *                         implementation class, not null
 		 * @param  persister       The <code>Persister</code> used to store the
 		 *                         <code>ActivityType</code>, not null
 		 * @param  sourceRetriever <code>Retriever</code> for
 		 *                         <code>ActivitySource</code> instances, not null
 		 */
 
-		protected Builder (final Supplier<ActivityType> supplier, final Persister<ActivityType> persister, final Retriever<ActivitySource> sourceRetriever)
+		protected Builder (
+				final Persister<ActivityType> persister,
+				final Retriever<ActivitySource> sourceRetriever)
 		{
-			assert supplier != null : "supplier is NULL";
-			assert persister != null : "persister is NULL";
+			super (persister);
+
 			assert sourceRetriever != null : "sourceRetriever is NULL";
 
-			this.log = LoggerFactory.getLogger (this.getClass ());
-
 			this.sourceRetriever = sourceRetriever;
-			this.persister = persister;
-			this.supplier = supplier;
 
-			this.type = null;
 			this.id = null;
 			this.name = null;
 			this.source = null;
-		}
-
-		/**
-		 * Create an instance of the <code>ActivityType</code>.
-		 *
-		 * @return                       The new <code>ActivityType</code> instance
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
-		 */
-
-		@Override
-		public ActivityType build ()
-		{
-			this.log.trace ("build:");
-
-			if (this.name == null)
-			{
-				this.log.error ("Attempting to create an ActivityType without a name");
-				throw new IllegalStateException ("name is NULL");
-			}
-
-			if (this.source == null)
-			{
-				this.log.error ("Attempting to create an ActivityType without an ActivitySource");
-				throw new IllegalStateException ("source is NULL");
-			}
-
-			ActivityType result = this.supplier.get ();
-			result.setId (this.id);
-			result.setName (this.name);
-			result.setSource (this.source);
-
-			this.type = this.persister.insert (this.type, result);
-
-			return this.type;
 		}
 
 		/**
@@ -170,11 +113,13 @@ public abstract class ActivityType extends Element
 		 * @return This <code>Builder</code>
 		 */
 
+		@Override
 		public Builder clear ()
 		{
 			this.log.trace ("clear:");
 
-			this.type = null;
+			super.clear ();
+
 			this.id = null;
 			this.name = null;
 			this.source = null;
@@ -188,26 +133,21 @@ public abstract class ActivityType extends Element
 		 * the specified <code>ActivityType</code> instance.  The  parameters
 		 * are validated as they are set.
 		 *
-		 * @param  type                     The <code>ActivityType</code>, not
-		 *                                  null
+		 * @param  type The <code>ActivityType</code>, not null
+		 * @return      This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>ActivityType</code> instance
 		 *                                  to be loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final ActivityType type)
 		{
 			this.log.trace ("load: type={}", type);
 
-			if (type == null)
-			{
-				this.log.error ("Attempting to load a NULL ActivityType");
-				throw new NullPointerException ();
-			}
+			super.load (type);
 
-			this.type = type;
 			this.id = type.getId ();
 			this.setName (type.getName ());
 			this.setActivitySource (type.getSource ());
@@ -223,7 +163,7 @@ public abstract class ActivityType extends Element
 		 */
 
 		@CheckReturnValue
-		public Long getId ()
+		public final Long getId ()
 		{
 			return this.id;
 		}
@@ -235,7 +175,8 @@ public abstract class ActivityType extends Element
 		 *         <code>ActivityType</code>
 		 */
 
-		public String getName ()
+		@CheckReturnValue
+		public final String getName ()
 		{
 			return this.name;
 		}
@@ -243,28 +184,18 @@ public abstract class ActivityType extends Element
 		/**
 		 * Set the name of the <code>ActivityType</code>.
 		 *
-		 * @param  name                     The name of the
-		 *                                  <code>ActivityType</code>, not null
+		 * @param  name The name of the <code>ActivityType</code>, not null
+		 * @return      This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If the name is empty
 		 */
 
-		public Builder setName (final String name)
+		public final Builder setName (final String name)
 		{
 			this.log.trace ("setName: name={}", name);
 
-			if (name == null)
-			{
-				this.log.error ("name is NULL");
-				throw new NullPointerException ("name is NULL");
-			}
-
-			if (name.length () == 0)
-			{
-				this.log.error ("name is an empty string");
-				throw new IllegalArgumentException ("name is empty");
-			}
+			Preconditions.checkNotNull (name, "name");
+			Preconditions.checkArgument (name.length () > 0, "name is empty");
 
 			this.name = name;
 
@@ -278,7 +209,8 @@ public abstract class ActivityType extends Element
 		 * @return The <code>ActivitySource</code> instance
 		 */
 
-		public ActivitySource getActivitySource ()
+		@CheckReturnValue
+		public final ActivitySource getActivitySource ()
 		{
 			return this.source;
 		}
@@ -287,32 +219,20 @@ public abstract class ActivityType extends Element
 		 * Set the <code>ActivitySource</code> for the
 		 * <code>ActivityType</code>.
 		 *
-		 * @param  source                   The <code>ActivitySource</code> for
-		 *                                  the <code>ActivityType</code>
+		 * @param  source The <code>ActivitySource</code> for the
+		 *                <code>ActivityType</code>
+		 * @return        This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If the <code>AcivitySourse</code>
 		 *                                  does not exist in the
 		 *                                  <code>DataStore</code>
 		 */
 
-		public Builder setActivitySource (final ActivitySource source)
+		public final Builder setActivitySource (final ActivitySource source)
 		{
 			this.log.trace ("setSource: source={}", source);
 
-			if (source == null)
-			{
-				this.log.error ("source is NULL");
-				throw new NullPointerException ("source is NULL");
-			}
-
-			this.source = this.sourceRetriever.fetch (source);
-
-			if (this.source == null)
-			{
-				this.log.error ("The specified ActivitySource does not exist in the DataStore: {}", source);
-				throw new IllegalArgumentException ("ActivitySource is not in the DataStore");
-			}
+			this.source = this.verifyRelationship (this.sourceRetriever, source, "source");
 
 			return this;
 		}
@@ -394,9 +314,9 @@ public abstract class ActivityType extends Element
 	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @return       The <code>Builder</code> instance
 	 *
-	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> does not
 	 *                               have a default implementation class for
@@ -422,6 +342,18 @@ public abstract class ActivityType extends Element
 	}
 
 	/**
+	 * Create the <code>ActivityType</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected ActivityType (final Builder builder)
+	{
+		super (builder);
+	}
+
+	/**
 	 * Template method to create and initialize a <code>ToStringHelper</code>.
 	 *
 	 * @return The <code>ToStringHelper</code>
@@ -443,7 +375,6 @@ public abstract class ActivityType extends Element
 	 *
 	 * @param  obj The <code>ActivityType</code> instance to compare to the one
 	 *             represented by the called instance
-	 *
 	 * @return     <code>True</code> if the two <code>ActivityType</code>
 	 *             instances are equal, <code>False</code> otherwise
 	 */
@@ -521,7 +452,6 @@ public abstract class ActivityType extends Element
 	 * contents of this <code>ActivityType</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
 	 * @return       The initialized <code>Builder</code>
 	 */
 

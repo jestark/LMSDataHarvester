@@ -23,8 +23,11 @@ import java.util.Set;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Implementation of the <code>ActivitySource</code> interface.  It is expected
@@ -39,11 +42,50 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
 public class ActivitySourceData extends ActivitySource
 {
+	/**
+	 * <code>Builder</code> for <code>ActivitySourceData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.ActivitySource.Builder
+	 */
+
+	public static final class Builder extends ActivitySource.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister The <code>Persister</code> used to store the
+		 *                   <code>Role</code>, not null
+		 */
+
+		private Builder (final Persister<ActivitySource> persister)
+		{
+			super (persister);
+		}
+
+		/**
+		 * Create an instance of the <code>ActivitySource</code>.
+		 *
+		 * @return The new <code>ActivitySource</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected ActivitySource createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new ActivitySourceData (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key of the activity source */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The name of the activity source */
 	private String name;
@@ -59,6 +101,23 @@ public class ActivitySourceData extends ActivitySource
 	{
 		this.id = null;
 		this.name = null;
+
+		this.types = new HashSet<ActivityType> ();
+	}
+
+	/**
+	 * Create an <code>ActivitySource</code> from the supplied
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected ActivitySourceData (final Builder builder)
+	{
+		super (builder);
+
+		this.id = builder.getId ();
+		this.name = Preconditions.checkNotNull (builder.getName (), "name");
 
 		this.types = new HashSet<ActivityType> ();
 	}
@@ -160,7 +219,6 @@ public class ActivitySourceData extends ActivitySource
 	 * <code>ActivitySource</code>.
 	 *
 	 * @param  type   The <code>ActivityType</code> to add, not null
-	 *
 	 * @return        <code>True</code> if the <code>ActivityType</code> was
 	 *                successfully added, <code>False</code> otherwise
 	 */
@@ -178,7 +236,6 @@ public class ActivitySourceData extends ActivitySource
 	 * <code>ActivitySource</code>.
 	 *
 	 * @param  type   The <code>ActivityType</code> to remove, not null
-	 *
 	 * @return        <code>True</code> if the <code>ActivityType</code> was
 	 *                successfully removed, <code>False</code> otherwise
 	 */

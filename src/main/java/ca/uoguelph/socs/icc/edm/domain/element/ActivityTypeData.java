@@ -19,8 +19,12 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
@@ -35,11 +39,55 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
 public class ActivityTypeData extends ActivityType
 {
+	/**
+	 * <code>Builder</code> for <code>ActivityTypeData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.ActivityType.Builder
+	 */
+
+	public static final class Builder extends ActivityType.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister       The <code>Persister</code> used to store the
+		 *                         <code>Role</code>, not null
+		 * @param  sourceRetriever <code>Retriever</code> for
+		 *                         <code>ActivitySource</code> instances, not
+		 *                         null
+		 */
+
+		private Builder (
+				final Persister<ActivityType> persister,
+				final Retriever<ActivitySource> sourceRetriever)
+		{
+			super (persister, sourceRetriever);
+		}
+
+		/**
+		 * Create an instance of the <code>ActivityType</code>.
+		 *
+		 * @return The new <code>ActivityType</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected ActivityType createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new ActivityTypeData (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key of the activity type */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The name of the activity type */
 	private String name;
@@ -56,6 +104,23 @@ public class ActivityTypeData extends ActivityType
 		this.id = null;
 		this.name = null;
 		this.source = null;
+	}
+
+	/**
+	 * Create an <code>ActivityType</code> from the supplied
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected ActivityTypeData (final Builder builder)
+	{
+		super (builder);
+		assert builder != null : "builder is NULL";
+
+		this.id = builder.getId ();
+		this.name = Preconditions.checkNotNull (builder.getName (), "name");
+		this.source = Preconditions.checkNotNull (builder.getActivitySource (), "source");
 	}
 
 	/**

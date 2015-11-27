@@ -22,8 +22,14 @@ import java.util.stream.Stream;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -80,17 +86,173 @@ public abstract class Element implements Serializable
 	 * @param   <T> The type of <code>Element</code> to be created
 	 */
 
-	public interface Builder<T extends Element>
+	public static abstract class Builder<T extends Element>
 	{
+		/** The Logger */
+		protected final Logger log;
+
+		/** The <code>Persister</code> used to store the <code>Element</code> */
+		protected final Persister<T> persister;
+
+		/** The previously created or loaded <code>Element</code> instance */
+		protected @Nullable T element;
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister The <code>Persister</code>, not null
+		 */
+
+		protected Builder (final Persister<T> persister)
+		{
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			this.persister = Preconditions.checkNotNull (persister, "persister");
+			this.element = null;
+		}
+
+		/**
+		 * Verify a relationship.  This utility method verifies that the
+		 * supplied <code>Element</code> instance is not null, and that it
+		 * exists in the <code>DataStore</code> that is associated with this
+		 * <code>Builder</code>.  The supplied <code>Element</code>instance will
+		 * substituted with the version in the <code>DataStore</code> if
+		 * necessary, and the two instances will be verified to be identical
+		 * using the <code>equalsAll</code> method.
+		 *
+		 * @param  <R>       The type of the related <code>Element</code>
+		 * @param  retriever The <code>Retriever</code> for the relationship,
+		 *                   not null
+		 * @param  element   The <code>Element</code> to verify
+		 * @param  msg       The message to place in the exception if the
+		 *                   <code>Element</code> is null, not null
+		 * @return           The <code>Element</code> instance from the
+		 *                   <code>DataStore</code>
+		 *
+		 * @throws NullPointerException     if the supplied <code>Element</code>
+		 *                                  instance is null
+		 * @throws IllegalArgumentException if the supplied <code>Element</code>
+		 *                                  does not exist in the
+		 *                                  <code>DataStore</code>
+		 * @throws IllegalArgumentException if the supplied <code>Element</code>
+		 *                                  is not identical to the instance in
+		 *                                  the <code>DataStore</code>
+		 */
+
+		protected final <R extends Element> R verifyRelationship (
+				final Retriever<R> retriever,
+				final @Nullable R element,
+				final String msg)
+		{
+			assert retriever != null : "retriever is NULL";
+			assert msg != null : "msg is NULL";
+
+			Preconditions.checkNotNull (element, msg);
+
+			R result = retriever.fetch (element);
+
+			Preconditions.checkArgument (result != null,
+					"Element is not in the DataStore: %s", element.toString ());
+			Preconditions.checkArgument (result.equalsAll (element),
+					"Element is not identical to the instance in the DataStore");
+
+			return result;
+		}
+
+		/**
+		 * Update the <code>Element</code> if only mutable fields have changed.
+		 * This method determines if the existing <code>Element</code> instance
+		 * should be modified, rather than creating a new <code>Element</code>
+		 * instance, and performs the modification.  The default implementation
+		 * assumes that the <code>Element</code> is immutable and returns
+		 * <code>false</code> unconditionally.
+		 *
+		 * @return <code>true</code> if the <code>Element</code> was modified,
+		 *         <code>false</code> otherwise
+		 */
+
+		protected boolean updateElement ()
+		{
+			return false;
+		}
+
 		/**
 		 * Create an instance of the <code>Element</code>.
 		 *
-		 * @return                       The new <code>Element</code> instance
-		 * @throws IllegalStateException If any if the fields is missing
+		 * @return The new <code>Element</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		protected abstract T createElement ();
+
+		/**
+		 * Reset the builder.  This method will set all of the fields for the
+		 * <code>Element</code> to be built to <code>null</code>.
+		 *
+		 * @return This <code>Builder</code>
+		 */
+
+		public Builder<T> clear ()
+		{
+			this.element = null;
+
+			return this;
+		}
+
+		/**
+		 * Load an <code>Element</code> instance into the builder.  This method
+		 * resets the builder and initializes all of its parameters from
+		 * the specified <code>Element</code> instance.  The  parameters are
+		 * validated as they are set.
+		 *
+		 * @param  element The <code>Element</code>, not null
+		 * @return         This <code>Builder</code>
+		 *
+		 * @throws IllegalArgumentException If any of the fields in the
+		 *                                  <code>Element</code> instance to be
+		 *                                  loaded are not valid
+		 */
+
+		public Builder<T> load (final T element)
+		{
+			this.element = Preconditions.checkNotNull (element, "element");
+
+			return this;
+		}
+
+		/**
+		 * Create an instance of the <code>Element</code>.
+		 *
+		 * @return The new <code>Element</code> instance
+		 *
+		 * @throws IllegalStateException If any if the fields are missing
 		 * @throws IllegalStateException If there isn't an active transaction
 		 */
 
-		public T build ();
+		public final T build ()
+		{
+			this.log.trace ("build:");
+
+			if (! this.updateElement ())
+			{
+				this.element = this.persister.insert (this.element, this.createElement ());
+			}
+
+			return this.element;
+		}
+
+		/**
+		 * Get a reference to the <code>DomainModel</code> which contains the
+		 * <code>Element</code>.
+		 *
+		 * @return A reference to the <code>DomainModel</code>
+		 */
+
+		public final DomainModel getDomainModel ()
+		{
+			return null;
+		}
 	}
 
 	/** Serial version id, required by the Serializable interface */
@@ -106,6 +268,20 @@ public abstract class Element implements Serializable
 	protected Element ()
 	{
 		this.model = null;
+	}
+
+	/**
+	 * Create the <code>Element</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected Element (final Builder<? extends Element> builder)
+	{
+		assert builder != null : "builder is NULL";
+
+		this.model = Preconditions.checkNotNull (builder.getDomainModel ());
 	}
 
 	/**
@@ -151,7 +327,6 @@ public abstract class Element implements Serializable
 	 *
 	 * @param  element The <code>Element</code> instance to compare to this
 	 *                 instance
-	 *
 	 * @return         <code>True</code> if the two <code>Enrolment</code>
 	 *                 instances are equal, <code>False</code> otherwise
 	 */
@@ -169,7 +344,6 @@ public abstract class Element implements Serializable
 	 *
 	 * @param  element The <code>Element</code> instance to compare to this
 	 *                 instance
-	 *
 	 * @return         <code>True</code> if the two <code>Enrolment</code>
 	 *                 instances are equal, <code>False</code> otherwise
 	 */

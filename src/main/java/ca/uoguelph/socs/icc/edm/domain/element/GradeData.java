@@ -19,11 +19,15 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Implementation of the <code>Grade</code> interface.  It is expected that
@@ -37,6 +41,52 @@ import ca.uoguelph.socs.icc.edm.domain.Grade;
 
 public class GradeData extends Grade
 {
+	/**
+	 * <code>Builder</code> for <code>GradeData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.Grade.Builder
+	 */
+
+	public static final class Builder extends Grade.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister          The <code>Persister</code> used to store
+		 *                            the <code>Enrolment</code>, not null
+		 * @param  activityRetriever  <code>Retriever</code> for
+		 *                            <code>Role</code> instances, not null
+		 * @param  enrolmentRetriever <code>Retriever</code> for
+		 *                            <code>Enrolment</code> instances, not null
+		 */
+
+		private Builder (
+				final Persister<Grade> persister,
+				final Retriever<Activity> activityRetriever,
+				final Retriever<Enrolment> enrolmentRetriever)
+		{
+			super (persister, activityRetriever, enrolmentRetriever);
+		}
+
+		/**
+		 * Create an instance of the <code>Grade</code>.
+		 *
+		 * @return The new <code>Grade</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected Grade createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new GradeData (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -58,6 +108,21 @@ public class GradeData extends Grade
 		this.grade = null;
 		this.activity = null;
 		this.enrolment = null;
+	}
+
+	/**
+	 * Create an <code>Grade</code> from the supplied <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	private GradeData (final Builder builder)
+	{
+		super (builder);
+
+		this.enrolment = Preconditions.checkNotNull (builder.getEnrolment (), "enrolment");
+//		this.activity = Preconditions.checkNotNull (builder.getActivity (), "activity");
+		this.grade = Preconditions.checkNotNull (builder.getGrade (), "grade");
 	}
 
 	/**

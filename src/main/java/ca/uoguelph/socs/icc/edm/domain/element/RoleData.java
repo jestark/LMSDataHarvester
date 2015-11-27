@@ -19,7 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Role;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Implementation of the <code>Role</code> interface.  It is expected that
@@ -33,11 +36,50 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 
 public class RoleData extends Role
 {
+	/**
+	 * <code>Builder</code> for <code>RoleData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.Role.Builder
+	 */
+
+	public static final class Builder extends Role.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister The <code>Persister</code> used to store the
+		 *                   <code>Role</code>, not null
+		 */
+
+		private Builder (final Persister<Role> persister)
+		{
+			super (persister);
+		}
+
+		/**
+		 * Create an instance of the <code>Role</code>.
+		 *
+		 * @return The new <code>Role</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected Role createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new RoleData (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key for the <code>Role</code> */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The name of the <code>Role</code> */
 	private String name;
@@ -50,6 +92,20 @@ public class RoleData extends Role
 	{
 		this.id = null;
 		this.name = null;
+	}
+
+	/**
+	 * Create an <code>Role</code> from the supplied <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected RoleData (final Builder builder)
+	{
+		super (builder);
+
+		this.id = builder.getId ();
+		this.name = Preconditions.checkNotNull (builder.getName (), "name");
 	}
 
 	/**

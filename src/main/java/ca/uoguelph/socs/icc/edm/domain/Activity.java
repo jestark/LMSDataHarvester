@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -30,9 +29,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
@@ -106,28 +102,14 @@ public abstract class Activity extends ParentActivity
 	 * @version 1.0
 	 */
 
-	public static class Builder implements Element.Builder<Activity>
+	public static abstract class Builder extends Element.Builder<Activity>
 	{
-		/** The Logger */
-		protected final Logger log;
-
 		/** Builder to create the <code>ActivityReferences</code> */
 		protected final ActivityReference.Builder referenceBuilder;
-
-		/** Helper to operate on <code>Activity</code> instances*/
-		protected final Persister<Activity> persister;
-
-		/** Method reference to the constructor of the implementation class */
-		protected final Supplier<Activity> supplier;
-
-		/** The loaded or previously built <code>SubActivity</code> instance */
-		protected Activity activity;
 
 		/**
 		 * Create the <code>AbstractBuilder</code>.
 		 *
-		 * @param  supplier         Method reference to the constructor of the
-		 *                          implementation class, not null
 		 * @param  persister        The <code>Persister</code> used to store the
 		 *                          <code>Activity</code>, not null
 		 * @param  referenceBuilder Builder for the internal
@@ -136,42 +118,14 @@ public abstract class Activity extends ParentActivity
 		 */
 
 		protected Builder (
-				final Supplier<Activity> supplier,
 				final Persister<Activity> persister,
 				final ActivityReference.Builder referenceBuilder)
 		{
-			assert supplier != null : "supplier is null";
-			assert persister != null : "persister is NULL";
+			super (persister);
+
 			assert referenceBuilder != null : "referenceBuilder is NULL";
 
-			this.log = LoggerFactory.getLogger (this.getClass ());
-
 			this.referenceBuilder = referenceBuilder;
-			this.persister = persister;
-			this.supplier = supplier;
-
-			this.activity = null;
-		}
-
-		/**
-		 * Create an instance of the <code>Activity</code>.
-		 *
-		 * @return                       The new <code>Activity</code> instance
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
-		 */
-
-		@Override
-		public Activity build ()
-		{
-			this.log.trace ("build:");
-
-			Activity result = this.supplier.get ();
-			result.setReference (this.referenceBuilder.build ());
-
-			this.activity = this.persister.insert (this.activity, result);
-
-			return this.activity;
 		}
 
 		/**
@@ -181,13 +135,15 @@ public abstract class Activity extends ParentActivity
 		 * @return This <code>ActionBuilder</code>
 		 */
 
+		@Override
 		public Builder clear ()
 		{
 			this.log.trace ("clear:");
 
+			super.clear ();
+
 			ActivityType type = this.referenceBuilder.getType ();
 
-			this.activity = null;
 			this.referenceBuilder.clear ();
 			this.referenceBuilder.setType (type);
 
@@ -200,22 +156,19 @@ public abstract class Activity extends ParentActivity
 		 * the specified <code>Activity</code> instance.  The  parameters are
 		 * validated as they are set.
 		 *
-		 * @param  activity                 The <code>Activity</code>, not null
+		 * @param  activity The <code>Activity</code>, not null
 		 *
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>Activity</code> instance to be
 		 *                                  loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final Activity activity)
 		{
 			this.log.trace ("load: activity={}", activity);
 
-			if (activity == null)
-			{
-				this.log.error ("Attempting to load a NULL Activity");
-				throw new NullPointerException ();
-			}
+			super.load (activity);
 
 			if (! (this.getType ()).equals (activity.getType ()))
 			{
@@ -223,7 +176,6 @@ public abstract class Activity extends ParentActivity
 				throw new IllegalArgumentException ("Invalid ActivityType");
 			}
 
-			this.activity = activity;
 			this.referenceBuilder.load (activity.getReference ());
 
 			return this;
@@ -247,6 +199,7 @@ public abstract class Activity extends ParentActivity
 		 * @return The <code>Course</code> instance
 		 */
 
+		@CheckReturnValue
 		public final Course getCourse ()
 		{
 			return this.referenceBuilder.getCourse ();
@@ -256,7 +209,7 @@ public abstract class Activity extends ParentActivity
 		 * Set the <code>Course</code> with which the <code>Activity</code> is
 		 * associated.
 		 *
-		 * @param  course                   The <code>Course</code>, not null
+		 * @param  course The <code>Course</code>, not null
 		 *
 		 * @throws IllegalArgumentException If the <code>Course</code> does not
 		 *                                  exist in the <code>DataStore</code>
@@ -385,7 +338,6 @@ public abstract class Activity extends ParentActivity
 	 * registered for the specified <code>ActivityType</code>.
 	 *
 	 * @param  type The <code>ActivityType</code>, not null
-	 *
 	 * @return      <code>true</code> if an <code>Activity</code>
 	 *              implementation class has been registered for the specified
 	 *              <code>ActivityType</code>, <code>false</code> otherwise
@@ -403,7 +355,6 @@ public abstract class Activity extends ParentActivity
 	 * with the specified <code>ActivityType</code>.
 	 *
 	 * @param  type The <code>ActivityType</code>
-	 *
 	 * @return      The <code>Activity </code> data class for the given
 	 *              <code>ActivityType</code>, may be null
 	 */
@@ -419,10 +370,10 @@ public abstract class Activity extends ParentActivity
 	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  type                  The <code>ActivityType</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  type  The <code>ActivityType</code>, not null
+	 * @return       The <code>Builder</code> instance
 	 *
-	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> does not
 	 *                               have a default implementation class for
@@ -451,6 +402,20 @@ public abstract class Activity extends ParentActivity
 	}
 
 	/**
+	 * Create the <code>Activity</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected Activity (final Builder builder)
+	{
+		super (builder);
+
+//		this.reference = Preconditions.checkNotNull (builder.getReference ());
+	}
+
+	/**
 	 * Template method to create and initialize a <code>ToStringHelper</code>.
 	 *
 	 * @return The <code>ToStringHelper</code>
@@ -470,7 +435,6 @@ public abstract class Activity extends ParentActivity
 	 *
 	 * @param  obj The <code>Activity</code> instance to compare to the one
 	 *             represented by the called instance
-	 *
 	 * @return     <code>True</code> if the two <code>Activity</code> instances
 	 *             are equal, <code>False</code> otherwise
 	 */
@@ -547,7 +511,6 @@ public abstract class Activity extends ParentActivity
 	 * contents of this <code>Activity</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
 	 * @return       The initialized <code>Builder</code>
 	 */
 

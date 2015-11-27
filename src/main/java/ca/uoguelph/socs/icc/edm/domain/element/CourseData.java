@@ -26,11 +26,14 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Semester;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Implementation of the <code>Course</code> interface.  It is expected that
@@ -44,11 +47,50 @@ import ca.uoguelph.socs.icc.edm.domain.Semester;
 
 public class CourseData extends Course
 {
+	/**
+	 * <code>Builder</code> for <code>CourseData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.Course.Builder
+	 */
+
+	public static final class Builder extends Course.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister The <code>Persister</code> used to store the
+		 *                   <code>Role</code>, not null
+		 */
+
+		private Builder (final Persister<Course> persister)
+		{
+			super (persister);
+		}
+
+		/**
+		 * Create an instance of the <code>Course</code>.
+		 *
+		 * @return The new <code>Course</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected Course createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new CourseData (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key of the course. */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The name of the course. */
 	private String name;
@@ -75,6 +117,25 @@ public class CourseData extends Course
 		this.name = null;
 		this.semester = null;
 		this.year = null;
+
+		this.activities = new ArrayList<ActivityReference> ();
+		this.enrolments = new HashSet<Enrolment> ();
+	}
+
+	/**
+	 * Create an <code>Course</code> from the supplied <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected CourseData (final Builder builder)
+	{
+		super (builder);
+
+		this.id = builder.getId ();
+		this.name = Preconditions.checkNotNull (builder.getName (), "name");
+		this.semester = Preconditions.checkNotNull (builder.getSemester (), "semester");
+		this.year = Preconditions.checkNotNull (builder.getYear (), "year");
 
 		this.activities = new ArrayList<ActivityReference> ();
 		this.enrolments = new HashSet<Enrolment> ();
@@ -247,7 +308,6 @@ public class CourseData extends Course
 	 * <code>Course</code>.
 	 *
 	 * @param  activity The <code>ActivityReference</code> to add, not null
-	 *
 	 * @return          <code>True</code> if the <code>ActivityReference</code>
 	 *                  was successfully added, <code>False</code> otherwise
 	 */
@@ -265,7 +325,6 @@ public class CourseData extends Course
 	 * <code>Course</code>.
 	 *
 	 * @param  activity The <code>ActivityReference</code> to remove,  not null
-	 *
 	 * @return          <code>True</code> if the <code>ActivityReference</code>
 	 *                  was successfully removed, <code>False</code> otherwise
 	 */
@@ -315,7 +374,6 @@ public class CourseData extends Course
 	 * Add the specified <code>Enrolment</code> to the <code>Course</code>.
 	 *
 	 * @param  enrolment The <code>Enrolment</code> to add, not null
-	 *
 	 * @return           <code>True</code> if the <code>Enrolment</code> was
 	 *                   successfully added, <code>False</code> otherwise
 	 */
@@ -333,7 +391,6 @@ public class CourseData extends Course
 	 * <code>Course</code>.
 	 *
 	 * @param  enrolment The <code>Enrolment</code> to remove, not null
-	 *
 	 * @return           <code>True</code> if the <code>Enrolment</code> was
 	 *                   successfully removed, <code>False</code> otherwise
 	 */

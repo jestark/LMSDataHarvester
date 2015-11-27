@@ -16,22 +16,25 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.NamedActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/label
@@ -55,6 +58,50 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 public class Label extends NamedActivity
 {
+	/**
+	 * <code>Builder</code> for <code>Label</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.NamedActivity.Builder
+	 */
+
+	public static final class Builder extends NamedActivity.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister        The <code>Persister</code> used to store the
+		 *                          <code>Activity</code>, not null
+		 * @param  referenceBuilder Builder for the internal
+		 *                          <code>ActivityReference</code> instance, not
+		 *                          null
+		 */
+
+		private Builder (
+				final Persister<Activity> persister,
+				final ActivityReference.Builder referenceBuilder)
+		{
+			super (persister, referenceBuilder);
+		}
+
+		/**
+		 * Create an instance of the <code>Activity</code>.
+		 *
+		 * @return The new <code>Activity</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected Activity createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new Label (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -87,6 +134,22 @@ public class Label extends NamedActivity
 	protected Label ()
 	{
 		this.name = null;
+
+		this.grades = new HashSet<Grade> ();
+		this.subActivities = new ArrayList<SubActivity> ();
+	}
+
+	/**
+	 * Create an <code>Activity</code> from the supplied <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected Label (final Builder builder)
+	{
+		super (builder);
+
+		this.name = Preconditions.checkNotNull (builder.getName (), "name");
 
 		this.grades = new HashSet<Grade> ();
 		this.subActivities = new ArrayList<SubActivity> ();

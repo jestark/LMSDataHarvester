@@ -23,11 +23,15 @@ import java.util.List;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Implementation of <code>ActivityReference</code>.
@@ -38,11 +42,57 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 public class ActivityReferenceData extends ActivityReference
 {
+	/**
+	 * <code>Builder</code> for <code>ActivityReferenceData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.ActivityReference.Builder
+	 */
+
+	public static final class Builder extends ActivityReference.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister       The <code>Persister</code> used to store the
+		 *                         <code>ActivityReference</code>, not null
+		 * @param  typeRetriever   <code>Retriever</code> for
+		 *                         <code>ActivityType</code> instances, not null
+		 * @param  courseRetriever <code>Retriever</code> for <code>Course</code>
+		 *                         instances, not null
+		 */
+
+		private Builder (
+				final Persister<ActivityReference> persister,
+				final Retriever<ActivityType> typeRetriever,
+				final Retriever<Course> courseRetriever)
+		{
+			super (persister, typeRetriever, courseRetriever);
+		}
+
+		/**
+		 * Create an instance of the <code>ActivityReference</code>.
+		 *
+		 * @return The new <code>ActivityReference</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected ActivityReference createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new ActivityReferenceData (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key for the <code>Activity</code> */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The associated <code>Course</code> */
 	private Course course;
@@ -66,6 +116,25 @@ public class ActivityReferenceData extends ActivityReference
 		this.activity = null;
 		this.course = null;
 		this.type = null;
+		this.log = new ArrayList<LogEntry> ();
+	}
+
+	/**
+	 * Create an <code>ActivityReference</code> from the supplied
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected ActivityReferenceData (final Builder builder)
+	{
+		super (builder);
+
+		this.id = builder.getId ();
+		this.course = Preconditions.checkNotNull (builder.getCourse (), "course");
+		this.type = Preconditions.checkNotNull (builder.getType (), "type");
+
+		this.activity = null;
 		this.log = new ArrayList<LogEntry> ();
 	}
 
@@ -220,7 +289,6 @@ public class ActivityReferenceData extends ActivityReference
 	 * <code>ActivityReference</code>.
 	 *
 	 * @param  entry    The <code>LogEntry</code> to add, not null
-	 *
 	 * @return          <code>True</code> if the <code>LogEntry</code> was
 	 *                  successfully added, <code>False</code> otherwise
 	 */
@@ -238,7 +306,6 @@ public class ActivityReferenceData extends ActivityReference
 	 * <code>ActivityReference</code>.
 	 *
 	 * @param  entry    The <code>LogEntry</code> to remove, not null
-	 *
 	 * @return          <code>True</code> if the <code>LogEntry</code> was
 	 *                  successfully removed, <code>False</code> otherwise
 	 */

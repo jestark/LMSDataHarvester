@@ -32,6 +32,27 @@ public abstract class ParentActivity extends Element
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Create the <code>ParentActivity</code>
+	 */
+
+	protected ParentActivity ()
+	{
+		super ();
+	}
+
+	/**
+	 * Create the <code>ParentActivity</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected ParentActivity (final Element.Builder<? extends ParentActivity> builder)
+	{
+		super (builder);
+	}
+
+	/**
 	 * Get the <code>Course</code> with which the <code>Activity</code> is
 	 * associated.
 	 *

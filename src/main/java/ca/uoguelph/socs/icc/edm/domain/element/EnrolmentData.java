@@ -25,12 +25,16 @@ import java.util.Set;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Implementation of the <code>Enrolment</code> interface.  It is expected that
@@ -48,11 +52,57 @@ import ca.uoguelph.socs.icc.edm.domain.Role;
 
 public class EnrolmentData extends Enrolment
 {
+	/**
+	 * <code>Builder</code> for <code>EnrolmentData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.Enrolment.Builder
+	 */
+
+	public static final class Builder extends Enrolment.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister       The <code>Persister</code> used to store the
+		 *                         <code>Enrolment</code>, not null
+		 * @param  roleRetriever   <code>Retriever</code> for <code>Role</code>
+		 *                         instances, not null
+		 * @param  courseRetriever <code>Retriever</code> for
+		 *                         <code>Course</code> instances, not null
+		 */
+
+		private Builder (
+				final Persister<Enrolment> persister,
+				final Retriever<Course> courseRetriever,
+				final Retriever<Role> roleRetriever)
+		{
+			super (persister, courseRetriever, roleRetriever);
+		}
+
+		/**
+		 * Create an instance of the <code>Enrolment</code>.
+		 *
+		 * @return The new <code>Enrolment</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected Enrolment createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new EnrolmentData (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key of the enrolment */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The course associated with the enrolment */
 	private Course course;
@@ -61,7 +111,7 @@ public class EnrolmentData extends Enrolment
 	private Role role;
 
 	/** The user's final grade in the associated course */
-	protected Integer finalGrade;
+	protected @Nullable Integer finalGrade;
 
 	/** Flag indicating if the enrolment can be used for research */
 	protected Boolean usable;
@@ -84,6 +134,26 @@ public class EnrolmentData extends Enrolment
 		this.finalGrade = null;
 
 		this.usable = Boolean.valueOf (false);
+
+		this.grades = new HashSet<Grade> ();
+		this.log = new ArrayList<LogEntry> ();
+	}
+
+	/**
+	 * Create an <code>Enrolment</code> from the supplied <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	private EnrolmentData (final Builder builder)
+	{
+		super (builder);
+
+		this.id = builder.getId ();
+		this.course = Preconditions.checkNotNull (builder.getCourse (), "course");
+		this.role = Preconditions.checkNotNull (builder.getRole (), "role");
+		this.usable = Preconditions.checkNotNull (builder.isUsable (), "usable");
+		this.finalGrade = builder.getFinalGrade ();
 
 		this.grades = new HashSet<Grade> ();
 		this.log = new ArrayList<LogEntry> ();

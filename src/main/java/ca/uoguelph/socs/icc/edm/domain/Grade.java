@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -25,9 +24,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
@@ -71,40 +67,26 @@ public abstract class Grade extends Element
 	 * @version 1.0
 	 */
 
-	public static final class Builder implements Element.Builder<Grade>
+	public static abstract class Builder extends Element.Builder<Grade>
 	{
-		/** The Logger */
-		private final Logger log;
-
 		/** Helper to substitute <code>Activity</code> instances */
 		private final Retriever<Activity> activityRetriever;
 
 		/** Helper to substitute <code>Enrolment</code> instances */
 		private final Retriever<Enrolment> enrolmentRetriever;
 
-		/** Helper to operate on <code>Grade</code> instances */
-		private final Persister<Grade> persister;
-
-		/** Method reference to the constructor of the implementation class */
-		private final Supplier<Grade> supplier;
-
-		/** The loaded or previously built <code>Grade</code> instance */
-		private Grade grade;
-
 		/** The associated <code>Activity</code> */
-		private Activity activity;
+		private @Nullable Activity activity;
 
 		/** The associated <code>Enrolment</code> */
-		private Enrolment enrolment;
+		private @Nullable Enrolment enrolment;
 
 		/** The value of the <code>Grade</code> */
-		private Integer value;
+		private @Nullable Integer value;
 
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  supplier           Method reference to the constructor of the
-		 *                            implementation class, not null
 		 * @param  persister          The <code>Persister</code> used to store
 		 *                            the <code>Enrolment</code>, not null
 		 * @param  activityRetriever  <code>Retriever</code> for
@@ -114,41 +96,50 @@ public abstract class Grade extends Element
 		 */
 
 		protected Builder (
-				final Supplier<Grade> supplier,
 				final Persister<Grade> persister,
 				final Retriever<Activity> activityRetriever,
 				final Retriever<Enrolment> enrolmentRetriever)
 		{
-			assert supplier != null : "supplier is NULL";
-			assert persister != null : "persister is NULL";
+			super (persister);
+
 			assert activityRetriever != null : "activityRetriever is NULL";
 			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
 
-			this.log = LoggerFactory.getLogger (this.getClass ());
-
 			this.activityRetriever = activityRetriever;
 			this.enrolmentRetriever = enrolmentRetriever;
-			this.persister = persister;
-			this.supplier = supplier;
 
-			this.grade = null;
 			this.activity = null;
 			this.enrolment = null;
 			this.value = null;
 		}
 
+		@Override
+		protected boolean updateElement ()
+		{
+			this.log.trace ("updateElement:");
+
+			boolean result = false;
+
+			if (this.element != null
+					&& this.element.getActivity () == this.activity
+					&& this.element.getEnrolment () == this.enrolment)
+			{
+				this.element.setGrade (this.value);
+			}
+
+			return result;
+		}
+
 		/**
 		 * Create an instance of the <code>Grade</code>.
 		 *
-		 * @return                       The new <code>Grade</code> instance
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
+		 * @return The new <code>Grade</code> instance
 		 */
 
-		@Override
-		public Grade build ()
+/*		@Override
+		protected Grade createElement ()
 		{
-			this.log.trace ("build:");
+			this.log.trace ("createElement:");
 
 			if (this.activity == null)
 			{
@@ -168,31 +159,22 @@ public abstract class Grade extends Element
 				throw new IllegalStateException ("grade is NULL");
 			}
 
-			if ((this.grade == null)
-					|| (this.grade.getActivity () != this.activity)
-					|| (this.grade.getEnrolment () != this.enrolment))
-			{
-				Grade result = this.supplier.get ();
-				result.setActivityReference (this.activity.getReference ());
-				result.setEnrolment (this.enrolment);
-				result.setGrade (this.value);
+			Grade result = this.supplier.get ();
+			result.setActivityReference (this.activity.getReference ());
+			result.setEnrolment (this.enrolment);
+			result.setGrade (this.value);
 
-				this.grade = this.persister.insert (this.grade, result);
+			this.element = this.persister.insert (this.element, result);
 
-				if (! this.grade.equalsAll (result))
-				{
-					this.log.error ("Grade is already in the datastore with a value of: {} vs. the specified value: {}", this.grade.getGrade (), this.value);
-					throw new IllegalStateException ("Grade already exists but with a different value");
-				}
-			}
-			else
+			if (! this.element.equalsAll (result))
 			{
-				this.grade.setGrade (this.value);
+				this.log.error ("Grade is already in the datastore with a value of: {} vs. the specified value: {}", this.element.getGrade (), this.value);
+				throw new IllegalStateException ("Grade already exists but with a different value");
 			}
 
-			return this.grade;
+			return result;
 		}
-
+*/
 		/**
 		 * Reset the builder.  This method will set all of the fields for the
 		 * <code>Element</code> to be built to <code>null</code>.
@@ -200,11 +182,13 @@ public abstract class Grade extends Element
 		 * @return This <code>Builder</code>
 		 */
 
+		@Override
 		public Builder clear ()
 		{
 			this.log.trace ("clear:");
 
-			this.grade = null;
+			super.clear ();
+
 			this.activity = null;
 			this.enrolment = null;
 			this.value = null;
@@ -218,7 +202,8 @@ public abstract class Grade extends Element
 		 * the specified <code>Grade</code> instance.  The  parameters are
 		 * validated as they are set.
 		 *
-		 * @param  grade                    The <code>Grade</code>, not null
+		 * @param  grade The <code>Grade</code>, not null
+		 * @return       This <code>Builder</code>
 		 *
 		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If any of the fields in the
@@ -226,17 +211,13 @@ public abstract class Grade extends Element
 		 *                                  loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final Grade grade)
 		{
 			this.log.trace ("load: grade={}", grade);
 
-			if (grade == null)
-			{
-				this.log.error ("Attempting to load a NULL Grade");
-				throw new NullPointerException ();
-			}
+			super.load (grade);
 
-			this.grade = grade;
 			this.setActivity (grade.getActivity ());
 			this.setEnrolment (grade.getEnrolment ());
 			this.setGrade (grade.getGrade ());
@@ -251,7 +232,8 @@ public abstract class Grade extends Element
 		 * @return The associated <code>Activity</code>
 		 */
 
-		public Activity getActivity ()
+		@CheckReturnValue
+		public final Activity getActivity ()
 		{
 			return this.activity;
 		}
@@ -260,32 +242,20 @@ public abstract class Grade extends Element
 		 * Set the <code>Activity</code> which is associated with the
 		 * <code>Grade</code>.
 		 *
-		 * @param  activity                 The <code>Activity</code>, not null
+		 * @param  activity The <code>Activity</code>, not null
+		 * @return          This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException if the <code>Activity</code> is not
 		 *                                  in the <code>DataStore</code>
 		 * @throws IllegalArgumentException if the <code>Activity</code> is not
 		 *                                  a <code>NamedActivity</code>
 		 */
 
-		public Builder setActivity (final Activity activity)
+		public final Builder setActivity (final Activity activity)
 		{
 			this.log.trace ("setActivity: activity={}", activity);
 
-			if (activity == null)
-			{
-				this.log.error ("The specified activity is NULL");
-				throw new NullPointerException ("The specified activity is NULL");
-			}
-
-			this.activity = this.activityRetriever.fetch (activity);
-
-			if (this.activity == null)
-			{
-				this.log.error ("The specified Activity does not exist in the DataStore");
-				throw new IllegalArgumentException ("Activity is not in the DataStore");
-			}
+			this.activity = this.verifyRelationship (this.activityRetriever, activity, "activity");
 
 			if (! (this.activity instanceof NamedActivity))
 			{
@@ -303,7 +273,8 @@ public abstract class Grade extends Element
 		 * @return The associated <code>Enrolment</code>
 		 */
 
-		public Enrolment getEnrolment ()
+		@CheckReturnValue
+		public final Enrolment getEnrolment ()
 		{
 			return this.enrolment;
 		}
@@ -312,30 +283,18 @@ public abstract class Grade extends Element
 		 * Set the <code>Enrolment</code> which is associated with the
 		 * <code>Grade</code>.
 		 *
-		 * @param  enrolment                The <code>Enrolment</code>, not null
+		 * @param  enrolment The <code>Enrolment</code>, not null
+		 * @return           This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException if the <code>Activity</code> is not
 		 *                                  in the <code>DataStore</code>
 		 */
 
-		public Builder setEnrolment (final Enrolment enrolment)
+		public final Builder setEnrolment (final Enrolment enrolment)
 		{
 			this.log.trace ("setEnrolment: enrolment={}", enrolment);
 
-			if (enrolment == null)
-			{
-				this.log.error ("The specified Enrolment is NULL");
-				throw new NullPointerException ("The specified Enrolment is NULL");
-			}
-
-			this.enrolment = this.enrolmentRetriever.fetch (enrolment);
-
-			if (this.enrolment == null)
-			{
-				this.log.error ("The specified Enrolment does not exist in the DataStore");
-				throw new IllegalArgumentException ("Enrolment is not in the DataStore");
-			}
+			this.enrolment = this.verifyRelationship (this.enrolmentRetriever, enrolment, "enrolment");
 
 			return this;
 		}
@@ -349,7 +308,8 @@ public abstract class Grade extends Element
 		 *         null
 		 */
 
-		public Integer getGrade ()
+		@CheckReturnValue
+		public final Integer getGrade ()
 		{
 			return this.value;
 		}
@@ -357,35 +317,19 @@ public abstract class Grade extends Element
 		/**
 		 * Set the value of the <code>Grade</code>.
 		 *
-		 * @param  grade                    The value of the <code>Grade</code>,
-		 *                                  not null
+		 * @param  grade The value of the <code>Grade</code>, not null
+		 * @return       This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If the value is less than zero or
 		 *                                  greater than 100
 		 */
 
-		public Builder setGrade (final Integer grade)
+		public final Builder setGrade (final Integer grade)
 		{
 			this.log.trace ("setGrade: grade={}", grade);
 
-			if (grade == null)
-			{
-				this.log.error ("The specified grade is NULL");
-				throw new NullPointerException ("The specified grade is NULL");
-			}
-
-			if (grade < 0)
-			{
-				this.log.error ("Grades can not be negative: {}", grade);
-				throw new IllegalArgumentException ("Grade is negative");
-			}
-
-			if (grade > 100)
-			{
-				this.log.error ("Grades can not be greater than 100%: {}", grade);
-				throw new IllegalArgumentException ("Grade is greater than 100%");
-			}
+			Preconditions.checkNotNull (grade, "grade");
+			Preconditions.checkArgument (grade >= 0 && grade <= 100, "grade must be between 0 and 100");
 
 			this.value = grade;
 
@@ -465,9 +409,9 @@ public abstract class Grade extends Element
 	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @return       The <code>Builder</code> instance
 	 *
-	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> does not
 	 *                               have a default implementation class for
@@ -493,6 +437,18 @@ public abstract class Grade extends Element
 	}
 
 	/**
+	 * Create the <code>Grade</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected Grade (final Builder builder)
+	{
+		super (builder);
+	}
+
+	/**
 	 * Template method to create and initialize a <code>ToStringHelper</code>.
 	 *
 	 * @return The <code>ToStringHelper</code>
@@ -515,7 +471,6 @@ public abstract class Grade extends Element
 	 *
 	 * @param  obj The <code>Grade</code> instance to compare to the one
 	 *             represented by the called instance
-	 *
 	 * @return     <code>True</code> if the two <code>Grade</code> instances
 	 *             are equal, <code>False</code> otherwise
 	 */
@@ -537,7 +492,6 @@ public abstract class Grade extends Element
 	 *
 	 * @param  element The <code>Element</code> instance to compare to this
 	 *                 instance
-	 *
 	 * @return         <code>True</code> if the two <code>Grade</code>
 	 *                 instances are equal, <code>False</code> otherwise
 	 */
@@ -616,7 +570,6 @@ public abstract class Grade extends Element
 	 * contents of this <code>Grade</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
 	 * @return       The initialized <code>Builder</code>
 	 */
 

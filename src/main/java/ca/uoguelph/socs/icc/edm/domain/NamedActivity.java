@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -27,9 +26,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
@@ -56,16 +52,14 @@ public abstract class NamedActivity extends Activity
 	 * @version 1.0
 	 */
 
-	public class Builder extends Activity.Builder
+	public static abstract class Builder extends Activity.Builder
 	{
 		/** The name of the <code>Activity</code> */
-		private String name;
+		private @Nullable String name;
 
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  supplier         Method reference to the constructor of the
-		 *                          implementation class, not null
 		 * @param  persister        The <code>Persister</code> used to store the
 		 *                          <code>Activity</code>, not null
 		 * @param  referenceBuilder Builder for the internal
@@ -74,39 +68,10 @@ public abstract class NamedActivity extends Activity
 		 */
 
 		protected Builder (
-				final Supplier<Activity> supplier,
 				final Persister<Activity> persister,
 				final ActivityReference.Builder referenceBuilder)
 		{
-			super (supplier, persister, referenceBuilder);
-		}
-
-		/**
-		 * Create an instance of the <code>NamedActivity</code>.
-		 *
-		 * @return                       The new <code>Activity</code> instance
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
-		 */
-
-		@Override
-		public Activity build ()
-		{
-			this.log.trace ("build:");
-
-			if (this.name == null)
-			{
-				this.log.error ("name is NULL");
-				throw new IllegalStateException ("name is NULL");
-			}
-
-			NamedActivity result = (NamedActivity) this.supplier.get ();
-			result.setReference (this.referenceBuilder.build ());
-			result.setName (this.name);
-
-			this.activity = this.persister.insert (this.activity, result);
-
-			return this.activity;
+			super (persister, referenceBuilder);
 		}
 
 		/**
@@ -115,13 +80,15 @@ public abstract class NamedActivity extends Activity
 		 * the specified <code>Activity</code> instance.  The  parameters are
 		 * validated as they are set.
 		 *
-		 * @param  activity                 The <code>Activity</code>, not null
+		 * @param  activity The <code>Activity</code>, not null
+		 * @return          This <code>Builder</code>
 		 *
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>Activity</code> instance to be
 		 *                                  loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final Activity activity)
 		{
 			this.log.trace ("load: activity={}", activity);
@@ -138,7 +105,8 @@ public abstract class NamedActivity extends Activity
 		 * @return The name of the <code>Activity</code>
 		 */
 
-		public String getName ()
+		@CheckReturnValue
+		public final String getName ()
 		{
 			return this.name;
 		}
@@ -146,27 +114,18 @@ public abstract class NamedActivity extends Activity
 		/**
 		 * Set the name of the <code>Activity</code>.
 		 *
-		 * @param  name                     The name of the
-		 *                                  <code>Activity</code>, not null
+		 * @param  name The name of the <code>Activity</code>, not null
+		 * @return      This <code>Builder</code>
 		 *
 		 * @throws IllegalArgumentException if the name is empty
 		 */
 
-		public Builder setName (final String name)
+		public final Builder setName (final String name)
 		{
 			this.log.trace ("setName: name={}", name);
 
-			if (name == null)
-			{
-				this.log.error ("Attempting to set a NULL name");
-				throw new NullPointerException ();
-			}
-
-			if (name.length () == 0)
-			{
-				this.log.error ("name is an empty string");
-				throw new IllegalArgumentException ("name is empty");
-			}
+			Preconditions.checkNotNull (name);
+			Preconditions.checkArgument (name.length () > 0, "name is empty");
 
 			this.name = name;
 
@@ -210,11 +169,10 @@ public abstract class NamedActivity extends Activity
 	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  type                  The <code>ActivityType</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @param  type  The <code>ActivityType</code>, not null
+	 * @return       The <code>Builder</code> instance
 	 *
-	 * @return                       The <code>Builder</code>
-	 *                               instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> is
 	 *                               immutable
@@ -234,6 +192,18 @@ public abstract class NamedActivity extends Activity
 	protected NamedActivity ()
 	{
 		super ();
+	}
+
+	/**
+	 * Create the <code>NamedActivity</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected NamedActivity (final Builder builder)
+	{
+		super (builder);
 	}
 
 	/**
@@ -258,7 +228,6 @@ public abstract class NamedActivity extends Activity
 	 *
 	 * @param  obj The <code>NamedActivity</code> instance to compare to the
 	 *             one represented by the called instance
-	 *
 	 * @return     <code>True</code> if the two <code>NamedActivity</code>
 	 *             instances are equal, <code>False</code> otherwise
 	 */
@@ -337,7 +306,6 @@ public abstract class NamedActivity extends Activity
 	 * contents of this <code>NamedActivity</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
 	 * @return       The initialized <code>Builder</code>
 	 */
 
@@ -373,7 +341,6 @@ public abstract class NamedActivity extends Activity
 	 * <code>Activity</code>.
 	 *
 	 * @param  grade    The <code>Grade</code> to add, not null
-	 *
 	 * @return          <code>True</code> if the <code>Grade</code> was
 	 *                  successfully added, <code>False</code> otherwise
 	 */
@@ -385,7 +352,6 @@ public abstract class NamedActivity extends Activity
 	 * <code>Activity</code>.
 	 *
 	 * @param  grade    The <code>Grade</code> to remove, not null
-	 *
 	 * @return          <code>True</code> if the <code>Grade</code> was
 	 *                  successfully removed from, <code>False</code> otherwise
 	 */
@@ -408,7 +374,6 @@ public abstract class NamedActivity extends Activity
 	 * <code>Activity</code>.
 	 *
 	 * @param  subactivity The <code>SubActivity</code> to add, not null
-	 *
 	 * @return             <code>True</code> if the <code>SubActivity</code>
 	 *                     was successfully added, <code>False</code> otherwise
 	 */
@@ -420,7 +385,6 @@ public abstract class NamedActivity extends Activity
 	 * <code>Activity</code>.
 	 *
 	 * @param  subactivity The <code>SubActivity</code> to remove, not null
-	 *
 	 * @return             <code>True</code> if the <code>SubActivity</code>
 	 *                     was successfully removed, <code>False</code>
 	 *                     otherwise

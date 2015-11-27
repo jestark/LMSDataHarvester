@@ -25,6 +25,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
@@ -58,7 +59,7 @@ public class MoodleActivityReference extends ActivityReference
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key of the <code>MoodleActivity</code> */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The instance data identifier */
 	private Long instanceId;

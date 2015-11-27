@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -25,9 +24,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
@@ -65,76 +61,27 @@ public abstract class Role extends Element
 	 * @version 1.0
 	 */
 
-	public static final class Builder implements Element.Builder<Role>
+	public static abstract class Builder extends Element.Builder<Role>
 	{
-		/** The Logger */
-		private final Logger log;
-
-		/** Helper to operate on <code>Role</code> instances*/
-		private final Persister<Role> persister;
-
-		/** Method reference to the constructor of the implementation class */
-		private final Supplier<Role> supplier;
-
-		/** The loaded of previously created <code>Role</code> */
-		private Role role;
-
 		/** The <code>DataStore</code> id number for the <code>Role</code> */
-		private Long id;
+		private @Nullable Long id;
 
 		/** The name of the <code>Role</code> */
-		private String name;
+		private @Nullable String name;
 
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  supplier  Method reference to the constructor of the
-		 *                   implementation class, not null
 		 * @param  persister The <code>Persister</code> used to store the
 		 *                   <code>Role</code>, not null
 		 */
 
-		protected Builder (final Supplier<Role> supplier, final Persister<Role> persister)
+		protected Builder (final Persister<Role> persister)
 		{
-			assert supplier != null : "supplier is NULL";
-			assert persister != null : "persister is NULL";
+			super (persister);
 
-			this.log = LoggerFactory.getLogger (this.getClass ());
-
-			this.persister = persister;
-			this.supplier = supplier;
-
-			this.role = null;
 			this.id = null;
 			this.name = null;
-		}
-
-		/**
-		 * Create an instance of the <code>Role</code>.
-		 *
-		 * @return                       The new <code>Role</code> instance
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
-		 */
-
-		@Override
-		public Role build ()
-		{
-			this.log.trace ("build:");
-
-			if (this.name == null)
-			{
-				this.log.error ("Attempting to create an Role without a name");
-				throw new IllegalStateException ("name is NULL");
-			}
-
-			Role result = this.supplier.get ();
-			result.setId (this.id);
-			result.setName (this.name);
-
-			this.role = this.persister.insert (this.role, result);
-
-			return this.role;
 		}
 
 		/**
@@ -144,11 +91,13 @@ public abstract class Role extends Element
 		 * @return This <code>Builder</code>
 		 */
 
+		@Override
 		public Builder clear ()
 		{
 			this.log.trace ("clear:");
 
-			this.role = null;
+			super.clear ();
+
 			this.id = null;
 			this.name = null;
 
@@ -161,25 +110,21 @@ public abstract class Role extends Element
 		 * the specified <code>Role</code> instance.  The  parameters are
 		 * validated as they are set.
 		 *
-		 * @param  role                     The <code>Role</code>, not null
+		 * @param  role The <code>Role</code>, not null
+		 * @return      This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>Role</code> instance to be
 		 *                                  loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final Role role)
 		{
 			this.log.trace ("load: role={}", role);
 
-			if (role == null)
-			{
-				this.log.error ("Attempting to load a NULL Role");
-				throw new NullPointerException ();
-			}
+			super.load (role);
 
-			this.role = role;
 			this.id = role.getId ();
 			this.setName (role.getName ());
 
@@ -194,7 +139,7 @@ public abstract class Role extends Element
 		 */
 
 		@CheckReturnValue
-		public Long getId ()
+		public final Long getId ()
 		{
 			return this.id;
 		}
@@ -206,7 +151,8 @@ public abstract class Role extends Element
 		 *         <code>Role</code>
 		 */
 
-		public String getName ()
+		@CheckReturnValue
+		public final String getName ()
 		{
 			return this.name;
 		}
@@ -214,28 +160,18 @@ public abstract class Role extends Element
 		/**
 		 * Set the name of the <code>Role</code>.
 		 *
-		 * @param  name                     The name of the <code>Role</code>,
-		 *                                  not null
+		 * @param  name The name of the <code>Role</code>, not null
+		 * @return      This <code>Builder</code>
 		 *
-		 * @return                          This <code>Builder</code>
 		 * @throws IllegalArgumentException If the name is empty
 		 */
 
-		public Builder setName (final String name)
+		public final Builder setName (final String name)
 		{
 			this.log.trace ("setName: name={}", name);
 
-			if (name == null)
-			{
-				this.log.error ("name is NULL");
-				throw new NullPointerException ("Name is NULL");
-			}
-
-			if (name.length () == 0)
-			{
-				this.log.error ("name is an empty string");
-				throw new IllegalArgumentException ("name is empty");
-			}
+			Preconditions.checkNotNull (name);
+			Preconditions.checkArgument (name.length () > 0, "name is empty");
 
 			this.name = name;
 
@@ -306,9 +242,9 @@ public abstract class Role extends Element
 	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @return       The <code>Builder</code> instance
 	 *
-	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> does not
 	 *                               have a default implementation class for
@@ -334,6 +270,18 @@ public abstract class Role extends Element
 	}
 
 	/**
+	 * Create the <code>Role</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected Role (final Builder builder)
+	{
+		super (builder);
+	}
+
+	/**
 	 * Template method to create and initialize a <code>ToStringHelper</code>.
 	 *
 	 * @return The <code>ToStringHelper</code>
@@ -354,7 +302,6 @@ public abstract class Role extends Element
 	 *
 	 * @param  obj The <code>Role</code> instance to compare to the one
 	 *             represented by the called instance
-	 *
 	 * @return     <code>True</code> if the two <code>Role</code> instances
 	 *             are equal, <code>False</code> otherwise
 	 */
@@ -430,7 +377,6 @@ public abstract class Role extends Element
 	 * contents of this <code>Role</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
 	 * @return       The initialized <code>Builder</code>
 	 */
 

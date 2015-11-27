@@ -19,7 +19,6 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -27,9 +26,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
@@ -96,46 +92,32 @@ public abstract class Enrolment extends Element
 	 * @version 1.0
 	 */
 
-	public static final class Builder implements Element.Builder<Enrolment>
+	public static abstract class Builder extends Element.Builder<Enrolment>
 	{
-		/** The Logger */
-		private final Logger log;
-
 		/** Helper to substitute <code>Course</code> instances */
 		private Retriever<Course> courseRetriever;
 
 		/** Helper to substitute <code>Activity</code> instances */
 		private Retriever<Role> roleRetriever;
 
-		/** Helper to operate on <code>Enrolment</code> instances */
-		private Persister<Enrolment> persister;
-
-		/** Method reference to the constructor of the implementation class */
-		private final Supplier<Enrolment> supplier;
-
-		/** The loaded or previously built <code>Enrolment</code> */
-		private Enrolment enrolment;
-
 		/** The <code>DataStore</code> ID number for the <code>Enrolment</code> */
-		private Long id;
+		private @Nullable Long id;
 
 		/** The associated <code>Course</code> */
-		private Course course;
+		private @Nullable Course course;
 
 		/** The associated <code>Role</code> */
-		private Role role;
+		private @Nullable Role role;
 
 		/** The final grade */
-		private Integer finalGrade;
+		private @Nullable Integer finalGrade;
 
 		/** Indication if the data is usable for research */
-		private Boolean usable;
+		private @Nullable Boolean usable;
 
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  supplier        Method reference to the constructor of the
-		 *                         implementation class, not null
 		 * @param  persister       The <code>Persister</code> used to store the
 		 *                         <code>Enrolment</code>, not null
 		 * @param  roleRetriever   <code>Retriever</code> for <code>Role</code>
@@ -145,24 +127,18 @@ public abstract class Enrolment extends Element
 		 */
 
 		protected Builder (
-				final Supplier<Enrolment> supplier,
 				final Persister<Enrolment> persister,
 				final Retriever<Course> courseRetriever,
 				final Retriever<Role> roleRetriever)
 		{
-			assert supplier != null : "supplier is NULL";
-			assert persister != null : "persister is NULL";
+			super (persister);
+
 			assert courseRetriever != null : "courseRetriever is NULL";
 			assert roleRetriever != null : "roleRetriever is NULL";
 
-			this.log = LoggerFactory.getLogger (this.getClass ());
-
 			this.courseRetriever = courseRetriever;
 			this.roleRetriever = roleRetriever;
-			this.persister = persister;
-			this.supplier = supplier;
 
-			this.enrolment = null;
 			this.id = null;
 			this.course = null;
 			this.role = null;
@@ -170,58 +146,23 @@ public abstract class Enrolment extends Element
 			this.usable = null;
 		}
 
-		/**
-		 * Create an instance of the <code>Enrolment</code>.
-		 *
-		 * @return                       The new <code>Enrolment</code> instance
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
-		 */
-
 		@Override
-		public Enrolment build ()
+		protected boolean updateElement ()
 		{
-			this.log.trace ("build:");
+			boolean result = false;
 
-			if (this.course == null)
+			if (this.element != null
+					&& this.persister.contains (this.element)
+					&& this.element.getCourse () == this.course
+					&& this.element.getRole () == this.role)
 			{
-				this.log.error ("Attempting to create an Enrolment without a Course");
-				throw new IllegalStateException ("course is NULL");
+				this.element.setFinalGrade (this.finalGrade);
+				this.element.setUsable (this.usable);
+
+				result = true;
 			}
 
-			if (this.role == null)
-			{
-				this.log.error ("Attempting to create an Enrolment without a Role");
-				throw new IllegalStateException ("course is NULL");
-			}
-
-			if (this.usable == null)
-			{
-				this.log.error ("Attempting to create an Enrolment without setting the usability");
-				throw new IllegalStateException ("usable is NULL");
-			}
-
-			if ((this.enrolment == null)
-					|| (! this.persister.contains (this.enrolment))
-					|| (this.enrolment.getCourse () != this.course)
-					|| (this.enrolment.getRole () != this.role))
-			{
-				Enrolment result = this.supplier.get ();
-				result.setId (this.id);
-				result.setCourse (this.course);
-				result.setRole (this.role);
-				result.setFinalGrade (this.finalGrade);
-				result.setUsable (this.usable);
-
-				this.enrolment = this.persister.insert (this.enrolment, result);
-			}
-			else
-			{
-				this.enrolment.setFinalGrade (this.finalGrade);
-				this.enrolment.setUsable (this.usable);
-			}
-
-			return this.enrolment;
+			return result;
 		}
 
 		/**
@@ -231,11 +172,13 @@ public abstract class Enrolment extends Element
 		 * @return This <code>Builder</code>
 		 */
 
+		@Override
 		public Builder clear ()
 		{
 			this.log.trace ("clear:");
 
-			this.enrolment = null;
+			super.clear ();
+
 			this.id = null;
 			this.course = null;
 			this.role = null;
@@ -251,24 +194,21 @@ public abstract class Enrolment extends Element
 		 * the specified <code>Enrolment</code> instance.  The  parameters are
 		 * validated as they are set.
 		 *
-		 * @param  enrolment                The <code>Enrolment</code>, not null
+		 * @param  enrolment The <code>Enrolment</code>, not null
+		 * @return           This <code>Builder</code>
 		 *
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>Enrolment</code> instance to
 		 *                                  be loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final Enrolment enrolment)
 		{
 			this.log.trace ("load: enrolment={}", enrolment);
 
-			if (enrolment == null)
-			{
-				this.log.error ("Attempting to load a NULL Enrolment");
-				throw new NullPointerException ();
-			}
+			super.load (enrolment);
 
-			this.enrolment = enrolment;
 			this.id = enrolment.getId ();
 			this.setCourse (enrolment.getCourse ());
 			this.setFinalGrade (enrolment.getFinalGrade ());
@@ -286,7 +226,7 @@ public abstract class Enrolment extends Element
 		 */
 
 		@CheckReturnValue
-		public Long getId ()
+		public final Long getId ()
 		{
 			return this.id;
 		}
@@ -298,7 +238,8 @@ public abstract class Enrolment extends Element
 		 * @return The <code>Course</code> instance
 		 */
 
-		public Course getCourse ()
+		@CheckReturnValue
+		public final Course getCourse ()
 		{
 			return this.course;
 		}
@@ -307,29 +248,18 @@ public abstract class Enrolment extends Element
 		 * Set the <code>Course</code> in which the <code>User</code> is
 		 * enrolled.
 		 *
-		 * @param  course                   The <code>Course</code>, not null
+		 * @param  course The <code>Course</code>, not null
+		 * @return        This <code>Builder</code>
 		 *
 		 * @throws IllegalArgumentException if the <code>Course</code> is not in
 		 *                                  the <code>DataStore</code>
 		 */
 
-		public Builder setCourse (final Course course)
+		public final Builder setCourse (final Course course)
 		{
 			this.log.trace ("setCourse: course={}", course);
 
-			if (course == null)
-			{
-				this.log.error ("Course is NULL");
-				throw new NullPointerException ("Course is NULL");
-			}
-
-			this.course = this.courseRetriever.fetch (course);
-
-			if (this.course == null)
-			{
-				this.log.error ("This specified Course does not exist in the DataStore");
-				throw new IllegalArgumentException ("Course is not in the DataStore");
-			}
+			this.course = this.verifyRelationship (this.courseRetriever, course, "course");
 
 			return this;
 		}
@@ -341,7 +271,8 @@ public abstract class Enrolment extends Element
 		 * @return The <code>Role</code> instance
 		 */
 
-		public Role getRole ()
+		@CheckReturnValue
+		public final Role getRole ()
 		{
 			return this.role;
 		}
@@ -350,29 +281,18 @@ public abstract class Enrolment extends Element
 		 * Set the <code>Role</code> of the <code>User</code> in the
 		 * <code>Course</code>.
 		 *
-		 * @param  role                      The <code>Role</code>, not null
+		 * @param  role The <code>Role</code>, not null
+		 * @return      This <code>Builder</code>
 		 *
 		 * @throws IllegalArgumentException if the <code>Role</code> is not in
 		 *                                  the <code>DataStore</code>
 		 */
 
-		public Builder setRole (final Role role)
+		public final Builder setRole (final Role role)
 		{
 			this.log.trace ("setRole: role={}", role);
 
-			if (role == null)
-			{
-				this.log.error ("Role is NULL");
-				throw new NullPointerException ("Role is NULL");
-			}
-
-			this.role = this.roleRetriever.fetch (role);
-
-			if (this.role == null)
-			{
-				this.log.error ("This specified Role does not exist in the DataStore");
-				throw new IllegalArgumentException ("Role is not in the DataStore");
-			}
+			this.role = this.verifyRelationship (this.roleRetriever, role, "role");
 
 			return this;
 		}
@@ -387,7 +307,8 @@ public abstract class Enrolment extends Element
 		 *         if there is no final grade
 		 */
 
-		public Integer getFinalGrade ()
+		@CheckReturnValue
+		public final Integer getFinalGrade ()
 		{
 			return this.finalGrade;
 		}
@@ -398,20 +319,18 @@ public abstract class Enrolment extends Element
 		 *
 		 * @param  finalgrade The final grade for the <code>User</code> in the
 		 *                    course, on the interval [0, 100]
+		 * @return            This <code>Builder</code>
 		 *
 		 * @throws IllegalArgumentException If the value is less than zero or
 		 *                                  greater than 100
 		 */
 
-		public Builder setFinalGrade (final Integer finalgrade)
+		public final Builder setFinalGrade (final @Nullable Integer finalgrade)
 		{
 			this.log.trace ("setFinalGrade: finalgrade={}", finalgrade);
 
-			if ((finalgrade != null) && ((finalgrade < 0) || (finalgrade > 100)))
-			{
-				this.log.error ("Grade must be between 0 and 100");
-				throw new IllegalArgumentException ("Grade must be between 0 and 100");
-			}
+			Preconditions.checkArgument (finalgrade == null || (finalgrade >= 0 && finalgrade <= 100),
+					"Grade must be between 0 and 100");
 
 			this.finalGrade = finalgrade;
 
@@ -427,7 +346,8 @@ public abstract class Enrolment extends Element
 		 *         <code>False</code> otherwise.
 		 */
 
-		public Boolean isUsable ()
+		@CheckReturnValue
+		public final Boolean isUsable ()
 		{
 			return this.usable;
 		}
@@ -440,19 +360,14 @@ public abstract class Enrolment extends Element
 		 *
 		 * @param  usable Indication if the data may be used for research, not
 		 *                null
+		 * @return        This <code>Builder</code>
 		 */
 
-		public Builder setUsable (final Boolean usable)
+		public final Builder setUsable (final Boolean usable)
 		{
 			this.log.trace ("setUsable: usable={}", usable);
 
-			if (usable == null)
-			{
-				this.log.error ("usable is NULL");
-				throw new NullPointerException ("usable is NULL");
-			}
-
-			this.usable = usable;
+			this.usable = Preconditions.checkNotNull (usable, "usable");
 
 			return this;
 		}
@@ -558,9 +473,9 @@ public abstract class Enrolment extends Element
 	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @return       The <code>Builder</code> instance
 	 *
-	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> does not
 	 *                               have a default implementation class for
@@ -583,6 +498,18 @@ public abstract class Enrolment extends Element
 	protected Enrolment ()
 	{
 		super ();
+	}
+
+	/**
+	 * Create the <code>Enrolment</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected Enrolment (final Builder builder)
+	{
+		super (builder);
 	}
 
 	/**
@@ -609,7 +536,6 @@ public abstract class Enrolment extends Element
 	 *
 	 * @param  obj The <code>Enrolment</code> instance to compare to the one
 	 *             represented by the called instance
-	 *
 	 * @return     <code>True</code> if the two <code>Enrolment</code>
 	 *             instances are equal, <code>False</code> otherwise
 	 */
@@ -632,7 +558,6 @@ public abstract class Enrolment extends Element
 	 *
 	 * @param  element The <code>Element</code> instance to compare to this
 	 *                 instance
-	 *
 	 * @return         <code>True</code> if the two <code>Enrolment</code>
 	 *                 instances are equal, <code>False</code> otherwise
 	 */
@@ -657,7 +582,6 @@ public abstract class Enrolment extends Element
 	 *
 	 * @param  element The <code>Element</code> instance to compare to this
 	 *                 instance
-	 *
 	 * @return         <code>True</code> if the two <code>Enrolment</code>
 	 *                 instances are equal, <code>False</code> otherwise
 	 */
@@ -737,7 +661,6 @@ public abstract class Enrolment extends Element
 	 * instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
 	 * @return       The initialized <code>Builder</code>
 	 */
 
@@ -866,7 +789,6 @@ public abstract class Enrolment extends Element
 	 * Add the specified <code>Grade</code> to the <code>Enrolment</code>.
 	 *
 	 * @param  grade  The <code>Grade</code> to add, not null
-	 *
 	 * @return        <code>True</code> if the <code>Grade</code> was
 	 *                successfully added, <code>False</code> otherwise
 	 */
@@ -877,7 +799,6 @@ public abstract class Enrolment extends Element
 	 * Remove the specified <code>Grade</code> from the <code>Enrolment</code>.
 	 *
 	 * @param  grade The <code>Grade</code> to remove, not null
-	 *
 	 * @return       <code>True</code> if the <code>Grade</code> was
 	 *               successfully removed, <code>False</code> otherwise
 	 */
@@ -909,7 +830,6 @@ public abstract class Enrolment extends Element
 	 * Add the specified <code>LogEntry</code> to the <code>Enrolment</code>.
 	 *
 	 * @param  entry The <code>LogEntry</code> to add, not null
-	 *
 	 * @return       <code>True</code> if the <code>LogEntry</code> was
 	 *               successfully added, <code>False</code> otherwise
 	 */
@@ -921,7 +841,6 @@ public abstract class Enrolment extends Element
 	 * <code>Enrolment</code>.
 	 *
 	 * @param  entry The <code>LogEntry</code> to remove, not null
-	 *
 	 * @return       <code>True</code> if the <code>LogEntry</code> was
 	 *               successfully removed, <code>False</code> otherwise
 	 */

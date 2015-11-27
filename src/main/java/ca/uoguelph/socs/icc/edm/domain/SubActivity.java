@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -29,9 +28,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
@@ -69,28 +65,16 @@ public abstract class SubActivity extends ParentActivity
 	 * @version 1.0
 	 */
 
-	public static class Builder implements Element.Builder<SubActivity>
+	public static abstract class Builder extends Element.Builder<SubActivity>
 	{
-		/** The Logger */
-		protected final Logger log;
-
-		/** Helper to operate on <code>SubActivity</code> instances*/
-		protected final Persister<SubActivity> persister;
-
 		/** The parent */
 		protected final ParentActivity parent;
 
-		/** Method reference to the constructor of the implementation class */
-		private final Supplier<SubActivity> supplier;
-
-		/** The loaded or previously built <code>SubActivity</code> instance */
-		protected SubActivity subActivity;
-
 		/** The <code>DataStore</code> id number for the <code>SubActivity</code> */
-		protected Long id;
+		protected @Nullable Long id;
 
 		/** The name of the <code>SubActivity</code> */
-		protected String name;
+		protected @Nullable String name;
 
 		/**
 		 * Create the <code>Builder</code>.
@@ -98,14 +82,12 @@ public abstract class SubActivity extends ParentActivity
 		 */
 
 		protected Builder (
-				final Supplier<SubActivity> supplier,
 				final Persister<SubActivity> persister,
 				final ParentActivity parent)
 		{
-			assert persister != null : "persister is NULL";
-			assert parent != null : "parent is NULL";
+			super (persister);
 
-			this.log = LoggerFactory.getLogger (this.getClass ());
+			assert parent != null : "parent is NULL";
 
 			// The ParentActivity class exists as compromise for JPA.  As such it
 			// does not have metadata, so we have to use instance of here instead
@@ -148,56 +130,24 @@ public abstract class SubActivity extends ParentActivity
 	//			throw new IllegalStateException ("No registered Subactivity classes corresponding to the specified parent");
 	//		}
 
-			this.persister = persister;
-			this.supplier = supplier;
-
-			this.subActivity = null;
 			this.id = null;
 			this.name = null;
-		}
-
-		/**
-		 * Create an instance of the <code>SubActivity</code>.
-		 *
-		 * @return                       The new <code>SubActivity</code>
-		 *                               instance
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
-		 */
-
-		@Override
-		public SubActivity build ()
-		{
-			this.log.trace ("build:");
-
-			if (this.name == null)
-			{
-				this.log.error ("name is NULL");
-				throw new IllegalStateException ("name is NULL");
-			}
-
-			SubActivity result = this.supplier.get ();
-			result.setId (this.id);
-			result.setParent (this.parent);
-			result.setName (this.name);
-
-			this.subActivity = this.persister.insert (this.subActivity, result);
-
-			return this.subActivity;
 		}
 
 		/**
 		 * Reset the builder.  This method will set all of the fields for the
 		 * <code>Element</code> to be built to <code>null</code>.
 		 *
-		 * @return This <code>ActionBuilder</code>
+		 * @return This <code>Builder</code>
 		 */
 
+		@Override
 		public Builder clear ()
 		{
 			this.log.trace ("clear:");
 
-			this.subActivity = null;
+			super.clear ();
+
 			this.id = null;
 			this.name = null;
 
@@ -210,23 +160,20 @@ public abstract class SubActivity extends ParentActivity
 		 * the specified <code>SubActivity</code> instance.  The  parameters are
 		 * validated as they are set.
 		 *
-		 * @param  subActivity              The <code>SubActivity</code>, not
-		 *                                  null
+		 * @param  subActivity The <code>SubActivity</code>, not null
+		 * @return             This <code>Builder</code>
 		 *
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>SubActivity</code> instance to
 		 *                                  be loaded are not valid
 		 */
 
+		@Override
 		public Builder load (final SubActivity subActivity)
 		{
 			this.log.trace ("load: activity={}", subActivity);
 
-			if (subActivity == null)
-			{
-				this.log.error ("Attempting to load a NULL SubActivity");
-				throw new NullPointerException ();
-			}
+			super.load (subActivity);
 
 			if (! (this.getParent ()).equals (subActivity.getParent ()))
 			{
@@ -234,7 +181,6 @@ public abstract class SubActivity extends ParentActivity
 				throw new IllegalArgumentException ("Parent activity instances are different");
 			}
 
-			this.subActivity = subActivity;
 			this.id = subActivity.getId ();
 			this.setName (subActivity.getName ());
 
@@ -249,7 +195,7 @@ public abstract class SubActivity extends ParentActivity
 		 */
 
 		@CheckReturnValue
-		public Long getId ()
+		public final Long getId ()
 		{
 			return this.id;
 		}
@@ -261,6 +207,7 @@ public abstract class SubActivity extends ParentActivity
 		 *         <code>SubActivity</code>
 		 */
 
+		@CheckReturnValue
 		public final String getName ()
 		{
 			return this.name;
@@ -269,8 +216,8 @@ public abstract class SubActivity extends ParentActivity
 		/**
 		 * Set the name of the <code>SubActivity</code>.
 		 *
-		 * @param  name                     The name of the
-		 *                                  <code>SubActivity</code>, not null
+		 * @param  name The name of the <code>SubActivity</code>, not null
+		 * @return      This <code>Builder</code>
 		 *
 		 * @throws IllegalArgumentException If the name is empty
 		 */
@@ -279,17 +226,8 @@ public abstract class SubActivity extends ParentActivity
 		{
 			this.log.trace ("setName: name={}", name);
 
-			if (name == null)
-			{
-				this.log.error ("Attempting to set a NULL name");
-				throw new NullPointerException ();
-			}
-
-			if (name.length () == 0)
-			{
-				this.log.error ("name is an empty string");
-				throw new IllegalArgumentException ("name is empty");
-			}
+			Preconditions.checkNotNull (name);
+			Preconditions.checkArgument (name.length () > 0, "name is empty");
 
 			this.name = name;
 
@@ -414,11 +352,11 @@ public abstract class SubActivity extends ParentActivity
 	 * class.
 	 *
 	 * @param  activity The <code>Activity</code> implementation class
-	 *
-	 * @return          The <code>SubActivity</code> implementation class, may be
-	 *                  null
+	 * @return          The <code>SubActivity</code> implementation class, may
+	 *                  be null
 	 */
 
+	@CheckReturnValue
 	public static final Class<? extends SubActivity> getSubActivityClass (final Class<? extends ParentActivity> activity)
 	{
 		assert activity != null : "activity is NULL";
@@ -431,10 +369,10 @@ public abstract class SubActivity extends ParentActivity
 	 * Get an instance of the <code>Builder</code> for the specified
 	 * <code>DomainModel</code>.
 	 *
-	 * @param  model                 The <code>DomainModel</code>, not null
-	 * @param  parent                The parent <code>Activity</code>, not null
+	 * @param  model  The <code>DomainModel</code>, not null
+	 * @param  parent The parent <code>Activity</code>, not null
+	 * @return        The <code>Builder</code> instance
 	 *
-	 * @return                       The <code>Builder</code> instance
 	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
 	 * @throws IllegalStateException if the <code>DomainModel</code> is
 	 *                               immutable
@@ -455,6 +393,18 @@ public abstract class SubActivity extends ParentActivity
 	protected SubActivity ()
 	{
 		super ();
+	}
+
+	/**
+	 * Create the <code>SubActivity</code> instance from the specified
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected SubActivity (final Builder builder)
+	{
+		super (builder);
 	}
 
 	/**
@@ -479,7 +429,6 @@ public abstract class SubActivity extends ParentActivity
 	 *
 	 * @param  obj The <code>SubActivity</code> instance to compare to the one
 	 *             represented by the called instance
-	 *
 	 * @return     <code>True</code> if the two <code>SubActivity</code>
 	 *             instances are equal, <code>False</code> otherwise
 	 */
@@ -558,7 +507,6 @@ public abstract class SubActivity extends ParentActivity
 	 * contents of this <code>SubActivity</code> instance.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 *
 	 * @return       The initialized <code>Builder</code>
 	 */
 
@@ -664,11 +612,9 @@ public abstract class SubActivity extends ParentActivity
 	 * Add the specified <code>LogReference</code> to the
 	 * <code>SubActivity</code>.
 	 *
-	 * @param  reference    The <code>LogReference</code> to add, not null
-	 *
-	 * @return              <code>True</code> if the <code>LogReference</code>
-	 *                      was successfully added, <code>False</code>
-	 *                      otherwise
+	 * @param  reference The <code>LogReference</code> to add, not null
+	 * @return           <code>True</code> if the <code>LogReference</code>
+	 *                   was successfully added, <code>False</code> otherwise
 	 */
 
 	protected abstract boolean addReference (LogReference reference);
@@ -677,11 +623,9 @@ public abstract class SubActivity extends ParentActivity
 	 * Remove the specified <code>LogReference</code> from the
 	 * <code>SubActivity</code>.
 	 *
-	 * @param  reference    The <code>LogReference</code> to remove, not null
-	 *
-	 * @return              <code>True</code> if the <code>LogReference</code>
-	 *                      was successfully removed, <code>False</code>
-	 *                      otherwise
+	 * @param  reference The <code>LogReference</code> to remove, not null
+	 * @return           <code>True</code> if the <code>LogReference</code> was
+	 *                   successfully removed, <code>False</code> otherwise
 	 */
 
 	protected abstract boolean removeReference (LogReference reference);
@@ -702,7 +646,6 @@ public abstract class SubActivity extends ParentActivity
 	 * <code>SubActivity</code>.
 	 *
 	 * @param  subactivity The <code>SubActivity</code> to add, not null
-	 *
 	 * @return             <code>True</code> if the <code>SubActivity</code>
 	 *                     was successfully added, <code>False</code> otherwise
 	 */
@@ -714,7 +657,6 @@ public abstract class SubActivity extends ParentActivity
 	 * <code>SubActivity</code>.
 	 *
 	 * @param  subactivity The <code>SubActivity</code> to remove, not null
-	 *
 	 * @return             <code>True</code> if the <code>SubActivity</code>
 	 *                     was successfully removed, <code>False</code>
 	 *                     otherwise

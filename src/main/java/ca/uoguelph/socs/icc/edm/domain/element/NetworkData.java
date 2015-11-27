@@ -19,7 +19,10 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Network;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Implementation of the <code>Network</code> interface.  It is expected that
@@ -33,11 +36,50 @@ import ca.uoguelph.socs.icc.edm.domain.Network;
 
 public class NetworkData extends Network
 {
+	/**
+	 * <code>Builder</code> for <code>NetworkData</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.Network.Builder
+	 */
+
+	public static final class Builder extends Network.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister The <code>Persister</code> used to store the
+		 *                   <code>Role</code>, not null
+		 */
+
+		private Builder (final Persister<Network> persister)
+		{
+			super (persister);
+		}
+
+		/**
+		 * Create an instance of the <code>Network</code>.
+		 *
+		 * @return The new <code>Network</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected Network createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new NetworkData (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
 	/** The primary key for the <code>Network</code> */
-	private Long id;
+	private @Nullable Long id;
 
 	/** The name of the <code>Network</code> */
 	private String name;
@@ -50,6 +92,20 @@ public class NetworkData extends Network
 	{
 		this.id = null;
 		this.name = null;
+	}
+
+	/**
+	 * Create an <code>Network</code> from the supplied <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected NetworkData (final NetworkData.Builder builder)
+	{
+		super (builder);
+
+		this.id = builder.getId ();
+		this.name = Preconditions.checkNotNull (builder.getName (), "name");
 	}
 
 	/**

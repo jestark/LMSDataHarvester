@@ -16,9 +16,13 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Implementation of the <code>LogEntry</code> interface for logs referencing
@@ -44,6 +48,54 @@ import ca.uoguelph.socs.icc.edm.domain.LogReference;
 
 class ForumPostLog extends LogReference
 {
+	/**
+	 * <code>Builder</code> for <code>ForumPostLog</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.LogReference.Builder
+	 */
+
+	public static final class Builder extends LogReference.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister            The <code>Persister</code> used to store
+		 *                              the <code>ActivityType</code>, not null
+		 * @param  entryRetriever       <code>Retriever</code> for
+		 *                              <code>ActivitySource</code> instances,
+		 *                              not null
+		 * @param  subActivityRetriever <code>Retriever</code> for
+		 *                              <code>ActivitySource</code> instances,
+		 *                              not null
+		 */
+
+		private Builder (
+				final Persister<LogReference> persister,
+				final Retriever<LogEntry> entryRetriever,
+				final Retriever<SubActivity> subActivityRetriever)
+		{
+			super (persister, entryRetriever, subActivityRetriever);
+		}
+
+		/**
+		 * Create an instance of the <code>LogReference</code>.
+		 *
+		 * @return The new <code>LogReference</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected LogReference createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new ForumPostLog (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -67,6 +119,20 @@ class ForumPostLog extends LogReference
 	protected ForumPostLog ()
 	{
 		this.subActivity = null;
+	}
+
+	/**
+	 * Create an <code>LogReference</code> from the supplied
+	 * <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected ForumPostLog (final Builder builder)
+	{
+		super (builder);
+
+		this.subActivity = Preconditions.checkNotNull (builder.getSubActivity (), "subActivity");
 	}
 
 	/**

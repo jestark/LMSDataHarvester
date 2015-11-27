@@ -24,11 +24,14 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/wiki
@@ -53,6 +56,47 @@ import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 
 public class WikiPage extends SubActivity
 {
+	/**
+	 * <code>Builder</code> for <code>WikiPage</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @see     ca.uoguelph.socs.icc.edm.domain.SubActivity.Builder
+	 */
+
+	public static final class Builder extends SubActivity.Builder
+	{
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  persister        The <code>Persister</code> used to store the
+		 *                          <code>Activity</code>, not null
+		 */
+
+		private Builder (
+				final Persister<SubActivity> persister,
+				final ParentActivity parent)
+		{
+			super (persister, parent);
+		}
+
+		/**
+		 * Create an instance of the <code>Activity</code>.
+		 *
+		 * @return The new <code>Activity</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected SubActivity createElement ()
+		{
+			this.log.trace ("createElement");
+
+			return new WikiPage (this);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -90,6 +134,24 @@ public class WikiPage extends SubActivity
 		this.id = null;
 		this.name = null;
 		this.parent = null;
+
+		this.references = new ArrayList<LogReference> ();
+		this.subActivities = new ArrayList<SubActivity> ();
+	}
+
+	/**
+	 * Create an <code>Activity</code> from the supplied <code>Builder</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 */
+
+	protected WikiPage (final Builder builder)
+	{
+		super (builder);
+
+		this.id = builder.getId ();
+		this.name = Preconditions.checkNotNull (builder.getName (), "name");
+		this.parent = Preconditions.checkNotNull (builder.getParent (), "parent");
 
 		this.references = new ArrayList<LogReference> ();
 		this.subActivities = new ArrayList<SubActivity> ();
