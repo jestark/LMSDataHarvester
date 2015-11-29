@@ -131,51 +131,6 @@ public abstract class Grade extends Element
 		}
 
 		/**
-		 * Create an instance of the <code>Grade</code>.
-		 *
-		 * @return The new <code>Grade</code> instance
-		 */
-
-/*		@Override
-		protected Grade createElement ()
-		{
-			this.log.trace ("createElement:");
-
-			if (this.activity == null)
-			{
-				this.log.error ("Attempting to create an Grade without an Activity");
-				throw new IllegalStateException ("activity is NULL");
-			}
-
-			if (this.enrolment == null)
-			{
-				this.log.error ("Attempting to create an Grade without an Enrolment");
-				throw new IllegalStateException ("enrolment is NULL");
-			}
-
-			if (this.value == null)
-			{
-				this.log.error ("Attempting to create an Grade without a Grade");
-				throw new IllegalStateException ("grade is NULL");
-			}
-
-			Grade result = this.supplier.get ();
-			result.setActivityReference (this.activity.getReference ());
-			result.setEnrolment (this.enrolment);
-			result.setGrade (this.value);
-
-			this.element = this.persister.insert (this.element, result);
-
-			if (! this.element.equalsAll (result))
-			{
-				this.log.error ("Grade is already in the datastore with a value of: {} vs. the specified value: {}", this.element.getGrade (), this.value);
-				throw new IllegalStateException ("Grade already exists but with a different value");
-			}
-
-			return result;
-		}
-*/
-		/**
 		 * Reset the builder.  This method will set all of the fields for the
 		 * <code>Element</code> to be built to <code>null</code>.
 		 *
@@ -223,6 +178,20 @@ public abstract class Grade extends Element
 			this.setGrade (grade.getGrade ());
 
 			return this;
+		}
+
+		/**
+		 * Get the <code>ActivityReference</code> for which the
+		 * <code>Grade</code> is assigned.  This method exists for the benefit
+		 * of the <code>Grade</code> implementation.
+		 *
+		 * @return the <code>ActivityReference</code>
+		 */
+
+		@CheckReturnValue
+		protected ActivityReference getActivityReference ()
+		{
+			return this.activity.getReference ();
 		}
 
 		/**

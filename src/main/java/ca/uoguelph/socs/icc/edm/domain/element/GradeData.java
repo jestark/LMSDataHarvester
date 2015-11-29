@@ -85,6 +85,21 @@ public class GradeData extends Grade
 
 			return new GradeData (this);
 		}
+
+		/**
+		 * Get the <code>ActivityReference</code> for which the
+		 * <code>Grade</code> is assigned.  This method exists for the benefit
+		 * of the <code>Grade</code> implementation.
+		 *
+		 * @return the <code>ActivityReference</code>
+		 */
+
+		@Override
+		@CheckReturnValue
+		protected ActivityReference getActivityReference ()
+		{
+			return super.getActivityReference ();
+		}
 	}
 
 	/** Serial version id, required by the Serializable interface */
@@ -121,7 +136,7 @@ public class GradeData extends Grade
 		super (builder);
 
 		this.enrolment = Preconditions.checkNotNull (builder.getEnrolment (), "enrolment");
-//		this.activity = Preconditions.checkNotNull (builder.getActivity (), "activity");
+		this.activity = Preconditions.checkNotNull (builder.getActivityReference (), "activity");
 		this.grade = Preconditions.checkNotNull (builder.getGrade (), "grade");
 	}
 

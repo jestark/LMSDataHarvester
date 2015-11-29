@@ -144,63 +144,12 @@ public abstract class LogEntry extends Element
 			this.referenceBuilder = null;
 		}
 
-		/**
-		 * Create an instance of the <code>LogEntry</code>.
-		 *
-		 * @return The new <code>LogEntry</code> instance
-		 *
-		 * @throws IllegalStateException If any if the fields is missing
-		 * @throws IllegalStateException If there isn't an active transaction
-		 */
-
-/*		@Override
-		protected LogEntry createElement ()
-		{
-			this.log.trace ("createElement:");
-
-			if (this.action == null)
-			{
-				this.log.error ("Attempting to create an LogEntry without an Action");
-				throw new IllegalStateException ("action is NULL");
-			}
-
-			if (this.activity == null)
-			{
-				this.log.error ("Attempting to create an LogEntry without an Activity");
-				throw new IllegalStateException ("activity is NULL");
-			}
-
-			if (this.enrolment == null)
-			{
-				this.log.error ("Attempting to create an LogEntry without an Enrolment");
-				throw new IllegalStateException ("enrolment is NULL");
-			}
-
-			if (this.time == null)
-			{
-				this.log.error ("Attempting to create an LogEntry without a time");
-				throw new IllegalStateException ("time is NULL");
-			}
-
-			LogEntry result = this.supplier.get ();
-			result.setId (this.id);
-			result.setAction (this.action);
-			result.setActivityReference (this.activity.getReference ());
-			result.setEnrolment (this.enrolment);
-			result.setNetwork (this.network);
-			result.setTime (this.time);
-
-			this.element = this.persister.insert (this.element, result);
-
-			// Create the reference
+/*
 			if (this.referenceBuilder != null)
 			{
 				this.referenceBuilder.setEntry (this.element)
 					.build ();
 			}
-
-			return this.element;
-		}
 */
 		/**
 		 * Reset the builder.  This method will set all of the fields for the
@@ -261,6 +210,20 @@ public abstract class LogEntry extends Element
 			}
 
 			return this;
+		}
+
+		/**
+		 * Get the <code>ActivityReference</code> with which the
+		 * <code>LogEntry</code> is associated.  This method exists for the
+		 * benefit of the <code>LogEntry</code> implementation.
+		 *
+		 * @return the <code>ActivityReference</code>
+		 */
+
+		@CheckReturnValue
+		protected ActivityReference getActivityReference ()
+		{
+			return this.activity.getreference ();
 		}
 
 		/**

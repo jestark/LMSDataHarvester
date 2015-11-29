@@ -101,6 +101,21 @@ public class LogData extends LogEntry
 
 			return new LogData (this);
 		}
+
+		/**
+		 * Get the <code>ActivityReference</code> with which the
+		 * <code>LogEntry</code> is associated.  This method exists for the
+		 * benefit of the <code>LogEntry</code> implementation.
+		 *
+		 * @return the <code>ActivityReference</code>
+		 */
+
+		@Override
+		@CheckReturnValue
+		protected ActivityReference getActivityReference ()
+		{
+			return super.getActivityReference ();
+		}
 	}
 
 	/** Serial version id, required by the Serializable interface */
@@ -154,10 +169,9 @@ public class LogData extends LogEntry
 
 		this.id = builder.getId ();
 		this.action = Preconditions.checkNotNull (builder.getAction (), "action");
-//		this.activity = Preconditions.checkNotNull (builder.getActivity (), "activity");
+		this.activity = Preconditions.checkNotNull (builder.getActivityReference (), "activity");
 		this.enrolment = Preconditions.checkNotNull (builder.getEnrolment (), "enrolment");
 		this.network = Preconditions.checkNotNull (builder.getNetwork (), "network");
-//		this.reference = builder.getReference ();
 		this.time = Preconditions.checkNotNull (builder.getTime (), "time");
 	}
 
