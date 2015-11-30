@@ -23,10 +23,18 @@ import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
- * <code>Retriever</code> implementation using a <code>Query</code>.  This
- * <code>Retriever</code> implementation uses a <code>Query</code> to fetch
- * an <code>Element</code> instance corresponding to the supplied
- * <code>Element</code> instance from the <code>DataStore</code>.
+ * <code>Retriever</code> implementation using a <code>Query</code> and the
+ * <code>TranslationTable</code>.  This <code>Retriever</code> implementation
+ * is a cross between the <code>QueryRetriever</code> and the
+ * <code>TableRetriever</code>.  It fetches the <code>Element</code> instance
+ * which corresponds to the supplied <code>Element</code> instance by first
+ * inspecting the <code>TranslationTable</code>, and then by running a
+ * <code>Query</code> against the <code>DataStore</code> if the corresponding
+ * <code>Element</code> instance was not fount in the
+ * <code>TranslationTable</code>.  If the <code>Query</code> returns a
+ * corresponding <code>Element</code> instance then this <code>Retriever</code>
+ * implementation will update the <code>TranslationTable</code> before
+ * returning the result.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -44,22 +52,45 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 	/** The <code>Query</code> used to fetch <code>Element</code> instances */
 	private final Query<T> query;
 
+	/** The <code>TranslationTable</code> */
+	private final TranslationTable table;
+
 	/**
 	 * Create the <code>QueryRetriever</code>.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
 	 * @param  query The <code>Query</code>, not null
+	 * @param  table The <code>TranslationTable</code>, not null
 	 */
 
-	protected QueryRetriever (final DomainModel model, final Query<T> query)
+	protected QueryRetriever (final DomainModel model, final Query<T> query, final TranslationTable table)
 	{
 		assert model != null : "model is NULL";
 		assert query != null : "query is NULL";
+		assert table != null : "table is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.model = model;
 		this.query = query;
+		this.table = table;
+	}
+
+	private T load (final T element)
+	{
+		assert element != null : "element is NULL";
+
+		if (! this.table.contains (element, this.model))
+		{
+			T result = this.query.setAllValues (element).query ();
+
+			if (result != null)
+			{
+				this.table.put (element, result);
+			}
+		}
+
+		return this.table.get (element, this.model);
 	}
 
 	/**
@@ -90,6 +121,6 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 			throw new IllegalStateException ("datastore is closed");
 		}
 
-		return (this.model.contains (element)) ? element : this.query.setAllValues (element).query ();
+		return  (this.model.contains (element)) ? element : this.load (element);
 	}
 }
