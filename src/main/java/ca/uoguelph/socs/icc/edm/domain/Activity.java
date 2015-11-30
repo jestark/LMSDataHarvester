@@ -107,6 +107,9 @@ public abstract class Activity extends ParentActivity
 		/** Builder to create the <code>ActivityReferences</code> */
 		protected final ActivityReference.Builder referenceBuilder;
 
+		/** The name of the <code>Activity</code> */
+		protected @Nullable String name;
+
 		/**
 		 * Create the <code>AbstractBuilder</code>.
 		 *
@@ -126,6 +129,8 @@ public abstract class Activity extends ParentActivity
 			assert referenceBuilder != null : "referenceBuilder is NULL";
 
 			this.referenceBuilder = referenceBuilder;
+
+			this.name = null;
 		}
 
 		/**
@@ -146,6 +151,8 @@ public abstract class Activity extends ParentActivity
 
 			this.referenceBuilder.clear ();
 			this.referenceBuilder.setType (type);
+
+			this.name = null;
 
 			return this;
 		}
@@ -177,8 +184,22 @@ public abstract class Activity extends ParentActivity
 			}
 
 			this.referenceBuilder.load (activity.getReference ());
+			this.setName (activity.getName ());
 
 			return this;
+		}
+
+		/**
+		 * Get the <code>ActivityReference</code> for the <code>Activity</code>.
+		 * This method creates the <code>ActivityReference</code> instance, and
+		 * is used as part of the build process.
+		 *
+		 * @return The <code>ActivityReference</code>
+		 */
+
+		protected final ActivityReference getReference ()
+		{
+			return this.referenceBuilder.build ();
 		}
 
 		/**
@@ -223,6 +244,39 @@ public abstract class Activity extends ParentActivity
 
 			return this;
 		}
+
+		/**
+		 * Get the name of the <code>Activity</code>.
+		 *
+		 * @return The name of the <code>Activity</code>
+		 */
+
+		@CheckReturnValue
+		public final String getName ()
+		{
+			return this.name;
+		}
+
+		/**
+		 * Set the name of the <code>Activity</code>.
+		 *
+		 * @param  name The name of the <code>Activity</code>, not null
+		 * @return      This <code>Builder</code>
+		 *
+		 * @throws IllegalArgumentException if the name is empty
+		 */
+
+		public final Builder setName (final String name)
+		{
+			this.log.trace ("setName: name={}", name);
+
+			Preconditions.checkNotNull (name);
+			Preconditions.checkArgument (name.length () > 0, "name is empty");
+
+			this.name = name;
+
+			return this;
+		}
 	}
 
 	/** Serial version id, required by the Serializable interface */
@@ -245,6 +299,12 @@ public abstract class Activity extends ParentActivity
 
 	/** The associated <code>ActivityReference</code> */
 	public static final Property<Activity, ActivityReference> REFERENCE;
+
+	/** The <code>Grade</code> instances associated with the <code>Activity</code> */
+	public static final Property<Activity, Grade> GRADES;
+
+	/** The <code>SubActivity</code> instances for the <code>Activity</code> */
+	public static final Property<Activity, SubActivity> SUBACTIVITIES;
 
 	/** Select the <code>Activity</code> instance by its id */
 	public static final Selector<Activity> SELECTOR_ID;
@@ -274,6 +334,13 @@ public abstract class Activity extends ParentActivity
 				Activity::getReference, Activity::setReference,
 				Property.Flags.REQUIRED);
 
+		GRADES = Property.of (Activity.class, Grade.class, "grade",
+				Activity::getGrades, Activity::addGrade, Activity::removeGrade);
+
+		SUBACTIVITIES = Property.of (Activity.class, SubActivity.class, "subactivities",
+				Activity::getSubActivities, Activity::addSubActivity, Activity::removeSubActivity,
+				Property.Flags.RECOMMENDED);
+
 		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, REFERENCE);
 
 		SELECTOR_ALL = Selector.builder (Activity.class)
@@ -284,6 +351,8 @@ public abstract class Activity extends ParentActivity
 		METADATA = MetaData.builder (Activity.class)
 			.addProperty (MODEL)
 			.addProperty (NAME)
+			.addProperty (GRADES)
+			.addProperty (SUBACTIVITIES)
 			.addRelationship (REFERENCE, ActivityReference.METADATA, ActivityReference.ACTIVITY)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
@@ -412,7 +481,7 @@ public abstract class Activity extends ParentActivity
 	{
 		super (builder);
 
-//		this.reference = Preconditions.checkNotNull (builder.getReference ());
+		this.reference = Preconditions.checkNotNull (builder.getReference ());
 	}
 
 	/**
@@ -426,7 +495,8 @@ public abstract class Activity extends ParentActivity
 	protected MoreObjects.ToStringHelper toStringHelper ()
 	{
 		return super.toStringHelper ()
-			.add ("reference", this.getReference ());
+			.add ("reference", this.getReference ())
+			.add ("name", this.getName ());
 	}
 
 	/**
@@ -443,7 +513,8 @@ public abstract class Activity extends ParentActivity
 	public boolean equals (final Object obj)
 	{
 		return (obj == this) ? true : (obj instanceof Activity)
-				&& Objects.equals (this.getReference (), ((Activity) obj).getReference ());
+				&& Objects.equals (this.getReference (), ((Activity) obj).getReference ())
+				&& Objects.equals (this.getName (), ((Activity) obj).getName ());
 	}
 
 	/**
@@ -457,7 +528,7 @@ public abstract class Activity extends ParentActivity
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.getReference ());
+		return Objects.hash (this.getReference (), this.getName ());
 	}
 
 	/**
@@ -587,4 +658,80 @@ public abstract class Activity extends ParentActivity
 
 		this.reference = reference;
 	}
+
+	/**
+	 * Set the name of the <code>Activity</code>.  This method is intended to
+	 * be used to initialize a new <code>Activity</code> instance.
+	 *
+	 * @param  name The name of the <code>Activity</code>, not null
+	 */
+
+	protected abstract void setName (String name);
+
+	/**
+	 * Initialize the <code>Set</code> of <code>Grade</code> instances
+	 * associated with the <code>Activity</code> instance.  This method is
+	 * intended to be used to initialize a new <code>Activity</code> instance.
+	 *
+	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
+	 *                null
+	 */
+
+	protected abstract void setGrades (Set<Grade> grades);
+
+	/**
+	 * Add the specified <code>Grade</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  grade    The <code>Grade</code> to add, not null
+	 * @return          <code>True</code> if the <code>Grade</code> was
+	 *                  successfully added, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean addGrade (Grade grade);
+
+	/**
+	 * Remove the specified <code>Grade</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  grade    The <code>Grade</code> to remove, not null
+	 * @return          <code>True</code> if the <code>Grade</code> was
+	 *                  successfully removed from, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean removeGrade (Grade grade);
+
+	/**
+	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
+	 * for the <code>Activity</code>.  This method is intended to be used to
+	 * initialize a new <code>Activity</code> instance.
+	 *
+	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
+	 *                       instances, not null
+	 */
+
+	protected abstract void setSubActivities (List<SubActivity> subactivities);
+
+	/**
+	 * Add the specified <code>SubActivity</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to add, not null
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully added, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean addSubActivity (SubActivity subactivity);
+
+	/**
+	 * Remove the specified <code>SubActivity</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to remove, not null
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully removed, <code>False</code>
+	 *                     otherwise
+	 */
+
+	protected abstract boolean removeSubActivity (SubActivity subactivity);
 }

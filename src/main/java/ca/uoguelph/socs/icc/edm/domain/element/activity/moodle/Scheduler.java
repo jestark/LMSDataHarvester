@@ -32,7 +32,6 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
-import ca.uoguelph.socs.icc.edm.domain.NamedActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 
@@ -43,7 +42,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
  * along with the relevant manager, and builder.  See the <code>Activity</code>
  * interface documentation for details.
  * <p>
- * This class was generated from the <code>NamedActivity</code> template,
+ * This class was generated from the <code>Activity</code> template,
  * with the following values:
  * <p>
  * <ul>
@@ -56,17 +55,17 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
  * @version 1.0
  */
 
-public class Scheduler extends NamedActivity
+public class Scheduler extends Activity
 {
 	/**
 	 * <code>Builder</code> for <code>Scheduler</code>.
 	 *
 	 * @author  James E. Stark
 	 * @version 1.0
-	 * @see     ca.uoguelph.socs.icc.edm.domain.NamedActivity.Builder
+	 * @see     ca.uoguelph.socs.icc.edm.domain.Activity.Builder
 	 */
 
-	public static final class Builder extends NamedActivity.Builder
+	public static final class Builder extends Activity.Builder
 	{
 		/**
 		 * Create the <code>Builder</code>.

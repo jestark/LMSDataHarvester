@@ -157,6 +157,19 @@ public class GenericActivity extends Activity
 	}
 
 	/**
+	 * Set the name of the <code>Activity</code>.  This method is intended to
+	 * be used to initialize a new <code>Activity</code> instance.
+	 *
+	 * @param  name The name of the <code>Activity</code>, not null
+	 */
+
+	@Override
+	protected void setName (final String name)
+	{
+		throw new UnsupportedOperationException ();
+	}
+
+	/**
 	 * Get the <code>Set</code> of <code>Grade</code> instances which are
 	 * associated with the <code>Activity</code>.  Not all
 	 * <code>Activity</code> instances are graded.  If the
@@ -173,6 +186,51 @@ public class GenericActivity extends Activity
 	}
 
 	/**
+	 * Initialize the <code>Set</code> of <code>Grade</code> instances
+	 * associated with the <code>Activity</code> instance.  This method is
+	 * intended to be used to initialize a new <code>Activity</code> instance.
+	 *
+	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
+	 *                null
+	 */
+
+	@Override
+	protected void setGrades (final Set<Grade> grades)
+	{
+		throw new UnsupportedOperationException ("Generic activities can not have grades");
+	}
+
+	/**
+	 * Add the specified <code>Grade</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  grade    The <code>Grade</code> to add, not null
+	 * @return          <code>True</code> if the <code>Grade</code> was
+	 *                  successfully added, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean addGrade (final Grade grade)
+	{
+		throw new UnsupportedOperationException ("Generic activities can not have grades");
+	}
+
+	/**
+	 * Remove the specified <code>Grade</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  grade    The <code>Grade</code> to remove, not null
+	 * @return          <code>True</code> if the <code>Grade</code> was
+	 *                  successfully removed from, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean removeGrade (final Grade grade)
+	{
+		throw new UnsupportedOperationException ("Generic activities can not have grades");
+	}
+
+	/**
 	 * Get the <code>List</code> of <code>SubActivity</code> instances
 	 * associated with the <code>Actvity</code>.
 	 *
@@ -183,5 +241,51 @@ public class GenericActivity extends Activity
 	public List<SubActivity> getSubActivities ()
 	{
 		return Collections.emptyList ();
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
+	 * for the <code>Activity</code>.  This method is intended to be used to
+	 * initialize a new <code>Activity</code> instance.
+	 *
+	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
+	 *                       instances, not null
+	 */
+
+	@Override
+	protected void setSubActivities (final List<SubActivity> subactivities)
+	{
+		throw new UnsupportedOperationException ("Generic activities can not have sub-activities");
+	}
+
+	/**
+	 * Add the specified <code>SubActivity</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to add, not null
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully added, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean addSubActivity (final SubActivity subactivity)
+	{
+		throw new UnsupportedOperationException ("Generic activities can not have sub-activities");
+	}
+
+	/**
+	 * Remove the specified <code>SubActivity</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to remove, not null
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully removed, <code>False</code>
+	 *                     otherwise
+	 */
+
+	@Override
+	protected boolean removeSubActivity (final SubActivity subactivity)
+	{
+		throw new UnsupportedOperationException ("Generic activities can not have sub-activities");
 	}
 }
