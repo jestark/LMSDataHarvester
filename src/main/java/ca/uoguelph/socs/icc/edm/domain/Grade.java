@@ -216,8 +216,6 @@ public abstract class Grade extends Element
 		 *
 		 * @throws IllegalArgumentException if the <code>Activity</code> is not
 		 *                                  in the <code>DataStore</code>
-		 * @throws IllegalArgumentException if the <code>Activity</code> is not
-		 *                                  a <code>NamedActivity</code>
 		 */
 
 		public final Builder setActivity (final Activity activity)
@@ -225,12 +223,6 @@ public abstract class Grade extends Element
 			this.log.trace ("setActivity: activity={}", activity);
 
 			this.activity = this.verifyRelationship (this.activityRetriever, activity, "activity");
-
-			if (! (this.activity instanceof NamedActivity))
-			{
-				this.log.error ("Only NamedActivity instances can be assigned Grades");
-				throw new IllegalArgumentException ("Not a NamedActivity");
-			}
 
 			return this;
 		}
@@ -316,7 +308,7 @@ public abstract class Grade extends Element
 	public static final Property<Grade, DomainModel> MODEL;
 
 	/** The associated <code>Activity</code> */
-	public static final Property<Grade, ActivityReference> ACTIVITY;
+	public static final Property<Grade, Activity> ACTIVITY;
 
 	/** The associated <code>Enrolment</code> */
 	public static final Property<Grade, Enrolment> ENROLMENT;
@@ -340,8 +332,8 @@ public abstract class Grade extends Element
 		MODEL = Property.of (Grade.class, DomainModel.class, "domainmodel",
 				Grade::getDomainModel, Grade::setDomainModel);
 
-		ACTIVITY = Property.of (Grade.class, ActivityReference.class, "activity",
-				Grade::getActivityReference, Grade::setActivityReference,
+		ACTIVITY = Property.of (Grade.class, Activity.class, "activity",
+				Grade::getActivity, Grade::setActivity,
 				Property.Flags.REQUIRED);
 
 		ENROLMENT = Property.of (Grade.class, Enrolment.class, "enrolment",
@@ -367,7 +359,7 @@ public abstract class Grade extends Element
 		METADATA = MetaData.builder (Grade.class)
 			.addProperty (MODEL)
 			.addProperty (GRADE)
-//			.addRelationship (NamedActivity.METADATA, ACTIVITY, NamedActivity.GRADES)
+			.addRelationship (ACTIVITY, Activity.METADATA, Activity.GRADES)
 			.addRelationship (ENROLMENT, Enrolment.METADATA, Enrolment.GRADES)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_PKEY)
@@ -559,23 +551,14 @@ public abstract class Grade extends Element
 	public abstract Activity getActivity ();
 
 	/**
-	 * Get the <code>ActivityReference</code> for which the <code>Grade</code>
-	 * is assigned.
-	 *
-	 * @return The associated <code>ActivityReference</code>
-	 */
-
-	protected abstract ActivityReference getActivityReference ();
-
-	/**
-	 * Set the <code>ActivityReference</code> which is associated with the
+	 * Set the <code>Activity</code> which is associated with the
 	 * <code>Grade</code>.  This method is intended to be used to initialize a
 	 * new <code>Grade</code> instance.
 	 *
-	 * @param  activity The <code>ActivityReference</code>, not null
+	 * @param  activity The <code>Activity</code>, not null
 	 */
 
-	protected abstract void setActivityReference (ActivityReference activity);
+	protected abstract void setActivity (Activity activity);
 
 	/**
 	 * Get the <code>Enrolment</code>, for the student, to which the

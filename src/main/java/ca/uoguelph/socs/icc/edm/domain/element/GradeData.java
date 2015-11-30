@@ -85,21 +85,6 @@ public class GradeData extends Grade
 
 			return new GradeData (this);
 		}
-
-		/**
-		 * Get the <code>ActivityReference</code> for which the
-		 * <code>Grade</code> is assigned.  This method exists for the benefit
-		 * of the <code>Grade</code> implementation.
-		 *
-		 * @return the <code>ActivityReference</code>
-		 */
-
-		@Override
-		@CheckReturnValue
-		protected ActivityReference getActivityReference ()
-		{
-			return super.getActivityReference ();
-		}
 	}
 
 	/** Serial version id, required by the Serializable interface */
@@ -112,7 +97,7 @@ public class GradeData extends Grade
 	private Enrolment enrolment;
 
 	/** The activity for which the grade is assigned */
-	private ActivityReference activity;
+	private Activity activity;
 
 	/**
 	 * Create the <code>Grade</code> with null values.
@@ -136,7 +121,7 @@ public class GradeData extends Grade
 		super (builder);
 
 		this.enrolment = Preconditions.checkNotNull (builder.getEnrolment (), "enrolment");
-		this.activity = Preconditions.checkNotNull (builder.getActivityReference (), "activity");
+		this.activity = Preconditions.checkNotNull (builder.getActivity (), "activity");
 		this.grade = Preconditions.checkNotNull (builder.getGrade (), "grade");
 	}
 
@@ -179,31 +164,19 @@ public class GradeData extends Grade
 	@Override
 	public Activity getActivity ()
 	{
-		return this.getActivityReference ().getActivity ();
-	}
-
-	/**
-	 * Get the <code>ActivityReference</code> for which the <code>Grade</code>
-	 * is assigned.
-	 *
-	 * @return The associated <code>ActivityReference</code>
-	 */
-
-	protected ActivityReference getActivityReference ()
-	{
 		return this.propagateDomainModel (this.activity);
 	}
 
 	/**
-	 * Set the <code>ActivityReference</code> which is associated with the
+	 * Set the <code>Activity</code> which is associated with the
 	 * <code>Grade</code>.  This method is intended to be used to initialize a
 	 * new <code>Grade</code> instance.
 	 *
-	 * @param  activity The <code>ActivityReference</code>, not null
+	 * @param  activity The <code>Activity</code>, not null
 	 */
 
 	@Override
-	protected void setActivityReference (final ActivityReference activity)
+	protected void setActivity (final Activity activity)
 	{
 		assert activity != null : "activity is NULL";
 
