@@ -28,8 +28,9 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.TranslationTable;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -91,23 +92,39 @@ public abstract class Element implements Serializable
 		/** The Logger */
 		protected final Logger log;
 
-		/** The <code>Persister</code> used to store the <code>Element</code> */
-		protected final Persister<T> persister;
+		/** The <code>DomainModel</code> which will contain the <code>Element</code> */
+		protected final DomainModel model;
+
+		/** The <code>Retriever</code> for the <code>Element</code> being created */
+		protected final Retriever<T> retriever;
+
+		/** The <code>IdGenerator</code>*/
+		protected final @Nullable IdGenerator idGenerator;
 
 		/** The previously created or loaded <code>Element</code> instance */
-		protected @Nullable T element;
+		private @Nullable T element;
 
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister The <code>Persister</code>, not null
+		 * @param  model       The <code>DomainModel</code>, not null
+		 * @param  idGenerator The <code>IdGenerator</code>, not null
+		 * @param  retriever   The <code>Retriever</code>, not null
 		 */
 
-		protected Builder (final Persister<T> persister)
+		protected Builder (
+				final DomainModel model,
+				final @Nullable IdGenerator idGenerator,
+				final Retriever<T> retriever)
 		{
 			this.log = LoggerFactory.getLogger (this.getClass ());
 
-			this.persister = Preconditions.checkNotNull (persister, "persister");
+			assert model != null : "model is NULL";
+			assert retriever != null : "model is NULL";
+
+			this.model = model;
+			this.idGenerator = idGenerator;
+			this.retriever = retriever;
 			this.element = null;
 		}
 
@@ -160,31 +177,22 @@ public abstract class Element implements Serializable
 		}
 
 		/**
-		 * Update the <code>Element</code> if only mutable fields have changed.
-		 * This method determines if the existing <code>Element</code> instance
-		 * should be modified, rather than creating a new <code>Element</code>
-		 * instance, and performs the modification.  The default implementation
-		 * assumes that the <code>Element</code> is immutable and returns
-		 * <code>false</code> unconditionally.
+		 * Create a new <code>Element</code> instance.  Implementations of this
+		 * method are responsible for creating a new instance of the
+		 * implementation class and populating it with data from the
+		 * <code>Builder</code>.  For an <code>Element</code> implementation
+		 * where only mutable fields have been changed this method should apply
+		 * the modifications to the supplied <code>Element</code> instance and
+		 * return it.
 		 *
-		 * @return <code>true</code> if the <code>Element</code> was modified,
-		 *         <code>false</code> otherwise
-		 */
-
-		protected boolean updateElement ()
-		{
-			return false;
-		}
-
-		/**
-		 * Create an instance of the <code>Element</code>.
-		 *
-		 * @return The new <code>Element</code> instance
+		 * @param  element The pre-existing <code>Element</code> instance, may
+		 *                 be null
+		 * @return         The new <code>Element</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
-		protected abstract T createElement ();
+		protected abstract T create (@Nullable T element);
 
 		/**
 		 * Reset the builder.  This method will set all of the fields for the
@@ -222,24 +230,104 @@ public abstract class Element implements Serializable
 		}
 
 		/**
-		 * Create an instance of the <code>Element</code>.
+		 * Create an instance of the <code>Element</code>.  This method is
+		 * responsible for creating new <code>Element</code> instances, or
+		 * modifying existing <code>Element</code> instances.
+		 * <p>
+		 * An existing <code>Element</code> instance will be modified if the
+		 * following conditions are satisfied:
+		 * <ol>
+		 * <li> The <code>Element</code> instance has been loaded into a
+		 *      <code>Builder</code> which is associated with the
+		 *      <code>DomainModel</code> which contains the <code>Element</code>
+		 *      instance.
+		 * <li> All of the non-mutable fields are unchanged.  For fields which
+		 *      describe relationships with other <code>Element</code> instances
+		 *      the references must be identical.
+		 * </ol>
+		 * If both of these conditions are met, the existing
+		 * <code>Element</code> instance will be modified and a reference to
+		 * that instance will be returned, otherwise a new <code>Element</code>
+		 * instance will be created.
+		 * <p>
+		 * When a new <code>Element</code> instance is created, this method
+		 * ensures that it is not creating a duplicate of an
+		 * <code>Element</code> which already exists in the
+		 * <code>DataStore</code>.  For <code>Element</code> instances, which
+		 * are unique, a <code>Query</code> using a <code>Selector</code> for a
+		 * unique <code>Property</code> is used to find any pre-existing
+		 * instances.  If the <code>Element</code> is not unique, then if there
+		 * is a previously loaded <code>Element</code> instance which is equal
+		 * to the new instance, then the previously loaded <code>Element</code>
+		 * instance is used to inspect the <code>TranslationTable</code> for an
+		 * associated <code>Element</code> instance in the
+		 * <code>DataStore</code>.  Since it is not possible to directly query
+		 * the <code>DataStore</code>, it is assumed that creating a duplicate
+		 * instance is intended if the inspection of the
+		 * <code>TranslationTable</code> does not yield an pre-existing
+		 * instance.  This method will throw and
+		 * <code>IllegalStateException</code> if the <code>Element</code>
+		 * instance retrieved from the <code>DataStore</code> is not identical
+		 * to the new <code>Element</code> instance (tested using the
+		 * <code>equalsAll</code> method).
+		 * <p>
+		 * Once the new <code>Element</code> instance has been created and
+		 * determined to not already exist in the <code>DataStore</code>, it is
+		 * inserted into the <code>DataStore</code> before being returned to the
+		 * caller.
 		 *
 		 * @return The new <code>Element</code> instance
 		 *
 		 * @throws IllegalStateException If any if the fields are missing
 		 * @throws IllegalStateException If there isn't an active transaction
+		 * @throws IllegalStateException If the <code>Element</code> already
+		 *                               exists in the <code>DataStore</code>
+		 *                               but is not identical to the new
+		 *                               instance
 		 */
 
 		public final T build ()
 		{
 			this.log.trace ("build:");
 
-			if (! this.updateElement ())
+			try
 			{
-				this.element = this.persister.insert (this.element, this.createElement ());
-			}
+				T newElement = this.create (this.element);
 
-			return this.element;
+				if (this.element != newElement)
+				{
+					T result = this.retriever.fetch ((newElement.equals (this.element)) ? this.element : newElement);
+
+					if (result == null)
+					{
+						if (this.idGenerator != null)
+						{
+							this.log.debug ("Setting ID");
+							newElement.setId (this.idGenerator.nextId ());
+						}
+
+						this.log.debug ("Inserting the Element into the datastore");
+						this.element = this.model.insert (this.element, newElement);
+					}
+					else if (! result.equalsAll (newElement))
+					{
+						this.log.debug ("Element exists in the DataStore, but it not identical");
+						throw new IllegalStateException ("Element exists in the DataStore, but it not identical");
+					}
+					else
+					{
+						this.log.debug ("Using pre-existing element instance from the translation table");
+						this.element = result;
+					}
+				}
+
+				return this.element;
+			}
+			catch (NullPointerException ex)
+			{
+				this.log.error ("Element is missing required fields", ex);
+				throw new IllegalStateException ("Element is missing required fields", ex);
+			}
 		}
 
 		/**
@@ -251,7 +339,7 @@ public abstract class Element implements Serializable
 
 		public final DomainModel getDomainModel ()
 		{
-			return null;
+			return this.model;
 		}
 	}
 
@@ -321,6 +409,28 @@ public abstract class Element implements Serializable
 	}
 
 	/**
+	 * Connect all of the relationships for this <code>Element</code> instance.
+	 * This method is intended to be used just after the <code>Element</code> is
+	 * inserted into the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         connected, <code>false</code> otherwise
+	 */
+
+	protected abstract boolean connect ();
+
+	/**
+	 * Disconnect all of the relationships for this <code>Element</code>
+	 * instance.  This method is intended to be used just before the
+	 * <code>Element</code> is removed from the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         disconnected, <code>false</code> otherwise
+	 */
+
+	protected abstract boolean disconnect ();
+
+	/**
 	 * Compare two <code>Element</code> instances to determine if they are
 	 * equal using all of the instance fields.  In most cases this will be the
 	 * same as the <code>equals</code> method.
@@ -352,26 +462,6 @@ public abstract class Element implements Serializable
 	{
 		return this.equals (element);
 	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Property</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Property</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	public abstract Stream<Property<? extends Element, ?>> properties ();
-
-	/**
-	 * Get the <code>Set</code> of <code>Selector</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Selector</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	public abstract Stream<Selector<? extends Element>> selectors ();
 
 	/**
 	 * Get an <code>Builder</code> instance for the specified

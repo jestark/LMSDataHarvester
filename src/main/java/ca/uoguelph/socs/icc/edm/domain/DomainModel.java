@@ -17,6 +17,10 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Collection;
+import java.util.function.Consumer;
+import java.util.function.BiConsumer;
+
+import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +33,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
-
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.datastore.TranslationTable;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
@@ -54,6 +57,9 @@ public final class DomainModel
 	/** The data store which contains all of the data */
 	private final DataStore datastore;
 
+	/** The <code>TranslationTable</code> */
+	private final TranslationTable ttable;
+
 	/**
 	 * Create the <code>DomainModel</code>.
 	 *
@@ -62,12 +68,62 @@ public final class DomainModel
 	 *                   not null
 	 */
 
-	public DomainModel (final Profile profile, final @Provided DataStore.DataStoreFactory factory)
+	public DomainModel (
+			final Profile profile,
+			final @Provided DataStore.DataStoreFactory factory,
+			final @Provided TranslationTable ttable)
 	{
 		this.log = LoggerFactory.getLogger (DomainModel.class);
 
 		this.profile = profile;
+		this.ttable = ttable;
 		this.datastore = factory.getDataStore (profile);
+	}
+
+	/**
+	 * Insert a new <code>Element</code> instance into the
+	 * <code>DataStore</code>.  This method inserts the <code>Element</code>
+	 * instance specified by <code>netElement</code> into the
+	 * <code>DataStore</code>, connects its relationships and updates the
+	 * <code>TranslationTable</code> creating an association with the
+	 * <code>Element</code> instance specified by <code>oldElement</code>
+	 *
+	 * @param  oldElement The <code>Element</code> to be associated with the
+	 *                    inserted <code>Element</code>, may be null
+	 * @param  newElement The <code>Element</code> to insert, not null
+	 * @return            A reference to the <code>Element</code> instance in
+	 *                    the <code>DataStore</code>
+	 *
+	 * @throws IllegalStateException If any of the relationships for the
+	 *                               <code>Element</code> to be inserted fails
+	 *                               to connect
+	 */
+
+	protected <T extends Element> T insert (final @Nullable T oldElement, final T newElement)
+	{
+		this.log.trace ("insert: oldElement={}, newElement={}", oldElement, newElement);
+
+		assert newElement != null : "newElement is NULL";
+
+		Preconditions.checkState (this.datastore.getTransaction ().isActive (), "transaction required");
+
+		this.log.debug ("inserting element into the DataStore: {}", newElement);
+		T result = this.datastore.insert (newElement);
+
+		this.log.debug ("connecting relationships");
+		if (! result.connect ())
+		{
+			this.log.error ("Failed to connect relationships");
+			throw new IllegalStateException ("Failed to connect relationships");
+		}
+
+		if (result.equals (oldElement))
+		{
+			this.log.debug ("Inserting the Element mapping into the TranslationTable");
+			this.ttable.put (oldElement, result);
+		}
+
+		return result;
 	}
 
 	/**
@@ -80,17 +136,6 @@ public final class DomainModel
 	protected Profile getProfile ()
 	{
 		return this.profile;
-	}
-
-	/**
-	 * Get a reference to the <code>DataStore</code>.
-	 *
-	 * @return The <code>DataStore</code>
-	 */
-
-	protected DataStore getDataStore ()
-	{
-		return this.datastore;
 	}
 
 	/**
@@ -143,18 +188,21 @@ public final class DomainModel
 	 *
 	 * @param  <T>      The type of the <code>Element</code> returned by the
 	 *                  <code>Query</code>
-	 * @param  element  The <code>Element</code> interface class, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 *
 	 * @return          The <code>Query</code>
 	 */
 
-	public <T extends Element> Query<T> getQuery (final Class<T> element, final Selector<T> selector)
+	public <T extends Element> Query<T> getQuery (final Selector<T> selector)
 	{
-		assert element != null : "element is NULL";
-		assert selector != null : "selector is NULL";
+		this.log.trace ("getQuery: selector={}", selector);
 
-		return null; // new Query<T> (this.getProfile ().getCreator (element), selector, this.datastore);
+		Preconditions.checkNotNull (selector, "selector");
+
+		Preconditions.checkArgument (this.profile.hasElementClass (selector.getElementClass ()),
+				"no implementation for element: %s", selector.getElementClass ().getSimpleName ());
+
+		return this.getQuery (selector, (Class<? extends T>) this.profile.getElementClass (selector.getElementClass ()));
 	}
 
 	/**
@@ -163,40 +211,20 @@ public final class DomainModel
 	 *
 	 * @param  <T>      The type of the <code>Element</code> returned by the
 	 *                  <code>Query</code>
-	 * @param  type     The <code>Element</code> interface class, not null
+	 * @param  selector The <code>Selector</code>, not null
 	 * @param  impl     The <code>Element</code> implementation class, not null
-	 * @param  selector The <code>Selector</code>, not null
 	 *
 	 * @return          The <code>Query</code>
 	 */
 
-	public <T extends Element> Query<T> getQuery (final Class<T> type, Class<? extends T> impl, final Selector<T> selector)
+	public <T extends Element> Query<T> getQuery (final Selector<T> selector, final Class<? extends T> impl)
 	{
-		assert type != null : "type is NULL";
-		assert impl != null : "impl is NULL";
-		assert selector != null : "selector is NULL";
+		this.log.trace ("getQuery: selector={}, impl={}", selector, impl);
 
-		return null; //new Query<T> (this.getProfile ().getCreator (type, impl), selector,	this.datastore);
-	}
+		Preconditions.checkNotNull (selector, "selector");
+		Preconditions.checkNotNull (impl, "impl");
 
-	/**
-	 * Get a <code>Query</code> for the specified <code>Element</code> using
-	 * the specified <code>MetaData</code> instance
-	 *
-	 * @param  <T>      The type of the <code>Element</code> returned by the
-	 *                  <code>Query</code>
-	 * @param  metadata The <code>MetaData</code> instance, not null
-	 * @param  selector The <code>Selector</code>, not null
-	 *
-	 * @return          The <code>Query</code>
-	 */
-
-	public <T extends Element> Query<T> getQuery (final MetaData<T> metadata, final Selector<T> selector)
-	{
-		assert metadata != null : "metadata is NULL";
-		assert selector != null : "selector is NULL";
-
-		return null; //new Query<T> (metadata, selector, this.datastore);
+		return this.datastore.createQuery (selector, impl, this, T::setDomainModel);
 	}
 
 	/**
@@ -217,11 +245,6 @@ public final class DomainModel
 		}
 
 		return this.datastore.getTransaction ();
-	}
-
-	public InsertProcessor getProcessor ()
-	{
-		return null; // new InsertProcessor (this.datastore, DomainModel.ttable);
 	}
 
 	/**
@@ -372,30 +395,18 @@ public final class DomainModel
 	{
 		this.log.trace ("remove: element={}", element);
 
-/*		if (element == null)
-		{
-			this.log.error ("Attempting to remove a NULL element");
-			throw new NullPointerException ();
-		}
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkArgument (this.datastore.contains (element), "element is no in the datastore");
+		Preconditions.checkState (this.datastore.getTransaction ().isActive (), "transaction required");
 
-		if (! this.datastore.getTransaction ().isActive ())
-		{
-			this.log.error ("Attempting to insert an Element without an Active Transaction");
-			throw new IllegalStateException ("Active Transaction required");
-		}
-
-		if (! this.contains (element))
-		{
-			this.log.error ("Attempting to remove an Element which does not exist in the DataStore");
-			throw new IllegalArgumentException ("Element does not exist in the DataStore");
-		}
-
-		if (! ((MetaData<T>) element.metadata ()).disconnect (this.datastore, element))
+		this.log.debug ("Disconnecting relationships");
+		if (! element.disconnect ())
 		{
 			this.log.error ("Can not safely remove the element: {}", element);
 			throw new IllegalStateException ("Can not break the relationships for the Element");
 		}
 
+		this.log.debug ("removing Element from the DataStore");
 		this.datastore.remove (element);
-*/	}
+	}
 }
