@@ -14,20 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore;
+package ca.uoguelph.socs.icc.edm.domain.datastore.memory;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
-
 import java.util.function.Function;
-
 import java.util.stream.Collectors;
 
 import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -44,10 +41,10 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 public final class Filter<T extends Element>
 {
 	/** The <code>Selector</code> from which the <code>Filter</code> is created */
-	private final Selector selector;
+	private final Selector<T> selector;
 
 	/** <code>Filter</code> parameters */
-	private final Map<Property<?>, Object> values;
+	private final Map<Property<T, ?>, Object> values;
 
 	/**
 	 * Create the <code>Filter</code> from the specified <code>MetaData</code>
@@ -57,7 +54,7 @@ public final class Filter<T extends Element>
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
-	public Filter (final Selector selector)
+	public Filter (final Selector<T> selector)
 	{
 		assert selector != null : "selector is NULL";
 
@@ -120,7 +117,7 @@ public final class Filter<T extends Element>
 	 * @return The <code>Selector</code>
 	 */
 
-	public Selector getSelector ()
+	public Selector<T> getSelector ()
 	{
 		return this.selector;
 	}
@@ -134,12 +131,12 @@ public final class Filter<T extends Element>
 	 * @return          The value associated with the <code>Property</code>
 	 */
 
-	public <V> V getValue (final Property<V> property)
+	public <V> V getValue (final Property<T, V> property)
 	{
 		assert property != null : "property is NULL";
 		assert (this.values.containsKey (property)) : "invalid property";
 
-		return property.getPropertyType ().cast (this.values.get (property));
+		return property.getValueClass ().cast (this.values.get (property));
 	}
 
 	/**
@@ -150,7 +147,7 @@ public final class Filter<T extends Element>
 	 * @param  value    The value to be set, not null
 	 */
 
-	public <V> void setValue (final Property<V> property, final V value)
+	public <V> void setValue (final Property<T, V> property, final V value)
 	{
 		assert property != null : "property is NULL";
 		assert value != null : "value is NULL";

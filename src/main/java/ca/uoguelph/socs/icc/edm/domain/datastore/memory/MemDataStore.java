@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore;
+package ca.uoguelph.socs.icc.edm.domain.datastore.memory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
@@ -40,6 +41,10 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
@@ -102,22 +107,31 @@ public final class MemDataStore implements DataStore
 	 */
 
 	@AutoValue
-	protected static abstract class Key
+	protected static abstract class Key<T extends Element>
 	{
 		/**
 		 *
 		 */
 
-		public static Key create (final Selector<?> selector, final List<Object> keys)
+		public static <T extends Element> Key<T> create (
+				final Selector<T> selector,
+				final Class<? extends T> impl,
+				final List<Object> keys)
 		{
-			return new AutoValue_MemDataStore_Key (selector, keys);
+			return new AutoValue_MemDataStore_Key<T> (selector, impl, keys);
 		}
 
 		/**
 		 *
 		 */
 
-		public abstract Selector<?> getSelector ();
+		public abstract Selector<T> getSelector ();
+
+		/**
+		 *
+		 */
+
+		public abstract Class<? extends T> getElementClass ();
 
 		/**
 		 *
@@ -136,7 +150,7 @@ public final class MemDataStore implements DataStore
 	private final Set<Wrapper<? extends Element>> elements;
 
 	/** Indexed <code>Element</code> instances */
-	private final Map<Key, Element> index;
+	private final Map<Key<?>, Element> index;
 
 	/** The transaction manager for the <code>DataStore</code> */
 	private Transaction transaction;
@@ -200,26 +214,6 @@ public final class MemDataStore implements DataStore
 
 	/**
 	 * Build a key for the index <code>Map</code> from the supplied
-	 * <code>Filter</code> instance.
-	 *
-	 * @param  filter The <code>Filter</code>, not null
-	 *
-	 * @return The key for the index <code>Map</code>
-	 */
-
-	private <T extends Element> Key buildIndex (final Filter<T> filter)
-	{
-		assert filter != null : "filter is NULL";
-
-		return Key.create (filter.getSelector (), filter.getSelector ()
-			.getProperties ()
-			.stream ()
-			.map ((x) -> filter.getValue (x))
-			.collect (Collectors.toList ()));
-	}
-
-	/**
-	 * Build a key for the index <code>Map</code> from the supplied
 	 * <code>Element</code> instance, using the specified <code>Selector</code>.
 	 *
 	 * @param  selector The <code>Selector</code>, not null
@@ -228,18 +222,35 @@ public final class MemDataStore implements DataStore
 	 * @return          The key for the index <code>Map</code>
 	 */
 
-	private <T extends Element> Key buildIndex (final Selector<?> selector, final T element)
+//	private <T extends Element> Key<T> buildIndex (
+//			final Selector<T> selector,
+//			final Class<? extends Element> impl,
+//			final T element)
+//	{
+//		this.log.trace ("buildIndex: selector={}, element={}", selector, element);
+//
+//		assert selector != null : "selector is NULL";
+//		assert element != null : "element is NULL";
+//
+//		return Key.create (selector, impl, selector.getProperties ()
+//			.stream ()
+//			.flatMap ((x) -> x.stream (element))
+//			.collect (Collectors.toList ()));
+//	}
+
+	@Override
+	public <T extends Element> Query<T> createQuery (
+			Selector<T> selector,
+			Class<? extends T> impl,
+			DomainModel model,
+			BiConsumer<T, DomainModel> reference)
 	{
-		this.log.trace ("buildIndex: selector={}, element={}", selector, element);
+		assert selector != null;
+		assert impl != null;
 
-		assert selector != null : "selector is NULL";
-		assert element != null : "element is NULL";
-
-		return return Key.create (selector, selector.getProperties ()
-			.stream ()
-			.flatMap ((x) -> element.stream (x))
-			.collect (Collectors.toList ()));
+		return new MemQuery<T> (selector, impl, model);
 	}
+
 
 	/**
 	 * Get an instance of the transaction manager for the
@@ -253,7 +264,7 @@ public final class MemDataStore implements DataStore
 	{
 		if (this.transaction == null)
 		{
-			this.transaction = new BasicTransaction (this);
+			this.transaction = new MemTransaction (this);
 		}
 
 		return this.transaction;
@@ -315,48 +326,6 @@ public final class MemDataStore implements DataStore
 	}
 
 	/**
-	 * Retrieve a <code>List</code> of <code>Element</code> instances which
-	 * match the specified <code>Filter</code>.
-	 *
-	 * @param  <T>    The <code>Element</code> interface type
-	 * @param  filter The <code>Filter</code>, not null
-	 *
-	 * @return        A <code>List</code> of <code>Element</code> instances
-	 */
-
-	@Override
-	public <T extends Element> List<T> fetch (final Class<? extends T> type, final Filter<T> filter)
-	{
-		this.log.trace ("fetch: type={}, filter={}", type, filter);
-
-		assert type != null : "type is NULL";
-		assert filter != null : "filter is NULL";
-
-		List<T> result = null;
-
-		if (filter.getSelector ().isUnique () && filter.getSelector ().isConstant ())
-		{
-			result = new ArrayList<T> ();
-
-			T element = (T) this.index.get (this.buildIndex (filter));
-
-			if (element != null)
-			{
-				result.add (element);
-			}
-		}
-		else
-		{
-			result = (List<T>) this.elements.parallelStream ()
-				.map (Wrapper::unwrap)
-				.filter (x -> type.isInstance (x) && filter.test ((T) x))
-				.collect (Collectors.toList ());
-		}
-
-		return result;
-	}
-
-	/**
 	 * Get a <code>List</code> containing all of the ID numbers in the
 	 * <code>DataStore</code> for instances of the specified
 	 * <code>Element</code> class.
@@ -402,10 +371,8 @@ public final class MemDataStore implements DataStore
 		this.log.debug ("Inserting the Element");
 		this.elements.add (new Wrapper<T> (element));
 
-		this.log.debug ("building indexes");
-		element.selectors ()
-			.filter (x -> x.getCardinality () != Selector.Cardinality.MULTIPLE && x.isConstant ())
-			.forEach (x -> this.index.put (this.buildIndex (x, element), element));
+//		this.log.debug ("building indexes");
+//		selectors.forEach (x -> this.index.put (this.buildIndex (x, element), element));
 
 		return element;
 	}
@@ -429,9 +396,9 @@ public final class MemDataStore implements DataStore
 		this.log.debug ("removing element");
 		this.elements.remove (new Wrapper<T> (element));
 
-		this.log.debug ("removing indexes");
-		element.selectors ()
-			.filter (x -> x.getCardinality () != Selector.Cardinality.MULTIPLE && x.isConstant ())
-			.forEach ((x) -> this.index.remove (this.buildIndex (x, element)));
+//		this.log.debug ("removing indexes");
+//		element.selectors ()
+//			.filter (x -> x.getCardinality () != Selector.Cardinality.MULTIPLE && x.isConstant ())
+//			.forEach ((x) -> this.index.remove (this.buildIndex (x, element)));
 	}
 }
