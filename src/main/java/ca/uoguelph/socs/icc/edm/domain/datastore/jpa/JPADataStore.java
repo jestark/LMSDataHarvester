@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore;
+package ca.uoguelph.socs.icc.edm.domain.datastore.jpa;
 
 import java.util.List;
 import java.util.Map;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.BiConsumer;
 
 import javax.inject.Singleton;
 
@@ -43,6 +43,11 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * Implementation of the <code>DataStore</code> using the Java Persistence API.
@@ -188,61 +193,19 @@ public final class JPADataStore implements DataStore
 		}
 	}
 
-	/**
-	 * Retrieve a <code>List</code> of <code>Element</code> instances which
-	 * match the specified <code>Filter</code>.
-	 *
-	 * @param  <T>    The <code>Element</code> interface type
-	 * @param  filter The <code>Filter</code>, not null
-	 *
-	 * @return        A <code>List</code> of <code>Element</code> instances
-	 */
-
 	@Override
-	public <T extends Element> List<T> fetch (final Class<? extends T> type, final Filter<T> filter)
+	public <T extends Element> Query<T> createQuery (
+			Selector<T> selector,
+			Class<? extends T> impl,
+			DomainModel model,
+			BiConsumer<T, DomainModel> reference)
 	{
-		this.log.trace ("fetch: type={}, filter={}", type, filter);
+		assert selector != null;
+		assert impl != null;
 
-		assert type != null : "type is NULL";
-		assert filter != null : "filter is NULL";
-		assert this.isOpen () : "datastore is closed";
-
-		List<T> result = new ArrayList<T> ();
-
-		if (Element.SELECTOR_ID.equals (filter.getSelector ()))
-		{
-			this.log.debug ("Fetching by ID for: class={}, id={}", type.getSimpleName (), filter.getValue (Element.ID));
-
-			T data = this.em.find (type, filter.getValue (Element.ID));
-
-			if (data != null)
-			{
-				this.log.debug ("Loaded Element: {}", data);
-
-				result.add (data);
-			}
-			else
-			{
-				this.log.debug ("No Element of type {} found with ID: {}", type.getSimpleName (), filter.getValue (Element.ID));
-			}
-		}
-		else
-		{
-			String qname = String.format ("%s:%s", filter.getMetaData ()
-					.getElementType ().getSimpleName (),
-					filter.getSelector ().getName ());
-
-			TypedQuery<? extends T> query = this.em.createNamedQuery (qname, type);
-
-			filter.getSelector ()
-				.getProperties ()
-				.stream ()
-				.forEach ((x) -> query.setParameter (x.getName (), filter.getValue (x)));
-
-			result.addAll (query.getResultList ());
-		}
-
-		return result;
+		return (selector.getCardinality () == Selector.Cardinality.KEY)
+			? new JPAIdQuery<T> (selector, impl, model, this.em)
+			: new JPANamedQuery<T> (selector, impl, model, this.em);
 	}
 
 	/**

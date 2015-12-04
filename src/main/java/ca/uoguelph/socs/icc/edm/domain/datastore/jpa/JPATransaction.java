@@ -14,12 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore;
+package ca.uoguelph.socs.icc.edm.domain.datastore.jpa;
 
 import javax.persistence.EntityTransaction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 
 /**
  * JPA implementation of the <code>Transaction</code> interface.  This class
@@ -30,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  */
 
-public final class JPATransaction implements Transaction
+final class JPATransaction implements Transaction
 {
 	/** The log */
 	private final Logger log;
@@ -45,7 +47,7 @@ public final class JPATransaction implements Transaction
 	 * @param transaction The <code>EntityTransaction</code>, not null
 	 */
 
-	protected JPATransaction (final EntityTransaction transaction)
+	JPATransaction (final EntityTransaction transaction)
 	{
 		this.log = LoggerFactory.getLogger (JPATransaction.class);
 
