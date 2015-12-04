@@ -54,18 +54,37 @@ final class PropertyRelationship<T extends Element, V extends Element> implement
 	/**
 	 * Create the <code>PropertyRelationship</code> from the specified values.
 	 *
-	 * @param  inverse   The <code>Inverse</code> relationship, not null
 	 * @param  property The <code>Property</code>, not null
+	 * @param  inverse  The <code>Property</code> for the inverse relationship,
+	 *                  not null
 	 */
 
 	public static <T extends Element, V extends Element> PropertyRelationship<T, V> of (
-			final InverseRelationship<V, T> inverse,
-			final Property<T, V> property)
+			final Property<T, V> property,
+			final Property<V, T> inverse)
 	{
 		assert inverse != null : "inverse is NULL";
 		assert property != null : "property is NULL";
 
-		return new PropertyRelationship<T, V> (inverse, property);
+		return new PropertyRelationship<T, V> (PropertyInverseRelationship.of (inverse), property);
+	}
+
+	/**
+	 * Create the <code>PropertyRelationship</code> from the specified values.
+	 *
+	 * @param  inverse  The <code>Selector</code> for the inverse relationship,
+	 *                  not null
+	 * @param  property The <code>Property</code>, not null
+	 */
+
+	public static <T extends Element, V extends Element> PropertyRelationship<T, V> of (
+			final Property<T, V> property,
+			final Selector<T> inverse)
+	{
+		assert inverse != null : "inverse is NULL";
+		assert property != null : "property is NULL";
+
+		return new PropertyRelationship<T, V> (SelectorInverseRelationship.of (property, inverse), property);
 	}
 
 	/**

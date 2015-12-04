@@ -152,8 +152,8 @@ public final class MetaData<T extends Element>
 
 			this.properties.add (local);
 
-			this.relationships.add (PropertyRelationship.of (PropertyInverseRelationship.of (remote), local));
-			metadata.relationships.add (PropertyRelationship.of (PropertyInverseRelationship.of (local), remote));
+			this.relationships.add (PropertyRelationship.of (local, remote));
+			metadata.relationships.add (PropertyRelationship.of (remote, local));
 
 			return this;
 		}
@@ -193,8 +193,8 @@ public final class MetaData<T extends Element>
 			this.properties.add (local);
 			this.selectors.add (remote);
 
-			this.relationships.add (PropertyRelationship.of (SelectorInverseRelationship.of (local, remote), local));
-			metadata.relationships.add (SelectorRelationship.of (PropertyInverseRelationship.of (local), local, remote));
+			this.relationships.add (PropertyRelationship.of (local, remote));
+			metadata.relationships.add (SelectorRelationship.of (local, remote));
 
 			return this;
 		}

@@ -60,21 +60,18 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	/**
 	 * Create the <code>SelectorRelationship</code> from the specified values.
 	 *
-	 * @param  inverse   The <code>Inverse</code> relationship, not null
 	 * @param  property The <code>Property</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
 	public static <T extends Element, V extends Element> SelectorRelationship<T, V> of (
-			final InverseRelationship<V, T> inverse,
 			final Property<V, T> property,
 			final Selector<V> selector)
 	{
-		assert inverse != null : "inverse is NULL";
 		assert property != null : "property is NULL";
 		assert selector != null : "selector is NULL";
 
-		return new SelectorRelationship<T, V> (inverse, property, selector);
+		return new SelectorRelationship<T, V> (PropertyInverseRelationship.of (property), property, selector);
 	}
 
 	/**
@@ -94,13 +91,6 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		this.inverse = inverse;
 		this.property = property;
 		this.selector = selector;
-	}
-
-	private Query<V> getQuery ()
-	{
-		return null; // model.getQuery (Container.getInstance ()
-//				.getMetaData (this.value),
-//				this.selector);
 	}
 
 	/**
@@ -206,9 +196,9 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 		assert element.getDomainModel () != null : "missing DomainModel";
 		assert element.getDomainModel ().contains (element) : "element is not in the model";
 
-		return element.getDomainModel ().contains (element) && this.getQuery ()
+		return element.getDomainModel ().contains (element) && element.getDomainModel ()
+			.getQuery (this.selector, this.selector.getElementClass ())
 			.setValue (this.property, element)
-			.queryAll ()
 			.stream ()
 			.allMatch (x -> this.inverse.remove (x, element));
 	}

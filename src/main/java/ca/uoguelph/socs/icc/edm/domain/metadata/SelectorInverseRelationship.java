@@ -86,13 +86,6 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 		this.selector = selector;
 	}
 
-	private Query<V> getQuery ()
-	{
-		return null; // model.getQuery (Container.getInstance ()
-//				.getMetaData (this.value),
-//				this.selector);
-	}
-
 	/**
 	 * Compare two <code>SelectorInverseRelationship</code> instances to determine
 	 * if they are equal.
@@ -148,9 +141,6 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 	/**
 	 * Insert the specified value into the specified <code>Element</code> to
 	 * create the relationship.
-	 * <p>
-	 * This method is a same as <code>canInsert</code> as there is nothing
-	 * to insert in a uni-directional relationship.
 	 *
 	 * @param  element The <code>Element</code> to operate on, not null
 	 * @param  value   The <code>Element</code> to be inserted, not null
@@ -174,7 +164,8 @@ final class SelectorInverseRelationship<T extends Element, V extends Element> im
 
 		return element.getDomainModel ().contains (element)
 			&& ((this.selector.getCardinality () == Selector.Cardinality.MULTIPLE)
-					|| this.getQuery ()
+					|| element.getDomainModel ()
+					.getQuery (this.selector, this.selector.getElementClass ())
 					.setValue (this.property, element)
 					.queryAll ()
 					.size () <= 1);
