@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore;
+package ca.uoguelph.socs.icc.edm.domain.datastore.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import javax.inject.Singleton;
 
@@ -36,6 +37,11 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.DomainModelFactory;
 import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
  * A <code>DataStore</code> implementation that does nothing.  This
@@ -166,26 +172,17 @@ public final class DummyDataStore implements DataStore
 		this.transaction = null;
 	}
 
-	/**
-	 * Retrieve a <code>List</code> of <code>Element</code> instances which
-	 * match the specified <code>Filter</code>.
-	 *
-	 * @param  <T>    The <code>Element</code> interface type
-	 * @param  filter The <code>Filter</code>, not null
-	 *
-	 * @return        A <code>List</code> of <code>Element</code> instances
-	 */
-
 	@Override
-	public <T extends Element> List<T> fetch (final Class<? extends T> type, final Filter<T> filter)
+	public <T extends Element> Query<T> createQuery (
+			Selector<T> selector,
+			Class<? extends T> impl,
+			DomainModel model,
+			BiConsumer<T, DomainModel> reference)
 	{
-		this.log.trace ("fetch: type={}, filter={}", type, filter);
+		assert selector != null;
+		assert impl != null;
 
-		assert type != null : "type is NULL";
-		assert filter != null : "filter is NULL";
-		assert this.isOpen () : "datastore is closed";
-
-		return new ArrayList<T> ();
+		return new DummyQuery<T> (selector, impl, model);
 	}
 
 	/**
@@ -221,7 +218,7 @@ public final class DummyDataStore implements DataStore
 	{
 		if (this.transaction == null)
 		{
-			this.transaction = new BasicTransaction (this);
+			this.transaction = new DummyTransaction (this);
 		}
 
 		return this.transaction;

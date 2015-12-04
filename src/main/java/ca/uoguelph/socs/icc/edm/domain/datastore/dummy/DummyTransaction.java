@@ -14,10 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain.datastore;
+package ca.uoguelph.socs.icc.edm.domain.datastore.dummy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 
 /**
  * Basic <code>Transaction</code> implementation for the
@@ -29,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  */
 
-public final class BasicTransaction implements Transaction
+final class DummyTransaction implements Transaction
 {
 	/** The log  */
 	private final Logger log;
@@ -49,7 +52,7 @@ public final class BasicTransaction implements Transaction
 	 * @param  datastore The <code>DataStore</code>, not null
 	 */
 
-	public BasicTransaction (final DataStore datastore)
+	public DummyTransaction (final DataStore datastore)
 	{
 		assert datastore != null : "datastore is NULL";
 
