@@ -30,9 +30,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.SequentialIdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.datastore.memory.MemDataStore;
 import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
@@ -113,18 +112,19 @@ public abstract class Activity extends ParentActivity
 		/**
 		 * Create the <code>AbstractBuilder</code>.
 		 *
-		 * @param  persister        The <code>Persister</code> used to store the
-		 *                          <code>Activity</code>, not null
+		 * @param  model            The <code>DomainModel</code>, not null
+		 * @param  retriever        The <code>Retriever</code>, not null
 		 * @param  referenceBuilder Builder for the internal
 		 *                          <code>ActivityReference</code> instance, not
 		 *                          null
 		 */
 
 		protected Builder (
-				final Persister<Activity> persister,
+				final DomainModel model,
+				final Retriever<Activity> retriever,
 				final ActivityReference.Builder referenceBuilder)
 		{
-			super (persister);
+			super (model, null, retriever);
 
 			assert referenceBuilder != null : "referenceBuilder is NULL";
 
@@ -358,13 +358,13 @@ public abstract class Activity extends ParentActivity
 			.addSelector (SELECTOR_ALL)
 			.build ();
 
-		STORE = MemDataStore.create (Profile.builder ()
-				.setName ("Activity")
-				.setMutable (true)
-				.setElementClass (ActivitySource.class, ActivitySourceData.class)
-				.setElementClass (ActivityType.class, ActivityTypeData.class)
-				.setGenerator (Element.class, SequentialIdGenerator.class)
-				.build ());
+		STORE = null; //MemDataStore.create (Profile.builder ()
+//				.setName ("Activity")
+//				.setMutable (true)
+//				.setElementClass (ActivitySource.class, ActivitySourceData.class)
+//				.setElementClass (ActivityType.class, ActivityTypeData.class)
+//				.setGenerator (Element.class, SequentialIdGenerator.class)
+//				.build ());
 	}
 
 	/**
@@ -386,20 +386,20 @@ public abstract class Activity extends ParentActivity
 		assert impl != null : "impl is NULL";
 		assert source.length () > 0 : "source is empty";
 
-		Activity.STORE.getTransaction ().begin ();
+//		Activity.STORE.getTransaction ().begin ();
 
-		ActivityType atype = ActivityType.builder (Activity.STORE)
-			.setActivitySource (ActivitySource.builder (Activity.STORE)
-					.setName (source)
-					.build ())
-			.setName (type)
-			.build ();
+//		ActivityType atype = ActivityType.builder (Activity.STORE)
+//			.setActivitySource (ActivitySource.builder (Activity.STORE)
+//					.setName (source)
+//					.build ())
+//			.setName (type)
+//			.build ();
 
-		Activity.STORE.getTransaction ().commit ();
+//		Activity.STORE.getTransaction ().commit ();
 
-		assert ! Activity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
+//		assert ! Activity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
 
-		Activity.activities.put (atype, impl);
+//		Activity.activities.put (atype, impl);
 	}
 
 	/**
@@ -500,6 +500,38 @@ public abstract class Activity extends ParentActivity
 	}
 
 	/**
+	 * Connect all of the relationships for this <code>Activity</code> instance.
+	 * This method is intended to be used just after the <code>Activity</code>
+	 * is inserted into the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         connected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean connect ()
+	{
+		return Activity.METADATA.relationships ()
+				.allMatch (r -> r.connect (this));
+	}
+
+	/**
+	 * Disconnect all of the relationships for this <code>Activity</code>
+	 * instance.  This method is intended to be used just before the
+	 * <code>Activity</code> is removed from the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         disconnected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean disconnect ()
+	{
+		return Activity.METADATA.relationships ()
+				.allMatch (r -> r.disconnect (this));
+	}
+
+	/**
 	 * Compare two <code>Activity</code> instances to determine if they are
 	 * equal.
 	 *
@@ -545,34 +577,6 @@ public abstract class Activity extends ParentActivity
 	{
 		return this.toStringHelper ()
 			.toString ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Property</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Property</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Property<? extends Element, ?>> properties ()
-	{
-		return Activity.METADATA.properties ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Selector</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Selector</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Selector<? extends Element>> selectors ()
-	{
-		return Activity.METADATA.selectors ();
 	}
 
 	/**

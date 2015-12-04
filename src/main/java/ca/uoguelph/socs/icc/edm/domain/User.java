@@ -28,9 +28,9 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -96,8 +96,10 @@ public abstract class User extends Element
 		/**
 		 * Create an instance of the <code>Builder</code>.
 		 *
-		 * @param  persister          The <code>Persister</code> used to store
-		 *                            the <code>User</code>, not null
+		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  idGenerator        The <code>IdGenerator</code>, not null
+		 * @param  UserRetriever      <code>Retriever</code> for
+		 *                            <code>User</code> instances, not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
 		 *                            <code>Enrolment</code> instances, not null
 		 * @param  enrolmentQuery     <code>Query</code> to check if an
@@ -107,11 +109,13 @@ public abstract class User extends Element
 		 */
 
 		protected Builder (
-				final Persister<User> persister,
+				final DomainModel model,
+				final IdGenerator idGenerator,
+				final Retriever<User> userRetriever,
 				final Retriever<Enrolment> enrolmentRetriever,
 				final Query<User> enrolmentQuery)
 		{
-			super (persister);
+			super (model, idGenerator, userRetriever);
 
 			this.enrolmentRetriever = enrolmentRetriever;
 			this.enrolmentQuery = enrolmentQuery;
@@ -124,62 +128,39 @@ public abstract class User extends Element
 			this.enrolments = new HashSet<Enrolment> ();
 		}
 
-/*		@Override
-		public User build ()
+		/**
+		 * Update the mutable fields in the <code>User</code> instance.
+		 *
+		 * @param user The <code>User</code> instance, not null
+		 * @return     The supplied <code>User</code> instance
+		 */
+
+		@CheckReturnValue
+		protected final User updateUser (final User user)
 		{
-			this.log.trace ("build:");
+			this.log.trace ("updateUser: user={}", user);
 
-			if (this.firstname == null)
-			{
-				this.log.error ("Attempting to create an User without a First name");
-				throw new IllegalStateException ("firstname is NULL");
-			}
+			assert user != null : "user is NULL";
 
-			if (this.lastname == null)
-			{
-				this.log.error ("Attempting to create an User without an Last name");
-				throw new IllegalStateException ("lastname is NULL");
-			}
+			user.setFirstname (Preconditions.checkNotNull (this.firstname, "firstname"));
+			user.setLastname (Preconditions.checkNotNull (this.lastname, "lastname"));
 
-			if (this.username == null)
-			{
-				this.log.error ("Attempting to create an User without a username");
-				throw new IllegalStateException ("username is NULL");
-			}
+			this.enrolments.stream ()
+				.filter (x -> ! user.getEnrolments ().contains (x))
+				.forEach (x -> user.addEnrolment (x));
 
-			if ((this.element == null)
-					|| (! this.persister.contains (this.element))
-					|| (! this.username.equals (this.element.getUsername ())))
-			{
-				User result = null; // this.supplier.get ();
-				result.setId (this.id);
-				result.setFirstname (this.firstname);
-				result.setLastname (this.lastname);
-				result.setUsername (this.username);
-
-				this.enrolments.forEach (x -> result.addEnrolment (x));
-
-				this.element = this.persister.insert (this.element, result);
-
-				if (! this.element.equalsAll (result))
-				{
-					this.log.error ("User is already in the datastore with a name of: {} vs. the specified value of: {}", this.element.getName (), result.getName ());
-					throw new IllegalArgumentException ("User is already in the datastore with a different name");
-				}
-			}
-			else
-			{
-				this.element.setFirstname (this.firstname);
-				this.element.setLastname (this.lastname);
-
-				this.enrolments.stream ()
-					.filter (x -> ! this.element.getEnrolments ().contains (x))
-					.forEach (x -> this.element.addEnrolment (x));
-			}
-
-			return this.element;
+			return user;
 		}
-*/
+
+		protected final User setEnrolments (final User user)
+		{
+			assert user != null : "user is NULL";
+
+			this.enrolments.forEach (x -> user.addEnrolment (x));
+
+			return user;
+		}
+
 		/**
 		 * Reset the builder.  This method will set all of the fields for the
 		 * <code>Element</code> to be built to <code>null</code>.
@@ -571,6 +552,38 @@ public abstract class User extends Element
 	}
 
 	/**
+	 * Connect all of the relationships for this <code>User</code> instance.
+	 * This method is intended to be used just after the <code>User</code> is
+	 * inserted into the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         connected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean connect ()
+	{
+		return User.METADATA.relationships ()
+				.allMatch (r -> r.connect (this));
+	}
+
+	/**
+	 * Disconnect all of the relationships for this <code>User</code> instance.
+	 * This method is intended to be used just before the <code>User</code> is
+	 * removed from the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         disconnected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean disconnect ()
+	{
+		return User.METADATA.relationships ()
+				.allMatch (r -> r.disconnect (this));
+	}
+
+	/**
 	 * Compare two <code>User</code> instances to determine if they are
 	 * equal.  The <code>User</code> instances are compared based upon the
 	 * this ID number and the username.
@@ -638,34 +651,6 @@ public abstract class User extends Element
 	{
 		return this.toStringHelper ()
 			.toString ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Property</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Property</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Property<? extends Element, ?>> properties ()
-	{
-		return User.METADATA.properties ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Selector</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Selector</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Selector<? extends Element>> selectors ()
-	{
-		return User.METADATA.selectors ();
 	}
 
 	/**

@@ -27,13 +27,14 @@ import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.Network;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * Implementation of the <code>LogEntry</code> interface.  It is expected that
@@ -64,8 +65,10 @@ public class LogData extends LogEntry
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister          The <code>Persister</code> used to store the
-		 *                            <code>LogEntry</code>, not null
+		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  idGenerator        The <code>IdGenerator</code>, not null
+		 * @param  logRetriever       <code>Retriever</code> for
+		 *                            <code>LogEntry</code> instances, not null
 		 * @param  actionRetriever    <code>Retriever</code> for
 		 *                            <code>Action</code> instances, not null
 		 * @param  activityRetriever  <code>Retriever</code> for
@@ -77,27 +80,31 @@ public class LogData extends LogEntry
 		 */
 
 		private Builder (
-				final Persister<LogEntry> persister,
+				final DomainModel model,
+				final IdGenerator idGenerator,
+				final Retriever<LogEntry> logRetriever,
 				final Retriever<Action> actionRetriever,
 				final Retriever<Activity> activityRetriever,
 				final Retriever<Enrolment> enrolmentRetriever,
 				final Retriever<Network> networkRetriever)
 		{
-			super (persister, actionRetriever, activityRetriever, enrolmentRetriever, networkRetriever);
+			super (model, idGenerator, logRetriever, actionRetriever, activityRetriever, enrolmentRetriever, networkRetriever);
 		}
 
 		/**
 		 * Create an instance of the <code>LogEntry</code>.
 		 *
-		 * @return The new <code>LogEntry</code> instance
+		 * @param  entry The previously existing <code>LogEntry</code> instance,
+		 *                may be null
+		 * @return        The new <code>LogEntry</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected LogEntry createElement ()
+		protected LogEntry create (final @Nullable LogEntry entry)
 		{
-			this.log.trace ("createElement");
+			this.log.trace ("create: entry={}", entry);
 
 			return new LogData (this);
 		}

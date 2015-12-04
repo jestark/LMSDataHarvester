@@ -16,12 +16,14 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Preconditions;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
@@ -61,8 +63,10 @@ class WorkshopSubmissionLog extends LogReference
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister            The <code>Persister</code> used to store
-		 *                              the <code>ActivityType</code>, not null
+		 * @param  model                The <code>DomainModel</code>, not null
+		 * @param  refRetriever         <code>Retriever</code> for
+		 *                              <code>LogReference</code> instances, not
+		 *                              null
 		 * @param  entryRetriever       <code>Retriever</code> for
 		 *                              <code>ActivitySource</code> instances,
 		 *                              not null
@@ -72,25 +76,28 @@ class WorkshopSubmissionLog extends LogReference
 		 */
 
 		private Builder (
-				final Persister<LogReference> persister,
+				final DomainModel model,
+				final Retriever<LogReference> refRetriever,
 				final Retriever<LogEntry> entryRetriever,
 				final Retriever<SubActivity> subActivityRetriever)
 		{
-			super (persister, entryRetriever, subActivityRetriever);
+			super (model, refRetriever, entryRetriever, subActivityRetriever);
 		}
 
 		/**
-		 * Create an instance of the <code>LogReference</code>.
+		 * Create an instance of the <code>WorkshopSubmissionLog</code>.
 		 *
-		 * @return The new <code>LogReference</code> instance
+		 * @param  reference The previously existing <code>LogReference</code>
+		 *                   instance, may be null
+		 * @return           The new <code>LogReference</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected LogReference createElement ()
+		protected LogReference create (final @Nullable LogReference reference)
 		{
-			this.log.trace ("createElement");
+			this.log.trace ("create: reference={}", reference);
 
 			return new WorkshopSubmissionLog (this);
 		}

@@ -25,7 +25,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -72,13 +73,17 @@ public abstract class Role extends Element
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister The <code>Persister</code> used to store the
-		 *                   <code>Role</code>, not null
+		 * @param  model       The <code>DomainModel</code>, not null
+		 * @param  idGenerator The <code>IdGenerator</code>, not null
+		 * @param  retriever   The <code>Retriever</code>, not null
 		 */
 
-		protected Builder (final Persister<Role> persister)
+		protected Builder (
+				final DomainModel model,
+				final IdGenerator idGenerator,
+				final Retriever<Role> retriever)
 		{
-			super (persister);
+			super (model, idGenerator, retriever);
 
 			this.id = null;
 			this.name = null;
@@ -296,6 +301,38 @@ public abstract class Role extends Element
 	}
 
 	/**
+	 * Connect all of the relationships for this <code>Role</code> instance.
+	 * This method is intended to be used just after the <code>Role</code> is
+	 * inserted into the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         connected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean connect ()
+	{
+		return Role.METADATA.relationships ()
+				.allMatch (r -> r.connect (this));
+	}
+
+	/**
+	 * Disconnect all of the relationships for this <code>Role</code> instance.
+	 * This method is intended to be used just before the <code>Role</code> is
+	 * removed from the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         disconnected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean disconnect ()
+	{
+		return Role.METADATA.relationships ()
+				.allMatch (r -> r.disconnect (this));
+	}
+
+	/**
 	 * Compare two <code>Role</code> instances to determine if they are
 	 * equal.  The <code>Role</code> instances are compared based upon their
 	 * names.
@@ -340,34 +377,6 @@ public abstract class Role extends Element
 	{
 		return this.toStringHelper ()
 			.toString ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Property</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Property</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Property<? extends Element, ?>> properties ()
-	{
-		return Role.METADATA.properties ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Selector</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Selector</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Selector<? extends Element>> selectors ()
-	{
-		return Role.METADATA.selectors ();
 	}
 
 	/**

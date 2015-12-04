@@ -31,9 +31,10 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/book
@@ -70,32 +71,35 @@ public class Book extends Activity
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister        The <code>Persister</code> used to store the
-		 *                          <code>Activity</code>, not null
+		 * @param  model            The <code>DomainModel</code>, not null
+		 * @param  retriever        The <code>Retriever</code>, not null
 		 * @param  referenceBuilder Builder for the internal
 		 *                          <code>ActivityReference</code> instance, not
 		 *                          null
 		 */
 
 		private Builder (
-				final Persister<Activity> persister,
+				final DomainModel model,
+				final Retriever<Activity> retriever,
 				final ActivityReference.Builder referenceBuilder)
 		{
-			super (persister, referenceBuilder);
+			super (model, retriever, referenceBuilder);
 		}
 
 		/**
-		 * Create an instance of the <code>Activity</code>.
+		 * Create an instance of the <code>Book</code>.
 		 *
-		 * @return The new <code>Activity</code> instance
+		 * @param  activity The previously existing <code>Activity</code>
+		 *                  instance, may be null
+		 * @return          The new <code>Activity</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected Activity createElement ()
+		protected Activity create (final @Nullable Activity activity)
 		{
-			this.log.trace ("createElement");
+			this.log.trace ("create: activity={}", activity);
 
 			return new Book (this);
 		}

@@ -27,11 +27,13 @@ import javax.annotation.Nullable;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/lesson
@@ -69,29 +71,34 @@ public class LessonPage extends SubActivity
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister        The <code>Persister</code> used to store the
-		 *                          <code>Activity</code>, not null
+		 * @param  model        The <code>DomainModel</code>, not null
+		 * @param  idGenerator  The <code>IdGenerator</code>, not null
+		 * @param  subRetriever <code>Retriever</code> for
+		 *                      <code>SubActivity</code> instances, not null
 		 */
 
 		private Builder (
-				final Persister<SubActivity> persister,
-				final ParentActivity parent)
+				final DomainModel model,
+				final IdGenerator idGenerator,
+				final Retriever<SubActivity> subRetriever)
 		{
-			super (persister, parent);
+			super (model, idGenerator, subRetriever);
 		}
 
 		/**
-		 * Create an instance of the <code>Activity</code>.
+		 * Create an instance of the <code>LessonPage</code>.
 		 *
-		 * @return The new <code>Activity</code> instance
+		 * @param  subActivity The previously existing <code>SubActivity</code>
+		 *                     instance, may be null
+		 * @return             The new <code>SubActivity</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected SubActivity createElement ()
+		protected SubActivity create (final @Nullable SubActivity subActivity)
 		{
-			this.log.trace ("createElement");
+			this.log.trace ("create: subActivity={}", subActivity);
 
 			return new LessonPage (this);
 		}

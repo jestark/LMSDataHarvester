@@ -25,8 +25,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -87,8 +87,9 @@ public abstract class Grade extends Element
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister          The <code>Persister</code> used to store
-		 *                            the <code>Enrolment</code>, not null
+		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  gradeRetriever     <code>Retriever</code> for
+		 *                            <code>Grade</code> instances, not null
 		 * @param  activityRetriever  <code>Retriever</code> for
 		 *                            <code>Role</code> instances, not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
@@ -96,11 +97,12 @@ public abstract class Grade extends Element
 		 */
 
 		protected Builder (
-				final Persister<Grade> persister,
+				final DomainModel model,
+				final Retriever<Grade> gradeRetriever,
 				final Retriever<Activity> activityRetriever,
 				final Retriever<Enrolment> enrolmentRetriever)
 		{
-			super (persister);
+			super (model, null, gradeRetriever);
 
 			assert activityRetriever != null : "activityRetriever is NULL";
 			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
@@ -113,21 +115,23 @@ public abstract class Grade extends Element
 			this.value = null;
 		}
 
-		@Override
-		protected boolean updateElement ()
+		/**
+		 * Update the mutable fields in the <code>Grade</code> instance.
+		 *
+		 * @param grade The <code>Grade</code> instance, not null
+		 * @return      The supplied <code>Grade</code> instance
+		 */
+
+		@CheckReturnValue
+		protected final Grade updateGrade (final Grade grade)
 		{
-			this.log.trace ("updateElement:");
+			this.log.trace ("updateGrade: grade={}", grade);
 
-			boolean result = false;
+			assert grade != null : "grade is NULL";
 
-			if (this.element != null
-					&& this.element.getActivity () == this.activity
-					&& this.element.getEnrolment () == this.enrolment)
-			{
-				this.element.setGrade (this.value);
-			}
+			grade.setGrade (Preconditions.checkNotNull (this.value, "grade"));
 
-			return result;
+			return grade;
 		}
 
 		/**
@@ -426,6 +430,38 @@ public abstract class Grade extends Element
 	}
 
 	/**
+	 * Connect all of the relationships for this <code>Grade</code> instance.
+	 * This method is intended to be used just after the <code>Grade</code> is
+	 * inserted into the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         connected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean connect ()
+	{
+		return Grade.METADATA.relationships ()
+				.allMatch (r -> r.connect (this));
+	}
+
+	/**
+	 * Disconnect all of the relationships for this <code>Grade</code>
+	 * instance.  This method is intended to be used just before the
+	 * <code>Grade</code> is removed from the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         disconnected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean disconnect ()
+	{
+		return Grade.METADATA.relationships ()
+				.allMatch (r -> r.disconnect (this));
+	}
+
+	/**
 	 * Compare two <code>Grade</code> instances to determine if they are equal.
 	 * The <code>Grade</code> instances are compared based upon the associated
 	 * <code>Activity</code> and the associated <code>Enrolment</code>.
@@ -494,34 +530,6 @@ public abstract class Grade extends Element
 	{
 		return this.toStringHelper ()
 			.toString ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Property</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Property</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Property<? extends Element, ?>> properties ()
-	{
-		return Grade.METADATA.properties ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Selector</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Selector</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Selector<? extends Element>> selectors ()
-	{
-		return Grade.METADATA.selectors ();
 	}
 
 	/**

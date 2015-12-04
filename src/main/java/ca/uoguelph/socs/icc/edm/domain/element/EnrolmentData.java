@@ -29,12 +29,13 @@ import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.Role;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * Implementation of the <code>Enrolment</code> interface.  It is expected that
@@ -65,8 +66,10 @@ public class EnrolmentData extends Enrolment
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister       The <code>Persister</code> used to store the
-		 *                         <code>Enrolment</code>, not null
+		 * @param  model           The <code>DomainModel</code>, not null
+		 * @param  idGenerator     The <code>IdGenerator</code>, not null
+		 * @param  EnrolRetriever  <code>Retriever</code> for
+		 *                         <code>Enrolment</code> instances, not null
 		 * @param  roleRetriever   <code>Retriever</code> for <code>Role</code>
 		 *                         instances, not null
 		 * @param  courseRetriever <code>Retriever</code> for
@@ -74,27 +77,36 @@ public class EnrolmentData extends Enrolment
 		 */
 
 		private Builder (
-				final Persister<Enrolment> persister,
+				final DomainModel model,
+				final IdGenerator idGenerator,
+				final Retriever<Enrolment> enrolRetriever,
 				final Retriever<Course> courseRetriever,
 				final Retriever<Role> roleRetriever)
 		{
-			super (persister, courseRetriever, roleRetriever);
+			super (model, idGenerator, enrolRetriever, courseRetriever, roleRetriever);
 		}
 
 		/**
 		 * Create an instance of the <code>Enrolment</code>.
 		 *
-		 * @return The new <code>Enrolment</code> instance
+		 * @param  enrolment The previously existing <code>Enrolment</code>
+		 *                   instance, may be null
+		 * @return           The new <code>Enrolment</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected Enrolment createElement ()
+		protected Enrolment create (final @Nullable Enrolment enrolment)
 		{
-			this.log.trace ("createElement");
+			this.log.trace ("create: enrolment={}", enrolment);
 
-			return new EnrolmentData (this);
+			return (enrolment != null
+					&& this.model.contains (enrolment)
+					&& enrolment.getCourse () == this.getCourse ()
+					&& enrolment.getRole () == this.getRole ())
+				? this.updateEnrolment (enrolment)
+				: new EnrolmentData (this);
 		}
 	}
 

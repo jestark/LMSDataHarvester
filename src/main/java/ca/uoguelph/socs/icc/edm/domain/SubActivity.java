@@ -29,8 +29,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -79,57 +79,20 @@ public abstract class SubActivity extends ParentActivity
 		/**
 		 * Create the <code>Builder</code>.
 		 *
+		 * @param  model        The <code>DomainModel</code>, not null
+		 * @param  idGenerator  The <code>IdGenerator</code>, not null
+		 * @param  subRetriever <code>Retriever</code> for
+		 *                      <code>SubActivity</code> instances, not null
 		 */
 
 		protected Builder (
-				final Persister<SubActivity> persister,
-				final ParentActivity parent)
+				final DomainModel model,
+				final IdGenerator idGenerator,
+				final Retriever<SubActivity> subRetriever)
 		{
-			super (persister);
-
-			assert parent != null : "parent is NULL";
-
-			// The ParentActivity class exists as compromise for JPA.  As such it
-			// does not have metadata, so we have to use instance of here instead
-			// of a proper OO method.
-	//		if (parent instanceof Activity)
-	//		{
-	//			this.parent = DataStoreProxy.getInstance (Activity.class,
-	//					Activity.getActivityClass (parent.getType ()),
-	//					Activity.SELECTOR_ID,
-	//					datastore)
-	//				.fetch ((Activity) parent);
-	//
-	//			if (! (this.parent instanceof NamedActivity))
-	//			{
-	//				this.log.error ("Only NamedActivity instances can have sub-activities");
-	//				throw new IllegalArgumentException ("Not a NamedActivity");
-	//			}
-	//		}
-	//		else
-	//		{
-	//			this.parent = DataStoreProxy.getInstance (SubActivity.class,
-	//					((SubActivity) parent).getClass (),
-	//					SubActivity.SELECTOR_ID,
-	//					datastore)
-	//				.fetch ((SubActivity) parent);
-	//		}
+			super (model, idGenerator, subRetriever);
 
 			this.parent = null;
-
-	//		if (this.parent == null)
-	//		{
-	//			this.log.error ("The Parent Activity does not exist in the DataStore");
-	//			throw new IllegalStateException ("Parent is not in the DataStore");
-	//		}
-
-	//		Class<? extends SubActivity> sclass = SubActivity.getSubActivityClass (this.parent.getClass ());
-
-	//		if (sclass == null)
-	//		{
-	//			throw new IllegalStateException ("No registered Subactivity classes corresponding to the specified parent");
-	//		}
-
 			this.id = null;
 			this.name = null;
 		}
@@ -423,6 +386,38 @@ public abstract class SubActivity extends ParentActivity
 	}
 
 	/**
+	 * Connect all of the relationships for this <code>SubActivity</code>
+	 * instance.  This method is intended to be used just after the
+	 * <code>SubActivity</code> is inserted into the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         connected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean connect ()
+	{
+		return SubActivity.METADATA.relationships ()
+			.allMatch (r -> r.connect (this));
+	}
+
+	/**
+	 * Disconnect all of the relationships for this <code>SubActivity</code>
+	 * instance.  This method is intended to be used just before the
+	 * <code>SubActivity</code> is removed from the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         disconnected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean disconnect ()
+	{
+		return SubActivity.METADATA.relationships ()
+			.allMatch (r -> r.disconnect (this));
+	}
+
+	/**
 	 * Compare two <code>SubActivity</code> instances to determine if they are
 	 * equal.  The <code>SubActivity</code> instances are compared based upon
 	 * their names and the parent <code>Activity</code>.
@@ -470,34 +465,6 @@ public abstract class SubActivity extends ParentActivity
 	{
 		return this.toStringHelper ()
 			.toString ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Property</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Property</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Property<? extends Element, ?>> properties ()
-	{
-		return SubActivity.METADATA.properties ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Selector</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Selector</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Selector<? extends Element>> selectors ()
-	{
-		return SubActivity.METADATA.selectors ();
 	}
 
 	/**

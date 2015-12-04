@@ -29,9 +29,10 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * Implementation of <code>ActivityReference</code>.
@@ -55,8 +56,11 @@ public class ActivityReferenceData extends ActivityReference
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister       The <code>Persister</code> used to store the
-		 *                         <code>ActivityReference</code>, not null
+		 * @param  model           The <code>DomainModel</code>, not null
+		 * @param  idGenerator     The <code>IdGenerator</code>, not null
+		 * @param  refRetriever    <code>Retriever</code> for
+		 *                         <code>ActivityReference</code>, instances not
+		 *                         null
 		 * @param  typeRetriever   <code>Retriever</code> for
 		 *                         <code>ActivityType</code> instances, not null
 		 * @param  courseRetriever <code>Retriever</code> for <code>Course</code>
@@ -64,25 +68,30 @@ public class ActivityReferenceData extends ActivityReference
 		 */
 
 		private Builder (
-				final Persister<ActivityReference> persister,
+				final DomainModel model,
+				final IdGenerator idGenerator,
+				final Retriever<ActivityReference> refRetriever,
 				final Retriever<ActivityType> typeRetriever,
 				final Retriever<Course> courseRetriever)
 		{
-			super (persister, typeRetriever, courseRetriever);
+			super (model, idGenerator, refRetriever, typeRetriever, courseRetriever);
 		}
 
 		/**
 		 * Create an instance of the <code>ActivityReference</code>.
 		 *
-		 * @return The new <code>ActivityReference</code> instance
+		 * @param  reference The previously existing
+		 *                   <code>ActivityReference</code> instance, may be
+		 *                   null
+		 * @return           The new <code>ActivityReference</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected ActivityReference createElement ()
+		protected ActivityReference create (final @Nullable ActivityReference reference)
 		{
-			this.log.trace ("createElement");
+			this.log.trace ("create: reference={}", reference);
 
 			return new ActivityReferenceData (this);
 		}

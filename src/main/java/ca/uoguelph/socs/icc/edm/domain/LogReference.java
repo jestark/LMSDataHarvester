@@ -27,8 +27,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -70,8 +70,10 @@ public abstract class LogReference extends Element
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister            The <code>Persister</code> used to store
-		 *                              the <code>ActivityType</code>, not null
+		 * @param  model                The <code>DomainModel</code>, not null
+		 * @param  refRetriever         <code>Retriever</code> for
+		 *                              <code>LogReference</code> instances, not
+		 *                              null
 		 * @param  entryRetriever       <code>Retriever</code> for
 		 *                              <code>ActivitySource</code> instances,
 		 *                              not null
@@ -81,11 +83,12 @@ public abstract class LogReference extends Element
 		 */
 
 		protected Builder (
-				final Persister<LogReference> persister,
+				final DomainModel model,
+				final Retriever<LogReference> refRetriever,
 				final Retriever<LogEntry> entryRetriever,
 				final Retriever<SubActivity> subActivityRetriever)
 		{
-			super (persister);
+			super (model, null, refRetriever);
 
 			assert entryRetriever != null : "entryRetriever is NULL";
 
@@ -351,6 +354,38 @@ public abstract class LogReference extends Element
 	}
 
 	/**
+	 * Connect all of the relationships for this <code>LogReference</code>
+	 * instance.  This method is intended to be used just after the
+	 * <code>LogReference</code> is inserted into the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         connected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean connect ()
+	{
+		return LogReference.METADATA.relationships ()
+				.allMatch (r -> r.connect (this));
+	}
+
+	/**
+	 * Disconnect all of the relationships for this <code>LogReference</code>
+	 * instance.  This method is intended to be used just before the
+	 * <code>LogReference</code> is removed from the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         disconnected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean disconnect ()
+	{
+		return LogReference.METADATA.relationships ()
+				.allMatch (r -> r.disconnect (this));
+	}
+
+	/**
 	 * Compare two <code>LogReference</code> instances to determine if they are
 	 * equal.
 	 *
@@ -395,34 +430,6 @@ public abstract class LogReference extends Element
 	{
 		return this.toStringHelper ()
 			.toString ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Property</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Property</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Property<? extends Element, ?>> properties ()
-	{
-		return LogReference.METADATA.properties ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Selector</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Selector</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Selector<? extends Element>> selectors ()
-	{
-		return LogReference.METADATA.selectors ();
 	}
 
 	/**

@@ -26,8 +26,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -104,8 +104,10 @@ public abstract class LogEntry extends Element
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister          The <code>Persister</code> used to store the
-		 *                            <code>LogEntry</code>, not null
+		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  idGenerator        The <code>IdGenerator</code>, not null
+		 * @param  logRetriever       <code>Retriever</code> for
+		 *                            <code>LogEntry</code> instances, not null
 		 * @param  actionRetriever    <code>Retriever</code> for
 		 *                            <code>Action</code> instances, not null
 		 * @param  activityRetriever  <code>Retriever</code> for
@@ -117,13 +119,15 @@ public abstract class LogEntry extends Element
 		 */
 
 		protected Builder (
-				final Persister<LogEntry> persister,
+				final DomainModel model,
+				final IdGenerator idGenerator,
+				final Retriever<LogEntry> logRetriever,
 				final Retriever<Action> actionRetriever,
 				final Retriever<Activity> activityRetriever,
 				final Retriever<Enrolment> enrolmentRetriever,
 				final Retriever<Network> networkRetriever)
 		{
-			super (persister);
+			super (model, idGenerator, logRetriever);
 
 			assert actionRetriever != null : "actionRetriever is NULL";
 			assert activityRetriever != null : "activityRetriever is NULL";
@@ -223,7 +227,7 @@ public abstract class LogEntry extends Element
 		@CheckReturnValue
 		protected ActivityReference getActivityReference ()
 		{
-			return this.activity.getreference ();
+			return this.activity.getReference ();
 		}
 
 		/**
@@ -627,6 +631,38 @@ public abstract class LogEntry extends Element
 	}
 
 	/**
+	 * Connect all of the relationships for this <code>LogEntry</code> instance.
+	 * This method is intended to be used just after the <code>LogEntry</code>
+	 * is inserted into the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         connected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean connect ()
+	{
+		return LogEntry.METADATA.relationships ()
+				.allMatch (r -> r.connect (this));
+	}
+
+	/**
+	 * Disconnect all of the relationships for this <code>LogEntry</code>
+	 * instance.  This method is intended to be used just before the
+	 * <code>LogEntry</code> is removed from the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         disconnected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean disconnect ()
+	{
+		return LogEntry.METADATA.relationships ()
+				.allMatch (r -> r.disconnect (this));
+	}
+
+	/**
 	 * Compare two <code>LogEntry</code> instances and determine if they are
 	 * equal.
 	 * <p>
@@ -690,34 +726,6 @@ public abstract class LogEntry extends Element
 	{
 		return this.toStringHelper ()
 			.toString ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Property</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Property</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Property<? extends Element, ?>> properties ()
-	{
-		return LogEntry.METADATA.properties ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Selector</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Selector</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Selector<? extends Element>> selectors ()
-	{
-		return LogEntry.METADATA.selectors ();
 	}
 
 	/**

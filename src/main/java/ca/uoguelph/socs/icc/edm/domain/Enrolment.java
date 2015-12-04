@@ -27,8 +27,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -95,10 +95,10 @@ public abstract class Enrolment extends Element
 	public static abstract class Builder extends Element.Builder<Enrolment>
 	{
 		/** Helper to substitute <code>Course</code> instances */
-		private Retriever<Course> courseRetriever;
+		private final Retriever<Course> courseRetriever;
 
 		/** Helper to substitute <code>Activity</code> instances */
-		private Retriever<Role> roleRetriever;
+		private final Retriever<Role> roleRetriever;
 
 		/** The <code>DataStore</code> ID number for the <code>Enrolment</code> */
 		private @Nullable Long id;
@@ -118,8 +118,10 @@ public abstract class Enrolment extends Element
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister       The <code>Persister</code> used to store the
-		 *                         <code>Enrolment</code>, not null
+		 * @param  model           The <code>DomainModel</code>, not null
+		 * @param  idGenerator     The <code>IdGenerator</code>, not null
+		 * @param  EnrolRetriever  <code>Retriever</code> for
+		 *                         <code>Enrolment</code> instances, not null
 		 * @param  roleRetriever   <code>Retriever</code> for <code>Role</code>
 		 *                         instances, not null
 		 * @param  courseRetriever <code>Retriever</code> for <code>Course</code>
@@ -127,11 +129,13 @@ public abstract class Enrolment extends Element
 		 */
 
 		protected Builder (
-				final Persister<Enrolment> persister,
+				final DomainModel model,
+				final IdGenerator idGenerator,
+				final Retriever<Enrolment> enrolmentRetriever,
 				final Retriever<Course> courseRetriever,
 				final Retriever<Role> roleRetriever)
 		{
-			super (persister);
+			super (model, idGenerator, enrolmentRetriever);
 
 			assert courseRetriever != null : "courseRetriever is NULL";
 			assert roleRetriever != null : "roleRetriever is NULL";
@@ -146,23 +150,24 @@ public abstract class Enrolment extends Element
 			this.usable = null;
 		}
 
-		@Override
-		protected boolean updateElement ()
+		/**
+		 * Update the mutable fields in the <code>Enrolment</code> instance.
+		 *
+		 * @param enrolment The <code>Enrolment</code> instance, not null
+		 * @return          The supplied <code>Enrolment</code> instance
+		 */
+
+		@CheckReturnValue
+		protected final Enrolment updateEnrolment (final Enrolment enrolment)
 		{
-			boolean result = false;
+			this.log.trace ("updateEnrolment: enrolment={}", enrolment);
 
-			if (this.element != null
-					&& this.persister.contains (this.element)
-					&& this.element.getCourse () == this.course
-					&& this.element.getRole () == this.role)
-			{
-				this.element.setFinalGrade (this.finalGrade);
-				this.element.setUsable (this.usable);
+			assert enrolment != null : "enrolment is NULL";
 
-				result = true;
-			}
+			enrolment.setFinalGrade (this.finalGrade);
+			enrolment.setUsable (Preconditions.checkNotNull (this.usable, "usable"));
 
-			return result;
+			return enrolment;
 		}
 
 		/**
@@ -530,6 +535,38 @@ public abstract class Enrolment extends Element
 	}
 
 	/**
+	 * Connect all of the relationships for this <code>Enrolment</code>
+	 * instance.  This method is intended to be used just after the
+	 * <code>Enrolment</code> is inserted into the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         connected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean connect ()
+	{
+		return Enrolment.METADATA.relationships ()
+				.allMatch (r -> r.connect (this));
+	}
+
+	/**
+	 * Disconnect all of the relationships for this <code>Enrolment</code>
+	 * instance.  This method is intended to be used just before the
+	 * <code>Enrolment</code> is removed from the <code>DataStore</code>.
+	 *
+	 * @return <code>true</code> if all of the relationships were successfully
+	 *         disconnected, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean disconnect ()
+	{
+		return Enrolment.METADATA.relationships ()
+				.allMatch (r -> r.disconnect (this));
+	}
+
+	/**
 	 * Compare two <code>Enrolment</code> instances to determine if they are
 	 * equal.  The <code>Enrolment</code> instances are compared based upon the
 	 * <code>Course</code>, <code>Role</code> and <code>DataStore</code> id.
@@ -623,34 +660,6 @@ public abstract class Enrolment extends Element
 	{
 		return this.toStringHelper ()
 			.toString ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Property</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Property</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Property<? extends Element, ?>> properties ()
-	{
-		return Enrolment.METADATA.properties ();
-	}
-
-	/**
-	 * Get the <code>Set</code> of <code>Selector</code> instances associated
-	 * with the <code>Element</code> interface class.
-	 *
-	 * @return The <code>Set</code> of <code>Selector</code> instances
-	 *         associated with the <code>Element</code> interface class
-	 */
-
-	@Override
-	public Stream<Selector<? extends Element>> selectors ()
-	{
-		return Enrolment.METADATA.selectors ();
 	}
 
 	/**

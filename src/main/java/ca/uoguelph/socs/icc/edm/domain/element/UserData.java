@@ -26,12 +26,13 @@ import javax.annotation.Nullable;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Persister;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
@@ -58,8 +59,10 @@ public class UserData extends User
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  persister          The <code>Persister</code> used to store
-		 *                            the <code>User</code>, not null
+		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  idGenerator        The <code>IdGenerator</code>, not null
+		 * @param  UserRetriever      <code>Retriever</code> for
+		 *                            <code>User</code> instances, not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
 		 *                            <code>Enrolment</code> instances, not null
 		 * @param  enrolmentQuery     <code>Query</code> to check if an
@@ -69,28 +72,35 @@ public class UserData extends User
 		 */
 
 		protected Builder (
-				final Persister<User> persister,
+				final DomainModel model,
+				final IdGenerator idGenerator,
+				final Retriever<User> userRetriever,
 				final Retriever<Enrolment> enrolmentRetriever,
 				final Query<User> enrolmentQuery)
 
 		{
-			super (persister, enrolmentRetriever, enrolmentQuery);
+			super (model, idGenerator, userRetriever, enrolmentRetriever, enrolmentQuery);
 		}
 
 		/**
 		 * Create an instance of the <code>User</code>.
 		 *
-		 * @return The new <code>User</code> instance
+		 * @param  user The previously existing <code>User</code> instance, may
+		 *              be null
+		 * @return      The new <code>User</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected User createElement ()
+		protected User create (final @Nullable User user)
 		{
-			this.log.trace ("createElement");
+			this.log.trace ("create: user={}", user);
 
-			return new UserData (this);
+			return (user != null && this.model.contains (user)
+					&& user.getUsername ().equals (this.getUsername ()))
+				? this.updateUser (user)
+				: this.setEnrolments (new UserData (this));
 		}
 	}
 
