@@ -109,7 +109,7 @@ public abstract class ActivityReference extends Element
 		 * Reset the builder.  This method will set all of the fields for the
 		 * <code>Activity</code> to be built to <code>null</code>.
 		 *
-		 * @return This <code>ActionBuilder</code>
+		 * @return This <code>ActivityReferenceBuilder</code>
 		 */
 
 		@Override
@@ -227,6 +227,76 @@ public abstract class ActivityReference extends Element
 			this.type = this.verifyRelationship (this.typeRetriever, type, "type");
 
 			return this;
+		}
+	}
+
+	/**
+	 * Dagger Component interface for creating <code>Builder</code> instances.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	protected interface BuilderComponent extends Element.BuilderComponent<ActivityReference, ActivityReference.Builder>
+	{
+		/**
+		 * Create the Builder instance.
+		 *
+		 * @return The <code>Builder</code>
+		 */
+
+		@Override
+		public abstract Builder getBuilder ();
+	}
+
+	/**
+	 * Abstract representation of an <code>Element</code> implementation class.
+	 * Instances of this class are used to load the <code>Element</code>
+	 * implementations into the JVM via the <code>ServiceLoader</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	protected abstract class Definition extends Element.Definition<ActivityReference, Builder>
+	{
+		/**
+		 * Create the <code>Definition</code>.
+		 *
+		 * @param  impl The <code>Element</code> implementation class, not null
+		 */
+
+		public Definition (final Class<? extends ActivityReference> impl)
+		{
+			super (impl);
+		}
+
+		/**
+		 * Get a <code>Stream</code> of the <code>Property</code> instances for
+		 * the <code>Element</code> class represented by this
+		 * <code>Definition</code>.
+		 *
+		 * @return A <code>Stream</code> of <code>Property</code> instances
+		 */
+
+		@Override
+		public Stream<Property<ActivityReference, ?>> properties ()
+		{
+			return ActivityReference.METADATA.properties ();
+		}
+
+		/**
+		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
+		 * the <code>Element</code> class represented by this
+		 * <code>Definition</code>.
+		 *
+		 * @return A <code>Stream</code> of <code>Selector</code> instances
+		 */
+
+		@Override
+		public Stream<Selector<ActivityReference>> selectors ()
+		{
+			return ActivityReference.METADATA.selectors ();
 		}
 	}
 

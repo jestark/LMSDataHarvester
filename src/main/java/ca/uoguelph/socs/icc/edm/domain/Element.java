@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
+import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 import ca.uoguelph.socs.icc.edm.domain.datastore.TranslationTable;
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
@@ -340,6 +341,114 @@ public abstract class Element implements Serializable
 		public final DomainModel getDomainModel ()
 		{
 			return this.model;
+		}
+	}
+
+	/**
+	 * Template interface for the Dagger Component used to create the
+	 * <code>Builder</code> instance.  Implementations of this interface are
+	 * responsible for creating the <code>Builder</code> instance.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @param   <B> The type of <code>Builder</code> produced by the component
+	 * @param   <T> The type of <code>Element</code> produced by the
+	 *              <code>Builder</code>
+	 */
+
+	protected interface BuilderComponent<T extends Element, B extends Builder<T>>
+	{
+		/**
+		 * Create the Builder instance.
+		 *
+		 * @return The <code>Builder</code>
+		 */
+
+		public abstract B getBuilder ();
+	}
+
+	/**
+	 * Abstract representation of an <code>Element</code> implementation class.
+	 * Instances of this class are used to load the <code>Element</code>
+	 * implementations into the JVM via the <code>ServiceLoader</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 * @param   <B> The type of <code>Builder</code> produced by the component
+	 * @param   <T> The type of <code>Element</code> produced by the
+	 *              <code>Builder</code>
+	 */
+
+	protected abstract class Definition<T extends Element, B extends Builder<T>>
+	{
+		/** The <code>Element</code> implementation class */
+		protected final Class<? extends T> impl;
+
+		/**
+		 * Create the <code>Definition</code>.
+		 *
+		 * @param  impl The <code>Element</code> implementation class, not null
+		 */
+
+		public Definition (final Class<? extends T> impl)
+		{
+			assert impl != null : "impl is NULL";
+			this.impl = impl;
+		}
+
+		/**
+		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * specified <code>DomainModel</code>.
+		 *
+		 * @param model The <code>DomainModel</code>, not null
+		 * @return      The <code>Builder</code>
+		 */
+
+		protected abstract BuilderComponent<T, B> getBuilderComponent (final DomainModel model);
+
+		/**
+		 * Get a <code>Stream</code> of the <code>Property</code> instances for
+		 * the <code>Element</code> class represented by this
+		 * <code>Definition</code>.
+		 *
+		 * @return A <code>Stream</code> of <code>Property</code> instances
+		 */
+
+		public abstract Stream<Property<T, ?>> properties ();
+
+		/**
+		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
+		 * the <code>Element</code> class represented by this
+		 * <code>Definition</code>.
+		 *
+		 * @return A <code>Stream</code> of <code>Selector</code> instances
+		 */
+
+		public abstract Stream<Selector<T>> selectors ();
+
+		/**
+		 * Get the <code>Element</code> implementation class represented by this
+		 * <code>Definition</code>.
+		 *
+		 * @return The <code>Element</code> implementation class
+		 */
+
+		public final Class<? extends T> getElementClass ()
+		{
+			return this.impl;
+		}
+
+		/**
+		 * Get a <code>Query</code> for the specified <code>Selector</code> on
+		 * the specified <code>DomainModel</code> using the <code>Element</code>
+		 * implementation represented by this <code>Definition</code>.
+		 *
+		 * @return The <code>Query</code>
+		 */
+
+		public final Query<T> getQuery (final DomainModel model, final Selector<T> selector)
+		{
+			return model.getQuery (selector, this.impl);
 		}
 	}
 
