@@ -16,6 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
+import dagger.Module;
+import dagger.Provides;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +46,39 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public final class QueryRetriever<T extends Element> implements Retriever<T>
 {
+	/**
+	 * Dagger Module to create a new instance of the
+	 * <code>QueryRetriever</code>.  The Dagger Component which uses this module
+	 * is responsible for providing the required <code>DomainModel</code>,
+	 * <code>TranslationTable</code> and <code>Query</code> instances.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module
+	public static abstract class RetrieverModule<T extends Element>
+	{
+		/**
+		 * Create a new <code>QueryRetriever</code> instance.
+		 *
+		 * @param  model The <code>DomainModel</code>, not null
+		 * @param  table The <code>TranslationTable</code>, not null
+		 * @param  query The <code>Query</code>, not null
+		 * @return       The <code>QueryRetriever</code>
+		 */
+
+		@Provides
+		public final Retriever<T> createRetriever (final DomainModel model, final TranslationTable table, final Query<T> query)
+		{
+			assert model != null : "model is NULL";
+			assert table != null : "table is NULL";
+			assert query != null : "query is NULL";
+
+			return new QueryRetriever<T> (model, query, table);
+		}
+	}
+
 	/** The Log */
 	private final Logger log;
 
@@ -63,7 +99,7 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 	 * @param  table The <code>TranslationTable</code>, not null
 	 */
 
-	protected QueryRetriever (final DomainModel model, final Query<T> query, final TranslationTable table)
+	private QueryRetriever (final DomainModel model, final Query<T> query, final TranslationTable table)
 	{
 		assert model != null : "model is NULL";
 		assert query != null : "query is NULL";
