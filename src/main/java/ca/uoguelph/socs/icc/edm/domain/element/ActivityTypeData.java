@@ -19,13 +19,12 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
@@ -41,52 +40,24 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 public class ActivityTypeData extends ActivityType
 {
 	/**
-	 * <code>Builder</code> for <code>ActivityTypeData</code>.
+	 * Representation of an <code>Element</code> implementation class.
+	 * Instances of this class are used to load the <code>Element</code>
+	 * implementations into the JVM via the <code>ServiceLoader</code>.
 	 *
 	 * @author  James E. Stark
 	 * @version 1.0
-	 * @see     ca.uoguelph.socs.icc.edm.domain.ActivityType.Builder
 	 */
 
-	public static final class Builder extends ActivityType.Builder
+	@AutoService (Element.Definition.class)
+	public final class Definition extends ActivityType.Definition
 	{
 		/**
-		 * Create the <code>Builder</code>.
-		 *
-		 * @param  model           The <code>DomainModel</code>, not null
-		 * @param  idGenerator     The <code>IdGenerator</code>, not null
-		 * @param  typeRetriever   <code>Retriever</code> for
-		 *                         <code>ActivityType</code> instances, not null
-		 * @param  sourceRetriever <code>Retriever</code> for
-		 *                         <code>ActivitySource</code> instances, not
-		 *                         null
+		 * Create the <code>Definition</code>.
 		 */
 
-		private Builder (
-				final DomainModel model,
-				final IdGenerator idGenerator,
-				final Retriever<ActivityType> typeRetriever,
-				final Retriever<ActivitySource> sourceRetriever)
+		public Definition ()
 		{
-			super (model, idGenerator, typeRetriever, sourceRetriever);
-		}
-
-		/**
-		 * Create an instance of the <code>ActivityType</code>.
-		 *
-		 * @param  type   The previously existing <code>ActivityType</code>
-		 *                instance, may be null
-		 * @return        The new <code>ActivityType</code> instance
-		 *
-		 * @throws NullPointerException if any required field is missing
-		 */
-
-		@Override
-		protected ActivityType create (final @Nullable ActivityType type)
-		{
-			this.log.trace ("create: type={}", type);
-
-			return new ActivityTypeData (this);
+			super (ActivityTypeData.class, ActivityTypeData::new);
 		}
 	}
 

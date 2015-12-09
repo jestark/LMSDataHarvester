@@ -19,12 +19,11 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * Implementation of the <code>Action</code> interface.  It is expected that
@@ -39,47 +38,24 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 public class ActionData extends Action
 {
 	/**
-	 * <code>Builder</code> for <code>ActionData</code>.
+	 * Representation of an <code>Element</code> implementation class.
+	 * Instances of this class are used to load the <code>Element</code>
+	 * implementations into the JVM via the <code>ServiceLoader</code>.
 	 *
 	 * @author  James E. Stark
 	 * @version 1.0
-	 * @see     ca.uoguelph.socs.icc.edm.domain.Action.Builder
 	 */
 
-	public static final class Builder extends Action.Builder
+	@AutoService (Element.Definition.class)
+	public final class Definition extends Action.Definition
 	{
 		/**
-		 * Create the <code>Builder</code>.
-		 *
-		 * @param  model       The <code>DomainModel</code>, not null
-		 * @param  idGenerator The <code>IdGenerator</code>, not null
-		 * @param  retriever   The <code>Retriever</code>, not null
+		 * Create the <code>Definition</code>.
 		 */
 
-		private Builder (
-				final DomainModel model,
-				final IdGenerator idGenerator,
-				final Retriever<Action> retriever)
+		public Definition ()
 		{
-			super (model, idGenerator, retriever);
-		}
-
-		/**
-		 * Create an instance of the <code>Action</code>.
-		 *
-		 * @param  action The previously existing <code>Action</code> instance,
-		 *                may be null
-		 * @return        The new <code>Action</code> instance
-		 *
-		 * @throws NullPointerException if any required field is missing
-		 */
-
-		@Override
-		protected Action create (final @Nullable Action action)
-		{
-			this.log.trace ("create: action={}", action);
-
-			return new ActionData (this);
+			super (ActionData.class, ActionData::new);
 		}
 	}
 

@@ -25,16 +25,16 @@ import java.util.Set;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/checklist
@@ -59,49 +59,24 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 public class Checklist extends Activity
 {
 	/**
-	 * <code>Builder</code> for <code>Checklist</code>.
+	 * Representation of an <code>Element</code> implementation class.
+	 * Instances of this class are used to load the <code>Element</code>
+	 * implementations into the JVM via the <code>ServiceLoader</code>.
 	 *
 	 * @author  James E. Stark
 	 * @version 1.0
-	 * @see     ca.uoguelph.socs.icc.edm.domain.Activity.Builder
 	 */
 
-	public static final class Builder extends Activity.Builder
+	@AutoService (Element.Definition.class)
+	public final class Definition extends Activity.Definition
 	{
 		/**
-		 * Create the <code>Builder</code>.
-		 *
-		 * @param  model            The <code>DomainModel</code>, not null
-		 * @param  retriever        The <code>Retriever</code>, not null
-		 * @param  referenceBuilder Builder for the internal
-		 *                          <code>ActivityReference</code> instance, not
-		 *                          null
+		 * Create the <code>Definition</code>.
 		 */
 
-		private Builder (
-				final DomainModel model,
-				final Retriever<Activity> retriever,
-				final ActivityReference.Builder referenceBuilder)
+		public Definition ()
 		{
-			super (model, retriever, referenceBuilder);
-		}
-
-		/**
-		 * Create an instance of the <code>Checklist</code>.
-		 *
-		 * @param  activity The previously existing <code>Activity</code>
-		 *                  instance, may be null
-		 * @return          The new <code>Activity</code> instance
-		 *
-		 * @throws NullPointerException if any required field is missing
-		 */
-
-		@Override
-		protected Activity create (final @Nullable Activity activity)
-		{
-			this.log.trace ("create: activity={}", activity);
-
-			return new Checklist (this);
+			super (Checklist.class, Checklist::new);
 		}
 	}
 

@@ -23,16 +23,14 @@ import java.util.Set;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * Implementation of the <code>User</code> interface.  It is expected that
@@ -47,60 +45,24 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 public class UserData extends User
 {
 	/**
-	 * <code>Builder</code> for <code>UserData</code>.
+	 * Representation of an <code>Element</code> implementation class.
+	 * Instances of this class are used to load the <code>Element</code>
+	 * implementations into the JVM via the <code>ServiceLoader</code>.
 	 *
 	 * @author  James E. Stark
 	 * @version 1.0
-	 * @see     ca.uoguelph.socs.icc.edm.domain.User.Builder
 	 */
 
-	public static final class Builder extends User.Builder
+	@AutoService (Element.Definition.class)
+	public final class Definition extends User.Definition
 	{
 		/**
-		 * Create the <code>Builder</code>.
-		 *
-		 * @param  model              The <code>DomainModel</code>, not null
-		 * @param  idGenerator        The <code>IdGenerator</code>, not null
-		 * @param  UserRetriever      <code>Retriever</code> for
-		 *                            <code>User</code> instances, not null
-		 * @param  enrolmentRetriever <code>Retriever</code> for
-		 *                            <code>Enrolment</code> instances, not null
-		 * @param  enrolmentQuery     <code>Query</code> to check if an
-		 *                            <code>Enrolment</code> instances is
-		 *                            already associated with another
-		 *                            <code>User</code> instance, not null
+		 * Create the <code>Definition</code>.
 		 */
 
-		protected Builder (
-				final DomainModel model,
-				final IdGenerator idGenerator,
-				final Retriever<User> userRetriever,
-				final Retriever<Enrolment> enrolmentRetriever,
-				final Query<User> enrolmentQuery)
-
+		public Definition ()
 		{
-			super (model, idGenerator, userRetriever, enrolmentRetriever, enrolmentQuery);
-		}
-
-		/**
-		 * Create an instance of the <code>User</code>.
-		 *
-		 * @param  user The previously existing <code>User</code> instance, may
-		 *              be null
-		 * @return      The new <code>User</code> instance
-		 *
-		 * @throws NullPointerException if any required field is missing
-		 */
-
-		@Override
-		protected User create (final @Nullable User user)
-		{
-			this.log.trace ("create: user={}", user);
-
-			return (user != null && this.model.contains (user)
-					&& user.getUsername ().equals (this.getUsername ()))
-				? this.updateUser (user)
-				: this.setEnrolments (new UserData (this));
+			super (UserData.class, UserData::new);
 		}
 	}
 

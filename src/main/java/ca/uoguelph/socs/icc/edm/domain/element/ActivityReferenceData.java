@@ -23,16 +23,15 @@ import java.util.List;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * Implementation of <code>ActivityReference</code>.
@@ -44,56 +43,24 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 public class ActivityReferenceData extends ActivityReference
 {
 	/**
-	 * <code>Builder</code> for <code>ActivityReferenceData</code>.
+	 * Representation of an <code>Element</code> implementation class.
+	 * Instances of this class are used to load the <code>Element</code>
+	 * implementations into the JVM via the <code>ServiceLoader</code>.
 	 *
 	 * @author  James E. Stark
 	 * @version 1.0
-	 * @see     ca.uoguelph.socs.icc.edm.domain.ActivityReference.Builder
 	 */
 
-	public static final class Builder extends ActivityReference.Builder
+	@AutoService (Element.Definition.class)
+	public final class Definition extends ActivityReference.Definition
 	{
 		/**
-		 * Create the <code>Builder</code>.
-		 *
-		 * @param  model           The <code>DomainModel</code>, not null
-		 * @param  idGenerator     The <code>IdGenerator</code>, not null
-		 * @param  refRetriever    <code>Retriever</code> for
-		 *                         <code>ActivityReference</code>, instances not
-		 *                         null
-		 * @param  typeRetriever   <code>Retriever</code> for
-		 *                         <code>ActivityType</code> instances, not null
-		 * @param  courseRetriever <code>Retriever</code> for <code>Course</code>
-		 *                         instances, not null
+		 * Create the <code>Definition</code>.
 		 */
 
-		private Builder (
-				final DomainModel model,
-				final IdGenerator idGenerator,
-				final Retriever<ActivityReference> refRetriever,
-				final Retriever<ActivityType> typeRetriever,
-				final Retriever<Course> courseRetriever)
+		public Definition ()
 		{
-			super (model, idGenerator, refRetriever, typeRetriever, courseRetriever);
-		}
-
-		/**
-		 * Create an instance of the <code>ActivityReference</code>.
-		 *
-		 * @param  reference The previously existing
-		 *                   <code>ActivityReference</code> instance, may be
-		 *                   null
-		 * @return           The new <code>ActivityReference</code> instance
-		 *
-		 * @throws NullPointerException if any required field is missing
-		 */
-
-		@Override
-		protected ActivityReference create (final @Nullable ActivityReference reference)
-		{
-			this.log.trace ("create: reference={}", reference);
-
-			return new ActivityReferenceData (this);
+			super (ActivityReferenceData.class, ActivityReferenceData::new);
 		}
 	}
 

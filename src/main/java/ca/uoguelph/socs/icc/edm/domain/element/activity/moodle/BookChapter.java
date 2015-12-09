@@ -24,16 +24,15 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 import ca.uoguelph.socs.icc.edm.domain.LogReference;
 import ca.uoguelph.socs.icc.edm.domain.ParentActivity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * Implementation of the <code>Activity</code> interface for the moodle/book
@@ -59,48 +58,24 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 public class BookChapter extends SubActivity
 {
 	/**
-	 * <code>Builder</code> for <code>BookChapter</code>.
+	 * Representation of an <code>Element</code> implementation class.
+	 * Instances of this class are used to load the <code>Element</code>
+	 * implementations into the JVM via the <code>ServiceLoader</code>.
 	 *
 	 * @author  James E. Stark
 	 * @version 1.0
-	 * @see     ca.uoguelph.socs.icc.edm.domain.SubActivity.Builder
 	 */
 
-	public static final class Builder extends SubActivity.Builder
+	@AutoService (Element.Definition.class)
+	public final class Definition extends SubActivity.Definition
 	{
 		/**
-		 * Create the <code>Builder</code>.
-		 *
-		 * @param  model        The <code>DomainModel</code>, not null
-		 * @param  idGenerator  The <code>IdGenerator</code>, not null
-		 * @param  subRetriever <code>Retriever</code> for
-		 *                      <code>SubActivity</code> instances, not null
+		 * Create the <code>Definition</code>.
 		 */
 
-		private Builder (
-				final DomainModel model,
-				final IdGenerator idGenerator,
-				final Retriever<SubActivity> subRetriever)
+		public Definition ()
 		{
-			super (model, idGenerator, subRetriever);
-		}
-
-		/**
-		 * Create an instance of the <code>BookChapter</code>.
-		 *
-		 * @param  subActivity The previously existing <code>SubActivity</code>
-		 *                     instance, may be null
-		 * @return             The new <code>SubActivity</code> instance
-		 *
-		 * @throws NullPointerException if any required field is missing
-		 */
-
-		@Override
-		protected SubActivity create (final @Nullable SubActivity subActivity)
-		{
-			this.log.trace ("create: subActivity={}", subActivity);
-
-			return new BookChapter (this);
+			super (BookChapter.class, BookChapter::new);
 		}
 	}
 

@@ -19,16 +19,14 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
-import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
 import ca.uoguelph.socs.icc.edm.domain.Grade;
-import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
 /**
  * Implementation of the <code>Grade</code> interface.  It is expected that
@@ -43,56 +41,24 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 public class GradeData extends Grade
 {
 	/**
-	 * <code>Builder</code> for <code>GradeData</code>.
+	 * Representation of an <code>Element</code> implementation class.
+	 * Instances of this class are used to load the <code>Element</code>
+	 * implementations into the JVM via the <code>ServiceLoader</code>.
 	 *
 	 * @author  James E. Stark
 	 * @version 1.0
-	 * @see     ca.uoguelph.socs.icc.edm.domain.Grade.Builder
 	 */
 
-	public static final class Builder extends Grade.Builder
+	@AutoService (Element.Definition.class)
+	public final class Definition extends Grade.Definition
 	{
 		/**
-		 * Create the <code>Builder</code>.
-		 *
-		 * @param  model              The <code>DomainModel</code>, not null
-		 * @param  gradeRetriever     <code>Retriever</code> for
-		 *                            <code>Grade</code> instances, not null
-		 * @param  activityRetriever  <code>Retriever</code> for
-		 *                            <code>Role</code> instances, not null
-		 * @param  enrolmentRetriever <code>Retriever</code> for
-		 *                            <code>Enrolment</code> instances, not null
+		 * Create the <code>Definition</code>.
 		 */
 
-		private Builder (
-				final DomainModel model,
-				final Retriever<Grade> gradeRetriever,
-				final Retriever<Activity> activityRetriever,
-				final Retriever<Enrolment> enrolmentRetriever)
+		public Definition ()
 		{
-			super (model, gradeRetriever, activityRetriever, enrolmentRetriever);
-		}
-
-		/**
-		 * Create an instance of the <code>Grade</code>.
-		 *
-		 * @param  grade The previously existing <code>Grade</code> instance,
-		 *               may be null
-		 * @return       The new <code>Grade</code> instance
-		 *
-		 * @throws NullPointerException if any required field is missing
-		 */
-
-		@Override
-		protected Grade create (final @Nullable Grade grade)
-		{
-			this.log.trace ("create: grade={}", grade);
-
-			return (grade != null && this.model.contains (grade)
-					&& grade.getActivity () == this.getActivity ()
-					&& grade.getEnrolment () == this.getEnrolment ())
-				? this.updateGrade (grade)
-				: new GradeData (this);
+			super (GradeData.class, GradeData::new);
 		}
 	}
 
