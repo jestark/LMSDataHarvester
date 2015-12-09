@@ -21,10 +21,16 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -65,8 +71,11 @@ public abstract class SubActivity extends ParentActivity
 	 * @version 1.0
 	 */
 
-	public static abstract class Builder extends Element.Builder<SubActivity>
+	public static class Builder extends Element.Builder<SubActivity>
 	{
+		/** Method reference to the implementation constructor  */
+		private final Function<SubActivity.Builder, SubActivity> creator;
+
 		/** The parent */
 		protected final ParentActivity parent;
 
@@ -83,18 +92,41 @@ public abstract class SubActivity extends ParentActivity
 		 * @param  idGenerator  The <code>IdGenerator</code>, not null
 		 * @param  subRetriever <code>Retriever</code> for
 		 *                      <code>SubActivity</code> instances, not null
+		 * @param  creator      Method Reference to the constructor, not null
 		 */
 
 		protected Builder (
 				final DomainModel model,
 				final IdGenerator idGenerator,
-				final Retriever<SubActivity> subRetriever)
+				final Retriever<SubActivity> subRetriever,
+				final Function<SubActivity.Builder, SubActivity> creator)
 		{
 			super (model, idGenerator, subRetriever);
+
+			assert creator != null : "creator is NULL";
+			this.creator = creator;
 
 			this.parent = null;
 			this.id = null;
 			this.name = null;
+		}
+
+		/**
+		 * Create an instance of the <code>SubActivity</code>.
+		 *
+		 * @param  subActivity The previously existing <code>SubActivity</code>
+		 *                     instance, may be null
+		 * @return             The new <code>SubActivity</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected SubActivity create (final @Nullable SubActivity subActivity)
+		{
+			this.log.trace ("create: subActivity={}", subActivity);
+
+			return this.creator.apply (this);
 		}
 
 		/**
@@ -217,7 +249,9 @@ public abstract class SubActivity extends ParentActivity
 	 * @version 1.0
 	 */
 
-	protected interface BuilderComponent extends Element.BuilderComponent<SubActivity, SubActivity.Builder>
+	@BuilderScope
+	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {SubActivityBuilderModule.class})
+	protected interface BuilderComponent extends Element.BuilderComponent<SubActivity>
 	{
 		/**
 		 * Create the Builder instance.
@@ -230,6 +264,61 @@ public abstract class SubActivity extends ParentActivity
 	}
 
 	/**
+	 * Dagger module for creating <code>Retriever</code> instances.  This module
+	 * contains implementation-independent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module
+	public static final class SubActivityModule extends Element.ElementModule<SubActivity> {}
+
+	/**
+	 * Dagger module for creating <code>Builder</code> instances.  This module
+	 * contains implementation-dependent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module (includes = {SubActivityModule.class})
+	public static final class SubActivityBuilderModule
+	{
+		/** Method reference to the implementation constructor  */
+		private final Function<SubActivity.Builder, SubActivity> creator;
+
+		/**
+		 * Create the <code>SubActivityBuilderModule</code>
+		 *
+		 * @param  creator Method reference to the Constructor, not null
+		 */
+
+		public SubActivityBuilderModule (final Function<SubActivity.Builder, SubActivity> creator)
+		{
+			this.creator = creator;
+		}
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  model     The <code>DomainModel</code>, not null
+		 * @param  generator The <code>IdGenerator</code>, not null
+		 * @param  retriever <code>Retriever</code> for <code>SubActivity</code>
+		 *                   instances, not null
+		 */
+
+		@Provides
+		protected Builder createBuilder (
+				final DomainModel model,
+				final IdGenerator generator,
+				final @Named ("TableRetriever") Retriever<SubActivity> retriever)
+		{
+			return new Builder (model, generator, retriever, this.creator);
+		}
+	}
+
+	/**
 	 * Abstract representation of an <code>Element</code> implementation class.
 	 * Instances of this class are used to load the <code>Element</code>
 	 * implementations into the JVM via the <code>ServiceLoader</code>.
@@ -238,17 +327,44 @@ public abstract class SubActivity extends ParentActivity
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<SubActivity, Builder>
+	protected abstract class Definition extends Element.Definition<SubActivity>
 	{
+		/** The module for creating <code>Builder</code> instances */
+		private final SubActivityBuilderModule module;
+
 		/**
 		 * Create the <code>Definition</code>.
 		 *
-		 * @param  impl The <code>Element</code> implementation class, not null
+		 * @param  impl    The implementation class, not null
+		 * @param  creator Method reference to the constructor, not null
 		 */
 
-		public Definition (final Class<? extends SubActivity> impl)
+		public Definition (
+				final Class<? extends SubActivity> impl,
+				final Function<SubActivity.Builder, SubActivity> creator)
 		{
 			super (impl);
+
+			assert creator != null : "creator is NULL";
+			this.module = new SubActivityBuilderModule (creator);
+		}
+
+		/**
+		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * specified <code>DomainModel</code>.
+		 *
+		 * @param model The <code>DomainModel</code>, not null
+		 * @return      The <code>BuilderComponent</code>
+		 */
+
+		@Override
+		protected SubActivity.BuilderComponent getBuilderComponent (final DomainModel model)
+		{
+			return DaggerSubActivity_BuilderComponent.builder ()
+//				.idGeneratorComponent (null)
+				.domainModelModule (new DomainModel.DomainModelModule (SubActivity.class, model))
+				.subActivityBuilderModule (this.module)
+				.build ();
 		}
 
 		/**

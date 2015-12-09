@@ -20,10 +20,16 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -70,8 +76,11 @@ public abstract class User extends Element
 	 * @version 1.0
 	 */
 
-	public static abstract class Builder extends Element.Builder<User>
+	public static class Builder extends Element.Builder<User>
 	{
+		/** Method reference to the implementation constructor  */
+		private final Function<User.Builder, User> creator;
+
 		/** Helper to substitute <code>Enrolment</code> instances */
 		private final Retriever<Enrolment> enrolmentRetriever;
 
@@ -106,17 +115,25 @@ public abstract class User extends Element
 		 *                            <code>Enrolment</code> instances is
 		 *                            already associated with another
 		 *                            <code>User</code> instance, not null
+		 * @param  creator            Method reference to the Constructor, not
+		 *                            null
 		 */
 
-		protected Builder (
+		private Builder (
 				final DomainModel model,
 				final IdGenerator idGenerator,
 				final Retriever<User> userRetriever,
 				final Retriever<Enrolment> enrolmentRetriever,
-				final Query<User> enrolmentQuery)
+				final Query<User> enrolmentQuery,
+				final Function<User.Builder, User> creator)
 		{
 			super (model, idGenerator, userRetriever);
 
+			assert creator != null : "creator is NULL";
+			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
+			assert enrolmentQuery != null : "enrolmentQuery is NULL";
+
+			this.creator = creator;
 			this.enrolmentRetriever = enrolmentRetriever;
 			this.enrolmentQuery = enrolmentQuery;
 
@@ -129,36 +146,37 @@ public abstract class User extends Element
 		}
 
 		/**
-		 * Update the mutable fields in the <code>User</code> instance.
+		 * Create an instance of the <code>User</code>.
 		 *
-		 * @param user The <code>User</code> instance, not null
-		 * @return     The supplied <code>User</code> instance
+		 * @param  user The previously existing <code>User</code> instance, may
+		 *              be null
+		 * @return      The new <code>User</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
 		 */
 
-		@CheckReturnValue
-		protected final User updateUser (final User user)
+		@Override
+		protected User create (final @Nullable User user)
 		{
-			this.log.trace ("updateUser: user={}", user);
+			this.log.trace ("create: user={}", user);
 
-			assert user != null : "user is NULL";
+			User result = user;
 
-			user.setFirstname (Preconditions.checkNotNull (this.firstname, "firstname"));
-			user.setLastname (Preconditions.checkNotNull (this.lastname, "lastname"));
+			if (user != null && this.model.contains (user) && user.getUsername ().equals (this.getUsername ()))
+			{
+				user.setFirstname (Preconditions.checkNotNull (this.firstname, "firstname"));
+				user.setLastname (Preconditions.checkNotNull (this.lastname, "lastname"));
 
-			this.enrolments.stream ()
-				.filter (x -> ! user.getEnrolments ().contains (x))
-				.forEach (x -> user.addEnrolment (x));
+				this.enrolments.stream ()
+					.filter (x -> ! user.getEnrolments ().contains (x))
+					.forEach (x -> user.addEnrolment (x));
+			}
+			else
+			{
+				result = this.creator.apply (this);
+			}
 
-			return user;
-		}
-
-		protected final User setEnrolments (final User user)
-		{
-			assert user != null : "user is NULL";
-
-			this.enrolments.forEach (x -> user.addEnrolment (x));
-
-			return user;
+			return result;
 		}
 
 		/**
@@ -412,7 +430,9 @@ public abstract class User extends Element
 	 * @version 1.0
 	 */
 
-	protected interface BuilderComponent extends Element.BuilderComponent<User, User.Builder>
+	@BuilderScope
+	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {UserBuilderModule.class})
+	protected interface BuilderComponent extends Element.BuilderComponent<User>
 	{
 		/**
 		 * Create the Builder instance.
@@ -425,6 +445,97 @@ public abstract class User extends Element
 	}
 
 	/**
+	 * Dagger module for creating <code>Retriever</code> instances.  This module
+	 * contains implementation-independent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module
+	public static final class UserModule extends Element.ElementModule<User>
+	{
+		/**
+		 * Get the <code>Selector</code> used by the
+		 * <code>QueryRetriever</code>.
+		 *
+		 * @return The <code>Selector</code>
+		 */
+
+		@Provides
+		public Selector<User> getSelector ()
+		{
+			return User.SELECTOR_USERNAME;
+		}
+	}
+
+	/**
+	 * Dagger module for creating <code>Builder</code> instances.  This module
+	 * contains implementation-dependent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module (includes = {UserModule.class, Enrolment.EnrolmentModule.class})
+	public static final class UserBuilderModule
+	{
+		/** Method reference to the implementation constructor  */
+		private final Function<User.Builder, User> creator;
+
+		/**
+		 * Create the <code>UserBuilderModule</code>
+		 *
+		 * @param  creator Method reference to the Constructor, not null
+		 */
+
+		public UserBuilderModule (final Function<User.Builder, User> creator)
+		{
+			this.creator = creator;
+		}
+
+		/**
+		 * Get a <code>Query</code> for getting a <code>User</code> which is
+		 * associated with an <code>Enrolment</code>.
+		 *
+		 * @return The <code>Query</code>
+		 */
+
+		@Provides
+		@Named ("Enrolment")
+		public Query<User> getQuery (final DomainModel model)
+		{
+			return model.getQuery (User.SELECTOR_USERNAME);
+		}
+
+		/**
+		 * Create an instance of the <code>Builder</code>.
+		 *
+		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  idGenerator        The <code>IdGenerator</code>, not null
+		 * @param  UserRetriever      <code>Retriever</code> for
+		 *                            <code>User</code> instances, not null
+		 * @param  enrolmentRetriever <code>Retriever</code> for
+		 *                            <code>Enrolment</code> instances, not null
+		 * @param  enrolmentQuery     <code>Query</code> to check if an
+		 *                            <code>Enrolment</code> instances is
+		 *                            already associated with another
+		 *                            <code>User</code> instance, not null
+		 */
+
+		@Provides
+		public Builder createBuilder (
+				final DomainModel model,
+				final IdGenerator idGenerator,
+				final @Named ("QueryRetriever") Retriever<User> userRetriever,
+				final @Named ("TableRetriever") Retriever<Enrolment> enrolmentRetriever,
+				final @Named ("Enrolment") Query<User> enrolmentQuery)
+		{
+			return new Builder (model, idGenerator, userRetriever, enrolmentRetriever, enrolmentQuery, this.creator);
+		}
+	}
+
+	/**
 	 * Abstract representation of an <code>Element</code> implementation class.
 	 * Instances of this class are used to load the <code>Element</code>
 	 * implementations into the JVM via the <code>ServiceLoader</code>.
@@ -433,17 +544,44 @@ public abstract class User extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<User, Builder>
+	protected abstract class Definition extends Element.Definition<User>
 	{
+		/** The module for creating <code>Builder</code> instances */
+		private final UserBuilderModule module;
+
 		/**
 		 * Create the <code>Definition</code>.
 		 *
-		 * @param  impl The <code>Element</code> implementation class, not null
+		 * @param  impl    The implementation class, not null
+		 * @param  creator Method reference to the constructor, not null
 		 */
 
-		public Definition (final Class<? extends User> impl)
+		public Definition (
+				final Class<? extends User> impl,
+				final Function<User.Builder, User> creator)
 		{
 			super (impl);
+
+			assert creator != null : "creator is NULL";
+			this.module = new UserBuilderModule (creator);
+		}
+
+		/**
+		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * specified <code>DomainModel</code>.
+		 *
+		 * @param model The <code>DomainModel</code>, not null
+		 * @return      The <code>BuilderComponent</code>
+		 */
+
+		@Override
+		protected User.BuilderComponent getBuilderComponent (final DomainModel model)
+		{
+			return DaggerUser_BuilderComponent.builder ()
+//				.idGeneratorComponent (null)
+				.domainModelModule (new DomainModel.DomainModelModule (User.class, model))
+				.userBuilderModule (this.module)
+				.build ();
 		}
 
 		/**

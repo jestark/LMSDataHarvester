@@ -18,10 +18,16 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -66,8 +72,11 @@ public abstract class LogEntry extends Element
 	 * @version 1.0
 	 */
 
-	public static abstract class Builder extends Element.Builder<LogEntry>
+	public static class Builder extends Element.Builder<LogEntry>
 	{
+		/** Method reference to the implementation constructor  */
+		private final Function<LogEntry.Builder, LogEntry> creator;
+
 		/** Helper to substitute <code>Action</code> instances */
 		private final Retriever<Action> actionRetriever;
 
@@ -116,6 +125,8 @@ public abstract class LogEntry extends Element
 		 *                            <code>Enrolment</code> instances, not null
 		 * @param  networkRetriever   <code>Retriever</code> for
 		 *                            <code>Network</code> instances, not null
+		 * @param  creator            Method Reference to the constructor, not
+		 *                            null
 		 */
 
 		protected Builder (
@@ -125,7 +136,8 @@ public abstract class LogEntry extends Element
 				final Retriever<Action> actionRetriever,
 				final Retriever<Activity> activityRetriever,
 				final Retriever<Enrolment> enrolmentRetriever,
-				final Retriever<Network> networkRetriever)
+				final Retriever<Network> networkRetriever,
+				final Function<LogEntry.Builder, LogEntry> creator)
 		{
 			super (model, idGenerator, logRetriever);
 
@@ -133,11 +145,13 @@ public abstract class LogEntry extends Element
 			assert activityRetriever != null : "activityRetriever is NULL";
 			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
 			assert networkRetriever != null : "networkRetriever is NULL";
+			assert creator != null : "creator is NULL";
 
 			this.actionRetriever = actionRetriever;
 			this.activityRetriever = activityRetriever;
 			this.enrolmentRetriever = enrolmentRetriever;
 			this.networkRetriever = networkRetriever;
+			this.creator = creator;
 
 			this.id = null;
 			this.action = null;
@@ -155,6 +169,24 @@ public abstract class LogEntry extends Element
 					.build ();
 			}
 */
+		/**
+		 * Create an instance of the <code>LogEntry</code>.
+		 *
+		 * @param  entry The previously existing <code>LogEntry</code> instance,
+		 *                may be null
+		 * @return        The new <code>LogEntry</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected LogEntry create (final @Nullable LogEntry entry)
+		{
+			this.log.trace ("create: entry={}", entry);
+
+			return this.creator.apply (this);
+		}
+
 		/**
 		 * Reset the builder.  This method will set all of the fields for the
 		 * <code>Element</code> to be built to <code>null</code>.
@@ -463,7 +495,9 @@ public abstract class LogEntry extends Element
 	 * @version 1.0
 	 */
 
-	protected interface BuilderComponent extends Element.BuilderComponent<LogEntry, LogEntry.Builder>
+	@BuilderScope
+	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {LogEntryBuilderModule.class})
+	protected interface BuilderComponent extends Element.BuilderComponent<LogEntry>
 	{
 		/**
 		 * Create the Builder instance.
@@ -476,6 +510,72 @@ public abstract class LogEntry extends Element
 	}
 
 	/**
+	 * Dagger module for creating <code>Retriever</code> instances.  This module
+	 * contains implementation-independent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module
+	public static final class LogEntryModule extends Element.ElementModule<LogEntry> {}
+
+	/**
+	 * Dagger module for creating <code>Builder</code> instances.  This module
+	 * contains implementation-dependent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module (includes = {LogEntryModule.class, Action.ActionModule.class, Activity.ActivityModule.class, Enrolment.EnrolmentModule.class, Network.NetworkModule.class})
+	public static final class LogEntryBuilderModule
+	{
+		/** Method reference to the implementation constructor  */
+		private final Function<LogEntry.Builder, LogEntry> creator;
+
+		/**
+		 * Create the <code>LogEntryBuilderModule</code>
+		 *
+		 * @param  creator Method reference to the Constructor, not null
+		 */
+
+		public LogEntryBuilderModule (final Function<LogEntry.Builder, LogEntry> creator)
+		{
+			this.creator = creator;
+		}
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  generator          The <code>IdGenerator</code>, not null
+		 * @param  retriever          The <code>Retriever</code>, not null
+		 * @param  actionRetriever    <code>Retriever</code> for
+		 *                            <code>Action</code> instances, not null
+		 * @param  activityRetriever  <code>Retriever</code> for
+		 *                            <code>Activity</code> instances, not null
+		 * @param  enrolmentRetriever <code>Retriever</code> for
+		 *                            <code>Enrolment</code> instances, not null
+		 * @param  networkRetriever   <code>Retriever</code> for
+		 *                            <code>Network</code> instances, not null
+		 */
+
+		@Provides
+		public Builder createBuilder (
+				final DomainModel model,
+				final IdGenerator generator,
+				final @Named ("TableRetriever") Retriever<LogEntry> retriever,
+				final @Named ("QueryRetriever") Retriever<Action> actionRetriever,
+				final @Named ("TableRetriever") Retriever<Activity> activityRetriever,
+				final @Named ("TableRetriever") Retriever<Enrolment> enrolmentRetriever,
+				final @Named ("QueryRetriever") Retriever<Network> networkRetriever)
+		{
+			return new Builder (model, generator, retriever, actionRetriever, activityRetriever, enrolmentRetriever, networkRetriever, this.creator);
+		}
+	}
+
+	/**
 	 * Abstract representation of an <code>Element</code> implementation class.
 	 * Instances of this class are used to load the <code>Element</code>
 	 * implementations into the JVM via the <code>ServiceLoader</code>.
@@ -484,17 +584,44 @@ public abstract class LogEntry extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<LogEntry, Builder>
+	protected abstract class Definition extends Element.Definition<LogEntry>
 	{
+		/** The module for creating <code>Builder</code> instances */
+		private final LogEntryBuilderModule module;
+
 		/**
 		 * Create the <code>Definition</code>.
 		 *
-		 * @param  impl The <code>Element</code> implementation class, not null
+		 * @param  impl    The implementation class, not null
+		 * @param  creator Method reference to the constructor, not null
 		 */
 
-		public Definition (final Class<? extends LogEntry> impl)
+		public Definition (
+				final Class<? extends LogEntry> impl,
+				final Function<LogEntry.Builder, LogEntry> creator)
 		{
 			super (impl);
+
+			assert creator != null : "creator is NULL";
+			this.module = new LogEntryBuilderModule (creator);
+		}
+
+		/**
+		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * specified <code>DomainModel</code>.
+		 *
+		 * @param model The <code>DomainModel</code>, not null
+		 * @return      The <code>BuilderComponent</code>
+		 */
+
+		@Override
+		protected LogEntry.BuilderComponent getBuilderComponent (final DomainModel model)
+		{
+			return DaggerLogEntry_BuilderComponent.builder ()
+//				.idGeneratorComponent (null)
+				.domainModelModule (new DomainModel.DomainModelModule (LogEntry.class, model))
+				.logEntryBuilderModule (this.module)
+				.build ();
 		}
 
 		/**
@@ -679,6 +806,8 @@ public abstract class LogEntry extends Element
 	protected LogEntry (final Builder builder)
 	{
 		super (builder);
+
+		this.setActivityReference (Preconditions.checkNotNull (builder.getActivityReference (), "activity"));
 	}
 
 	/**

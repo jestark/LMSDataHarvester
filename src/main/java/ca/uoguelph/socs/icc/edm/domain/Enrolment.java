@@ -19,10 +19,16 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -92,8 +98,11 @@ public abstract class Enrolment extends Element
 	 * @version 1.0
 	 */
 
-	public static abstract class Builder extends Element.Builder<Enrolment>
+	public static class Builder extends Element.Builder<Enrolment>
 	{
+		/** Method reference to the implementation constructor  */
+		private final Function<Enrolment.Builder, Enrolment> creator;
+
 		/** Helper to substitute <code>Course</code> instances */
 		private final Retriever<Course> courseRetriever;
 
@@ -126,6 +135,7 @@ public abstract class Enrolment extends Element
 		 *                         instances, not null
 		 * @param  courseRetriever <code>Retriever</code> for <code>Course</code>
 		 *                         instances, not null
+		 * @param  creator         Method Reference to the constructor, not null
 		 */
 
 		protected Builder (
@@ -133,15 +143,18 @@ public abstract class Enrolment extends Element
 				final IdGenerator idGenerator,
 				final Retriever<Enrolment> enrolmentRetriever,
 				final Retriever<Course> courseRetriever,
-				final Retriever<Role> roleRetriever)
+				final Retriever<Role> roleRetriever,
+				final Function<Enrolment.Builder, Enrolment> creator)
 		{
 			super (model, idGenerator, enrolmentRetriever);
 
 			assert courseRetriever != null : "courseRetriever is NULL";
 			assert roleRetriever != null : "roleRetriever is NULL";
+			assert creator != null : "creator is NULL";
 
 			this.courseRetriever = courseRetriever;
 			this.roleRetriever = roleRetriever;
+			this.creator = creator;
 
 			this.id = null;
 			this.course = null;
@@ -168,6 +181,29 @@ public abstract class Enrolment extends Element
 			enrolment.setUsable (Preconditions.checkNotNull (this.usable, "usable"));
 
 			return enrolment;
+		}
+
+		/**
+		 * Create an instance of the <code>Enrolment</code>.
+		 *
+		 * @param  enrolment The previously existing <code>Enrolment</code>
+		 *                   instance, may be null
+		 * @return           The new <code>Enrolment</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected Enrolment create (final @Nullable Enrolment enrolment)
+		{
+			this.log.trace ("create: enrolment={}", enrolment);
+
+			return (enrolment != null
+					&& this.model.contains (enrolment)
+					&& enrolment.getCourse () == this.getCourse ()
+					&& enrolment.getRole () == this.getRole ())
+				? this.updateEnrolment (enrolment)
+				: this.creator.apply (this);
 		}
 
 		/**
@@ -385,7 +421,9 @@ public abstract class Enrolment extends Element
 	 * @version 1.0
 	 */
 
-	protected interface BuilderComponent extends Element.BuilderComponent<Enrolment, Enrolment.Builder>
+	@BuilderScope
+	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {EnrolmentBuilderModule.class})
+	protected interface BuilderComponent extends Element.BuilderComponent<Enrolment>
 	{
 		/**
 		 * Create the Builder instance.
@@ -398,6 +436,66 @@ public abstract class Enrolment extends Element
 	}
 
 	/**
+	 * Dagger module for creating <code>Retriever</code> instances.  This module
+	 * contains implementation-independent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module
+	public static final class EnrolmentModule extends Element.ElementModule<Enrolment> {}
+
+	/**
+	 * Dagger module for creating <code>Builder</code> instances.  This module
+	 * contains implementation-dependent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module (includes = {EnrolmentModule.class, Course.CourseModule.class, Role.RoleModule.class})
+	public static final class EnrolmentBuilderModule
+	{
+		/** Method reference to the implementation constructor  */
+		private final Function<Enrolment.Builder, Enrolment> creator;
+
+		/**
+		 * Create the <code>RoleBuilderModule</code>
+		 *
+		 * @param  creator Method reference to the Constructor, not null
+		 */
+
+		public EnrolmentBuilderModule (final Function<Enrolment.Builder, Enrolment> creator)
+		{
+			this.creator = creator;
+		}
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  model           The <code>DomainModel</code>, not null
+		 * @param  generator       The <code>IdGenerator</code>, not null
+		 * @param  retriever       The <code>Retriever</code>, not null
+		 * @param  roleRetriever   <code>Retriever</code> for <code>Role</code>
+		 *                         instances, not null
+		 * @param  courseRetriever <code>Retriever</code> for <code>Course</code>
+		 *                         instances, not null
+		 */
+
+		@Provides
+		public Builder createBuilder (
+				final DomainModel model,
+				final IdGenerator generator,
+				final @Named ("TableRetriever") Retriever<Enrolment> retriever,
+				final @Named ("QueryRetriever") Retriever<Course> courseRetriever,
+				final @Named ("QueryRetriever") Retriever<Role> roleRetriever)
+		{
+			return new Builder (model, generator, retriever, courseRetriever, roleRetriever, this.creator);
+		}
+	}
+
+	/**
 	 * Abstract representation of an <code>Element</code> implementation class.
 	 * Instances of this class are used to load the <code>Element</code>
 	 * implementations into the JVM via the <code>ServiceLoader</code>.
@@ -406,17 +504,44 @@ public abstract class Enrolment extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<Enrolment, Builder>
+	protected abstract class Definition extends Element.Definition<Enrolment>
 	{
+		/** The module for creating <code>Builder</code> instances */
+		private final EnrolmentBuilderModule module;
+
 		/**
 		 * Create the <code>Definition</code>.
 		 *
-		 * @param  impl The <code>Element</code> implementation class, not null
+		 * @param  impl    The implementation class, not null
+		 * @param  creator Method reference to the constructor, not null
 		 */
 
-		public Definition (final Class<? extends Enrolment> impl)
+		public Definition (
+				final Class<? extends Enrolment> impl,
+				final Function<Enrolment.Builder, Enrolment> creator)
 		{
 			super (impl);
+
+			assert creator != null : "creator is NULL";
+			this.module = new EnrolmentBuilderModule (creator);
+		}
+
+		/**
+		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * specified <code>DomainModel</code>.
+		 *
+		 * @param model The <code>DomainModel</code>, not null
+		 * @return      The <code>BuilderComponent</code>
+		 */
+
+		@Override
+		protected Enrolment.BuilderComponent getBuilderComponent (final DomainModel model)
+		{
+			return DaggerEnrolment_BuilderComponent.builder ()
+//				.idGeneratorComponent (null)
+				.domainModelModule (new DomainModel.DomainModelModule (Enrolment.class, model))
+				.enrolmentBuilderModule (this.module)
+				.build ();
 		}
 
 		/**

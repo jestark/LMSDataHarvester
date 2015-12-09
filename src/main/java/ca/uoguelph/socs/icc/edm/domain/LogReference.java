@@ -19,16 +19,21 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -53,8 +58,11 @@ public abstract class LogReference extends Element
 	 * @version 1.0
 	 */
 
-	public static abstract class Builder extends Element.Builder<LogReference>
+	public static class Builder extends Element.Builder<LogReference>
 	{
+		/** Method reference to the implementation constructor  */
+		private final Function<LogReference.Builder, LogReference> creator;
+
 		/** Helper to substitute <code>LogEntry</code> instances*/
 		private final Retriever<LogEntry> entryRetriever;
 
@@ -80,23 +88,46 @@ public abstract class LogReference extends Element
 		 * @param  subActivityRetriever <code>Retriever</code> for
 		 *                              <code>ActivitySource</code> instances,
 		 *                              not null
+		 * @param  creator              Method Reference to the constructor, not
+		 *                              null
 		 */
 
 		protected Builder (
 				final DomainModel model,
 				final Retriever<LogReference> refRetriever,
 				final Retriever<LogEntry> entryRetriever,
-				final Retriever<SubActivity> subActivityRetriever)
+				final Retriever<SubActivity> subActivityRetriever,
+				final Function<LogReference.Builder, LogReference> creator)
 		{
 			super (model, null, refRetriever);
 
 			assert entryRetriever != null : "entryRetriever is NULL";
+			assert creator != null : "creator is NULL";
 
 			this.entryRetriever = entryRetriever;
 			this.subActivityRetriever = subActivityRetriever;
+			this.creator = creator;
 
 			this.entry = null;
 			this.subActivity = null;
+		}
+
+		/**
+		 * Create an instance of the <code>LogReference</code>.
+		 *
+		 * @param  reference The previously existing <code>LogReference</code>
+		 *                   instance, may be null
+		 * @return           The new <code>LogReference</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected LogReference create (final @Nullable LogReference reference)
+		{
+			this.log.trace ("create: reference={}", reference);
+
+			return this.creator.apply (this);
 		}
 
 		/**
@@ -221,7 +252,9 @@ public abstract class LogReference extends Element
 	 * @version 1.0
 	 */
 
-	protected interface BuilderComponent extends Element.BuilderComponent<LogReference, LogReference.Builder>
+	@BuilderScope
+	@Component (modules = {LogReferenceBuilderModule.class})
+	protected interface BuilderComponent extends Element.BuilderComponent<LogReference>
 	{
 		/**
 		 * Create the Builder instance.
@@ -234,6 +267,66 @@ public abstract class LogReference extends Element
 	}
 
 	/**
+	 * Dagger module for creating <code>Retriever</code> instances.  This module
+	 * contains implementation-independent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module
+	public static final class LogReferenceModule extends Element.ElementModule<LogReference> {}
+
+	/**
+	 * Dagger module for creating <code>Builder</code> instances.  This module
+	 * contains implementation-dependent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module (includes = {LogReferenceModule.class, LogEntry.LogEntryModule.class, SubActivity.SubActivityModule.class})
+	public static final class LogReferenceBuilderModule
+	{
+		/** Method reference to the implementation constructor  */
+		private final Function<LogReference.Builder, LogReference> creator;
+
+		/**
+		 * Create the <code>LogReferenceBuilderModule</code>
+		 *
+		 * @param  creator Method reference to the Constructor, not null
+		 */
+
+		public LogReferenceBuilderModule (final Function<LogReference.Builder, LogReference> creator)
+		{
+			this.creator = creator;
+		}
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  model                The <code>DomainModel</code>, not null
+		 * @param  retriever            The <code>Retriever</code>, not null
+		 * @param  entryRetriever       <code>Retriever</code> for
+		 *                              <code>ActivitySource</code> instances,
+		 *                              not null
+		 * @param  subActivityRetriever <code>Retriever</code> for
+		 *                              <code>ActivitySource</code> instances,
+		 *                              not null
+		 */
+
+		@Provides
+		public Builder createBuilder (
+				final DomainModel model,
+				final @Named ("TableRetriever") Retriever<LogReference> retriever,
+				final @Named ("TableRetriever") Retriever<LogEntry> entryRetriever,
+				final @Named ("TableRetriever") Retriever<SubActivity> subActivityRetriever)
+		{
+			return new Builder (model, retriever, entryRetriever, subActivityRetriever, this.creator);
+		}
+	}
+
+	/**
 	 * Abstract representation of an <code>Element</code> implementation class.
 	 * Instances of this class are used to load the <code>Element</code>
 	 * implementations into the JVM via the <code>ServiceLoader</code>.
@@ -242,17 +335,44 @@ public abstract class LogReference extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<LogReference, Builder>
+	protected abstract class Definition extends Element.Definition<LogReference>
 	{
+		/** The module for creating <code>Builder</code> instances */
+		private final LogReferenceBuilderModule module;
+
 		/**
 		 * Create the <code>Definition</code>.
 		 *
-		 * @param  impl The <code>Element</code> implementation class, not null
+		 * @param  impl    The implementation class, not null
+		 * @param  creator Method reference to the constructor, not null
 		 */
 
-		public Definition (final Class<? extends LogReference> impl)
+		public Definition (
+				final Class<? extends LogReference> impl,
+				final Function<LogReference.Builder, LogReference> creator)
 		{
 			super (impl);
+
+			assert creator != null : "creator is NULL";
+			this.module = new LogReferenceBuilderModule (creator);
+		}
+
+		/**
+		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * specified <code>DomainModel</code>.
+		 *
+		 * @param model The <code>DomainModel</code>, not null
+		 * @return      The <code>BuilderComponent</code>
+		 */
+
+		@Override
+		protected LogReference.BuilderComponent getBuilderComponent (final DomainModel model)
+		{
+			return DaggerLogReference_BuilderComponent.builder ()
+//				.idGeneratorComponent (null)
+				.domainModelModule (new DomainModel.DomainModelModule (LogReference.class, model))
+				.logReferenceBuilderModule (this.module)
+				.build ();
 		}
 
 		/**

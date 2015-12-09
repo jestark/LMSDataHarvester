@@ -18,10 +18,16 @@ package ca.uoguelph.socs.icc.edm.domain;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -65,8 +71,11 @@ public abstract class Action extends Element
 	 * @version 1.0
 	 */
 
-	public static abstract class Builder extends Element.Builder<Action>
+	public static class Builder extends Element.Builder<Action>
 	{
+		/** Method reference to the implementation constructor  */
+		private final Function<Action.Builder, Action> creator;
+
 		/** The <code>DataStore</code> id number for the <code>Action</code> */
 		private @Nullable Long id;
 
@@ -79,17 +88,41 @@ public abstract class Action extends Element
 		 * @param  model       The <code>DomainModel</code>, not null
 		 * @param  idGenerator The <code>IdGenerator</code>, not null
 		 * @param  retriever   The <code>Retriever</code>, not null
+		 * @param  creator     Method Reference to the constructor, not null
 		 */
 
 		protected Builder (
 				final DomainModel model,
 				final IdGenerator idGenerator,
-				final Retriever<Action> retriever)
+				final Retriever<Action> retriever,
+				final Function<Action.Builder, Action> creator)
 		{
 			super (model, idGenerator, retriever);
 
+			assert creator != null : "creator is NULL";
+
+			this.creator = creator;
+
 			this.id = null;
 			this.name = null;
+		}
+
+		/**
+		 * Create an instance of the <code>Action</code>.
+		 *
+		 * @param  action The previously existing <code>Action</code> instance,
+		 *                may be null
+		 * @return        The new <code>Action</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected Action create (final @Nullable Action action)
+		{
+			this.log.trace ("create: action={}", action);
+
+			return this.creator.apply (this);
 		}
 
 		/**
@@ -193,7 +226,9 @@ public abstract class Action extends Element
 	 * @version 1.0
 	 */
 
-	protected interface BuilderComponent extends Element.BuilderComponent<Action, Action.Builder>
+	@BuilderScope
+	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {ActionBuilderModule.class})
+	protected static interface BuilderComponent extends Element.BuilderComponent<Action>
 	{
 		/**
 		 * Create the Builder instance.
@@ -206,6 +241,74 @@ public abstract class Action extends Element
 	}
 
 	/**
+	 * Dagger module for creating <code>Retriever</code> instances.  This module
+	 * contains implementation-independent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module
+	public static final class ActionModule extends Element.ElementModule<Action>
+	{
+		/**
+		 * Get the <code>Selector</code> used by the
+		 * <code>QueryRetriever</code>.
+		 *
+		 * @return The <code>Selector</code>
+		 */
+
+		@Provides
+		public Selector<Action> getSelector ()
+		{
+			return Action.SELECTOR_NAME;
+		}
+	}
+
+	/**
+	 * Dagger module for creating <code>Builder</code> instances.  This module
+	 * contains implementation-dependent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module (includes = {ActionModule.class})
+	public static final class ActionBuilderModule
+	{
+		/** Method reference to the implementation constructor  */
+		private final Function<Action.Builder, Action> creator;
+
+		/**
+		 * Create the <code>ActionBuilderModule</code>
+		 *
+		 * @param  creator Method reference to the Constructor, not null
+		 */
+
+		public ActionBuilderModule (final Function<Action.Builder, Action> creator)
+		{
+			this.creator = creator;
+		}
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  model     The <code>DomainModel</code>, not null
+		 * @param  generator The <code>IdGenerator</code>, not null
+		 * @param  retriever The <code>Retriever</code>, not null
+		 */
+
+		@Provides
+		public Builder createBuilder (
+				final DomainModel model,
+				final IdGenerator generator,
+				final @Named ("QueryRetriever") Retriever<Action> retriever)
+		{
+			return new Builder (model, generator, retriever, this.creator);
+		}
+	}
+
+	/**
 	 * Abstract representation of an <code>Element</code> implementation class.
 	 * Instances of this class are used to load the <code>Element</code>
 	 * implementations into the JVM via the <code>ServiceLoader</code>.
@@ -214,17 +317,44 @@ public abstract class Action extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<Action, Builder>
+	protected abstract class Definition extends Element.Definition<Action>
 	{
+		/** The module for creating <code>Builder</code> instances */
+		private final ActionBuilderModule module;
+
 		/**
 		 * Create the <code>Definition</code>.
 		 *
-		 * @param  impl The <code>Element</code> implementation class, not null
+		 * @param  impl    The implementation class, not null
+		 * @param  creator Method reference to the constructor, not null
 		 */
 
-		public Definition (final Class<? extends Action> impl)
+		public Definition (
+				final Class<? extends Action> impl,
+				final Function<Action.Builder, Action> creator)
 		{
 			super (impl);
+
+			assert creator != null : "creator is NULL";
+			this.module = new ActionBuilderModule (creator);
+		}
+
+		/**
+		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * specified <code>DomainModel</code>.
+		 *
+		 * @param model The <code>DomainModel</code>, not null
+		 * @return      The <code>BuilderComponent</code>
+		 */
+
+		@Override
+		protected Action.BuilderComponent getBuilderComponent (final DomainModel model)
+		{
+			return DaggerAction_BuilderComponent.builder ()
+//				.idGeneratorComponent (null)
+				.domainModelModule (new DomainModel.DomainModelModule (Action.class, model))
+				.actionBuilderModule (module)
+				.build ();
 		}
 
 		/**

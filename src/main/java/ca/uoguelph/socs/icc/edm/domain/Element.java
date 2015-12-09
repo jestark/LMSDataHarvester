@@ -21,6 +21,10 @@ import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import dagger.Module;
+import dagger.Provides;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +33,9 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+import ca.uoguelph.socs.icc.edm.domain.datastore.QueryRetriever;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.TableRetriever;
 import ca.uoguelph.socs.icc.edm.domain.datastore.TranslationTable;
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
@@ -356,7 +362,7 @@ public abstract class Element implements Serializable
 	 *              <code>Builder</code>
 	 */
 
-	protected interface BuilderComponent<T extends Element, B extends Builder<T>>
+	protected interface BuilderComponent<T extends Element>
 	{
 		/**
 		 * Create the Builder instance.
@@ -364,7 +370,45 @@ public abstract class Element implements Serializable
 		 * @return The <code>Builder</code>
 		 */
 
-		public abstract B getBuilder ();
+		public abstract T.Builder<T> getBuilder ();
+	}
+
+	@Module (includes = {DomainModel.DomainModelModule.class})
+	protected static abstract class ElementModule<T extends Element>
+	{
+		/**
+		 * Create a new <code>QueryRetriever</code> instance.
+		 *
+		 * @param  retriever The <code>QueryRetriever</code>, not null
+		 * @return           The <code>QueryRetriever</code>
+		 */
+
+		@Provides
+		@Named ("QueryRetriever")
+		public final Retriever<T> getQueryRetriever (final QueryRetriever<T> retriever)
+		{
+			return retriever;
+		}
+
+		/**
+		 * Create a new <code>TableRetriever</code> instance.
+		 *
+		 * @param  retriever The <code>TableRetriever</code>, not null
+		 * @return           The <code>TableRetriever</code>
+		 */
+
+		@Provides
+		@Named ("TableRetriever")
+		public final Retriever<T> getTableRetriever (final TableRetriever<T> retriever)
+		{
+			return retriever;
+		}
+
+		@Provides
+		public final Query<T> getRetrieverQuery (final DomainModel model, final Selector<T> selector)
+		{
+			return model.getQuery (selector);
+		}
 	}
 
 	/**
@@ -374,12 +418,11 @@ public abstract class Element implements Serializable
 	 *
 	 * @author  James E. Stark
 	 * @version 1.0
-	 * @param   <B> The type of <code>Builder</code> produced by the component
 	 * @param   <T> The type of <code>Element</code> produced by the
 	 *              <code>Builder</code>
 	 */
 
-	protected abstract class Definition<T extends Element, B extends Builder<T>>
+	protected abstract class Definition<T extends Element>
 	{
 		/** The <code>Element</code> implementation class */
 		protected final Class<? extends T> impl;
@@ -404,7 +447,7 @@ public abstract class Element implements Serializable
 		 * @return      The <code>Builder</code>
 		 */
 
-		protected abstract BuilderComponent<T, B> getBuilderComponent (final DomainModel model);
+		protected abstract BuilderComponent<T> getBuilderComponent (final DomainModel model);
 
 		/**
 		 * Get a <code>Stream</code> of the <code>Property</code> instances for

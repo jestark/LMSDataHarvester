@@ -17,16 +17,21 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -67,8 +72,11 @@ public abstract class Grade extends Element
 	 * @version 1.0
 	 */
 
-	public static abstract class Builder extends Element.Builder<Grade>
+	public static class Builder extends Element.Builder<Grade>
 	{
+		/** Method reference to the implementation constructor  */
+		private final Function<Grade.Builder, Grade> creator;
+
 		/** Helper to substitute <code>Activity</code> instances */
 		private final Retriever<Activity> activityRetriever;
 
@@ -94,21 +102,26 @@ public abstract class Grade extends Element
 		 *                            <code>Role</code> instances, not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
 		 *                            <code>Enrolment</code> instances, not null
+		 * @param  creator            Method Reference to the constructor, not
+		 *                            null
 		 */
 
 		protected Builder (
 				final DomainModel model,
 				final Retriever<Grade> gradeRetriever,
 				final Retriever<Activity> activityRetriever,
-				final Retriever<Enrolment> enrolmentRetriever)
+				final Retriever<Enrolment> enrolmentRetriever,
+				final Function<Grade.Builder, Grade> creator)
 		{
 			super (model, null, gradeRetriever);
 
 			assert activityRetriever != null : "activityRetriever is NULL";
 			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
+			assert creator != null : "creator is NULL";
 
 			this.activityRetriever = activityRetriever;
 			this.enrolmentRetriever = enrolmentRetriever;
+			this.creator = creator;
 
 			this.activity = null;
 			this.enrolment = null;
@@ -132,6 +145,28 @@ public abstract class Grade extends Element
 			grade.setGrade (Preconditions.checkNotNull (this.value, "grade"));
 
 			return grade;
+		}
+
+		/**
+		 * Create an instance of the <code>Grade</code>.
+		 *
+		 * @param  grade The previously existing <code>Grade</code> instance,
+		 *               may be null
+		 * @return       The new <code>Grade</code> instance
+		 *
+		 * @throws NullPointerException if any required field is missing
+		 */
+
+		@Override
+		protected Grade create (final @Nullable Grade grade)
+		{
+			this.log.trace ("create: grade={}", grade);
+
+			return (grade != null && this.model.contains (grade)
+					&& grade.getActivity () == this.getActivity ()
+					&& grade.getEnrolment () == this.getEnrolment ())
+				? this.updateGrade (grade)
+				: this.creator.apply (this);
 		}
 
 		/**
@@ -309,7 +344,9 @@ public abstract class Grade extends Element
 	 * @version 1.0
 	 */
 
-	protected interface BuilderComponent extends Element.BuilderComponent<Grade, Grade.Builder>
+	@BuilderScope
+	@Component (modules = {GradeBuilderModule.class})
+	protected interface BuilderComponent extends Element.BuilderComponent<Grade>
 	{
 		/**
 		 * Create the Builder instance.
@@ -322,6 +359,64 @@ public abstract class Grade extends Element
 	}
 
 	/**
+	 * Dagger module for creating <code>Retriever</code> instances.  This module
+	 * contains implementation-independent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module
+	public static final class GradeModule extends Element.ElementModule<Grade> {}
+
+	/**
+	 * Dagger module for creating <code>Builder</code> instances.  This module
+	 * contains implementation-dependent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module (includes = {GradeModule.class, Activity.ActivityModule.class, Enrolment.EnrolmentModule.class})
+	public static final class GradeBuilderModule
+	{
+		/** Method reference to the implementation constructor  */
+		private final Function<Grade.Builder, Grade> creator;
+
+		/**
+		 * Create the <code>RoleBuilderModule</code>
+		 *
+		 * @param  creator Method reference to the Constructor, not null
+		 */
+
+		public GradeBuilderModule (final Function<Grade.Builder, Grade> creator)
+		{
+			this.creator = creator;
+		}
+
+		/**
+		 * Create the <code>Builder</code>.
+		 *
+		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  retriever          The <code>Retriever</code>, not null
+		 * @param  activityRetriever  <code>Retriever</code> for
+		 *                            <code>Role</code> instances, not null
+		 * @param  enrolmentRetriever <code>Retriever</code> for
+		 *                            <code>Enrolment</code> instances, not null
+		 */
+
+		@Provides
+		public Builder createBuilder (
+				final DomainModel model,
+				final @Named ("TableRetriever") Retriever<Grade> retriever,
+				final @Named ("TableRetriever") Retriever<Activity> activityRetriever,
+				final @Named ("TableRetriever") Retriever<Enrolment> enrolmentRetriever)
+		{
+			return new Builder (model, retriever, activityRetriever, enrolmentRetriever, this.creator);
+		}
+	}
+
+	/**
 	 * Abstract representation of an <code>Element</code> implementation class.
 	 * Instances of this class are used to load the <code>Element</code>
 	 * implementations into the JVM via the <code>ServiceLoader</code>.
@@ -330,17 +425,44 @@ public abstract class Grade extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<Grade, Builder>
+	protected abstract class Definition extends Element.Definition<Grade>
 	{
+		/** The module for creating <code>Builder</code> instances */
+		private final GradeBuilderModule module;
+
 		/**
 		 * Create the <code>Definition</code>.
 		 *
-		 * @param  impl The <code>Element</code> implementation class, not null
+		 * @param  impl    The implementation class, not null
+		 * @param  creator Method reference to the constructor, not null
 		 */
 
-		public Definition (final Class<? extends Grade> impl)
+		public Definition (
+				final Class<? extends Grade> impl,
+				final Function<Grade.Builder, Grade> creator)
 		{
 			super (impl);
+
+			assert creator != null : "creator is NULL";
+			this.module = new GradeBuilderModule (creator);
+		}
+
+		/**
+		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * specified <code>DomainModel</code>.
+		 *
+		 * @param model The <code>DomainModel</code>, not null
+		 * @return      The <code>BuilderComponent</code>
+		 */
+
+		@Override
+		protected Grade.BuilderComponent getBuilderComponent (final DomainModel model)
+		{
+			return DaggerGrade_BuilderComponent.builder ()
+//				.idGeneratorComponent (null)
+				.domainModelModule (new DomainModel.DomainModelModule (Grade.class, model))
+				.gradeBuilderModule (this.module)
+				.build ();
 		}
 
 		/**
