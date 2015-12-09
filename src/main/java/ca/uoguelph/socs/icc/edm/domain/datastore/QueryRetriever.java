@@ -16,8 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
-import dagger.Module;
-import dagger.Provides;
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,38 +45,8 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public final class QueryRetriever<T extends Element> implements Retriever<T>
 {
-	/**
-	 * Dagger Module to create a new instance of the
-	 * <code>QueryRetriever</code>.  The Dagger Component which uses this module
-	 * is responsible for providing the required <code>DomainModel</code>,
-	 * <code>TranslationTable</code> and <code>Query</code> instances.
-	 *
-	 * @author  James E. Stark
-	 * @version 1.0
-	 */
-
-	@Module
-	public static abstract class RetrieverModule<T extends Element>
-	{
-		/**
-		 * Create a new <code>QueryRetriever</code> instance.
-		 *
-		 * @param  model The <code>DomainModel</code>, not null
-		 * @param  table The <code>TranslationTable</code>, not null
-		 * @param  query The <code>Query</code>, not null
-		 * @return       The <code>QueryRetriever</code>
-		 */
-
-		@Provides
-		public final Retriever<T> createRetriever (final DomainModel model, final TranslationTable table, final Query<T> query)
-		{
-			assert model != null : "model is NULL";
-			assert table != null : "table is NULL";
-			assert query != null : "query is NULL";
-
-			return new QueryRetriever<T> (model, query, table);
-		}
-	}
+	/** The <code>TranslationTable</code> */
+	private static final TranslationTable table;
 
 	/** The Log */
 	private final Logger log;
@@ -88,45 +57,49 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 	/** The <code>Query</code> used to fetch <code>Element</code> instances */
 	private final Query<T> query;
 
-	/** The <code>TranslationTable</code> */
-	private final TranslationTable table;
+	/**
+	 * Static initializer to set the reference to the Translation table.
+	 */
+
+	static
+	{
+		table = TranslationTable.getInstance ();
+	}
 
 	/**
 	 * Create the <code>QueryRetriever</code>.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
 	 * @param  query The <code>Query</code>, not null
-	 * @param  table The <code>TranslationTable</code>, not null
 	 */
 
-	private QueryRetriever (final DomainModel model, final Query<T> query, final TranslationTable table)
+	@Inject
+	QueryRetriever (final DomainModel model, final Query<T> query)
 	{
 		assert model != null : "model is NULL";
 		assert query != null : "query is NULL";
-		assert table != null : "table is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.model = model;
 		this.query = query;
-		this.table = table;
 	}
 
 	private T load (final T element)
 	{
 		assert element != null : "element is NULL";
 
-		if (! this.table.contains (element, this.model))
+		if (! QueryRetriever.table.contains (element, this.model))
 		{
 			T result = this.query.setAllValues (element).query ();
 
 			if (result != null)
 			{
-				this.table.put (element, result);
+				QueryRetriever.table.put (element, result);
 			}
 		}
 
-		return this.table.get (element, this.model);
+		return QueryRetriever.table.get (element, this.model);
 	}
 
 	/**

@@ -16,8 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
-import dagger.Module;
-import dagger.Provides;
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,36 +41,8 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public final class TableRetriever<T extends Element> implements Retriever<T>
 {
-	/**
-	 * Dagger Module to create a new instance of the
-	 * <code>TableRetriever</code>.  The Dagger Component which uses this module
-	 * is responsible for providing the required <code>DomainModel</code> and
-	 * <code>TranslationTable</code> instances.
-	 *
-	 * @author  James E. Stark
-	 * @version 1.0
-	 */
-
-	@Module
-	public static abstract class RetrieverModule<T extends Element>
-	{
-		/**
-		 * Create a new <code>TableRetriever</code> instance.
-		 *
-		 * @param  model The <code>DomainModel</code>, not null
-		 * @param  table The <code>TranslationTable</code>, not null
-		 * @return       The <code>QueryRetriever</code>
-		 */
-
-		@Provides
-		public final Retriever<T> createRetriever (final DomainModel model, final TranslationTable table)
-		{
-			assert model != null : "model is NULL";
-			assert table != null : "table is NULL";
-
-			return new TableRetriever<T> (model, table);
-		}
-	}
+	/** The <code>TranslationTable</code> */
+	private static final TranslationTable table;
 
 	/** The Log */
 	private final Logger log;
@@ -79,17 +50,23 @@ public final class TableRetriever<T extends Element> implements Retriever<T>
 	/** The <code>DomainModel</code> */
 	private final DomainModel model;
 
-	/** The <code>TranslationTable</code> */
-	private final TranslationTable table;
+	/**
+	 * Static initializer to set the reference to the Translation table.
+	 */
+
+	static
+	{
+		table = TranslationTable.getInstance ();
+	}
 
 	/**
 	 * Create the <code>TableRetriever</code>.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
-	 * @param  table The <code>TranslationTable</code>, not null
 	 */
 
-	private TableRetriever (final DomainModel model, final TranslationTable table)
+	@Inject
+	TableRetriever (final DomainModel model)
 	{
 		assert model != null : "model is NULL";
 		assert table != null : "table is NULL";
@@ -97,7 +74,6 @@ public final class TableRetriever<T extends Element> implements Retriever<T>
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.model = model;
-		this.table = table;
 	}
 
 	/**
@@ -128,6 +104,6 @@ public final class TableRetriever<T extends Element> implements Retriever<T>
 			throw new IllegalStateException ("datastore is closed");
 		}
 
-		return (this.model.contains (element)) ? element : this.table.get (element, this.model);
+		return (this.model.contains (element)) ? element : TableRetriever.table.get (element, this.model);
 	}
 }
