@@ -16,8 +16,14 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
+
+import com.google.auto.service.AutoService;
+
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * An <code>IdGenerator</code> which always returns a null reference.  This
@@ -33,17 +39,110 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 public final class NullIdGenerator implements IdGenerator
 {
 	/**
-	 * Create the <code>NullIdGenerator</code>.
+	 * Dagger Component to create <code>SequentialIdGenerator</code> instances.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code>, not null
+	 * @author  James E. Stark
+	 * @version 1.0
 	 */
 
-	NullIdGenerator (final DataStore datastore, final Class<? extends Element> element)
+	@GeneratorScope
+	@Component (modules = {IdGeneratorModule.class})
+	public static interface IdGeneratorComponent extends IdGenerator.IdGeneratorComponent
 	{
-		assert datastore != null : "datastore is NULL";
-		assert element != null : "element is NULL";
+		/**
+		 * Create the <code>IdGenerator</code>.
+		 *
+		 * @return The <code>IdGenerator</code>
+		 */
+
+		@Override
+		public abstract IdGenerator createIdGenerator ();
 	}
+
+	/**
+	 * Dagger Module to create the <code>NullIdGenerator</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module
+	protected static final class IdGeneratorModule
+	{
+		/**
+		 * Create the <code>RandomIdGenerator</code>.
+		 *
+		 * @return     The <code>RandomIdGenerator</code>
+		 */
+
+		@Provides
+		@GeneratorScope
+		public IdGenerator createIdGenerator ()
+		{
+			return new NullIdGenerator ();
+		}
+	}
+
+	/**
+	 * Representation of the <code>NullIdGenerator</code> used by the
+	 * <code>ServiceLoader</code> to load it into the JVM.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@AutoService (IdGenerator.Definition.class)
+	public static class Definition implements IdGenerator.Definition
+	{
+		/**
+		 * Get the <code>IdGenerator</code> implementation represented by this
+		 * <code>Definition</code>.
+		 *
+		 * @return  The <code>IdGenerator</code> implementation class
+		 */
+
+		@Override
+		public Class<? extends IdGenerator> getIdGeneratorClass ()
+		{
+			return NullIdGenerator.class;
+		}
+
+		/**
+		 * Create an <code>IdGeneratorComponent</code> for the specified
+		 * <code>DomainModel</code>, and <code>Element</code> class.
+		 *
+		 * @param  model   The <code>DomainModel</code>, not null
+		 * @param  element The <code>Element</code> class, not null
+		 * @return         The <code>IdGeneratorComponent</code>
+		 */
+
+		@Override
+		public IdGeneratorComponent createComponent (
+				final DomainModel model,
+				final Class<? extends Element> element)
+		{
+			return NullIdGenerator.createComponent ();
+		}
+	}
+
+	/**
+	 * Create an <code>IdGeneratorComponent</code> for the specified
+	 * <code>DomainModel</code>.  This method produces a Dagger Component which
+	 * will create and initialize a <code>NullIdGenerator</code>.
+	 *
+	 * @return         The <code>IdGeneratorComponent</code>
+	 */
+
+	public static IdGeneratorComponent createComponent ()
+	{
+		return DaggerNullIdGenerator_IdGeneratorComponent.create ();
+	}
+
+	/**
+	 * Create the <code>NullIdGenerator</code>.
+	 */
+
+	private NullIdGenerator () {}
 
 	/**
 	 * Return the next available ID number.  This method will always return

@@ -16,6 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
+import ca.uoguelph.socs.icc.edm.domain.Element;
+
 /**
  * An ID number generator.  Implementations of this interface provide ID numbers
  * suitable for use with a <code>DataStore</code>.  Each class implementing this
@@ -28,6 +31,62 @@ package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 public interface IdGenerator
 {
+	/**
+	 * Abstract interface for Dagger Components which create
+	 * <code>IdGenerator</code> instances.  This interface allows other
+	 * components to declare a dependency on the <code>IdGenerator</code>
+	 * without committing to an implementation.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@GeneratorScope
+	public static interface IdGeneratorComponent
+	{
+		/**
+		 * Create the <code>IdGenerator</code>.
+		 *
+		 * @return The <code>IdGenerator</code>
+		 */
+
+		public abstract IdGenerator createIdGenerator ();
+	}
+
+	/**
+	 * Representation of an <code>IdGenerator</code> used by the
+	 * <code>ServiceLoader</code> to load the <code>IdGenerator</code>
+	 * implementations into the JVM.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	public static interface Definition
+	{
+		/**
+		 * Get the <code>IdGenerator</code> implementation represented by this
+		 * <code>Definition</code>.
+		 *
+		 * @return  The <code>IdGenerator</code> implementation class
+		 */
+
+		public abstract Class<? extends IdGenerator> getIdGeneratorClass ();
+
+		/**
+		 * Create an <code>IdGeneratorComponent</code> for the specified
+		 * <code>DomainModel</code>, and <code>Element</code> class.
+		 *
+		 * @param  model   The <code>DomainModel</code>, not null
+		 * @param  element The <code>Element</code> class, not null
+		 * @return         The <code>IdGeneratorComponent</code>
+		 */
+
+		public abstract IdGeneratorComponent createComponent (
+				final DomainModel model,
+				final Class<? extends Element> element);
+	}
+
 	/**
 	 * Return the next available ID number.
 	 *

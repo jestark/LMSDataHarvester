@@ -17,12 +17,18 @@
 package ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator;
 
 import java.security.SecureRandom;
-
-import java.util.Set;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
+
+import com.google.auto.service.AutoService;
+
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 /**
  * An <code>IdGenerator</code> which returns unique random ID numbers.  The ID
@@ -38,6 +44,96 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 
 public final class RandomIdGenerator implements IdGenerator
 {
+	/**
+	 * Dagger Component to create <code>SequentialIdGenerator</code> instances.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@GeneratorScope
+	@Component (modules = {IdGeneratorModule.class})
+	public static interface IdGeneratorComponent extends IdGenerator.IdGeneratorComponent
+	{
+		/**
+		 * Create the <code>IdGenerator</code>.
+		 *
+		 * @return The <code>IdGenerator</code>
+		 */
+
+		@Override
+		public abstract IdGenerator createIdGenerator ();
+	}
+
+	/**
+	 * Dagger Module to create the <code>RandomIdGenerator</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module (includes = {DomainModel.DomainModelModule.class})
+	protected static final class IdGeneratorModule
+	{
+		/**
+		 * Create the <code>RandomIdGenerator</code>.
+		 *
+		 * @param  ids The <code>Collection</code> of used ID numbers, not null
+		 * @return     The <code>RandomIdGenerator</code>
+		 */
+
+		@Provides
+		@GeneratorScope
+		public IdGenerator createIdGenerator (final Collection<Long> ids)
+		{
+			assert ids != null : "ids is NULL";
+
+			return new RandomIdGenerator (ids);
+		}
+	}
+
+	/**
+	 * Representation of the <code>RandomIdGenerator</code> used by the
+	 * <code>ServiceLoader</code> to it into the JVM.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@AutoService (IdGenerator.Definition.class)
+	public static class Definition implements IdGenerator.Definition
+	{
+		/**
+		 * Get the <code>IdGenerator</code> implementation represented by this
+		 * <code>Definition</code>.
+		 *
+		 * @return  The <code>IdGenerator</code> implementation class
+		 */
+
+		@Override
+		public Class<? extends IdGenerator> getIdGeneratorClass ()
+		{
+			return RandomIdGenerator.class;
+		}
+
+		/**
+		 * Create an <code>IdGeneratorComponent</code> for the specified
+		 * <code>DomainModel</code>, and <code>Element</code> class.
+		 *
+		 * @param  model   The <code>DomainModel</code>, not null
+		 * @param  element The <code>Element</code> class, not null
+		 * @return         The <code>IdGeneratorComponent</code>
+		 */
+
+		@Override
+		public IdGeneratorComponent createComponent (
+				final DomainModel model,
+				final Class<? extends Element> element)
+		{
+			return RandomIdGenerator.createComponent (model, element);
+		}
+	}
+
 	/** The <code>Set</code> of previously used id numbers. */
 	private Set<Long> usedids;
 
@@ -45,19 +141,36 @@ public final class RandomIdGenerator implements IdGenerator
 	private SecureRandom generator;
 
 	/**
+	 * Create an <code>IdGeneratorComponent</code> for the specified
+	 * <code>DomainModel</code>.  This method produces a Dagger Component which
+	 * will create and initialize a <code>RandomIdGenerator</code>.
+	 *
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> class, not null
+	 * @return         The <code>IdGeneratorComponent</code>
+	 */
+
+	public static IdGeneratorComponent createComponent (
+			final DomainModel model,
+			final Class<? extends Element> element)
+	{
+		return DaggerRandomIdGenerator_IdGeneratorComponent.builder ()
+			.build ();
+	}
+
+	/**
 	 * Create a new <code>RandomIdGenerator</code>, with a <code>List</code> of
 	 * previously used Ids.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
-	 * @param  element   The <code>Element</code>, not null
+	 * @param ids A <code>Collection</code> containing all of the previously
+	 *            used ID numbers, not null
 	 */
 
-	RandomIdGenerator (final DataStore datastore, final Class<? extends Element> element)
+	private RandomIdGenerator (final Collection<Long> ids)
 	{
-		assert datastore != null : "datastore is NULL";
-		assert element != null : "element is NULL";
+		assert ids != null : "ids is NULL";
 
-		this.usedids = new HashSet<Long> (datastore.getAllIds (element));
+		this.usedids = new HashSet<Long> (ids);
 		this.generator = new SecureRandom ();
 	}
 
