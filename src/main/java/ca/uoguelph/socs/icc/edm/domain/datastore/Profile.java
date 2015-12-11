@@ -16,14 +16,24 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
-import java.util.Map;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.annotation.CheckReturnValue;
+
+import com.google.common.base.Preconditions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 
@@ -51,11 +61,14 @@ public final class Profile
 		/** The name of the <code>Profile</code> */
 		private String name;
 
+		/** Parameters for the <code>DataStore</code> */
+		private final Map<String, String> parameters;
+
 		/** Map of <code>Element</code> implementation classes */
 		private final Map<Class<? extends Element>, Class<? extends Element>> implementations;
 
 		/** Map of <code>IdGenerator</code> classes to <code>Element</code> classes */
-		private final Map<Class<? extends Element>, Class<?>> generators;
+		private final Map<Class<? extends Element>, Class<? extends IdGenerator>> generators;
 
 		/**
 		 * Create the <code>DomainModelBuilder</code>.
@@ -67,8 +80,33 @@ public final class Profile
 
 			this.mutable = false;
 			this.name = "";
+
+			this.parameters = new HashMap<> ();
 			this.generators = new HashMap<> ();
 			this.implementations = new HashMap<> ();
+		}
+
+		/**
+		 * Load an existing profile into the <code>Builder</code>.
+		 *
+		 * @param profile The <code>Profile</code>, not null
+		 * @return        This <code>Builder</code>
+		 */
+
+		public Builder load (final Profile profile)
+		{
+			this.log.trace ("load: profile={}");
+
+			Preconditions.checkNotNull (profile);
+
+			this.clear ();
+
+			this.mutable = profile.mutable;
+			this.name = profile.name;
+			this.generators.putAll (profile.generators);
+			this.implementations.putAll (profile.implementations);
+
+			return this;
 		}
 
 		/**
@@ -96,7 +134,7 @@ public final class Profile
 		 *         <code>false</code> otherwise
 		 */
 
-		public final boolean isMutable ()
+		public boolean isMutable ()
 		{
 			return this.mutable;
 		}
@@ -105,7 +143,6 @@ public final class Profile
 		 * Set the mutability of the <code>DomainModel</code>.
 		 *
 		 * @param  mutable The mutability of the <code>DomainModel</code>
-		 *
 		 * @return         This <code>ProfileBuilder</code>
 		 */
 
@@ -133,10 +170,10 @@ public final class Profile
 		/**
 		 * Set the name of the <code>Profile</code>.
 		 *
-		 * @param  name                     The name of the <code>Profile</code>,
-		 *                                  not null and must not be empty
+		 * @param  name The name of the <code>Profile</code>, not null and must
+		 *              not be empty
+		 * @return      This <code>ProfileBuilder</code>
 		 *
-		 * @return                          This <code>ProfileBuilder</code>
 		 * @throws IllegalArgumentException if the name is empty
 		 */
 
@@ -144,16 +181,8 @@ public final class Profile
 		{
 			this.log.trace ("setName: name={}", name);
 
-			if (name == null)
-			{
-				throw new NullPointerException ();
-			}
-
-			if (name.length () < 1)
-			{
-				this.log.error ("The supplied name is Empty");
-				throw new IllegalArgumentException ("name is Empty");
-			}
+			Preconditions.checkNotNull (name, "name");
+			Preconditions.checkArgument (name.length () > 0, "name is Empty");
 
 			this.name = name;
 
@@ -173,44 +202,20 @@ public final class Profile
 		}
 
 		/**
-		 * Determine if there is an implementation class registered for the
-		 * specified <code>Element</code> interface class.
-		 *
-		 * @param  type The <code>Element</code> interface class, not null
-		 *
-		 * @return      <code>true</code> if the <code>Element</code> has a
-		 *              registered implementation class, <code>false</code>
-		 *              otherwise
-		 */
-
-		public boolean hasElementClass (final Class<? extends Element> type)
-		{
-			if (type == null)
-			{
-				throw new NullPointerException ();
-			}
-
-			return this.implementations.containsKey (type);
-		}
-
-		/**
 		 * Get the default implementation class for the specified
 		 * <code>Element</code>.
 		 *
 		 * @param  element The <code>Element</code> interface class, not null
-		 *
-		 * @return         The default <code>Element</code> implementation class,
-		 *                 may be null
+		 * @return         The default <code>Element</code> implementation
+		 *                 class, may be null
 		 */
 
-		public Class<? extends Element> getElementClass (Class<? extends Element> element)
+		@CheckReturnValue
+		public Class<? extends Element> getElement (Class<? extends Element> element)
 		{
 			this.log.trace ("getElementClass: element={}", element);
 
-			if (element == null)
-			{
-				throw new NullPointerException ();
-			}
+			Preconditions.checkNotNull (element, "element");
 
 			return this.implementations.get (element);
 		}
@@ -219,34 +224,23 @@ public final class Profile
 		 * Set the default implementation class for the specified
 		 * <code>Element</code> interface.
 		 *
-		 * @param  <T>                      The <code>Element</code> interface type
-		 * @param  <U>                      The <code>Element</code> implementation
-		 *                                  type
-		 * @param  type                     The <code>Element</code> interface
-		 *                                  class, not null
-		 * @param  impl                     The <code>Element</code> implementation
-		 *                                  class, not null
+		 * @param  <T>  The <code>Element</code> interface type
+		 * @param  type The <code>Element</code> interface class, not null
+		 * @param  impl The <code>Element</code> implementation class, not null
+		 * @return      This <code>Builder</code>
 		 *
-		 * @return                          This <code>ProfileBuilder</code>
-		 * @throws IllegalArgumentException if an implementation for the
-		 *                                  <code>Element</code> class is already
-		 *                                  registered
+		 * @throws IllegalArgumentException if the there is no
+		 *                                  <code>Definition</code> registered
+		 *                                  for the implementation class
 		 */
 
-		public <T extends Element, U extends T> Builder setElementClass (final Class<T> type, final Class<U> impl)
+		public <T extends Element> Builder setElement (final Class<T> type, final Class<? extends T> impl)
 		{
 			this.log.trace ("setElementClass: type={}, impl={}", type, impl);
 
-			if (type == null || impl == null)
-			{
-				throw new NullPointerException ();
-			}
-
-			if (this.implementations.containsKey (type))
-			{
-				this.log.error ("Implementation for {} already registered", type);
-				throw new IllegalArgumentException ("Element implementation is already registered");
-			}
+			Preconditions.checkNotNull (type, "type");
+			Preconditions.checkNotNull (impl, "impl");
+			Preconditions.checkArgument (Profile.ELEMENT_DEFINITIONS.containsKey (impl), "Element implementation is not registered");
 
 			this.implementations.put (type, impl);
 
@@ -257,20 +251,14 @@ public final class Profile
 		 * Remove the entry for the specified <code>Element</code> class.
 		 *
 		 * @param  element The <code>Element</code> class, not null
-		 *
 		 * @return         This <code>ProfileBuilder</code>
 		 */
 
-		public Builder removeElementClass (Class<? extends Element> element)
+		public Builder removeElement (Class<? extends Element> element)
 		{
 			this.log.trace ("removeElementClass: element={}", element);
 
-			if (element == null)
-			{
-				throw new NullPointerException ();
-			}
-
-			this.implementations.remove (element);
+			this.implementations.remove (Preconditions.checkNotNull (element, "element"));
 
 			return this;
 		}
@@ -284,7 +272,7 @@ public final class Profile
 
 		public Set<Class<? extends Element>> getGenerators ()
 		{
-			return new HashSet<> (this.generators.keySet ());
+			return Collections.unmodifiableSet (this.generators.keySet ());
 		}
 
 		/**
@@ -292,20 +280,15 @@ public final class Profile
 		 * <code>Element</code> class, for the <code>DataStore</code>.
 		 *
 		 * @param  element The <code>Element</code> class, not null
-		 *
 		 * @return         The associated <code>IdGenerator</code>
 		 */
 
-		public Class<?> getGenerator (final Class<? extends Element> element)
+		@CheckReturnValue
+		public Class<? extends IdGenerator> getGenerator (final Class<? extends Element> element)
 		{
 			this.log.trace ("getGenerator: element={}", element);
 
-			if (element == null)
-			{
-				throw new NullPointerException ();
-			}
-
-			return this.generators.get (element);
+			return this.generators.get (Preconditions.checkNotNull (element, "element"));
 		}
 
 		/**
@@ -313,29 +296,22 @@ public final class Profile
 		 * numbers for the specified <code>Element</code> class and its
 		 * descendants.
 		 *
-		 * @param  element                  The <code>Element</code>, not null
-		 * @param  generator                The <code>IdGenerator</code>, not null
+		 * @param  element   The <code>Element</code>, not null
+		 * @param  generator The <code>IdGenerator</code>, not null
+		 * @return           This <code>ProfileBuilder</code>
 		 *
-		 * @return                          This <code>ProfileBuilder</code>
-		 * @throws IllegalArgumentException if a <code>IdGenerator</code> is
-		 *                                  already registered for the
-		 *                                  <code>Element</code>
+		 * @throws IllegalArgumentException if the there is no
+		 *                                  <code>Definition</code> registered
+		 *                                  for the <code>IdGenerator</code>
 		 */
 
-		public Builder setGenerator (final Class<? extends Element> element, final Class<?> generator)
+		public Builder setGenerator (final Class<? extends Element> element, final Class<? extends IdGenerator> generator)
 		{
 			this.log.trace ("setGenerator: element={}, generator={}", element, generator);
 
-			if (element == null || generator == null)
-			{
-				throw new NullPointerException ();
-			}
-
-			if (this.generators.containsKey (element))
-			{
-				this.log.error ("Generator already registered for: {}", element.getSimpleName ());
-				throw new IllegalArgumentException ("Generator already registered for element");
-			}
+			Preconditions.checkNotNull (element, "element");
+			Preconditions.checkNotNull (generator, "generator");
+			Preconditions.checkArgument (Profile.GENERATOR_DEFINITIONS.containsKey (generator), "ID Generator is not registered");
 
 			this.generators.put (element, generator);
 
@@ -348,10 +324,9 @@ public final class Profile
 		 * assigned the <code>Element</code> is the default <code>IdGnerator</code>
 		 * for the <code>DataStore</code> and can not be removed.
 		 *
-		 * @param  element                  The <code>Element</code> class, not
-		 *                                  null
+		 * @param  element The <code>Element</code> class, not null
+		 * @return         The <code>ProfileBuilder</code>
 		 *
-		 * @return                          The <code>ProfileBuilder</code>
 		 * @throws IllegalArgumentException if the <code>IdGenerator</code> for
 		 *                                  <code>Element</code> is to be removed
 		 */
@@ -360,16 +335,72 @@ public final class Profile
 		{
 			this.log.trace ("removeGenerator: element={}", element);
 
-			if (element == null)
-			{
-				throw new NullPointerException ();
-			}
+			Preconditions.checkNotNull (element, "element");
+			Preconditions.checkArgument (element != Element.class, "Can not remove the IdGenerator for Element");
 
-			if (element == Element.class)
-			{
-				this.log.error ("Can not remove the IdGenerator for Element");
-				throw new IllegalArgumentException ("Cann not remove the IdGenerator for Element");
-			}
+			this.generators.remove (element);
+
+			return this;
+		}
+
+		/**
+		 * Get the <code>Set</code> of <code>Parameters</code>.
+		 *
+		 * @return A <code>Set</code> of <code>Parameter</code> names
+		 */
+
+		public Set<String> getParameters ()
+		{
+			return Collections.unmodifiableSet (this.parameters.keySet ());
+		}
+
+		/**
+		 * Get the value for the specified parameter.
+		 *
+		 * @param  parameter The parameter, not null
+		 * @return           The associated value
+		 */
+
+		@CheckReturnValue
+		public String getParameter (final String parameter)
+		{
+			this.log.trace ("getParameter: parameter={}", parameter);
+
+			return this.parameters.get (Preconditions.checkNotNull (parameter, "parameter"));
+		}
+
+		/**
+		 * Set the specified parameter to the specified value.
+		 *
+		 * @param  parameter The parameter, not null
+		 * @param  value     The value of the parameter, not null
+		 * @return           This <code>Builder</code>.
+		 */
+
+		public Builder setParameter (final String parameter, final String value)
+		{
+			this.log.trace ("setParameter: parameter={}, value={}", parameter, value);
+
+			Preconditions.checkNotNull (parameter, "parameter");
+			Preconditions.checkNotNull (value, "value");
+
+			this.parameters.put (parameter, value);
+
+			return this;
+		}
+
+		/**
+		 * Remove the specified parameter.
+		 *
+		 * @param  parameter The parameter to remove, not null
+		 * @return           This <code>Builder</code>.
+		 */
+
+		public Builder removeParameter (final String parameter)
+		{
+			this.log.trace ("removeParameter: parameter={}", parameter);
+
+			this.parameters.remove (Preconditions.checkNotNull (parameter, "parameter"));
 
 			return this;
 		}
@@ -377,7 +408,8 @@ public final class Profile
 		/**
 		 * Create the <code>Profile</code>.
 		 *
-		 * @return                       The <code>Profile</code>
+		 * @return The <code>Profile</code>
+		 *
 		 * @throws IllegalStateException if there is not <code>IdGenerator</code>
 		 *                               set for <code>Element</code>
 		 * @throws IllegalStateException if the name is empty
@@ -387,21 +419,18 @@ public final class Profile
 		{
 			this.log.trace ("build:");
 
-			if (this.name.length () < 0)
-			{
-				this.log.error ("name is Empty");
-				throw new IllegalStateException ("name is Empty");
-			}
+			Preconditions.checkState (name.length () > 0, "name is Empty");
+			Preconditions.checkState (this.generators.containsKey (Element.class), "Missing IDGenerator for Element");
 
-			if (! this.generators.containsKey (Element.class))
-			{
-				this.log.error ("Missing IDGenerator for Element");
-				throw new IllegalStateException ("Missing IDGenerator for Element");
-			}
-
-			return new Profile (this.name, this.mutable, this.implementations, this.generators);
+			return new Profile (this);
 		}
 	}
+
+	/** Definitions for all of the <code>Element</code> implementation classes */
+	private static final Map<Class<? extends Element>, Element.Definition<? extends Element>> ELEMENT_DEFINITIONS;
+
+	/** Definitions for all of the <code>IdGenerator</code> implementations */
+	private static final Map<Class<? extends IdGenerator>, IdGenerator.Definition> GENERATOR_DEFINITIONS;
 
 	/** The Logger */
 	private final Logger log;
@@ -412,11 +441,31 @@ public final class Profile
 	/** The name of the <code>Profile</code> */
 	private final String name;
 
+	/** Parameters for the <code>DataStore</code> */
+	private final Map<String, String> parameters;
+
 	/** The default implementation classes for each <code>Element</code> */
 	private final Map<Class<? extends Element>, Class<? extends Element>> implementations;
 
 	/** The <code>IdGenerator</code> to be used with each <code>Element</code> */
-	private final Map<Class<? extends Element>, Class<?>> generators;
+	private final Map<Class<? extends Element>, Class<? extends IdGenerator>> generators;
+
+	/**
+	 * static initializer to load the <code>Element</code> and
+	 * <code>IdGenerator</code> definitions.
+	 */
+
+	static
+	{
+		GENERATOR_DEFINITIONS = Collections.unmodifiableMap (
+				StreamSupport.stream (ServiceLoader.load (IdGenerator.Definition.class).spliterator (), false)
+				.collect (Collectors.toMap (x -> x.getIdGeneratorClass (), Function.identity ())));
+
+		ELEMENT_DEFINITIONS = Collections.unmodifiableMap (
+				StreamSupport.stream (ServiceLoader.load (Element.Definition.class).spliterator (), false)
+				.map (x -> (Element.Definition<? extends Element>) x)
+				.collect (Collectors.toMap (x -> x.getElementClass (), Function.identity ())));
+	}
 
 	/**
 	 * Get the <code>Builder</code> for the <code>Profile</code>.
@@ -427,6 +476,20 @@ public final class Profile
 	public static Builder builder ()
 	{
 		return new Builder ();
+	}
+
+	/**
+	 * Get the <code>Builder</code> for the <code>Profile</code>, initialized
+	 * with the contents of the specified <code>Profile</code>.
+	 *
+	 * @param  profile The <code>Profile</code>, not null
+	 * @return         The <code>Builder</code>
+	 */
+
+	public static Builder builder (final Profile profile)
+	{
+		return new Builder ()
+			.load (Preconditions.checkNotNull (profile, "profile"));
 	}
 
 	/**
@@ -444,21 +507,18 @@ public final class Profile
 	 *                         <code>Element</code>, not null
 	 */
 
-	private Profile (final String name,
-			final boolean mutable,
-			final Map<Class<? extends Element>, Class<? extends Element>> implementations,
-			final Map<Class<? extends Element>, Class<?>> generators)
+	private Profile (final Builder builder)
 	{
-		assert name != null : "name is NULL";
-		assert implementations != null : "implementations is NULL";
-		assert generators != null : "generators is NULL";
+		assert builder != null : "builder is NULL";
 
 		this.log = LoggerFactory.getLogger (Profile.class);
 
-		this.name = name;
-		this.mutable = mutable;
-		this.implementations = new HashMap<> (implementations);
-		this.generators = new HashMap<> (generators);
+		this.name = builder.name;
+		this.mutable = builder.mutable;
+
+		this.parameters = Collections.unmodifiableMap (new HashMap<> (builder.parameters));
+		this.implementations = Collections.unmodifiableMap (new HashMap<> (builder.implementations));
+		this.generators = Collections.unmodifiableMap (new HashMap<> (builder.generators));
 	}
 
 	/**
@@ -488,74 +548,155 @@ public final class Profile
 	 * Determine if there is an implementation class registered for the
 	 * specified <code>Element</code> interface class.
 	 *
-	 * @param  type The <code>Element</code> interface class, not null
-	 *
-	 * @return      <code>true</code> if the <code>Element</code> has a
-	 *              registered implementation class, <code>false</code>
-	 *              otherwise
-	 */
-
-	public boolean hasElementClass (final Class<? extends Element> type)
-	{
-		this.log.trace ("hasElementClass: type={}", type);
-
-		assert type != null : "type is NULL";
-
-		return this.implementations.containsKey (type);
-	}
-
-	/**
-	 * Get the default implementation class for the specified
-	 * <code>Element</code>.
-	 *
 	 * @param  element The <code>Element</code> interface class, not null
-	 *
-	 * @return         The <code>Element</code> default implementation class
+	 * @return         <code>true</code> if the <code>Element</code> has a
+	 *                 registered implementation class, <code>false</code>
+	 *                 otherwise
 	 */
 
-	public Class<? extends Element> getElementClass (Class<? extends Element> element)
+	public boolean hasElement (final Class<? extends Element> element)
 	{
-		this.log.trace ("getElementClass: element={}", element);
+		this.log.trace ("hasElement: element={}", element);
 
-		assert element != null : "element is NULL";
-		assert this.hasElementClass (element) : "No implementation class registered for element";
-
-		return this.implementations.get (element);
+		return this.implementations.containsKey (Preconditions.checkNotNull (element, "element"));
 	}
 
 	/**
-	 * Get the <code>IdGenerator</code> associated with the specified
-	 * <code>Element</code> class, for the <code>DataStore</code>.  This method
-	 * searches for the appropriate <code>IdGenerator</code> for the specified
-	 * <code>Element</code> class.
+	 * Determine if there is a <code>Definition</code> registered for the
+	 * specified <code>Element</code> class.  The specified <code>Element</code>
+	 * class may be either an interface class or an implementation class.
 	 *
-	 * @param  element               The <code>Element</code> class, not null
-	 *
-	 * @return                       The associated <code>IdGenerator</code>
-	 * @throws IllegalStateException if there id no <code>MetaData</code>
-	 *                               registered for the specified
-	 *                               <code>Element</code> class or one of its
-	 *                               parents
+	 * @param  element The <code>Element</code> class, not null
+	 * @return         <code>true</code> if the <code>Element</code> has a
+	 *                 <code>Definition</code>, <code>false</code> otherwise
 	 */
 
-	public Class<?> getGenerator (final Class<? extends Element> element)
+	public boolean hasDefinition (final Class<? extends Element> element)
 	{
-		this.log.trace ("getGenerator: element={}", element);
+		this.log.trace ("hasDefinition: element={}", element);
 
-		assert element != null : "element is NULL";
+		Preconditions.checkNotNull (element, "element");
 
-		Class<?> key = element;
+		return (Profile.ELEMENT_DEFINITIONS.containsKey (element))
+			? true
+			: this.implementations.containsKey (element)
+				&& Profile.ELEMENT_DEFINITIONS.containsKey (this.implementations.get (element));
+	}
 
-		while (! this.generators.containsKey (key))
+	/**
+	 * Get a <code>Map</code> containing parameters for the
+	 * <code>DataStore</code>.
+	 *
+	 * @return The parameter <code>Map</code>
+	 */
+
+	public Map<String, String> getParameters ()
+	{
+		return this.parameters;
+	}
+
+	/**
+	 * Get the <code>Definition</code> for the specified <code>Element</code>.
+	 * The specified <code>Element</code> class may be either an interface class
+	 * or an implementation class.  For an interface class the
+	 * <code>Definition</code> for the default implementation will be returned.
+	 *
+	 * @param  <T>     The type of the <code>Element</code>
+	 * @param  element The <code>Element</code> class, not null
+	 * @return         The <code>Definition</code> for the <code>Element</code>
+	 *
+	 * @throws IllegalArgumentException If the specified <code>Element</code>
+	 *                                  class does not have a registered
+	 *                                  implementation
+	 */
+
+	@SuppressWarnings ("unchecked")
+	public <T extends Element> Element.Definition<T> getDefinition (final Class<T> element)
+	{
+		this.log.trace ("getDefinition: element={}", element);
+
+		Preconditions.checkNotNull (element, "element");
+
+		Element.Definition<T> result = (Element.Definition<T>) Profile.ELEMENT_DEFINITIONS.get (element);
+
+		if (result == null)
 		{
-			key = key.getSuperclass ();
+			Preconditions.checkArgument (this.implementations.containsKey (element), "No implementation registered for: %s", element.getSimpleName ());
 
-			if (! Element.class.isAssignableFrom (key))
-			{
-				throw new IllegalStateException (String.format ("No Generator registered for: %s", element.getSimpleName ()));
-			}
+			assert Profile.ELEMENT_DEFINITIONS.containsKey (this.implementations.get (element)) : "implementation class is not registered";
+
+			result = (Element.Definition<T>) Profile.ELEMENT_DEFINITIONS.get (this.implementations.get (element));
 		}
 
-		return this.generators.get (key);
+		return result;
+	}
+
+	/**
+	 * Get the <code>Definition</code> for the specified <code>Element</code>
+	 * implementation.
+	 *
+	 * @param  <T>     The type of the <code>Element</code>
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  impl    The <code>Element</code> implementation class, not null
+	 * @return         The <code>Definition</code> for the <code>Element</code>
+	 *
+	 * @throws IllegalArgumentException If the implementation class does not
+	 *                                  have a <code>Definition</code>
+	 */
+
+	@SuppressWarnings ("unchecked")
+	public <T extends Element> Element.Definition<T> getDefinition (final Class<T> element, final Class<? extends T> impl)
+	{
+		this.log.trace ("getDefinition: element={}, impl={}", element, impl);
+
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (impl, "impl");
+		Preconditions.checkArgument (Profile.ELEMENT_DEFINITIONS.containsKey (impl), "implementation class does not have a definition");
+
+		return (Element.Definition<T>) Profile.ELEMENT_DEFINITIONS.get (impl);
+	}
+
+	/**
+	 * Determine if there is an <code>IdGenerator</code> registered for the
+	 * specified <code>Element</code> class.
+	 *
+	 * @param  element The <code>Element</code> class, not null
+	 * @return         <code>true</code> if there is an <code>IdGenerator</code>
+	 *                 registered for the <code>Element</code>,
+	 *                 <code>false</code> otherwise
+	 */
+
+	public boolean hasGenerator (final Class<? extends Element> element)
+	{
+		return this.generators.containsKey (Preconditions.checkNotNull (element, "element"));
+	}
+
+	/**
+	 * Get the <code>IdGeneratorComponent</code> associated with the specified
+	 * <code>Element</code> class, for the <code>DomainModel</code>.
+	 *
+	 * @param  model   The <code>DomainModel</code>, not null
+	 * @param  element The <code>Element</code> class, not null
+	 * @return         The associated <code>IdGenerator</code>
+	 *
+	 * @throws IllegalArgumentException if there is no <code>IdGenerator</code>
+	 *                                  associated with the specified
+	 *                                  <code>Element</code> class
+	 */
+
+	public IdGenerator.IdGeneratorComponent getGenerator (final DomainModel model, final Class<? extends Element> element)
+	{
+		this.log.trace ("getGenerator: model={}, element={}", model, element);
+
+		Preconditions.checkNotNull (model, "model");
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkArgument (this.generators.containsKey (element),
+				"No Generator registered for Element: %s", element.getSimpleName ());
+
+		assert Profile.GENERATOR_DEFINITIONS.containsKey (this.generators.get (element))
+			: "Generator does not have a definition";
+
+		return Profile.GENERATOR_DEFINITIONS.get (this.generators.get (element))
+			.createComponent (model, element);
 	}
 }
