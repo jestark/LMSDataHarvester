@@ -16,14 +16,16 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
-import java.util.Map;
-import java.util.Set;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,9 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public final class TranslationTable
 {
+	/** Singleton Instance */
+	private static final TranslationTable INSTANCE;
+
 	/** The log */
 	private final Logger log;
 
@@ -57,10 +62,30 @@ public final class TranslationTable
 	private final Map<Element, Map<DomainModel, Element>> table;
 
 	/**
+	 * Static initializer to create the Singleton instance.
+	 */
+
+	static
+	{
+		INSTANCE = new TranslationTable ();
+	}
+
+	/**
+	 * Get an instance of the <code>TranslationTable</code>.
+	 *
+	 * @return The <code>TranslationTable</code>
+	 */
+
+	public static TranslationTable getInstance ()
+	{
+		return TranslationTable.INSTANCE;
+	}
+
+	/**
 	 * Create the <code>TranslationTable</code>.
 	 */
 
-	protected TranslationTable ()
+	private TranslationTable ()
 	{
 		this.log = LoggerFactory.getLogger (TranslationTable.class);
 
@@ -80,7 +105,7 @@ public final class TranslationTable
 	 *                   <code>false</code> otherwise
 	 */
 
-	public boolean contains (final Element element, final DomainModel model)
+	public boolean contains (final @Nullable Element element, final @Nullable DomainModel model)
 	{
 		this.log.trace ("contains: element={}, model={}", element, model);
 
@@ -120,6 +145,7 @@ public final class TranslationTable
 	 */
 
 	@SuppressWarnings ("unchecked")
+	@CheckReturnValue
 	public <T extends Element> T get (final T element, final DomainModel model)
 	{
 		this.log.trace ("get: element={}, model={}", element, model);
@@ -202,7 +228,7 @@ public final class TranslationTable
 	 * @param  element The <code>Element</code> instance to remove
 	 */
 
-	public void remove (final Element element)
+	public void remove (final @Nullable Element element)
 	{
 		this.log.trace ("remove: element=", element);
 
@@ -220,7 +246,7 @@ public final class TranslationTable
 	 * @param  model The <code>DomainModel</code>
 	 */
 
-	public void removeAll (final DomainModel model)
+	public void removeAll (final @Nullable DomainModel model)
 	{
 		this.log.trace ("removeAll: model={}", model);
 
