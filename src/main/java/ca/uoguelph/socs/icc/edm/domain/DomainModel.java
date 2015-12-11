@@ -17,10 +17,14 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.Collection;
-import java.util.function.Consumer;
-import java.util.function.BiConsumer;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nullable;
+
+import dagger.Module;
+import dagger.Provides;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +38,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 import ca.uoguelph.socs.icc.edm.domain.datastore.TranslationTable;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 /**
@@ -48,6 +53,87 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 @AutoFactory
 public final class DomainModel
 {
+	/**
+	 * Dagger Module containing common <code>DomainModel</code> operations.
+	 * This module contains the operations that are common to both the
+	 * <code>Element</code> components and the <code>IdGenerator</code>
+	 * components.  It provides access to the <code>DomainModel</code> and the
+	 * underlying <code>DataStore</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module
+	public static final class DomainModelModule
+	{
+		/** The <code>Element</code> class */
+		private final Class<? extends Element> element;
+
+		/** The <code>DomainModel</code> */
+		private final DomainModel model;
+
+		/**
+		 * Create the <code>DomainModelModule</code>.
+		 *
+		 * @param  element The <code>Element</code> class
+		 * @param  model   The <code>DomainModel</code>
+		 */
+
+		public DomainModelModule (final Class<? extends Element> element, final DomainModel model)
+		{
+			this.element = element;
+			this.model = model;
+		}
+
+		/**
+		 * Get the <code>DomainModel</code>
+		 *
+		 * @return The <code>DomainModel</code>
+		 */
+
+		@Provides
+		public DomainModel getDomainModel ()
+		{
+			return this.model;
+		}
+
+		/**
+		 * Get the <code>Element</code> class.
+		 *
+		 * @return The <code>Element</code> class
+		 */
+
+		@Provides
+		public Class<? extends Element> getElementClass ()
+		{
+			return element;
+		}
+
+		/**
+		 * Get a <code>Collection</code> containing all of the ID numbers
+		 * associated with the <code>Element</code> in the
+		 * <code>DomainModel</code>.
+		 *
+		 * @return The <code>Collection</code> of ID numbers
+		 */
+
+		@Provides
+		public Collection<Long> getAllIds ()
+		{
+			return this.model.datastore.getAllIds (this.element);
+		}
+	}
+
+	/** The <code>TranslationTable</code> */
+	private static final TranslationTable table;
+
+	/** Cache of <code>Element</code> <code>BuilderComponent</code> instances */
+	private final Map<Class<? extends Element>, Element.BuilderComponent<? extends Element>> builderComponents;
+
+	/** Cache of <code>IdGenerator</code> instances */
+	private final Map<Class<? extends Element>, IdGenerator.IdGeneratorComponent> idComponents;
+
 	/** The log */
 	private final Logger log;
 
@@ -57,8 +143,14 @@ public final class DomainModel
 	/** The data store which contains all of the data */
 	private final DataStore datastore;
 
-	/** The <code>TranslationTable</code> */
-	private final TranslationTable ttable;
+	/**
+	 * Static initializer to create the <code>TranslationTable</code> instance.
+	 */
+
+	static
+	{
+		table = TranslationTable.getInstance ();
+	}
 
 	/**
 	 * Create the <code>DomainModel</code>.
@@ -70,14 +162,15 @@ public final class DomainModel
 
 	public DomainModel (
 			final Profile profile,
-			final @Provided DataStore.DataStoreFactory factory,
-			final @Provided TranslationTable ttable)
+			final @Provided DataStore.DataStoreFactory factory)
 	{
 		this.log = LoggerFactory.getLogger (DomainModel.class);
 
 		this.profile = profile;
-		this.ttable = ttable;
 		this.datastore = factory.getDataStore (profile);
+
+		this.builderComponents = new HashMap<> ();
+		this.idComponents = new HashMap<> ();
 	}
 
 	/**
@@ -120,22 +213,106 @@ public final class DomainModel
 		if (result.equals (oldElement))
 		{
 			this.log.debug ("Inserting the Element mapping into the TranslationTable");
-			this.ttable.put (oldElement, result);
+			DomainModel.table.put (oldElement, result);
 		}
 
 		return result;
 	}
 
 	/**
-	 * Get a reference to the <code>Profile</code> data for the
-	 * <code>DataStore</code>.
+	 * Get the <code>IdGeneratorComponent</code> for the specified
+	 * <code>Element</code> class.  If the <code>Profile</code> does not contain
+	 * and <code>IdGenerator</code> for the specified <code>Element</code>
+	 * class, then this method will recursively process the super classes for
+	 * the <code>Element</code> until it finds a <code>IdGenerator</code>.  An
+	 * <code>IdGeneratorComponent</code> instance is shared between all of the
+	 * sub-classes for the <code>Element</code> class upon which it is defined.
 	 *
-	 * @return The <code>Profile</code>
+	 * @param  element The <code>Element</code> class, not null
+	 * @return         The <code>IdGeneratorComponent</code>
+	 *
+	 * @throws IllegalStateException If an <code>IdGenerator</code> for the
+	 *                               <code>Element</code> class.  This should
+	 *                               never happen, as <code>Profile</code>
+	 *                               requires that an <code>IdGenerator</code>
+	 *                               to be defined for <code>Element</code>.
 	 */
 
-	protected Profile getProfile ()
+	@SuppressWarnings ("unchecked")
+	protected IdGenerator.IdGeneratorComponent getIdGeneratorComponent (final Class<? extends Element> element)
 	{
-		return this.profile;
+		this.log.trace ("getIdGeneratorComponent: element={}", element);
+
+		if (! this.idComponents.containsKey (element))
+		{
+			if (this.profile.hasGenerator (element))
+			{
+				this.idComponents.put (element, this.profile.getGenerator (this, element));
+			}
+			else
+			{
+				if (! Element.class.isAssignableFrom (element.getSuperclass ()))
+				{
+					throw new IllegalStateException ("Can't find an IDGenerator");
+				}
+
+				this.idComponents.put (element, this.getIdGeneratorComponent ((Class<? extends Element>) element.getSuperclass ()));
+			}
+		}
+
+		return this.idComponents.get (element);
+	}
+
+	/**
+	 * Get a <code>BuilderConponent</code> instance for the specified
+	 * <code>Element</code> class.
+	 *
+	 * @param  <T>     The type of the <code>Element</code>
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @return         The <code>BuilderComponent</code>
+	 */
+
+	@SuppressWarnings ("unchecked")
+	protected <T extends Element> Element.BuilderComponent<T> getBuilderComponent (final Class<T> element)
+	{
+		this.log.trace ("getBuilder: element={}", element);
+
+		Preconditions.checkNotNull (element);
+
+		if (! this.builderComponents.containsKey (element))
+		{
+			this.builderComponents.put (element, this.profile.getDefinition (element)
+					.getBuilderComponent (this));
+		}
+
+		return (Element.BuilderComponent<T>) this.builderComponents.get (element);
+	}
+
+	/**
+	 * Get a <code>BuilderComponent</code> instance for the specified
+	 * <code>Element</code> interface and implementation classes.
+	 *
+	 * @param  <T>     The type of the <code>Element</code>
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  impl    The <code>Element</code> implementation class, not null
+	 * @return         The <code>BuilderComponent</code>
+	 */
+
+	@SuppressWarnings ("unchecked")
+	protected <T extends Element> Element.BuilderComponent<T> getBuilderComponent (final Class<T> element, final Class<? extends T> impl)
+	{
+		this.log.trace ("getBuilder: element={}, impl={}", element, impl);
+
+		Preconditions.checkNotNull (element);
+		Preconditions.checkNotNull (impl);
+
+		if (! this.builderComponents.containsKey (impl))
+		{
+			this.builderComponents.put (impl, this.profile.getDefinition (element, impl)
+					.getBuilderComponent (this));
+		}
+
+		return (Element.BuilderComponent<T>) this.builderComponents.get (impl);
 	}
 
 	/**
@@ -183,6 +360,53 @@ public final class DomainModel
 	}
 
 	/**
+	 * Get the <code>Definition</code> for the specified <code>Element</code>.
+	 * The specified <code>Element</code> class may be either an interface class
+	 * or an implementation class.  For an interface class the
+	 * <code>Definition</code> for the default implementation will be returned.
+	 *
+	 * @param  <T>     The type of the <code>Element</code>
+	 * @param  element The <code>Element</code> class, not null
+	 * @return         The <code>Definition</code> for the <code>Element</code>
+	 *
+	 * @throws IllegalArgumentException If the specified <code>Element</code>
+	 *                                  class does not have a registered
+	 *                                  implementation
+	 */
+
+	public <T extends Element> Element.Definition<T> getDefinition (final Class<T> element)
+	{
+		this.log.trace ("getDefinition: element={}", element);
+
+		Preconditions.checkNotNull (element, "element");
+
+		return this.profile.getDefinition (element);
+	}
+
+	/**
+	 * Get the <code>Definition</code> for the specified <code>Element</code>
+	 * implementation.
+	 *
+	 * @param  <T>     The type of the <code>Element</code>
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  impl    The <code>Element</code> implementation class, not null
+	 * @return         The <code>Definition</code> for the <code>Element</code>
+	 *
+	 * @throws IllegalArgumentException If the implementation class does not
+	 *                                  have a <code>Definition</code>
+	 */
+
+	public <T extends Element> Element.Definition<T> getDefinition (final Class<T> element, final Class<? extends T> impl)
+	{
+		this.log.trace ("getDefinition: element={}, impl={}", element, impl);
+
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkNotNull (impl, "impl");
+
+		return this.profile.getDefinition (element, impl);
+	}
+
+	/**
 	 * Get a <code>Query</code> for the specified <code>Element</code> using
 	 * the default implementation class defined in the <code>Profile</code>.
 	 *
@@ -198,11 +422,10 @@ public final class DomainModel
 		this.log.trace ("getQuery: selector={}", selector);
 
 		Preconditions.checkNotNull (selector, "selector");
-
-		Preconditions.checkArgument (this.profile.hasElementClass (selector.getElementClass ()),
+		Preconditions.checkArgument (this.profile.hasElement (selector.getElementClass ()),
 				"no implementation for element: %s", selector.getElementClass ().getSimpleName ());
 
-		return this.getQuery (selector, (Class<? extends T>) this.profile.getElementClass (selector.getElementClass ()));
+		return this.profile.getDefinition (selector.getElementClass ()).getQuery (this, selector);
 	}
 
 	/**
