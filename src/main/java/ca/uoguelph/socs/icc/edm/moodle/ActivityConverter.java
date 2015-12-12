@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.resolver;
+package ca.uoguelph.socs.icc.edm.moodle;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -28,10 +28,8 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
-import ca.uoguelph.socs.icc.edm.domain.ActivityTypeBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
-import ca.uoguelph.socs.icc.edm.domain.NamedActivity;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
@@ -154,7 +152,7 @@ public final class ActivityConverter
 	private final Query<ActivityReference> idQuery;
 
 	/** Builder to create the <code>ActivityType</code> instances */
-	private final ActivityTypeBuilder typeBuilder;
+	private final ActivityType.Builder typeBuilder;
 
 	/** Cache of <code>Activity</code> instances, indexed by ID */
 	private final Map<Long, Activity> idCache;
@@ -175,7 +173,7 @@ public final class ActivityConverter
 
 		this.dest = dest;
 
-		this.idQuery = source.getQuery (ActivityReference.class, ActivityReference.SELECTOR_ID);
+		this.idQuery = source.getQuery (ActivityReference.SELECTOR_ID);
 
 		this.typeBuilder = ActivityType.builder (this.dest)
 			.setActivitySource (ActivitySource.builder (this.dest)
@@ -187,7 +185,7 @@ public final class ActivityConverter
 	}
 
 	/**
-	 * Create a generic <code>NamedActivity</code>.
+	 * Create a generic <code>Activity</code>.
 	 *
 	 * @param  type   The <code>ActivityType</code>, not null
 	 * @param  course The <code>Course</code>, not null
@@ -196,13 +194,13 @@ public final class ActivityConverter
 	 * @return        The <code>Activity</code>
 	 */
 
-	private Activity buildNamedActivity (final ActivityType type, final Course course, final String name)
+	private Activity buildActivity (final ActivityType type, final Course course, final String name)
 	{
 		assert type != null : "type is NULL";
 		assert course != null : "course is NULL";
 		assert name != null : "name is NULL";
 
-		return NamedActivity.builder (this.dest, type)
+		return Activity.builder (this.dest, type)
 			.setName (name)
 			.setCourse (course)
 			.build ();
@@ -225,20 +223,20 @@ public final class ActivityConverter
 	{
 		if (! this.idCache.containsKey (id))
 		{
-			ActivityReference moodleActivity = this.idQuery.setValue (Activity.ID, id)
+			ActivityReference moodleActivity = this.idQuery.setValue (ActivityReference.ID, id)
 				.query ();
 
 			if (moodleActivity != null)
 			{
 				this.log.debug ("Loaded activity instance for module: {} id: {}", module, id);
-				this.idCache.put (id, (Activity) moodleActivity.getActivity ()
+				this.idCache.put (id, moodleActivity.getActivity ()
 						.getBuilder (this.dest)
 						.build ());
 			}
 			else
 			{
 				this.log.info ("Created dummy activity instance for module: {} id: {}", module, id);
-				this.idCache.put (id, this.buildNamedActivity (this.typeBuilder.setName (module).build (),
+				this.idCache.put (id, this.buildActivity (this.typeBuilder.setName (module).build (),
 							course, ActivityConverter.MISSING_ACTIVITY_NAME));
 			}
 		}
@@ -267,7 +265,7 @@ public final class ActivityConverter
 			if (Activity.hasActivityClass (type))
 			{
 				this.log.info ("Created null activity instance for module: {}", type.getName ());
-				this.typeCache.put (type, this.buildNamedActivity (type, course, ActivityConverter.NULL_ACTIVITY_NAME));
+				this.typeCache.put (type, this.buildActivity (type, course, ActivityConverter.NULL_ACTIVITY_NAME));
 			}
 			else
 			{

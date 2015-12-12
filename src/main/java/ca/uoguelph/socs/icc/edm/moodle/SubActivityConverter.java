@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.resolver;
+package ca.uoguelph.socs.icc.edm.moodle;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -134,7 +134,7 @@ public final class SubActivityConverter
 
 			if (! this.cache.containsKey (cacheKey))
 			{
-				subActivity = this.source.getQuery (SubActivity.class, sclass, SubActivity.SELECTOR_ID)
+				subActivity = this.source.getQuery (SubActivity.SELECTOR_ID, sclass)
 					.setValue (SubActivity.ID, subId)
 					.query ();
 

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.resolver;
+package ca.uoguelph.socs.icc.edm.moodle;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -25,10 +25,8 @@ import org.slf4j.LoggerFactory;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Enrolment;
-import ca.uoguelph.socs.icc.edm.domain.EnrolmentBuilder;
 import ca.uoguelph.socs.icc.edm.domain.Role;
 import ca.uoguelph.socs.icc.edm.domain.User;
-import ca.uoguelph.socs.icc.edm.domain.UserBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 
@@ -62,10 +60,10 @@ public final class EnrolmentConverter
 	private final Role unknownRole;
 
 	/** Builder to create missing <code>Enrolment</code> instances*/
-	private final EnrolmentBuilder eBuilder;
+	private final Enrolment.Builder eBuilder;
 
 	/** Builder to create missing <code>User</code> instances*/
-	private final UserBuilder uBuilder;
+	private final User.Builder uBuilder;
 
 	/** <code>Query</code> for the source <code>DomainModel</code> */
 	private final Query<User> sourceQuery;
@@ -101,8 +99,8 @@ public final class EnrolmentConverter
 		this.eBuilder = Enrolment.builder (dest);
 		this.uBuilder = User.builder (dest);
 
-		this.sourceQuery = source.getQuery (User.class, User.SELECTOR_ID);
-		this.destQuery = dest.getQuery (User.class, User.SELECTOR_USERNAME);
+		this.sourceQuery = source.getQuery (User.SELECTOR_ID);
+		this.destQuery = dest.getQuery (User.SELECTOR_USERNAME);
 
 		this.cache = new HashMap<> ();
 	}

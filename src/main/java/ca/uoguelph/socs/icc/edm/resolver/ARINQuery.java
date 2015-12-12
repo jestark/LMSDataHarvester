@@ -18,13 +18,13 @@ package ca.uoguelph.socs.icc.edm.resolver;
 
 import java.io.InputStream;
 import java.io.IOException;
-
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
-
 import java.util.Set;
 import java.util.HashSet;
+
+import javax.inject.Inject;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,6 +35,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -50,7 +53,7 @@ import org.xml.sax.SAXException;
  * @version 1.0
  */
 
-final class ARINQuery extends WhoisQuery
+final class ARINQuery implements WhoisQuery
 {
 	/** The XML DOM parser */
 	private static final DocumentBuilder parser;
@@ -69,6 +72,9 @@ final class ARINQuery extends WhoisQuery
 
 	/** XPath Query to get the parent network */
 	private static final XPathExpression parent;
+
+	/** The Log */
+	private final Logger log;
 
 	/**
 	 * Static initilaiizer to setup the parser, sice it is constance across all
@@ -98,6 +104,12 @@ final class ARINQuery extends WhoisQuery
 		{
 			throw new RuntimeException (ex);
 		}
+	}
+
+	@Inject
+	protected ARINQuery ()
+	{
+		this.log = LoggerFactory.getLogger (this.getClass ());
 	}
 
 	/**

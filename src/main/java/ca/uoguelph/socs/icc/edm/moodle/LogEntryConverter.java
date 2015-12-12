@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.resolver;
+package ca.uoguelph.socs.icc.edm.moodle;
 
 import java.util.Map;
 
@@ -25,10 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
-import ca.uoguelph.socs.icc.edm.domain.ActionBuilder;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
-import ca.uoguelph.socs.icc.edm.domain.LogEntryBuilder;
 
 import ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData;
 
@@ -56,10 +54,10 @@ public final class LogEntryConverter
 	private final SubActivityConverter subActivityConverter;
 
 	/**  */
-	private final ActionBuilder actionBuilder;
+	private final Action.Builder actionBuilder;
 
 	/**  */
-	private final LogEntryBuilder builder;
+	private final LogEntry.Builder builder;
 
 	/**
 	 * Create the <code>LogEntryConverter</code>

@@ -18,8 +18,9 @@ package ca.uoguelph.socs.icc.edm.resolver;
 
 import java.util.NavigableMap;
 import java.util.Set;
-
 import java.util.TreeMap;
+
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,7 @@ final class AddressCache
 	 * Create the <code>AddressCache</code>.
 	 */
 
+	@Inject
 	public AddressCache ()
 	{
 		this.log = LoggerFactory.getLogger (AddressCache.class);

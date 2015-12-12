@@ -14,17 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.resolver;
+package ca.uoguelph.socs.icc.edm.moodle;
 
 import java.util.Map;
 import java.util.HashMap;
+
+import javax.inject.Singleton;
+
+import dagger.Component;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Network;
-import ca.uoguelph.socs.icc.edm.domain.NetworkBuilder;
+import ca.uoguelph.socs.icc.edm.resolver.Resolver;
+import ca.uoguelph.socs.icc.edm.resolver.ARINQueryModule;
 
 /**
  *
@@ -32,6 +37,13 @@ import ca.uoguelph.socs.icc.edm.domain.NetworkBuilder;
 
 public final class NetworkConverter
 {
+	@Singleton
+	@Component (modules = { ARINQueryModule.class })
+	static interface ResolverComponent
+	{
+		public abstract Resolver getResolver ();
+	}
+
 	/** The log */
 	private final Logger log;
 
@@ -39,7 +51,7 @@ public final class NetworkConverter
 	private final Map<String, Network> cache;
 
 	/** Builder to create <code>Network</code> instances */
-	private final NetworkBuilder builder;
+	private final Network.Builder builder;
 
 	/** The IP address to <code>Network</code> resolver */
 	private final Resolver resolver;
@@ -56,7 +68,8 @@ public final class NetworkConverter
 
 		this.builder = Network.builder (dest);
 
-		this.resolver = Resolver.getInstance ();
+		this.resolver = null;
+//		this.resolver = DaggerNetworkConverter_ResolverComponent.create ().getResolver ();
 
 		this.cache = new HashMap<> ();
 	}

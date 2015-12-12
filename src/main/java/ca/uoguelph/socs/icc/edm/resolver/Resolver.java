@@ -18,10 +18,11 @@ package ca.uoguelph.socs.icc.edm.resolver;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.util.List;
-
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +39,9 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  */
 
+@Singleton
 public final class Resolver
 {
-	/** The singleton instance */
-	private static final Resolver instance;
-
 	/** The log */
 	private final Logger log;
 
@@ -56,35 +55,16 @@ public final class Resolver
 	private int queryCount;
 
 	/**
-	 * static initializer to create the singleton instance.
-	 */
-
-	static
-	{
-		instance = new Resolver ();
-	}
-
-	/**
-	 * Get an instance of the <code>Resolver</code>.
-	 *
-	 * @return The <code>Resolver</code>
-	 */
-
-	public static Resolver getInstance ()
-	{
-		return Resolver.instance;
-	}
-
-	/**
 	 * Create the <code>NetResolver</code>.
 	 */
 
-	private Resolver ()
+	@Inject
+	protected Resolver (final WhoisQuery query, final AddressCache cache)
 	{
 		this.log = LoggerFactory.getLogger (Resolver.class);
 
-		this.cache = new AddressCache ();
-		this.query = new ARINQuery ();
+		this.cache = cache;
+		this.query = query;
 
 		this.queryCount = 0;
 	}
@@ -117,7 +97,7 @@ public final class Resolver
 		else
 		{
 			this.log.debug ("Address {} is not cached, executing Whois query", address);
-			WhoisQuery.QueryResult qData = this.query.getOrg (addr);
+			QueryResult qData = this.query.getOrg (addr);
 
 			qData.getBlocks ()
 				.forEach (x -> this.cache.addOrg (x, qData.getName ()));

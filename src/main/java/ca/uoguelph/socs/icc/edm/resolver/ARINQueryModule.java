@@ -16,29 +16,15 @@
 
 package ca.uoguelph.socs.icc.edm.resolver;
 
-import java.util.Set;
+import dagger.Module;
+import dagger.Provides;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-/**
- * Fetch the "whois" data for a network.  Implementations of this calls are
- * responsible for performing a "whois" query, extracting the network data and
- * organization name from the results, and entering the data into the cache.
- *
- * @author  James E. Stark
- * @version 1.0
- */
-
-interface WhoisQuery
+@Module
+public final class ARINQueryModule
 {
-	/**
-	 * Execute a "whois" query for the specified IP address.
-	 *
-	 * @param  address The IP address, not null
-	 *
-	 * @return         The name of the organization which owns the IP Address
-	 */
-
-	public abstract QueryResult getOrg (NetAddress address);
+	@Provides
+	public WhoisQuery getQuery (final ARINQuery query)
+	{
+		return query;
+	}
 }
