@@ -430,9 +430,9 @@ public abstract class User extends Element
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {UserBuilderModule.class})
-	protected interface BuilderComponent extends Element.BuilderComponent<User>
+	protected interface UserComponent extends Element.ElementComponent<User>
 	{
 		/**
 		 * Create the Builder instance.
@@ -567,17 +567,17 @@ public abstract class User extends Element
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected User.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected User.UserComponent getComponent (final DomainModel model)
 		{
-			return DaggerUser_BuilderComponent.builder ()
+			return DaggerUser_UserComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (User.class, model))
 				.userBuilderModule (this.module)
@@ -718,7 +718,7 @@ public abstract class User extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return (User.Builder) model.getBuilderComponent (User.class)
+		return (User.Builder) model.getElementComponent (User.class)
 			.getBuilder ();
 	}
 

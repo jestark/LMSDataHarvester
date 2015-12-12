@@ -128,8 +128,8 @@ public final class DomainModel
 	/** The <code>TranslationTable</code> */
 	private static final TranslationTable table;
 
-	/** Cache of <code>Element</code> <code>BuilderComponent</code> instances */
-	private final Map<Class<? extends Element>, Element.BuilderComponent<? extends Element>> builderComponents;
+	/** Cache of <code>Element</code> <code>Component</code> instances */
+	private final Map<Class<? extends Element>, Element.ElementComponent<? extends Element>> elementComponents;
 
 	/** Cache of <code>IdGenerator</code> instances */
 	private final Map<Class<? extends Element>, IdGenerator.IdGeneratorComponent> idComponents;
@@ -169,7 +169,7 @@ public final class DomainModel
 		this.profile = profile;
 		this.datastore = factory.getDataStore (profile);
 
-		this.builderComponents = new HashMap<> ();
+		this.elementComponents = new HashMap<> ();
 		this.idComponents = new HashMap<> ();
 	}
 
@@ -264,55 +264,55 @@ public final class DomainModel
 	}
 
 	/**
-	 * Get a <code>BuilderConponent</code> instance for the specified
+	 * Get a <code>Component</code> instance for the specified
 	 * <code>Element</code> class.
 	 *
 	 * @param  <T>     The type of the <code>Element</code>
 	 * @param  element The <code>Element</code> interface class, not null
-	 * @return         The <code>BuilderComponent</code>
+	 * @return         The <code>Component</code>
 	 */
 
 	@SuppressWarnings ("unchecked")
-	protected <T extends Element> Element.BuilderComponent<T> getBuilderComponent (final Class<T> element)
+	protected <T extends Element> Element.ElementComponent<T> getElementComponent (final Class<T> element)
 	{
 		this.log.trace ("getBuilder: element={}", element);
 
 		Preconditions.checkNotNull (element);
 
-		if (! this.builderComponents.containsKey (element))
+		if (! this.elementComponents.containsKey (element))
 		{
-			this.builderComponents.put (element, this.profile.getDefinition (element)
-					.getBuilderComponent (this));
+			this.elementComponents.put (element, this.profile.getDefinition (element)
+					.getComponent (this));
 		}
 
-		return (Element.BuilderComponent<T>) this.builderComponents.get (element);
+		return (Element.ElementComponent<T>) this.elementComponents.get (element);
 	}
 
 	/**
-	 * Get a <code>BuilderComponent</code> instance for the specified
+	 * Get a <code>Component</code> instance for the specified
 	 * <code>Element</code> interface and implementation classes.
 	 *
 	 * @param  <T>     The type of the <code>Element</code>
 	 * @param  element The <code>Element</code> interface class, not null
 	 * @param  impl    The <code>Element</code> implementation class, not null
-	 * @return         The <code>BuilderComponent</code>
+	 * @return         The <code>Component</code>
 	 */
 
 	@SuppressWarnings ("unchecked")
-	protected <T extends Element> Element.BuilderComponent<T> getBuilderComponent (final Class<T> element, final Class<? extends T> impl)
+	protected <T extends Element> Element.ElementComponent<T> getElementComponent (final Class<T> element, final Class<? extends T> impl)
 	{
 		this.log.trace ("getBuilder: element={}, impl={}", element, impl);
 
 		Preconditions.checkNotNull (element);
 		Preconditions.checkNotNull (impl);
 
-		if (! this.builderComponents.containsKey (impl))
+		if (! this.elementComponents.containsKey (impl))
 		{
-			this.builderComponents.put (impl, this.profile.getDefinition (element, impl)
-					.getBuilderComponent (this));
+			this.elementComponents.put (impl, this.profile.getDefinition (element, impl)
+					.getComponent (this));
 		}
 
-		return (Element.BuilderComponent<T>) this.builderComponents.get (impl);
+		return (Element.ElementComponent<T>) this.elementComponents.get (impl);
 	}
 
 	/**

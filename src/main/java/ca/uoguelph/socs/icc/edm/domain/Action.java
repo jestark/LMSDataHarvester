@@ -226,9 +226,9 @@ public abstract class Action extends Element
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {ActionBuilderModule.class})
-	protected static interface BuilderComponent extends Element.BuilderComponent<Action>
+	protected static interface ActionComponent extends Element.ElementComponent<Action>
 	{
 		/**
 		 * Create the Builder instance.
@@ -340,17 +340,17 @@ public abstract class Action extends Element
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected Action.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected Action.ActionComponent getComponent (final DomainModel model)
 		{
-			return DaggerAction_BuilderComponent.builder ()
+			return DaggerAction_ActionComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Action.class, model))
 				.actionBuilderModule (module)
@@ -463,7 +463,7 @@ public abstract class Action extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return (Action.Builder) model.getBuilderComponent (Action.class)
+		return (Action.Builder) model.getElementComponent (Action.class)
 			.getBuilder ();
 	}
 

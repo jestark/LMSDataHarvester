@@ -223,9 +223,9 @@ public abstract class Role extends Element
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {RoleBuilderModule.class})
-	protected interface BuilderComponent extends Element.BuilderComponent<Role>
+	protected interface RoleComponent extends Element.ElementComponent<Role>
 	{
 		/**
 		 * Create the Builder instance.
@@ -337,17 +337,17 @@ public abstract class Role extends Element
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected Role.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected Role.RoleComponent getComponent (final DomainModel model)
 		{
-			return DaggerRole_BuilderComponent.builder ()
+			return DaggerRole_RoleComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Role.class, model))
 				.roleBuilderModule (this.module)
@@ -461,7 +461,7 @@ public abstract class Role extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return (Role.Builder) model.getBuilderComponent (Role.class)
+		return (Role.Builder) model.getElementComponent (Role.class)
 			.getBuilder ();
 	}
 

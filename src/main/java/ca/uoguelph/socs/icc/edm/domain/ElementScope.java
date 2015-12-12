@@ -32,7 +32,7 @@ import javax.inject.Scope;
  * scopes.  Such a tree would have the scopes at the nodes and
  * <code>@Singleton</code> at the root.
  * <p>
- * <code>@BuilderScope</code> exists to allow the components which produce the
+ * <code>@ElementScope</code> exists to allow the components which produce the
  * <code>Builder</code> instances (which are un-scoped) to depend on the
  * components which produce the <code>IdGenerator</code> instances (which are
  * scoped).
@@ -44,4 +44,4 @@ import javax.inject.Scope;
 @Scope
 @Documented
 @Retention (value=RUNTIME)
-public @interface SubBuilderScope {}
+public @interface ElementScope {}

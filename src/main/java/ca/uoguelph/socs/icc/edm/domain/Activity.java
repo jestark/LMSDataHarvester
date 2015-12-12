@@ -339,9 +339,9 @@ public abstract class Activity extends ParentActivity
 	 * @version 1.0
 	 */
 
-	@SubBuilderScope
-	@Component (dependencies = {ActivityReference.BuilderComponent.class}, modules = {ActivityBuilderModule.class})
-	protected interface BuilderComponent extends Element.BuilderComponent<Activity>
+	@ActivityScope
+	@Component (dependencies = {ActivityReference.ActivityReferenceComponent.class}, modules = {ActivityBuilderModule.class})
+	protected interface ActivityComponent extends Element.ElementComponent<Activity>
 	{
 		/**
 		 * Create the Builder instance.
@@ -441,19 +441,19 @@ public abstract class Activity extends ParentActivity
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected Activity.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected Activity.ActivityComponent getComponent (final DomainModel model)
 		{
-			return DaggerActivity_BuilderComponent.builder ()
+			return DaggerActivity_ActivityComponent.builder ()
 				.domainModelModule (new DomainModel.DomainModelModule (Activity.class, model))
-				.builderComponent ((ActivityReference.BuilderComponent) model.getBuilderComponent (ActivityReference.class))
+				.activityReferenceComponent ((ActivityReference.ActivityReferenceComponent) model.getElementComponent (ActivityReference.class))
 				.activityBuilderModule (this.module)
 				.build ();
 		}
@@ -664,7 +664,7 @@ public abstract class Activity extends ParentActivity
 		Preconditions.checkNotNull (model, "model");
 		Preconditions.checkNotNull (type, "type");
 
-		return ((Activity.Builder) model.getBuilderComponent (Activity.class, Activity.getActivityClass (type))
+		return ((Activity.Builder) model.getElementComponent (Activity.class, Activity.getActivityClass (type))
 			.getBuilder ())
 			.setType (type);
 	}

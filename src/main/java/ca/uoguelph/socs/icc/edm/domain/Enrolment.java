@@ -421,9 +421,9 @@ public abstract class Enrolment extends Element
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {EnrolmentBuilderModule.class})
-	protected interface BuilderComponent extends Element.BuilderComponent<Enrolment>
+	protected interface EnrolmentComponent extends Element.ElementComponent<Enrolment>
 	{
 		/**
 		 * Create the Builder instance.
@@ -527,17 +527,17 @@ public abstract class Enrolment extends Element
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected Enrolment.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected Enrolment.EnrolmentComponent getComponent (final DomainModel model)
 		{
-			return DaggerEnrolment_BuilderComponent.builder ()
+			return DaggerEnrolment_EnrolmentComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Enrolment.class, model))
 				.enrolmentBuilderModule (this.module)
@@ -688,7 +688,7 @@ public abstract class Enrolment extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return (Enrolment.Builder) model.getBuilderComponent (Enrolment.class)
+		return (Enrolment.Builder) model.getElementComponent (Enrolment.class)
 			.getBuilder ();
 	}
 

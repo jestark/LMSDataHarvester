@@ -23,19 +23,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import javax.inject.Scope;
 
 /**
- * Defines the Scope (within Dagger) for the <code>Builder</code> instances.
- * <p>
- * In Dagger, <code>@Component</code> dependencies must exist between scoped
- * components or un-scoped components.  An un-scoped component is not allowed
- * to depend on a scoped component.  Furthermore, dagger required that
- * dependencies between scoped components form a tree with respect to their
- * scopes.  Such a tree would have the scopes at the nodes and
- * <code>@Singleton</code> at the root.
- * <p>
- * <code>@BuilderScope</code> exists to allow the components which produce the
- * <code>Builder</code> instances (which are un-scoped) to depend on the
- * components which produce the <code>IdGenerator</code> instances (which are
- * scoped).
+ * Defines the Scope (within Dagger) of the <code>Builder</code> for
+ * <code>Activity</code> instances.  Dagger requires that the dependencies
+ * between scoped components form a tree.  This scope exists because the
+ * component for <code>Activity</code> depends on the component for
+ * <code>ActivityReference</code>.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -44,4 +36,4 @@ import javax.inject.Scope;
 @Scope
 @Documented
 @Retention (value=RUNTIME)
-public @interface BuilderScope {}
+public @interface ActivityScope {}

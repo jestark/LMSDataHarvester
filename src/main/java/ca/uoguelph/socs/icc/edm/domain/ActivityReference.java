@@ -269,9 +269,9 @@ public abstract class ActivityReference extends Element
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {ActivityReferenceBuilderModule.class})
-	protected interface BuilderComponent extends Element.BuilderComponent<ActivityReference>
+	protected interface ActivityReferenceComponent extends Element.ElementComponent<ActivityReference>
 	{
 		/**
 		 * Create the Builder instance.
@@ -377,17 +377,17 @@ public abstract class ActivityReference extends Element
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected ActivityReference.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected ActivityReference.ActivityReferenceComponent getComponent (final DomainModel model)
 		{
-			return DaggerActivityReference_BuilderComponent.builder ()
+			return DaggerActivityReference_ActivityReferenceComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Activity.class, model))
 				.activityReferenceBuilderModule (this.module)
@@ -639,7 +639,7 @@ public abstract class ActivityReference extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return ((ActivityReference.Builder) model.getBuilderComponent (ActivityReference.class)
+		return ((ActivityReference.Builder) model.getElementComponent (ActivityReference.class)
 			.getBuilder ())
 			.load (this);
 	}

@@ -249,9 +249,9 @@ public abstract class SubActivity extends ParentActivity
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {SubActivityBuilderModule.class})
-	protected interface BuilderComponent extends Element.BuilderComponent<SubActivity>
+	protected interface SubActivityComponent extends Element.ElementComponent<SubActivity>
 	{
 		/**
 		 * Create the Builder instance.
@@ -350,17 +350,17 @@ public abstract class SubActivity extends ParentActivity
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected SubActivity.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected SubActivity.SubActivityComponent getComponent (final DomainModel model)
 		{
-			return DaggerSubActivity_BuilderComponent.builder ()
+			return DaggerSubActivity_SubActivityComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (SubActivity.class, model))
 				.subActivityBuilderModule (this.module)
@@ -532,7 +532,7 @@ public abstract class SubActivity extends ParentActivity
 		Preconditions.checkNotNull (model, "model");
 		Preconditions.checkNotNull (parent, "parent");
 
-//		(SubActivity.Builder) model.getBuilderComponent (SubActivity.class, SubActivity.getSubActivityClass (parent))
+//		(SubActivity.Builder) model.getElementComponent (SubActivity.class, SubActivity.getSubActivityClass (parent))
 //			.getBuilder ();
 		return null;
 	}

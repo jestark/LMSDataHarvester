@@ -495,9 +495,9 @@ public abstract class LogEntry extends Element
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {LogEntryBuilderModule.class})
-	protected interface BuilderComponent extends Element.BuilderComponent<LogEntry>
+	protected interface LogEntryComponent extends Element.ElementComponent<LogEntry>
 	{
 		/**
 		 * Create the Builder instance.
@@ -607,17 +607,17 @@ public abstract class LogEntry extends Element
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected LogEntry.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected LogEntry.LogEntryComponent getComponent (final DomainModel model)
 		{
-			return DaggerLogEntry_BuilderComponent.builder ()
+			return DaggerLogEntry_LogEntryComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (LogEntry.class, model))
 				.logEntryBuilderModule (this.module)
@@ -784,7 +784,7 @@ public abstract class LogEntry extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return (LogEntry.Builder) model.getBuilderComponent (LogEntry.class)
+		return (LogEntry.Builder) model.getElementComponent (LogEntry.class)
 			.getBuilder ();
 	}
 

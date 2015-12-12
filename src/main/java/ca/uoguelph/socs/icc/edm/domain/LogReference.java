@@ -252,9 +252,9 @@ public abstract class LogReference extends Element
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (modules = {LogReferenceBuilderModule.class})
-	protected interface BuilderComponent extends Element.BuilderComponent<LogReference>
+	protected interface LogReferenceComponent extends Element.ElementComponent<LogReference>
 	{
 		/**
 		 * Create the Builder instance.
@@ -358,17 +358,17 @@ public abstract class LogReference extends Element
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected LogReference.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected LogReference.LogReferenceComponent getComponent (final DomainModel model)
 		{
-			return DaggerLogReference_BuilderComponent.builder ()
+			return DaggerLogReference_LogReferenceComponent.builder ()
 				.domainModelModule (new DomainModel.DomainModelModule (LogReference.class, model))
 				.logReferenceBuilderModule (this.module)
 				.build ();
@@ -636,7 +636,7 @@ public abstract class LogReference extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return ((LogReference.Builder) model.getBuilderComponent (LogReference.class)
+		return ((LogReference.Builder) model.getElementComponent (LogReference.class)
 			.getBuilder ())
 			.load (this);
 	}

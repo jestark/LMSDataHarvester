@@ -344,9 +344,9 @@ public abstract class Grade extends Element
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (modules = {GradeBuilderModule.class})
-	protected interface BuilderComponent extends Element.BuilderComponent<Grade>
+	protected interface GradeComponent extends Element.ElementComponent<Grade>
 	{
 		/**
 		 * Create the Builder instance.
@@ -448,17 +448,17 @@ public abstract class Grade extends Element
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected Grade.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected Grade.GradeComponent getComponent (final DomainModel model)
 		{
-			return DaggerGrade_BuilderComponent.builder ()
+			return DaggerGrade_GradeComponent.builder ()
 				.domainModelModule (new DomainModel.DomainModelModule (Grade.class, model))
 				.gradeBuilderModule (this.module)
 				.build ();
@@ -580,7 +580,7 @@ public abstract class Grade extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return (Grade.Builder) model.getBuilderComponent (Grade.class)
+		return (Grade.Builder) model.getElementComponent (Grade.class)
 			.getBuilder ();
 	}
 

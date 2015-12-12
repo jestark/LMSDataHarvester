@@ -231,9 +231,9 @@ public abstract class ActivitySource extends Element
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {ActivitySourceBuilderModule.class})
-	public interface BuilderComponent extends Element.BuilderComponent<ActivitySource>
+	public interface ActivitySourceComponent extends Element.ElementComponent<ActivitySource>
 	{
 		/**
 		 * Create the Builder instance.
@@ -345,17 +345,17 @@ public abstract class ActivitySource extends Element
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected ActivitySource.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected ActivitySource.ActivitySourceComponent getComponent (final DomainModel model)
 		{
-			return DaggerActivitySource_BuilderComponent.builder ()
+			return DaggerActivitySource_ActivitySourceComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (ActivitySource.class, model))
 				.activitySourceBuilderModule (this.module)
@@ -476,7 +476,7 @@ public abstract class ActivitySource extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return (ActivitySource.Builder) model.getBuilderComponent (ActivitySource.class)
+		return (ActivitySource.Builder) model.getElementComponent (ActivitySource.class)
 			.getBuilder ();
 	}
 

@@ -212,9 +212,9 @@ public abstract class Network extends Element
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {NetworkBuilderModule.class})
-	protected interface BuilderComponent extends Element.BuilderComponent<Network>
+	protected interface NetworkComponent extends Element.ElementComponent<Network>
 	{
 		/**
 		 * Create the Builder instance.
@@ -326,17 +326,17 @@ public abstract class Network extends Element
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected Network.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected Network.NetworkComponent getComponent (final DomainModel model)
 		{
-			return DaggerNetwork_BuilderComponent.builder ()
+			return DaggerNetwork_NetworkComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Network.class, model))
 				.networkBuilderModule (this.module)
@@ -450,7 +450,7 @@ public abstract class Network extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return (Network.Builder) model.getBuilderComponent (Network.class)
+		return (Network.Builder) model.getElementComponent (Network.class)
 			.getBuilder ();
 	}
 

@@ -304,9 +304,9 @@ public abstract class Course extends Element
 	 * @version 1.0
 	 */
 
-	@BuilderScope
+	@ElementScope
 	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {CourseBuilderModule.class})
-	protected interface BuilderComponent extends Element.BuilderComponent<Course>
+	protected interface CourseComponent extends Element.ElementComponent<Course>
 	{
 		/**
 		 * Create the Builder instance.
@@ -418,17 +418,17 @@ public abstract class Course extends Element
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>BuilderComponent</code>
+		 * @return      The <code>Component</code>
 		 */
 
 		@Override
-		protected Course.BuilderComponent getBuilderComponent (final DomainModel model)
+		protected Course.CourseComponent getComponent (final DomainModel model)
 		{
-			return DaggerCourse_BuilderComponent.builder ()
+			return DaggerCourse_CourseComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Course.class, model))
 				.courseBuilderModule (this.module)
@@ -581,7 +581,7 @@ public abstract class Course extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return (Course.Builder) model.getBuilderComponent (Course.class)
+		return (Course.Builder) model.getElementComponent (Course.class)
 			.getBuilder ();
 	}
 

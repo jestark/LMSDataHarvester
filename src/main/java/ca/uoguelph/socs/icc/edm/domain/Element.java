@@ -362,7 +362,7 @@ public abstract class Element implements Serializable
 	 *              <code>Builder</code>
 	 */
 
-	protected interface BuilderComponent<T extends Element>
+	protected interface ElementComponent<T extends Element>
 	{
 		/**
 		 * Create the Builder instance.
@@ -440,14 +440,14 @@ public abstract class Element implements Serializable
 		}
 
 		/**
-		 * Create a new instance of the <code>BuilderComponent</code> on the
+		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
 		 * @param model The <code>DomainModel</code>, not null
 		 * @return      The <code>Builder</code>
 		 */
 
-		protected abstract BuilderComponent<T> getBuilderComponent (final DomainModel model);
+		protected abstract ElementComponent<T> getComponent (final DomainModel model);
 
 		/**
 		 * Get a <code>Stream</code> of the <code>Property</code> instances for
