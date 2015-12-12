@@ -16,11 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
-import java.util.Set;
-
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -65,17 +63,14 @@ public final class MetaData<T extends Element>
 		/** The <code>Element</code> type */
 		private final Class<T> type;
 
-		/** The <code>MetaData</code> definition for the parent <code>Element</code> */
-		private final MetaData<? super T> parent;
-
 		/** The <code>Set</code> of <code>Property</code> instances */
-		private final Set<Property<? extends Element, ?>> properties;
+		private final List<Property<T, ?>> properties;
 
 		/** The <code>Relationship</code> instances for the interface */
-		private final Set<Relationship<? super T, ?>> relationships;
+		private final List<Relationship<? super T, ?>> relationships;
 
 		/** The <code>Set</code> of <code>Selector</code> instances */
-		private final Set<Selector<? extends Element>> selectors;
+		private final List<Selector<T>> selectors;
 
 		/**
 		 * Create the <code>Builder</code>.
@@ -83,16 +78,15 @@ public final class MetaData<T extends Element>
 		 * @param  type The <code>Element</code> interface class, not null
 		 */
 
-		private Builder (final Class<T> type, final @Nullable MetaData<? super T> parent)
+		private Builder (final Class<T> type)
 		{
 			this.log = LoggerFactory.getLogger (this.getClass ());
 
 			this.type = type;
-			this.parent = parent;
 
-			this.properties = new HashSet<> ();
-			this.relationships = new HashSet<> ();
-			this.selectors = new HashSet<> ();
+			this.properties = new ArrayList<> ();
+			this.relationships = new ArrayList<> ();
+			this.selectors = new ArrayList<> ();
 		}
 
 		private boolean hasProperty (final Property<? super T, ?> property)
@@ -232,7 +226,7 @@ public final class MetaData<T extends Element>
 		{
 			this.log.trace ("build:");
 
-			return new MetaData<T> (this.type, this.parent, this.properties, this.relationships, this.selectors);
+			return new MetaData<T> (this);
 		}
 	}
 
@@ -242,17 +236,14 @@ public final class MetaData<T extends Element>
 	/** The <code>Element</code> interface class */
 	private final Class<T> element;
 
-	/** The parent <code>Element</code> class */
-	private final @Nullable MetaData<? super T> parent;
-
 	/** The <code>Property</code> instances associated with the interface */
-	private final Set<Property<? extends Element, ?>> properties;
+	private final List<Property<T, ?>> properties;
 
 	/** The <code>Relationship</code> instances for the interface */
-	private final Set<Relationship<? super T, ?>> relationships;
+	private final List<Relationship<? super T, ?>> relationships;
 
 	/** The <code>Selector</code> instances for the interface */
-	private final Set<Selector<? extends Element>> selectors;
+	private final List<Selector<T>> selectors;
 
 	/**
 	 * Get the <code>MetaDataBuilder</code> for the specified
@@ -266,23 +257,7 @@ public final class MetaData<T extends Element>
 
 	public static <T extends Element> Builder<T> builder (final Class<T> element)
 	{
-		return new Builder<T> (element, null);
-	}
-
-	/**
-	 * Get the <code>MetaDataBuilder</code> for the specified
-	 * <code>Element</code> interface class.
-	 *
-	 * @param  <T>     The <code>Element</code> interface type
-	 * @param  element The <code>Element</code> interface class, not null
-	 * @param  parent  The <code>MetaData</code> for the parent class
-	 *
-	 * @return         The <code>MetaDataBuilder</code> instance
-	 */
-
-	public static <T extends Element> Builder<T> builder (final Class<T> element, final MetaData<? super T> parent)
-	{
-		return new Builder<T> (element, parent);
+		return new Builder<T> (element);
 	}
 
 	/**
@@ -298,25 +273,17 @@ public final class MetaData<T extends Element>
 	 *                       instances, not null
 	 */
 
-	private MetaData (final Class<T> element,
-			final MetaData<? super T> parent,
-			final Set<Property<? extends Element, ?>> properties,
-			final Set<Relationship<? super T, ? extends Element>> relationships,
-			final Set<Selector<? extends Element>> selectors)
+	private MetaData (final Builder<T> builder)
 	{
-		assert element != null : "element is NULL";
-		assert properties != null : "properties is NULL";
-		assert relationships != null : "properties is NULL";
-		assert selectors != null : "selectors is NULL";
+		assert builder != null : "builder is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.element = element;
-		this.parent = parent;
+		this.element = builder.type;
 
-		this.properties = new HashSet<> (properties);
-		this.relationships = new HashSet<> (relationships);
-		this.selectors = new HashSet<> (selectors);
+		this.properties = new ArrayList<> (builder.properties);
+		this.relationships = new ArrayList<> (builder.relationships);
+		this.selectors = new ArrayList<> (builder.selectors);
 	}
 
 	/**
@@ -385,12 +352,9 @@ public final class MetaData<T extends Element>
 	 * @return A <code>Stream</code> of <code>Property</code> instances
 	 */
 
-	public Stream<Property<? extends Element, ?>> properties ()
+	public Stream<Property<T, ?>> properties ()
 	{
-		Stream<Property<? extends Element, ?>> result = this.properties.stream ();
-
-		return (this.parent != null) ? Stream.concat (this.parent.properties (), result)
-			: result;
+		return this.properties.stream ();
 	}
 
 	/**
@@ -402,10 +366,7 @@ public final class MetaData<T extends Element>
 
 	public Stream<Relationship<? super T, ?>> relationships ()
 	{
-		Stream<Relationship<? super T, ?>> result = this.relationships.stream ();
-
-		return (this.parent != null) ? Stream.concat (this.parent.relationships (), result)
-			: result;
+		return this.relationships.stream ();
 	}
 
 	/**
@@ -415,11 +376,8 @@ public final class MetaData<T extends Element>
 	 * @return A <code>Stream</code> of <code>Selector</code> instances
 	 */
 
-	public Stream<Selector<? extends Element>> selectors ()
+	public Stream<Selector<T>> selectors ()
 	{
-		Stream<Selector<? extends Element>> result = this.selectors.stream ();
-
-		return (this.parent != null) ? Stream.concat (this.parent.selectors (), result)
-			: result;
+		return this.selectors.stream ();
 	}
 }
