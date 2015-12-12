@@ -123,7 +123,7 @@ public class Wiki extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Wiki (final Builder builder)
+	protected Wiki (final Activity.Builder builder)
 	{
 		super (builder);
 

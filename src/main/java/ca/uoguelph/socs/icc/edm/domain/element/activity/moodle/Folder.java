@@ -123,7 +123,7 @@ public class Folder extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Folder (final Builder builder)
+	protected Folder (final Activity.Builder builder)
 	{
 		super (builder);
 

@@ -123,7 +123,7 @@ public class URL extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected URL (final Builder builder)
+	protected URL (final Activity.Builder builder)
 	{
 		super (builder);
 

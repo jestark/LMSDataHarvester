@@ -123,7 +123,7 @@ public class Lesson extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Lesson (final Builder builder)
+	protected Lesson (final Activity.Builder builder)
 	{
 		super (builder);
 

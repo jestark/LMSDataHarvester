@@ -123,7 +123,7 @@ public class Scheduler extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Scheduler (final Builder builder)
+	protected Scheduler (final Activity.Builder builder)
 	{
 		super (builder);
 

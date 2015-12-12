@@ -104,7 +104,7 @@ class WikiPageLog extends LogReference
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected WikiPageLog (final Builder builder)
+	protected WikiPageLog (final LogReference.Builder builder)
 	{
 		super (builder);
 

@@ -123,7 +123,7 @@ public class Resource extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Resource (final Builder builder)
+	protected Resource (final Activity.Builder builder)
 	{
 		super (builder);
 

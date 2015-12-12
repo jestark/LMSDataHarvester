@@ -123,7 +123,7 @@ public class Workshop extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Workshop (final Builder builder)
+	protected Workshop (final Activity.Builder builder)
 	{
 		super (builder);
 

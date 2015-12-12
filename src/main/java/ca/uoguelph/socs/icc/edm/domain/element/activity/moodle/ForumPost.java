@@ -127,7 +127,7 @@ public class ForumPost extends SubActivity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected ForumPost (final Builder builder)
+	protected ForumPost (final SubActivity.Builder builder)
 	{
 		super (builder);
 

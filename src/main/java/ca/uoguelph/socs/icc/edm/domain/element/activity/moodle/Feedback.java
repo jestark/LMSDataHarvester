@@ -123,7 +123,7 @@ public class Feedback extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Feedback (final Builder builder)
+	protected Feedback (final Activity.Builder builder)
 	{
 		super (builder);
 

@@ -127,7 +127,7 @@ public class LessonPage extends SubActivity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected LessonPage (final Builder builder)
+	protected LessonPage (final SubActivity.Builder builder)
 	{
 		super (builder);
 

@@ -91,7 +91,7 @@ public class GradeData extends Grade
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	private GradeData (final Builder builder)
+	private GradeData (final Grade.Builder builder)
 	{
 		super (builder);
 

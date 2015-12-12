@@ -123,7 +123,7 @@ public class Label extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Label (final Builder builder)
+	protected Label (final Activity.Builder builder)
 	{
 		super (builder);
 

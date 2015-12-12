@@ -96,7 +96,7 @@ public class ActivitySourceData extends ActivitySource
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected ActivitySourceData (final Builder builder)
+	protected ActivitySourceData (final ActivitySource.Builder builder)
 	{
 		super (builder);
 

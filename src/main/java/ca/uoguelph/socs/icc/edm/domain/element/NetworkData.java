@@ -84,7 +84,7 @@ public class NetworkData extends Network
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected NetworkData (final NetworkData.Builder builder)
+	protected NetworkData (final Network.Builder builder)
 	{
 		super (builder);
 

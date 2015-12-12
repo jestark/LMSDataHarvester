@@ -123,7 +123,7 @@ public class Choice extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Choice (final Builder builder)
+	protected Choice (final Activity.Builder builder)
 	{
 		super (builder);
 

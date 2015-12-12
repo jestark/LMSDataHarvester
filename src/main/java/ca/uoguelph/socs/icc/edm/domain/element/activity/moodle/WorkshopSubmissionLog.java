@@ -104,7 +104,7 @@ class WorkshopSubmissionLog extends LogReference
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected WorkshopSubmissionLog (final Builder builder)
+	protected WorkshopSubmissionLog (final LogReference.Builder builder)
 	{
 		super (builder);
 

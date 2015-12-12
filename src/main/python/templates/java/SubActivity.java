@@ -127,7 +127,7 @@ public class ${ClassName} extends SubActivity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected ${ClassName} (final Builder builder)
+	protected ${ClassName} (final SubActivity.Builder builder)
 	{
 		super (builder);
 

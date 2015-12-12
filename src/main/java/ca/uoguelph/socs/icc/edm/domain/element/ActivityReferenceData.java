@@ -102,7 +102,7 @@ public class ActivityReferenceData extends ActivityReference
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected ActivityReferenceData (final Builder builder)
+	protected ActivityReferenceData (final ActivityReference.Builder builder)
 	{
 		super (builder);
 

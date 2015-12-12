@@ -123,7 +123,7 @@ public class Quiz extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Quiz (final Builder builder)
+	protected Quiz (final Activity.Builder builder)
 	{
 		super (builder);
 

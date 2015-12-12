@@ -127,7 +127,7 @@ public class WikiPage extends SubActivity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected WikiPage (final Builder builder)
+	protected WikiPage (final SubActivity.Builder builder)
 	{
 		super (builder);
 

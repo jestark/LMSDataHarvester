@@ -123,7 +123,7 @@ public class ${ClassName} extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected ${ClassName} (final Builder builder)
+	protected ${ClassName} (final Activity.Builder builder)
 	{
 		super (builder);
 

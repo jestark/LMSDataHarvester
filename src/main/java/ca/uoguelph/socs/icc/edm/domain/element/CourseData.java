@@ -112,7 +112,7 @@ public class CourseData extends Course
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected CourseData (final Builder builder)
+	protected CourseData (final Course.Builder builder)
 	{
 		super (builder);
 

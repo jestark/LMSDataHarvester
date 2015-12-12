@@ -121,7 +121,7 @@ public class EnrolmentData extends Enrolment
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	private EnrolmentData (final Builder builder)
+	private EnrolmentData (final Enrolment.Builder builder)
 	{
 		super (builder);
 

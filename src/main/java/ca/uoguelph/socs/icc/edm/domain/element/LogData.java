@@ -118,7 +118,7 @@ public class LogData extends LogEntry
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected LogData (final Builder builder)
+	protected LogData (final LogEntry.Builder builder)
 	{
 		super (builder);
 

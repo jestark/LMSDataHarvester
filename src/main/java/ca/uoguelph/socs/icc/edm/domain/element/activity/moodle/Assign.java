@@ -123,7 +123,7 @@ public class Assign extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Assign (final Builder builder)
+	protected Assign (final Activity.Builder builder)
 	{
 		super (builder);
 

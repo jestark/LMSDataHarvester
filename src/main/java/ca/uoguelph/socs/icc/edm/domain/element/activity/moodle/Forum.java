@@ -123,7 +123,7 @@ public class Forum extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Forum (final Builder builder)
+	protected Forum (final Activity.Builder builder)
 	{
 		super (builder);
 

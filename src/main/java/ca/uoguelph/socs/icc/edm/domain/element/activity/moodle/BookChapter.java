@@ -127,7 +127,7 @@ public class BookChapter extends SubActivity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected BookChapter (final Builder builder)
+	protected BookChapter (final SubActivity.Builder builder)
 	{
 		super (builder);
 

@@ -104,7 +104,7 @@ public class UserData extends User
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected UserData (final Builder builder)
+	protected UserData (final User.Builder builder)
 	{
 		super (builder);
 

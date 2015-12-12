@@ -104,7 +104,7 @@ class BookChapterLog extends LogReference
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected BookChapterLog (final Builder builder)
+	protected BookChapterLog (final LogReference.Builder builder)
 	{
 		super (builder);
 

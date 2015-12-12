@@ -127,7 +127,7 @@ public class WorkshopSubmission extends SubActivity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected WorkshopSubmission (final Builder builder)
+	protected WorkshopSubmission (final SubActivity.Builder builder)
 	{
 		super (builder);
 

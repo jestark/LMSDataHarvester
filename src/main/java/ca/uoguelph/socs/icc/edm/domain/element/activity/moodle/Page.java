@@ -123,7 +123,7 @@ public class Page extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Page (final Builder builder)
+	protected Page (final Activity.Builder builder)
 	{
 		super (builder);
 

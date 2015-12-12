@@ -84,7 +84,7 @@ public class RoleData extends Role
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected RoleData (final Builder builder)
+	protected RoleData (final Role.Builder builder)
 	{
 		super (builder);
 

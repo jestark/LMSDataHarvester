@@ -127,7 +127,7 @@ public class ForumDiscussion extends SubActivity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected ForumDiscussion (final Builder builder)
+	protected ForumDiscussion (final SubActivity.Builder builder)
 	{
 		super (builder);
 

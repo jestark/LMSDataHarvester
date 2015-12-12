@@ -104,7 +104,7 @@ class ${ClassName} extends LogReference
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected ${ClassName} (final Builder builder)
+	protected ${ClassName} (final LogReference.Builder builder)
 	{
 		super (builder);
 

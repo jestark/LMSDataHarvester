@@ -123,7 +123,7 @@ public class Checklist extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected Checklist (final Builder builder)
+	protected Checklist (final Activity.Builder builder)
 	{
 		super (builder);
 

@@ -104,7 +104,7 @@ class ForumPostLog extends LogReference
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected ForumPostLog (final Builder builder)
+	protected ForumPostLog (final LogReference.Builder builder)
 	{
 		super (builder);
 

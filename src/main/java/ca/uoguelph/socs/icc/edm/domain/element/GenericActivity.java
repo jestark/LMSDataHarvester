@@ -85,7 +85,7 @@ public class GenericActivity extends Activity
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected GenericActivity (final Builder builder)
+	protected GenericActivity (final Activity.Builder builder)
 	{
 		super (builder);
 	}

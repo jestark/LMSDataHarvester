@@ -104,7 +104,7 @@ class LessonPageLog extends LogReference
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected LessonPageLog (final Builder builder)
+	protected LessonPageLog (final LogReference.Builder builder)
 	{
 		super (builder);
 

@@ -84,7 +84,7 @@ public class ActionData extends Action
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected ActionData (final Builder builder)
+	protected ActionData (final Action.Builder builder)
 	{
 		super (builder);
 

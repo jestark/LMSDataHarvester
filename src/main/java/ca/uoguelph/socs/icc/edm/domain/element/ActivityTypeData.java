@@ -91,7 +91,7 @@ public class ActivityTypeData extends ActivityType
 	 * @param  builder The <code>Builder</code>, not null
 	 */
 
-	protected ActivityTypeData (final Builder builder)
+	protected ActivityTypeData (final ActivityType.Builder builder)
 	{
 		super (builder);
 		assert builder != null : "builder is NULL";
