@@ -170,7 +170,7 @@ public abstract class Activity extends ParentActivity
 		 * Reset the builder.  This method will set all of the fields for the
 		 * <code>Activity</code> to be built to <code>null</code>.
 		 *
-		 * @return This <code>ActivityBuilder</code>
+		 * @return This <code>Builder</code>
 		 */
 
 		@Override
@@ -197,6 +197,7 @@ public abstract class Activity extends ParentActivity
 		 * validated as they are set.
 		 *
 		 * @param  activity The <code>Activity</code>, not null
+		 * @return          This <code>Builder</code>
 		 *
 		 * @throws IllegalArgumentException If any of the fields in the
 		 *                                  <code>Activity</code> instance to be
@@ -247,6 +248,24 @@ public abstract class Activity extends ParentActivity
 		}
 
 		/**
+		 * Set the <code>ActivityType</code> for the <code>Activity</code>.
+		 * This method exists to load the <code>ActivityType</code> when the
+		 * <code>Builder</code> is created.
+		 *
+		 * @param  type The <code>ActivityType</code>
+		 * @return      This <code>Builder</code>
+		 */
+
+		private final Builder setType (final ActivityType type)
+		{
+			this.log.trace ("setType: type={}");
+
+			this.referenceBuilder.setType (type);
+
+			return this;
+		}
+
+		/**
 		 * Get the <code>Course</code> with which the <code>Activity</code> is
 		 * associated.
 		 *
@@ -264,6 +283,7 @@ public abstract class Activity extends ParentActivity
 		 * associated.
 		 *
 		 * @param  course The <code>Course</code>, not null
+		 * @return        This <code>Builder</code>
 		 *
 		 * @throws IllegalArgumentException If the <code>Course</code> does not
 		 *                                  exist in the <code>DataStore</code>
@@ -319,8 +339,8 @@ public abstract class Activity extends ParentActivity
 	 * @version 1.0
 	 */
 
-	@BuilderScope
-	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {ActivityBuilderModule.class})
+	@SubBuilderScope
+	@Component (dependencies = {ActivityReference.BuilderComponent.class}, modules = {ActivityBuilderModule.class})
 	protected interface BuilderComponent extends Element.BuilderComponent<Activity>
 	{
 		/**
@@ -352,7 +372,7 @@ public abstract class Activity extends ParentActivity
 	 * @version 1.0
 	 */
 
-	@Module (includes = {ActivityModule.class, ActivityReference.ActivityReferenceBuilderModule.class})
+	@Module (includes = {ActivityModule.class})
 	public static final class ActivityBuilderModule
 	{
 		/** Method reference to the implementation constructor  */
@@ -432,10 +452,9 @@ public abstract class Activity extends ParentActivity
 		protected Activity.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerActivity_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
 				.domainModelModule (new DomainModel.DomainModelModule (Activity.class, model))
+				.builderComponent ((ActivityReference.BuilderComponent) model.getBuilderComponent (ActivityReference.class))
 				.activityBuilderModule (this.module)
-//				.activityReferenceBuilderModule ()
 				.build ();
 		}
 
@@ -645,7 +664,9 @@ public abstract class Activity extends ParentActivity
 		Preconditions.checkNotNull (model, "model");
 		Preconditions.checkNotNull (type, "type");
 
-		return null;
+		return ((Activity.Builder) model.getBuilderComponent (Activity.class, Activity.getActivityClass (type))
+			.getBuilder ())
+			.setType (type);
 	}
 
 	/**

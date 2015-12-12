@@ -422,7 +422,7 @@ public abstract class Element implements Serializable
 	 *              <code>Builder</code>
 	 */
 
-	protected abstract class Definition<T extends Element>
+	public abstract class Definition<T extends Element>
 	{
 		/** The <code>Element</code> implementation class */
 		protected final Class<? extends T> impl;

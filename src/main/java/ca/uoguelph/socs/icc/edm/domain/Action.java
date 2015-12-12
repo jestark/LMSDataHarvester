@@ -351,7 +351,7 @@ public abstract class Action extends Element
 		protected Action.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerAction_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
+				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Action.class, model))
 				.actionBuilderModule (module)
 				.build ();
@@ -463,7 +463,8 @@ public abstract class Action extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return null;
+		return (Action.Builder) model.getBuilderComponent (Action.class)
+			.getBuilder ();
 	}
 
 	/**

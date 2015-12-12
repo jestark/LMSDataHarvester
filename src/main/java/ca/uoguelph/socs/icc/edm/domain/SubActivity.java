@@ -361,7 +361,7 @@ public abstract class SubActivity extends ParentActivity
 		protected SubActivity.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerSubActivity_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
+				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (SubActivity.class, model))
 				.subActivityBuilderModule (this.module)
 				.build ();
@@ -532,6 +532,8 @@ public abstract class SubActivity extends ParentActivity
 		Preconditions.checkNotNull (model, "model");
 		Preconditions.checkNotNull (parent, "parent");
 
+//		(SubActivity.Builder) model.getBuilderComponent (SubActivity.class, SubActivity.getSubActivityClass (parent))
+//			.getBuilder ();
 		return null;
 	}
 

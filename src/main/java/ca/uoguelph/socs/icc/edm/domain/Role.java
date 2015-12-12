@@ -348,7 +348,7 @@ public abstract class Role extends Element
 		protected Role.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerRole_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
+				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Role.class, model))
 				.roleBuilderModule (this.module)
 				.build ();
@@ -461,7 +461,8 @@ public abstract class Role extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return null;
+		return (Role.Builder) model.getBuilderComponent (Role.class)
+			.getBuilder ();
 	}
 
 	/**

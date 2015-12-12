@@ -388,7 +388,7 @@ public abstract class ActivityReference extends Element
 		protected ActivityReference.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerActivityReference_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
+				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Activity.class, model))
 				.activityReferenceBuilderModule (this.module)
 				.build ();
@@ -637,8 +637,11 @@ public abstract class ActivityReference extends Element
 	@Override
 	public Builder getBuilder (final DomainModel model)
 	{
-		return null; // new Builder (Preconditions.checkNotNull (model, "model"))
-//			.load (this);
+		Preconditions.checkNotNull (model, "model");
+
+		return ((ActivityReference.Builder) model.getBuilderComponent (ActivityReference.class)
+			.getBuilder ())
+			.load (this);
 	}
 
 	/**

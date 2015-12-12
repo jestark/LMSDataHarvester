@@ -459,7 +459,6 @@ public abstract class Grade extends Element
 		protected Grade.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerGrade_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
 				.domainModelModule (new DomainModel.DomainModelModule (Grade.class, model))
 				.gradeBuilderModule (this.module)
 				.build ();
@@ -581,7 +580,8 @@ public abstract class Grade extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return null;
+		return (Grade.Builder) model.getBuilderComponent (Grade.class)
+			.getBuilder ();
 	}
 
 	/**

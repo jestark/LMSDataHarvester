@@ -429,7 +429,7 @@ public abstract class Course extends Element
 		protected Course.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerCourse_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
+				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Course.class, model))
 				.courseBuilderModule (this.module)
 				.build ();
@@ -581,7 +581,8 @@ public abstract class Course extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return null;
+		return (Course.Builder) model.getBuilderComponent (Course.class)
+			.getBuilder ();
 	}
 
 	/**

@@ -538,7 +538,7 @@ public abstract class Enrolment extends Element
 		protected Enrolment.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerEnrolment_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
+				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Enrolment.class, model))
 				.enrolmentBuilderModule (this.module)
 				.build ();
@@ -688,7 +688,8 @@ public abstract class Enrolment extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return null;
+		return (Enrolment.Builder) model.getBuilderComponent (Enrolment.class)
+			.getBuilder ();
 	}
 
 	/**

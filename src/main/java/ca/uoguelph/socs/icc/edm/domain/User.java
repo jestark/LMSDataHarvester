@@ -578,7 +578,7 @@ public abstract class User extends Element
 		protected User.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerUser_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
+				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (User.class, model))
 				.userBuilderModule (this.module)
 				.build ();
@@ -718,7 +718,8 @@ public abstract class User extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return null;
+		return (User.Builder) model.getBuilderComponent (User.class)
+			.getBuilder ();
 	}
 
 	/**

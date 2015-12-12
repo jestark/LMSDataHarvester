@@ -337,7 +337,7 @@ public abstract class Network extends Element
 		protected Network.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerNetwork_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
+				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Network.class, model))
 				.networkBuilderModule (this.module)
 				.build ();
@@ -450,7 +450,8 @@ public abstract class Network extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return null;
+		return (Network.Builder) model.getBuilderComponent (Network.class)
+			.getBuilder ();
 	}
 
 	/**

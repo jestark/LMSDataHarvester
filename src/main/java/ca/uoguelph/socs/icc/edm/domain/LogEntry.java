@@ -618,7 +618,7 @@ public abstract class LogEntry extends Element
 		protected LogEntry.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerLogEntry_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
+				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (LogEntry.class, model))
 				.logEntryBuilderModule (this.module)
 				.build ();
@@ -784,7 +784,8 @@ public abstract class LogEntry extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return null;
+		return (LogEntry.Builder) model.getBuilderComponent (LogEntry.class)
+			.getBuilder ();
 	}
 
 	/**

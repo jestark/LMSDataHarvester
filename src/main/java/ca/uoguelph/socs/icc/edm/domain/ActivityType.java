@@ -411,7 +411,7 @@ public abstract class ActivityType extends Element
 		protected ActivityType.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerActivityType_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
+				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (ActivityType.class, model))
 				.activityTypeBuilderModule (this.module)
 				.build ();
@@ -537,7 +537,8 @@ public abstract class ActivityType extends Element
 	{
 		Preconditions.checkNotNull (model, "model");
 
-		return null;
+		return (ActivityType.Builder) model.getBuilderComponent (ActivityType.class)
+			.getBuilder ();
 	}
 
 	/**

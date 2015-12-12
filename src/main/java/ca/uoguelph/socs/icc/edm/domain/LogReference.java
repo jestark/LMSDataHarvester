@@ -369,7 +369,6 @@ public abstract class LogReference extends Element
 		protected LogReference.BuilderComponent getBuilderComponent (final DomainModel model)
 		{
 			return DaggerLogReference_BuilderComponent.builder ()
-//				.idGeneratorComponent (null)
 				.domainModelModule (new DomainModel.DomainModelModule (LogReference.class, model))
 				.logReferenceBuilderModule (this.module)
 				.build ();
@@ -635,8 +634,11 @@ public abstract class LogReference extends Element
 	@Override
 	public Builder getBuilder (final DomainModel model)
 	{
-		return null; // new Builder (Preconditions.checkNotNull (model, "model"))
-			// .load (this);
+		Preconditions.checkNotNull (model, "model");
+
+		return ((LogReference.Builder) model.getBuilderComponent (LogReference.class)
+			.getBuilder ())
+			.load (this);
 	}
 
 	/**
