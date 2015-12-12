@@ -17,7 +17,9 @@
 package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,7 +69,7 @@ public final class MetaData<T extends Element>
 		private final List<Property<T, ?>> properties;
 
 		/** The <code>Relationship</code> instances for the interface */
-		private final List<Relationship<? super T, ?>> relationships;
+		private final Map<Class<? extends Element>, Relationship<T, ? extends Element>> relationships;
 
 		/** The <code>Set</code> of <code>Selector</code> instances */
 		private final List<Selector<T>> selectors;
@@ -85,7 +87,7 @@ public final class MetaData<T extends Element>
 			this.type = type;
 
 			this.properties = new ArrayList<> ();
-			this.relationships = new ArrayList<> ();
+			this.relationships = new HashMap<> ();
 			this.selectors = new ArrayList<> ();
 		}
 
@@ -138,7 +140,7 @@ public final class MetaData<T extends Element>
 				final MetaData<V> metadata,
 				final Property<V, T> remote)
 		{
-			this.log.trace ("addRelationship: local={}, metadata={}, remote={}",local, metadata, remote);
+			this.log.trace ("addRelationship: local={}, metadata={}, remote={}", local, metadata, remote);
 
 			assert local != null : "local is NULL";
 			assert metadata != null : "metadata is NULL";
@@ -146,8 +148,8 @@ public final class MetaData<T extends Element>
 
 			this.properties.add (local);
 
-			this.relationships.add (PropertyRelationship.of (local, remote));
-			metadata.relationships.add (PropertyRelationship.of (remote, local));
+			this.relationships.put (metadata.element, PropertyRelationship.of (local, remote));
+			metadata.relationships.put (this.type, PropertyRelationship.of (remote, local));
 
 			return this;
 		}
@@ -187,8 +189,8 @@ public final class MetaData<T extends Element>
 			this.properties.add (local);
 			this.selectors.add (remote);
 
-			this.relationships.add (PropertyRelationship.of (local, remote));
-			metadata.relationships.add (SelectorRelationship.of (local, remote));
+			this.relationships.put (metadata.element, PropertyRelationship.of (local, remote));
+			metadata.relationships.put (this.type, SelectorRelationship.of (local, remote));
 
 			return this;
 		}
@@ -240,7 +242,7 @@ public final class MetaData<T extends Element>
 	private final List<Property<T, ?>> properties;
 
 	/** The <code>Relationship</code> instances for the interface */
-	private final List<Relationship<? super T, ?>> relationships;
+	private final Map<Class<? extends Element>, Relationship<T, ? extends Element>> relationships;
 
 	/** The <code>Selector</code> instances for the interface */
 	private final List<Selector<T>> selectors;
@@ -282,7 +284,7 @@ public final class MetaData<T extends Element>
 		this.element = builder.type;
 
 		this.properties = new ArrayList<> (builder.properties);
-		this.relationships = new ArrayList<> (builder.relationships);
+		this.relationships = new HashMap<> (builder.relationships);
 		this.selectors = new ArrayList<> (builder.selectors);
 	}
 
@@ -346,6 +348,24 @@ public final class MetaData<T extends Element>
 	}
 
 	/**
+	 * Get the <code>Relationship</code> instance associated with the specified
+	 * <code>Element</code> class.
+	 *
+	 * @param  element The <code>Element</code> class, not null
+	 * @return         The <code>Relationship</code>
+	 */
+
+	public Relationship<T, ? extends Element> getRelationship (final Class<? extends Element> element)
+	{
+		this.log.trace ("getRelationship: element={}", element);
+
+		assert element != null : "element is NULL";
+		assert this.relationships.containsKey (element) : "No relationship registered for element";
+
+		return this.relationships.get (element);
+	}
+
+	/**
 	 * Get a <code>Stream</code> containing all of the <code>Property</code>
 	 * which are instances associated with the <code>Element</code>.
 	 *
@@ -366,7 +386,9 @@ public final class MetaData<T extends Element>
 
 	public Stream<Relationship<? super T, ?>> relationships ()
 	{
-		return this.relationships.stream ();
+		return this.relationships.entrySet ()
+			.stream ()
+			.map (Map.Entry::getValue);
 	}
 
 	/**
