@@ -566,13 +566,13 @@ public abstract class Activity extends ParentActivity
 			.addSelector (SELECTOR_ALL)
 			.build ();
 
-		STORE = null; //MemDataStore.create (Profile.builder ()
-//				.setName ("Activity")
-//				.setMutable (true)
-//				.setElementClass (ActivitySource.class, ActivitySourceData.class)
-//				.setElementClass (ActivityType.class, ActivityTypeData.class)
-//				.setGenerator (Element.class, SequentialIdGenerator.class)
-//				.build ());
+		STORE = MemDataStore.create (Profile.builder ()
+				.setName ("Activity")
+				.setMutable (true)
+				.setElement (ActivitySource.class, ActivitySourceData.class)
+				.setElement (ActivityType.class, ActivityTypeData.class)
+				.setGenerator (Element.class, SequentialIdGenerator.class)
+				.build ());
 	}
 
 	/**
@@ -594,20 +594,20 @@ public abstract class Activity extends ParentActivity
 		assert impl != null : "impl is NULL";
 		assert source.length () > 0 : "source is empty";
 
-//		Activity.STORE.getTransaction ().begin ();
+		Activity.STORE.getTransaction ().begin ();
 
-//		ActivityType atype = ActivityType.builder (Activity.STORE)
-//			.setActivitySource (ActivitySource.builder (Activity.STORE)
-//					.setName (source)
-//					.build ())
-//			.setName (type)
-//			.build ();
+		ActivityType atype = ActivityType.builder (Activity.STORE)
+			.setActivitySource (ActivitySource.builder (Activity.STORE)
+					.setName (source)
+					.build ())
+			.setName (type)
+			.build ();
 
-//		Activity.STORE.getTransaction ().commit ();
+		Activity.STORE.getTransaction ().commit ();
 
-//		assert ! Activity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
+		assert ! Activity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
 
-//		Activity.activities.put (atype, impl);
+		Activity.activities.put (atype, impl);
 	}
 
 	/**
