@@ -499,6 +499,9 @@ public abstract class Activity extends ParentActivity
 	/** The <code>MetaData</code> for the <code>Activity</code> */
 	protected static final MetaData<Activity> METADATA;
 
+	/** The Id number (needed for Moodle) */
+	public static final Property<Activity, Long> ID;
+
 	/** The <code>DomainModel</code> which contains the <code>Activity</code> */
 	public static final Property<Activity, DomainModel> MODEL;
 
@@ -532,6 +535,9 @@ public abstract class Activity extends ParentActivity
 	{
 		activities = new HashMap<> ();
 
+		ID = Property.of (Activity.class, Long.class, "id",
+				Activity::getId, Activity::setId);
+
 		MODEL = Property.of (Activity.class, DomainModel.class, "domainmodel",
 				Activity::getDomainModel, Activity::setDomainModel);
 
@@ -549,7 +555,7 @@ public abstract class Activity extends ParentActivity
 				Activity::getSubActivities, Activity::addSubActivity, Activity::removeSubActivity,
 				Property.Flags.RECOMMENDED);
 
-		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, REFERENCE);
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
 
 		SELECTOR_ALL = Selector.builder (Activity.class)
 			.setCardinality (Selector.Cardinality.MULTIPLE)
@@ -557,6 +563,7 @@ public abstract class Activity extends ParentActivity
 			.build ();
 
 		METADATA = MetaData.builder (Activity.class)
+			.addProperty (ID)
 			.addProperty (MODEL)
 			.addProperty (NAME)
 			.addProperty (GRADES)
