@@ -24,6 +24,7 @@ import java.util.Objects;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
@@ -31,6 +32,7 @@ import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 /**
@@ -55,6 +57,28 @@ import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 public class MoodleActivityReference extends ActivityReference
 {
+	/**
+	 * Representation of an <code>Element</code> implementation class.
+	 * Instances of this class are used to load the <code>Element</code>
+	 * implementations into the JVM via the <code>ServiceLoader</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@AutoService (Element.Definition.class)
+	public final class Definition extends ActivityReference.Definition
+	{
+		/**
+		 * Create the <code>Definition</code>.
+		 */
+
+		public Definition ()
+		{
+			super (MoodleActivityReference.class, MoodleActivityReference::new);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -88,6 +112,25 @@ public class MoodleActivityReference extends ActivityReference
 		this.course = null;
 		this.instanceId = null;
 		this.log = new ArrayList<LogEntry> ();
+	}
+
+	/**
+	 * Create an <code>ActivityReference</code> from the supplied
+	 * <code>Builder</code>.  Since this class is Moodle-specific, and it only
+	 * intended to be loaded from the Moodle database, this method throws an
+	 * <code>UnsupportedOperationException</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 *
+	 * @throws UnsupportedOperationException unconditionally as
+	 *                                       <code>MoodleActivityReference</code>
+	 *                                       instances should not be created via
+	 *                                       a <code>Builder</code>
+	 */
+
+	protected MoodleActivityReference (final ActivityReference.Builder builder)
+	{
+		throw new UnsupportedOperationException ("Creation via a builder is not supported");
 	}
 
 	/**
@@ -186,9 +229,7 @@ public class MoodleActivityReference extends ActivityReference
 			}
 
 //			this.activity = this.getDomainModel ()
-//				.getQuery (Activity.class,
-//						Activity.getActivityClass (this.getType ()),
-//						Activity.SELECTOR_ID)
+//				.getQuery (Activity.SELECTOR_ID, Activity.getActivityClass (this.getType ()))
 //				.setValue (Activity.ID, this.instanceId)
 //				.query ();
 

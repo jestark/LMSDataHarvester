@@ -19,10 +19,12 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
+import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
  * Implementation of the <code>ActivityType</code> interface.  It is expected
@@ -42,6 +44,28 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 
 public class MoodleActivityType extends ActivityType
 {
+	/**
+	 * Representation of an <code>Element</code> implementation class.
+	 * Instances of this class are used to load the <code>Element</code>
+	 * implementations into the JVM via the <code>ServiceLoader</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@AutoService (Element.Definition.class)
+	public final class Definition extends ActivityType.Definition
+	{
+		/**
+		 * Create the <code>Definition</code>.
+		 */
+
+		public Definition ()
+		{
+			super (MoodleActivityType.class, MoodleActivityType::new);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -73,6 +97,25 @@ public class MoodleActivityType extends ActivityType
 	{
 		this.id = null;
 		this.name = null;
+	}
+
+	/**
+	 * Create an <code>ActivityType</code> from the supplied
+	 * <code>Builder</code>.  Since this class is Moodle-specific, and it only
+	 * intended to be loaded from the Moodle database, this method throws an
+	 * <code>UnsupportedOperationException</code>.
+	 *
+	 * @param  builder The <code>Builder</code>, not null
+	 *
+	 * @throws UnsupportedOperationException unconditionally as
+	 *                                       <code>MoodleActivityType</code>
+	 *                                       instances should not be created via
+	 *                                       a <code>Builder</code>
+	 */
+
+	protected MoodleActivityType (final ActivityType.Builder builder)
+	{
+		throw new UnsupportedOperationException ("Creation via a builder is not supported");
 	}
 
 	/**
