@@ -160,23 +160,7 @@ public abstract class User extends Element
 		{
 			this.log.trace ("create: user={}", user);
 
-			User result = user;
-
-			if (user != null && this.model.contains (user) && user.getUsername ().equals (this.getUsername ()))
-			{
-				user.setFirstname (Preconditions.checkNotNull (this.firstname, "firstname"));
-				user.setLastname (Preconditions.checkNotNull (this.lastname, "lastname"));
-
-				this.enrolments.stream ()
-					.filter (x -> ! user.getEnrolments ().contains (x))
-					.forEach (x -> user.addEnrolment (x));
-			}
-			else
-			{
-				result = this.creator.apply (this);
-			}
-
-			return result;
+			return this.creator.apply (this);
 		}
 
 		/**
@@ -663,11 +647,11 @@ public abstract class User extends Element
 
 		FIRSTNAME = Property.of (User.class, String.class, "firstname",
 				User::getFirstname, User::setFirstname,
-				Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+				Property.Flags.REQUIRED);
 
 		LASTNAME = Property.of (User.class, String.class, "lastname",
 				User::getLastname, User::setLastname,
-				Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+				Property.Flags.REQUIRED);
 
 		USERNAME = Property.of (User.class, String.class, "username",
 				User::getUsername, User::setUsername,

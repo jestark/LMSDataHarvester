@@ -129,25 +129,6 @@ public abstract class Grade extends Element
 		}
 
 		/**
-		 * Update the mutable fields in the <code>Grade</code> instance.
-		 *
-		 * @param grade The <code>Grade</code> instance, not null
-		 * @return      The supplied <code>Grade</code> instance
-		 */
-
-		@CheckReturnValue
-		protected final Grade updateGrade (final Grade grade)
-		{
-			this.log.trace ("updateGrade: grade={}", grade);
-
-			assert grade != null : "grade is NULL";
-
-			grade.setGrade (Preconditions.checkNotNull (this.value, "grade"));
-
-			return grade;
-		}
-
-		/**
 		 * Create an instance of the <code>Grade</code>.
 		 *
 		 * @param  grade The previously existing <code>Grade</code> instance,
@@ -162,11 +143,7 @@ public abstract class Grade extends Element
 		{
 			this.log.trace ("create: grade={}", grade);
 
-			return (grade != null && this.model.contains (grade)
-					&& grade.getActivity () == this.getActivity ()
-					&& grade.getEnrolment () == this.getEnrolment ())
-				? this.updateGrade (grade)
-				: this.creator.apply (this);
+			return this.creator.apply (this);
 		}
 
 		/**
@@ -537,7 +514,7 @@ public abstract class Grade extends Element
 
 		GRADE = Property.of (Grade.class, Integer.class, "grade",
 				Grade::getGrade, Grade::setGrade,
-				Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+				Property.Flags.REQUIRED);
 
 		SELECTOR_ALL =  Selector.builder (Grade.class)
 			.setCardinality (Selector.Cardinality.MULTIPLE)
