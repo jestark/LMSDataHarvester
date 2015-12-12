@@ -14,83 +14,81 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.uoguelph.socs.icc.edm.domain;
+package ca.uoguelph.socs.icc.edm.domain.datastore;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-
-import java.util.ArrayDeque;
-import java.util.EnumMap;
-
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.Element;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 import ca.uoguelph.socs.icc.edm.domain.datastore.TranslationTable;
-
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 
-final class RelationshipProcessor
-{
-	public static enum Priority
-	{
-		DEPENDS,
-		RECOMMENDS,
-		DEFERRED;
-	}
-
-	private final Logger log;
-
-	private final MetaData<Element> metadata;
-
-	private final Map<Priority, List<Property<?>>> properties;
-
-	private static Priority determinePriority (final Property<?> property)
-	{
-		return (property.hasFlags (Property.Flags.REQUIRED)
-				|| property.hasFlags (Property.Flags.MUTABLE))
-			? Priority.DEPENDS
-			: (property.hasFlags (Property.Flags.RECOMMENDED))
-			? Priority.RECOMMENDS : Priority.DEFERRED;
-	}
-
-	public RelationshipProcessor (final MetaData<Element> metadata)
-	{
-		this.log = LoggerFactory.getLogger (this.getClass ());
-
-		this.metadata = metadata;
-
-		this.properties = this.metadata.properties ()
-			.filter (p -> p.hasFlags (Property.Flags.RELATIONSHIP))
-			.collect (Collectors.groupingBy (p -> determinePriority (p),
-					() -> new EnumMap<Priority, List<Property<?>>> (Priority.class),
-					Collectors.toList ()));
-	}
-
-	public boolean hasPriority (final Priority priority)
-	{
-		assert priority != null : "Priority is NULL";
-
-		return ! this.properties.get (priority).isEmpty ();
-	}
-
-	@SuppressWarnings ("unchecked")
-	public List<Element> getByPriority (final Priority priority, final Element element)
-	{
-		assert priority != null : "Priority is NULL";
-		assert element != null : "element is NULL";
-
-		return (List<Element>) this.properties.get (priority).stream ()
-			.flatMap (p -> element.stream (p))
-			.collect (Collectors.toList ());
-	}
-}
+//final class RelationshipProcessor
+//{
+//	public static enum Priority
+//	{
+//		DEPENDS,
+//		RECOMMENDS,
+//		DEFERRED;
+//	}
+//
+//	private final Logger log;
+//
+//	private final MetaData<Element> metadata;
+//
+//	private final Map<Priority, List<Property<?>>> properties;
+//
+//	private static Priority determinePriority (final Property<?> property)
+//	{
+//		return (property.hasFlags (Property.Flags.REQUIRED)
+//				|| property.hasFlags (Property.Flags.MUTABLE))
+//			? Priority.DEPENDS
+//			: (property.hasFlags (Property.Flags.RECOMMENDED))
+//			? Priority.RECOMMENDS : Priority.DEFERRED;
+//	}
+//
+//	public RelationshipProcessor (final MetaData<Element> metadata)
+//	{
+//		this.log = LoggerFactory.getLogger (this.getClass ());
+//
+//		this.metadata = metadata;
+//
+//		this.properties = this.metadata.properties ()
+//			.filter (p -> p.hasFlags (Property.Flags.RELATIONSHIP))
+//			.collect (Collectors.groupingBy (p -> determinePriority (p),
+//					() -> new EnumMap<Priority, List<Property<?>>> (Priority.class),
+//					Collectors.toList ()));
+//	}
+//
+//	public boolean hasPriority (final Priority priority)
+//	{
+//		assert priority != null : "Priority is NULL";
+//
+//		return ! this.properties.get (priority).isEmpty ();
+//	}
+//
+//	@SuppressWarnings ("unchecked")
+//	public List<Element> getByPriority (final Priority priority, final Element element)
+//	{
+//		assert priority != null : "Priority is NULL";
+//		assert element != null : "element is NULL";
+//
+//		return (List<Element>) this.properties.get (priority).stream ()
+//			.flatMap (p -> element.stream (p))
+//			.collect (Collectors.toList ());
+//	}
+//}
 
 /**
  * Insert <code>Element</code> instances along with their relationships.  This
