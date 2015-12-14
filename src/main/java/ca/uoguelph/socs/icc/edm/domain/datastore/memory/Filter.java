@@ -16,16 +16,13 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.memory;
 
+import java.util.Collections;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.google.common.base.MoreObjects;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
-import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
@@ -38,31 +35,44 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @param   <T> The <code>Element</code> interface type
  */
 
-public final class Filter<T extends Element>
+final class Filter<T extends Element>
 {
 	/** The <code>Selector</code> from which the <code>Filter</code> is created */
 	private final Selector<T> selector;
 
+	/** The <code>Element</code> implementation class */
+	private final Class<? extends T> impl;
+
 	/** <code>Filter</code> parameters */
-	private final Map<Property<T, ?>, Object> values;
+	private final Map<Property<T, ?>, ?> values;
+
+	public static <T extends Element> Filter<T> create (
+			final Selector<T> selector,
+			final Class<? extends T> impl,
+			final Map<Property<T, ?>, ?> values)
+	{
+		return new Filter<T> (selector, impl, Collections.unmodifiableMap (values));
+	}
 
 	/**
 	 * Create the <code>Filter</code> from the specified <code>MetaData</code>
 	 * using the supplied <code>Selector</code>.
 	 *
-	 * @param  metadata The <code>MetaData</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
 	 */
 
-	public Filter (final Selector<T> selector)
+	private Filter (
+			final Selector<T> selector,
+			final Class<? extends T> impl,
+			final Map<Property<T, ?>, ?> values)
 	{
 		assert selector != null : "selector is NULL";
+		assert impl != null : "impl is NULL";
+		assert values != null : "values is NULL";
 
 		this.selector = selector;
-
-		this.values = selector.getProperties ()
-			.stream ()
-			.collect (Collectors.toMap (Function.identity (), null));
+		this.impl = impl;
+		this.values = values;
 	}
 
 	/**
@@ -80,7 +90,9 @@ public final class Filter<T extends Element>
 	public boolean equals (final Object obj)
 	{
 		return (obj == this) ? true : (obj instanceof Filter)
-			&& Objects.equals (this.selector, ((Filter) obj).selector);
+			&& Objects.equals (this.selector, ((Filter) obj).selector)
+			&& Objects.equals (this.impl, ((Filter) obj).impl)
+			&& Objects.equals (this.values, ((Filter) obj).values);
 	}
 
 	/**
@@ -92,7 +104,7 @@ public final class Filter<T extends Element>
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.selector);
+		return Objects.hash (this.selector, this.impl, this.values);
 	}
 
 	/**
@@ -108,6 +120,8 @@ public final class Filter<T extends Element>
 	{
 		return MoreObjects.toStringHelper (this)
 			.add ("selector", this.selector)
+			.add ("impl", this.impl)
+			.add ("values", this.values)
 			.toString ();
 	}
 
@@ -123,37 +137,14 @@ public final class Filter<T extends Element>
 	}
 
 	/**
-	 * Get the value associated with the specified <code>Property</code>.
+	 * Get the implementation class for the indexed <code>Element</code>.
 	 *
-	 * @param  <V>      The type of the <code>Property</code>
-	 * @param  property The <code>Property</code>, not null
-	 *
-	 * @return          The value associated with the <code>Property</code>
+	 * @return The <code>Element</code> implementation class
 	 */
 
-	public <V> V getValue (final Property<T, V> property)
+	public Class<? extends T> getElementClass ()
 	{
-		assert property != null : "property is NULL";
-		assert (this.values.containsKey (property)) : "invalid property";
-
-		return property.getValueClass ().cast (this.values.get (property));
-	}
-
-	/**
-	 * Set the value for the specified <code>Property</code>.
-	 *
-	 * @param  <V>      The type of the <code>Property</code>
-	 * @param  property The <code>Property</code>, not null
-	 * @param  value    The value to be set, not null
-	 */
-
-	public <V> void setValue (final Property<T, V> property, final V value)
-	{
-		assert property != null : "property is NULL";
-		assert value != null : "value is NULL";
-		assert (this.values.containsKey (property)) : "invalid property";
-
-		this.values.put (property, value);
+		return this.impl;
 	}
 
 	/**
@@ -171,8 +162,8 @@ public final class Filter<T extends Element>
 	{
 		assert element != null : "element is NULL";
 
-		return false; //this.values.entrySet ()
-//			.stream ()
-//			.allMatch (x -> element.hasValue (x.getKey (), x.getKey ().getPropertyType ().cast (x.getValue ())));
+		return this.values.entrySet ()
+			.stream ()
+			.allMatch (x -> x.getKey ().hasValue (element, x.getKey ().getElementClass ().cast (x.getValue ())));
 	}
 }

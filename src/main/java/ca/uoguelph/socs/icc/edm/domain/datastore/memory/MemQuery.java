@@ -52,6 +52,36 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 final class MemQuery<T extends Element> implements Query<T>
 {
+	static final class Accumulator<T extends Element>
+	{
+		private T element;
+		private int count;
+
+		public Accumulator ()
+		{
+			this.result = null;
+			this.count = 0;
+		}
+
+		public T getElement ()
+		{
+			return this.element;
+		}
+
+		public int getCount ()
+		{
+			return this.count;
+		}
+
+		public void setElement (final T element)
+		{
+			assert element != null : "element is NULL";
+
+			this.element = element;
+			this.count += 1;
+		}
+	}
+
 	/** The logger for this Query instance */
 	private final Logger log;
 
@@ -61,7 +91,7 @@ final class MemQuery<T extends Element> implements Query<T>
 	/** The <code>Element</code> implementation class to query */
 	private final Class<? extends T> impl;
 
-	private final DomainModel model;
+	private final MemDataStore datastore;
 
 	/** <code>Filter</code> parameters */
 	private final Map<Property<T, ?>, Object> values;
@@ -69,26 +99,25 @@ final class MemQuery<T extends Element> implements Query<T>
 	/**
 	 * Create the <code>JPAIdQuery</code>.
 	 *
-	 * @param  selector The <code>Selector</code>, not null
-	 * @param  impl     The <code>Element</code> implementation class, not null
-	 * @param  manager  The JPA <code>EntityManager</code>, not null
-	 * @param  model    The <code>DomainModel</code>, not null
-	 * @param  mutator  The <code>Mutator</code>, not null
+	 * @param  selector  The <code>Selector</code>, not null
+	 * @param  impl      The <code>Element</code> implementation class, not null
+	 * @param  datastore The <code>MemDataStore</code>, not null
 	 */
 
 	protected MemQuery (
 			final Selector<T> selector,
 			final Class<? extends T> impl,
-			final DomainModel model)
+			final MemDataStore datastore)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		assert selector != null : "selector is NULL";
 		assert impl != null : "impl is NULL";
+		assert datastore != null : "datastore is NULL";
 
 		this.selector = selector;
 		this.impl = impl;
-		this.model = model;
+		this.datastore = datastore;
 
 		this.values = selector.getProperties ()
 			.stream ()
@@ -118,7 +147,7 @@ final class MemQuery<T extends Element> implements Query<T>
 	public <V> V getValue (final Property<T, V> property)
 	{
 		Preconditions.checkNotNull (property, "property");
-		Preconditions.checkArgument (this.selector.getProperties ().contains (property),
+		Preconditions.checkArgument (this.values.containsKey (property),
 				"property (%s) is not associated with this query", property.getName ());
 
 		return property.getValueClass ().cast (this.values.get (property));
@@ -145,7 +174,7 @@ final class MemQuery<T extends Element> implements Query<T>
 
 		Preconditions.checkNotNull (property, "property");
 		Preconditions.checkNotNull (value, "value");
-		Preconditions.checkArgument (this.selector.getProperties ().contains (property),
+		Preconditions.checkArgument (this.values.containsKey (property),
 				"property (%s) is not associated with this query", property.getName ());
 
 		this.values.put (property, value);
@@ -201,14 +230,18 @@ final class MemQuery<T extends Element> implements Query<T>
 	{
 		this.log.trace ("query:");
 
-		Preconditions.checkState (model.isOpen (), "DataStore is closed");
 		Preconditions.checkState (this.selector.getCardinality () !=
 				Selector.Cardinality.MULTIPLE, "Selector must be unique");
-		Preconditions.checkState (this.values.entrySet ()
-				.stream ()
-				.allMatch (e -> e.getValue () != null), "Query Parameters must not be null");
 
-		return null;
+		Accumulator<T> accumulator = this.stream ()
+			.reduce (new Accumulator<T> (), Accumulator::set);
+
+		if (accumulator.getCount () > 1)
+		{
+			throw new IllegalstateException ("Query returned Multiple results");
+		}
+
+		return accumulator.getElement ();
 	}
 
 	/**
@@ -232,7 +265,8 @@ final class MemQuery<T extends Element> implements Query<T>
 	{
 		this.log.trace ("queryAll:");
 
-		return this.stream ().collect (Collectors.toList ());
+		return this.stream ()
+			.collect (Collectors.toList ());
 	}
 
 	/**
@@ -252,72 +286,22 @@ final class MemQuery<T extends Element> implements Query<T>
 	{
 		this.log.trace ("stream:");
 
-		Preconditions.checkState (model.isOpen (), "DataStore is closed");
+		Preconditions.checkState (datastore.isOpen (), "DataStore is closed");
 		Preconditions.checkState (this.values.entrySet ()
 				.stream ()
 				.allMatch (e -> e.getValue () != null), "Query Parameters must not be null");
 
-		return Stream.empty ();
+		Stream<T> result = null;
+
+		if (this.selector.getCardinality () != Selector.Cardinality.MULTIPLE && this.selector.isConstant ())
+		{
+			result = this.datastore.fetch (Index.create (this.selector, this.impl, this.values));
+		}
+		else
+		{
+			result = this.datastore.fetch (Filter.create (this.selector, this.impl, this.values));
+		}
+
+		return result;
 	}
 }
-
-//	/**
-//	 * Retrieve a <code>List</code> of <code>Element</code> instances which
-//	 * match the specified <code>Filter</code>.
-//	 *
-//	 * @param  <T>    The <code>Element</code> interface type
-//	 * @param  filter The <code>Filter</code>, not null
-//	 *
-//	 * @return        A <code>List</code> of <code>Element</code> instances
-//	 */
-//
-//	public <T extends Element> List<T> fetch (final Class<? extends T> type, final Filter<T> filter)
-//	{
-//		this.log.trace ("fetch: type={}, filter={}", type, filter);
-//
-//		assert type != null : "type is NULL";
-//		assert filter != null : "filter is NULL";
-//
-//		List<T> result = null;
-//
-//		if (filter.getSelector ().isUnique () && filter.getSelector ().isConstant ())
-//		{
-//			result = new ArrayList<T> ();
-//
-//			T element = (T) this.index.get (this.buildIndex (filter));
-//
-//			if (element != null)
-//			{
-//				result.add (element);
-//			}
-//		}
-//		else
-//		{
-//			result = (List<T>) this.elements.parallelStream ()
-//				.map (Wrapper::unwrap)
-//				.filter (x -> type.isInstance (x) && filter.test ((T) x))
-//				.collect (Collectors.toList ());
-//		}
-//
-//		return result;
-//	}
-//
-//	/**
-//	 * Build a key for the index <code>Map</code> from the supplied
-//	 * <code>Filter</code> instance.
-//	 *
-//	 * @param  filter The <code>Filter</code>, not null
-//	 *
-//	 * @return The key for the index <code>Map</code>
-//	 */
-//
-//	private <T extends Element> Key buildIndex (final Filter<T> filter)
-//	{
-//		assert filter != null : "filter is NULL";
-//
-//		return Key.create (filter.getSelector (), filter.getSelector ()
-//			.getProperties ()
-//			.stream ()
-//			.map ((x) -> filter.getValue (x))
-//			.collect (Collectors.toList ()));
-//	}
