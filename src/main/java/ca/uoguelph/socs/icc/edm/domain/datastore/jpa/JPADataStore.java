@@ -306,13 +306,13 @@ public final class JPADataStore implements DataStore
 	 * Insert the specified <code>Element</code> instance into the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  element  The <code>Element</code> instance to insert, not null
-	 *
-	 * @return          A reference to the <code>Element</code>
+	 * @param  definition The <code>Definition</code> for the, not null
+	 * @param  element    The <code>Element</code> instance to insert, not null
+	 * @return            A reference to the <code>Element</code>
 	 */
 
 	@Override
-	public <T extends Element> T insert (final T element)
+	public <T extends Element> T insert (final Element.Definition<T> definition, final T element)
 	{
 		this.log.trace ("insert: element={}", element);
 
@@ -322,8 +322,7 @@ public final class JPADataStore implements DataStore
 		this.log.debug ("Persisting the Element");
 		this.em.persist (element);
 
-		@SuppressWarnings ("unchecked") // but there should be a better way...
-		T result = this.em.find (((Class<? extends T>) element.getClass ()), element.getId ());
+		T result = this.em.find (definition.getElementClass (), element.getId ());
 
 		return result;
 	}

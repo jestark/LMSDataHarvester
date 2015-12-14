@@ -134,7 +134,6 @@ public final class DummyDataStore implements DataStore
 	 * encapsulated in a new <code>DomainModel</code> instance.
 	 *
 	 * @param  profile The <code>Profile</code>, not null
-	 *
 	 * @return         The <code>DomainModel</code>
 	 */
 
@@ -191,7 +190,6 @@ public final class DummyDataStore implements DataStore
 	 * <code>Element</code> class.
 	 *
 	 * @param  element The <code>Element</code> class, not null
-	 *
 	 * @return         A <code>List</code> of ID numbers, may be empty
 	 */
 
@@ -255,7 +253,6 @@ public final class DummyDataStore implements DataStore
 	 * always return true (even though it would actually be false).
 	 *
 	 * @param  element The <code>Element</code> instance to check, not null
-	 *
 	 * @return         <code>true</code> if the <code>Element</code> instance
 	 *                 exists in the <code>DataStore</code>, <code>false</code>
 	 *                 otherwise
@@ -277,16 +274,17 @@ public final class DummyDataStore implements DataStore
 	 * <code>DataStore</code>.  For the <code>DummyDataStore</code> this does
 	 * nothing as there is no actual storage.
 	 *
-	 * @param  element  The <code>Element</code> instance to insert, not null
-	 *
-	 * @return          A reference to the <code>Element</code>
+	 * @param  definition The <code>Definition</code> for the, not null
+	 * @param  element    The <code>Element</code> instance to insert, not null
+	 * @return            A reference to the <code>Element</code>
 	 */
 
 	@Override
-	public <T extends Element> T insert (final T element)
+	public <T extends Element> T insert (final Element.Definition<T> definition, final T element)
 	{
 		this.log.trace ("insert: element={}", element);
 
+		assert definition != null : "definition is NULL";
 		assert element != null : "element is NULL";
 		assert this.transaction.isActive () : "No Active transaction";
 

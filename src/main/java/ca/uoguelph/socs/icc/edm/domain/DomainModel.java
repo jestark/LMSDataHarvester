@@ -181,6 +181,7 @@ public final class DomainModel
 	 * <code>TranslationTable</code> creating an association with the
 	 * <code>Element</code> instance specified by <code>oldElement</code>
 	 *
+	 * @param  definition The <code>Definition</code>, not null
 	 * @param  oldElement The <code>Element</code> to be associated with the
 	 *                    inserted <code>Element</code>, may be null
 	 * @param  newElement The <code>Element</code> to insert, not null
@@ -192,16 +193,20 @@ public final class DomainModel
 	 *                               to connect
 	 */
 
-	protected <T extends Element> T insert (final @Nullable T oldElement, final T newElement)
+	protected <T extends Element> T insert (
+			final Element.Definition<T> definition,
+			final @Nullable T oldElement,
+			final T newElement)
 	{
-		this.log.trace ("insert: oldElement={}, newElement={}", oldElement, newElement);
+		this.log.trace ("insert: definition={}, oldElement={}, newElement={}", oldElement, newElement);
 
+		assert definition != null : "definition is NULL";
 		assert newElement != null : "newElement is NULL";
 
 		Preconditions.checkState (this.datastore.getTransaction ().isActive (), "transaction required");
 
 		this.log.debug ("inserting element into the DataStore: {}", newElement);
-		T result = this.datastore.insert (newElement);
+		T result = this.datastore.insert (definition, newElement);
 
 		this.log.debug ("connecting relationships");
 		if (! result.connect ())
@@ -540,7 +545,7 @@ public final class DomainModel
 			throw new IllegalStateException ("Active Transaction required");
 		}
 
-		InsertProcessor processor = null; // new InsertProcessor (this.datastore, DomainModel.ttable);
+//		InsertProcessor processor = new InsertProcessor (this.datastore, DomainModel.ttable);
 
 //		T result = processor.insert (element);
 //		processor.processDeferred ();
@@ -591,7 +596,7 @@ public final class DomainModel
 			throw new IllegalStateException ("Active Transaction required");
 		}
 
-		InsertProcessor processor = null; // new InsertProcessor (this.datastore, DomainModel.ttable);
+//		InsertProcessor processor = new InsertProcessor (this.datastore, DomainModel.ttable);
 
 //		Collection<T> results = processor.insert (elements);
 //		processor.processDeferred ();

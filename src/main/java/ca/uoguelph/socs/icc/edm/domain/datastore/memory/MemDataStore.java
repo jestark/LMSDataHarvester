@@ -16,7 +16,6 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.memory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Singleton;
 
@@ -102,44 +102,6 @@ public final class MemDataStore implements DataStore
 		}
 	}
 
-	/**
-	 *
-	 */
-
-	@AutoValue
-	protected static abstract class Key<T extends Element>
-	{
-		/**
-		 *
-		 */
-
-		public static <T extends Element> Key<T> create (
-				final Selector<T> selector,
-				final Class<? extends T> impl,
-				final List<Object> keys)
-		{
-			return new AutoValue_MemDataStore_Key<T> (selector, impl, keys);
-		}
-
-		/**
-		 *
-		 */
-
-		public abstract Selector<T> getSelector ();
-
-		/**
-		 *
-		 */
-
-		public abstract Class<? extends T> getElementClass ();
-
-		/**
-		 *
-		 */
-
-		public abstract List<Object> getKeys ();
-	}
-
 	/** The component for creating instances of the <code>DataStore</code>*/
 	private static final DataStore.DataStoreComponent COMPONENT;
 
@@ -150,7 +112,7 @@ public final class MemDataStore implements DataStore
 	private final Set<Wrapper<? extends Element>> elements;
 
 	/** Indexed <code>Element</code> instances */
-	private final Map<Key<?>, Element> index;
+	private final Map<Index<?>, Element> index;
 
 	/** The transaction manager for the <code>DataStore</code> */
 	private Transaction transaction;
@@ -199,6 +161,8 @@ public final class MemDataStore implements DataStore
 
 	/**
 	 * Create the <code>MemDataStore</code>.
+	 *
+	 * @param  profile The <code>Profile</code>
 	 */
 
 	protected MemDataStore (final Profile profile)
@@ -213,30 +177,53 @@ public final class MemDataStore implements DataStore
 	}
 
 	/**
-	 * Build a key for the index <code>Map</code> from the supplied
-	 * <code>Element</code> instance, using the specified <code>Selector</code>.
+	 * Get a <code>Stream</code> of <code>Element</code> instances which match
+	 * the specified <code>Filter</code>.  The <code>Stream</code> will be
+	 * empty if no <code>Element</code> instances match.
 	 *
-	 * @param  selector The <code>Selector</code>, not null
-	 * @param  element  The <code>Element</code>, not null
-	 *
-	 * @return          The key for the index <code>Map</code>
+	 * @param  <T>    The <code>Element</code> interface type
+	 * @param  filter The <code>Filter</code>, not null
+	 * @return        A <code>Stream</code> of <code>Element</code> instances
 	 */
 
-//	private <T extends Element> Key<T> buildIndex (
-//			final Selector<T> selector,
-//			final Class<? extends Element> impl,
-//			final T element)
-//	{
-//		this.log.trace ("buildIndex: selector={}, element={}", selector, element);
-//
-//		assert selector != null : "selector is NULL";
-//		assert element != null : "element is NULL";
-//
-//		return Key.create (selector, impl, selector.getProperties ()
-//			.stream ()
-//			.flatMap ((x) -> x.stream (element))
-//			.collect (Collectors.toList ()));
-//	}
+	<T extends Element> Stream<T> fetch (final Filter<T> filter)
+	{
+		this.log.trace ("fetch: filter={}", filter);
+
+		assert filter != null : "filter is NULL";
+
+		return this.elements.parallelStream ()
+			.map (Wrapper::unwrap)
+			.filter (x -> filter.getElementClass ()
+					.isInstance (x))
+			.map (x -> filter.getSelector ()
+					.getElementClass ()
+					.cast (x))
+			.filter (x -> filter.test (x));
+	}
+
+	/**
+	 * Get a <code>Stream</code> containing the <code>Element</code> which
+	 * matches the supplied <code>Index</code>.  The <code>Stream</code> will be
+	 * empty if no <code>Element</code> instances match.
+	 *
+	 * @param  <T>   The <code>Element</code> interface type
+	 * @param  index The <code>Index</code>, not null
+	 * @return       A <code>Stream</code> of <code>Element</code> instances
+	 */
+
+	<T extends Element> Stream<T> fetch (final Index<T> index)
+	{
+		this.log.trace ("fetch: index={}", index);
+
+		assert index != null : "index is NULL";
+
+		return (this.index.containsKey (index))
+			? Stream.of (index.getSelector ()
+					.getElementClass ()
+					.cast (this.index.get (index)))
+			: Stream.empty ();
+	}
 
 	@Override
 	public <T extends Element> Query<T> createQuery (
@@ -250,7 +237,6 @@ public final class MemDataStore implements DataStore
 
 		return new MemQuery<T> (selector, impl, model);
 	}
-
 
 	/**
 	 * Get an instance of the transaction manager for the
@@ -308,7 +294,6 @@ public final class MemDataStore implements DataStore
 	 * <code>DataStore</code>.
 	 *
 	 * @param  element The <code>Element</code> instance to check, not null
-	 *
 	 * @return         <code>true</code> if the <code>Element</code> instance
 	 *                 exists in the <code>DataStore</code>, <code>false</code>
 	 *                 otherwise
@@ -331,7 +316,6 @@ public final class MemDataStore implements DataStore
 	 * <code>Element</code> class.
 	 *
 	 * @param  element The <code>Element</code> class, not null
-	 *
 	 * @return         A <code>List</code> of ID numbers, may be empty
 	 */
 
@@ -354,16 +338,17 @@ public final class MemDataStore implements DataStore
 	 * Insert the specified <code>Element</code> instance into the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  element  The <code>Element</code> instance to insert, not null
-	 *
-	 * @return          A reference to the <code>Element</code>
+	 * @param  definition The <code>Definition</code> for the, not null
+	 * @param  element    The <code>Element</code> instance to insert, not null
+	 * @return            A reference to the <code>Element</code>
 	 */
 
 	@Override
-	public <T extends Element> T insert (final T element)
+	public <T extends Element> T insert (final Element.Definition<T> definition, final T element)
 	{
-		this.log.trace ("insert: element={}", element);
+		this.log.trace ("insert: definition={}, element={}", element);
 
+		assert definition != null : "definition is NULL";
 		assert element != null : "element is NULL";
 		assert ! this.contains (element) : "element is already in the DataStore";
 		assert this.transaction.isActive () : "No Active transaction";
@@ -371,8 +356,10 @@ public final class MemDataStore implements DataStore
 		this.log.debug ("Inserting the Element");
 		this.elements.add (new Wrapper<T> (element));
 
-//		this.log.debug ("building indexes");
-//		selectors.forEach (x -> this.index.put (this.buildIndex (x, element), element));
+		this.log.debug ("building indexes");
+		this.index.putAll (definition.selectors ()
+			.filter (s -> s.getCardinality () != Selector.Cardinality.MULTIPLE && s.isConstant ())
+			.collect (Collectors.toMap (s -> Index.create (s, definition.getElementClass (), element), s -> element)));
 
 		return element;
 	}
@@ -396,9 +383,8 @@ public final class MemDataStore implements DataStore
 		this.log.debug ("removing element");
 		this.elements.remove (new Wrapper<T> (element));
 
-//		this.log.debug ("removing indexes");
-//		element.selectors ()
-//			.filter (x -> x.getCardinality () != Selector.Cardinality.MULTIPLE && x.isConstant ())
-//			.forEach ((x) -> this.index.remove (this.buildIndex (x, element)));
+		this.log.debug ("removing indexes");
+		this.index.entrySet ()
+			.removeIf (x -> x.getValue () == element);
 	}
 }

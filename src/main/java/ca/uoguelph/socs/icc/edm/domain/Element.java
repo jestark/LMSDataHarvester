@@ -102,6 +102,9 @@ public abstract class Element implements Serializable
 		/** The <code>DomainModel</code> which will contain the <code>Element</code> */
 		protected final DomainModel model;
 
+		/** The <code>Definition</code> */
+		protected final Definition<T> definition;
+
 		/** The <code>Retriever</code> for the <code>Element</code> being created */
 		protected final Retriever<T> retriever;
 
@@ -133,6 +136,8 @@ public abstract class Element implements Serializable
 			this.idGenerator = idGenerator;
 			this.retriever = retriever;
 			this.element = null;
+
+			this.definition = null;
 		}
 
 		/**
@@ -314,7 +319,7 @@ public abstract class Element implements Serializable
 						}
 
 						this.log.debug ("Inserting the Element into the datastore");
-						this.element = this.model.insert (this.element, newElement);
+						this.element = this.model.insert (this.definition, this.element, newElement);
 					}
 					else if (! result.equalsAll (newElement))
 					{

@@ -67,7 +67,6 @@ public interface DataStore
 		 * <code>Profile</code>.
 		 *
 		 * @param  profile The <code>Profile</code>, not null
-		 *
 		 * @return         The <code>DataStore</code>
 		 */
 
@@ -82,7 +81,6 @@ public interface DataStore
 	 * @param  impl      The <code>Element</code> implementation class, not null
 	 * @param  model     The <code>DomaonModel</code>, not null
 	 * @param  reference
-	 *
 	 * @return           The <code>Query</code>
 	 */
 
@@ -98,7 +96,6 @@ public interface DataStore
 	 * <code>Element</code> class.
 	 *
 	 * @param  element The <code>Element</code> class, not null
-	 *
 	 * @return         A <code>List</code> of ID numbers, may be empty
 	 */
 
@@ -135,7 +132,6 @@ public interface DataStore
 	 * <code>DataStore</code>.
 	 *
 	 * @param  element The <code>Element</code> instance to check, not null
-	 *
 	 * @return         <code>true</code> if the <code>Element</code> instance
 	 *                 exists in the <code>DataStore</code>, <code>false</code>
 	 *                 otherwise
@@ -147,12 +143,12 @@ public interface DataStore
 	 * Insert the specified <code>Element</code> instance into the
 	 * <code>DataStore</code>.
 	 *
-	 * @param  element  The <code>Element</code> instance to insert, not null
-	 *
-	 * @return          A reference to the <code>Element</code>
+	 * @param  definition The <code>Definition</code> for the, not null
+	 * @param  element    The <code>Element</code> instance to insert, not null
+	 * @return            A reference to the <code>Element</code>
 	 */
 
-	public abstract <T extends Element> T insert (T element);
+	public abstract <T extends Element> T insert (Element.Definition<T> definition, T element);
 
 	/**
 	 * Remove the specified <code>Element</code> instance from the
