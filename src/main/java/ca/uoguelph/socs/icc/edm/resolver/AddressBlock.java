@@ -17,11 +17,11 @@
 package ca.uoguelph.socs.icc.edm.resolver;
 
 import java.math.BigInteger;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.util.Arrays;
+
+import com.google.common.base.Preconditions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +103,6 @@ final class AddressBlock extends NetAddress
 		 * Set the base address for the <code>AddressBlock</code>.
 		 *
 		 * @param  address The base address, not null
-		 *
 		 * @return         This <code>Builder</code>
 		 */
 
@@ -126,7 +125,6 @@ final class AddressBlock extends NetAddress
 		 * Set the base address for the <code>AddressBlock</code>.
 		 *
 		 * @param  address The base address, not null
-		 *
 		 * @return         This <code>Builder</code>
 		 */
 
@@ -161,7 +159,6 @@ final class AddressBlock extends NetAddress
 		 *
 		 * @param  length The number of set bits in the netmask, must not be
 		 *                negative.
-		 *
 		 * @return        This <code>Builder</code>
 		 */
 
@@ -184,14 +181,22 @@ final class AddressBlock extends NetAddress
 	/** The log */
 	private final Logger log;
 
-	/** The base address for the block */
-	private final SingleAddress address;
+	/** The Internet Protocol address */
+	private final InetAddress address;
+
+	/** Integer representation of the ip address */
+	private final BigInteger ipAddress;
 
 	/** The netmask */
 	private final BigInteger mask;
 
 	/** The number of set bits in the net mask */
-	private final short length;
+	private final int length;
+
+	public static AddressBlock create (final InetAddress address)
+	{
+		return new AddressBlock (address, address.getAddress ().length * 8);
+	}
 
 	/**
 	 * Create the <code>AddressBlock</code>.
@@ -201,7 +206,7 @@ final class AddressBlock extends NetAddress
 	 *                 greater than zero
 	 */
 
-	public AddressBlock (final InetAddress address, final short length)
+	private AddressBlock (final InetAddress address, final int length)
 	{
 		assert address != null : "address is NULL";
 		assert length >= 0 : "mask length can not be negative";
@@ -209,9 +214,34 @@ final class AddressBlock extends NetAddress
 
 		this.log = LoggerFactory.getLogger (AddressBlock.class);
 
-		this.address = new SingleAddress (address);
+		this.address = address;
 		this.length = length;
-		this.mask = this.calculateNetMask (this.address.getLength (), length);
+
+		this.ipAddress = this.calculateIPAddress (this.address);
+		this.mask = this.calculateNetMask (this.address.getAddress ().length, length);
+	}
+
+	/**
+	 * Get a representation of the IP Address as an integer from the
+	 * <code>InetAddress</code>.
+	 *
+	 * @param  addr The <code>InetAddress</code>, not null
+	 * @return      The IP Address
+	 */
+
+	private BigInteger calculateIPAddress (final InetAddress addr)
+	{
+		assert addr != null : "addr is NULL";
+
+		BigInteger result = BigInteger.ZERO;
+
+		for (byte b : addr.getAddress ())
+		{
+			result = result.shiftLeft (8);
+			result = result.or (BigInteger.valueOf (b & 0xFF));
+		}
+
+		return result;
 	}
 
 	/**
@@ -219,11 +249,10 @@ final class AddressBlock extends NetAddress
 	 *
 	 * @param  len     The number of bytes in the IP Address
 	 * @param  cidrlen The number of set bits in the mask
-	 *
 	 * @return         The netmask
 	 */
 
-	private BigInteger calculateNetMask (final int len, final short cidrlen)
+	private BigInteger calculateNetMask (final int len, final int cidrlen)
 	{
 		BigInteger result = BigInteger.ZERO;
 
@@ -253,7 +282,7 @@ final class AddressBlock extends NetAddress
 	@Override
 	public BigInteger getAddress ()
 	{
-		return this.address.getAddress ();
+		return this.ipAddress;
 	}
 
 	/**
@@ -278,7 +307,7 @@ final class AddressBlock extends NetAddress
 	@Override
 	public InetAddress getInetAddress ()
 	{
-		return this.address.getInetAddress ();
+		return this.address;
 	}
 
 	/**
@@ -290,7 +319,7 @@ final class AddressBlock extends NetAddress
 	@Override
 	public int getLength ()
 	{
-		return this.address.getLength ();
+		return this.address.getAddress ().length;
 	}
 
 	/**

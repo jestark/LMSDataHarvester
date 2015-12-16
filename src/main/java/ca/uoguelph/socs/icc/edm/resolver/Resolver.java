@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.Component;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +44,13 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public final class Resolver
 {
+	@Component (modules = {ARINQueryModule.class})
+	@Singleton
+	public interface ResolverComponent
+	{
+		public abstract Resolver getResolver ();
+	}
+
 	/** The log */
 	private final Logger log;
 
@@ -87,7 +96,7 @@ public final class Resolver
 		}
 
 		String result = null;
-		NetAddress addr = new SingleAddress (address);
+		NetAddress addr = AddressBlock.create (address);
 
 		if (this.cache.hasAddress (addr))
 		{
