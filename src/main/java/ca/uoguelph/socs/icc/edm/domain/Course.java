@@ -76,8 +76,8 @@ public abstract class Course extends Element
 
 	public static class Builder extends Element.Builder<Course>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Course.Builder, Course> creator;
+		/** The <code>IdGenerator</code>*/
+		private final IdGenerator idGenerator;
 
 		/** The <code>DataStore</code> id number for the <code>Course</code> */
 		private @Nullable Long id;
@@ -95,21 +95,21 @@ public abstract class Course extends Element
 		 * Create the <code>Builder</code>.
 		 *
 		 * @param  model       The <code>DomainModel</code>, not null
+		 * @param  definition  The <code>Definition</code>, not null
 		 * @param  idGenerator The <code>IdGenerator</code>, not null
 		 * @param  retriever   The <code>Retriever</code>, not null
-		 * @param  creator     Method Reference to the constructor, not null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final IdGenerator idGenerator,
-				final Retriever<Course> retriever,
-				final Function<Course.Builder, Course> creator)
+				final Retriever<Course> retriever)
 		{
-			super (model, idGenerator, retriever);
+			super (model, definition, retriever);
 
-			assert creator != null : "creator is NULL";
-			this.creator = creator;
+			assert idGenerator != null : "idGenerator is NULL";
+			this.idGenerator = idGenerator;
 
 			this.id = null;
 			this.name = null;
@@ -120,19 +120,35 @@ public abstract class Course extends Element
 		/**
 		 * Create an instance of the <code>Course</code>.
 		 *
-		 * @param  course The previously existing <code>Course</code> instance,
-		 *                may be null
-		 * @return        The new <code>Course</code> instance
+		 * @return The new <code>Course</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected Course create (final @Nullable Course course)
+		protected Course create ()
 		{
-			this.log.trace ("create: course={}", course);
+			this.log.trace ("create:");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
+		}
+
+		/**
+		 * Implementation of the pre-insert hook to set the ID number.
+		 *
+		 * @param  course The <code>Course</code> to be inserted, not null
+		 * @return        The <code>Course</code> to be inserted
+		 */
+
+		@Override
+		protected Course preInsert (final Course course)
+		{
+			assert course != null : "course is NULL";
+
+			this.log.debug ("Setting ID");
+			course.setId (this.idGenerator.nextId ());
+
+			return course;
 		}
 
 		/**
@@ -354,18 +370,19 @@ public abstract class Course extends Element
 	@Module (includes = {CourseModule.class})
 	public static final class CourseBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Course.Builder, Course> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>CourseBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public CourseBuilderModule (final Function<Course.Builder, Course> creator)
+		public CourseBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is NULL";
+			this.definition = definition;
 		}
 
 		/**
@@ -382,7 +399,7 @@ public abstract class Course extends Element
 				final IdGenerator generator,
 				final @Named ("QueryRetriever") Retriever<Course> retriever)
 		{
-			return new Builder (model, generator, retriever, this.creator);
+			return new Builder (model, this.definition, generator, retriever);
 		}
 	}
 
@@ -397,8 +414,8 @@ public abstract class Course extends Element
 
 	protected abstract class Definition extends Element.Definition<Course>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final CourseBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<Course.Builder, Course> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -411,10 +428,10 @@ public abstract class Course extends Element
 				final Class<? extends Course> impl,
 				final Function<Course.Builder, Course> creator)
 		{
-			super (impl);
+			super (Course.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new CourseBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -431,36 +448,8 @@ public abstract class Course extends Element
 			return DaggerCourse_CourseComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Course.class, model))
-				.courseBuilderModule (this.module)
+				.courseBuilderModule (new CourseBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<Course, ?>> properties ()
-		{
-			return Course.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<Course>> selectors ()
-		{
-			return Course.METADATA.selectors ();
 		}
 	}
 

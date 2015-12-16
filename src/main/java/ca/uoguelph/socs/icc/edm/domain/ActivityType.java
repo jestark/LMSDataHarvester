@@ -76,8 +76,8 @@ public abstract class ActivityType extends Element
 
 	public static class Builder extends Element.Builder<ActivityType>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<ActivityType.Builder, ActivityType> creator;
+		/** The <code>IdGenerator</code>*/
+		private final IdGenerator idGenerator;
 
 		/** Helper to substitute <code>ActivitySource</code> instances */
 		private final Retriever<ActivitySource> sourceRetriever;
@@ -95,29 +95,29 @@ public abstract class ActivityType extends Element
 		 * Create the <code>Builder</code>.
 		 *
 		 * @param  model           The <code>DomainModel</code>, not null
+		 * @param  definition      The <code>Definition</code>, not null
 		 * @param  idGenerator     The <code>IdGenerator</code>, not null
 		 * @param  typeRetriever   <code>Retriever</code> for
 		 *                         <code>ActivityType</code> instances, not null
 		 * @param  sourceRetriever <code>Retriever</code> for
 		 *                         <code>ActivitySource</code> instances, not
 		 *                         null
-		 * @param  creator         Method Reference to the constructor, not null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final IdGenerator idGenerator,
 				final Retriever<ActivityType> typeRetriever,
-				final Retriever<ActivitySource> sourceRetriever,
-				final Function<ActivityType.Builder, ActivityType> creator)
+				final Retriever<ActivitySource> sourceRetriever)
 		{
-			super (model, idGenerator, typeRetriever);
+			super (model, definition, typeRetriever);
 
+			assert idGenerator != null : "idGenerator is NULL";
 			assert sourceRetriever != null : "sourceRetriever is NULL";
-			assert creator != null : "creator is NULL";
 
+			this.idGenerator = idGenerator;
 			this.sourceRetriever = sourceRetriever;
-			this.creator = creator;
 
 			this.id = null;
 			this.name = null;
@@ -127,19 +127,35 @@ public abstract class ActivityType extends Element
 		/**
 		 * Create an instance of the <code>ActivityType</code>.
 		 *
-		 * @param  type   The previously existing <code>ActivityType</code>
-		 *                instance, may be null
-		 * @return        The new <code>ActivityType</code> instance
+		 * @return The new <code>ActivityType</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected ActivityType create (final @Nullable ActivityType type)
+		protected ActivityType create ()
 		{
-			this.log.trace ("create: type={}", type);
+			this.log.trace ("create:");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
+		}
+
+		/**
+		 * Implementation of the pre-insert hook to set the ID number.
+		 *
+		 * @param  type The <code>ActivityType</code> to be inserted, not null
+		 * @return      The <code>ActivityType</code> to be inserted
+		 */
+
+		@Override
+		protected ActivityType preInsert (final ActivityType type)
+		{
+			assert type != null : "type is NULL";
+
+			this.log.debug ("Setting ID");
+			type.setId (this.idGenerator.nextId ());
+
+			return type;
 		}
 
 		/**
@@ -331,18 +347,19 @@ public abstract class ActivityType extends Element
 	@Module (includes = {ActivityTypeModule.class, ActivitySource.ActivitySourceModule.class})
 	public static final class ActivityTypeBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<ActivityType.Builder, ActivityType> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>ActivityTypeBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public ActivityTypeBuilderModule (final Function<ActivityType.Builder, ActivityType> creator)
+		public ActivityTypeBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is NULL";
+			this.definition = definition;
 		}
 
 		/**
@@ -364,7 +381,7 @@ public abstract class ActivityType extends Element
 				final @Named ("QueryRetriever") Retriever<ActivityType> typeRetriever,
 				final @Named ("QueryRetriever") Retriever<ActivitySource> sourceRetriever)
 		{
-			return new Builder (model, generator, typeRetriever, sourceRetriever, this.creator);
+			return new Builder (model, this.definition, generator, typeRetriever, sourceRetriever);
 		}
 	}
 
@@ -379,8 +396,8 @@ public abstract class ActivityType extends Element
 
 	protected abstract class Definition extends Element.Definition<ActivityType>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final ActivityTypeBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<ActivityType.Builder, ActivityType> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -393,10 +410,10 @@ public abstract class ActivityType extends Element
 				final Class<? extends ActivityType> impl,
 				final Function<ActivityType.Builder, ActivityType> creator)
 		{
-			super (impl);
+			super (ActivityType.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new ActivityTypeBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -413,36 +430,8 @@ public abstract class ActivityType extends Element
 			return DaggerActivityType_ActivityTypeComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (ActivityType.class, model))
-				.activityTypeBuilderModule (this.module)
+				.activityTypeBuilderModule (new ActivityTypeBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<ActivityType, ?>> properties ()
-		{
-			return ActivityType.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<ActivityType>> selectors ()
-		{
-			return ActivityType.METADATA.selectors ();
 		}
 	}
 

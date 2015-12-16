@@ -60,9 +60,6 @@ public abstract class LogReference extends Element
 
 	public static class Builder extends Element.Builder<LogReference>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<LogReference.Builder, LogReference> creator;
-
 		/** Helper to substitute <code>LogEntry</code> instances*/
 		private final Retriever<LogEntry> entryRetriever;
 
@@ -79,6 +76,7 @@ public abstract class LogReference extends Element
 		 * Create the <code>Builder</code>.
 		 *
 		 * @param  model                The <code>DomainModel</code>, not null
+		 * @param  definition           The <code>Definition</code>, not null
 		 * @param  refRetriever         <code>Retriever</code> for
 		 *                              <code>LogReference</code> instances, not
 		 *                              null
@@ -88,25 +86,21 @@ public abstract class LogReference extends Element
 		 * @param  subActivityRetriever <code>Retriever</code> for
 		 *                              <code>ActivitySource</code> instances,
 		 *                              not null
-		 * @param  creator              Method Reference to the constructor, not
-		 *                              null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final Retriever<LogReference> refRetriever,
 				final Retriever<LogEntry> entryRetriever,
-				final Retriever<SubActivity> subActivityRetriever,
-				final Function<LogReference.Builder, LogReference> creator)
+				final Retriever<SubActivity> subActivityRetriever)
 		{
-			super (model, null, refRetriever);
+			super (model, definition, refRetriever);
 
 			assert entryRetriever != null : "entryRetriever is NULL";
-			assert creator != null : "creator is NULL";
 
 			this.entryRetriever = entryRetriever;
 			this.subActivityRetriever = subActivityRetriever;
-			this.creator = creator;
 
 			this.entry = null;
 			this.subActivity = null;
@@ -115,19 +109,17 @@ public abstract class LogReference extends Element
 		/**
 		 * Create an instance of the <code>LogReference</code>.
 		 *
-		 * @param  reference The previously existing <code>LogReference</code>
-		 *                   instance, may be null
-		 * @return           The new <code>LogReference</code> instance
+		 * @return The new <code>LogReference</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected LogReference create (final @Nullable LogReference reference)
+		protected LogReference create ()
 		{
-			this.log.trace ("create: reference={}", reference);
+			this.log.trace ("create:");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
 		}
 
 		/**
@@ -145,7 +137,6 @@ public abstract class LogReference extends Element
 			super.clear ();
 
 			this.entry = null;
-			this.subActivity = null;
 
 			return this;
 		}
@@ -171,8 +162,12 @@ public abstract class LogReference extends Element
 
 			super.load (reference);
 
+			if (! Objects.equals (this.getSubActivity (), reference.getSubActivity ()))
+			{
+				throw new IllegalArgumentException ("SubActivity instances are different");
+			}
+
 			this.setEntry (reference.getEntry ());
-			this.setSubActivity (reference.getSubActivity ());
 
 			return this;
 		}
@@ -235,7 +230,7 @@ public abstract class LogReference extends Element
 		 *                                  not in the <code>DataStore</code>
 		 */
 
-		public final Builder setSubActivity (final SubActivity subActivity)
+		private final Builder setSubActivity (final SubActivity subActivity)
 		{
 			this.log.trace ("setSubActivity: subActivity={}", subActivity);
 
@@ -288,18 +283,19 @@ public abstract class LogReference extends Element
 	@Module (includes = {LogReferenceModule.class, LogEntry.LogEntryModule.class, SubActivity.SubActivityModule.class})
 	public static final class LogReferenceBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<LogReference.Builder, LogReference> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>LogReferenceBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public LogReferenceBuilderModule (final Function<LogReference.Builder, LogReference> creator)
+		public LogReferenceBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is NULL";
+			this.definition = definition;
 		}
 
 		/**
@@ -322,7 +318,7 @@ public abstract class LogReference extends Element
 				final @Named ("TableRetriever") Retriever<LogEntry> entryRetriever,
 				final @Named ("TableRetriever") Retriever<SubActivity> subActivityRetriever)
 		{
-			return new Builder (model, retriever, entryRetriever, subActivityRetriever, this.creator);
+			return new Builder (model, this.definition, retriever, entryRetriever, subActivityRetriever);
 		}
 	}
 
@@ -337,8 +333,8 @@ public abstract class LogReference extends Element
 
 	protected abstract class Definition extends Element.Definition<LogReference>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final LogReferenceBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<LogReference.Builder, LogReference> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -351,10 +347,10 @@ public abstract class LogReference extends Element
 				final Class<? extends LogReference> impl,
 				final Function<LogReference.Builder, LogReference> creator)
 		{
-			super (impl);
+			super (LogReference.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new LogReferenceBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -370,36 +366,8 @@ public abstract class LogReference extends Element
 		{
 			return DaggerLogReference_LogReferenceComponent.builder ()
 				.domainModelModule (new DomainModel.DomainModelModule (LogReference.class, model))
-				.logReferenceBuilderModule (this.module)
+				.logReferenceBuilderModule (new LogReferenceBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<LogReference, ?>> properties ()
-		{
-			return LogReference.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<LogReference>> selectors ()
-		{
-			return LogReference.METADATA.selectors ();
 		}
 	}
 
@@ -500,6 +468,31 @@ public abstract class LogReference extends Element
 		assert LogReference.references.containsKey (subactivity) : "subactivity is not registered";
 
 		return LogReference.references.get (subactivity);
+	}
+
+	/**
+	 * Get an instance of the <code>Builder</code> for the specified
+	 * <code>DomainModel</code>.  The <code>Builder</code> will be initialized
+	 * with the specified <code>SubActivity</code>.
+	 *
+	 * @param  model       The <code>DomainModel</code>, not null
+	 * @param  subActivity The <code>SubActivity</code>, not null
+	 * @return             The <code>Builder</code> instance
+	 *
+	 * @throws IllegalStateException if the <code>DomainModel</code> is closed
+	 * @throws IllegalStateException if the <code>DomainModel</code> is
+	 *                               immutable
+	 */
+
+	protected static Builder builder (final DomainModel model, final SubActivity subActivity)
+	{
+		Preconditions.checkNotNull (model, "model");
+		Preconditions.checkNotNull (subActivity, "subActivity");
+
+		return ((LogReference.Builder) model.getElementComponent (LogReference.class,
+					LogReference.getLogClass (subActivity.getClass ()))
+			.getBuilder ())
+			.setSubActivity (subActivity);
 	}
 
 	/**
@@ -634,10 +627,7 @@ public abstract class LogReference extends Element
 	@Override
 	public Builder getBuilder (final DomainModel model)
 	{
-		Preconditions.checkNotNull (model, "model");
-
-		return ((LogReference.Builder) model.getElementComponent (LogReference.class)
-			.getBuilder ())
+		return LogReference.builder (Preconditions.checkNotNull (model, "model"), this.getSubActivity ())
 			.load (this);
 	}
 

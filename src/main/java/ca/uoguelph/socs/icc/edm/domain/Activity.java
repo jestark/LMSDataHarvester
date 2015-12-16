@@ -110,9 +110,6 @@ public abstract class Activity extends ParentActivity
 
 	public static class Builder extends Element.Builder<Activity>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Activity.Builder, Activity> creator;
-
 		/** Builder to create the <code>ActivityReferences</code> */
 		protected final ActivityReference.Builder referenceBuilder;
 
@@ -123,27 +120,23 @@ public abstract class Activity extends ParentActivity
 		 * Create the <code>AbstractBuilder</code>.
 		 *
 		 * @param  model            The <code>DomainModel</code>, not null
+		 * @param  definition       The <code>Definition</code>, not null
 		 * @param  retriever        The <code>Retriever</code>, not null
 		 * @param  referenceBuilder Builder for the internal
 		 *                          <code>ActivityReference</code> instance, not
-		 *                          null
-		 * @param  creator          Method Reference to the constructor, not
 		 *                          null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final Retriever<Activity> retriever,
-				final ActivityReference.Builder referenceBuilder,
-				final Function<Activity.Builder, Activity> creator)
+				final ActivityReference.Builder referenceBuilder)
 		{
-			super (model, null, retriever);
+			super (model, definition, retriever);
 
 			assert referenceBuilder != null : "referenceBuilder is NULL";
-			assert creator != null : "creator is NULL";
-
 			this.referenceBuilder = referenceBuilder;
-			this.creator = creator;
 
 			this.name = null;
 		}
@@ -151,19 +144,17 @@ public abstract class Activity extends ParentActivity
 		/**
 		 * Create an instance of the <code>Activity</code>.
 		 *
-		 * @param  activity The previously existing <code>Activity</code>
-		 *                  instance, may be null
-		 * @return          The new <code>Activity</code> instance
+		 * @return The new <code>Activity</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected Activity create (final @Nullable Activity activity)
+		protected Activity create ()
 		{
-			this.log.trace ("create: activity={}", activity);
+			this.log.trace ("create:");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
 		}
 
 		/**
@@ -375,18 +366,19 @@ public abstract class Activity extends ParentActivity
 	@Module (includes = {ActivityModule.class})
 	public static final class ActivityBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Activity.Builder, Activity> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>ActivityBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public ActivityBuilderModule (final Function<Activity.Builder, Activity> creator)
+		public ActivityBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is NULL";
+			this.definition = definition;
 		}
 
 		/**
@@ -405,7 +397,7 @@ public abstract class Activity extends ParentActivity
 				final @Named ("TableRetriever") Retriever<Activity> retriever,
 				final ActivityReference.Builder referenceBuilder)
 		{
-			return new Builder (model, retriever, referenceBuilder, this.creator);
+			return new Builder (model, this.definition, retriever, referenceBuilder);
 		}
 	}
 
@@ -420,8 +412,8 @@ public abstract class Activity extends ParentActivity
 
 	protected abstract class Definition extends Element.Definition<Activity>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final ActivityBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<Activity.Builder, Activity> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -434,18 +426,18 @@ public abstract class Activity extends ParentActivity
 				final Class<? extends Activity> impl,
 				final Function<Activity.Builder, Activity> creator)
 		{
-			super (impl);
+			super (Activity.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new ActivityBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
 		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
-		 * @param model The <code>DomainModel</code>, not null
-		 * @return      The <code>Component</code>
+		 * @param  model The <code>DomainModel</code>, not null
+		 * @return       The <code>Component</code>
 		 */
 
 		@Override
@@ -454,36 +446,8 @@ public abstract class Activity extends ParentActivity
 			return DaggerActivity_ActivityComponent.builder ()
 				.domainModelModule (new DomainModel.DomainModelModule (Activity.class, model))
 				.activityReferenceComponent ((ActivityReference.ActivityReferenceComponent) model.getElementComponent (ActivityReference.class))
-				.activityBuilderModule (this.module)
+				.activityBuilderModule (new ActivityBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<Activity, ?>> properties ()
-		{
-			return Activity.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<Activity>> selectors ()
-		{
-			return Activity.METADATA.selectors ();
 		}
 	}
 
@@ -513,9 +477,6 @@ public abstract class Activity extends ParentActivity
 
 	/** The <code>Grade</code> instances associated with the <code>Activity</code> */
 	public static final Property<Activity, Grade> GRADES;
-
-	/** The <code>SubActivity</code> instances for the <code>Activity</code> */
-	public static final Property<Activity, SubActivity> SUBACTIVITIES;
 
 	/** Select the <code>Activity</code> instance by its id */
 	public static final Selector<Activity> SELECTOR_ID;
@@ -551,10 +512,6 @@ public abstract class Activity extends ParentActivity
 		GRADES = Property.of (Activity.class, Grade.class, "grade",
 				Activity::getGrades, Activity::addGrade, Activity::removeGrade);
 
-		SUBACTIVITIES = Property.of (Activity.class, SubActivity.class, "subactivities",
-				Activity::getSubActivities, Activity::addSubActivity, Activity::removeSubActivity,
-				Property.Flags.RECOMMENDED);
-
 		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
 
 		SELECTOR_ALL = Selector.builder (Activity.class)
@@ -562,12 +519,11 @@ public abstract class Activity extends ParentActivity
 			.setName ("all")
 			.build ();
 
-		METADATA = MetaData.builder (Activity.class)
+		METADATA = MetaData.builder (Activity.class, ParentActivity.METADATA)
 			.addProperty (ID)
 			.addProperty (MODEL)
 			.addProperty (NAME)
 			.addProperty (GRADES)
-			.addProperty (SUBACTIVITIES)
 			.addRelationship (REFERENCE, ActivityReference.METADATA, ActivityReference.ACTIVITY)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
@@ -652,7 +608,8 @@ public abstract class Activity extends ParentActivity
 
 	/**
 	 * Get an instance of the <code>Builder</code> for the specified
-	 * <code>DomainModel</code>.
+	 * <code>DomainModel</code>.  The <code>Builder</code> will be initialized
+	 * with the specified <code>ActivityType</code>.
 	 *
 	 * @param  model The <code>DomainModel</code>, not null
 	 * @param  type  The <code>ActivityType</code>, not null
@@ -921,38 +878,4 @@ public abstract class Activity extends ParentActivity
 	 */
 
 	protected abstract boolean removeGrade (Grade grade);
-
-	/**
-	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
-	 * for the <code>Activity</code>.  This method is intended to be used to
-	 * initialize a new <code>Activity</code> instance.
-	 *
-	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
-	 *                       instances, not null
-	 */
-
-	protected abstract void setSubActivities (List<SubActivity> subactivities);
-
-	/**
-	 * Add the specified <code>SubActivity</code> to the
-	 * <code>Activity</code>.
-	 *
-	 * @param  subactivity The <code>SubActivity</code> to add, not null
-	 * @return             <code>True</code> if the <code>SubActivity</code>
-	 *                     was successfully added, <code>False</code> otherwise
-	 */
-
-	protected abstract boolean addSubActivity (SubActivity subactivity);
-
-	/**
-	 * Remove the specified <code>SubActivity</code> from the
-	 * <code>Activity</code>.
-	 *
-	 * @param  subactivity The <code>SubActivity</code> to remove, not null
-	 * @return             <code>True</code> if the <code>SubActivity</code>
-	 *                     was successfully removed, <code>False</code>
-	 *                     otherwise
-	 */
-
-	protected abstract boolean removeSubActivity (SubActivity subactivity);
 }

@@ -70,8 +70,8 @@ public abstract class Role extends Element
 
 	public static class Builder extends Element.Builder<Role>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Role.Builder, Role> creator;
+		/** The <code>IdGenerator</code>*/
+		private final IdGenerator idGenerator;
 
 		/** The <code>DataStore</code> id number for the <code>Role</code> */
 		private @Nullable Long id;
@@ -83,21 +83,21 @@ public abstract class Role extends Element
 		 * Create the <code>Builder</code>.
 		 *
 		 * @param  model       The <code>DomainModel</code>, not null
+		 * @param  definition  The <code>Definition</code>, not null
 		 * @param  idGenerator The <code>IdGenerator</code>, not null
 		 * @param  retriever   The <code>Retriever</code>, not null
-		 * @param  creator     Method Reference to the constructor, not null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final IdGenerator idGenerator,
-				final Retriever<Role> retriever,
-				final Function<Role.Builder, Role> creator)
+				final Retriever<Role> retriever)
 		{
-			super (model, idGenerator, retriever);
+			super (model, definition, retriever);
 
-			assert creator != null : "creator is NULL";
-			this.creator = creator;
+			assert idGenerator != null : "idGenerator is NULL";
+			this.idGenerator = idGenerator;
 
 			this.id = null;
 			this.name = null;
@@ -106,19 +106,35 @@ public abstract class Role extends Element
 		/**
 		 * Create an instance of the <code>Role</code>.
 		 *
-		 * @param  role The previously existing <code>Role</code> instance,
-		 *              may be null
-		 * @return      The new <code>Role</code> instance
+		 * @return The new <code>Role</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected Role create (final @Nullable Role role)
+		protected Role create ()
 		{
-			this.log.trace ("create: role={}", role);
+			this.log.trace ("create:");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
+		}
+
+		/**
+		 * Implementation of the pre-insert hook to set the ID number.
+		 *
+		 * @param  role The <code>Role</code> to be inserted, not null
+		 * @return      The <code>Role</code> to be inserted
+		 */
+
+		@Override
+		protected Role preInsert (final Role role)
+		{
+			assert role != null : "role is NULL";
+
+			this.log.debug ("Setting ID");
+			role.setId (this.idGenerator.nextId ());
+
+			return role;
 		}
 
 		/**
@@ -273,18 +289,19 @@ public abstract class Role extends Element
 	@Module (includes = {RoleModule.class})
 	public static final class RoleBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Role.Builder, Role> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>RoleBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public RoleBuilderModule (final Function<Role.Builder, Role> creator)
+		public RoleBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is NULL";
+			this.definition = definition;
 		}
 
 		/**
@@ -301,7 +318,7 @@ public abstract class Role extends Element
 				final IdGenerator generator,
 				final @Named ("QueryRetriever") Retriever<Role> retriever)
 		{
-			return new Builder (model, generator, retriever, this.creator);
+			return new Builder (model, this.definition, generator, retriever);
 		}
 	}
 
@@ -316,8 +333,8 @@ public abstract class Role extends Element
 
 	protected abstract class Definition extends Element.Definition<Role>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final RoleBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<Role.Builder, Role> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -330,10 +347,10 @@ public abstract class Role extends Element
 				final Class<? extends Role> impl,
 				final Function<Role.Builder, Role> creator)
 		{
-			super (impl);
+			super (Role.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new RoleBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -350,36 +367,8 @@ public abstract class Role extends Element
 			return DaggerRole_RoleComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Role.class, model))
-				.roleBuilderModule (this.module)
+				.roleBuilderModule (new RoleBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<Role, ?>> properties ()
-		{
-			return Role.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<Role>> selectors ()
-		{
-			return Role.METADATA.selectors ();
 		}
 	}
 

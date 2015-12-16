@@ -78,8 +78,8 @@ public abstract class User extends Element
 
 	public static class Builder extends Element.Builder<User>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<User.Builder, User> creator;
+		/** The <code>IdGenerator</code>*/
+		private final IdGenerator idGenerator;
 
 		/** Helper to substitute <code>Enrolment</code> instances */
 		private final Retriever<Enrolment> enrolmentRetriever;
@@ -106,6 +106,7 @@ public abstract class User extends Element
 		 * Create an instance of the <code>Builder</code>.
 		 *
 		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  definition         The <code>Definition</code>, not null
 		 * @param  idGenerator        The <code>IdGenerator</code>, not null
 		 * @param  UserRetriever      <code>Retriever</code> for
 		 *                            <code>User</code> instances, not null
@@ -115,25 +116,23 @@ public abstract class User extends Element
 		 *                            <code>Enrolment</code> instances is
 		 *                            already associated with another
 		 *                            <code>User</code> instance, not null
-		 * @param  creator            Method reference to the Constructor, not
-		 *                            null
 		 */
 
 		private Builder (
 				final DomainModel model,
+				final Definition definition,
 				final IdGenerator idGenerator,
 				final Retriever<User> userRetriever,
 				final Retriever<Enrolment> enrolmentRetriever,
-				final Query<User> enrolmentQuery,
-				final Function<User.Builder, User> creator)
+				final Query<User> enrolmentQuery)
 		{
-			super (model, idGenerator, userRetriever);
+			super (model, definition, userRetriever);
 
-			assert creator != null : "creator is NULL";
+			assert idGenerator != null : "idGenerator is NULL";
 			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
 			assert enrolmentQuery != null : "enrolmentQuery is NULL";
 
-			this.creator = creator;
+			this.idGenerator = idGenerator;
 			this.enrolmentRetriever = enrolmentRetriever;
 			this.enrolmentQuery = enrolmentQuery;
 
@@ -148,19 +147,35 @@ public abstract class User extends Element
 		/**
 		 * Create an instance of the <code>User</code>.
 		 *
-		 * @param  user The previously existing <code>User</code> instance, may
-		 *              be null
-		 * @return      The new <code>User</code> instance
+		 * @return The new <code>User</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected User create (final @Nullable User user)
+		protected User create ()
 		{
-			this.log.trace ("create: user={}", user);
+			this.log.trace ("create:");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
+		}
+
+		/**
+		 * Implementation of the pre-insert hook to set the ID number.
+		 *
+		 * @param  user The <code>User</code> to be inserted, not null
+		 * @return      The <code>User</code> to be inserted
+		 */
+
+		@Override
+		protected User preInsert (final User user)
+		{
+			assert user != null : "user is NULL";
+
+			this.log.debug ("Setting ID");
+			user.setId (this.idGenerator.nextId ());
+
+			return user;
 		}
 
 		/**
@@ -464,18 +479,19 @@ public abstract class User extends Element
 	@Module (includes = {UserModule.class, Enrolment.EnrolmentModule.class})
 	public static final class UserBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<User.Builder, User> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>UserBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public UserBuilderModule (final Function<User.Builder, User> creator)
+		public UserBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is null";
+			this.definition = definition;
 		}
 
 		/**
@@ -497,7 +513,7 @@ public abstract class User extends Element
 		 *
 		 * @param  model              The <code>DomainModel</code>, not null
 		 * @param  idGenerator        The <code>IdGenerator</code>, not null
-		 * @param  UserRetriever      <code>Retriever</code> for
+		 * @param  userRetriever      <code>Retriever</code> for
 		 *                            <code>User</code> instances, not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
 		 *                            <code>Enrolment</code> instances, not null
@@ -515,7 +531,7 @@ public abstract class User extends Element
 				final @Named ("TableRetriever") Retriever<Enrolment> enrolmentRetriever,
 				final @Named ("Enrolment") Query<User> enrolmentQuery)
 		{
-			return new Builder (model, idGenerator, userRetriever, enrolmentRetriever, enrolmentQuery, this.creator);
+			return new Builder (model, this.definition, idGenerator, userRetriever, enrolmentRetriever, enrolmentQuery);
 		}
 	}
 
@@ -530,8 +546,8 @@ public abstract class User extends Element
 
 	protected abstract class Definition extends Element.Definition<User>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final UserBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<User.Builder, User> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -544,10 +560,10 @@ public abstract class User extends Element
 				final Class<? extends User> impl,
 				final Function<User.Builder, User> creator)
 		{
-			super (impl);
+			super (User.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new UserBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -564,38 +580,11 @@ public abstract class User extends Element
 			return DaggerUser_UserComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (User.class, model))
-				.userBuilderModule (this.module)
+				.userBuilderModule (new UserBuilderModule (this))
 				.build ();
 		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<User, ?>> properties ()
-		{
-			return User.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<User>> selectors ()
-		{
-			return User.METADATA.selectors ();
-		}
 	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
@@ -796,9 +785,9 @@ public abstract class User extends Element
 	/**
 	 * Compare two <code>User</code> instances to determine if they are equal
 	 * using all of the instance fields.  For <code>User</code> the
-	 * <code>equals</code> methods excludes the mutable fields from the
-	 * comparison.  This methods compares two <code>User</code> instances
-	 * using all of the fields.
+	 * <code>equals</code> methods excludes the first name and last name fields
+	 * from the comparison.  This methods compares two <code>User</code>
+	 * instances using all of the fields.
 	 *
 	 * @param  element The <code>Element</code> instance to compare to this
 	 *                 instance

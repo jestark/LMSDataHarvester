@@ -74,9 +74,6 @@ public abstract class Grade extends Element
 
 	public static class Builder extends Element.Builder<Grade>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Grade.Builder, Grade> creator;
-
 		/** Helper to substitute <code>Activity</code> instances */
 		private final Retriever<Activity> activityRetriever;
 
@@ -96,32 +93,29 @@ public abstract class Grade extends Element
 		 * Create the <code>Builder</code>.
 		 *
 		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  definition         The <code>Definition</code>, not null
 		 * @param  gradeRetriever     <code>Retriever</code> for
 		 *                            <code>Grade</code> instances, not null
 		 * @param  activityRetriever  <code>Retriever</code> for
 		 *                            <code>Role</code> instances, not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
 		 *                            <code>Enrolment</code> instances, not null
-		 * @param  creator            Method Reference to the constructor, not
-		 *                            null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final Retriever<Grade> gradeRetriever,
 				final Retriever<Activity> activityRetriever,
-				final Retriever<Enrolment> enrolmentRetriever,
-				final Function<Grade.Builder, Grade> creator)
+				final Retriever<Enrolment> enrolmentRetriever)
 		{
-			super (model, null, gradeRetriever);
+			super (model, definition, gradeRetriever);
 
 			assert activityRetriever != null : "activityRetriever is NULL";
 			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
-			assert creator != null : "creator is NULL";
 
 			this.activityRetriever = activityRetriever;
 			this.enrolmentRetriever = enrolmentRetriever;
-			this.creator = creator;
 
 			this.activity = null;
 			this.enrolment = null;
@@ -131,19 +125,17 @@ public abstract class Grade extends Element
 		/**
 		 * Create an instance of the <code>Grade</code>.
 		 *
-		 * @param  grade The previously existing <code>Grade</code> instance,
-		 *               may be null
-		 * @return       The new <code>Grade</code> instance
+		 * @return The new <code>Grade</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected Grade create (final @Nullable Grade grade)
+		protected Grade create ()
 		{
-			this.log.trace ("create: grade={}", grade);
+			this.log.trace ("create:");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
 		}
 
 		/**
@@ -357,18 +349,19 @@ public abstract class Grade extends Element
 	@Module (includes = {GradeModule.class, Activity.ActivityModule.class, Enrolment.EnrolmentModule.class})
 	public static final class GradeBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Grade.Builder, Grade> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
-		 * Create the <code>RoleBuilderModule</code>
+		 * Create the <code>GradeBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public GradeBuilderModule (final Function<Grade.Builder, Grade> creator)
+		public GradeBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is NULL";
+			this.definition = definition;
 		}
 
 		/**
@@ -389,7 +382,7 @@ public abstract class Grade extends Element
 				final @Named ("TableRetriever") Retriever<Activity> activityRetriever,
 				final @Named ("TableRetriever") Retriever<Enrolment> enrolmentRetriever)
 		{
-			return new Builder (model, retriever, activityRetriever, enrolmentRetriever, this.creator);
+			return new Builder (model, this.definition, retriever, activityRetriever, enrolmentRetriever);
 		}
 	}
 
@@ -404,8 +397,8 @@ public abstract class Grade extends Element
 
 	protected abstract class Definition extends Element.Definition<Grade>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final GradeBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<Grade.Builder, Grade> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -418,10 +411,10 @@ public abstract class Grade extends Element
 				final Class<? extends Grade> impl,
 				final Function<Grade.Builder, Grade> creator)
 		{
-			super (impl);
+			super (Grade.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new GradeBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -437,36 +430,8 @@ public abstract class Grade extends Element
 		{
 			return DaggerGrade_GradeComponent.builder ()
 				.domainModelModule (new DomainModel.DomainModelModule (Grade.class, model))
-				.gradeBuilderModule (this.module)
+				.gradeBuilderModule (new GradeBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<Grade, ?>> properties ()
-		{
-			return Grade.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<Grade>> selectors ()
-		{
-			return Grade.METADATA.selectors ();
 		}
 	}
 
@@ -652,7 +617,7 @@ public abstract class Grade extends Element
 	/**
 	 * Compare two <code>Grade</code> instances to determine if they are equal
 	 * using all of the instance fields.  For <code>Grade</code> the
-	 * <code>equals</code> methods excludes the mutable fields from the
+	 * <code>equals</code> methods excludes the grade field from the
 	 * comparison.  This methods compares two <code>Grade</code> instances
 	 * using all of the fields.
 	 *

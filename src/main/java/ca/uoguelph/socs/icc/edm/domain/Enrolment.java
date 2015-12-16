@@ -79,8 +79,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * comparisons.  As a result, two otherwise identical <code>Enrolment</code>
  * instances from different data stores will probably compare as different.
  * <p>
- * Once created an <code>Enrolment</code> instance is immutable except for the
- * <code>finalGrade</code> and <code>usable</code> properties.
+ * Once created an <code>Enrolment</code> instance is immutable.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -100,8 +99,8 @@ public abstract class Enrolment extends Element
 
 	public static class Builder extends Element.Builder<Enrolment>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Enrolment.Builder, Enrolment> creator;
+		/** The <code>IdGenerator</code>*/
+		private final IdGenerator idGenerator;
 
 		/** Helper to substitute <code>Course</code> instances */
 		private final Retriever<Course> courseRetriever;
@@ -127,34 +126,34 @@ public abstract class Enrolment extends Element
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  model           The <code>DomainModel</code>, not null
-		 * @param  idGenerator     The <code>IdGenerator</code>, not null
-		 * @param  EnrolRetriever  <code>Retriever</code> for
-		 *                         <code>Enrolment</code> instances, not null
-		 * @param  roleRetriever   <code>Retriever</code> for <code>Role</code>
-		 *                         instances, not null
-		 * @param  courseRetriever <code>Retriever</code> for <code>Course</code>
-		 *                         instances, not null
-		 * @param  creator         Method Reference to the constructor, not null
+		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  definition         The <code>Definition</code>, not null
+		 * @param  idGenerator        The <code>IdGenerator</code>, not null
+		 * @param  enrolmentRetriever <code>Retriever</code> for
+		 *                            <code>Enrolment</code> instances, not null
+		 * @param  roleRetriever      <code>Retriever</code> for
+		 *                            <code>Role</code> instances, not null
+		 * @param  courseRetriever    <code>Retriever</code> for
+		 *                            <code>Course</code> instances, not null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final IdGenerator idGenerator,
 				final Retriever<Enrolment> enrolmentRetriever,
 				final Retriever<Course> courseRetriever,
-				final Retriever<Role> roleRetriever,
-				final Function<Enrolment.Builder, Enrolment> creator)
+				final Retriever<Role> roleRetriever)
 		{
-			super (model, idGenerator, enrolmentRetriever);
+			super (model, definition, enrolmentRetriever);
 
+			assert idGenerator != null : "idGenerator is NULL";
 			assert courseRetriever != null : "courseRetriever is NULL";
 			assert roleRetriever != null : "roleRetriever is NULL";
-			assert creator != null : "creator is NULL";
 
+			this.idGenerator = idGenerator;
 			this.courseRetriever = courseRetriever;
 			this.roleRetriever = roleRetriever;
-			this.creator = creator;
 
 			this.id = null;
 			this.course = null;
@@ -164,46 +163,37 @@ public abstract class Enrolment extends Element
 		}
 
 		/**
-		 * Update the mutable fields in the <code>Enrolment</code> instance.
-		 *
-		 * @param enrolment The <code>Enrolment</code> instance, not null
-		 * @return          The supplied <code>Enrolment</code> instance
-		 */
-
-		@CheckReturnValue
-		protected final Enrolment updateEnrolment (final Enrolment enrolment)
-		{
-			this.log.trace ("updateEnrolment: enrolment={}", enrolment);
-
-			assert enrolment != null : "enrolment is NULL";
-
-			enrolment.setFinalGrade (this.finalGrade);
-			enrolment.setUsable (Preconditions.checkNotNull (this.usable, "usable"));
-
-			return enrolment;
-		}
-
-		/**
 		 * Create an instance of the <code>Enrolment</code>.
 		 *
-		 * @param  enrolment The previously existing <code>Enrolment</code>
-		 *                   instance, may be null
-		 * @return           The new <code>Enrolment</code> instance
+		 * @return The new <code>Enrolment</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected Enrolment create (final @Nullable Enrolment enrolment)
+		protected Enrolment create ()
 		{
-			this.log.trace ("create: enrolment={}", enrolment);
+			this.log.trace ("create:");
 
-			return (enrolment != null
-					&& this.model.contains (enrolment)
-					&& enrolment.getCourse () == this.getCourse ()
-					&& enrolment.getRole () == this.getRole ())
-				? this.updateEnrolment (enrolment)
-				: this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
+		}
+
+		/**
+		 * Implementation of the pre-insert hook to set the ID number.
+		 *
+		 * @param  enrolment The <code>Enrolment</code> to be inserted, not null
+		 * @return           The <code>Enrolment</code> to be inserted
+		 */
+
+		@Override
+		protected Enrolment preInsert (final Enrolment enrolment)
+		{
+			assert enrolment != null : "enrolment is NULL";
+
+			this.log.debug ("Setting ID");
+			enrolment.setId (this.idGenerator.nextId ());
+
+			return enrolment;
 		}
 
 		/**
@@ -457,18 +447,19 @@ public abstract class Enrolment extends Element
 	@Module (includes = {EnrolmentModule.class, Course.CourseModule.class, Role.RoleModule.class})
 	public static final class EnrolmentBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Enrolment.Builder, Enrolment> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>RoleBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public EnrolmentBuilderModule (final Function<Enrolment.Builder, Enrolment> creator)
+		public EnrolmentBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is NULL";
+			this.definition = definition;
 		}
 
 		/**
@@ -491,7 +482,7 @@ public abstract class Enrolment extends Element
 				final @Named ("QueryRetriever") Retriever<Course> courseRetriever,
 				final @Named ("QueryRetriever") Retriever<Role> roleRetriever)
 		{
-			return new Builder (model, generator, retriever, courseRetriever, roleRetriever, this.creator);
+			return new Builder (model, this.definition, generator, retriever, courseRetriever, roleRetriever);
 		}
 	}
 
@@ -506,8 +497,8 @@ public abstract class Enrolment extends Element
 
 	protected abstract class Definition extends Element.Definition<Enrolment>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final EnrolmentBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<Enrolment.Builder, Enrolment> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -520,10 +511,10 @@ public abstract class Enrolment extends Element
 				final Class<? extends Enrolment> impl,
 				final Function<Enrolment.Builder, Enrolment> creator)
 		{
-			super (impl);
+			super (Enrolment.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new EnrolmentBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -540,36 +531,8 @@ public abstract class Enrolment extends Element
 			return DaggerEnrolment_EnrolmentComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Enrolment.class, model))
-				.enrolmentBuilderModule (this.module)
+				.enrolmentBuilderModule (new EnrolmentBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<Enrolment, ?>> properties ()
-		{
-			return Enrolment.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<Enrolment>> selectors ()
-		{
-			return Enrolment.METADATA.selectors ();
 		}
 	}
 
@@ -630,8 +593,7 @@ public abstract class Enrolment extends Element
 				Property.Flags.REQUIRED);
 
 		FINALGRADE = Property.of (Enrolment.class, Integer.class, "finalgrade",
-				Enrolment::getFinalGrade, Enrolment::setFinalGrade,
-				Property.Flags.MUTABLE);
+				Enrolment::getFinalGrade, Enrolment::setFinalGrade);
 
 		ROLE = Property.of (Enrolment.class, Role.class, "role",
 				Enrolment::getRole, Enrolment::setRole,
@@ -639,7 +601,7 @@ public abstract class Enrolment extends Element
 
 		USABLE = Property.of (Enrolment.class, Boolean.class, "usable",
 				Enrolment::isUsable, Enrolment::setUsable,
-				Property.Flags.REQUIRED, Property.Flags.MUTABLE);
+				Property.Flags.REQUIRED);
 
 		GRADES = Property.of (Enrolment.class, Grade.class, "grades",
 				Enrolment::getGrades, Enrolment::addGrade, Enrolment::removeGrade);
@@ -785,9 +747,9 @@ public abstract class Enrolment extends Element
 	/**
 	 * Compare two <code>Enrolment</code> instances to determine if they are
 	 * equal using all of the instance fields.  For <code>Enrolment</code> the
-	 * <code>equals</code> methods excludes the mutable fields from the
-	 * comparison.  This methods compares two <code>Enrolment</code> instances
-	 * using all of the fields.
+	 * <code>equals</code> methods excludes the usable and final grade fields
+	 * from the comparison.  This methods compares two <code>Enrolment</code>
+	 * instances using all of the fields.
 	 *
 	 * @param  element The <code>Element</code> instance to compare to this
 	 *                 instance
@@ -804,29 +766,6 @@ public abstract class Enrolment extends Element
 			&& Objects.equals (this.getFinalGrade (), ((Enrolment) element).getFinalGrade ())
 			&& Objects.equals (this.isUsable (), ((Enrolment) element).isUsable ());
 	}
-
-	/**
-	 * Compare two <code>Enrolment</code> instances to determine if they are
-	 * equal using the minimum set fields required to identify the
-	 * <code>Element</code> instance.  The <code>equals</code> method for
-	 * <code>Enrolment</code> includes the <code>DataStore</code> id in the
-	 * comparison.  This methods compares two <code>Enrolment</code> instances
-	 * without using the <code>DataStore</code> id.
-	 *
-	 * @param  element The <code>Element</code> instance to compare to this
-	 *                 instance
-	 * @return         <code>True</code> if the two <code>Enrolment</code>
-	 *                 instances are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equalsUnique (final @Nullable Element element)
-	{
-		return (element == this) ? true : (element instanceof Enrolment)
-			&& Objects.equals (this.getCourse (), ((Enrolment) element).getCourse ())
-			&& Objects.equals (this.getRole (), ((Enrolment) element).getRole ());
-	}
-
 
 	/**
 	 * Compute a <code>hashCode</code> of the <code>Enrolment</code> instance.

@@ -59,8 +59,8 @@ public abstract class Network extends Element
 
 	public static class Builder extends Element.Builder<Network>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Network.Builder, Network> creator;
+		/** The <code>IdGenerator</code>*/
+		private final IdGenerator idGenerator;
 
 		/** The <code>DataStore</code> id number for the <code>Network</code> */
 		private @Nullable Long id;
@@ -72,21 +72,21 @@ public abstract class Network extends Element
 		 * Create the <code>Builder</code>.
 		 *
 		 * @param  model       The <code>DomainModel</code>, not null
+		 * @param  definition  The <code>Definition</code>, not null
 		 * @param  idGenerator The <code>IdGenerator</code>, not null
 		 * @param  retriever   The <code>Retriever</code>, not null
-		 * @param  creator     Method Reference to the constructor, not null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final IdGenerator idGenerator,
-				final Retriever<Network> retriever,
-				final Function<Network.Builder, Network> creator)
+				final Retriever<Network> retriever)
 		{
-			super (model, idGenerator, retriever);
+			super (model, definition, retriever);
 
-			assert creator != null : "creator is NULL";
-			this.creator = creator;
+			assert idGenerator != null : "idGenerator is NULL";
+			this.idGenerator = idGenerator;
 
 			this.id = null;
 			this.name = null;
@@ -95,19 +95,35 @@ public abstract class Network extends Element
 		/**
 		 * Create an instance of the <code>Network</code>.
 		 *
-		 * @param  network The previously existing <code>Network</code>
-		 *                 instance, may be null
-		 * @return         The new <code>Network</code> instance
+		 * @return The new <code>Network</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected Network create (final @Nullable Network network)
+		protected Network create ()
 		{
-			this.log.trace ("create: network={}", network);
+			this.log.trace ("create:");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
+		}
+
+		/**
+		 * Implementation of the pre-insert hook to set the ID number.
+		 *
+		 * @param  network The <code>Network</code> to be inserted, not null
+		 * @return         The <code>Network</code> to be inserted
+		 */
+
+		@Override
+		protected Network preInsert (final Network network)
+		{
+			assert network != null : "network is NULL";
+
+			this.log.debug ("Setting ID");
+			network.setId (this.idGenerator.nextId ());
+
+			return network;
 		}
 
 		/**
@@ -262,18 +278,19 @@ public abstract class Network extends Element
 	@Module (includes = {NetworkModule.class})
 	public static final class NetworkBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<Network.Builder, Network> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>NetworkBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public NetworkBuilderModule (final Function<Network.Builder, Network> creator)
+		public NetworkBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is NULL";
+			this.definition = definition;
 		}
 
 		/**
@@ -290,7 +307,7 @@ public abstract class Network extends Element
 				final IdGenerator generator,
 				final @Named ("QueryRetriever") Retriever<Network> retriever)
 		{
-			return new Builder (model, generator, retriever, this.creator);
+			return new Builder (model, this.definition, generator, retriever);
 		}
 	}
 
@@ -305,8 +322,8 @@ public abstract class Network extends Element
 
 	protected abstract class Definition extends Element.Definition<Network>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final NetworkBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<Network.Builder, Network> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -319,10 +336,10 @@ public abstract class Network extends Element
 				final Class<? extends Network> impl,
 				final Function<Network.Builder, Network> creator)
 		{
-			super (impl);
+			super (Network.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new NetworkBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -339,36 +356,8 @@ public abstract class Network extends Element
 			return DaggerNetwork_NetworkComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Network.class, model))
-				.networkBuilderModule (this.module)
+				.networkBuilderModule (new NetworkBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<Network, ?>> properties ()
-		{
-			return Network.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<Network>> selectors ()
-		{
-			return Network.METADATA.selectors ();
 		}
 	}
 

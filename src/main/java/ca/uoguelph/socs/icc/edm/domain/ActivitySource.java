@@ -78,8 +78,8 @@ public abstract class ActivitySource extends Element
 
 	public static class Builder extends Element.Builder<ActivitySource>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<ActivitySource.Builder, ActivitySource> creator;
+		/** The <code>IdGenerator</code>*/
+		private final IdGenerator idGenerator;
 
 		/** The <code>DataStore</code> id number for the <code>ActivitySource</code> */
 		private @Nullable Long id;
@@ -91,21 +91,21 @@ public abstract class ActivitySource extends Element
 		 * Create the <code>Builder</code>.
 		 *
 		 * @param  model       The <code>DomainModel</code>, not null
+		 * @param  definition  The <code>Definition</code>, not null
 		 * @param  idGenerator The <code>IdGenerator</code>, not null
 		 * @param  retriever   The <code>Retriever</code>, not null
-		 * @param  creator     Method Reference to the constructor, not null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final IdGenerator idGenerator,
-				final Retriever<ActivitySource> retriever,
-				final Function<ActivitySource.Builder, ActivitySource> creator)
+				final Retriever<ActivitySource> retriever)
 		{
-			super (model, idGenerator, retriever);
+			super (model, definition, retriever);
 
-			assert creator != null : "creator is NULL";
-			this.creator = creator;
+			assert idGenerator != null : "idGenerator is NULL";
+			this.idGenerator = idGenerator;
 
 			this.id = null;
 			this.name = null;
@@ -114,19 +114,36 @@ public abstract class ActivitySource extends Element
 		/**
 		 * Create an instance of the <code>ActivitySource</code>.
 		 *
-		 * @param  source The previously existing <code>ActivitySource</code>
-		 *                instance, may be null
-		 * @return        The new <code>ActivitySource</code> instance
+		 * @return The new <code>ActivitySource</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected ActivitySource create (final @Nullable ActivitySource source)
+		protected ActivitySource create ()
 		{
-			this.log.trace ("create: source={}", source);
+			this.log.trace ("create");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
+		}
+
+		/**
+		 * Implementation of the pre-insert hook to set the ID number.
+		 *
+		 * @param  source The <code>ActivitySource</code> to be inserted, not
+		 *                null
+		 * @return        The <code>ActivitySource</code> to be inserted
+		 */
+
+		@Override
+		protected ActivitySource preInsert (final ActivitySource source)
+		{
+			assert source != null : "source is NULL";
+
+			this.log.debug ("Setting ID");
+			source.setId (this.idGenerator.nextId ());
+
+			return source;
 		}
 
 		/**
@@ -281,18 +298,19 @@ public abstract class ActivitySource extends Element
 	@Module (includes = {ActivitySourceModule.class})
 	public static final class ActivitySourceBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<ActivitySource.Builder, ActivitySource> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>ActivitySourceBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public ActivitySourceBuilderModule (final Function<ActivitySource.Builder, ActivitySource> creator)
+		public ActivitySourceBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is NULL";
+			this.definition = definition;
 		}
 
 		/**
@@ -309,7 +327,7 @@ public abstract class ActivitySource extends Element
 				final IdGenerator generator,
 				final @Named ("QueryRetriever") Retriever<ActivitySource> retriever)
 		{
-			return new Builder (model, generator, retriever, this.creator);
+			return new Builder (model, this.definition, generator, retriever);
 		}
 	}
 
@@ -324,8 +342,8 @@ public abstract class ActivitySource extends Element
 
 	protected abstract class Definition extends Element.Definition<ActivitySource>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final ActivitySourceBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<ActivitySource.Builder, ActivitySource> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -338,10 +356,10 @@ public abstract class ActivitySource extends Element
 				final Class<? extends ActivitySource> impl,
 				final Function<ActivitySource.Builder, ActivitySource> creator)
 		{
-			super (impl);
+			super (ActivitySource.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new ActivitySourceBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -358,36 +376,8 @@ public abstract class ActivitySource extends Element
 			return DaggerActivitySource_ActivitySourceComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (ActivitySource.class, model))
-				.activitySourceBuilderModule (this.module)
+				.activitySourceBuilderModule (new ActivitySourceBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<ActivitySource, ?>> properties ()
-		{
-			return ActivitySource.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<ActivitySource>> selectors ()
-		{
-			return ActivitySource.METADATA.selectors ();
 		}
 	}
 

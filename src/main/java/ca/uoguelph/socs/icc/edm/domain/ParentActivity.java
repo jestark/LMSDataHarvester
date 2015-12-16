@@ -19,8 +19,23 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.List;
 import java.util.Set;
 
+import dagger.Module;
+
+import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
+import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
+
 /**
- *
+ * Common base class for <code>Activity</code> and <code>SubActivity</code>.
+ * While most <code>SubActivity</code> implementations will have an
+ * <code>Activity</code> as the parent, some will have a
+ * <code>SubActivity</code> as the parent.  This class exists to abstract the
+ * difference between <code>Activity</code> and <code>SubActivity</code> such
+ * that <code>SubActivity</code> can point to it as the parent.  Otherwise,
+ * there would need to be multiple <code>SubActivity</code> interface classes to
+ * represent the different levels of nesting.
+ * <p>
+ * This class should only be reference in the context of a
+ * <code>SubActivity</code>.
  *
  * @author  James E. Stark
  * @version 1.0
@@ -28,8 +43,41 @@ import java.util.Set;
 
 public abstract class ParentActivity extends Element
 {
+	/**
+	 * Dagger module for creating <code>Retriever</code> instances.  This module
+	 * contains implementation-independent information.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	@Module
+	public static final class ParentActivityModule extends Element.ElementModule<ParentActivity> {}
+
+	/** The <code>MetaData</code> for the <code>SubActivity</code> */
+	protected static final MetaData<ParentActivity> METADATA;
+
+	/** The <code>SubActivity</code> instances for the <code>SubActivity</code> */
+	public static final Property<ParentActivity, SubActivity> SUBACTIVITIES;
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Initialize the <code>MetaData</code>, <code>Property</code> and
+	 * <code>Selector</code> instances for the <code>ParentActivity</code>.
+	 */
+
+	static
+	{
+		SUBACTIVITIES = Property.of (ParentActivity.class, SubActivity.class, "subactivities",
+				ParentActivity::getSubActivities, ParentActivity::addSubActivity, ParentActivity::removeSubActivity,
+				Property.Flags.RECOMMENDED);
+
+		METADATA = MetaData.builder (ParentActivity.class)
+			.addProperty (SUBACTIVITIES)
+			.build ();
+	}
 
 	/**
 	 * Create the <code>ParentActivity</code>
@@ -110,4 +158,38 @@ public abstract class ParentActivity extends Element
 	 */
 
 	public abstract List<SubActivity> getSubActivities ();
+
+		/**
+	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
+	 * for the <code>Activity</code>.  This method is intended to be used to
+	 * initialize a new <code>Activity</code> instance.
+	 *
+	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
+	 *                       instances, not null
+	 */
+
+	protected abstract void setSubActivities (List<SubActivity> subactivities);
+
+	/**
+	 * Add the specified <code>SubActivity</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to add, not null
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully added, <code>False</code> otherwise
+	 */
+
+	protected abstract boolean addSubActivity (SubActivity subactivity);
+
+	/**
+	 * Remove the specified <code>SubActivity</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  subactivity The <code>SubActivity</code> to remove, not null
+	 * @return             <code>True</code> if the <code>SubActivity</code>
+	 *                     was successfully removed, <code>False</code>
+	 *                     otherwise
+	 */
+
+	protected abstract boolean removeSubActivity (SubActivity subactivity);
 }

@@ -62,8 +62,8 @@ public abstract class ActivityReference extends Element
 
 	public static class Builder extends Element.Builder<ActivityReference>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<ActivityReference.Builder, ActivityReference> creator;
+		/** The <code>IdGenerator</code>*/
+		private final IdGenerator idGenerator;
 
 		/** Helper to substitute <code>Course</code> instances */
 		private final Retriever<Course> courseRetriever;
@@ -84,6 +84,7 @@ public abstract class ActivityReference extends Element
 		 * Create the <code>Builder</code>.
 		 *
 		 * @param  model           The <code>DomainModel</code>, not null
+		 * @param  definition      The <code>Definition</code>, not null
 		 * @param  idGenerator     The <code>IdGenerator</code>, not null
 		 * @param  refRetriever    <code>Retriever</code> for
 		 *                         <code>ActivityReference</code>, instances not
@@ -92,26 +93,25 @@ public abstract class ActivityReference extends Element
 		 *                         <code>ActivityType</code> instances, not null
 		 * @param  courseRetriever <code>Retriever</code> for <code>Course</code>
 		 *                         instances, not null
-		 * @param  creator         Method Reference to the constructor, not null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final IdGenerator idGenerator,
 				final Retriever<ActivityReference> refRetriever,
 				final Retriever<ActivityType> typeRetriever,
-				final Retriever<Course> courseRetriever,
-				final Function<ActivityReference.Builder, ActivityReference> creator)
+				final Retriever<Course> courseRetriever)
 		{
-			super (model, idGenerator, refRetriever);
+			super (model, definition, refRetriever);
 
+			assert idGenerator != null : "idGenerator is NULL";
 			assert typeRetriever != null : "typeRetriever is NULL";
 			assert courseRetriever != null : "courseRetriever is NULL";
-			assert creator != null : "creator is NULL";
 
+			this.idGenerator = idGenerator;
 			this.typeRetriever = typeRetriever;
 			this.courseRetriever = courseRetriever;
-			this.creator = creator;
 
 			this.id = null;
 			this.course = null;
@@ -121,20 +121,36 @@ public abstract class ActivityReference extends Element
 		/**
 		 * Create an instance of the <code>ActivityReference</code>.
 		 *
-		 * @param  reference The previously existing
-		 *                   <code>ActivityReference</code> instance, may be
-		 *                   null
-		 * @return           The new <code>ActivityReference</code> instance
+		 * @return The new <code>ActivityReference</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected ActivityReference create (final @Nullable ActivityReference reference)
+		protected ActivityReference create ()
 		{
-			this.log.trace ("create: reference={}", reference);
+			this.log.trace ("create:");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
+		}
+
+		/**
+		 * Implementation of the pre-insert hook to set the ID number.
+		 *
+		 * @param  ref The <code>ActivityReference</code> to be inserted, not
+		 *             null
+		 * @return     The <code>ActivityReference</code> to be inserted
+		 */
+
+		@Override
+		protected ActivityReference preInsert (final ActivityReference ref)
+		{
+			assert ref != null : "ref is NULL";
+
+			this.log.debug ("Setting ID");
+			ref.setId (this.idGenerator.nextId ());
+
+			return ref;
 		}
 
 		/**
@@ -305,18 +321,19 @@ public abstract class ActivityReference extends Element
 	@Module (includes = {ActivityReferenceModule.class, ActivityType.ActivityTypeModule.class, Course.CourseModule.class})
 	public static final class ActivityReferenceBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<ActivityReference.Builder, ActivityReference> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>ActivityReferenceBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public ActivityReferenceBuilderModule (final Function<ActivityReference.Builder, ActivityReference> creator)
+		public ActivityReferenceBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is NULL";
+			this.definition = definition;
 		}
 
 		/**
@@ -341,7 +358,7 @@ public abstract class ActivityReference extends Element
 				final @Named ("QueryRetriever") Retriever<ActivityType> typeRetriever,
 				final @Named ("QueryRetriever") Retriever<Course> courseRetriever)
 		{
-			return new Builder (model, generator, refRetriever, typeRetriever, courseRetriever, this.creator);
+			return new Builder (model, this.definition, generator, refRetriever, typeRetriever, courseRetriever);
 		}
 	}
 
@@ -356,8 +373,8 @@ public abstract class ActivityReference extends Element
 
 	protected abstract class Definition extends Element.Definition<ActivityReference>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final ActivityReferenceBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<ActivityReference.Builder, ActivityReference> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -370,10 +387,10 @@ public abstract class ActivityReference extends Element
 				final Class<? extends ActivityReference> impl,
 				final Function<ActivityReference.Builder, ActivityReference> creator)
 		{
-			super (impl);
+			super (ActivityReference.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new ActivityReferenceBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -390,36 +407,8 @@ public abstract class ActivityReference extends Element
 			return DaggerActivityReference_ActivityReferenceComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Activity.class, model))
-				.activityReferenceBuilderModule (this.module)
+				.activityReferenceBuilderModule (new ActivityReferenceBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<ActivityReference, ?>> properties ()
-		{
-			return ActivityReference.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<ActivityReference>> selectors ()
-		{
-			return ActivityReference.METADATA.selectors ();
 		}
 	}
 

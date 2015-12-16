@@ -74,8 +74,8 @@ public abstract class LogEntry extends Element
 
 	public static class Builder extends Element.Builder<LogEntry>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<LogEntry.Builder, LogEntry> creator;
+		/** The <code>IdGenerator</code>*/
+		private final IdGenerator idGenerator;
 
 		/** Helper to substitute <code>Action</code> instances */
 		private final Retriever<Action> actionRetriever;
@@ -114,6 +114,7 @@ public abstract class LogEntry extends Element
 		 * Create the <code>Builder</code>.
 		 *
 		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  definition         The <code>Definition</code>, not null
 		 * @param  idGenerator        The <code>IdGenerator</code>, not null
 		 * @param  logRetriever       <code>Retriever</code> for
 		 *                            <code>LogEntry</code> instances, not null
@@ -125,33 +126,31 @@ public abstract class LogEntry extends Element
 		 *                            <code>Enrolment</code> instances, not null
 		 * @param  networkRetriever   <code>Retriever</code> for
 		 *                            <code>Network</code> instances, not null
-		 * @param  creator            Method Reference to the constructor, not
-		 *                            null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final IdGenerator idGenerator,
 				final Retriever<LogEntry> logRetriever,
 				final Retriever<Action> actionRetriever,
 				final Retriever<Activity> activityRetriever,
 				final Retriever<Enrolment> enrolmentRetriever,
-				final Retriever<Network> networkRetriever,
-				final Function<LogEntry.Builder, LogEntry> creator)
+				final Retriever<Network> networkRetriever)
 		{
-			super (model, idGenerator, logRetriever);
+			super (model, definition, logRetriever);
 
+			assert idGenerator != null : "idGenerator is NULL";
 			assert actionRetriever != null : "actionRetriever is NULL";
 			assert activityRetriever != null : "activityRetriever is NULL";
 			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
 			assert networkRetriever != null : "networkRetriever is NULL";
-			assert creator != null : "creator is NULL";
 
+			this.idGenerator = idGenerator;
 			this.actionRetriever = actionRetriever;
 			this.activityRetriever = activityRetriever;
 			this.enrolmentRetriever = enrolmentRetriever;
 			this.networkRetriever = networkRetriever;
-			this.creator = creator;
 
 			this.id = null;
 			this.action = null;
@@ -162,29 +161,58 @@ public abstract class LogEntry extends Element
 			this.referenceBuilder = null;
 		}
 
-/*
-			if (this.referenceBuilder != null)
-			{
-				this.referenceBuilder.setEntry (this.element)
-					.build ();
-			}
-*/
 		/**
 		 * Create an instance of the <code>LogEntry</code>.
 		 *
-		 * @param  entry The previously existing <code>LogEntry</code> instance,
-		 *                may be null
-		 * @return        The new <code>LogEntry</code> instance
+		 * @return The new <code>LogEntry</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected LogEntry create (final @Nullable LogEntry entry)
+		protected LogEntry create ()
 		{
-			this.log.trace ("create: entry={}", entry);
+			this.log.trace ("create:");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
+		}
+
+		/**
+		 * Implementation of the pre-insert hook to set the ID number.
+		 *
+		 * @param  entry The <code>LogEntry</code> to be inserted, not null
+		 * @return       The <code>LogEntry</code> to be inserted
+		 */
+
+		@Override
+		protected LogEntry preInsert (final LogEntry entry)
+		{
+			assert entry != null : "entry is NULL";
+
+			this.log.debug ("Setting ID");
+			entry.setId (this.idGenerator.nextId ());
+
+			return entry;
+		}
+
+		/**
+		 * Implementation of the post-Insert hook to create the associated
+		 * <code>LogReference</code>, if necessary.
+		 *
+		 * @param  entry The <code>LogEntry</code> not null
+		 * @return       The <code>LogEntry</code>
+		 */
+
+		@Override
+		protected LogEntry postInsert (final LogEntry entry)
+		{
+			if (this.referenceBuilder != null)
+			{
+				this.referenceBuilder.setEntry (entry)
+					.build ();
+			}
+
+			return entry;
 		}
 
 		/**
@@ -439,17 +467,7 @@ public abstract class LogEntry extends Element
 
 			if (subActivity != null)
 			{
-	//			this.subActivity = DataStoreProxy.getInstance (SubActivity.class,
-	//					subActivity.getClass (),
-	//					SubActivity.SELECTOR_ID,
-	//					datastore)
-	//				.fetch (subActivity);
-	//
-	//			if (this.subActivity == null)
-	//			{
-	//				this.log.error ("The specified SubActivity does not exist in the DataStore");
-	//				throw new IllegalArgumentException ("SubActivity is not in the DataStore");
-	//			}
+				this.referenceBuilder = LogReference.builder (this.model, subActivity);
 			}
 			else
 			{
@@ -528,21 +546,23 @@ public abstract class LogEntry extends Element
 	 * @version 1.0
 	 */
 
-	@Module (includes = {LogEntryModule.class, Action.ActionModule.class, Activity.ActivityModule.class, Enrolment.EnrolmentModule.class, Network.NetworkModule.class})
+	@Module (includes = {LogEntryModule.class, Action.ActionModule.class, Activity.ActivityModule.class,
+		Enrolment.EnrolmentModule.class, Network.NetworkModule.class})
 	public static final class LogEntryBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<LogEntry.Builder, LogEntry> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>LogEntryBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public LogEntryBuilderModule (final Function<LogEntry.Builder, LogEntry> creator)
+		public LogEntryBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is NULL";
+			this.definition = definition;
 		}
 
 		/**
@@ -571,7 +591,8 @@ public abstract class LogEntry extends Element
 				final @Named ("TableRetriever") Retriever<Enrolment> enrolmentRetriever,
 				final @Named ("QueryRetriever") Retriever<Network> networkRetriever)
 		{
-			return new Builder (model, generator, retriever, actionRetriever, activityRetriever, enrolmentRetriever, networkRetriever, this.creator);
+			return new Builder (model, this.definition, generator, retriever, actionRetriever,
+					activityRetriever, enrolmentRetriever, networkRetriever);
 		}
 	}
 
@@ -586,8 +607,8 @@ public abstract class LogEntry extends Element
 
 	protected abstract class Definition extends Element.Definition<LogEntry>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final LogEntryBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<LogEntry.Builder, LogEntry> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -600,10 +621,10 @@ public abstract class LogEntry extends Element
 				final Class<? extends LogEntry> impl,
 				final Function<LogEntry.Builder, LogEntry> creator)
 		{
-			super (impl);
+			super (LogEntry.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new LogEntryBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -620,36 +641,8 @@ public abstract class LogEntry extends Element
 			return DaggerLogEntry_LogEntryComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (LogEntry.class, model))
-				.logEntryBuilderModule (this.module)
+				.logEntryBuilderModule (new LogEntryBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<LogEntry, ?>> properties ()
-		{
-			return LogEntry.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<LogEntry>> selectors ()
-		{
-			return LogEntry.METADATA.selectors ();
 		}
 	}
 

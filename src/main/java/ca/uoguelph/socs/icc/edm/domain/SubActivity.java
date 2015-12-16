@@ -36,6 +36,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.TableRetriever;
 import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
@@ -73,14 +74,17 @@ public abstract class SubActivity extends ParentActivity
 
 	public static class Builder extends Element.Builder<SubActivity>
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<SubActivity.Builder, SubActivity> creator;
+		/** The <code>IdGenerator</code>*/
+		private final IdGenerator idGenerator;
 
-		/** The parent */
-		protected final ParentActivity parent;
+		/** Helper to substitute <code>ParentActivity</code> instances */
+		private final Retriever<ParentActivity> parentRetriever;
 
 		/** The <code>DataStore</code> id number for the <code>SubActivity</code> */
 		protected @Nullable Long id;
+
+		/** The parent */
+		protected @Nullable ParentActivity parent;
 
 		/** The name of the <code>SubActivity</code> */
 		protected @Nullable String name;
@@ -88,23 +92,30 @@ public abstract class SubActivity extends ParentActivity
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  model        The <code>DomainModel</code>, not null
-		 * @param  idGenerator  The <code>IdGenerator</code>, not null
-		 * @param  subRetriever <code>Retriever</code> for
-		 *                      <code>SubActivity</code> instances, not null
-		 * @param  creator      Method Reference to the constructor, not null
+		 * @param  model           The <code>DomainModel</code>, not null
+		 * @param  definition      The <code>Definition</code>, not null
+		 * @param  idGenerator     The <code>IdGenerator</code>, not null
+		 * @param  subRetriever    <code>Retriever</code> for
+		 *                         <code>SubActivity</code> instances, not null
+		 * @param  parentRetriever <code>Retriever</code> for
+		 *                         <code>ParentActivity</code> instances, not
+		 *                         null
 		 */
 
 		protected Builder (
 				final DomainModel model,
+				final Definition definition,
 				final IdGenerator idGenerator,
 				final Retriever<SubActivity> subRetriever,
-				final Function<SubActivity.Builder, SubActivity> creator)
+				final Retriever<ParentActivity> parentRetriever)
 		{
-			super (model, idGenerator, subRetriever);
+			super (model, definition, subRetriever);
 
-			assert creator != null : "creator is NULL";
-			this.creator = creator;
+			assert idGenerator != null : "idGenerator is NULL";
+			assert parentRetriever != null : "parentRetriever is NULL";
+
+			this.idGenerator = idGenerator;
+			this.parentRetriever = parentRetriever;
 
 			this.parent = null;
 			this.id = null;
@@ -114,19 +125,36 @@ public abstract class SubActivity extends ParentActivity
 		/**
 		 * Create an instance of the <code>SubActivity</code>.
 		 *
-		 * @param  subActivity The previously existing <code>SubActivity</code>
-		 *                     instance, may be null
-		 * @return             The new <code>SubActivity</code> instance
+		 * @return The new <code>SubActivity</code> instance
 		 *
 		 * @throws NullPointerException if any required field is missing
 		 */
 
 		@Override
-		protected SubActivity create (final @Nullable SubActivity subActivity)
+		protected SubActivity create ()
 		{
-			this.log.trace ("create: subActivity={}", subActivity);
+			this.log.trace ("create:");
 
-			return this.creator.apply (this);
+			return ((Definition) this.definition).creator.apply (this);
+		}
+
+		/**
+		 * Implementation of the pre-insert hook to set the ID number.
+		 *
+		 * @param  subActivity The <code>SubActivity</code> to be inserted, not
+		 *                     null
+		 * @return             The <code>SubActivity</code> to be inserted
+		 */
+
+		@Override
+		protected SubActivity preInsert (final SubActivity subActivity)
+		{
+			assert subActivity != null : "subActivity is NULL";
+
+			this.log.debug ("Setting ID");
+			subActivity.setId (this.idGenerator.nextId ());
+
+			return subActivity;
 		}
 
 		/**
@@ -240,6 +268,22 @@ public abstract class SubActivity extends ParentActivity
 		{
 			return this.parent;
 		}
+
+		/**
+		 * Set the <code>ParentActivity</code>.
+		 *
+		 * @param  parent The <code>ParentActivity</code>, not null
+		 * @return        This <code>Builder</code>
+		 */
+
+		private final Builder setParent (final ParentActivity parent)
+		{
+			this.log.trace ("setParent: parent={}", parent);
+
+			this.parent = this.verifyRelationship (this.parentRetriever, parent, "parent");
+
+			return this;
+		}
 	}
 
 	/**
@@ -282,39 +326,44 @@ public abstract class SubActivity extends ParentActivity
 	 * @version 1.0
 	 */
 
-	@Module (includes = {SubActivityModule.class})
+	@Module (includes = {SubActivityModule.class, ParentActivity.ParentActivityModule.class})
 	public static final class SubActivityBuilderModule
 	{
-		/** Method reference to the implementation constructor  */
-		private final Function<SubActivity.Builder, SubActivity> creator;
+		/** The <code>Definition</code> */
+		private final Definition definition;
 
 		/**
 		 * Create the <code>SubActivityBuilderModule</code>
 		 *
-		 * @param  creator Method reference to the Constructor, not null
+		 * @param  definition The <code>Definition</code>, not null
 		 */
 
-		public SubActivityBuilderModule (final Function<SubActivity.Builder, SubActivity> creator)
+		public SubActivityBuilderModule (final Definition definition)
 		{
-			this.creator = creator;
+			assert definition != null : "definition is null";
+			this.definition = definition;
 		}
 
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  model     The <code>DomainModel</code>, not null
-		 * @param  generator The <code>IdGenerator</code>, not null
-		 * @param  retriever <code>Retriever</code> for <code>SubActivity</code>
-		 *                   instances, not null
+		 * @param  model           The <code>DomainModel</code>, not null
+		 * @param  generator       The <code>IdGenerator</code>, not null
+		 * @param  retriever       <code>Retriever</code> for
+		 *                         <code>SubActivity</code> instances, not null
+		 * @param  parentRetriever <code>Retriever</code> for
+		 *                         <code>ParentActivity</code> instances, not
+		 *                         null
 		 */
 
 		@Provides
 		protected Builder createBuilder (
 				final DomainModel model,
 				final IdGenerator generator,
-				final @Named ("TableRetriever") Retriever<SubActivity> retriever)
+				final @Named ("TableRetriever") Retriever<SubActivity> retriever,
+				final @Named ("TableRetriever") Retriever<ParentActivity> parentRetriever)
 		{
-			return new Builder (model, generator, retriever, this.creator);
+			return new Builder (model, this.definition, generator, retriever, parentRetriever);
 		}
 	}
 
@@ -329,8 +378,8 @@ public abstract class SubActivity extends ParentActivity
 
 	protected abstract class Definition extends Element.Definition<SubActivity>
 	{
-		/** The module for creating <code>Builder</code> instances */
-		private final SubActivityBuilderModule module;
+		/** Method reference to the implementation constructor  */
+		private final Function<SubActivity.Builder, SubActivity> creator;
 
 		/**
 		 * Create the <code>Definition</code>.
@@ -343,10 +392,10 @@ public abstract class SubActivity extends ParentActivity
 				final Class<? extends SubActivity> impl,
 				final Function<SubActivity.Builder, SubActivity> creator)
 		{
-			super (impl);
+			super (SubActivity.METADATA, impl);
 
 			assert creator != null : "creator is NULL";
-			this.module = new SubActivityBuilderModule (creator);
+			this.creator = creator;
 		}
 
 		/**
@@ -363,36 +412,8 @@ public abstract class SubActivity extends ParentActivity
 			return DaggerSubActivity_SubActivityComponent.builder ()
 				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (SubActivity.class, model))
-				.subActivityBuilderModule (this.module)
+				.subActivityBuilderModule (new SubActivityBuilderModule (this))
 				.build ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		@Override
-		public Stream<Property<SubActivity, ?>> properties ()
-		{
-			return SubActivity.METADATA.properties ();
-		}
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Selector</code> instances
-		 */
-
-		@Override
-		public Stream<Selector<SubActivity>> selectors ()
-		{
-			return SubActivity.METADATA.selectors ();
 		}
 	}
 
@@ -419,9 +440,6 @@ public abstract class SubActivity extends ParentActivity
 
 	/** The <code>LogEntry</code> instances associated with the <code>SubActivity</code> */
 	public static final Property<SubActivity, LogReference> REFERENCES;
-
-	/** The <code>SubActivity</code> instances for the <code>SubActivity</code> */
-	public static final Property<SubActivity, SubActivity> SUBACTIVITIES;
 
 	/** Select the <code>SubActivity</code> instance by its id */
 	public static final Selector<SubActivity> SELECTOR_ID;
@@ -455,9 +473,6 @@ public abstract class SubActivity extends ParentActivity
 		REFERENCES = Property.of (SubActivity.class, LogReference.class, "references",
 				SubActivity::getReferences, SubActivity::addReference, SubActivity::removeReference);
 
-		SUBACTIVITIES = Property.of (SubActivity.class, SubActivity.class, "subactivities",
-				SubActivity::getSubActivities, SubActivity::addSubActivity, SubActivity::removeSubActivity);
-
 		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
 
 		SELECTOR_ALL = Selector.builder (SubActivity.class)
@@ -465,14 +480,13 @@ public abstract class SubActivity extends ParentActivity
 			.setName ("all")
 			.build ();
 
-		METADATA = MetaData.builder (SubActivity.class)
+		METADATA = MetaData.builder (SubActivity.class, ParentActivity.METADATA)
 			.addProperty (ID)
 			.addProperty (MODEL)
 			.addProperty (NAME)
 			.addProperty (PARENT)
 			.addProperty (REFERENCES)
-			.addProperty (SUBACTIVITIES)
-//			.addRelationship ()
+			.addRelationship (PARENT, ParentActivity.METADATA, ParentActivity.SUBACTIVITIES)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.build ();
@@ -516,7 +530,8 @@ public abstract class SubActivity extends ParentActivity
 
 	/**
 	 * Get an instance of the <code>Builder</code> for the specified
-	 * <code>DomainModel</code>.
+	 * <code>DomainModel</code>.  The <code>Builder</code> will be initialized
+	 * with the supplied <code>ParentActivity</code> instance.
 	 *
 	 * @param  model  The <code>DomainModel</code>, not null
 	 * @param  parent The parent <code>Activity</code>, not null
@@ -532,9 +547,10 @@ public abstract class SubActivity extends ParentActivity
 		Preconditions.checkNotNull (model, "model");
 		Preconditions.checkNotNull (parent, "parent");
 
-//		(SubActivity.Builder) model.getElementComponent (SubActivity.class, SubActivity.getSubActivityClass (parent))
-//			.getBuilder ();
-		return null;
+		return ((SubActivity.Builder) model.getElementComponent (SubActivity.class,
+					SubActivity.getSubActivityClass (parent.getClass ()))
+			.getBuilder ())
+			.setParent (parent);
 	}
 
 	/**
@@ -784,38 +800,4 @@ public abstract class SubActivity extends ParentActivity
 	 */
 
 	protected abstract boolean removeReference (LogReference reference);
-
-	/**
-	 * Initialize the <code>List</code> of <code>SubActivity</code> instances
-	 * for the <code>SubActivity</code>.  This method is intended to be used to
-	 * initialize a new <code>SubActivity</code> instance.
-	 *
-	 * @param  subactivities The <code>List</code> of <code>SubActivity</code>
-	 *                       instances, not null
-	 */
-
-	protected abstract void setSubActivities (List<SubActivity> subactivities);
-
-	/**
-	 * Add the specified <code>SubActivity</code> to the
-	 * <code>SubActivity</code>.
-	 *
-	 * @param  subactivity The <code>SubActivity</code> to add, not null
-	 * @return             <code>True</code> if the <code>SubActivity</code>
-	 *                     was successfully added, <code>False</code> otherwise
-	 */
-
-	protected abstract boolean addSubActivity (SubActivity subactivity);
-
-	/**
-	 * Remove the specified <code>SubActivity</code> from the
-	 * <code>SubActivity</code>.
-	 *
-	 * @param  subactivity The <code>SubActivity</code> to remove, not null
-	 * @return             <code>True</code> if the <code>SubActivity</code>
-	 *                     was successfully removed, <code>False</code>
-	 *                     otherwise
-	 */
-
-	protected abstract boolean removeSubActivity (SubActivity subactivity);
 }
