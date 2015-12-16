@@ -36,11 +36,20 @@ public interface Retriever<T extends Element>
 	 * method will return the matching <code>Element</code> instance from the
 	 * <code>DataStore</code> or <code>null</code> if there is no matching
 	 * <code>Element</code> instance in the <code>DataStore</code>.
+	 * <p>
+	 * This method will ensure that the <code>Element</code> instance returned
+	 * from the <code>DataStore</code> is identical to the supplied instance by
+	 * comparing them using the <code>equalsAll</code> method.  If the
+	 * <code>Element</code> instances are not identical, an
+	 * <code>IllegalStateException</code> will be thrown.
 	 *
 	 * @param  element The <code>Element</code> instance, not null
-	 *
 	 * @return         The <code>Element</code> instance in the
 	 *                 <code>DataStore</code> or <code>null</code>
+	 *
+	 * @throws IllegalStateException if the <code>Element</code> instance in the
+	 *                               <code>DataStore</code> is not identical to
+	 *                               the supplied <code>Element</code> instance
 	 */
 
 	public abstract T fetch (final T element);

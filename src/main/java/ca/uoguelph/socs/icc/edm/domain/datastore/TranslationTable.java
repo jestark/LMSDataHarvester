@@ -99,7 +99,6 @@ public final class TranslationTable
 	 *
 	 * @param  element   The <code>Element</code> instance
 	 * @param  model     The <code>DomainModel</code>
-	 *
 	 * @return           <code>true</code> if the <code>Element</code> instance
 	 *                   is in the <code>TranslationTable</code>,
 	 *                   <code>false</code> otherwise
@@ -139,7 +138,6 @@ public final class TranslationTable
 	 *
 	 * @param  element   The <code>Element</code> instance
 	 * @param  model     The <code>DomainModel</code>
-	 *
 	 * @return           The corresponding <code>Element</code> instance, or
 	 *                   <code>null</code> if it does not exist
 	 */
@@ -159,10 +157,18 @@ public final class TranslationTable
 
 	/**
 	 * Create a translation mapping between the specified <code>Element</code>
-	 * instances.
+	 * instances.  Before they are inserted into the
+	 * <code>TranslationTable</code>, the two <code>Element</code> instances are
+	 * compared using the <code>equalsAll</code> method.  If the two
+	 * <code>Element</code> instances do not compare as identical than an
+	 * <code>IllegalArguementException</code> will be thrown.
 	 *
 	 * @param  left  The first <code>Element</code> in the mapping, not null
 	 * @param  right The second <code>Element</code> in the mapping, not null
+	 *
+	 * @throws IllegalArguementException if the <code>left</code> and
+	 *                                   <code>right</code> <code>Element</code>
+	 *                                   instances are not identical
 	 */
 
 	public <T extends Element> void put (final T left, final T right)
@@ -172,6 +178,11 @@ public final class TranslationTable
 		assert left != null : "left is NULL";
 		assert right != null : "right is NULL";
 		assert left.getDomainModel () != right.getDomainModel () : "The elements can't both be from the same DomainModel";
+
+		if (! left.equalsAll (right))
+		{
+			throw new IllegalArgumentException ("The Elements are not Identical");
+		}
 
 		if (this.table.containsKey (left) && this.table.containsKey (right))
 		{
