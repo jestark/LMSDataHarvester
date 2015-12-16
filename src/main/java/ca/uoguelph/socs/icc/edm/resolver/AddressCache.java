@@ -26,24 +26,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Cache mapping <code>AddressBlock</code> instances to the name of the owning
- * organization.  This class maintains a cache of <code>AddressBlock</code>
+ * Cache mapping <code>CIDRAddress</code> instances to the name of the owning
+ * organization.  This class maintains a cache of <code>CIDRAddress</code>
  * instances, mapped to the owning organization.  When the cache is queried
- * with a <code>NetAddress</code> it find the <code>AddressBlock</code> that
- * contains the <code>NetAddress</code> and returns the name of the associated
- * owner.
+ * with a <code>CIDRAddress</code> which represents a host it finds the
+ * <code>CIDRAddress</code> for the corresponding network returns the name of
+ * the associated owner.
  *
  * @author  James E. Stark
  * @version 1.0
  */
 
-final class AddressCache
+public final class AddressCache
 {
 	/** The log */
 	private final Logger log;
 
 	/** The address cache */
-	private final NavigableMap<NetAddress, String> cache;
+	private final NavigableMap<CIDRAddress, String> cache;
 
 	/**
 	 * Create the <code>AddressCache</code>.
@@ -58,35 +58,34 @@ final class AddressCache
 	}
 
 	/**
-	 * Determine if the specified <code>NetAddress</code> matches any entries
+	 * Determine if the specified <code>CIDRAddress</code> matches any entries
 	 * in the cache.
 	 */
 
-	public boolean hasAddress (final NetAddress address)
+	public boolean hasAddress (final CIDRAddress address)
 	{
 		this.log.trace ("hasAddress: address={}", address);
 
-		NetAddress key = this.cache.floorKey (address);
+		CIDRAddress key = this.cache.floorKey (address);
 
 		return ((key != null) && key.hasMember (address));
 	}
 
 	/**
 	 * Get the name of the organization which owns the specified
-	 * <code>NetAddress</code>.
+	 * <code>CIDRAddress</code>.
 	 *
-	 * @param  address The <code>NetAddress</code>
-	 *
+	 * @param  address The <code>CIDRAddress</code>
 	 * @return         The name of the owning organization, or
 	 *                 <code>null</code> if there is no matching entry in the
 	 *                 cache
 	 */
 
-	public String getOrg (final NetAddress address)
+	public String getOrg (final CIDRAddress address)
 	{
 		this.log.trace ("getOrg: address={}", address);
 
-		NetAddress key = this.cache.floorKey (address);
+		CIDRAddress key = this.cache.floorKey (address);
 
 		return ((key != null) && key.hasMember (address)) ? this.cache.get (key) : null;
 	}
@@ -98,7 +97,7 @@ final class AddressCache
 	 * @param  org     The name of tho owning organization, not null
 	 */
 
-	public void addOrg (final AddressBlock address, final String org)
+	public void addOrg (final CIDRAddress address, final String org)
 	{
 		this.log.trace ("addOrg: address={}, org={}", address, org);
 
@@ -115,7 +114,7 @@ final class AddressCache
 	 * @return A <code>Set</code> containing all of the cached addresses
 	 */
 
-	public Set<NetAddress> getAddresses ()
+	public Set<CIDRAddress> getAddresses ()
 	{
 		return this.cache.keySet ();
 	}
