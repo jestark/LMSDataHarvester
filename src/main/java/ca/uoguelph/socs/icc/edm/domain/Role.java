@@ -331,7 +331,7 @@ public abstract class Role extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<Role>
+	protected static abstract class Definition extends Element.Definition<Role>
 	{
 		/** Method reference to the implementation constructor  */
 		private final Function<Role.Builder, Role> creator;

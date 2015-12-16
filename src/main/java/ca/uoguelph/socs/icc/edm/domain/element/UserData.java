@@ -54,7 +54,7 @@ public class UserData extends User
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends User.Definition
+	public static final class Definition extends User.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.

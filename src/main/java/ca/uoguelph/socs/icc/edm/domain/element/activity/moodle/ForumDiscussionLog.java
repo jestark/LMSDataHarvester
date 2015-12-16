@@ -60,7 +60,7 @@ class ForumDiscussionLog extends LogReference
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends LogReference.Definition
+	public static final class Definition extends LogReference.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -69,6 +69,8 @@ class ForumDiscussionLog extends LogReference
 		public Definition ()
 		{
 			super (ForumDiscussionLog.class, ForumDiscussionLog::new);
+
+			LogReference.registerImplementation (ForumDiscussion.class, ForumDiscussionLog.class);
 		}
 	}
 
@@ -77,16 +79,6 @@ class ForumDiscussionLog extends LogReference
 
 	/** The associated <code>SubActivity</code> */
 	private SubActivity subActivity;
-
-	/**
-	 * Register the <code>ForumDiscussionLog</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		LogReference.registerImplementation (ForumDiscussion.class, ForumDiscussionLog.class);
-	}
 
 	/**
 	 * Create the <code>LogReference</code> instance with Null values.

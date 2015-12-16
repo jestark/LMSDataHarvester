@@ -544,7 +544,7 @@ public abstract class User extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<User>
+	protected static abstract class Definition extends Element.Definition<User>
 	{
 		/** Method reference to the implementation constructor  */
 		private final Function<User.Builder, User> creator;

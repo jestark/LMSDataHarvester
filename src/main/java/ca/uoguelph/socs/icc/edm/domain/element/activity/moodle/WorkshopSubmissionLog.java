@@ -60,7 +60,7 @@ class WorkshopSubmissionLog extends LogReference
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends LogReference.Definition
+	public static final class Definition extends LogReference.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -69,6 +69,8 @@ class WorkshopSubmissionLog extends LogReference
 		public Definition ()
 		{
 			super (WorkshopSubmissionLog.class, WorkshopSubmissionLog::new);
+
+			LogReference.registerImplementation (WorkshopSubmission.class, WorkshopSubmissionLog.class);
 		}
 	}
 
@@ -77,16 +79,6 @@ class WorkshopSubmissionLog extends LogReference
 
 	/** The associated <code>SubActivity</code> */
 	private SubActivity subActivity;
-
-	/**
-	 * Register the <code>WorkshopSubmissionLog</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		LogReference.registerImplementation (WorkshopSubmission.class, WorkshopSubmissionLog.class);
-	}
 
 	/**
 	 * Create the <code>LogReference</code> instance with Null values.

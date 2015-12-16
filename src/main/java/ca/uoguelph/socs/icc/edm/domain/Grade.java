@@ -395,7 +395,7 @@ public abstract class Grade extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<Grade>
+	protected static abstract class Definition extends Element.Definition<Grade>
 	{
 		/** Method reference to the implementation constructor  */
 		private final Function<Grade.Builder, Grade> creator;

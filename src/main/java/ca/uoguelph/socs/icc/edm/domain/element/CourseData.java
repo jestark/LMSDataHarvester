@@ -58,7 +58,7 @@ public class CourseData extends Course
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Course.Definition
+	public static final class Definition extends Course.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.

@@ -68,7 +68,7 @@ public class Feedback extends Activity
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Activity.Definition
+	public static final class Definition extends Activity.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -77,6 +77,8 @@ public class Feedback extends Activity
 		public Definition ()
 		{
 			super (Feedback.class, Feedback::new);
+
+			Activity.registerImplementation ("moodle", "feedback", Feedback.class);
 		}
 	}
 
@@ -94,16 +96,6 @@ public class Feedback extends Activity
 
 	/** The associated <code>SubActivity</code> instances*/
 	private List<SubActivity> subActivities;
-
-	/**
-	 * Register the <code>Feedback</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		Activity.registerImplementation ("moodle", "feedback", Feedback.class);
-	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.

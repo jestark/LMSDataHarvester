@@ -58,7 +58,7 @@ public class GenericActivity extends Activity
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Activity.Definition
+	public static final class Definition extends Activity.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.

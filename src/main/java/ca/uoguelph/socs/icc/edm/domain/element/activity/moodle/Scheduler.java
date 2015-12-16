@@ -68,7 +68,7 @@ public class Scheduler extends Activity
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Activity.Definition
+	public static final class Definition extends Activity.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -77,6 +77,8 @@ public class Scheduler extends Activity
 		public Definition ()
 		{
 			super (Scheduler.class, Scheduler::new);
+
+			Activity.registerImplementation ("moodle", "scheduler", Scheduler.class);
 		}
 	}
 
@@ -94,16 +96,6 @@ public class Scheduler extends Activity
 
 	/** The associated <code>SubActivity</code> instances*/
 	private List<SubActivity> subActivities;
-
-	/**
-	 * Register the <code>Scheduler</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		Activity.registerImplementation ("moodle", "scheduler", Scheduler.class);
-	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.

@@ -60,7 +60,7 @@ class WikiPageLog extends LogReference
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends LogReference.Definition
+	public static final class Definition extends LogReference.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -69,6 +69,8 @@ class WikiPageLog extends LogReference
 		public Definition ()
 		{
 			super (WikiPageLog.class, WikiPageLog::new);
+
+			LogReference.registerImplementation (WikiPage.class, WikiPageLog.class);
 		}
 	}
 
@@ -77,16 +79,6 @@ class WikiPageLog extends LogReference
 
 	/** The associated <code>SubActivity</code> */
 	private SubActivity subActivity;
-
-	/**
-	 * Register the <code>WikiPageLog</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		LogReference.registerImplementation (WikiPage.class, WikiPageLog.class);
-	}
 
 	/**
 	 * Create the <code>LogReference</code> instance with Null values.

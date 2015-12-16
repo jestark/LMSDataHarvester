@@ -62,7 +62,7 @@ public class EnrolmentData extends Enrolment
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Enrolment.Definition
+	public static final class Definition extends Enrolment.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.

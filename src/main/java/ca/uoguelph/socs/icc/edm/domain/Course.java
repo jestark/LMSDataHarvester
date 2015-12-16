@@ -412,7 +412,7 @@ public abstract class Course extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<Course>
+	protected static abstract class Definition extends Element.Definition<Course>
 	{
 		/** Method reference to the implementation constructor  */
 		private final Function<Course.Builder, Course> creator;

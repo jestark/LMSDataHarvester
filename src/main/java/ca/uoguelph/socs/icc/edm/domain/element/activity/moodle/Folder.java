@@ -68,7 +68,7 @@ public class Folder extends Activity
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Activity.Definition
+	public static final class Definition extends Activity.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -77,6 +77,8 @@ public class Folder extends Activity
 		public Definition ()
 		{
 			super (Folder.class, Folder::new);
+
+			Activity.registerImplementation ("moodle", "folder", Folder.class);
 		}
 	}
 
@@ -94,16 +96,6 @@ public class Folder extends Activity
 
 	/** The associated <code>SubActivity</code> instances*/
 	private List<SubActivity> subActivities;
-
-	/**
-	 * Register the <code>Folder</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		Activity.registerImplementation ("moodle", "folder", Folder.class);
-	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.

@@ -50,7 +50,7 @@ public class GradeData extends Grade
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Grade.Definition
+	public static final class Definition extends Grade.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.

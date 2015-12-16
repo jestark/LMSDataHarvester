@@ -67,7 +67,7 @@ public class ForumDiscussion extends SubActivity
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends SubActivity.Definition
+	public static final class Definition extends SubActivity.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -76,6 +76,7 @@ public class ForumDiscussion extends SubActivity
 		public Definition ()
 		{
 			super (ForumDiscussion.class, ForumDiscussion::new);
+			SubActivity.registerImplementation (Forum.class, ForumDiscussion.class);
 		}
 	}
 
@@ -96,16 +97,6 @@ public class ForumDiscussion extends SubActivity
 
 	/** The <code>List</code> of <code>SubActivity</code> instances*/
 	private List<SubActivity> subActivities;
-
-	/**
-	 * Register the <code>ForumDiscussion</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		SubActivity.registerImplementation (Forum.class, ForumDiscussion.class);
-	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.

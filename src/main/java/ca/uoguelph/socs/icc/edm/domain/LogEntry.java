@@ -605,7 +605,7 @@ public abstract class LogEntry extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<LogEntry>
+	protected static abstract class Definition extends Element.Definition<LogEntry>
 	{
 		/** Method reference to the implementation constructor  */
 		private final Function<LogEntry.Builder, LogEntry> creator;

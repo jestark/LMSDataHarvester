@@ -67,7 +67,7 @@ public class WikiPage extends SubActivity
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends SubActivity.Definition
+	public static final class Definition extends SubActivity.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -76,6 +76,7 @@ public class WikiPage extends SubActivity
 		public Definition ()
 		{
 			super (WikiPage.class, WikiPage::new);
+			SubActivity.registerImplementation (Wiki.class, WikiPage.class);
 		}
 	}
 
@@ -96,16 +97,6 @@ public class WikiPage extends SubActivity
 
 	/** The <code>List</code> of <code>SubActivity</code> instances*/
 	private List<SubActivity> subActivities;
-
-	/**
-	 * Register the <code>WikiPage</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		SubActivity.registerImplementation (Wiki.class, WikiPage.class);
-	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.

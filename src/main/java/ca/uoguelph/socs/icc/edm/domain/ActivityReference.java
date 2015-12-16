@@ -371,7 +371,7 @@ public abstract class ActivityReference extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<ActivityReference>
+	protected static abstract class Definition extends Element.Definition<ActivityReference>
 	{
 		/** Method reference to the implementation constructor  */
 		private final Function<ActivityReference.Builder, ActivityReference> creator;

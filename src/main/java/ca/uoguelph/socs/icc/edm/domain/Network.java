@@ -320,7 +320,7 @@ public abstract class Network extends Element
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<Network>
+	protected static abstract class Definition extends Element.Definition<Network>
 	{
 		/** Method reference to the implementation constructor  */
 		private final Function<Network.Builder, Network> creator;

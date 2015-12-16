@@ -53,7 +53,7 @@ public class ActivitySourceData extends ActivitySource
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends ActivitySource.Definition
+	public static final class Definition extends ActivitySource.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.

@@ -47,7 +47,7 @@ public class NetworkData extends Network
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Network.Definition
+	public static final class Definition extends Network.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.

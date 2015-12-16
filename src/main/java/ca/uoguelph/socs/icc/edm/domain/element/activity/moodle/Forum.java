@@ -68,7 +68,7 @@ public class Forum extends Activity
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Activity.Definition
+	public static final class Definition extends Activity.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -77,6 +77,8 @@ public class Forum extends Activity
 		public Definition ()
 		{
 			super (Forum.class, Forum::new);
+
+			Activity.registerImplementation ("moodle", "forum", Forum.class);
 		}
 	}
 
@@ -94,16 +96,6 @@ public class Forum extends Activity
 
 	/** The associated <code>SubActivity</code> instances*/
 	private List<SubActivity> subActivities;
-
-	/**
-	 * Register the <code>Forum</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		Activity.registerImplementation ("moodle", "forum", Forum.class);
-	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.

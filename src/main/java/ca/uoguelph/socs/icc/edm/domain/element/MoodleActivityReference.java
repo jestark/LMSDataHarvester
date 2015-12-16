@@ -67,7 +67,7 @@ public class MoodleActivityReference extends ActivityReference
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends ActivityReference.Definition
+	public static final class Definition extends ActivityReference.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.

@@ -36,13 +36,7 @@ import dagger.Provides;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
-import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.SequentialIdGenerator;
-import ca.uoguelph.socs.icc.edm.domain.datastore.memory.MemDataStore;
-import ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData;
-import ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData;
 import ca.uoguelph.socs.icc.edm.domain.element.GenericActivity;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
@@ -410,7 +404,7 @@ public abstract class Activity extends ParentActivity
 	 * @version 1.0
 	 */
 
-	protected abstract class Definition extends Element.Definition<Activity>
+	protected static abstract class Definition extends Element.Definition<Activity>
 	{
 		/** Method reference to the implementation constructor  */
 		private final Function<Activity.Builder, Activity> creator;
@@ -451,14 +445,103 @@ public abstract class Activity extends ParentActivity
 		}
 	}
 
+	/**
+	 * Value class to represent an <code>ActivityType</code> instance as two
+	 * Strings.  It is used as the Key for the <code>ActivityType</code> to
+	 * <code>Activity</code> implementation class mapping.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	private static final class TypeKey
+	{
+		/** Name of the associated <code>ActivitySource</code> */
+		private final String source;
+
+		/** Name of the associated <code>ActivityType</code> */
+		private final String type;
+
+		/**
+		 * Create the <code>TypeKey</code> for an <code>ActivityType</code>
+		 * instance.
+		 *
+		 * @param  type The <code>ActivityType</code>, not null
+		 * @return      The <code>TypeKey</code>
+		 */
+
+		public static TypeKey create (final ActivityType type)
+		{
+			assert type != null : "type is NULL";
+
+			return new TypeKey (type.getSource ().getName (), type.getName ());
+		}
+
+		/**
+		 * Create the <code>TypeKey</code> from strings.
+		 *
+		 * @param  source The name of the <code>ActivitySource</code>, not null
+		 * @param  type   The name of the <code>ActivityType</code>, not null
+		 * @return        The <code>TypeKey</code>
+		 */
+
+		public static TypeKey create (final String source, final String type)
+		{
+			assert source != null : "source is NULL";
+			assert type != null : "type is NULL";
+
+			return new TypeKey (source, type);
+		}
+
+		/**
+		 * Create the <code>TypeKey</code>.
+		 *
+		 * @param  source The name of the <code>ActivitySource</code>, not null
+		 * @param  type   The name of the <code>ActivityType</code>, not null
+		 */
+
+		private TypeKey (final String source, final String type)
+		{
+			this.source = source;
+			this.type = type;
+		}
+
+		/**
+		 * Compare two <code>TypeKey</code> instances to determine if they are
+		 * equal.
+		 *
+		 * @param  obj The <code>TypeKey</code> instance to compare to the one
+		 *             represented by the called instance
+		 * @return     <code>true</code> if the two <code>TypeKey</code>
+		 *             instances are equal, <code>false</code> otherwise
+		 */
+
+		@Override
+		public boolean equals (final Object obj)
+		{
+			return (obj == this) ? true : (obj instanceof TypeKey)
+				&& Objects.equals (this.source, ((TypeKey) obj).source)
+				&& Objects.equals (this.type, ((TypeKey) obj).type);
+		}
+
+		/**
+		 * Compute a <code>hashCode</code> of the <code>TypeKey</code> instance.
+		 *
+		 * @return The hash code
+		 */
+
+		@Override
+		public int hashCode ()
+		{
+			return Objects.hash (this.source, this.type);
+		}
+	}
+
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
-	/** Internal <code>DomainModel</code> for sources and types */
-	private static final DomainModel STORE;
-
 	/** <code>ActivityType</code> to implementation class map */
-	private static final Map<ActivityType, Class<? extends Activity>> activities;
+	private static final Map<TypeKey, Class<? extends Activity>> activities;
 
 	/** The <code>MetaData</code> for the <code>Activity</code> */
 	protected static final MetaData<Activity> METADATA;
@@ -528,14 +611,6 @@ public abstract class Activity extends ParentActivity
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
 			.build ();
-
-		STORE = MemDataStore.create (Profile.builder ()
-				.setName ("Activity")
-				.setMutable (true)
-				.setElement (ActivitySource.class, ActivitySourceData.class)
-				.setElement (ActivityType.class, ActivityTypeData.class)
-				.setGenerator (Element.class, SequentialIdGenerator.class)
-				.build ());
 	}
 
 	/**
@@ -557,16 +632,7 @@ public abstract class Activity extends ParentActivity
 		assert impl != null : "impl is NULL";
 		assert source.length () > 0 : "source is empty";
 
-		Activity.STORE.getTransaction ().begin ();
-
-		ActivityType atype = ActivityType.builder (Activity.STORE)
-			.setActivitySource (ActivitySource.builder (Activity.STORE)
-					.setName (source)
-					.build ())
-			.setName (type)
-			.build ();
-
-		Activity.STORE.getTransaction ().commit ();
+		TypeKey atype = TypeKey.create (source, type);
 
 		assert ! Activity.activities.containsKey (atype) : "Implementation class already registered for ActivityType";
 
@@ -587,7 +653,7 @@ public abstract class Activity extends ParentActivity
 	{
 		assert type != null : "type is NULL";
 
-		return Activity.activities.containsKey (type);
+		return Activity.activities.containsKey (TypeKey.create (type));
 	}
 
 	/**
@@ -603,7 +669,9 @@ public abstract class Activity extends ParentActivity
 	{
 		assert type != null : "type is NULL";
 
-		return (Activity.activities.containsKey (type)) ? Activity.activities.get (type) : GenericActivity.class;
+		TypeKey key = TypeKey.create (type);
+
+		return (Activity.activities.containsKey (key)) ? Activity.activities.get (key) : GenericActivity.class;
 	}
 
 	/**

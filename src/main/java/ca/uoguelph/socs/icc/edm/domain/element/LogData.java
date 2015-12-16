@@ -61,7 +61,7 @@ public class LogData extends LogEntry
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends LogEntry.Definition
+	public static final class Definition extends LogEntry.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.

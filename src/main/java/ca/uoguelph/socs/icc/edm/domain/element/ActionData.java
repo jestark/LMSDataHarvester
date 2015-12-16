@@ -47,7 +47,7 @@ public class ActionData extends Action
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Action.Definition
+	public static final class Definition extends Action.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.

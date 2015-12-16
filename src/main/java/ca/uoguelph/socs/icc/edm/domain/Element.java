@@ -427,7 +427,7 @@ public abstract class Element implements Serializable
 	 *              <code>Builder</code>
 	 */
 
-	public abstract class Definition<T extends Element>
+	public static abstract class Definition<T extends Element>
 	{
 		/** The <code>MetaData</code> */
 		protected final MetaData<T> metadata;

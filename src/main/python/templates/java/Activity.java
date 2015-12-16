@@ -68,7 +68,7 @@ public class ${ClassName} extends Activity
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Activity.Definition
+	public static final class Definition extends Activity.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -77,6 +77,8 @@ public class ${ClassName} extends Activity
 		public Definition ()
 		{
 			super (${ClassName}.class, ${ClassName}::new);
+
+			Activity.registerImplementation ("${ActivitySource}", "${ActivityType}", ${ClassName}.class);
 		}
 	}
 
@@ -94,16 +96,6 @@ public class ${ClassName} extends Activity
 
 	/** The associated <code>SubActivity</code> instances*/
 	private List<SubActivity> subActivities;
-
-	/**
-	 * Register the <code>${ClassName}</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		Activity.registerImplementation ("${ActivitySource}", "${ActivityType}", ${ClassName}.class);
-	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.

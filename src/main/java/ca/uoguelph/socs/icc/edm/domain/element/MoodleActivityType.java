@@ -54,7 +54,7 @@ public class MoodleActivityType extends ActivityType
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends ActivityType.Definition
+	public static final class Definition extends ActivityType.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.

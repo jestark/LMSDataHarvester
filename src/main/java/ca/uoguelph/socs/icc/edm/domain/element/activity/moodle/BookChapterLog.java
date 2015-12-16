@@ -60,7 +60,7 @@ class BookChapterLog extends LogReference
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends LogReference.Definition
+	public static final class Definition extends LogReference.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -69,6 +69,8 @@ class BookChapterLog extends LogReference
 		public Definition ()
 		{
 			super (BookChapterLog.class, BookChapterLog::new);
+
+			LogReference.registerImplementation (BookChapter.class, BookChapterLog.class);
 		}
 	}
 
@@ -77,16 +79,6 @@ class BookChapterLog extends LogReference
 
 	/** The associated <code>SubActivity</code> */
 	private SubActivity subActivity;
-
-	/**
-	 * Register the <code>BookChapterLog</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		LogReference.registerImplementation (BookChapter.class, BookChapterLog.class);
-	}
 
 	/**
 	 * Create the <code>LogReference</code> instance with Null values.

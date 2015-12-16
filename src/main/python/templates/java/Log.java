@@ -60,7 +60,7 @@ class ${ClassName} extends LogReference
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends LogReference.Definition
+	public static final class Definition extends LogReference.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -69,6 +69,8 @@ class ${ClassName} extends LogReference
 		public Definition ()
 		{
 			super (${ClassName}.class, ${ClassName}::new);
+
+			LogReference.registerImplementation (${SubActivityClass}.class, ${ClassName}.class);
 		}
 	}
 
@@ -77,16 +79,6 @@ class ${ClassName} extends LogReference
 
 	/** The associated <code>SubActivity</code> */
 	private SubActivity subActivity;
-
-	/**
-	 * Register the <code>${ClassName}</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		LogReference.registerImplementation (${SubActivityClass}.class, ${ClassName}.class);
-	}
 
 	/**
 	 * Create the <code>LogReference</code> instance with Null values.

@@ -68,7 +68,7 @@ public class Lesson extends Activity
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Activity.Definition
+	public static final class Definition extends Activity.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -77,6 +77,8 @@ public class Lesson extends Activity
 		public Definition ()
 		{
 			super (Lesson.class, Lesson::new);
+
+			Activity.registerImplementation ("moodle", "lesson", Lesson.class);
 		}
 	}
 
@@ -94,16 +96,6 @@ public class Lesson extends Activity
 
 	/** The associated <code>SubActivity</code> instances*/
 	private List<SubActivity> subActivities;
-
-	/**
-	 * Register the <code>Lesson</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		Activity.registerImplementation ("moodle", "lesson", Lesson.class);
-	}
 
 	/**
 	 * Create the <code>Activity</code> instance with Null values.

@@ -60,7 +60,7 @@ class LessonPageLog extends LogReference
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends LogReference.Definition
+	public static final class Definition extends LogReference.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
@@ -69,6 +69,8 @@ class LessonPageLog extends LogReference
 		public Definition ()
 		{
 			super (LessonPageLog.class, LessonPageLog::new);
+
+			LogReference.registerImplementation (LessonPage.class, LessonPageLog.class);
 		}
 	}
 
@@ -77,16 +79,6 @@ class LessonPageLog extends LogReference
 
 	/** The associated <code>SubActivity</code> */
 	private SubActivity subActivity;
-
-	/**
-	 * Register the <code>LessonPageLog</code> with the factories on
-	 * initialization.
-	 */
-
-	static
-	{
-		LogReference.registerImplementation (LessonPage.class, LessonPageLog.class);
-	}
 
 	/**
 	 * Create the <code>LogReference</code> instance with Null values.

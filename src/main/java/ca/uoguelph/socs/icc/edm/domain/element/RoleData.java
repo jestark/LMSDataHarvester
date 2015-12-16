@@ -47,7 +47,7 @@ public class RoleData extends Role
 	 */
 
 	@AutoService (Element.Definition.class)
-	public final class Definition extends Role.Definition
+	public static final class Definition extends Role.Definition
 	{
 		/**
 		 * Create the <code>Definition</code>.
