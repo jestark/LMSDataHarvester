@@ -48,13 +48,13 @@ final class AddressBlock extends NetAddress
 		private InetAddress address;
 
 		/** The length of the network mask */
-		private short length;
+		private int length;
 
 		/**
 		 * Create the <code>Builder</code>.
 		 */
 
-		public Builder ()
+		private Builder ()
 		{
 			this.log = LoggerFactory.getLogger (this.getClass ());
 
@@ -72,19 +72,14 @@ final class AddressBlock extends NetAddress
 		{
 			this.log.trace ("build:");
 
-			if (this.address == null)
-			{
-				this.log.error ("Can not build: Address is NULL");
-				throw new IllegalStateException ("Address is null");
-			}
+			Preconditions.checkState (this.address != null, "address is NULL");
 
 			if (this.length < 0)
 			{
-				this.log.error ("Can not Build: Length is less than zero");
-				throw new IllegalStateException ("Length is less then zero");
+				this.length = this.address.getAddress ().length * 8;
 			}
 
-			return new AddressBlock (this.address, this.length);
+			return new AddressBlock (this);
 		}
 
 		/**
@@ -110,13 +105,7 @@ final class AddressBlock extends NetAddress
 		{
 			this.log.trace ("setAddress: address={}", address);
 
-			if (address == null)
-			{
-				this.log.error ("address is NULL");
-				throw new NullPointerException ();
-			}
-
-			this.address = address;
+			this.address = Preconditions.checkNotNull (address, "address");
 
 			return this;
 		}
@@ -132,13 +121,7 @@ final class AddressBlock extends NetAddress
 		{
 			this.log.trace ("setAddress: address={}", address);
 
-			if (address == null)
-			{
-				this.log.error ("address is NULL");
-				throw new NullPointerException ();
-			}
-
-			this.address = InetAddress.getByName (address);
+			this.address = InetAddress.getByName (Preconditions.checkNotNull (address, "address"));
 
 			return this;
 		}
@@ -149,7 +132,7 @@ final class AddressBlock extends NetAddress
 		 * @return The number of set bits in the netmask
 		 */
 
-		public short getLength ()
+		public int getLength ()
 		{
 			return this.length;
 		}
@@ -162,16 +145,11 @@ final class AddressBlock extends NetAddress
 		 * @return        This <code>Builder</code>
 		 */
 
-		public Builder setLength (final short length)
+		public Builder setLength (final int length)
 		{
 			this.log.trace ("setLength: length={}", length);
 
-			if (length < 0)
-			{
-				this.log.error ("Length can not be negative");
-				throw new IllegalArgumentException ("length is negative");
-			}
-
+			Preconditions.checkArgument (length >= 0, "length is negative");
 			this.length = length;
 
 			return this;
@@ -193,9 +171,16 @@ final class AddressBlock extends NetAddress
 	/** The number of set bits in the net mask */
 	private final int length;
 
+	public static Builder builder ()
+	{
+		return new Builder ();
+	}
+
 	public static AddressBlock create (final InetAddress address)
 	{
-		return new AddressBlock (address, address.getAddress ().length * 8);
+		return AddressBlock.builder ()
+			.setAddress (address)
+			.build ();
 	}
 
 	/**
@@ -206,16 +191,14 @@ final class AddressBlock extends NetAddress
 	 *                 greater than zero
 	 */
 
-	private AddressBlock (final InetAddress address, final int length)
+	private AddressBlock (final Builder builder)
 	{
-		assert address != null : "address is NULL";
-		assert length >= 0 : "mask length can not be negative";
-		assert length <= 8 * address.getAddress ().length : "length can not be longer than the address";
+		assert builder != null : "builder is NULL";
 
 		this.log = LoggerFactory.getLogger (AddressBlock.class);
 
-		this.address = address;
-		this.length = length;
+		this.address = builder.address;
+		this.length = builder.length;
 
 		this.ipAddress = this.calculateIPAddress (this.address);
 		this.mask = this.calculateNetMask (this.address.getAddress ().length, length);
@@ -334,8 +317,7 @@ final class AddressBlock extends NetAddress
 	{
 		this.log.trace ("hasMember: address={}", address);
 
-		return this.address.getAddress ()
-			.equals (address.getAddress ().and (this.mask));
+		return this.ipAddress.equals (address.getAddress ().and (this.mask));
 	}
 
 	/**
