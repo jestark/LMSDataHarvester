@@ -62,6 +62,9 @@ public final class MetaData<T extends Element>
 		/** The Logger */
 		private final Logger log;
 
+		/** The <code>MetaData</code> for the superclass */
+		private final @Nullable MetaData<? super T> parent;
+
 		/** The <code>Element</code> type */
 		private final Class<T> type;
 
@@ -77,25 +80,20 @@ public final class MetaData<T extends Element>
 		/**
 		 * Create the <code>Builder</code>.
 		 *
-		 * @param  type The <code>Element</code> interface class, not null
+		 * @param  type   The <code>Element</code> interface class, not null
+		 * @param  parent The <code>MetaData</code> for the superclass
 		 */
 
-		private Builder (final Class<T> type)
+		private Builder (final Class<T> type, final @Nullable MetaData<? super T> parent)
 		{
 			this.log = LoggerFactory.getLogger (this.getClass ());
 
 			this.type = type;
+			this.parent = parent;
 
 			this.properties = new ArrayList<> ();
 			this.relationships = new HashMap<> ();
 			this.selectors = new ArrayList<> ();
-		}
-
-		private boolean hasProperty (final Property<? super T, ?> property)
-		{
-			assert property != null : "property is null";
-
-			return this.properties.contains (property);
 		}
 
 		/**
@@ -209,8 +207,6 @@ public final class MetaData<T extends Element>
 
 			assert selector != null : "selector is NULL";
 			assert ! this.selectors.contains (selector) : "selector is already registered";
-			assert selector.getProperties ().stream ()
-				.allMatch (p -> this.hasProperty (p)) : "Properties in selector missing from definition";
 
 			this.selectors.add (selector);
 
@@ -235,21 +231,24 @@ public final class MetaData<T extends Element>
 	/** The Logger */
 	private final Logger log;
 
+	/** The <code>MetaData</code> for the superclass */
+	private final @Nullable MetaData<? super T> parent;
+
 	/** The <code>Element</code> interface class */
 	private final Class<T> element;
 
 	/** The <code>Property</code> instances associated with the interface */
-	private final List<Property<T, ?>> properties;
+	private final List<Property<? super T, ?>> properties;
 
 	/** The <code>Relationship</code> instances for the interface */
 	private final Map<Class<? extends Element>, Relationship<T, ? extends Element>> relationships;
 
 	/** The <code>Selector</code> instances for the interface */
-	private final List<Selector<T>> selectors;
+	private final List<Selector<? super T>> selectors;
 
 	/**
-	 * Get the <code>MetaDataBuilder</code> for the specified
-	 * <code>Element</code> interface class.
+	 * Get the <code>Builder</code> for the specified <code>Element</code>
+	 * interface class.
 	 *
 	 * @param  <T>     The <code>Element</code> interface type
 	 * @param  element The <code>Element</code> interface class, not null
@@ -259,7 +258,23 @@ public final class MetaData<T extends Element>
 
 	public static <T extends Element> Builder<T> builder (final Class<T> element)
 	{
-		return new Builder<T> (element);
+		return new Builder<T> (element, null);
+	}
+
+	/**
+	 * Get the <code>Builder</code> for the specified <code>Element</code>
+	 * interface class.
+	 *
+	 * @param  <T>     The <code>Element</code> interface type
+	 * @param  element The <code>Element</code> interface class, not null
+	 * @param  parent  The <code>MetaData</code> for the superclass
+	 *
+	 * @return         The <code>MetaDataBuilder</code> instance
+	 */
+
+	public static <T extends Element> Builder<T> builder (final Class<T> element, final MetaData<? super T> parent)
+	{
+		return new Builder<T> (element, parent);
 	}
 
 	/**
@@ -282,6 +297,7 @@ public final class MetaData<T extends Element>
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.element = builder.type;
+		this.parent = builder.parent;
 
 		this.properties = new ArrayList<> (builder.properties);
 		this.relationships = new HashMap<> (builder.relationships);
@@ -372,9 +388,13 @@ public final class MetaData<T extends Element>
 	 * @return A <code>Stream</code> of <code>Property</code> instances
 	 */
 
-	public Stream<Property<T, ?>> properties ()
+	public Stream<Property<? super T, ?>> properties ()
 	{
-		return this.properties.stream ();
+		Stream<Property<? super T, ?>> stream = this.properties.stream ();
+
+		return (this.parent != null)
+			? Stream.concat (parent.properties (), stream)
+			: stream;
 	}
 
 	/**
@@ -386,9 +406,13 @@ public final class MetaData<T extends Element>
 
 	public Stream<Relationship<? super T, ?>> relationships ()
 	{
-		return this.relationships.entrySet ()
+		Stream<Relationship<? super T, ?>> stream = this.relationships.entrySet ()
 			.stream ()
 			.map (Map.Entry::getValue);
+
+		return (this.parent != null)
+			? Stream.concat (parent.relationships (), stream)
+			: stream;
 	}
 
 	/**
@@ -398,8 +422,12 @@ public final class MetaData<T extends Element>
 	 * @return A <code>Stream</code> of <code>Selector</code> instances
 	 */
 
-	public Stream<Selector<T>> selectors ()
+	public Stream<Selector<? super T>> selectors ()
 	{
-		return this.selectors.stream ();
+		Stream<Selector<? super T>> stream = this.selectors.stream ();
+
+		return (this.parent != null)
+			? Stream.concat (parent.selectors (), stream)
+			: stream;
 	}
 }
