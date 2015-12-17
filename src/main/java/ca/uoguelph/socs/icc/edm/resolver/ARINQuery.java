@@ -132,7 +132,7 @@ public final class ARINQuery implements WhoisQuery
 	}
 
 	@Inject
-	protected ARINQuery ()
+	ARINQuery ()
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 	}

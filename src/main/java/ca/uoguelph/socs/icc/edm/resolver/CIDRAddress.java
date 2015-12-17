@@ -21,6 +21,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
@@ -50,7 +53,7 @@ public final class CIDRAddress implements Comparable<CIDRAddress>
 		private final Logger log;
 
 		/** The base address of the network block */
-		private InetAddress address;
+		private @Nullable InetAddress address;
 
 		/** The length of the network mask */
 		private int length;
@@ -94,6 +97,7 @@ public final class CIDRAddress implements Comparable<CIDRAddress>
 		 *         for the block, may be null
 		 */
 
+		@CheckReturnValue
 		public InetAddress getAddress ()
 		{
 			return this.address;

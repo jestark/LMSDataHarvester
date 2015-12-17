@@ -14,17 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Resolve the name of the organization which owns the network from the host
+ * IP address.
+ */
+
+@ParametersAreNonnullByDefault
 package ca.uoguelph.socs.icc.edm.resolver;
 
-import dagger.Module;
-import dagger.Provides;
-
-@Module
-public final class ARINQueryModule
-{
-	@Provides
-	public WhoisQuery getQuery (final ARINQuery query)
-	{
-		return query;
-	}
-}
+import javax.annotation.ParametersAreNonnullByDefault;
