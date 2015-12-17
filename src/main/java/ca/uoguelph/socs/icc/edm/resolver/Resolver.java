@@ -19,12 +19,16 @@ package ca.uoguelph.socs.icc.edm.resolver;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import dagger.Component;
+import com.google.common.base.Preconditions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,38 +48,28 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public final class Resolver
 {
-	@Component (modules = {ARINQueryModule.class})
-	@Singleton
-	public interface ResolverComponent
-	{
-		public abstract Resolver getResolver ();
-	}
-
 	/** The log */
 	private final Logger log;
 
 	/** The address cache */
-	private final AddressCache cache;
+	private final NavigableMap<CIDRAddress, String> cache;
 
 	/** Query to fetch whois data*/
 	private final WhoisQuery query;
-
-	/** Number of Whois queries issued */
-	private int queryCount;
 
 	/**
 	 * Create the <code>NetResolver</code>.
 	 */
 
 	@Inject
-	protected Resolver (final WhoisQuery query, final AddressCache cache)
+	Resolver (final WhoisQuery query)
 	{
 		this.log = LoggerFactory.getLogger (Resolver.class);
 
-		this.cache = cache;
-		this.query = query;
+		assert query != null : "query is NULL";
 
-		this.queryCount = 0;
+		this.cache = new TreeMap<> ();
+		this.query = query;
 	}
 
 	/**
@@ -90,30 +84,35 @@ public final class Resolver
 	{
 		this.log.trace ("getOwner: address={}", address);
 
-		if (address == null)
-		{
-			throw new NullPointerException ();
-		}
+		final CIDRAddress addr = CIDRAddress.create (Preconditions.checkNotNull (address, "address"));
 
 		String result = null;
-		NetAddress addr = AddressBlock.create (address);
 
-		if (this.cache.hasAddress (addr))
+		Map.Entry<CIDRAddress, String> entry = this.cache.floorEntry (addr);
+
+		if ((entry != null) && (entry.getKey ().hasMember (addr)))
 		{
-			this.log.debug ("Address {} is cached", address);
-			result = this.cache.getOrg (addr);
+			this.log.debug ("Address {} is cached, returning cached value: {}", address, entry.getValue ());
+			result = entry.getValue ();
 		}
 		else
 		{
 			this.log.debug ("Address {} is not cached, executing Whois query", address);
-			QueryResult qData = this.query.getOrg (addr);
 
-			qData.getBlocks ()
-				.forEach (x -> this.cache.addOrg (x, qData.getName ()));
+			for (NetBlock block : this.query.getNetBlocks (addr))
+			{
+				if (! this.cache.containsKey (block.getAddress ()))
+				{
+					this.cache.put (block.getAddress (), block.getOwner ());
+				}
 
-			result = qData.getName ();
+				if (block.getAddress ().hasMember (addr))
+				{
+					result = block.getOwner ();
+				}
+			}
 
-			this.queryCount += 1;
+			assert result != null : "failed to get a Network";
 		}
 
 		return result;
@@ -131,10 +130,7 @@ public final class Resolver
 	{
 		this.log.trace ("getOwner: address={}", address);
 
-		if (address == null)
-		{
-			throw new NullPointerException ();
-		}
+		Preconditions.checkNotNull (address, "address");
 
 		try
 		{
@@ -154,22 +150,10 @@ public final class Resolver
 	 * @return A <code>Set</code> of IP addresses
 	 */
 
-	public List<InetAddress> getAddresses ()
+	public Stream<InetAddress> getAddresses ()
 	{
-		return this.cache.getAddresses ()
+		return this.cache.keySet ()
 			.stream ()
-			.map (NetAddress::getInetAddress)
-			.collect (Collectors.toList ());
-	}
-
-	/**
-	 * Get the number of Whois queries that were sent.
-	 *
-	 * @return The number of queries sent
-	 */
-
-	public int getNumQueries ()
-	{
-		return this.queryCount;
+			.map (CIDRAddress::getAddress);
 	}
 }
