@@ -16,54 +16,57 @@
 
 package ca.uoguelph.socs.icc.edm.resolver;
 
-import java.util.Set;
-
 /**
- * Carrier class for the results of a whois query.
+ * Representation of an address block from a who-is query.
+ *
+ * @author  James E. Stark
+ * @version 1.0
  */
 
-public final class QueryResult
+public final class NetBlock
 {
-	/** The <code>Set</code> of <code>AddressBlock</code> instances */
-	private final Set<AddressBlock> blocks;
+	/** The <code>CIDRAddress</code> of the network block */
+	private final CIDRAddress address;
 
 	/** The name of the organization */
-	private final String orgName;
+	private final String owner;
 
 	/**
 	 * Create the <code>QueryResult</code>.
 	 *
-	 * @param  orgName The name of the organization, not null
-	 * @param  blocks  The <code>Set</code> of <code>AddressBlock</code>
-	 *                 instances, not null
+	 * @param  owner   The name of the owning organization, not null
+	 * @param  address The <code>CIDRAddress</code> of the network block, not
+	 *                 null
 	 */
 
-	protected QueryResult (final String orgName, final Set<AddressBlock> blocks)
+	protected NetBlock (final String owner, final CIDRAddress address)
 	{
-		this.orgName = orgName;
-		this.blocks = blocks;
+		assert owner != null : "owner is NULL";
+		assert address != null : "address is NULL";
+
+		this.owner = owner;
+		this.address = address;
 	}
 
 	/**
-	 * Get the name of the organization returned by the whois query.
+	 * Get the name of the organization which owns the <code>NetBlock</code>.
 	 *
 	 * @return The name of the organization
 	 */
 
-	public String getName ()
+	public String getOwner ()
 	{
-		return this.orgName;
+		return this.owner;
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>AddressBlock</code> instances
-	 * returned by the whois query.
+	 * Get the <code>CIDRAddress</code> of the <code>NetBlock</code>.
 	 *
-	 * @return A <code>Set</code> of <code>AddressBlock</code> instances
+	 * @return The <code>CIDRAddress</code> of the network
 	 */
 
-	public Set<AddressBlock> getBlocks ()
+	public CIDRAddress getAddress ()
 	{
-		return this.blocks;
+		return this.address;
 	}
 }

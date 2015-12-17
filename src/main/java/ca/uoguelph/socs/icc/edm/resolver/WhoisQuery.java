@@ -16,10 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.resolver;
 
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
 /**
  * Fetch the "whois" data for a network.  Implementations of this calls are
@@ -30,15 +27,17 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  */
 
-interface WhoisQuery
+public interface WhoisQuery
 {
 	/**
-	 * Execute a "whois" query for the specified IP address.
+	 * Execute a "whois" query for the specified IP address.  This method will
+	 * execute a who-is query and return all of the <code>NetBlock</code>
+	 * instances for the network which contains the host address.
 	 *
 	 * @param  address The IP address, not null
-	 *
-	 * @return         The name of the organization which owns the IP Address
+	 * @return         A <code>List</code> of the <code>NetBlock</code>
+	 *                 instances
 	 */
 
-	public abstract QueryResult getOrg (NetAddress address);
+	public abstract List<NetBlock> getNetBlocks (CIDRAddress address);
 }
