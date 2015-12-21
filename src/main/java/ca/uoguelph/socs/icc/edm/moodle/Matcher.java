@@ -18,6 +18,7 @@ package ca.uoguelph.socs.icc.edm.moodle;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData;
 
 /**
  * Determine if a Moodle log entry references a <code>SubActivity</code>.
@@ -74,10 +75,9 @@ public interface Matcher
 	 * Determine if the specified <code>Action</code> or URL references a
 	 * <code>SubActivity</code>.
 	 *
-	 * @param  action The name of the <code>Action</code>, not null
-	 * @param  url    The URL, not null
-	 * @return        <code>true</code>, <code>false</code> otherwise
+	 * @param  entry The <code>MoodleLogData</code> to process, not null
+	 * @return       <code>true</code>, <code>false</code> otherwise
 	 */
 
-	public abstract boolean matches (String action, String url);
+	public abstract boolean matches (MoodleLogData entry);
 }

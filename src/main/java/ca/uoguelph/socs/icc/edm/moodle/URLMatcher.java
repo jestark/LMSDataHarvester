@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData;
 
 /**
  * Implementation of the <code>Matcher</code> using the URL.  This
@@ -113,14 +114,13 @@ final class URLMatcher implements Matcher
 	/**
 	 * Determine if the specified URL references a <code>SubActivity</code>.
 	 *
-	 * @param  action The name of the <code>Action</code>, not null
-	 * @param  url    The URL, not null
+	 * @param  entry The <code>MoodleLogData</code> to process, not null
 	 * @return        <code>true</code>, <code>false</code> otherwise
 	 */
 
 	@Override
-	public boolean matches (final String action, final String url)
+	public boolean matches (final MoodleLogData entry)
 	{
-		return this.pattern.matcher (url).matches ();
+		return this.pattern.matcher (entry.getUrl ()).matches ();
 	}
 }
