@@ -16,8 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.moodle;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
@@ -85,6 +87,56 @@ final class URLMatcher implements Matcher
 		this.activity = activity;
 		this.subActivity = subActivity;
 		this.pattern = Pattern.compile (pattern);
+	}
+
+	/**
+	 * Compare two <code>URLMatcher</code> instances to determine if they are
+	 * equal.
+	 *
+	 * @param  obj The <code>URLMatcher</code> instance to compare to the one
+	 *             represented by the called instance
+	 * @return     <code>true</code> if the two <code>URLMatcher</code>
+	 *             instances are equal, <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		return (obj == this) ? true : (obj instanceof URLMatcher)
+			&& Objects.equals (this.activity, ((URLMatcher) obj).activity)
+			&& Objects.equals (this.subActivity, ((URLMatcher) obj).subActivity)
+			&& Objects.equals (this.pattern, ((URLMatcher) obj).pattern);
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>URLMatcher</code>
+	 * instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		return Objects.hash (this.activity, this.subActivity, this.pattern);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the
+	 * <code>URLMatcher</code> instance.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>URLMatcher</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("activity", this.activity)
+			.add ("subActivity", this.subActivity)
+			.add ("pattern", this.pattern)
+			.toString ();
 	}
 
 	/**

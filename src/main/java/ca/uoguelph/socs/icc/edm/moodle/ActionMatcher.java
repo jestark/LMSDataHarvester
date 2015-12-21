@@ -16,6 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.moodle;
 
+import java.util.Objects;
+
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.Activity;
@@ -76,6 +79,56 @@ public final class ActionMatcher implements Matcher
 		this.activity = activity;
 		this.subActivity = subActivity;
 		this.action = action;
+	}
+
+	/**
+	 * Compare two <code>ActionMatcher</code> instances to determine if they are
+	 * equal.
+	 *
+	 * @param  obj The <code>ActionMatcher</code> instance to compare to the one
+	 *             represented by the called instance
+	 * @return     <code>true</code> if the two <code>ActionMatcher</code>
+	 *             instances are equal, <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		return (obj == this) ? true : (obj instanceof ActionMatcher)
+			&& Objects.equals (this.activity, ((ActionMatcher) obj).activity)
+			&& Objects.equals (this.subActivity, ((ActionMatcher) obj).subActivity)
+			&& Objects.equals (this.action, ((ActionMatcher) obj).action);
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>ActionMatcher</code>
+	 * instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		return Objects.hash (this.activity, this.subActivity, this.action);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the
+	 * <code>ActionMatcher</code> instance.
+	 *
+	 * @return A <code>String</code> representation of the
+	 *         <code>ActionMatcher</code> instance
+	 */
+
+	@Override
+	public String toString ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("activity", this.activity)
+			.add ("subActivity", this.subActivity)
+			.add ("action", this.action)
+			.toString ();
 	}
 
 	/**
