@@ -17,6 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -52,7 +53,6 @@ public interface Query<T extends Element>
 	 *
 	 * @param  <V>      The type of the value associated with the property
 	 * @param  property The <code>Property</code>, not null
-	 *
 	 * @return          The value associated with the specified property
 	 */
 
@@ -61,12 +61,11 @@ public interface Query<T extends Element>
 	/**
 	 * Set the specified property to the specified value.
 	 *
-	 * @param  <V>                      The type of the value associated with
-	 *                                  the property
-	 * @param  property                 The <code>Property</code>, not null
-	 * @param  value                    The value to set for the property
+	 * @param  <V>      The type of the value associated with the property
+	 * @param  property The <code>Property</code>, not null
+	 * @param  value    The value to set for the property
+	 * @return          A reference to this <code>Query</code>
 	 *
-	 * @return                          A reference to this <code>Query</code>
 	 * @throws IllegalArgumentException if the specified <code>Property</code>
 	 *                                  is not a member of the
 	 *                                  <code>Selector</code> for this
@@ -85,7 +84,6 @@ public interface Query<T extends Element>
 	 * behaviour of this method is undefined.
 	 *
 	 * @param  element The <code>Element</code> instance, not null
-	 *
 	 * @return         A reference to this <code>Query</code>
 	 */
 
@@ -95,29 +93,27 @@ public interface Query<T extends Element>
 	 * Fetch the <code>Element</code> instance from the <code>DataStore</code>
 	 * which matches <code>Query</code>.
 	 *
-	 * @return                       The <code>Element</code> instance which
-	 *                               matches the properties specified for the
-	 *                               query, null if no <code>Element</code>
-	 *                               instances exist in the
-	 *                               <code>DataStore</code> that match the
-	 *                               <code>Query</code>
+	 * @return An <code>Optional</code> containing the <code>Element</code>
+	 *         instance which matches the properties specified for the query,
+	 *         null if no <code>Element</code> instances exist in the
+	 *         <code>DataStore</code> that match the <code>Query</code>
+	 *
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 * @throws IllegalStateException if any <code>Property</code> instance
 	 *                               associated with the <code>Query</code> has
 	 *                               a null value
 	 */
 
-	public abstract T query ();
+	public abstract Optional<T> query ();
 
 	/**
 	 * Fetch a <code>List</code> of <code>Element</code> instances from the
 	 * <code>DataStore</code> which match the <code>Query</code>.
 	 *
-	 * @return                       The <code>List</code> of
-	 *                               <code>Element</code> instances which match
-	 *                               the query.  The <code>List</code> will be
-	 *                               empty if no <code>Element</code> instances
-	 *                               match the <code>Query</code>.
+	 * @return The <code>List</code> of <code>Element</code> instances which
+	 *         match the query.  The <code>List</code> will be empty if no
+	 *         <code>Element</code> instances match the <code>Query</code>
+	 *
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 * @throws IllegalStateException if any <code>Property</code> instance
 	 *                               associated with the <code>Query</code> has
@@ -130,9 +126,9 @@ public interface Query<T extends Element>
 	 * Get a <code>Stream</code> of <code>Element</code> instances from the
 	 * <code>DataStore</code> which match the <code>Query</code>.
 	 *
-	 * @return                       A <code>Stream</code> containing the
-	 *                               <code>Element</code> instances with match
-	 *                               the <code>Query</code>
+	 * @return A <code>Stream</code> containing the <code>Element</code>
+	 *         instances with match the <code>Query</code>
+	 *
 	 * @throws IllegalStateException if the <code>DataStore</code> is closed
 	 * @throws IllegalStateException if any <code>Property</code> instance
 	 *                               associated with the <code>Query</code> has
