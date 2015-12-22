@@ -231,12 +231,10 @@ public class MoodleActivityReference extends ActivityReference
 			this.activity = this.getDomainModel ()
 				.getQuery (Activity.SELECTOR_ID, Activity.getActivityClass (this.getType ()))
 				.setValue (Activity.ID, this.instanceId)
-				.query ();
-
-			if (this.activity == null)
-			{
-				throw new IllegalStateException (String.format ("Failed to load data for Activity: %s/%d", this.type.getName (), this.instanceId));
-			}
+				.query ()
+				.orElseThrow (() -> new IllegalStateException (
+							String.format ("Failed to load data for Activity: %s/%d",
+								this.type.getName (), this.instanceId)));
 
 			ActivityReference.METADATA.getRelationship (Activity.class)
 				.connect (this);
