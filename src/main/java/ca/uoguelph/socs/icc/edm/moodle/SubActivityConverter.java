@@ -16,149 +16,228 @@
 
 package ca.uoguelph.socs.icc.edm.moodle;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableMap;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+import ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData;
 
-import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Book;
-import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.BookChapter;
-import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Forum;
-import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.ForumDiscussion;
-import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.ForumPost;
-import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Lesson;
-import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.LessonPage;
-import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Workshop;
-import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WorkshopSubmission;
+/**
+ * Process <code>SubActivity</code> instances which are associated with
+ * <code>MoodleLogData</code> instances.  This class is responsible for
+ * determining if a <code>MoodleLogData</code> instance has an associated
+ * <code>SubActivity</code> instance and importing that <code>SubActivity</code>
+ * instance into the destination <code>DomainModel</code>.  To ensure integrity
+ * and consistency on the destination <code>DataStore</code>, if a nonexistent
+ * <code>SubActivity</code> instance is referenced in the
+ * <code>MoodleLogData</code>, then a placeholder will be created.
+ * <p>
+ * A cache of all of the loaded and created <code>SubActivity</code> instances
+ * is kept by this class to make sure that duplicates placeholders are not
+ * created for missing <code>SubActivity</code> instances.  The cache is indexed
+ * using the <code>DataStore</code> ID of the <code>SubActivity</code> from the
+ * source <code>DataStore</code> and the <code>SubActivity</code> implementation
+ * class.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ * @see     Matcher
+ */
 
 public final class SubActivityConverter
 {
-	@AutoValue
-	protected static abstract class ClassKey
-	{
-		public static ClassKey create (final Class<? extends Activity> cls, final String action)
-		{
-			return new AutoValue_SubActivityConverter_ClassKey (cls, action);
-		}
-
-		public abstract Class<? extends Activity> getActivityClass ();
-
-		public abstract String getAction ();
-	}
+	/**
+	 * Key for the cache of <code>SubActivity</code> instances.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
 
 	@AutoValue
 	protected static abstract class Key
 	{
-		public static Key create (final Long id, final Class<? extends SubActivity> cls)
+		/**
+		 * Create the <code>Key</code>.
+		 *
+		 * @param  id          The <code>DataStore</code> ID, not null
+		 * @param  subActivity The <code>SubActivity</code> class, not null
+		 */
+
+		public static Key create (final Long id, final Class<? extends SubActivity> subActivity)
 		{
-			return new AutoValue_SubActivityConverter_Key (id, cls);
+			assert id != null : "is is NULL";
+			assert subActivity != null : "subActivity is NULL";
+
+			return new AutoValue_SubActivityConverter_Key (id, subActivity);
 		}
 
+		/**
+		 * Get the <code>DataStore</code> ID of the <code>SubActivity</code>.
+		 *
+		 * @return The <code>DataStore</code> ID
+		 */
+
 		public abstract Long getId ();
+
+		/**
+		 * Get the <code>SubActivity</code> class.
+		 *
+		 * @return The <code>SubActivity</code> implementation class
+		 */
 
 		public abstract Class<? extends SubActivity> getSubActivityClass ();
 	}
 
+	/** The name of the given to missing <code>SubActivity</code> instances */
 	private static final String MISSING_SUBACTIVITY_NAME = "-=- MISSING SUBACTIVITY -=-";
 
-	private static final Map<ClassKey, Class<? extends SubActivity>> tmpmap;
-
+	/** The log */
 	private final Logger log;
 
-	private final DomainModel dest;
+	/** <code>Activity</code> to <code>SubActivity</code> mapping */
+	private final Map<Class<? extends Activity>, List<Matcher>> subActivities;
 
+	/** Cache of <code>SubActivity</code> instances */
+	private final Map<Key, SubActivity> subActivityCache;
+
+	/** The source <code>DomainModel</code> */
 	private final DomainModel source;
 
-	private final Map<Key, SubActivity> cache;
+	/** The destination <code>DomainModel</code> */
+	private final DomainModel dest;
 
-	static
+	/**
+	 * Create the <code>SubActivityConverter</code>.
+	 *
+	 * @param  dest          The destination <code>DomainModel</code>, not null
+	 * @param  source        The source <code>DomainModel</code>, not null
+	 * @param  subActivities <code>Activity</code> to <code>SubActivity</code>
+	 *                       mapping, not null
+	 */
+
+	SubActivityConverter (
+			final DomainModel dest,
+			final DomainModel source,
+			final Map<Class<? extends Activity>, List<Matcher>> subActivities)
 	{
-		tmpmap = new HashMap<> ();
+		assert dest != null : "dest is null";
+		assert source != null : "source is NULL";
+		assert subActivities != null : "subActivities is NULL";
 
-		tmpmap.put (ClassKey.create (Book.class, "add chapter"), BookChapter.class);
-		tmpmap.put (ClassKey.create (Book.class, "print chapter"), BookChapter.class);
-		tmpmap.put (ClassKey.create (Book.class, "update chapter"), BookChapter.class);
-		tmpmap.put (ClassKey.create (Book.class, "view chapter"), BookChapter.class);
-		tmpmap.put (ClassKey.create (Forum.class, "add discussion"), ForumDiscussion.class);
-		tmpmap.put (ClassKey.create (Forum.class, "move discussion"), ForumDiscussion.class);
-		tmpmap.put (ClassKey.create (Forum.class, "update discussion"), ForumDiscussion.class);
-		tmpmap.put (ClassKey.create (Forum.class, "view discussion"), ForumDiscussion.class);
-		tmpmap.put (ClassKey.create (Forum.class, "add post"), ForumPost.class);
-		tmpmap.put (ClassKey.create (Forum.class, "update post"), ForumPost.class);
-		tmpmap.put (ClassKey.create (Forum.class, "delete chapter"), ForumPost.class);
-		tmpmap.put (ClassKey.create (Lesson.class, "view"), LessonPage.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "update example assessment"), WorkshopSubmission.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "add example assessment"), WorkshopSubmission.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "update reference assessment"), WorkshopSubmission.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "add reference assessment"), WorkshopSubmission.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "view example"), WorkshopSubmission.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "update example"), WorkshopSubmission.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "add example"), WorkshopSubmission.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "update assessment"), WorkshopSubmission.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "add assessment"), WorkshopSubmission.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "view submission"), WorkshopSubmission.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "update submission"), WorkshopSubmission.class);
-		tmpmap.put (ClassKey.create (Workshop.class, "add submission"), WorkshopSubmission.class);
-	}
+		this.log = LoggerFactory.getLogger (this.getClass ());
 
-	public SubActivityConverter (final DomainModel dest, final DomainModel source)
-	{
-		this.log = LoggerFactory.getLogger (SubActivityConverter.class);
-
-		this.source = source;
 		this.dest = dest;
+		this.source = source;
+		this.subActivities = ImmutableMap.copyOf (subActivities);
 
-		this.cache = new HashMap<> ();
+		this.subActivityCache = new HashMap<> ();
 	}
 
-	public SubActivity convert (final Activity activity, final Action action, final String info, final String url)
+	/**
+	 * Import a <code>SubActivity</code> instance into the destination
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  subActivity The <code>SubActivity</code>, not null
+	 * @return             The <code>SubActivity</code>
+	 */
+
+	private SubActivity importSubActivity (final SubActivity subActivity)
 	{
-		this.log.trace ("convert: activity={}, action={}, info={}, url={}", activity, action, info, url);
+		this.log.debug ("Loaded sub-activity instance: {}", subActivity);
 
-		SubActivity subActivity = null;
+		assert subActivity != null : "subActivity is NULL";
 
-		Class<? extends SubActivity> sclass = SubActivityConverter.tmpmap.get (ClassKey.create (activity.getClass (), action.getName ()));
+		return subActivity.getBuilder (this.dest)
+			.build ();
+	}
 
-		if (sclass != null)
+	/**
+	 * Create a placeholder <code>SubActivity</code> instance.  This method
+	 * creates placeholders for missing <code>SubActivity</code> instances to
+	 * ensure log consistency.
+	 *
+	 * @param  parent The parent <code>Activity</code>, not null
+	 * @return        The <code>SubActivity</code>
+	 */
+
+	private SubActivity createSubActivity (final Activity parent)
+	{
+		this.log.debug ("Create entry for missing sub-activity Class: {} id: {}");
+
+		assert parent != null : "parent is NULL";
+
+		return SubActivity.builder (this.dest, parent)
+			.setName (SubActivityConverter.MISSING_SUBACTIVITY_NAME)
+			.build ();
+	}
+
+	/**
+	 * Load the <code>SubActivity</code> instance.  This method loads the
+	 * <code>SubActivity</code> instance, identified by the <code>Key</code> and
+	 * parent <code>Activity</code>, from the source <code>DataStore</code> and
+	 * copies it to the destination <code>DataStore</code> before returning a
+	 * reference to it.  If the <code>SubActivity</code> instance does not exist
+	 * in the source <code>DataStore</code> then a placeholder will be created
+	 * on the destination <code>DataStore</code>.  All <code>SubActivity</code>
+	 * instances created on the destination <code>DataStore</code> are cached.
+	 * On subsequent calls for the same <code>SubActivity</code>, the cached
+	 * version will be returned.
+	 *
+	 * @param  key    The <code>Key</code>, not null
+	 * @param  parent The parent <code>Activity</code>, not null
+	 * @return        The <code>SubActivity</code>
+	 */
+
+	private SubActivity loadSubActivity (final Key key, final Activity parent)
+	{
+		this.log.trace ("getSubActivity: key={}, parent={}", key, parent);
+
+		assert key != null : "key is NULL";
+		assert parent != null : "parent is NULL";
+
+		if (! this.subActivityCache.containsKey (key))
 		{
-			Long subId = Long.valueOf (info);
-			Key cacheKey = Key.create (subId, sclass);
-
-			if (! this.cache.containsKey (cacheKey))
-			{
-				subActivity = this.source.getQuery (SubActivity.SELECTOR_ID, sclass)
-					.setValue (SubActivity.ID, subId)
-					.query ();
-
-				if (subActivity == null)
-				{
-					subActivity = SubActivity.builder (this.dest, activity)
-						.setName (SubActivityConverter.MISSING_SUBACTIVITY_NAME)
-						.build ();
-
-					this.log.debug ("Created entry for missing sub-activity Class: {} id: {}", sclass.getSimpleName (), subId);
-				}
-				else
-				{
-					this.log.debug ("Loaded sub-activity instance for Class: {} id: {}", sclass.getSimpleName (), subId);
-				}
-
-				this.cache.put (cacheKey, subActivity);
-			}
-			else
-			{
-				subActivity = this.cache.get (cacheKey);
-			}
+			this.subActivityCache.put (key, this.source.getQuery (SubActivity.SELECTOR_ID, key.getSubActivityClass ())
+				.setValue (SubActivity.ID, key.getId ())
+				.query ()
+				.map (x -> this.importSubActivity (x))
+				.orElse (this.createSubActivity (parent)));
 		}
 
-		return subActivity;
+		return this.subActivityCache.get (key);
+	}
+
+	/**
+	 * Get the <code>SubActivity</code> associated with the specified
+	 * <code>MoodleLogData</code> instance.
+	 *
+	 * @param  activity The parent <code>Activity</code>, not null
+	 * @param  entry    The <code>MoodleLogData</code> to process, not null
+	 * @return          An <code>Optional</code> containing the
+	 *                  <code>SubActivity</code>
+	 */
+
+	public Optional<SubActivity> getSubActivity (final Activity activity, final MoodleLogData entry)
+	{
+		this.log.trace ("getSubActivity: activity={}, entry={}", activity, entry);
+
+		return Optional.ofNullable (this.subActivities.get (activity.getClass ()))
+			.flatMap (x -> x.stream ()
+					.filter (m -> m.matches (entry))
+					.findAny ())
+			.map (Matcher::getSubActivityClass)
+			.map (x -> Key.create (Long.valueOf (entry.getInfo ()), x))
+			.map (x -> this.loadSubActivity (x, activity));
 	}
 }
