@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 
 import com.google.common.base.Preconditions;
@@ -94,8 +96,9 @@ public final class TableRetriever<T extends Element> implements Retriever<T>
 	 * <code>IllegalStateException</code> will be thrown.
 	 *
 	 * @param  element The <code>Element</code> instance, not null
-	 * @return         The <code>Element</code> instance in the
-	 *                 <code>DataStore</code> or <code>null</code>
+	 * @return         An <code>Optional</code> containing the
+	 *                 <code>Element</code> instance in the
+	 *                 <code>DataStore</code>
 	 *
 	 * @throws IllegalStateException if the <code>Element</code> instance in the
 	 *                               <code>DataStore</code> is not identical to
@@ -103,7 +106,7 @@ public final class TableRetriever<T extends Element> implements Retriever<T>
 	 */
 
 	@Override
-	public T fetch (final T element)
+	public Optional<T> fetch (final T element)
 	{
 		this.log.trace ("fetch: element={}", element);
 
@@ -111,6 +114,8 @@ public final class TableRetriever<T extends Element> implements Retriever<T>
 
 		Preconditions.checkState (this.model.isOpen (), "datastore is closed");
 
-		return (this.model.contains (element)) ? element : TableRetriever.table.get (element, this.model);
+		return (this.model.contains (element))
+			? Optional.of (element)
+			: TableRetriever.table.get (element, this.model);
 	}
 }

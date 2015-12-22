@@ -22,9 +22,9 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
@@ -138,13 +138,12 @@ public final class TranslationTable
 	 *
 	 * @param  element   The <code>Element</code> instance
 	 * @param  model     The <code>DomainModel</code>
-	 * @return           The corresponding <code>Element</code> instance, or
-	 *                   <code>null</code> if it does not exist
+	 * @return           An <code>Optional</code> containing the corresponding
+	 *                   <code>Element</code> instance
 	 */
 
 	@SuppressWarnings ("unchecked")
-	@CheckReturnValue
-	public <T extends Element> T get (final T element, final DomainModel model)
+	public <T extends Element> Optional<T> get (final T element, final DomainModel model)
 	{
 		this.log.trace ("get: element={}, model={}", element, model);
 
@@ -152,7 +151,9 @@ public final class TranslationTable
 		assert model != null : "model is NULL";
 		assert element.getDomainModel () != model : "The specified element is in the specified model";
 
-		return (this.table.containsKey (element)) ? (T) this.table.get (element).get (model) : null;
+		return (this.table.containsKey (element))
+			? Optional.ofNullable ((T) this.table.get (element).get (model))
+			: Optional.empty ();
 	}
 
 	/**

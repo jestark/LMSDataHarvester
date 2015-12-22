@@ -17,6 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.io.Serializable;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckReturnValue;
@@ -173,14 +174,8 @@ public abstract class Element implements Comparable<Element>, Serializable
 			assert retriever != null : "retriever is NULL";
 			assert msg != null : "msg is NULL";
 
-			Preconditions.checkNotNull (element, msg);
-
-			R result = retriever.fetch (element);
-
-			Preconditions.checkArgument (result != null,
-					"Element is not in the DataStore: %s", element.toString ());
-
-			return result;
+			return retriever.fetch (Preconditions.checkNotNull (element, msg))
+				.orElseThrow (() -> new IllegalArgumentException ("Element is not in the DataStore"));
 		}
 
 		/**
@@ -317,9 +312,10 @@ public abstract class Element implements Comparable<Element>, Serializable
 			{
 				T newElement = this.create ();
 
-				T result = this.retriever.fetch ((newElement.equals (this.element)) ? this.element : newElement);
+				Optional<T> result = this.retriever.fetch ((newElement.equals (this.element))
+						? this.element : newElement);
 
-				if (result == null)
+				if (! result.isPresent ())
 				{
 					this.log.debug ("Inserting the Element into the datastore");
 					newElement = this.preInsert (newElement);
@@ -331,7 +327,7 @@ public abstract class Element implements Comparable<Element>, Serializable
 				else
 				{
 					this.log.debug ("Using pre-existing element instance from the translation table");
-					this.element = result;
+					this.element = result.get ();
 				}
 			}
 			catch (NullPointerException ex)

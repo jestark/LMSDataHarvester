@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 
 import com.google.common.base.Preconditions;
@@ -87,31 +89,34 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 		this.query = query;
 	}
 
-	private T load (final T element)
+	/**
+	 * Add an association between the supplied and retrieved
+	 * <code>Element</code> instances to the <code>TranslationTable</code>.
+	 *
+	 * @param  supplied  The supplied <code>Element</code> instance, not null
+	 * @param  retrieved The retrieved <code>Element</code> instance, not null
+	 * @return           The retrieved <code>Element</code> instance
+	 */
+
+	private T store (final T supplied, final T retrieved)
 	{
-		assert element != null : "element is NULL";
+		this.log.trace ("store: supplied={}, retrieved={}", supplied, retrieved);
 
-		if (! QueryRetriever.table.contains (element, this.model))
+		assert supplied != null : "supplied is NULL";
+		assert retrieved != null : "retrieved is NULL";
+
+		if (supplied.equalsAll (retrieved))
 		{
-			T result = this.query.setAllValues (element)
-				.query ();
-
-			if (result != null)
-			{
-				if (element.equalsAll (result))
-				{
-					this.log.debug ("Creating association in the translation table");
-					QueryRetriever.table.put (element, result);
-				}
-				else
-				{
-					this.log.debug ("Elements are different: DataStore ({}), Supplied ({})", result, element);
-					throw new IllegalStateException ("The Element in the DataStore is not identical to the supplied Element");
-				}
-			}
+			this.log.debug ("Creating association in the translation table");
+			QueryRetriever.table.put (supplied, retrieved);
+		}
+		else
+		{
+			this.log.debug ("Elements are different: DataStore ({}), Supplied ({})", retrieved, supplied);
+			throw new IllegalStateException ("The Element in the DataStore is not identical to the supplied Element");
 		}
 
-		return QueryRetriever.table.get (element, this.model);
+		return retrieved;
 	}
 
 	/**
@@ -130,8 +135,9 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 	 * <code>IllegalStateException</code> will be thrown.
 	 *
 	 * @param  element The <code>Element</code> instance, not null
-	 * @return         The <code>Element</code> instance in the
-	 *                 <code>DataStore</code> or <code>null</code>
+	 * @return         An <code>Optional</code> containing the
+	 *                 <code>Element</code> instance in the
+	 *                 <code>DataStore</code>
 	 *
 	 * @throws IllegalStateException if the <code>Element</code> instance in the
 	 *                               <code>DataStore</code> is not identical to
@@ -139,7 +145,7 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 	 */
 
 	@Override
-	public T fetch (final T element)
+	public Optional<T> fetch (final T element)
 	{
 		this.log.trace ("fetch: element={}", element);
 
@@ -147,6 +153,23 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 
 		Preconditions.checkState (this.model.isOpen (), "datastore is closed");
 
-		return  (this.model.contains (element)) ? element : this.load (element);
+		Optional<T> result = null;
+
+		if (this.model.contains (element))
+		{
+			result = Optional.of (element);
+		}
+		else if (QueryRetriever.table.contains (element, this.model))
+		{
+			result = QueryRetriever.table.get (element, this.model);
+		}
+		else
+		{
+			result = this.query.setAllValues (element)
+				.query ()
+				.map (x -> this.store (element, x));
+		}
+
+		return result;
 	}
 }

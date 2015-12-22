@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
+import java.util.Optional;
+
 import ca.uoguelph.socs.icc.edm.domain.Element;
 
 /**
@@ -44,13 +46,14 @@ public interface Retriever<T extends Element>
 	 * <code>IllegalStateException</code> will be thrown.
 	 *
 	 * @param  element The <code>Element</code> instance, not null
-	 * @return         The <code>Element</code> instance in the
-	 *                 <code>DataStore</code> or <code>null</code>
+	 * @return         An <code>Optional</code> containing the
+	 *                 <code>Element</code> instance in the
+	 *                 <code>DataStore</code>
 	 *
 	 * @throws IllegalStateException if the <code>Element</code> instance in the
 	 *                               <code>DataStore</code> is not identical to
 	 *                               the supplied <code>Element</code> instance
 	 */
 
-	public abstract T fetch (final T element);
+	public abstract Optional<T> fetch (final T element);
 }
