@@ -774,6 +774,42 @@ public abstract class Activity extends ParentActivity
 	}
 
 	/**
+	 * Compare two <code>Activity</code> instances, based upon the associated
+	 * <code>ActivityReference</code>.
+	 * <p>
+	 * Note:  The result from <code>compareTo</code> may not agree with the
+	 * result from <code>equals</code>.
+	 *
+	 * @param  element The <code>Element</code> to be compared
+	 * @return         The value 0 if the <code>Activity</code> instances are
+	 *                 equal, less than 0 of the argument is is greater, and
+	 *                 greater than 0 if the argument is less than the
+	 *                 <code>Activity</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (element instanceof Activity)
+			{
+				result = this.reference.compareTo (((Activity) element).reference);
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compare two <code>Activity</code> instances to determine if they are
 	 * equal.
 	 *

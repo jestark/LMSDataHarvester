@@ -599,6 +599,45 @@ public abstract class ActivityType extends Element
 	}
 
 	/**
+	 * Compare two <code>ActivityType</code> instances. The comparison is based
+	 * upon the associated <code>ActivitySource</code> instances and the names
+	 * of the <code>ActivityType</code> instances.
+	 *
+	 * @param  element The <code>Element</code> to be compared
+	 * @return         The value 0 if the <code>ActivityType</code> instances
+	 *                 are equal, less than 0 of the argument is is greater, and
+	 *                 greater than 0 if the argument is less than the
+	 *                 <code>ActivityType</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (element instanceof ActivityType)
+			{
+				result = this.getSource ().compareTo (((ActivityType) element).getSource ());
+
+				if (result == 0)
+				{
+					result = this.getName ().compareTo (((ActivityType) element).getName ());
+				}
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compare two <code>ActivityType</code> instances to determine if they are
 	 * equal.  The <code>ActivityType</code> instances are compared based upon
 	 * their associated <code>ActivitySource</code> and their names.

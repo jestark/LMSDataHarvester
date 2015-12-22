@@ -644,6 +644,49 @@ public abstract class Course extends Element
 	}
 
 	/**
+	 * Compare two <code>Course</code> instances.  The comparison is based upon
+	 * the names of the <code>Course</code> instances and the date of offering.
+	 *
+	 * @param  element The <code>Element</code> to be compared
+	 * @return         The value 0 if the <code>Course</code> instances
+	 *                 are equal, less than 0 of the argument is is greater, and
+	 *                 greater than 0 if the argument is less than the
+	 *                 <code>Course</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (element instanceof Course)
+			{
+				result = this.getYear ().compareTo (((Course) element).getYear ());
+
+				if (result == 0)
+				{
+					result = this.getSemester ().compareTo (((Course) element).getSemester ());
+
+					if (result == 0)
+					{
+						result = this.getName ().compareTo (((Course) element).getName ());
+					}
+				}
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compare two <code>Course</code> instances to determine if they are
 	 * equal.  The <code>Course</code> instances are compared based upon their
 	 * names, as well as their year and <code>Semester</code> of offering.

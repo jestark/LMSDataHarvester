@@ -563,6 +563,43 @@ public abstract class ActivityReference extends Element
 	}
 
 	/**
+	 * Compare two <code>ActivityReference</code> instances.
+	 * <code>ActivityReference</code> instances are compared by their
+	 * <code>DataStore</code> ID.
+	 * <p>
+	 * Note:  The result from <code>compareTo</code> may not agree with the
+	 * result from <code>equals</code>.
+	 *
+	 * @param  element The <code>Element</code> to be compared
+	 * @return         The value 0 if the <code>ActivityReference</code>
+	 *                 instances are  equal, less than 0 of the argument is is
+	 *                 greater, and greater than  0 if the argument is less than
+	 *                 the <code>ActivityReference</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (element instanceof ActivityReference)
+			{
+				result = this.getId ().compareTo (element.getId ());
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compare two <code>Activity</code> instances to determine if they are
 	 * equal.
 	 *

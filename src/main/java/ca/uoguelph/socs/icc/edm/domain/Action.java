@@ -523,6 +523,38 @@ public abstract class Action extends Element
 	}
 
 	/**
+	 * Compare two <code>Action</code> instances, based upon their names.
+	 *
+	 * @param  element The <code>Action</code> to be compared
+	 * @return         The value 0 if the <code>Action</code> instances are
+	 *                 equal, less than 0 of the argument is is greater, and
+	 *                 greater than 0 if the argument is less than the
+	 *                 <code>Action</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (element instanceof Action)
+			{
+				result = this.getName ().compareTo (((Action) element).getName ());
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compare two <code>Action</code> instances to determine if they are
 	 * equal.  The <code>Action</code> instances are compared based upon their
 	 * names.

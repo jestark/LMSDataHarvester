@@ -52,7 +52,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  * @version 1.0
  */
 
-public abstract class Element implements Serializable
+public abstract class Element implements Comparable<Element>, Serializable
 {
 	/**
 	 * Create and modify instances of the <code>Element</code> implementations.

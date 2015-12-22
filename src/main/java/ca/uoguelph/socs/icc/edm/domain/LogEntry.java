@@ -856,6 +856,42 @@ public abstract class LogEntry extends Element
 	}
 
 	/**
+	 * Compare two <code>LogEntry</code> instances.  <code>LogEntry</code>
+	 * instances are compared by their <code>DataStore</code> ID.
+	 * <p>
+	 * Note:  The result from <code>compareTo</code> may not agree with the
+	 * result from <code>equals</code>.
+	 *
+	 * @param  element The <code>Element</code> to be compared
+	 * @return         The value 0 if the <code>Element</code> instances are
+	 *                 equal, less than 0 of the argument is is greater, and
+	 *                 greater than  0 if the argument is less than the
+	 *                 <code>Element</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (element instanceof LogEntry)
+			{
+				result = this.getId ().compareTo (element.getId ());
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compare two <code>LogEntry</code> instances and determine if they are
 	 * equal.
 	 * <p>

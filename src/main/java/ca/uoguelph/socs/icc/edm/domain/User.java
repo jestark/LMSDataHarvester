@@ -829,6 +829,49 @@ public abstract class User extends Element
 	}
 
 	/**
+	 * Compare two <code>User</code> instances. <code>User</code> instances are
+	 * compared based upon their last name, then the first name and finally the
+	 * username.
+	 *
+	 * @param  element The <code>Element</code> to be compared
+	 * @return         The value 0 if the <code>User</code> instances are equal,
+	 *                 less than 0 of the argument is is greater, and greater
+	 *                 than 0 if the argument is less than the <code>User</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (element instanceof User)
+			{
+				result = this.getLastname ().compareTo (((User) element).getLastname ());
+
+				if (result == 0)
+				{
+					result = this.getFirstname ().compareTo (((User) element).getFirstname ());
+
+					if (result == 0)
+					{
+						result = this.getUsername ().compareTo (((User) element).getUsername ());
+					}
+				}
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compare two <code>User</code> instances to determine if they are
 	 * equal.  The <code>User</code> instances are compared based upon the
 	 * this ID number and the username.

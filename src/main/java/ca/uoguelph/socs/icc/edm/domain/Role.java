@@ -522,6 +522,37 @@ public abstract class Role extends Element
 	}
 
 	/**
+	 * Compare two <code>Role</code> instances, based upon their names.
+	 *
+	 * @param  element The <code>Element</code> to be compared
+	 * @return         The value 0 if the <code>Role</code> instances are equal,
+	 *                 less than 0 of the argument is is greater, and greater
+	 *                 than 0 if the argument is less than the <code>Role</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (element instanceof Role)
+			{
+				result = this.getName ().compareTo (((Role) element).getName ());
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compare two <code>Role</code> instances to determine if they are
 	 * equal.  The <code>Role</code> instances are compared based upon their
 	 * names.

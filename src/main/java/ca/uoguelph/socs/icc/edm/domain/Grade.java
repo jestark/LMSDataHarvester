@@ -596,6 +596,45 @@ public abstract class Grade extends Element
 	}
 
 	/**
+	 * Compare two <code>Grade</code> instances.  The comparison is based upon
+	 * the associated <code>Enrolment</code> and <code>Activity</code>
+	 * instances.
+	 *
+	 * @param  element The <code>Grade</code> to be compared
+	 * @return         The value 0 if the <code>Grade</code> instances
+	 *                 are equal, less than 0 of the argument is is greater, and
+	 *                 greater than 0 if the argument is less than the
+	 *                 <code>Grade</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (element instanceof Grade)
+			{
+				result = this.getEnrolment ().compareTo (((Grade) element).getEnrolment ());
+
+				if (result == 0)
+				{
+					result = this.getActivity ().compareTo (((Grade) element).getActivity ());
+				}
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compare two <code>Grade</code> instances to determine if they are equal.
 	 * The <code>Grade</code> instances are compared based upon the associated
 	 * <code>Activity</code> and the associated <code>Enrolment</code>.

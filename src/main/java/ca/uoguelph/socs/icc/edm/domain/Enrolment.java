@@ -725,6 +725,39 @@ public abstract class Enrolment extends Element
 	}
 
 	/**
+	 * Compare two <code>Enrolment</code> instances.  <code>Enrolment</code>
+	 * instances are compared by their <code>DataStore</code> ID.
+	 *
+	 * @param  element The <code>Element</code> to be compared
+	 * @return         The value 0 if the <code>Enrolment</code> instances are
+	 *                 equal, less than 0 of the argument is is greater, and
+	 *                 greater than  0 if the argument is less than the
+	 *                 <code>Enrolment</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (element instanceof Enrolment)
+			{
+				result = this.getId ().compareTo (element.getId ());
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compare two <code>Enrolment</code> instances to determine if they are
 	 * equal.  The <code>Enrolment</code> instances are compared based upon the
 	 * <code>Course</code>, <code>Role</code> and <code>DataStore</code> id.

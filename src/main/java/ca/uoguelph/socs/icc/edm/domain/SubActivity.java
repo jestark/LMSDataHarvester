@@ -622,6 +622,48 @@ public abstract class SubActivity extends ParentActivity
 	}
 
 	/**
+	 * Compare two <code>SubActivity</code> instances.  <code>SubActivity</code>
+	 * instances are compared first by their parents, then by their
+	 * <code>DataStore</code> ID's.
+	 * <p>
+	 * Note:  The result from <code>compareTo</code> may not agree with the
+	 * result from <code>equals</code>.
+	 *
+	 * @param  element The <code>Element</code> to be compared
+	 * @return         The value 0 if the <code>SubActivity</code> instances are
+	 *                 equal, less than 0 of the argument is is greater, and
+	 *                 greater than  0 if the argument is less than the
+	 *                 <code>SubActivity</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (element instanceof SubActivity)
+			{
+				result = this.getParent ().compareTo (((SubActivity) element).getParent ());
+
+				if (result == 0)
+				{
+					result = this.getId ().compareTo (element.getId ());
+				}
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Compare two <code>SubActivity</code> instances to determine if they are
 	 * equal.  The <code>SubActivity</code> instances are compared based upon
 	 * their names and the parent <code>Activity</code>.
