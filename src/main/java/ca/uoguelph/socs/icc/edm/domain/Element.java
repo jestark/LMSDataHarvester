@@ -378,6 +378,13 @@ public abstract class Element implements Serializable
 		public abstract T.Builder<T> getBuilder ();
 	}
 
+	/**
+	 * Template Dagger module for creating <code>Retriever</code> instances.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
 	@Module (includes = {DomainModel.DomainModelModule.class})
 	protected static abstract class ElementModule<T extends Element>
 	{
@@ -408,6 +415,15 @@ public abstract class Element implements Serializable
 		{
 			return retriever;
 		}
+
+		/**
+		 * Create a new <code>Query</code> instance for use with the
+		 * <code>QueryRetriever</code>.
+		 *
+		 * @param  model    The <code>DomainModel</code>, not null
+		 * @param  selector The <code>Selector</code>, not null
+		 * @return          The <code>Query</code>
+		 */
 
 		@Provides
 		public final Query<T> getRetrieverQuery (final DomainModel model, final Selector<T> selector)

@@ -155,9 +155,8 @@ public final class DomainModel
 	/**
 	 * Create the <code>DomainModel</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code> which contains all of the
-	 *                   data represented by this <code>DomainModel</code>,
-	 *                   not null
+	 * @param  profile The <code>Profile</code>, not null
+	 * @param  factory The <code>DataStoreFactory</code>, not null
 	 */
 
 	public DomainModel (
@@ -571,11 +570,10 @@ public final class DomainModel
 	 * by this method will have the same order as the input
 	 * <code>Collection</code>.
 	 *
-	 * @param  element               The <code>Element</code> to insert, not
-	 *                               null
+	 * @param  elements The <code>Element</code> to insert, not null
+	 * @return          A reference to the <code>Element</code> in the
+	 *                  <code>DataStore</code>
 	 *
-	 * @return                       A reference to the <code>Element</code> in
-	 *                               the <code>DataStore</code>
 	 * @throws IllegalStateException If there is not an active
 	 *                               <code>Transaction</code>
 	 */
