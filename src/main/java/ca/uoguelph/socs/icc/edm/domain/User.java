@@ -178,6 +178,20 @@ public abstract class User extends Element
 			return user;
 		}
 
+		@Override
+		protected User postInsert (final User user)
+		{
+			if (! this.enrolments.equals (user.getEnrolments ()))
+			{
+				new HashSet<Enrolment> (this.enrolments)
+					.stream ()
+					.filter (x -> (! user.getEnrolments ().contains (x)))
+					.forEach (x -> user.addEnrolment (x));
+			}
+
+			return user;
+		}
+
 		/**
 		 * Reset the builder.  This method will set all of the fields for the
 		 * <code>Element</code> to be built to <code>null</code>.
@@ -693,6 +707,56 @@ public abstract class User extends Element
 
 		return (User.Builder) model.getElementComponent (User.class)
 			.getBuilder ();
+	}
+
+	/**
+	 * Create an association between a <code>User</code> and an
+	 * <code>Enrolment</code>.
+	 *
+	 * @param  user      The <code>User</code>, not null
+	 * @param  enrolment The <code>Enrolment</code>, not null
+	 * @return           <code>true</code> if the association was successfully
+	 *                   created, <code>false</code> otherwise
+	 */
+
+	public static boolean enrol (final User user, final Enrolment enrolment)
+	{
+		Preconditions.checkNotNull (user, "user");
+		Preconditions.checkNotNull (enrolment, "enrolment");
+
+		assert user.getDomainModel ().contains (user) : "User is not a Member of its DomainModel";
+		assert enrolment.getDomainModel ().contains (enrolment) : "Enrolment is not a Member of its DomainModel";
+
+		Preconditions.checkArgument (user.getDomainModel () == enrolment.getDomainModel (),
+				"User and enrolment must be members of the same DomainModel");
+
+		Preconditions.checkArgument (user.getDomainModel ()
+				.getQuery (User.SELECTOR_ENROLMENTS)
+				.setValue (User.ENROLMENTS, enrolment)
+				.query () == null, "Enrolment is already associated with a user");
+
+		return user.addEnrolment (enrolment);
+	}
+
+	/**
+	 * Break an association between a <code>User</code> and an
+	 * <code>Enrolment</code>.
+	 *
+	 * @param  user      The <code>User</code>, not null
+	 * @param  enrolment The <code>Enrolment</code>, not null
+	 * @return           <code>true</code> if the association was successfully
+	 *                   broken, <code>false</code> otherwise
+	 */
+
+	public static boolean unenrol (final User user, final Enrolment enrolment)
+	{
+		Preconditions.checkNotNull (user, "user");
+		Preconditions.checkNotNull (enrolment, "enrolment");
+
+		assert user.getDomainModel ().contains (user) : "User is not a Member of its DomainModel";
+		assert enrolment.getDomainModel ().contains (enrolment) : "Enrolment is not a Member of its DomainModel";
+
+		return user.removeEnrolment (enrolment);
 	}
 
 	/**
