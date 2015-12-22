@@ -30,8 +30,8 @@ import ca.uoguelph.socs.icc.edm.domain.ActivitySource;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
-
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
+import ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData;
 
 /**
  * Convert <code>Activity</code> data in the moodle log to something sane.
@@ -131,7 +131,7 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
  *
  * @author  James E. Stark
  * @version 1.0
- * @see     ca.uoguelph.socs.icc.edm.domain.element.MoodleActivity
+ * @see     ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityReference
  */
 
 public final class ActivityConverter
@@ -145,11 +145,11 @@ public final class ActivityConverter
 	/** The log */
 	private final Logger log;
 
+	/** The source <code>DomainModel</code> */
+	private final DomainModel source;
+
 	/** The destination <code>DomainModel</code> */
 	private final DomainModel dest;
-
-	/** Query for loading <code>Activity</code> instances */
-	private final Query<ActivityReference> idQuery;
 
 	/** Builder to create the <code>ActivityType</code> instances */
 	private final ActivityType.Builder typeBuilder;
@@ -171,9 +171,11 @@ public final class ActivityConverter
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.dest = dest;
+		assert dest != null : "dest is NULL";
+		assert source != null : "source is NULL";
 
-		this.idQuery = source.getQuery (ActivityReference.SELECTOR_ID);
+		this.dest = dest;
+		this.source = source;
 
 		this.typeBuilder = ActivityType.builder (this.dest)
 			.setActivitySource (ActivitySource.builder (this.dest)
@@ -185,24 +187,39 @@ public final class ActivityConverter
 	}
 
 	/**
-	 * Create a generic <code>Activity</code>.
+	 * Import an <code>Activity</code> instance into the destination
+	 * <code>DomainModel</code>.
+	 *
+	 * @param  ref The <code>ActivityReference</code>, not null
+	 * @return     The <code>Activity</code>
+	 */
+
+	private Activity loadActivity (final ActivityReference ref)
+	{
+		this.log.debug ("Loaded activity instance for module: {} id: {}", ref.getType ().getName (), ref.getId ());
+
+		return ref.getActivity ().getBuilder (this.dest).build ();
+	}
+
+	/**
+	 * Create a placeholder <code>Activity</code> instance.  This method creates
+	 * placeholders to represent "stealth" <code>Activity</code> instances
+	 * (which have an ID of 0 in the source <code>DataStore</code>) and
+	 * <code>Activity</code> instances which are missing from the source
+	 * <code>DataStore</code>.
 	 *
 	 * @param  type   The <code>ActivityType</code>, not null
-	 * @param  course The <code>Course</code>, not null
-	 * @param  name   The name of the <code>Activity</code>, not null
-	 *
+	 * @param  course The <code>Course</code> not null
 	 * @return        The <code>Activity</code>
 	 */
 
-	private Activity buildActivity (final ActivityType type, final Course course, final String name)
+	private Activity createActivity (final ActivityType type, final Course course)
 	{
-		assert type != null : "type is NULL";
-		assert course != null : "course is NULL";
-		assert name != null : "name is NULL";
+		this.log.info ("Created dummy activity instance for module: {}", type.getName ());
 
 		return Activity.builder (this.dest, type)
-			.setName (name)
 			.setCourse (course)
+			.setName (ActivityConverter.MISSING_ACTIVITY_NAME)
 			.build ();
 	}
 
@@ -210,35 +227,27 @@ public final class ActivityConverter
 	 * Load the <code>Activity</code> based on its <code>DataStore</code>
 	 * identifier.
 	 *
-	 * @param  activityId The <code>DataStore</code> ID of the
-	 *                    <code>Activity</code>, not null
-	 * @param  module     The name of the module (<code>ActivityType</code>),
-	 *                    not null
-	 * @param  course     The <code>Course</code>, not null
+	 * @param  id     The <code>DataStore</code> ID of the
+	 *                <code>Activity</code>, not null
+	 * @param  type   The <code>ActivityType</code>, not null
+	 * @param  course The <code>Course</code>, not null
 	 *
-	 * @return            The <code>Activity</code>
+	 * @return        The <code>Activity</code>
 	 */
 
-	private Activity getById (final Long id, final String module, final Course course)
+	private Activity getById (final Long id, final ActivityType type, final Course course)
 	{
+		assert id != null : "id is NULL";
+		assert type != null : "type is NULL";
+		assert course != null : "course is NULL";
+
 		if (! this.idCache.containsKey (id))
 		{
-			ActivityReference moodleActivity = this.idQuery.setValue (ActivityReference.ID, id)
-				.query ();
-
-			if (moodleActivity != null)
-			{
-				this.log.debug ("Loaded activity instance for module: {} id: {}", module, id);
-				this.idCache.put (id, moodleActivity.getActivity ()
-						.getBuilder (this.dest)
-						.build ());
-			}
-			else
-			{
-				this.log.info ("Created dummy activity instance for module: {} id: {}", module, id);
-				this.idCache.put (id, this.buildActivity (this.typeBuilder.setName (module).build (),
-							course, ActivityConverter.MISSING_ACTIVITY_NAME));
-			}
+			this.idCache.put (id, this.source.getQuery (ActivityReference.SELECTOR_ID)
+					.setValue (ActivityReference.ID, id)
+					.query ()
+					.map (x -> this.loadActivity (x))
+					.orElse (this.createActivity (type, course)));
 		}
 
 		return this.idCache.get (id);
@@ -248,32 +257,21 @@ public final class ActivityConverter
 	 * Load or generate the default <code>Activity</code> for the specified
 	 * module.
 	 *
-	 * @param  module     The name of the module (<code>ActivityType</code>),
-	 *                    not null
-	 * @param  course     The <code>Course</code>, not null
+	 * @param  type   The <code>ActivityType</code>, not null
+	 * @param  course The <code>Course</code>, not null
 	 *
-	 * @return            The <code>Activity</code>
+	 * @return        The <code>Activity</code>
 	 */
 
-	private Activity getByModule (final String module, final Course course)
+	private Activity getByModule (final ActivityType type, final Course course)
 	{
-		ActivityType type = this.typeBuilder.setName (module)
-			.build ();
+		assert type != null : "type is NULL";
+		assert course != null : "course is NULL";
 
 		if (! this.typeCache.containsKey (type))
 		{
-			if (Activity.hasActivityClass (type))
-			{
-				this.log.info ("Created null activity instance for module: {}", type.getName ());
-				this.typeCache.put (type, this.buildActivity (type, course, ActivityConverter.NULL_ACTIVITY_NAME));
-			}
-			else
-			{
-				this.log.info ("Created stealth activity for module: {}", type.getName ());
-				this.typeCache.put (type, Activity.builder (this.dest, type)
-					.setCourse (course)
-					.build ());
-			}
+			this.log.info ("Created null activity instance for module: {}", type.getName ());
+			this.typeCache.put (type, this.createActivity (type, course));
 		}
 
 		return this.typeCache.get (type);
@@ -283,23 +281,24 @@ public final class ActivityConverter
 	 * Load an <code>Activity</code> instance from the moodle database and
 	 * convert it to a format that works with the destination database.
 	 *
-	 * @param  activityId The <code>DataStore</code> ID of the
-	 *                    <code>Activity</code>, not null
-	 * @param  module     The name of the module (<code>ActivityType</code>),
-	 *                    not null
-	 * @param  course     The <code>Course</code>, not null
+	 * @param  course The <code>Course</code>, not null
+	 * @param  entry  The <code>MoodleLogData</code> to process, not null
 	 *
-	 * @return            The <code>Activity</code>
+	 * @return        The <code>Activity</code>
 	 */
 
-	public Activity convert (final Long activityId, final String module, final Course course)
+	public Activity getActivity (final Course course, final MoodleLogData entry)
 	{
-		this.log.trace ("convert: activityId={}, module={}, course={}", activityId, module, course);
+		this.log.trace ("convert: course={}, entry={}", course, entry);
 
-		Preconditions.checkNotNull (activityId, "activityId is NULL");
-		Preconditions.checkNotNull (module, "module is NULL");
-		Preconditions.checkNotNull (course, "course is NULL");
+		Preconditions.checkNotNull (course, "course");
+		Preconditions.checkNotNull (entry, "entry");
 
-		return (activityId != 0) ? this.getById (activityId, module, course) : this.getByModule (module, course);
+		Long id = entry.getActivityId ();
+
+		ActivityType type = this.typeBuilder.setName (entry.getModule ())
+			.build ();
+
+		return (id != 0) ? this.getById (id, type, course) : this.getByModule (type, course);
 	}
 }
