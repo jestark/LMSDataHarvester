@@ -212,7 +212,7 @@ public final class SubActivityConverter
 				.setValue (SubActivity.ID, key.getId ())
 				.query ()
 				.map (x -> this.importSubActivity (x))
-				.orElse (this.createSubActivity (parent)));
+				.orElseGet (() -> this.createSubActivity (parent)));
 		}
 
 		return this.subActivityCache.get (key);

@@ -247,7 +247,7 @@ public final class ActivityConverter
 					.setValue (ActivityReference.ID, id)
 					.query ()
 					.map (x -> this.loadActivity (x))
-					.orElse (this.createActivity (type, course)));
+					.orElseGet (() -> this.createActivity (type, course)));
 		}
 
 		return this.idCache.get (id);
@@ -270,7 +270,6 @@ public final class ActivityConverter
 
 		if (! this.typeCache.containsKey (type))
 		{
-			this.log.info ("Created null activity instance for module: {}", type.getName ());
 			this.typeCache.put (type, this.createActivity (type, course));
 		}
 
