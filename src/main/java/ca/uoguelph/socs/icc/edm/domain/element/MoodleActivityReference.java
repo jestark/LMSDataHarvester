@@ -134,39 +134,6 @@ public class MoodleActivityReference extends ActivityReference
 	}
 
 	/**
-	 * Compare two <code>Activity</code> instances to determine if they are
-	 * equal.
-	 *
-	 * @param  obj The <code>Activity</code> instance to compare to the one
-	 *             represented by the called instance
-	 *
-	 * @return     <code>True</code> if the two <code>Activity</code> instances
-	 *             are equal, <code>False</code> otherwise
-	 */
-
-	@Override
-	public boolean equals (final Object obj)
-	{
-		return (obj == this) ? true : (obj instanceof MoodleActivityReference)
-			&& super.equals (obj)
-			&& Objects.equals (this.instanceId, ((MoodleActivityReference) obj).getInstanceId ());
-	}
-
-	/**
-	 * Compute a <code>hashCode</code> of the <code>Activity</code> instance.
-	 * The hash code is computed based upon the <code>ActivityType</code>, the
-	 * <code>Course</code> and the Moodle instance id.
-	 *
-	 * @return An <code>Integer</code> containing the hash code
-	 */
-
-	@Override
-	public int hashCode ()
-	{
-		return Objects.hash (super.hashCode (), this.getInstanceId ());
-	}
-
-	/**
 	 * Get a <code>String</code> representation of the <code>Activity</code>
 	 * instance, including the identifying fields.
 	 *
