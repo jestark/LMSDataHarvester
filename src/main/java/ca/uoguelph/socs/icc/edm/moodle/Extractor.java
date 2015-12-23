@@ -181,11 +181,13 @@ public final class Extractor
 				.setValue (User.ID, userId)
 				.query ()
 				.map (x -> this.importUser (x))
-				.orElse (this.createUser ());
+				.orElseGet (() -> this.createUser ());
 
 			if (user.getEnrolment (course) == null)
 			{
-				User.enrol (user, this.createEnrolment (Extractor.this.registrations.get (user.getUsername ())));
+				User.enrol (user, (Extractor.this.registrations.containsKey (user.getUsername ()))
+					? this.createEnrolment (Extractor.this.registrations.get (user.getUsername ()))
+					: this.createEnrolment ());
 			}
 
 			return user.getEnrolment (course);
@@ -193,7 +195,7 @@ public final class Extractor
 
 		/**
 		 * Create an <code>Enrolment</code> instance on the destination
-		 * <code>DomainModel</code>.
+		 * <code>DomainModel</code>, from a <code>Registration</code>.
 		 *
 		 * @param  registration The <code>Registration</code>, not null
 		 * @return              The <code>Enrolment</code>
@@ -210,6 +212,24 @@ public final class Extractor
 				.setRole (this.createRole (registration.getRole ()))
 				.setUsable (registration.getUsable ())
 				.setFinalGrade (registration.getGrade ())
+				.build ();
+		}
+
+		/**
+		 * Create an <code>Enrolment</code> instance on the destination
+		 * <code>DomainModel</code> for an unknown <code>User</code>.
+		 *
+		 * @return The <code>Enrolment</code>
+		 */
+
+		public Enrolment createEnrolment ()
+		{
+			this.log.trace ("createEnrolment:");
+
+			return Enrolment.builder (this.dest)
+				.setCourse (Extractor.this.course)
+				.setRole (this.createRole (Extractor.UNKNOWN_ROLE_NAME))
+				.setUsable (false)
 				.build ();
 		}
 
