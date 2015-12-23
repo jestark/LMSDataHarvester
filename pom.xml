@@ -151,6 +151,7 @@
 					<forceJavacCompilerUse>true</forceJavacCompilerUse>
 					<compilerArgs>
 						<arg>-Xlint:all</arg>
+						<arg>-Xdiags:verbose</arg>
 					</compilerArgs>
 					<encoding>UTF-8</encoding>
 					<showWarnings>true</showWarnings>
