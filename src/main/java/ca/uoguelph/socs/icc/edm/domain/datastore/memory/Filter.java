@@ -164,6 +164,6 @@ final class Filter<T extends Element>
 
 		return this.values.entrySet ()
 			.stream ()
-			.allMatch (x -> x.getKey ().hasValue (element, x.getKey ().getElementClass ().cast (x.getValue ())));
+			.allMatch (x -> x.getKey ().hasValue (element, x.getKey ().getValueClass ().cast (x.getValue ())));
 	}
 }
