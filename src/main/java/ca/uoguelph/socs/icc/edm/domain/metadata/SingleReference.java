@@ -171,7 +171,7 @@ final class SingleReference<T extends Element, V> implements Reference<T, V>
 	{
 		assert element != null : "element is NULL";
 
-		return this.get.apply (element).equals (value);
+		return Objects.equals (this.get.apply (element), value);
 	}
 
 	/**
