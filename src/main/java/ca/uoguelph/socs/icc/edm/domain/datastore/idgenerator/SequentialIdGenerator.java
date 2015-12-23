@@ -149,6 +149,7 @@ public final class SequentialIdGenerator implements IdGenerator
 			final Class<? extends Element> element)
 	{
 		return DaggerSequentialIdGenerator_IdGeneratorComponent.builder ()
+			.domainModelModule (new DomainModel.DomainModelModule (element, model))
 			.build ();
 	}
 

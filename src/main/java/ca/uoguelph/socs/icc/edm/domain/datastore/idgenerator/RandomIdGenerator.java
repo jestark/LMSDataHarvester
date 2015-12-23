@@ -155,6 +155,7 @@ public final class RandomIdGenerator implements IdGenerator
 			final Class<? extends Element> element)
 	{
 		return DaggerRandomIdGenerator_IdGeneratorComponent.builder ()
+			.domainModelModule (new DomainModel.DomainModelModule (element, model))
 			.build ();
 	}
 
