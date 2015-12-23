@@ -174,10 +174,10 @@ public final class JPADataStore implements DataStore
 		try
 		{
 			this.log.debug ("Creating the JPA EntityManagerFactory");
-			this.emf = Persistence.createEntityManagerFactory (profile.getName ());
+			this.emf = Persistence.createEntityManagerFactory (profile.getName (), profile.getParameters ());
 
 			this.log.debug ("Creating the JPA EntityManager");
-			this.em = this.emf.createEntityManager (profile.getParameters ());
+			this.em = this.emf.createEntityManager ();
 
 			this.transaction = null;
 		}
