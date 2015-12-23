@@ -21,6 +21,7 @@ import javax.persistence.EntityTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 
 /**
@@ -37,6 +38,9 @@ final class JPATransaction implements Transaction
 	/** The log */
 	private final Logger log;
 
+	/** The <code>DomainModel</code> upon which the <code>Transaction</code> operates */
+	private final DomainModel model;
+
 	/** The data store */
 	private final EntityTransaction transaction;
 
@@ -44,13 +48,18 @@ final class JPATransaction implements Transaction
 	 * Create the <code>JPADataStoreTransaction</code>, encapsulating the
 	 * specified <code>EntityTransaction</code>.
 	 *
-	 * @param transaction The <code>EntityTransaction</code>, not null
+	 * @param  model       The <code>DomainModel</code>, not null
+	 * @param  transaction The <code>EntityTransaction</code>, not null
 	 */
 
-	JPATransaction (final EntityTransaction transaction)
+	JPATransaction (final DomainModel model, final EntityTransaction transaction)
 	{
 		this.log = LoggerFactory.getLogger (JPATransaction.class);
 
+		assert model != null : "model is NULL";
+		assert transaction != null : "transaction is NULL";
+
+		this.model = model;
 		this.transaction = transaction;
 	}
 
@@ -108,6 +117,12 @@ final class JPATransaction implements Transaction
 		this.log.trace ("commit:");
 
 		this.transaction.commit ();
+
+		// re-close the DomainModel to make sure that it is cleaned up.
+		if (! this.model.isOpen ())
+		{
+			this.model.close ();
+		}
 	}
 
 	/**
@@ -120,5 +135,11 @@ final class JPATransaction implements Transaction
 		this.log.trace ("rollback:");
 
 		this.transaction.rollback ();
+
+		// re-close the DomainModel to make sure that it is cleaned up.
+		if (! this.model.isOpen ())
+		{
+			this.model.close ();
+		}
 	}
 }

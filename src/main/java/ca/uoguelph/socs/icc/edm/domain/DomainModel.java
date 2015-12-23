@@ -197,12 +197,12 @@ public final class DomainModel
 			final @Nullable T oldElement,
 			final T newElement)
 	{
-		this.log.trace ("insert: definition={}, oldElement={}, newElement={}", oldElement, newElement);
+		this.log.trace ("insert: definition={}, oldElement={}, newElement={}", definition, oldElement, newElement);
 
 		assert definition != null : "definition is NULL";
 		assert newElement != null : "newElement is NULL";
 
-		Preconditions.checkState (this.datastore.getTransaction ().isActive (), "transaction required");
+		Preconditions.checkState (this.datastore.getTransaction (this).isActive (), "transaction required");
 
 		this.log.debug ("inserting element into the DataStore: {}", newElement);
 		T result = this.datastore.insert (definition, newElement);
@@ -214,7 +214,7 @@ public final class DomainModel
 			throw new IllegalStateException ("Failed to connect relationships");
 		}
 
-		if (result.equals (oldElement))
+		if (result.equalsAll (oldElement))
 		{
 			this.log.debug ("Inserting the Element mapping into the TranslationTable");
 			DomainModel.table.put (oldElement, result);
@@ -361,6 +361,11 @@ public final class DomainModel
 	public void close ()
 	{
 		this.datastore.close ();
+
+		if (! this.datastore.getTransaction (this).isActive ())
+		{
+			DomainModel.table.removeAll (this);
+		}
 	}
 
 	/**
@@ -471,7 +476,7 @@ public final class DomainModel
 			throw new IllegalStateException ("DataStore is immutable");
 		}
 
-		return this.datastore.getTransaction ();
+		return this.datastore.getTransaction (this);
 	}
 
 	/**
@@ -538,7 +543,7 @@ public final class DomainModel
 			throw new NullPointerException ();
 		}
 
-		if (! this.datastore.getTransaction ().isActive ())
+		if (! this.datastore.getTransaction (this).isActive ())
 		{
 			this.log.error ("Attempting to insert an Element without an Active Transaction");
 			throw new IllegalStateException ("Active Transaction required");
@@ -588,7 +593,7 @@ public final class DomainModel
 			throw new NullPointerException ();
 		}
 
-		if (! this.datastore.getTransaction ().isActive ())
+		if (! this.datastore.getTransaction (this).isActive ())
 		{
 			this.log.error ("Attempting to insert an Element without an Active Transaction");
 			throw new IllegalStateException ("Active Transaction required");
@@ -623,7 +628,7 @@ public final class DomainModel
 
 		Preconditions.checkNotNull (element, "element");
 		Preconditions.checkArgument (this.datastore.contains (element), "element is no in the datastore");
-		Preconditions.checkState (this.datastore.getTransaction ().isActive (), "transaction required");
+		Preconditions.checkState (this.datastore.getTransaction (this).isActive (), "transaction required");
 
 		this.log.debug ("Disconnecting relationships");
 		if (! element.disconnect ())

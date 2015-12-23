@@ -105,10 +105,11 @@ public interface DataStore
 	 * Get an instance of the transaction manager for the
 	 * <code>DataStore</code>.
 	 *
-	 * @return An instance of the transaction manager
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @return       An instance of the transaction manager
 	 */
 
-	public abstract Transaction getTransaction ();
+	public abstract Transaction getTransaction (DomainModel model);
 
 	/**
 	 * Determine if the <code>DataStore</code> is open.

@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.datastore.dummy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
+import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
 
 /**
@@ -37,8 +37,8 @@ final class DummyTransaction implements Transaction
 	/** The log  */
 	private final Logger log;
 
-	/** The <code>DataStore</code> upon which the <code>Transaction</code> operates */
-	private final DataStore datastore;
+	/** The <code>DomainModel</code> upon which the <code>Transaction</code> operates */
+	private final DomainModel model;
 
 	/** Is the <code>Transaction</code> active? */
 	private boolean active;
@@ -49,16 +49,16 @@ final class DummyTransaction implements Transaction
 	/**
 	 * Create the <code>BasicTransaction</code>.
 	 *
-	 * @param  datastore The <code>DataStore</code>, not null
+	 * @param  model The <code>DomainModel</code>, not null
 	 */
 
-	public DummyTransaction (final DataStore datastore)
+	public DummyTransaction (final DomainModel model)
 	{
-		assert datastore != null : "datastore is NULL";
+		assert model != null : "model is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		this.datastore = datastore;
+		this.model = model;
 
 		this.active = false;
 		this.rollback = false;
@@ -134,7 +134,7 @@ final class DummyTransaction implements Transaction
 			throw new IllegalStateException ("Transaction already in progress");
 		}
 
-		if (! this.datastore.isOpen ())
+		if (! this.model.isOpen ())
 		{
 			this.log.error ("Can not begin: Datastore is closed");
 			throw new IllegalStateException ("Datastore is closed");
@@ -170,10 +170,10 @@ final class DummyTransaction implements Transaction
 
 		this.active = false;
 
-		// re-close the datastore to make sure that it is cleaned up.
-		if (! this.datastore.isOpen ())
+		// re-close the DomainModel to make sure that it is cleaned up.
+		if (! this.model.isOpen ())
 		{
-			this.datastore.close ();
+			this.model.close ();
 		}
 	}
 
@@ -197,10 +197,10 @@ final class DummyTransaction implements Transaction
 		this.active = false;
 		this.rollback = false;
 
-		// re-close the datastore to make sure that it is cleaned up.
-		if (! this.datastore.isOpen ())
+		// re-close the DomainModel to make sure that it is cleaned up.
+		if (! this.model.isOpen ())
 		{
-			this.datastore.close ();
+			this.model.close ();
 		}
 	}
 }

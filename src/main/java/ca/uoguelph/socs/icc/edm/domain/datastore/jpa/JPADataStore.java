@@ -119,7 +119,7 @@ public final class JPADataStore implements DataStore
 	private final EntityManager em;
 
 	/** The <code>Transaction</code> instance */
-	private final Transaction transaction;
+	private Transaction transaction;
 
 	/**
 	 * Static initializer to create a constance instance of the Dagger
@@ -179,7 +179,7 @@ public final class JPADataStore implements DataStore
 			this.log.debug ("Creating the JPA EntityManager");
 			this.em = this.emf.createEntityManager (profile.getParameters ());
 
-			this.transaction = new JPATransaction (this.em.getTransaction ());
+			this.transaction = null;
 		}
 		catch (Exception ex)
 		{
@@ -242,12 +242,18 @@ public final class JPADataStore implements DataStore
 	 * Get an instance of the transaction manager for the
 	 * <code>DataStore</code>.
 	 *
-	 * @return An instance of the transaction manager
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @return       An instance of the transaction manager
 	 */
 
 	@Override
-	public Transaction getTransaction ()
+	public Transaction getTransaction (final DomainModel model)
 	{
+		if (this.transaction == null)
+		{
+			this.transaction = new JPATransaction (model, this.em.getTransaction ());
+		}
+
 		return this.transaction;
 	}
 

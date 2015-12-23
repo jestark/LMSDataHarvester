@@ -218,15 +218,16 @@ public final class DummyDataStore implements DataStore
 	 * Get an instance of the transaction manager for the
 	 * <code>DataStore</code>.
 	 *
-	 * @return An instance of the transaction manager
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @return       An instance of the transaction manager
 	 */
 
 	@Override
-	public Transaction getTransaction ()
+	public Transaction getTransaction (final DomainModel model)
 	{
 		if (this.transaction == null)
 		{
-			this.transaction = new DummyTransaction (this);
+			this.transaction = new DummyTransaction (model);
 		}
 
 		return this.transaction;
