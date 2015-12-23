@@ -533,79 +533,20 @@ public final class DomainModel
 	 *                               <code>Transaction</code>
 	 */
 
-	public <T extends Element> T insert (final T element)
-	{
-		this.log.trace ("insert: element={}", element);
+//	public <T extends Element> T insert (final T element)
+//	{
+//		this.log.trace ("insert: element={}", element);
 
-		if (element == null)
-		{
-			this.log.error ("Attempting to insert a NULL element");
-			throw new NullPointerException ();
-		}
-
-		if (! this.datastore.getTransaction (this).isActive ())
-		{
-			this.log.error ("Attempting to insert an Element without an Active Transaction");
-			throw new IllegalStateException ("Active Transaction required");
-		}
+//		Preconditions.checkNotNull (element, "enement");
+//		Preconditions.checkState (this.datastore.getTransaction (this).isActive (), "Active Transaction required");
 
 //		InsertProcessor processor = new InsertProcessor (this.datastore, DomainModel.ttable);
 
 //		T result = processor.insert (element);
 //		processor.processDeferred ();
 
-		return null; // result;
-	}
-
-	/**
-	 * Insert all of the <code>Element</code> instances in the specified
-	 * <code>Collection</code> into the <code>DataStore</code>.  This method
-	 * will insert a copy of the specified <code>Element</code> instances into
-	 * the <code>DataStore</code> and return <code>Collection</code> of
-	 * references to the <code>Element</code> instances which were inserted.
-	 * <p>
-	 * If any of the <code>Element</code> instances in the specified
-	 * <code>Collection</code> already exists in the <code>DataStore</code>
-	 * then the returned instances will be the same as the input instance.
-	 * <p>
-	 * To insert an <code>Element</code> into the <code>DataStore</code>, an
-	 * active <code>Transaction</code> is required.
-	 * <p>
-	 * The <code>Collection</code> of <code>Element</code> instances returned
-	 * by this method will have the same order as the input
-	 * <code>Collection</code>.
-	 *
-	 * @param  elements The <code>Element</code> to insert, not null
-	 * @return          A reference to the <code>Element</code> in the
-	 *                  <code>DataStore</code>
-	 *
-	 * @throws IllegalStateException If there is not an active
-	 *                               <code>Transaction</code>
-	 */
-
-	public <T extends Element> Collection<T> insert (final Collection<T> elements)
-	{
-		this.log.trace ("insert: elements={}", elements);
-
-		if (elements == null)
-		{
-			this.log.error ("Attempting to insert a NULL element");
-			throw new NullPointerException ();
-		}
-
-		if (! this.datastore.getTransaction (this).isActive ())
-		{
-			this.log.error ("Attempting to insert an Element without an Active Transaction");
-			throw new IllegalStateException ("Active Transaction required");
-		}
-
-//		InsertProcessor processor = new InsertProcessor (this.datastore, DomainModel.ttable);
-
-//		Collection<T> results = processor.insert (elements);
-//		processor.processDeferred ();
-
-		return null; // results;
-	}
+//		return result;
+//	}
 
 	/**
 	 * Remove the specified <code>Element</code> instance from the
