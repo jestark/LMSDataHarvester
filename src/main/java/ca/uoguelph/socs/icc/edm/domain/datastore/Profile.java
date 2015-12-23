@@ -427,10 +427,10 @@ public final class Profile
 	}
 
 	/** Definitions for all of the <code>Element</code> implementation classes */
-	private static final Map<Class<? extends Element>, Element.Definition<? extends Element>> ELEMENT_DEFINITIONS;
+	public static final Map<Class<? extends Element>, Element.Definition<? extends Element>> ELEMENT_DEFINITIONS;
 
 	/** Definitions for all of the <code>IdGenerator</code> implementations */
-	private static final Map<Class<? extends IdGenerator>, IdGenerator.Definition> GENERATOR_DEFINITIONS;
+	public static final Map<Class<? extends IdGenerator>, IdGenerator.Definition> GENERATOR_DEFINITIONS;
 
 	/** The Logger */
 	private final Logger log;
