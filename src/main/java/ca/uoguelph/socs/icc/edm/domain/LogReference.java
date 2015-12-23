@@ -202,7 +202,7 @@ public abstract class LogReference extends Element
 
 			this.entry = this.verifyRelationship (this.entryRetriever, entry, "entry");
 
-			Preconditions.checkArgument (this.entry.getReference () != null,
+			Preconditions.checkArgument (this.entry.getReference () == null,
 					"Entry already has a reference");
 
 			return this;
