@@ -331,7 +331,7 @@ public abstract class LogEntry extends Element
 		{
 			this.log.trace ("setAction: action={}", action);
 
-			this.verifyRelationship (this.actionRetriever, action, "action");
+			this.action = this.verifyRelationship (this.actionRetriever, action, "action");
 
 			return this;
 		}
@@ -364,7 +364,7 @@ public abstract class LogEntry extends Element
 		{
 			this.log.trace ("setActivity: activity={}", activity);
 
-			this.verifyRelationship (this.activityRetriever, activity, "activity");
+			this.activity = this.verifyRelationship (this.activityRetriever, activity, "activity");
 
 			return this;
 		}
