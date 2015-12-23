@@ -114,8 +114,17 @@ public final class TableRetriever<T extends Element> implements Retriever<T>
 
 		Preconditions.checkState (this.model.isOpen (), "datastore is closed");
 
-		return (this.model.contains (element))
-			? Optional.of (element)
-			: TableRetriever.table.get (element, this.model);
+		Optional<T> result = Optional.empty ();
+
+		if (this.model.contains (element))
+		{
+			result = Optional.of (element);
+		}
+		else if (this.model != element.getDomainModel ())
+		{
+			result = TableRetriever.table.get (element, this.model);
+		}
+
+		return result;
 	}
 }

@@ -90,8 +90,10 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 	}
 
 	/**
-	 * Add an association between the supplied and retrieved
-	 * <code>Element</code> instances to the <code>TranslationTable</code>.
+	 * Cache the association between the supplied and retrieved
+	 * <code>Element</code> instances.  The association is only cached if the
+	 * supplied and retrieved <code>Element</code> instances are members of
+	 * different <code>DomainModel</code> instances.
 	 *
 	 * @param  supplied  The supplied <code>Element</code> instance, not null
 	 * @param  retrieved The retrieved <code>Element</code> instance, not null
@@ -107,8 +109,11 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 
 		if (supplied.equalsAll (retrieved))
 		{
-			this.log.debug ("Creating association in the translation table");
-			QueryRetriever.table.put (supplied, retrieved);
+			if ((supplied.getDomainModel () != retrieved.getDomainModel ()) && (supplied.getDomainModel ().contains (supplied)))
+			{
+				this.log.debug ("Creating association in the translation table");
+				QueryRetriever.table.put (supplied, retrieved);
+			}
 		}
 		else
 		{
