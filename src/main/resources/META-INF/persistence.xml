@@ -12,9 +12,6 @@
 		<mapping-file>mappings-moodledb-moodle.xml</mapping-file>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://***REMOVED***?ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory"/>
-			<property name="javax.persistence.jdbc.user" value="***REMOVED***"/>
-			<property name="javax.persistence.jdbc.password" value="***REMOVED***"/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
 		</properties>
 	</persistence-unit>
@@ -26,9 +23,6 @@
 		<mapping-file>mappings-coursedb-moodle.xml</mapping-file>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://***REMOVED***?ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory"/>
-			<property name="javax.persistence.jdbc.user" value="***REMOVED***"/>
-			<property name="javax.persistence.jdbc.password" value="***REMOVED***"/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
 		</properties>
 	</persistence-unit>
