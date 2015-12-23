@@ -195,7 +195,7 @@ final class DummyQuery<T extends Element> implements Query<T>
 	 *                               a null value
 	 */
 
-	public T query ()
+	public Optional<T> query ()
 	{
 		this.log.trace ("query:");
 
@@ -206,7 +206,7 @@ final class DummyQuery<T extends Element> implements Query<T>
 				.stream ()
 				.allMatch (e -> e.getValue () != null), "Query Parameters must not be null");
 
-		return null;
+		return Optional.empty ();
 	}
 
 	/**

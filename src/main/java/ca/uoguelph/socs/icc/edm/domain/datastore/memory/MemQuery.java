@@ -17,6 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain.datastore.memory;
 
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -52,36 +53,6 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 
 final class MemQuery<T extends Element> implements Query<T>
 {
-	static final class Accumulator<T extends Element>
-	{
-		private T element;
-		private int count;
-
-		public Accumulator ()
-		{
-			this.result = null;
-			this.count = 0;
-		}
-
-		public T getElement ()
-		{
-			return this.element;
-		}
-
-		public int getCount ()
-		{
-			return this.count;
-		}
-
-		public void setElement (final T element)
-		{
-			assert element != null : "element is NULL";
-
-			this.element = element;
-			this.count += 1;
-		}
-	}
-
 	/** The logger for this Query instance */
 	private final Logger log;
 
@@ -91,6 +62,7 @@ final class MemQuery<T extends Element> implements Query<T>
 	/** The <code>Element</code> implementation class to query */
 	private final Class<? extends T> impl;
 
+	/** The <code>DataStore</code> */
 	private final MemDataStore datastore;
 
 	/** <code>Filter</code> parameters */
@@ -119,9 +91,10 @@ final class MemQuery<T extends Element> implements Query<T>
 		this.impl = impl;
 		this.datastore = datastore;
 
-		this.values = selector.getProperties ()
-			.stream ()
-			.collect (Collectors.toMap (Function.identity (), null));
+		this.values = new HashMap<> ();
+
+		selector.getProperties ()
+			.forEach (x -> this.values.put (x, null));
 	}
 
 	/**
@@ -226,22 +199,28 @@ final class MemQuery<T extends Element> implements Query<T>
 	 *                               a null value
 	 */
 
-	public T query ()
+	public Optional<T> query ()
 	{
 		this.log.trace ("query:");
 
 		Preconditions.checkState (this.selector.getCardinality () !=
 				Selector.Cardinality.MULTIPLE, "Selector must be unique");
 
-		Accumulator<T> accumulator = this.stream ()
-			.reduce (new Accumulator<T> (), Accumulator::set);
+		List<T> elements = this.queryAll ();
 
-		if (accumulator.getCount () > 1)
+		T result = null;
+
+		if (elements.size () > 1)
 		{
-			throw new IllegalstateException ("Query returned Multiple results");
+			throw new IllegalStateException ("Query returned multiple elements");
 		}
 
-		return accumulator.getElement ();
+		if (! elements.isEmpty ())
+		{
+			result = elements.get (0);
+		}
+
+		return Optional.ofNullable (result);
 	}
 
 	/**

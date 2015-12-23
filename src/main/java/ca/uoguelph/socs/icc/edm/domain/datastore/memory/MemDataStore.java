@@ -95,7 +95,6 @@ public final class MemDataStore implements DataStore
 		 */
 
 		@Provides
-		@Singleton
 		DataStore.DataStoreFactory getFactory (final MemDataStoreFactory factory)
 		{
 			return factory;
@@ -225,6 +224,17 @@ public final class MemDataStore implements DataStore
 			: Stream.empty ();
 	}
 
+	/**
+	 * Create a new <code>Query</code> instance for the specified
+	 * <code>Selector</code>.
+	 *
+	 * @param  selector  The <code>Selector</code>, not null
+	 * @param  impl      The <code>Element</code> implementation class, not null
+	 * @param  model     The <code>DomaonModel</code>, not null
+	 * @param  reference
+	 * @return           The <code>Query</code>
+	 */
+
 	@Override
 	public <T extends Element> Query<T> createQuery (
 			Selector<T> selector,
@@ -235,7 +245,7 @@ public final class MemDataStore implements DataStore
 		assert selector != null;
 		assert impl != null;
 
-		return new MemQuery<T> (selector, impl, model);
+		return new MemQuery<T> (selector, impl, this);
 	}
 
 	/**

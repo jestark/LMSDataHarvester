@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.datastore.jpa;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -66,6 +67,9 @@ final class JPANamedQuery<T extends Element> implements Query<T>
 	/** The <code>DomainModel</code> to set in the <code>Element</code> */
 	private final DomainModel model;
 
+	/** Reference for seting the <code>DomainModel</code> */
+	private final BiConsumer<T, DomainModel> reference;
+
 	/** The JPA <code>EntityManager</code> for the database */
 	private final EntityManager manager;
 
@@ -78,17 +82,19 @@ final class JPANamedQuery<T extends Element> implements Query<T>
 	/**
 	 * Create the <code>JPAIdQuery</code>.
 	 *
-	 * @param  selector The <code>Selector</code>, not null
-	 * @param  impl     The <code>Element</code> implementation class, not null
-	 * @param  manager  The JPA <code>EntityManager</code>, not null
-	 * @param  model    The <code>DomainModel</code>, not null
-	 * @param  mutator  The <code>Mutator</code>, not null
+	 * @param  selector  The <code>Selector</code>, not null
+	 * @param  impl      The <code>Element</code> implementation class, not null
+	 * @param  model     The <code>DomainModel</code>, not null
+	 * @param  reference Method reference for setting the
+	 *                   <code>DomainModel</code>, not null
+	 * @param  manager   The <code>EntityManager</code>, not null
 	 */
 
 	JPANamedQuery (
 			final Selector<T> selector,
 			final Class<? extends T> impl,
 			final DomainModel model,
+			final BiConsumer<T, DomainModel> reference,
 			final EntityManager manager)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
@@ -101,6 +107,7 @@ final class JPANamedQuery<T extends Element> implements Query<T>
 		this.selector = selector;
 		this.impl = impl;
 		this.model = model;
+		this.reference = reference;
 		this.manager = manager;
 
 		this.qname = String.format ("%s:%s", this.selector.getElementClass ()
@@ -111,7 +118,7 @@ final class JPANamedQuery<T extends Element> implements Query<T>
 
 	private T setDomainModel (final T element)
 	{
-
+		this.reference.accept (element, this.model);
 		return element;
 	}
 
@@ -213,7 +220,7 @@ final class JPANamedQuery<T extends Element> implements Query<T>
 	 *                               a null value
 	 */
 
-	public T query ()
+	public Optional<T> query ()
 	{
 		this.log.trace ("query:");
 
@@ -229,7 +236,7 @@ final class JPANamedQuery<T extends Element> implements Query<T>
 		try
 		{
 			result = this.query.getSingleResult ();
-			// Set domain model
+			result = this.setDomainModel (result);
 			this.log.debug ("Loaded Element: {}", result);
 		}
 		catch (NoResultException ex)
@@ -243,7 +250,7 @@ final class JPANamedQuery<T extends Element> implements Query<T>
 			throw new IllegalStateException ("Query returned multiple results", ex);
 		}
 
-		return result;
+		return Optional.ofNullable (result);
 	}
 
 	/**

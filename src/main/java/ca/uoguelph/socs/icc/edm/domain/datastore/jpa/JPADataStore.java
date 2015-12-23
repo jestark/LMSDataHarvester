@@ -100,7 +100,6 @@ public final class JPADataStore implements DataStore
 		 */
 
 		@Provides
-		@Singleton
 		DataStore.DataStoreFactory getFactory (final JPADataStoreFactory factory)
 		{
 			return factory;
@@ -164,9 +163,7 @@ public final class JPADataStore implements DataStore
 	/**
 	 * Create the <code>JPADataStore</code>.
 	 *
-	 * @param  unitName   The JPA unit name, not null
-	 * @param  parameters parameters for the JPA <code>EntityManager</code>,
-	 *                    not null
+	 * @param  profile The <code>Profile</code>, not null
 	 */
 
 	protected JPADataStore (final Profile profile)
@@ -180,7 +177,7 @@ public final class JPADataStore implements DataStore
 			this.emf = Persistence.createEntityManagerFactory (profile.getName ());
 
 			this.log.debug ("Creating the JPA EntityManager");
-			this.em = this.emf.createEntityManager ();
+			this.em = this.emf.createEntityManager (profile.getParameters ());
 
 			this.transaction = new JPATransaction (this.em.getTransaction ());
 		}
@@ -193,6 +190,17 @@ public final class JPADataStore implements DataStore
 		}
 	}
 
+	/**
+	 * Create a new <code>Query</code> instance for the specified
+	 * <code>Selector</code>.
+	 *
+	 * @param  selector  The <code>Selector</code>, not null
+	 * @param  impl      The <code>Element</code> implementation class, not null
+	 * @param  model     The <code>DomaonModel</code>, not null
+	 * @param  reference
+	 * @return           The <code>Query</code>
+	 */
+
 	@Override
 	public <T extends Element> Query<T> createQuery (
 			Selector<T> selector,
@@ -204,8 +212,8 @@ public final class JPADataStore implements DataStore
 		assert impl != null;
 
 		return (selector.getCardinality () == Selector.Cardinality.KEY)
-			? new JPAIdQuery<T> (selector, impl, model, this.em)
-			: new JPANamedQuery<T> (selector, impl, model, this.em);
+			? new JPAIdQuery<T> (selector, impl, model, reference, this.em)
+			: new JPANamedQuery<T> (selector, impl, model, reference, this.em);
 	}
 
 	/**

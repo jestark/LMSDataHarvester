@@ -19,7 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.datastore.jpa;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,6 +64,9 @@ final class JPAIdQuery<T extends Element> implements Query<T>
 	/** The <code>Element</code> implementation class to query */
 	private final Class<? extends T> impl;
 
+	/** Reference for seting the <code>DomainModel</code> */
+	private final BiConsumer<T, DomainModel> reference;
+
 	/** The JPA <code>EntityManager</code> for the database */
 	private final EntityManager manager;
 
@@ -73,17 +76,19 @@ final class JPAIdQuery<T extends Element> implements Query<T>
 	/**
 	 * Create the <code>JPAIdQuery</code>.
 	 *
-	 * @param  selector The <code>Selector</code>, not null
-	 * @param  impl     The <code>Element</code> implementation class, not null
-	 * @param  manager  The JPA <code>EntityManager</code>, not null
-	 * @param  model    The <code>DomainModel</code>, not null
-	 * @param  mutator  The <code>Mutator</code>, not null
+	 * @param  selector  The <code>Selector</code>, not null
+	 * @param  impl      The <code>Element</code> implementation class, not null
+	 * @param  model     The <code>DomainModel</code>, not null
+	 * @param  reference Method reference for setting the
+	 *                   <code>DomainModel</code>, not null
+	 * @param  manager   The <code>EntityManager</code>, not null
 	 */
 
 	JPAIdQuery (
 			final Selector<T> selector,
 			final Class<? extends T> impl,
 			final DomainModel model,
+			final BiConsumer<T, DomainModel> reference,
 			final EntityManager manager)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
@@ -96,6 +101,7 @@ final class JPAIdQuery<T extends Element> implements Query<T>
 		this.selector = selector;
 		this.impl = impl;
 		this.model = model;
+		this.reference = reference;
 		this.manager = manager;
 		this.key = null;
 	}
@@ -199,7 +205,7 @@ final class JPAIdQuery<T extends Element> implements Query<T>
 	 *                               a null value
 	 */
 
-	public T query ()
+	public Optional<T> query ()
 	{
 		this.log.trace ("query:");
 
@@ -211,15 +217,14 @@ final class JPAIdQuery<T extends Element> implements Query<T>
 		if (result != null)
 		{
 			this.log.debug ("Loaded Element: {}", result);
-
-			// Set the DomainModel
+			this.reference.accept (result, this.model);
 		}
 		else
 		{
 			this.log.debug ("No Element of type {} found with ID: {}", this.impl.getSimpleName (), this.key);
 		}
 
-		return result;
+		return Optional.ofNullable (result);
 	}
 
 	/**
@@ -263,8 +268,8 @@ final class JPAIdQuery<T extends Element> implements Query<T>
 	{
 		this.log.trace ("stream:");
 
-		T element = this.query ();
+		Optional<T> element = this.query ();
 
-		return (element != null) ? Stream.of (element) : Stream.empty ();
+		return (element.isPresent ()) ? Stream.of (element.get ()) : Stream.empty ();
 	}
 }

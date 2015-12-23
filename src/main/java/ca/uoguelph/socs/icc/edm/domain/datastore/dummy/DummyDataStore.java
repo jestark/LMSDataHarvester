@@ -100,7 +100,6 @@ public final class DummyDataStore implements DataStore
 		 */
 
 		@Provides
-		@Singleton
 		DataStore.DataStoreFactory getFactory (final DummyDataStoreFactory factory)
 		{
 			return factory;
@@ -170,6 +169,17 @@ public final class DummyDataStore implements DataStore
 		this.open = true;
 		this.transaction = null;
 	}
+
+	/**
+	 * Create a new <code>Query</code> instance for the specified
+	 * <code>Selector</code>.
+	 *
+	 * @param  selector  The <code>Selector</code>, not null
+	 * @param  impl      The <code>Element</code> implementation class, not null
+	 * @param  model     The <code>DomaonModel</code>, not null
+	 * @param  reference
+	 * @return           The <code>Query</code>
+	 */
 
 	@Override
 	public <T extends Element> Query<T> createQuery (
