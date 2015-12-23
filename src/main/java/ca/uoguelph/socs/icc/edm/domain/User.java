@@ -730,10 +730,11 @@ public abstract class User extends Element
 		Preconditions.checkArgument (user.getDomainModel () == enrolment.getDomainModel (),
 				"User and enrolment must be members of the same DomainModel");
 
-		Preconditions.checkArgument (user.getDomainModel ()
+		Preconditions.checkArgument (! user.getDomainModel ()
 				.getQuery (User.SELECTOR_ENROLMENTS)
 				.setValue (User.ENROLMENTS, enrolment)
-				.query () == null, "Enrolment is already associated with a user");
+				.query ()
+				.isPresent (), "Enrolment is already associated with a user");
 
 		return user.addEnrolment (enrolment);
 	}
