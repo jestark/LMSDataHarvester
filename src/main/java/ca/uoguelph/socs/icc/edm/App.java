@@ -1,4 +1,4 @@
-/* Copyright (C) 2014, 2015 James E. Stark
+/* Copyright (C) 2014, 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,6 @@ import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.LessonPage;
 import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.Workshop;
 import ca.uoguelph.socs.icc.edm.domain.element.activity.moodle.WorkshopSubmission;
 import ca.uoguelph.socs.icc.edm.domain.datastore.DataStore;
-import ca.uoguelph.socs.icc.edm.domain.datastore.InsertProcessor;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Transaction;
@@ -174,7 +173,6 @@ public class App
 				.build ();
 
 		DomainModel scratch = null;
-		DomainModel coursedb = null;
 		Extractor extractor = null;
 
 		try
@@ -211,63 +209,30 @@ public class App
 				.addRegistrations ("student", new File (STUDENT_LIST));
 
 			scratch = extractor.extract (MemDataStore.create (scratchProfile));
-
-/*			coursedb.getTransaction ().begin ();
-
-			InsertProcessor processor = coursedb.getProcessor ();
-
-			App.log.info ("Copying Activities from scratch to coursedb");
-			processor.processElements (course.getActivities ());
-
-			List<User> allUsers = scratch.getQuery (User.class, User.SELECTOR_ALL)
-				.queryAll ()
-				.stream ()
-				.filter (u -> u.getEnrolment (course) != null)
-				.sorted ((u1, u2) -> App.compareUsers (u1, u2, course))
-				.collect (Collectors.toList ());
-
-			processor.processElements (allUsers.stream ()
-					.map (u -> u.getEnrolment (course))
-					.sorted ((e1, e2) -> e1.getId ().compareTo (e2.getId ()))
-					.collect (Collectors.toList ()));
-
-			App.log.info ("Committing Transaction data to the database");
-			coursedb.getTransaction ().commit ();
-			coursedb.getTransaction ().begin ();
-
-			App.log.info ("Copying Users from scratch to coursedb");
-			processor.processElements (allUsers);
-
-			App.log.info ("Copying Activities from scratch to coursedb");
-			processor.processElements (course.getActivities ());
-
-			App.log.info ("Copying Log Entries from scratch to coursedb");
-
-			int i = 0;
-
-			for (LogEntry le : log)
-			{
-				processor.processElement (le);
-				i ++;
-			}
-
-			App.log.info ("Processing deferred items");
-			processor.processQueue ();
-
-			App.log.info ("Writing User data to the database");
-			coursedb.getTransaction ().commit ();
-*/		}
+		}
 		finally
 		{
 			if (extractor != null)
 			{
 				extractor.close ();
 			}
-
-			if (coursedb != null)
-			{
-				coursedb.close ();
-			}
 		}
+
+		DomainModel coursedb = JPADataStore.create (destProfile);
+		coursedb.getTransaction ().begin ();
+
+//		App.log.info ("Copying Course data from Scratch to coursedb");
+		coursedb.insert (scratch.getQuery (Course.SELECTOR_OFFERING)
+				.setAllValues (extractor.getCourse ().orElseThrow (() -> new IllegalStateException ("Course not set")))
+				.query ()
+				.orElseThrow (() -> new IllegalStateException ("Course not found")));
+
+//		App.log.info ("Copying Users from scratch to coursedb");
+		scratch.getQuery (User.SELECTOR_ALL)
+			.stream ()
+			.forEach (e -> coursedb.insert (e));
+
+		coursedb.getTransaction ().commit ();
+		coursedb.close ();
 	}
 }

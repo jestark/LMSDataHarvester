@@ -1,4 +1,4 @@
-/* Copyright (C) 2014, 2015 James E. Stark
+/* Copyright (C) 2014, 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -53,6 +54,102 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
 @AutoFactory
 public final class DomainModel
 {
+	/**
+	 * Synchronise an <code>Element</code> across two <code>DomainModel</code>
+	 * instances.  This class copies <code>Element</code> instances along with
+	 * all of the associated <code>Element</code> instances across
+	 * <code>DomainModel</code> instances.  <code>Element</code> instances are
+	 * inserted into the destination <code>DomainModel</code> in there natural
+	 * order, to ensure that the dependencies for an <code>Element</code>
+	 * instance are inserted before it.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	private static final class Synchronizer
+	{
+		/** The log */
+		private final Logger log;
+
+		/** The destination <code>DomainModel</code> */
+		private final DomainModel dest;
+
+		/** The <code>Element</code> instances to synchronize */
+		private final Map<Element, ?> elements;
+
+		/**
+		 * Create the <code>Synchronizer</code>.
+		 *
+		 * @param  dest The destination <code>DomainModel</code>, not null
+		 * @return      The <code>Synchronizer</code>
+		 */
+
+		public static Synchronizer create (final DomainModel dest)
+		{
+			assert dest != null : "dest is NULL";
+
+			return new Synchronizer (dest);
+		}
+
+		/**
+		 * Create the <code>Synchronizer</code>.
+		 *
+		 * @param  dest The destination <code>DomainModel</code>, not null
+		 */
+
+		private Synchronizer (final DomainModel dest)
+		{
+			assert dest != null : "dest is NULL";
+
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			this.dest = dest;
+			this.elements = new IdentityHashMap<> ();
+		}
+
+		/**
+		 * Add an <code>Element</code> instance and all of the associated
+		 * <code>Element</code> instances to the <code>Synchronizer</code>.
+		 *
+		 * @param  element The <code>Element</code>, not null
+		 * @return         This <code>Synchronizer</code>
+		 */
+
+		public Synchronizer addElement (final Element element)
+		{
+			this.log.trace ("addElement: element={}", element);
+
+			assert element != null : "element is NULL";
+
+			if ((! DomainModel.table.contains (element, dest)) && (! this.elements.containsKey (element)))
+			{
+				this.elements.put (element, null);
+
+				element.associations ()
+					.forEach (e -> this.addElement (e));
+			}
+
+			return this;
+		}
+
+		/**
+		 * Perform the synchronization.  This methods inserts all of the
+		 * <code>Elements</code> that are in the <code>Synchronizer</code> into
+		 * the destination <code>DomainModel</code>.
+		 */
+
+		public void synchronize ()
+		{
+			this.log.trace ("synchronize:");
+
+			this.elements.keySet ()
+				.stream ()
+				.sorted ()
+				.forEach (e -> e.getBuilder (this.dest).build ());
+		}
+	}
+
 	/**
 	 * Dagger Module containing common <code>DomainModel</code> operations.
 	 * This module contains the operations that are common to both the
@@ -422,7 +519,6 @@ public final class DomainModel
 	 * @param  <T>      The type of the <code>Element</code> returned by the
 	 *                  <code>Query</code>
 	 * @param  selector The <code>Selector</code>, not null
-	 *
 	 * @return          The <code>Query</code>
 	 */
 
@@ -445,7 +541,6 @@ public final class DomainModel
 	 *                  <code>Query</code>
 	 * @param  selector The <code>Selector</code>, not null
 	 * @param  impl     The <code>Element</code> implementation class, not null
-	 *
 	 * @return          The <code>Query</code>
 	 */
 
@@ -464,7 +559,8 @@ public final class DomainModel
 	 * <code>DataStore</code>.  A <code>Transaction</code> can only be returned
 	 * for a mutable <code>DataStore</code>.
 	 *
-	 * @return                      A reference to the <code>Transaction</code>
+	 * @return A reference to the <code>Transaction</code>
+	 *
 	 * @throws IllegalStateExcption If the <code>DataStore</code> is immutable
 	 */
 
@@ -492,10 +588,9 @@ public final class DomainModel
 	 * exists in the <code>DataStore</code>.
 	 *
 	 * @param  element The <code>Element</code> instance to test, not null
-	 *
-	 * @return          <code>True</code> if the <code>DataStore</code>
-	 *                  instance contains a reference to the
-	 *                  <code>Element</code>, <code>False</code> otherwise
+	 * @return         <code>True</code> if the <code>DataStore</code>
+	 *                 instance contains a reference to the
+	 *                 <code>Element</code>, <code>False</code> otherwise
 	 */
 
 	public boolean contains (final Element element)
@@ -514,39 +609,38 @@ public final class DomainModel
 	/**
 	 * Insert the specified <code>Element</code> instance into the
 	 * <code>DataStore</code>.  This method will insert a copy of the specified
-	 * <code>Element</code> into the <code>DataStore</code> and return a
+	 * <code>Element</code> and all of the associated <code>Element</code>
+	 * instances into the <code>DomainModel</code> and return a
 	 * reference to the <code>Element</code> instance which was inserted.
-	 * <p>
-	 * If the specified <code>Element</code> instance already exists in the
-	 * <code>DataStore</code> then the returned instance will be a reference to
-	 * the specified <code>Element</code> instance.
 	 * <p>
 	 * To insert an <code>Element</code> into the <code>DataStore</code>, an
 	 * active <code>Transaction</code> is required.
 	 *
-	 * @param  element               The <code>Element</code> to insert, not
-	 *                               null
+	 * @param  <T>     The type of <code>Element</code> being inserted
+	 * @param  element The <code>Element</code> to insert, not null
+	 * @return         A reference to the <code>Element</code> in the
+	 *                 <code>DataStore</code>
 	 *
-	 * @return                       A reference to the <code>Element</code> in
-	 *                               the <code>DataStore</code>
 	 * @throws IllegalStateException If there is not an active
 	 *                               <code>Transaction</code>
+	 * @throws IllegalStateException If the <code>Element</code> is not
+	 *                               successfully inserted
 	 */
 
-//	public <T extends Element> T insert (final T element)
-//	{
-//		this.log.trace ("insert: element={}", element);
+	public <T extends Element> T insert (final T element)
+	{
+		this.log.trace ("insert: element={}", element);
 
-//		Preconditions.checkNotNull (element, "enement");
-//		Preconditions.checkState (this.datastore.getTransaction (this).isActive (), "Active Transaction required");
+		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkState (this.datastore.getTransaction (this).isActive (), "Active Transaction required");
 
-//		InsertProcessor processor = new InsertProcessor (this.datastore, DomainModel.ttable);
+		Synchronizer.create (this)
+			.addElement (element)
+			.synchronize ();
 
-//		T result = processor.insert (element);
-//		processor.processDeferred ();
-
-//		return result;
-//	}
+		return DomainModel.table.get (element, this)
+			.orElseThrow (() -> new IllegalStateException ("Element was not successfully stored"));
+	}
 
 	/**
 	 * Remove the specified <code>Element</code> instance from the
@@ -554,8 +648,7 @@ public final class DomainModel
 	 * the <code>Element</code> must exist in the <code>DataStore</code> and
 	 * the <code>DataStore</code> must have an active <code>Transaction</code>.
 	 *
-	 * @param  element                  The <code>Element</code> to remove, not
-	 *                                  null
+	 * @param  element The <code>Element</code> to remove, not null
 	 *
 	 * @throws IllegalArgumentException If the <code>Element</code> does not
 	 *                                  exist in the <code>DataStore</code>
