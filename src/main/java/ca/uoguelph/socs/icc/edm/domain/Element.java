@@ -640,6 +640,15 @@ public abstract class Element implements Comparable<Element>, Serializable
 	}
 
 	/**
+	 * Get a <code>Stream</code> containing all of the associated
+	 * <code>Element</code> instances.
+	 *
+	 * @return The <code>Stream</code>
+	 */
+
+	public abstract Stream<Element> associations ();
+
+	/**
 	 * Get an <code>Builder</code> instance for the specified
 	 * <code>DomainModel</code>.  This method creates a <code>Builder</code> on
 	 * the specified <code>DomainModel</code> and initializes it with the

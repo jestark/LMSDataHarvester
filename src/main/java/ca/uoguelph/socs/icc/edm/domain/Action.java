@@ -602,6 +602,32 @@ public abstract class Action extends Element
 	}
 
 	/**
+	 * Get a <code>Stream</code> containing all of the associated
+	 * <code>Element</code> instances.
+	 *
+	 * @return The <code>Stream</code>
+	 */
+
+	@Override
+	public Stream<Element> associations ()
+	{
+		return Action.METADATA.properties ()
+			.filter (p -> p.hasFlags (Property.Flags.RELATIONSHIP))
+			.flatMap (p -> p.stream (this))
+			.map (e -> ((Element) e));
+	}
+
+	/**
+	 * Get an <code>Builder</code> instance for the specified
+	 * <code>DomainModel</code>.  This method creates an
+	 * <code>Builder</code> on the specified <code>DomainModel</code>
+	 * and initializes it with the contents of this <code>Enrolment</code>
+	 * instance.
+	 *
+	 * @param  model The <code>DomainModel</code>, not null
+	 * @return       The initialized <code>Builder</code>
+	 */
+	/**
 	 * Get an <code>Builder</code> instance for the specified
 	 * <code>DomainModel</code>.  This method creates an
 	 * <code>Builder</code> on the specified <code>DomainModel</code> and

@@ -942,6 +942,22 @@ public abstract class LogEntry extends Element
 	}
 
 	/**
+	 * Get a <code>Stream</code> containing all of the associated
+	 * <code>Element</code> instances.
+	 *
+	 * @return The <code>Stream</code>
+	 */
+
+	@Override
+	public Stream<Element> associations ()
+	{
+		return LogEntry.METADATA.properties ()
+			.filter (p -> p.hasFlags (Property.Flags.RELATIONSHIP))
+			.flatMap (p -> p.stream (this))
+			.map (e -> ((Element) e));
+	}
+
+	/**
 	 * Get a <code>String</code> representation of the <code>LogEntry</code>
 	 * instance, including the identifying fields.
 	 *

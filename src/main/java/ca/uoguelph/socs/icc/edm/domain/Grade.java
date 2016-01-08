@@ -690,6 +690,22 @@ public abstract class Grade extends Element
 	}
 
 	/**
+	 * Get a <code>Stream</code> containing all of the associated
+	 * <code>Element</code> instances.
+	 *
+	 * @return The <code>Stream</code>
+	 */
+
+	@Override
+	public Stream<Element> associations ()
+	{
+		return Grade.METADATA.properties ()
+			.filter (p -> p.hasFlags (Property.Flags.RELATIONSHIP))
+			.flatMap (p -> p.stream (this))
+			.map (e -> ((Element) e));
+	}
+
+	/**
 	 * Get a <code>String</code> representation of the <code>Grade</code>
 	 * instance, including the identifying fields.
 	 *
