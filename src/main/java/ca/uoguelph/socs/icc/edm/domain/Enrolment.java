@@ -1,4 +1,4 @@
-/* Copyright (C) 2014, 2015 James E. Stark
+/* Copyright (C) 2014, 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -725,6 +725,23 @@ public abstract class Enrolment extends Element
 	}
 
 	/**
+	 * Determine if this <code>Element</code> depends on the specified
+	 * <code>Element</code> class.  This method is used by
+	 * <code>compareTo</code> to order different <code>Element</code> classes
+	 * based on their dependencies.
+	 *
+	 * @param  element The <code>Element</code> implementation class, not null
+	 * @return         <code>true</code> if this<code>Element</code> depends on
+	 *                 the specified class, <code>false</code> otherwise
+	 */
+
+	@Override
+	protected boolean isDependency (final Class <? extends Element> element)
+	{
+		return this.isDependencyHelper (Enrolment.METADATA, element);
+	}
+
+	/**
 	 * Compare two <code>Enrolment</code> instances.  <code>Enrolment</code>
 	 * instances are compared by their <code>DataStore</code> ID.
 	 *
@@ -750,7 +767,7 @@ public abstract class Enrolment extends Element
 			}
 			else
 			{
-				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+				result = super.compareTo (element);
 			}
 		}
 

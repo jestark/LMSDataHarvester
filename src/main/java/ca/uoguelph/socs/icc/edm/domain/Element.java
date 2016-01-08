@@ -1,4 +1,4 @@
-/* Copyright (C) 2014, 2015 James E. Stark
+/* Copyright (C) 2014, 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -579,6 +580,27 @@ public abstract class Element implements Comparable<Element>, Serializable
 	}
 
 	/**
+	 * Helper method to determine if this <code>Element</code> instances depends
+	 * on the specified <code>Element</code> class.  This methods contains the
+	 * actual implementation of the <code>isDependency</code> method.  
+	 *
+	 * @param  metadata The <code>MetaData</code>, not null
+	 * @param  element  The <code>Element</code> implementation class, not null
+	 * @return          <code>true</code> <code>false</code> otherwise
+	 */
+
+	protected final <T extends Element> boolean isDependencyHelper (
+			final MetaData<T> metadata,
+			final Class<? extends Element> element)
+	{
+		return metadata.properties ()
+			.filter (p -> p.hasFlags (Property.Flags.RELATIONSHIP))
+			.filter (p -> p.hasFlags (Property.Flags.REQUIRED) || p.hasFlags (Property.Flags.MUTABLE))
+			.map (p -> p.getValueClass ())
+			.anyMatch (c -> c.isAssignableFrom (element));
+	}
+
+	/**
 	 * Propagate the <code>DomainModel</code> reference to the specified
 	 * <code>Element</code> instance.  This is an internal method to copy the
 	 * <code>DomainModel</code> reference to the target <code>Element</code>
@@ -624,6 +646,89 @@ public abstract class Element implements Comparable<Element>, Serializable
 	protected abstract boolean disconnect ();
 
 	/**
+	 * Determine if this <code>Element</code> depends on the specified
+	 * <code>Element</code> class.  This method is used by
+	 * <code>compareTo</code> to order different <code>Element</code> classes
+	 * based on their dependencies.
+	 *
+	 * @param  element The <code>Element</code> implementation class, not null
+	 * @return         <code>true</code> if this<code>Element</code> depends on
+	 *                 the specified class, <code>false</code> otherwise
+	 */
+
+	protected abstract boolean isDependency (Class <? extends Element> element);
+
+	/**
+	 * Compare two <code>Element</code> instances.
+	 * <p>
+	 * <code>Element</code> instances with the same <code>Element</code>
+	 * interface should be ordered by the <code>Element</code> interface class.
+	 * If the <code>Element</code> interface class does not determine an
+	 * ordering then the <code>Element</code> instances will be ordered based
+	 * upon their <code>DataStore</code> ID.  <code>Element</code> instances
+	 * with different interfaces are sorted based upon their dependencies, such
+	 * that all instances of an <code>Element</code> class will sort behind its
+	 * dependencies, and ahead of its dependents.  Where there is no dependency
+	 * between <code>Element</code> classes, they are sorted lexicographically
+	 * based on the full name of the class.
+	 *
+	 * @param  element The <code>Element</code> to be compared
+	 * @return         The value 0 if the <code>Enrolment</code> instances are
+	 *                 equal, less than 0 of the argument is is greater, and
+	 *                 greater than  0 if the argument is less than the
+	 *                 <code>Enrolment</code>
+	 */
+
+	@Override
+	public int compareTo (final Element element)
+	{
+		Preconditions.checkNotNull (element, "element");
+
+		int result = 0;
+
+		if (this != element)
+		{
+			if (this.isDependency (element.getClass ()))
+			{
+				result = 1;
+			}
+			else if (element.isDependency (this.getClass ()))
+			{
+				result = -1;
+			}
+			else
+			{
+				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
+
+				if (result == 0)
+				{
+					result = this.getId ().compareTo (element.getId ());
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Compare two <code>Element</code> instances to determine if they are
+	 * equal.  The <code>Element</code> instances are compared based upon their
+	 * <code>DataStore</code> ID.
+	 *
+	 * @param  obj The <code>Element</code> instance to compare to the one
+	 *             represented by the called instance
+	 * @return     <code>true</code> if the two <code>Element</code>
+	 *             instances are equal, <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		return (obj == this) ? true : (obj instanceof Element)
+			&& Objects.equals (this.getId (), ((Element) obj).getId ());
+	}
+
+	/**
 	 * Compare two <code>Element</code> instances to determine if they are
 	 * equal using all of the instance fields.  In most cases this will be the
 	 * same as the <code>equals</code> method.
@@ -637,6 +742,20 @@ public abstract class Element implements Comparable<Element>, Serializable
 	public boolean equalsAll (final @Nullable Element element)
 	{
 		return this.equals (element);
+	}
+
+	/**
+	 * Compute a <code>hashCode</code> of the <code>Element</code> instance.
+	 * The hash code is computed based upon the <code>DataStore</code> ID of
+	 * the <code>Element</code> instance.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		return Objects.hash (this.getId ());
 	}
 
 	/**
