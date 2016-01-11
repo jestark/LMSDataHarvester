@@ -196,6 +196,8 @@ public final class ActivityConverter
 
 	private Activity loadActivity (final ActivityReference ref)
 	{
+		this.log.trace ("loadActivity: ref={}", ref);
+
 		this.log.debug ("Loaded activity instance for module: {} id: {}", ref.getType ().getName (), ref.getId ());
 
 		return ref.getActivity ().getBuilder (this.dest).build ();
@@ -215,7 +217,7 @@ public final class ActivityConverter
 
 	private Activity createActivity (final ActivityType type, final Course course)
 	{
-		this.log.info ("Created dummy activity instance for module: {}", type.getName ());
+		this.log.trace ("createActivity: type={}, course={}", type, course);
 
 		return Activity.builder (this.dest, type)
 			.setCourse (course)
@@ -237,6 +239,8 @@ public final class ActivityConverter
 
 	private Activity getById (final Long id, final ActivityType type, final Course course)
 	{
+		this.log.trace ("getById: id={}, type={}, course={}", id, type, course);
+
 		assert id != null : "id is NULL";
 		assert type != null : "type is NULL";
 		assert course != null : "course is NULL";
@@ -265,11 +269,14 @@ public final class ActivityConverter
 
 	private Activity getByModule (final ActivityType type, final Course course)
 	{
+		this.log.trace ("getByModule: type={}, course={}", type, course);
+
 		assert type != null : "type is NULL";
 		assert course != null : "course is NULL";
 
 		if (! this.typeCache.containsKey (type))
 		{
+			this.log.info ("Created dummy activity instance for module: {}", type.getName ());
 			this.typeCache.put (type, this.createActivity (type, course));
 		}
 
