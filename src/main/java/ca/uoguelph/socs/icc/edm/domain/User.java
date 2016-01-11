@@ -173,8 +173,7 @@ public abstract class User extends Element
 		{
 			if (! this.enrolments.equals (user.getEnrolments ()))
 			{
-				new ArrayList<Enrolment> (this.enrolments)
-					.stream ()
+				this.enrolments.stream ()
 					.filter (x -> (! user.getEnrolments ().contains (x)))
 					.forEach (x -> user.addEnrolment (x));
 			}
