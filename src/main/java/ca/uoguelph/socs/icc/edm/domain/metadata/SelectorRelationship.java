@@ -62,6 +62,7 @@ final class SelectorRelationship<T extends Element, V extends Element> implement
 	 *
 	 * @param  property The <code>Property</code>, not null
 	 * @param  selector The <code>Selector</code>, not null
+	 * @return          The <code>Relationship</code>
 	 */
 
 	public static <T extends Element, V extends Element> SelectorRelationship<T, V> of (

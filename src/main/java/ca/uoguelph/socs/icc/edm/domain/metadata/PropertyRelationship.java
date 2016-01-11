@@ -54,9 +54,12 @@ final class PropertyRelationship<T extends Element, V extends Element> implement
 	/**
 	 * Create the <code>PropertyRelationship</code> from the specified values.
 	 *
+	 * @param  <T>      The type of the owning <code>Element</code>
+	 * @param  <V>      The type of the associated <code>Element</code>
 	 * @param  property The <code>Property</code>, not null
 	 * @param  inverse  The <code>Property</code> for the inverse relationship,
 	 *                  not null
+	 * @return          The <code>Relationship</code>
 	 */
 
 	public static <T extends Element, V extends Element> PropertyRelationship<T, V> of (
@@ -72,9 +75,12 @@ final class PropertyRelationship<T extends Element, V extends Element> implement
 	/**
 	 * Create the <code>PropertyRelationship</code> from the specified values.
 	 *
+	 * @param  <T>      The type of the owning <code>Element</code>
+	 * @param  <V>      The type of the associated <code>Element</code>
 	 * @param  inverse  The <code>Selector</code> for the inverse relationship,
 	 *                  not null
 	 * @param  property The <code>Property</code>, not null
+	 * @return          The <code>Relationship</code>
 	 */
 
 	public static <T extends Element, V extends Element> PropertyRelationship<T, V> of (
@@ -119,7 +125,6 @@ final class PropertyRelationship<T extends Element, V extends Element> implement
 	public boolean equals (final Object obj)
 	{
 		return (obj == this) ? true : (obj instanceof PropertyRelationship)
-				&& Objects.equals (this.inverse, ((PropertyRelationship) obj).inverse)
 				&& Objects.equals (this.property, ((PropertyRelationship) obj).property);
 	}
 
@@ -132,7 +137,7 @@ final class PropertyRelationship<T extends Element, V extends Element> implement
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.inverse, this.property);
+		return Objects.hash (this.property);
 	}
 
 	/**
