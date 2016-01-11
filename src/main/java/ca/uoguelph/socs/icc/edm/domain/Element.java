@@ -328,7 +328,7 @@ public abstract class Element implements Comparable<Element>, Serializable
 				}
 				else
 				{
-					this.log.debug ("Using pre-existing element instance from the translation table");
+					this.log.debug ("Using pre-existing element instance");
 					this.element = result.get ();
 				}
 			}
