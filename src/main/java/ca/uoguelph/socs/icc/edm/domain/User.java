@@ -84,9 +84,6 @@ public abstract class User extends Element
 		/** Helper to substitute <code>Enrolment</code> instances */
 		private final Retriever<Enrolment> enrolmentRetriever;
 
-		/** Query instance to look up <code>User</code> instances by <code>Enrolment</code> */
-		private final Query<User> enrolmentQuery;
-
 		/** The <code>DataStore</code> id number for the <code>User</code> */
 		private @Nullable Long id;
 
@@ -112,10 +109,6 @@ public abstract class User extends Element
 		 *                            <code>User</code> instances, not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
 		 *                            <code>Enrolment</code> instances, not null
-		 * @param  enrolmentQuery     <code>Query</code> to check if an
-		 *                            <code>Enrolment</code> instances is
-		 *                            already associated with another
-		 *                            <code>User</code> instance, not null
 		 */
 
 		private Builder (
@@ -123,18 +116,15 @@ public abstract class User extends Element
 				final Definition definition,
 				final IdGenerator idGenerator,
 				final Retriever<User> userRetriever,
-				final Retriever<Enrolment> enrolmentRetriever,
-				final Query<User> enrolmentQuery)
+				final Retriever<Enrolment> enrolmentRetriever)
 		{
 			super (model, definition, userRetriever);
 
 			assert idGenerator != null : "idGenerator is NULL";
 			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
-			assert enrolmentQuery != null : "enrolmentQuery is NULL";
 
 			this.idGenerator = idGenerator;
 			this.enrolmentRetriever = enrolmentRetriever;
-			this.enrolmentQuery = enrolmentQuery;
 
 			this.id = null;
 			this.firstname = null;
@@ -399,7 +389,7 @@ public abstract class User extends Element
 
 			Enrolment add = this.verifyRelationship (this.enrolmentRetriever, enrolment, "enrolment");
 
-			Preconditions.checkArgument (this.enrolmentQuery.setValue (User.ENROLMENTS, add).queryAll ().isEmpty (),
+			Preconditions.checkArgument (! User.hasUser (this.model, enrolment),
 					"The Enrolment is already assigned to another user");
 
 			this.enrolments.add (add);
@@ -509,20 +499,6 @@ public abstract class User extends Element
 		}
 
 		/**
-		 * Get a <code>Query</code> for getting a <code>User</code> which is
-		 * associated with an <code>Enrolment</code>.
-		 *
-		 * @return The <code>Query</code>
-		 */
-
-		@Provides
-		@Named ("Enrolment")
-		public Query<User> getQuery (final DomainModel model)
-		{
-			return model.getQuery (User.SELECTOR_USERNAME);
-		}
-
-		/**
 		 * Create an instance of the <code>Builder</code>.
 		 *
 		 * @param  model              The <code>DomainModel</code>, not null
@@ -531,10 +507,6 @@ public abstract class User extends Element
 		 *                            <code>User</code> instances, not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
 		 *                            <code>Enrolment</code> instances, not null
-		 * @param  enrolmentQuery     <code>Query</code> to check if an
-		 *                            <code>Enrolment</code> instances is
-		 *                            already associated with another
-		 *                            <code>User</code> instance, not null
 		 */
 
 		@Provides
@@ -542,10 +514,9 @@ public abstract class User extends Element
 				final DomainModel model,
 				final IdGenerator idGenerator,
 				final @Named ("QueryRetriever") Retriever<User> userRetriever,
-				final @Named ("TableRetriever") Retriever<Enrolment> enrolmentRetriever,
-				final @Named ("Enrolment") Query<User> enrolmentQuery)
+				final @Named ("TableRetriever") Retriever<Enrolment> enrolmentRetriever)
 		{
-			return new Builder (model, this.definition, idGenerator, userRetriever, enrolmentRetriever, enrolmentQuery);
+			return new Builder (model, this.definition, idGenerator, userRetriever, enrolmentRetriever);
 		}
 	}
 
@@ -710,6 +681,25 @@ public abstract class User extends Element
 	}
 
 	/**
+	 * Determine if a <code>User</code> instance is already associated with the
+	 * specified <code>Enrolment</code> instance.
+	 *
+	 * @param  model     The <code>DomainModel</code>, not null
+	 * @param  enrolment The <code>Enrolment</code>, not null
+	 * @return           <code>true</code> if the <code>Enrolment is associated
+	 *                   with a <code>User</code> instance, <code>false</code>
+	 *                   otherwise
+	 */
+
+	private static boolean hasUser (final DomainModel model, final Enrolment enrolment)
+	{
+		return model.getQuery (User.SELECTOR_ENROLMENTS)
+				.setValue (User.ENROLMENTS, enrolment)
+				.query ()
+				.isPresent ();
+	}
+
+	/**
 	 * Create an association between a <code>User</code> and an
 	 * <code>Enrolment</code>.
 	 *
@@ -730,11 +720,8 @@ public abstract class User extends Element
 		Preconditions.checkArgument (user.getDomainModel () == enrolment.getDomainModel (),
 				"User and enrolment must be members of the same DomainModel");
 
-		Preconditions.checkArgument (! user.getDomainModel ()
-				.getQuery (User.SELECTOR_ENROLMENTS)
-				.setValue (User.ENROLMENTS, enrolment)
-				.query ()
-				.isPresent (), "Enrolment is already associated with a user");
+		Preconditions.checkArgument (! User.hasUser (user.getDomainModel (), enrolment),
+				"Enrolment is already associated with a user");
 
 		return user.addEnrolment (enrolment);
 	}
