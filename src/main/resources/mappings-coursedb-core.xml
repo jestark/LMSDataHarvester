@@ -181,6 +181,8 @@
 		<attributes>
 			<id name="id">
 				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="enrolment_id_seq"/>
+				<sequence-generator name="enrolment_id_seq" sequence-name="enrolment_id_seq" initial-value="1" allocation-size="1"/>
 			</id>
 			<basic name="usable">
 				<column name="usable" nullable="false"/>

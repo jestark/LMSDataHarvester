@@ -76,7 +76,7 @@ comment on table enrolment_role is 'All of the possible roles in a course';
 
 -- All of the participants in a given course, listed with their role (student, ta, etc)
 create table if not exists enrolment (
-	id bigint primary key,
+	id bigserial primary key,
 	course_id bigint not null references course (id) on delete restrict on update cascade,
 	role_id bigint not null references enrolment_role (id) on delete restrict on update cascade,
 	grade integer,
