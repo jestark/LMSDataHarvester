@@ -790,7 +790,6 @@ public abstract class Enrolment extends Element
 	public boolean equals (final Object obj)
 	{
 		return (obj == this) ? true : (obj instanceof Enrolment)
-			&& Objects.equals (this.getId (), ((Enrolment) obj).getId ())
 			&& Objects.equals (this.getCourse (), ((Enrolment) obj).getCourse ())
 			&& Objects.equals (this.getRole (), ((Enrolment) obj).getRole ());
 	}
