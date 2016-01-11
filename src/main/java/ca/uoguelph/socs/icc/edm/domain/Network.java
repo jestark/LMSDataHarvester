@@ -524,7 +524,8 @@ public abstract class Network extends Element
 	@Override
 	protected boolean isDependency (final Class <? extends Element> element)
 	{
-		return this.isDependencyHelper (Network.METADATA, element);
+		return Network.METADATA.dependencies ()
+			.anyMatch (d -> d.isAssignableFrom (element));
 	}
 
 	/**
@@ -606,16 +607,6 @@ public abstract class Network extends Element
 			.map (e -> ((Element) e));
 	}
 
-	/**
-	 * Get an <code>Builder</code> instance for the specified
-	 * <code>DomainModel</code>.  This method creates an
-	 * <code>Builder</code> on the specified <code>DomainModel</code>
-	 * and initializes it with the contents of this <code>Enrolment</code>
-	 * instance.
-	 *
-	 * @param  model The <code>DomainModel</code>, not null
-	 * @return       The initialized <code>Builder</code>
-	/**
 	/**
 	 * Get a <code>String</code> representation of the <code>Network</code>
 	 * instance, including the identifying fields.

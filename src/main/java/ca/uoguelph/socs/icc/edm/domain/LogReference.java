@@ -581,7 +581,8 @@ public abstract class LogReference extends Element
 	@Override
 	protected boolean isDependency (final Class <? extends Element> element)
 	{
-		return this.isDependencyHelper (LogReference.METADATA, element);
+		return LogReference.METADATA.dependencies ()
+			.anyMatch (d -> d.isAssignableFrom (element));
 	}
 
 	/**

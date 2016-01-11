@@ -612,7 +612,8 @@ public abstract class ActivityType extends Element
 	@Override
 	protected boolean isDependency (final Class <? extends Element> element)
 	{
-		return this.isDependencyHelper (ActivityType.METADATA, element);
+		return ActivityType.METADATA.dependencies ()
+			.anyMatch (d -> d.isAssignableFrom (element));
 	}
 
 	/**

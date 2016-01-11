@@ -18,9 +18,11 @@ package ca.uoguelph.socs.icc.edm.domain.metadata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -71,11 +73,34 @@ public final class MetaData<T extends Element>
 		/** The <code>Set</code> of <code>Property</code> instances */
 		private final List<Property<T, ?>> properties;
 
+		/** The dependencies for the <code>Element</code> */
+		private final Set<Class<? extends Element>> dependencies;
+
 		/** The <code>Relationship</code> instances for the interface */
 		private final Map<Class<? extends Element>, Relationship<T, ? extends Element>> relationships;
 
 		/** The <code>Set</code> of <code>Selector</code> instances */
 		private final List<Selector<T>> selectors;
+
+		/**
+		 * Determine if the specified <code>Property</code> represents a
+		 * dependency for the associated <code>Element</code> instance.
+		 *
+		 * @param  <T>      The type of the owning <code>Element</code>
+		 * @param  <V>      The type of the associated <code>Element</code>
+		 * @param  property The <code>Property</code>, not null
+		 * @return          <code>true</code> if the <code>Property</code>
+		 *                  represents a dependency for the associated
+		 *                  <code>Element</code> instance, <code>false</code>
+		 *                  otherwise
+		 */
+
+		private static <T extends Element, V extends Element> boolean isDependent (final Property<T, V> property)
+		{
+			assert property != null : "property is NULL";
+
+			return (property.hasFlags (Property.Flags.REQUIRED) || property.hasFlags (Property.Flags.MUTABLE));
+		}
 
 		/**
 		 * Create the <code>Builder</code>.
@@ -91,6 +116,7 @@ public final class MetaData<T extends Element>
 			this.type = type;
 			this.parent = parent;
 
+			this.dependencies = new HashSet<> ();
 			this.properties = new ArrayList<> ();
 			this.relationships = new HashMap<> ();
 			this.selectors = new ArrayList<> ();
@@ -129,8 +155,11 @@ public final class MetaData<T extends Element>
 		 * @param  local    The local <code>Property</code>, not null
 		 * @param  metadata The remote <code>MetaData</code>, not null
 		 * @param  remote   The remote <code>Property</code>, not null
-		 *
 		 * @return          This <code>MetaData.Builder</code>
+		 *
+		 * @throws IllegalAgrumentException if the local <code>Property</code>
+		 *                                  is independent, or the remote
+		 *                                  <code>Property</code> is dependent
 		 */
 
 		public <V extends Element> Builder<T> addRelationship (
@@ -144,10 +173,16 @@ public final class MetaData<T extends Element>
 			assert metadata != null : "metadata is NULL";
 			assert remote != null : "remote is NULL";
 
+			Preconditions.checkState (Builder.isDependent (local), "local must be a dependent property");
+			Preconditions.checkState (! Builder.isDependent (remote), "remote must be an independent property");
+
 			this.properties.add (local);
 
 			this.relationships.put (metadata.element, PropertyRelationship.of (local, remote));
 			metadata.relationships.put (this.type, PropertyRelationship.of (remote, local));
+
+			this.dependencies.add (metadata.element);
+			this.dependencies.addAll (metadata.dependencies);
 
 			return this;
 		}
@@ -169,8 +204,10 @@ public final class MetaData<T extends Element>
 		 * @param  local    The local <code>Property</code>, not null
 		 * @param  metadata The remote <code>MetaData</code>, not null
 		 * @param  remote   The remote <code>Selector</code>, not null
-		 *
 		 * @return          This <code>MetaData.Builder</code>
+		 *
+		 * @throws IllegalAgrumentException if the <code>Property</code>
+		 *                                  instance is independent
 		 */
 
 		public <V extends Element> Builder<T> addRelationship (
@@ -184,11 +221,16 @@ public final class MetaData<T extends Element>
 			assert metadata != null : "metadata is NULL";
 			assert remote != null : "remote is NULL";
 
+			Preconditions.checkState (Builder.isDependent (local), "local must be a dependent property");
+
 			this.properties.add (local);
 			this.selectors.add (remote);
 
 			this.relationships.put (metadata.element, PropertyRelationship.of (local, remote));
 			metadata.relationships.put (this.type, SelectorRelationship.of (local, remote));
+
+			this.dependencies.add (metadata.element);
+			this.dependencies.addAll (metadata.dependencies);
 
 			return this;
 		}
@@ -223,6 +265,7 @@ public final class MetaData<T extends Element>
 		public MetaData<T> build ()
 		{
 			this.log.trace ("build:");
+			this.log.debug ("create MetaData for: {}", this.type.getSimpleName ());
 
 			return new MetaData<T> (this);
 		}
@@ -236,6 +279,9 @@ public final class MetaData<T extends Element>
 
 	/** The <code>Element</code> interface class */
 	private final Class<T> element;
+
+	/** The dependencies for the <code>Element</code> */
+	private final List<Class<? extends Element>> dependencies;
 
 	/** The <code>Property</code> instances associated with the interface */
 	private final List<Property<? super T, ?>> properties;
@@ -299,6 +345,7 @@ public final class MetaData<T extends Element>
 		this.element = builder.type;
 		this.parent = builder.parent;
 
+		this.dependencies = new ArrayList<> (builder.dependencies);
 		this.properties = new ArrayList<> (builder.properties);
 		this.relationships = new HashMap<> (builder.relationships);
 		this.selectors = new ArrayList<> (builder.selectors);
@@ -379,6 +426,22 @@ public final class MetaData<T extends Element>
 		assert this.relationships.containsKey (element) : "No relationship registered for element";
 
 		return this.relationships.get (element);
+	}
+
+	/**
+	 * Get a <code>Stream</code> containing all of the dependencies for the 
+	 * <code>Element</code>.
+	 *
+	 * @return A <code>Stream</code> of <code>Class</code> instances
+	 */
+
+	public Stream<Class<? extends Element>> dependencies ()
+	{
+		Stream<Class<? extends Element>> stream = this.dependencies.stream ();
+
+		return (this.parent != null)
+			? Stream.concat (parent.dependencies (), stream)
+			: stream;
 	}
 
 	/**

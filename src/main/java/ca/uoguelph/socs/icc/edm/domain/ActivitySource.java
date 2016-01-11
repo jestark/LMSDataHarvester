@@ -551,7 +551,8 @@ public abstract class ActivitySource extends Element
 	@Override
 	protected boolean isDependency (final Class <? extends Element> element)
 	{
-		return this.isDependencyHelper (ActivitySource.METADATA, element);
+		return ActivitySource.METADATA.dependencies ()
+			.anyMatch (d -> d.isAssignableFrom (element));
 	}
 
 	/**

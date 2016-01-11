@@ -738,7 +738,8 @@ public abstract class Enrolment extends Element
 	@Override
 	protected boolean isDependency (final Class <? extends Element> element)
 	{
-		return this.isDependencyHelper (Enrolment.METADATA, element);
+		return Enrolment.METADATA.dependencies ()
+			.anyMatch (d -> d.isAssignableFrom (element));
 	}
 
 	/**

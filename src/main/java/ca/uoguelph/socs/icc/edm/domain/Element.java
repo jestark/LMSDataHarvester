@@ -36,6 +36,7 @@ import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Query;
 import ca.uoguelph.socs.icc.edm.domain.datastore.QueryRetriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.Profile;
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
 import ca.uoguelph.socs.icc.edm.domain.datastore.TableRetriever;
 import ca.uoguelph.socs.icc.edm.domain.datastore.TranslationTable;
@@ -580,27 +581,6 @@ public abstract class Element implements Comparable<Element>, Serializable
 	}
 
 	/**
-	 * Helper method to determine if this <code>Element</code> instances depends
-	 * on the specified <code>Element</code> class.  This methods contains the
-	 * actual implementation of the <code>isDependency</code> method.  
-	 *
-	 * @param  metadata The <code>MetaData</code>, not null
-	 * @param  element  The <code>Element</code> implementation class, not null
-	 * @return          <code>true</code> <code>false</code> otherwise
-	 */
-
-	protected final <T extends Element> boolean isDependencyHelper (
-			final MetaData<T> metadata,
-			final Class<? extends Element> element)
-	{
-		return metadata.properties ()
-			.filter (p -> p.hasFlags (Property.Flags.RELATIONSHIP))
-			.filter (p -> p.hasFlags (Property.Flags.REQUIRED) || p.hasFlags (Property.Flags.MUTABLE))
-			.map (p -> p.getValueClass ())
-			.anyMatch (c -> c.isAssignableFrom (element));
-	}
-
-	/**
 	 * Propagate the <code>DomainModel</code> reference to the specified
 	 * <code>Element</code> instance.  This is an internal method to copy the
 	 * <code>DomainModel</code> reference to the target <code>Element</code>
@@ -673,9 +653,9 @@ public abstract class Element implements Comparable<Element>, Serializable
 	 * based on the full name of the class.
 	 *
 	 * @param  element The <code>Element</code> to be compared
-	 * @return         The value 0 if the <code>Enrolment</code> instances are
+	 * @return         The value 0 if the <code>Element</code> instances are
 	 *                 equal, less than 0 of the argument is is greater, and
-	 *                 greater than  0 if the argument is less than the
+	 *                 greater than 0 if the argument is less than the
 	 *                 <code>Enrolment</code>
 	 */
 
@@ -683,12 +663,23 @@ public abstract class Element implements Comparable<Element>, Serializable
 	public int compareTo (final Element element)
 	{
 		Preconditions.checkNotNull (element, "element");
+		Preconditions.checkState (Profile.ELEMENT_DEFINITIONS.containsKey (this.getClass ()),
+				"Definition not registered: %s", this.getClass ().getSimpleName ());
+		Preconditions.checkState (Profile.ELEMENT_DEFINITIONS.containsKey (element.getClass ()),
+				"Definition not registered: %s", element.getClass ().getSimpleName ());
 
 		int result = 0;
 
 		if (this != element)
 		{
-			if (this.isDependency (element.getClass ()))
+			Definition<? extends Element> ldef = Profile.ELEMENT_DEFINITIONS.get (this.getClass ());
+			Definition<? extends Element> rdef = Profile.ELEMENT_DEFINITIONS.get (element.getClass ());
+
+			if (ldef.getElementType () == rdef.getElementType ())
+			{
+				result = this.getId ().compareTo (element.getId ());
+			}
+			else if (this.isDependency (element.getClass ()))
 			{
 				result = 1;
 			}
@@ -698,12 +689,8 @@ public abstract class Element implements Comparable<Element>, Serializable
 			}
 			else
 			{
-				result = this.getClass ().getName ().compareTo (element.getClass ().getName ());
-
-				if (result == 0)
-				{
-					result = this.getId ().compareTo (element.getId ());
-				}
+				result = ldef.getElementType ().getName ()
+					.compareTo (rdef.getElementType ().getName ());
 			}
 		}
 

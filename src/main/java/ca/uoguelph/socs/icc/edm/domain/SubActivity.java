@@ -635,7 +635,8 @@ public abstract class SubActivity extends ParentActivity
 	@Override
 	protected boolean isDependency (final Class <? extends Element> element)
 	{
-		return this.isDependencyHelper (SubActivity.METADATA, element);
+		return SubActivity.METADATA.dependencies ()
+			.anyMatch (d -> d.isAssignableFrom (element));
 	}
 
 	/**
