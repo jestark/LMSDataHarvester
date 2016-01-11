@@ -16,8 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -78,6 +80,9 @@ public final class DomainModel
 		/** The <code>Element</code> instances to synchronize */
 		private final Map<Element, ?> elements;
 
+		/** Queue for association processing */
+		private final Deque<Element> queue;
+
 		/**
 		 * Create the <code>Synchronizer</code>.
 		 *
@@ -106,6 +111,27 @@ public final class DomainModel
 
 			this.dest = dest;
 			this.elements = new IdentityHashMap<> ();
+			this.queue = new ArrayDeque<> ();
+		}
+
+		/**
+		 * Add the specified <code>Element</code> instance to the processing
+		 * queue, if it has not already been processed.
+		 *
+		 * @param  element The <code>Element</code>, not null
+		 */
+
+		private void processElement (final Element element)
+		{
+			this.log.trace ("processElement: element={}", element);
+
+			assert element != null : "element is NULL";
+
+			if ((! DomainModel.table.contains (element, dest)) && (! this.elements.containsKey (element)))
+			{
+				this.elements.put (element, null);
+				this.queue.add (element);
+			}
 		}
 
 		/**
@@ -122,12 +148,13 @@ public final class DomainModel
 
 			assert element != null : "element is NULL";
 
-			if ((! DomainModel.table.contains (element, dest)) && (! this.elements.containsKey (element)))
-			{
-				this.elements.put (element, null);
+			this.processElement (element);
 
-				element.associations ()
-					.forEach (e -> this.addElement (e));
+			while (! this.queue.isEmpty ())
+			{
+				this.queue.remove ()
+					.associations ()
+					.forEach (e -> processElement (e));
 			}
 
 			return this;
@@ -146,7 +173,7 @@ public final class DomainModel
 			this.elements.keySet ()
 				.stream ()
 				.sorted ()
-				.forEach (e -> e.getBuilder (this.dest).build ());
+				.forEachOrdered (e -> e.getBuilder (this.dest).build ());
 		}
 	}
 
