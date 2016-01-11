@@ -18,7 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -198,7 +197,7 @@ public final class Profile
 
 		public Set<Class<? extends Element>> getElements ()
 		{
-			return new HashSet<> (this.implementations.keySet ());
+			return Collections.unmodifiableSet (this.implementations.keySet ());
 		}
 
 		/**

@@ -18,7 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -128,7 +127,7 @@ public final class TranslationTable
 
 	public Set<Element> elements ()
 	{
-		return new HashSet<> (this.table.keySet ());
+		return Collections.unmodifiableSet (this.table.keySet ());
 	}
 
 	/**
