@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 James E. Stark
+/* Copyright (C) 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
-import java.util.Set;
 
 import dagger.Module;
 
@@ -130,16 +129,16 @@ public abstract class ParentActivity extends Element
 	public abstract ActivityType getType();
 
 	/**
-	 * Get the <code>Set</code> of <code>Grade</code> instances which are
+	 * Get the <code>List</code> of <code>Grade</code> instances which are
 	 * associated with the <code>Activity</code>.  Not all
 	 * <code>Activity</code> instances are graded.  If the
-	 * <code>Activity</code> does is not graded then the <code>Set</code> will
+	 * <code>Activity</code> does is not graded then the <code>List</code> will
 	 * be empty.
 	 *
-	 * @return A <code>Set</code> of <code>Grade</code> instances
+	 * @return A <code>List</code> of <code>Grade</code> instances
 	 */
 
-	public abstract Set<Grade> getGrades ();
+	public abstract List<Grade> getGrades ();
 
 	/**
 	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances

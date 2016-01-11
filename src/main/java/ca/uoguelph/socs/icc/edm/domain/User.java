@@ -16,10 +16,10 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -97,7 +97,7 @@ public abstract class User extends Element
 		private @Nullable String username;
 
 		/** The associates <code>Enrolment</code> instances */
-		private final Set<Enrolment> enrolments;
+		private final List<Enrolment> enrolments;
 
 		/**
 		 * Create an instance of the <code>Builder</code>.
@@ -131,7 +131,7 @@ public abstract class User extends Element
 			this.lastname = null;
 			this.username = null;
 
-			this.enrolments = new HashSet<Enrolment> ();
+			this.enrolments = new ArrayList<Enrolment> ();
 		}
 
 		/**
@@ -173,7 +173,7 @@ public abstract class User extends Element
 		{
 			if (! this.enrolments.equals (user.getEnrolments ()))
 			{
-				new HashSet<Enrolment> (this.enrolments)
+				new ArrayList<Enrolment> (this.enrolments)
 					.stream ()
 					.filter (x -> (! user.getEnrolments ().contains (x)))
 					.forEach (x -> user.addEnrolment (x));
@@ -356,17 +356,17 @@ public abstract class User extends Element
 		}
 
 		/**
-		 * Get the <code>Set</code> of <code>Enrolment<code> instances which are
-		 * associated with this <code>User</code>.  If there are no associated
-		 * <code>Enrolment</code> instances, then the <code>Set</code> will be
-		 * empty.
+		 * Get the <code>List</code> of <code>Enrolment<code> instances which
+		 * are associated with this <code>User</code>.  If there are no
+		 * associated <code>Enrolment</code> instances, then the
+		 * <code>List</code> will be empty.
 		 *
-		 * @return A <code>Set</code> of <code>Enrolment</code> instances
+		 * @return A <code>List</code> of <code>Enrolment</code> instances
 		 */
 
-		public final Set<Enrolment> getEnrolments ()
+		public final List<Enrolment> getEnrolments ()
 		{
-			return Collections.unmodifiableSet (this.enrolments);
+			return Collections.unmodifiableList (this.enrolments);
 		}
 
 		/**
@@ -1060,26 +1060,26 @@ public abstract class User extends Element
 	public abstract Enrolment getEnrolment (Course course);
 
 	/**
-	 * Get the <code>Set</code> of <code>Enrolment<code> instances which are
+	 * Get the <code>List</code> of <code>Enrolment<code> instances which are
 	 * associated with this <code>User</code>.  If there are no associated
-	 * <code>Enrolment</code> instances, then the <code>Set</code> will be
+	 * <code>Enrolment</code> instances, then the <code>List</code> will be
 	 * empty.
 	 *
-	 * @return A <code>Set</code> of <code>Enrolment</code> instances
+	 * @return A <code>List</code> of <code>Enrolment</code> instances
 	 */
 
-	public abstract Set<Enrolment> getEnrolments ();
+	public abstract List<Enrolment> getEnrolments ();
 
 	/**
-	 * Initialize the <code>Set</code> of <code>Enrolment</code> instances
+	 * Initialize the <code>List</code> of <code>Enrolment</code> instances
 	 * associated with the <code>User</code> instance.  This method is intended
 	 * to be used to initialize a new <code>User</code> instance.
 	 *
-	 * @param  enrolments The <code>Set</code> of <code>Enrolment</code>
+	 * @param  enrolments The <code>List</code> of <code>Enrolment</code>
 	 *                    instances, not null
 	 */
 
-	protected abstract void setEnrolments (Set<Enrolment> enrolments);
+	protected abstract void setEnrolments (List<Enrolment> enrolments);
 
 	/**
 	 * Add an <code>Enrolment</code> to the <code>User</code> instance.

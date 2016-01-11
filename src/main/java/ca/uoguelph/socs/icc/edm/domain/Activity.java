@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -985,15 +984,15 @@ public abstract class Activity extends ParentActivity
 	protected abstract void setName (String name);
 
 	/**
-	 * Initialize the <code>Set</code> of <code>Grade</code> instances
+	 * Initialize the <code>List</code> of <code>Grade</code> instances
 	 * associated with the <code>Activity</code> instance.  This method is
 	 * intended to be used to initialize a new <code>Activity</code> instance.
 	 *
-	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
+	 * @param  grades The <code>List</code> of <code>Grade</code> instances, not
 	 *                null
 	 */
 
-	protected abstract void setGrades (Set<Grade> grades);
+	protected abstract void setGrades (List<Grade> grades);
 
 	/**
 	 * Add the specified <code>Grade</code> to the

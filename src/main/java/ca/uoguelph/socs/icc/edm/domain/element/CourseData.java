@@ -1,4 +1,4 @@
-/* Copyright (C) 2014, 2015 James E. Stark
+/* Copyright (C) 2014, 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.CheckReturnValue;
@@ -89,7 +87,7 @@ public class CourseData extends Course
 	private List<ActivityReference> activities;
 
 	/** The <code>List</code> of individuals which are enrolled in the course. */
-	private Set<Enrolment> enrolments;
+	private List<Enrolment> enrolments;
 
 	/**
 	 * Create the <code>Course</code> with null values.
@@ -103,7 +101,7 @@ public class CourseData extends Course
 		this.year = null;
 
 		this.activities = new ArrayList<ActivityReference> ();
-		this.enrolments = new HashSet<Enrolment> ();
+		this.enrolments = new ArrayList<Enrolment> ();
 	}
 
 	/**
@@ -122,7 +120,7 @@ public class CourseData extends Course
 		this.year = Preconditions.checkNotNull (builder.getYear (), "year");
 
 		this.activities = new ArrayList<ActivityReference> ();
-		this.enrolments = new HashSet<Enrolment> ();
+		this.enrolments = new ArrayList<Enrolment> ();
 	}
 
 	/**
@@ -330,11 +328,11 @@ public class CourseData extends Course
 	 */
 
 	@Override
-	public Set<Enrolment> getEnrolments ()
+	public List<Enrolment> getEnrolments ()
 	{
 		this.enrolments.forEach (x -> this.propagateDomainModel (x));
 
-		return Collections.unmodifiableSet (this.enrolments);
+		return Collections.unmodifiableList (this.enrolments);
 	}
 
 	/**
@@ -347,7 +345,7 @@ public class CourseData extends Course
 	 */
 
 	@Override
-	protected void setEnrolments (final Set<Enrolment> enrolments)
+	protected void setEnrolments (final List<Enrolment> enrolments)
 	{
 		assert enrolments != null : "enrolments is NULL";
 

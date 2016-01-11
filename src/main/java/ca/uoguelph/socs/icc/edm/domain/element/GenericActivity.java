@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 James E. Stark
+/* Copyright (C) 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain.element;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
@@ -147,32 +146,32 @@ public class GenericActivity extends Activity
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>Grade</code> instances which are
+	 * Get the <code>List</code> of <code>Grade</code> instances which are
 	 * associated with the <code>Activity</code>.  Not all
 	 * <code>Activity</code> instances are graded.  If the
-	 * <code>Activity</code> does is not graded then the <code>Set</code> will
+	 * <code>Activity</code> does is not graded then the <code>List</code> will
 	 * be empty.
 	 *
-	 * @return A <code>Set</code> of <code>Grade</code> instances
+	 * @return A <code>List</code> of <code>Grade</code> instances
 	 */
 
 	@Override
-	public Set<Grade> getGrades ()
+	public List<Grade> getGrades ()
 	{
-		return Collections.emptySet ();
+		return Collections.emptyList ();
 	}
 
 	/**
-	 * Initialize the <code>Set</code> of <code>Grade</code> instances
+	 * Initialize the <code>List</code> of <code>Grade</code> instances
 	 * associated with the <code>Activity</code> instance.  This method is
 	 * intended to be used to initialize a new <code>Activity</code> instance.
 	 *
-	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
+	 * @param  grades The <code>List</code> of <code>Grade</code> instances, not
 	 *                null
 	 */
 
 	@Override
-	protected void setGrades (final Set<Grade> grades)
+	protected void setGrades (final List<Grade> grades)
 	{
 		throw new UnsupportedOperationException ("Generic activities can not have grades");
 	}

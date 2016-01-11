@@ -1,4 +1,4 @@
-/* Copyright (C) 2014, 2015 James E. Stark
+/* Copyright (C) 2014, 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
@@ -82,7 +82,7 @@ public class UserData extends User
 	private String lastname;
 
 	/** The set of enrolments which are associated with the user */
-	private Set<Enrolment> enrolments;
+	private List<Enrolment> enrolments;
 
 	/**
 	 * Create the user with null values.
@@ -95,7 +95,7 @@ public class UserData extends User
 		this.lastname = null;
 		this.firstname= null;
 
-		this.enrolments = new HashSet<Enrolment> ();
+		this.enrolments = new ArrayList<Enrolment> ();
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class UserData extends User
 		this.lastname = Preconditions.checkNotNull (builder.getLastname (), "lastname");
 		this.username = Preconditions.checkNotNull (builder.getUsername (), "username");
 
-		this.enrolments = new HashSet<Enrolment> (builder.getEnrolments ());
+		this.enrolments = new ArrayList<Enrolment> (builder.getEnrolments ());
 	}
 
 	/**
@@ -266,33 +266,33 @@ public class UserData extends User
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>Enrolment<code> instances which are
+	 * Get the <code>List</code> of <code>Enrolment<code> instances which are
 	 * associated with this <code>User</code>.  If there are no associated
-	 * <code>Enrolment</code> instances, then the <code>Set</code> will be
+	 * <code>Enrolment</code> instances, then the <code>List</code> will be
 	 * empty.
 	 *
-	 * @return A <code>Set</code> of <code>Enrolment</code> instances
+	 * @return A <code>List</code> of <code>Enrolment</code> instances
 	 */
 
 	@Override
-	public Set<Enrolment> getEnrolments()
+	public List<Enrolment> getEnrolments()
 	{
 		this.enrolments.forEach (x -> this.propagateDomainModel (x));
 
-		return Collections.unmodifiableSet (this.enrolments);
+		return Collections.unmodifiableList (this.enrolments);
 	}
 
 	/**
-	 * Initialize the <code>Set</code> of <code>Enrolment</code> instances
+	 * Initialize the <code>List</code> of <code>Enrolment</code> instances
 	 * associated with the <code>User</code> instance.  This method is intended
 	 * to be used to initialize a new <code>User</code> instance.
 	 *
-	 * @param  enrolments The <code>Set</code> of <code>Enrolment</code>
+	 * @param  enrolments The <code>List</code> of <code>Enrolment</code>
 	 *                    instances, not null
 	 */
 
 	@Override
-	protected void setEnrolments (final Set<Enrolment> enrolments)
+	protected void setEnrolments (final List<Enrolment> enrolments)
 	{
 		assert enrolments != null : "enrolments is NULL";
 

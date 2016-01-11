@@ -1,4 +1,4 @@
-/* Copyright (C) 2014, 2015 James E. Stark
+/* Copyright (C) 2014, 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,9 @@
 
 package ca.uoguelph.socs.icc.edm.domain.element;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
@@ -75,7 +75,7 @@ public class ActivitySourceData extends ActivitySource
 	private String name;
 
 	/** The set of activity types which are associated with the source */
-	private Set<ActivityType> types;
+	private List<ActivityType> types;
 
 	/**
 	 * Create the <code>ActivitySource</code> with null values.
@@ -86,7 +86,7 @@ public class ActivitySourceData extends ActivitySource
 		this.id = null;
 		this.name = null;
 
-		this.types = new HashSet<ActivityType> ();
+		this.types = new ArrayList<ActivityType> ();
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class ActivitySourceData extends ActivitySource
 		this.id = builder.getId ();
 		this.name = Preconditions.checkNotNull (builder.getName (), "name");
 
-		this.types = new HashSet<ActivityType> ();
+		this.types = new ArrayList<ActivityType> ();
 	}
 
 	/**
@@ -164,34 +164,34 @@ public class ActivitySourceData extends ActivitySource
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>ActivityType</code> instances for the
+	 * Get the <code>List</code> of <code>ActivityType</code> instances for the
 	 * <code>ActivitySource</code>.  If there are no <code>ActivityType</code>
 	 * instances associated with the <code>ActivitySource</code> then the
-	 * <code>Set</code> will be empty.
+	 * <code>List</code> will be empty.
 	 *
-	 * @return A <code>Set</code> of <code>ActivityType</code> instances
+	 * @return A <code>List</code> of <code>ActivityType</code> instances
 	 */
 
 	@Override
-	public Set<ActivityType> getTypes ()
+	public List<ActivityType> getTypes ()
 	{
 		this.types.forEach (x -> this.propagateDomainModel (x));
 
-		return Collections.unmodifiableSet (this.types);
+		return Collections.unmodifiableList (this.types);
 	}
 
 	/**
-	 * Initialize the <code>Set</code> of dependent <code>ActivityType</code>
+	 * Initialize the <code>List</code> of dependent <code>ActivityType</code>
 	 * instances.  This method is intended to be used to initialize a new
 	 * <code>ActivitySource</code> instance.
 	 *
-	 * @param  types The <code>Set</code> of <code>ActivityType</code>
+	 * @param  types The <code>List</code> of <code>ActivityType</code>
 	 *               instances to be associated with the
 	 *               <code>ActivitySource</code>
 	 */
 
 	@Override
-	protected void setTypes (final Set<ActivityType> types)
+	protected void setTypes (final List<ActivityType> types)
 	{
 		assert types != null : "types is NULL";
 

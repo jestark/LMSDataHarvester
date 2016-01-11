@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -790,17 +789,17 @@ public abstract class SubActivity extends ParentActivity
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>Grade</code> instances which are
+	 * Get the <code>List</code> of <code>Grade</code> instances which are
 	 * associated with the <code>Activity</code>.  Not all
 	 * <code>Activity</code> instances are graded.  If the
-	 * <code>Activity</code> does is not graded then the <code>Set</code> will
+	 * <code>Activity</code> does is not graded then the <code>List</code> will
 	 * be empty.
 	 *
-	 * @return A <code>Set</code> of <code>Grade</code> instances
+	 * @return A <code>List</code> of <code>Grade</code> instances
 	 */
 
 	@Override
-	public final Set<Grade> getGrades ()
+	public final List<Grade> getGrades ()
 	{
 		return this.getParent ().getGrades ();
 	}

@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain;
 
-import java.util.Set;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -689,27 +689,27 @@ public abstract class ActivitySource extends Element
 	protected abstract void setName (String name);
 
 	/**
-	 * Get the <code>Set</code> of <code>ActivityType</code> instances for the
+	 * Get the <code>List</code> of <code>ActivityType</code> instances for the
 	 * <code>ActivitySource</code>.  If there are no <code>ActivityType</code>
 	 * instances associated with the <code>ActivitySource</code> then the
-	 * <code>Set</code> will be empty.
+	 * <code>List</code> will be empty.
 	 *
-	 * @return A <code>Set</code> of <code>ActivityType</code> instances
+	 * @return A <code>List</code> of <code>ActivityType</code> instances
 	 */
 
-	public abstract Set<ActivityType> getTypes ();
+	public abstract List<ActivityType> getTypes ();
 
 	/**
-	 * Initialize the <code>Set</code> of dependent <code>ActivityType</code>
+	 * Initialize the <code>List</code> of dependent <code>ActivityType</code>
 	 * instances.  This method is intended to be used to initialize a new
 	 * <code>ActivitySource</code> instance.
 	 *
-	 * @param  types The <code>Set</code> of <code>ActivityType</code>
+	 * @param  types The <code>List</code> of <code>ActivityType</code>
 	 *               instances to be associated with the
 	 *               <code>ActivitySource</code>
 	 */
 
-	protected abstract void setTypes (Set<ActivityType> types);
+	protected abstract void setTypes (List<ActivityType> types);
 
 	/**
 	 * Add the specified <code>ActivityType</code> to the

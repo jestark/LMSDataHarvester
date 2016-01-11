@@ -1,4 +1,4 @@
-/* Copyright (C) 2014, 2015 James E. Stark
+/* Copyright (C) 2014, 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,7 @@ package ca.uoguelph.socs.icc.edm.domain.element.activity.moodle;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
@@ -92,7 +90,7 @@ public class Feedback extends Activity
 	private String name;
 
 	/** The associated <code>Grade</code> instances */
-	private Set<Grade> grades;
+	private List<Grade> grades;
 
 	/** The associated <code>SubActivity</code> instances*/
 	private List<SubActivity> subActivities;
@@ -105,7 +103,7 @@ public class Feedback extends Activity
 	{
 		this.name = null;
 
-		this.grades = new HashSet<Grade> ();
+		this.grades = new ArrayList<Grade> ();
 		this.subActivities = new ArrayList<SubActivity> ();
 	}
 
@@ -121,7 +119,7 @@ public class Feedback extends Activity
 
 		this.name = Preconditions.checkNotNull (builder.getName (), "name");
 
-		this.grades = new HashSet<Grade> ();
+		this.grades = new ArrayList<Grade> ();
 		this.subActivities = new ArrayList<SubActivity> ();
 	}
 
@@ -181,34 +179,34 @@ public class Feedback extends Activity
 	}
 
 	/**
-	 * Get the <code>Set</code> of <code>Grade</code> instances which are
+	 * Get the <code>List</code> of <code>Grade</code> instances which are
 	 * associated with the <code>Activity</code>.  Not all
 	 * <code>Activity</code> instances are graded.  If the
-	 * <code>Activity</code> does is not graded then the <code>Set</code> will
+	 * <code>Activity</code> does is not graded then the <code>List</code> will
 	 * be empty.
 	 *
-	 * @return A <code>Set</code> of <code>Grade</code> instances
+	 * @return A <code>List</code> of <code>Grade</code> instances
 	 */
 
 	@Override
-	public Set<Grade> getGrades ()
+	public List<Grade> getGrades ()
 	{
 		this.grades.forEach (x -> this.propagateDomainModel (x));
 
-		return Collections.unmodifiableSet (this.grades);
+		return Collections.unmodifiableList (this.grades);
 	}
 
 	/**
-	 * Initialize the <code>Set</code> of <code>Grade</code> instances
+	 * Initialize the <code>List</code> of <code>Grade</code> instances
 	 * associated with the <code>Activity</code> instance.  This method is
 	 * intended to be used to initialize a new <code>Activity</code> instance.
 	 *
-	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
+	 * @param  grades The <code>List</code> of <code>Grade</code> instances, not
 	 *                null
 	 */
 
 	@Override
-	protected void setGrades (final Set<Grade> grades)
+	protected void setGrades (final List<Grade> grades)
 	{
 		assert grades != null : "grades is NULL";
 

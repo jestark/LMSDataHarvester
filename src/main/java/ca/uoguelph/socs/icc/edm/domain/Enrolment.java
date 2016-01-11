@@ -17,7 +17,6 @@
 package ca.uoguelph.socs.icc.edm.domain;
 
 import java.util.List;
-import java.util.Set;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -976,24 +975,24 @@ public abstract class Enrolment extends Element
 	public abstract Grade getGrade (Activity activity);
 
 	/**
-	 * Get the <code>Set</code> of <code>Grade</code> instances which are
+	 * Get the <code>List</code> of <code>Grade</code> instances which are
 	 * associated with the <code>Enrolment</code> instance.
 	 *
-	 * @return A <code>Set</code> of <code>Grade</code> instances.
+	 * @return A <code>List</code> of <code>Grade</code> instances.
 	 */
 
-	public abstract Set<Grade> getGrades ();
+	public abstract List<Grade> getGrades ();
 
 	/**
-	 * Initialize the <code>Set</code> of <code>Grade</code> instances
+	 * Initialize the <code>List</code> of <code>Grade</code> instances
 	 * associated with the <code>Enrolment</code> instance.  This method is
 	 * intended to be used to initialize a new <code>Enrolment</code> instance.
 	 *
-	 * @param  grades The <code>Set</code> of <code>Grade</code> instances, not
+	 * @param  grades The <code>List</code> of <code>Grade</code> instances, not
 	 *                null
 	 */
 
-	protected abstract void setGrades (Set<Grade> grades);
+	protected abstract void setGrades (List<Grade> grades);
 
 	/**
 	 * Add the specified <code>Grade</code> to the <code>Enrolment</code>.
