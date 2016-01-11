@@ -18,7 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain.datastore.jpa;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,10 +72,10 @@ final class JPANamedQuery<T extends Element> implements Query<T>
 	/** The JPA <code>EntityManager</code> for the database */
 	private final EntityManager manager;
 
-	/** */
+	/** The name of the query for JPA mapping */
 	private final String qname;
 
-	/** */
+	/** The JPA query */
 	private TypedQuery<? extends T> query;
 
 	/**

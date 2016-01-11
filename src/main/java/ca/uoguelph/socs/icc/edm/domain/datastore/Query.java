@@ -18,7 +18,6 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import ca.uoguelph.socs.icc.edm.domain.Element;
