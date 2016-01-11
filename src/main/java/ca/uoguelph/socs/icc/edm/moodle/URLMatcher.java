@@ -35,7 +35,7 @@ import ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData;
  * @version 1.0
  */
 
-final class URLMatcher implements Matcher
+public final class URLMatcher implements Matcher
 {
 	/** The <code>Activity</code> class */
 	final Class<? extends Activity> activity;
