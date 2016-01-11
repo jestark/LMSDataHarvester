@@ -17,10 +17,9 @@
 package ca.uoguelph.socs.icc.edm.domain.datastore.memory;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -108,7 +107,7 @@ public final class MemDataStore implements DataStore
 	private final Logger log;
 
 	/** The <code>Set</code> of stored <code>Element</code> instances */
-	private final Set<Wrapper<? extends Element>> elements;
+	private final Map<Element, ?> elements;
 
 	/** Indexed <code>Element</code> instances */
 	private final Map<Index<?>, Element> index;
@@ -171,7 +170,7 @@ public final class MemDataStore implements DataStore
 		this.open = true;
 		this.transaction = null;
 
-		this.elements = new HashSet<> ();
+		this.elements = new IdentityHashMap<> ();
 		this.index = new HashMap<> ();
 	}
 
@@ -191,8 +190,8 @@ public final class MemDataStore implements DataStore
 
 		assert filter != null : "filter is NULL";
 
-		return this.elements.parallelStream ()
-			.map (Wrapper::unwrap)
+		return this.elements.keySet ()
+			.stream ()
 			.filter (x -> filter.getElementClass ()
 					.isInstance (x))
 			.map (x -> filter.getSelector ()
@@ -318,7 +317,7 @@ public final class MemDataStore implements DataStore
 		assert element != null : "element is NULL";
 		assert this.isOpen () : "datastore is closed";
 
-		return this.elements.contains (new Wrapper<T> (element));
+		return this.elements.containsKey (element);
 	}
 
 	/**
@@ -338,8 +337,8 @@ public final class MemDataStore implements DataStore
 		assert element != null : "element is NULL";
 		assert this.isOpen () : "datastore is closed";
 
-		return this.elements.parallelStream ()
-			.map (Wrapper::unwrap)
+		return this.elements.keySet ()
+			.stream ()
 			.filter (x -> element.isInstance (x))
 			.map (Element::getId)
 			.collect (Collectors.toList ());
@@ -365,7 +364,7 @@ public final class MemDataStore implements DataStore
 		assert this.transaction.isActive () : "No Active transaction";
 
 		this.log.debug ("Inserting the Element");
-		this.elements.add (new Wrapper<T> (element));
+		this.elements.put (element, null);
 
 		this.log.debug ("building indexes");
 		this.index.putAll (definition.selectors ()
@@ -392,7 +391,7 @@ public final class MemDataStore implements DataStore
 		assert this.transaction.isActive () : "No Active transaction";
 
 		this.log.debug ("removing element");
-		this.elements.remove (new Wrapper<T> (element));
+		this.elements.remove (element);
 
 		this.log.debug ("removing indexes");
 		this.index.entrySet ()
