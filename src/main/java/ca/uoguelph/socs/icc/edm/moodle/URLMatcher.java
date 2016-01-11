@@ -173,6 +173,6 @@ public final class URLMatcher implements Matcher
 	@Override
 	public boolean matches (final MoodleLogData entry)
 	{
-		return this.pattern.matcher (entry.getUrl ()).matches ();
+		return this.pattern.matcher (entry.getUrl ()).find ();
 	}
 }
