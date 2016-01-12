@@ -22,7 +22,9 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -69,7 +71,7 @@ public final class DomainModel
 	 * @version 1.0
 	 */
 
-	private static final class Synchronizer
+	public static final class Synchronizer
 	{
 		/** The log */
 		private final Logger log;
@@ -78,10 +80,7 @@ public final class DomainModel
 		private final DomainModel dest;
 
 		/** The <code>Element</code> instances to synchronize */
-		private final Map<Element, ?> elements;
-
-		/** Queue for association processing */
-		private final Deque<Element> queue;
+		private Map<Element, ?> elements;
 
 		/**
 		 * Create the <code>Synchronizer</code>.
@@ -90,7 +89,7 @@ public final class DomainModel
 		 * @return      The <code>Synchronizer</code>
 		 */
 
-		public static Synchronizer create (final DomainModel dest)
+		private static Synchronizer create (final DomainModel dest)
 		{
 			assert dest != null : "dest is NULL";
 
@@ -111,26 +110,30 @@ public final class DomainModel
 
 			this.dest = dest;
 			this.elements = new IdentityHashMap<> ();
-			this.queue = new ArrayDeque<> ();
 		}
 
 		/**
-		 * Add the specified <code>Element</code> instance to the processing
-		 * queue, if it has not already been processed.
+		 * Process the specified queue, adding the elements and their
+		 * associations to the <code>Synchronizer</code>.
 		 *
-		 * @param  element The <code>Element</code>, not null
+		 * @param  queue The queue, not null
 		 */
 
-		private void processElement (final Element element)
+		private void processQueue (final Deque<Element> queue)
 		{
-			this.log.trace ("processElement: element={}", element);
+			this.log.trace ("processQueue: queue={}", queue);
 
-			assert element != null : "element is NULL";
+			assert queue != null : "queue is NULL";
 
-			if ((! DomainModel.table.contains (element, dest)) && (! this.elements.containsKey (element)))
+			while (! queue.isEmpty ())
 			{
-				this.elements.put (element, null);
-				this.queue.add (element);
+				Element element = queue.remove ();
+
+				if ((! DomainModel.table.contains (element, dest)) && (! this.elements.containsKey (element)))
+				{
+					this.elements.put (element, null);
+					queue.addAll (element.associations ().collect (Collectors.toList ()));
+				}
 			}
 		}
 
@@ -142,20 +145,37 @@ public final class DomainModel
 		 * @return         This <code>Synchronizer</code>
 		 */
 
-		public Synchronizer addElement (final Element element)
+		public Synchronizer add (final Element element)
 		{
 			this.log.trace ("addElement: element={}", element);
 
-			assert element != null : "element is NULL";
+			Preconditions.checkNotNull (element, "element");
 
-			this.processElement (element);
+			Deque<Element> queue = new ArrayDeque<> ();
+			queue.add (element);
 
-			while (! this.queue.isEmpty ())
-			{
-				this.queue.remove ()
-					.associations ()
-					.forEach (e -> processElement (e));
-			}
+			this.processQueue (queue);
+
+			return this;
+		}
+
+		/**
+		 * Add all of the <code>Element</code> instances in the specified
+		 * <code>Collection</code>, and all of the associated
+		 * <code>Element</code> instances to the <code>Synchronizer</code>.
+		 *
+		 * @param  elements The <code>Collection</code> of <code>Element</code>
+		 *                  instances, not null
+		 * @return          This <code>Synchronizer</code>
+		 */
+
+		public <T extends Element> Synchronizer addAll (final Collection<T> elements)
+		{
+			this.log.trace ("addAll: elements={}", elements);
+
+			Preconditions.checkNotNull (elements, "elements");
+
+			this.processQueue (new ArrayDeque<Element> (elements));
 
 			return this;
 		}
@@ -164,16 +184,62 @@ public final class DomainModel
 		 * Perform the synchronization.  This methods inserts all of the
 		 * <code>Elements</code> that are in the <code>Synchronizer</code> into
 		 * the destination <code>DomainModel</code>.
+		 * <p>
+		 * Note:  If there is not an active transaction, then this method will
+		 * begin and commit a new transaction as required.  A pre-existing
+		 * transaction will be used, but it will not be commited.
+		 *
+		 * @return The destination <code>DomainModel</code>
 		 */
 
-		public void synchronize ()
+		public DomainModel synchronize ()
 		{
 			this.log.trace ("synchronize:");
 
-			this.elements.keySet ()
+			final boolean transaction = this.dest.getTransaction ().isActive ();
+
+			List<Element> inputs = this.elements.keySet ()
 				.stream ()
 				.sorted ()
-				.forEachOrdered (e -> e.getBuilder (this.dest).build ());
+				.collect (Collectors.toList ());
+
+			// Kill the Map to save (potentially a lot of) memory
+			this.elements = new IdentityHashMap<> ();
+
+			if (! transaction)
+			{
+				this.dest.getTransaction ().begin ();
+			}
+
+			this.log.info ("beginning synchronization");
+
+			for (int i = 0; i < inputs.size (); i ++)
+			{
+				try
+				{
+					inputs.get (i)
+						.getBuilder (this.dest)
+						.build ();
+				}
+				catch (Exception ex)
+				{
+					this.log.debug ("Caught Exception:", ex);
+					this.log.debug ("Processing Element ({}/{}): {}", i, inputs.size (), inputs.get (i));
+
+					this.dest.getTransaction ().rollback ();
+
+					throw ex;
+				}
+			}
+
+			this.log.info ("synchronization complete");
+
+			if (! transaction)
+			{
+				this.dest.getTransaction ().commit ();
+			}
+
+			return this.dest;
 		}
 	}
 
@@ -582,6 +648,17 @@ public final class DomainModel
 	}
 
 	/**
+	 * Get a <code>Sychronizer</code> instance for the <code>DomainModel</code>.
+	 *
+	 * @return The <code>Synchronizer</code>
+	 */
+
+	public Synchronizer getSynchronizer ()
+	{
+		return Synchronizer.create (this);
+	}
+
+	/**
 	 * Get a reference to the <code>Transaction</code> instance for the
 	 * <code>DataStore</code>.  A <code>Transaction</code> can only be returned
 	 * for a mutable <code>DataStore</code>.
@@ -639,17 +716,12 @@ public final class DomainModel
 	 * <code>Element</code> and all of the associated <code>Element</code>
 	 * instances into the <code>DomainModel</code> and return a
 	 * reference to the <code>Element</code> instance which was inserted.
-	 * <p>
-	 * To insert an <code>Element</code> into the <code>DataStore</code>, an
-	 * active <code>Transaction</code> is required.
 	 *
 	 * @param  <T>     The type of <code>Element</code> being inserted
 	 * @param  element The <code>Element</code> to insert, not null
 	 * @return         A reference to the <code>Element</code> in the
 	 *                 <code>DataStore</code>
 	 *
-	 * @throws IllegalStateException If there is not an active
-	 *                               <code>Transaction</code>
 	 * @throws IllegalStateException If the <code>Element</code> is not
 	 *                               successfully inserted
 	 */
@@ -659,10 +731,9 @@ public final class DomainModel
 		this.log.trace ("insert: element={}", element);
 
 		Preconditions.checkNotNull (element, "element");
-		Preconditions.checkState (this.datastore.getTransaction (this).isActive (), "Active Transaction required");
 
 		Synchronizer.create (this)
-			.addElement (element)
+			.add (element)
 			.synchronize ();
 
 		return DomainModel.table.get (element, this)
