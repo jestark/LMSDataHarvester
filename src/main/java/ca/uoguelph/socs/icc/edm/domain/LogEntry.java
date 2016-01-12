@@ -939,6 +939,30 @@ public abstract class LogEntry extends Element
 	}
 
 	/**
+	 * Compare two <code>LogEntry</code> instances to determine if they are
+	 * equal using all of the instance fields.  <code>Enrolment</code> uses its
+	 * <code>DataStore</code> ID in its <code>equals</code> but not its
+	 * <code>equalsAll</code> method.  This method is keeps
+	 * <code>LogEntry</code> compatible with <code>Enrolment</code>.
+	 *
+	 * @param  element The <code>Element</code> instance to compare to this
+	 *                 instance
+	 * @return         <code>True</code> if the two <code>LogEntry</code>
+	 *                 instances are equal, <code>False</code> otherwise
+	 */
+
+	@Override
+	public boolean equalsAll (final @Nullable Element element)
+	{
+		return (element == this) ? true : (element instanceof LogEntry)
+			&& this.getAction ().equalsAll (((LogEntry) element).getAction ())
+			&& this.getActivity ().equalsAll (((LogEntry) element).getActivity ())
+			&& this.getEnrolment ().equalsAll (((LogEntry) element).getEnrolment ())
+			&& this.getNetwork ().equalsAll (((LogEntry) element).getNetwork ())
+			&& Objects.equals (this.getTime (), ((LogEntry) element).getTime ());
+	}
+
+	/**
 	 * Compute a <code>hashCode</code> of the <code>LogEntry</code> instance.
 	 * The hash code is computed based upon the following fields:
 	 * <p>

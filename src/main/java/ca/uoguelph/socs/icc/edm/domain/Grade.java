@@ -688,8 +688,8 @@ public abstract class Grade extends Element
 	public boolean equalsAll (final @Nullable Element element)
 	{
 		return (element == this) ? true : (element instanceof Grade)
-			&& Objects.equals (this.getActivity (), ((Grade) element).getActivity ())
-			&& Objects.equals (this.getEnrolment (), ((Grade) element).getEnrolment ())
+			&& this.getActivity ().equalsAll (((Grade) element).getActivity ())
+			&& this.getEnrolment ().equalsAll (((Grade) element).getEnrolment ())
 			&& Objects.equals (this.getGrade (), ((Grade) element).getGrade ());
 	}
 

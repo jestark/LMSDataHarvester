@@ -388,7 +388,7 @@ public abstract class User extends Element
 
 			Enrolment add = this.verifyRelationship (this.enrolmentRetriever, enrolment, "enrolment");
 
-			Preconditions.checkArgument (! User.hasUser (this.model, enrolment),
+			Preconditions.checkArgument ((! User.hasUser (this.model, enrolment)),
 					"The Enrolment is already assigned to another user");
 
 			this.enrolments.add (add);
@@ -719,7 +719,7 @@ public abstract class User extends Element
 		Preconditions.checkArgument (user.getDomainModel () == enrolment.getDomainModel (),
 				"User and enrolment must be members of the same DomainModel");
 
-		Preconditions.checkArgument (! User.hasUser (user.getDomainModel (), enrolment),
+		Preconditions.checkArgument ((! User.hasUser (user.getDomainModel (), enrolment)),
 				"Enrolment is already associated with a user");
 
 		return user.addEnrolment (enrolment);

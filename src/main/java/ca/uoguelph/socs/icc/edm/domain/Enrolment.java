@@ -789,6 +789,7 @@ public abstract class Enrolment extends Element
 	public boolean equals (final Object obj)
 	{
 		return (obj == this) ? true : (obj instanceof Enrolment)
+			&& Objects.equals (this.getId (), ((Enrolment) obj).getId ())
 			&& Objects.equals (this.getCourse (), ((Enrolment) obj).getCourse ())
 			&& Objects.equals (this.getRole (), ((Enrolment) obj).getRole ());
 	}
@@ -810,8 +811,8 @@ public abstract class Enrolment extends Element
 	public boolean equalsAll (final @Nullable Element element)
 	{
 		return (element == this) ? true : (element instanceof Enrolment)
-			&& Objects.equals (this.getCourse (), ((Enrolment) element).getCourse ())
-			&& Objects.equals (this.getRole (), ((Enrolment) element).getRole ())
+			&& this.getCourse ().equalsAll (((Enrolment) element).getCourse ())
+			&& this.getRole ().equalsAll (((Enrolment) element).getRole ())
 			&& Objects.equals (this.getFinalGrade (), ((Enrolment) element).getFinalGrade ())
 			&& Objects.equals (this.isUsable (), ((Enrolment) element).isUsable ());
 	}
