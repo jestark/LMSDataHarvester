@@ -56,7 +56,7 @@ import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
  */
 
 @AutoFactory
-public final class DomainModel
+public final class DomainModel implements AutoCloseable
 {
 	/**
 	 * Synchronise an <code>Element</code> across two <code>DomainModel</code>
@@ -548,6 +548,7 @@ public final class DomainModel
 	 * fail.
 	 */
 
+	@Override
 	public void close ()
 	{
 		this.datastore.close ();

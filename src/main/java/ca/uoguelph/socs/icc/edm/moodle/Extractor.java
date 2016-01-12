@@ -88,7 +88,7 @@ import ca.uoguelph.socs.icc.edm.resolver.Resolver;
  */
 
 @AutoFactory
-public final class Extractor
+public final class Extractor implements AutoCloseable
 {
 	/**
 	 * Processor for performing the data extraction from the Moodle database.
@@ -490,6 +490,7 @@ public final class Extractor
 	 * closes the <code>DomainModel</code>.
 	 */
 
+	@Override
 	public void close ()
 	{
 		this.log.trace ("close:");
