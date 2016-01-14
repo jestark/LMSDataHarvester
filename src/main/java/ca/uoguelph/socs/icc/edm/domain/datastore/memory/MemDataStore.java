@@ -292,7 +292,7 @@ public final class MemDataStore implements DataStore
 
 		this.open = false;
 
-		if (! this.transaction.isActive ())
+		if ((this.transaction == null) || (! this.transaction.isActive ()))
 		{
 			this.elements.clear ();
 			this.index.clear ();
