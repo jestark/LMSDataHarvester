@@ -14,9 +14,6 @@
 
 	<entity name="Action" class="ActionData" metadata-complete="true">
 		<table name="log_action"/>
-		<named-query name="Action:allid">
-			<query>SELECT a.id FROM Action a</query>
-		</named-query>
 		<named-query name="Action:all">
 			<query>SELECT a FROM Action a</query>
 		</named-query>
@@ -169,9 +166,6 @@
 
 	<entity name="Enrolment" class="EnrolmentData" metadata-complete="true">
 		<table name="enrolment"/>
-		<named-query name="Enrolment:allid">
-			<query>SELECT e.id FROM Enrolment e</query>
-		</named-query>
 		<named-query name="Enrolment:all">
 			<query>SELECT e FROM Enrolment e</query>
 		</named-query>
@@ -302,9 +296,6 @@
 
 	<entity name="User" class="UserData" metadata-complete="true">
 		<table name="user" schema="userdb"/>
-		<named-query name="User:allid">
-			<query>SELECT u.id FROM User u</query>
-		</named-query>
 		<named-query name="User:all">
 			<query>SELECT u FROM User u</query>
 		</named-query>
