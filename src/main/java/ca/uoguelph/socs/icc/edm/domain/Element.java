@@ -211,7 +211,7 @@ public abstract class Element implements Comparable<Element>, Serializable
 		 * @return         The <code>Element</code> to be inserted, not null
 		 */
 
-		protected T preInsert (T element)
+		protected T preInsert (final T element)
 		{
 			return element;
 		}
@@ -220,8 +220,8 @@ public abstract class Element implements Comparable<Element>, Serializable
 		 * Post-insert hook.  This method is executed after the new
 		 * <code>Element</code> instance is inserted into the
 		 * <code>DataStore</code>.  It is intended to be used for any operations
-		 * which need to occur just prior to returning the <code>Element</code>
-		 * instance.
+		 * which need to occur just prior to returning the new
+		 * <code>Element</code> instance.
 		 * <p>
 		 * By default, this method returns the input <code>Element</code>
 		 * instance unchanged.
@@ -230,7 +230,26 @@ public abstract class Element implements Comparable<Element>, Serializable
 		 * @return         The <code>Element</code>, not null
 		 */
 
-		protected T postInsert (T element)
+		protected T postInsert (final T element)
+		{
+			return element;
+		}
+
+		/**
+		 * Post-build hook.  This method is executed just before the
+		 * <code>Element</code> instance is returned.  It is intended to be used
+		 * for any operations which need to be applied to all
+		 * <code>Element</code> instances (new or retrieved from the
+		 * <code>DataStore</code>) just prior to being returned.
+		 * <p>
+		 * By default, this method returns the input <code>Element</code>
+		 * instance unchanged.
+		 *
+		 * @param  element The <code>Element</code>, not null
+		 * @return         The <code>Element</code>, not null
+		 */
+
+		protected T postBuild (final T element)
 		{
 			return element;
 		}
@@ -314,6 +333,7 @@ public abstract class Element implements Comparable<Element>, Serializable
 			{
 				T newElement = this.create ();
 
+				this.log.debug ("Checking if the new Element duplicated an existing element");
 				Optional<T> result = this.retriever.fetch ((newElement.equals (this.element))
 						? this.element : newElement);
 
@@ -338,7 +358,7 @@ public abstract class Element implements Comparable<Element>, Serializable
 				throw new IllegalStateException ("Element is missing required fields", ex);
 			}
 
-			return this.element;
+			return this.postBuild (this.element);
 		}
 
 		/**
@@ -562,6 +582,8 @@ public abstract class Element implements Comparable<Element>, Serializable
 
 	protected Element (final Builder<? extends Element> builder)
 	{
+		this ();
+
 		assert builder != null : "builder is NULL";
 
 		this.model = Preconditions.checkNotNull (builder.getDomainModel ());

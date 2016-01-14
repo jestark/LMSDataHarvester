@@ -153,8 +153,8 @@ public abstract class User extends Element
 		/**
 		 * Implementation of the pre-insert hook to set the ID number.
 		 *
-		 * @param  user The <code>User</code> to be inserted, not null
-		 * @return      The <code>User</code> to be inserted
+		 * @param  user The <code>User</code>, not null
+		 * @return      The <code>User</code>
 		 */
 
 		@Override
@@ -168,15 +168,21 @@ public abstract class User extends Element
 			return user;
 		}
 
+		/**
+		 * Implementation of the post-build hook to load any new Enrolment
+		 * instances into the <code>User</code>.
+		 *
+		 * @param  user The <code>User</code>, not null
+		 * @return      The <code>User</code>
+		 */
+
 		@Override
-		protected User postInsert (final User user)
+		protected User postBuild (final User user)
 		{
-			if (! this.enrolments.equals (user.getEnrolments ()))
-			{
-				this.enrolments.stream ()
-					.filter (x -> (! user.getEnrolments ().contains (x)))
-					.forEach (x -> user.addEnrolment (x));
-			}
+			this.enrolments.stream ()
+				.filter (x -> (! user.getEnrolments ().contains (x)))
+				.peek (e -> this.log.debug ("set Enrolment: {}", e))
+				.forEach (x -> user.addEnrolment (x));
 
 			return user;
 		}
@@ -387,6 +393,10 @@ public abstract class User extends Element
 			this.log.trace ("addEnrolment: enrolment={}", enrolment);
 
 			Enrolment add = this.verifyRelationship (this.enrolmentRetriever, enrolment, "enrolment");
+
+			Preconditions.checkArgument ((! this.enrolments.stream ()
+						.anyMatch (e -> (e.getCourse ().equals (add.getCourse ()) && e != add))),
+					"A User can not have two enrolments for the same course");
 
 			Preconditions.checkArgument ((! User.hasUser (this.model, enrolment)),
 					"The Enrolment is already assigned to another user");
@@ -718,6 +728,11 @@ public abstract class User extends Element
 
 		Preconditions.checkArgument (user.getDomainModel () == enrolment.getDomainModel (),
 				"User and enrolment must be members of the same DomainModel");
+
+		Preconditions.checkArgument ((! user.getEnrolments ()
+						.stream ()
+						.anyMatch (e -> e.getCourse ().equals (enrolment.getCourse ()))),
+					"A User can not have two enrolments for the same course");
 
 		Preconditions.checkArgument ((! User.hasUser (user.getDomainModel (), enrolment)),
 				"Enrolment is already associated with a user");
