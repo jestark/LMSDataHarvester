@@ -114,6 +114,10 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 				this.log.debug ("Creating association in the translation table");
 				QueryRetriever.table.put (supplied, retrieved);
 			}
+			else
+			{
+				this.log.debug ("Supplied and retrieved Elements have the same DomainModel");
+			}
 		}
 		else
 		{
@@ -162,14 +166,17 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 
 		if (this.model.contains (element))
 		{
+			this.log.debug ("Element is already in the DomainModel, skipping query: {}", element);
 			result = Optional.of (element);
 		}
 		else if (QueryRetriever.table.contains (element, this.model))
 		{
+			this.log.debug ("Returning Cached Element from the TranslationTable: {}", element);
 			result = QueryRetriever.table.get (element, this.model);
 		}
 		else
 		{
+			this.log.debug ("Loading element from the DataStore: {}", element);
 			result = this.query.setAllValues (element)
 				.query ()
 				.map (x -> this.store (element, x));
