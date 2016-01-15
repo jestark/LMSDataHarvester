@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -73,6 +73,9 @@ public final class DomainModel implements AutoCloseable
 
 	public static final class Synchronizer
 	{
+		/** The number of elements to process in one batch */
+		private static final int BATCH_SIZE;
+
 		/** The log */
 		private final Logger log;
 
@@ -81,6 +84,15 @@ public final class DomainModel implements AutoCloseable
 
 		/** The <code>Element</code> instances to synchronize */
 		private Map<Element, ?> elements;
+
+		/**
+		 * Static initializer to set the Batch size
+		 */
+
+		static
+		{
+			BATCH_SIZE = 50000;
+		}
 
 		/**
 		 * Create the <code>Synchronizer</code>.
@@ -184,10 +196,6 @@ public final class DomainModel implements AutoCloseable
 		 * Perform the synchronization.  This methods inserts all of the
 		 * <code>Elements</code> that are in the <code>Synchronizer</code> into
 		 * the destination <code>DomainModel</code>.
-		 * <p>
-		 * Note:  If there is not an active transaction, then this method will
-		 * begin and commit a new transaction as required.  A pre-existing
-		 * transaction will be used, but it will not be commited.
 		 *
 		 * @return The destination <code>DomainModel</code>
 		 */
@@ -196,46 +204,33 @@ public final class DomainModel implements AutoCloseable
 		{
 			this.log.trace ("synchronize:");
 
-			final boolean transaction = this.dest.getTransaction ().isActive ();
-
-			List<Element> inputs = this.elements.keySet ()
+			Iterator<Element> iterator = this.elements.keySet ()
 				.stream ()
 				.sorted ()
-				.collect (Collectors.toList ());
+				.iterator ();
 
-			// Kill the Map to save (potentially a lot of) memory
-			this.elements = new IdentityHashMap<> ();
-
-			if (! transaction)
+			while (iterator.hasNext ())
 			{
+				this.log.debug ("Processing batch");
 				this.dest.getTransaction ().begin ();
-			}
 
-			this.log.info ("beginning synchronization");
-
-			for (int i = 0; i < inputs.size (); i ++)
-			{
-				try
+				for (int i = 0; i < Synchronizer.BATCH_SIZE && iterator.hasNext (); i ++)
 				{
-					inputs.get (i)
-						.getBuilder (this.dest)
-						.build ();
+					try
+					{
+						iterator.next ()
+							.getBuilder (this.dest)
+							.build ();
+					}
+					catch (Exception ex)
+					{
+						this.dest.getTransaction ().rollback ();
+
+						throw ex;
+					}
 				}
-				catch (Exception ex)
-				{
-					this.log.debug ("Caught Exception:", ex);
-					this.log.debug ("Processing Element ({}/{}): {}", i, inputs.size (), inputs.get (i));
 
-					this.dest.getTransaction ().rollback ();
-
-					throw ex;
-				}
-			}
-
-			this.log.info ("synchronization complete");
-
-			if (! transaction)
-			{
+				this.log.debug ("Committing batch");
 				this.dest.getTransaction ().commit ();
 			}
 
