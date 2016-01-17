@@ -73,8 +73,11 @@ public final class DomainModel implements AutoCloseable
 
 	public static final class Synchronizer
 	{
-		/** The number of elements to process in one batch */
-		private static final int BATCH_SIZE;
+		/** Size of the evict queue relative to the cache, at which it is processed */
+		private static final double EVICT_FACTOR;
+
+		/** The minimum size of the evict queue before it is process */
+		private static final int EVICT_MIN;
 
 		/** The log */
 		private final Logger log;
@@ -83,7 +86,7 @@ public final class DomainModel implements AutoCloseable
 		private final DomainModel dest;
 
 		/** The <code>Element</code> instances to synchronize */
-		private Map<Element, ?> elements;
+		private Map<Element, Integer> elements;
 
 		/**
 		 * Static initializer to set the Batch size
@@ -91,7 +94,8 @@ public final class DomainModel implements AutoCloseable
 
 		static
 		{
-			BATCH_SIZE = 50000;
+			EVICT_FACTOR = 0.2;
+			EVICT_MIN = 100;
 		}
 
 		/**
@@ -125,6 +129,61 @@ public final class DomainModel implements AutoCloseable
 		}
 
 		/**
+		 * Add the specified <code>Element</code> instance to the
+		 * synchronization <code>Map</code> and initialize its dependency count
+		 * to zero.
+		 *
+		 * @param  element The <code>Element</code>, not null
+		 * @return         The <code>Element</code>
+		 */
+
+		private Element processElement (final Element element)
+		{
+			assert element != null : "element is NULL";
+			assert ! this.elements.containsKey (element) : "element is already in the sync map";
+
+			this.elements.put (element, Integer.valueOf (0));
+
+			return element;
+		}
+
+		/**
+		 * Increment the dependency counter for the specified
+		 * <code>Element</code> instance.
+		 *
+		 * @param  element The <code>Element</code> instance, not null
+		 * @return         The <code>Element</code>
+		 */
+
+		private Element incDependency (final Element element)
+		{
+			assert element != null : "element is NULL";
+			assert this.elements.containsKey (element) : "element is not in the sync map";
+
+			this.elements.put (element, this.elements.get (element) + 1);
+
+			return element;
+		}
+
+		/**
+		 * Decrement the dependency counter for the specified
+		 * <code>Element</code> instance.
+		 *
+		 * @param  element The <code>Element</code> instance, not null
+		 * @return         The <code>Element</code>
+		 */
+
+		private Element decDependency (final Element element)
+		{
+			assert element != null : "element is NULL";
+			assert this.elements.containsKey (element) : "element is not in the sync map";
+
+			this.elements.put (element, this.elements.get (element) - 1);
+
+			return element;
+		}
+
+		/**
 		 * Process the specified queue, adding the elements and their
 		 * associations to the <code>Synchronizer</code>.
 		 *
@@ -141,11 +200,13 @@ public final class DomainModel implements AutoCloseable
 			{
 				Element element = queue.remove ();
 
-				if ((! DomainModel.table.contains (element, dest)) && (! this.elements.containsKey (element)))
-				{
-					this.elements.put (element, null);
-					queue.addAll (element.associations ().collect (Collectors.toList ()));
-				}
+				element.associations ()
+					.filter (e -> (! this.elements.containsKey (e)))
+					.map (e -> this.processElement (e))
+					.forEach (e -> queue.add (e));
+
+				element.dependencies ()
+					.forEach (e -> this.incDependency (e));
 			}
 		}
 
@@ -163,10 +224,13 @@ public final class DomainModel implements AutoCloseable
 
 			Preconditions.checkNotNull (element, "element");
 
-			Deque<Element> queue = new ArrayDeque<> ();
-			queue.add (element);
+			if (! this.elements.containsKey (element))
+			{
+				Deque<Element> queue = new ArrayDeque<> ();
+				queue.add (this.processElement (element));
 
-			this.processQueue (queue);
+				this.processQueue (queue);
+			}
 
 			return this;
 		}
@@ -187,7 +251,14 @@ public final class DomainModel implements AutoCloseable
 
 			Preconditions.checkNotNull (elements, "elements");
 
-			this.processQueue (new ArrayDeque<Element> (elements));
+			final Deque<Element> queue = new ArrayDeque<> ();
+
+			elements.stream ()
+				.filter (e -> (! this.elements.containsKey (e)))
+				.map (e -> this.processElement (e))
+				.forEach (e -> queue.add (e));
+
+			this.processQueue (queue);
 
 			return this;
 		}
@@ -204,6 +275,10 @@ public final class DomainModel implements AutoCloseable
 		{
 			this.log.trace ("synchronize:");
 
+			int cachesize = 0;
+
+			final Deque<Element> evictions = new ArrayDeque<> ();
+
 			Iterator<Element> iterator = this.elements.keySet ()
 				.stream ()
 				.sorted ()
@@ -214,13 +289,32 @@ public final class DomainModel implements AutoCloseable
 				this.log.debug ("Processing batch");
 				this.dest.getTransaction ().begin ();
 
-				for (int i = 0; i < Synchronizer.BATCH_SIZE && iterator.hasNext (); i ++)
+				while (iterator.hasNext ()
+						&& (evictions.size () < (cachesize * Synchronizer.EVICT_FACTOR)
+							|| evictions.size () < Synchronizer.EVICT_MIN))
 				{
 					try
 					{
-						iterator.next ()
-							.getBuilder (this.dest)
+						Element element = iterator.next ();
+
+						this.log.trace ("Processing: {}/id={} dependencies={}", element.getClass (), element.getId (), this.elements.get (element));
+						Element n = element.getBuilder (this.dest)
 							.build ();
+
+						cachesize += 1;
+
+						if (this.elements.get (element) == 0)
+						{
+							this.log.trace ("Evicting element {}/id={} dependencies={}", element.getClass (), element.getId (), this.elements.get (element));
+							evictions.add (n);
+						}
+
+						element.dependencies ()
+							.map (e -> this.decDependency (e))
+							.filter (e -> this.elements.get (e) == 0)
+							.peek (e -> this.log.trace ("Evicting dependency {}/id={} dependencies={}", e.getClass (), e.getId (), this.elements.get (e)))
+							.map (e -> DomainModel.table.get (e, this.dest).get ())
+							.forEach (e -> evictions.add (e));
 					}
 					catch (Exception ex)
 					{
@@ -232,6 +326,17 @@ public final class DomainModel implements AutoCloseable
 
 				this.log.debug ("Committing batch");
 				this.dest.getTransaction ().commit ();
+
+				this.log.debug ("evicting {}/{} elements", evictions.size (), cachesize);
+				cachesize -= evictions.size ();
+
+				while (! evictions.isEmpty ())
+				{
+					Element element = evictions.remove ();
+
+					DomainModel.table.remove (element);
+					this.dest.datastore.evict (element);
+				}
 			}
 
 			return this.dest;
@@ -697,43 +802,9 @@ public final class DomainModel implements AutoCloseable
 	{
 		this.log.trace ("contains: element={}", element);
 
-		if (element == null)
-		{
-			this.log.error ("Testing if the DataStore Contains a NULL Element");
-			throw new NullPointerException ();
-		}
-
-		return this.datastore.contains (element);
-	}
-
-	/**
-	 * Insert the specified <code>Element</code> instance into the
-	 * <code>DataStore</code>.  This method will insert a copy of the specified
-	 * <code>Element</code> and all of the associated <code>Element</code>
-	 * instances into the <code>DomainModel</code> and return a
-	 * reference to the <code>Element</code> instance which was inserted.
-	 *
-	 * @param  <T>     The type of <code>Element</code> being inserted
-	 * @param  element The <code>Element</code> to insert, not null
-	 * @return         A reference to the <code>Element</code> in the
-	 *                 <code>DataStore</code>
-	 *
-	 * @throws IllegalStateException If the <code>Element</code> is not
-	 *                               successfully inserted
-	 */
-
-	public <T extends Element> T insert (final T element)
-	{
-		this.log.trace ("insert: element={}", element);
-
 		Preconditions.checkNotNull (element, "element");
 
-		Synchronizer.create (this)
-			.add (element)
-			.synchronize ();
-
-		return DomainModel.table.get (element, this)
-			.orElseThrow (() -> new IllegalStateException ("Element was not successfully stored"));
+		return (this == element.getDomainModel () && this.datastore.contains (element));
 	}
 
 	/**
@@ -755,7 +826,7 @@ public final class DomainModel implements AutoCloseable
 		this.log.trace ("remove: element={}", element);
 
 		Preconditions.checkNotNull (element, "element");
-		Preconditions.checkArgument (this.datastore.contains (element), "element is no in the datastore");
+		Preconditions.checkArgument (this.datastore.contains (element), "element is not in the datastore");
 		Preconditions.checkState (this.datastore.getTransaction (this).isActive (), "transaction required");
 
 		this.log.debug ("Disconnecting relationships");
@@ -767,5 +838,6 @@ public final class DomainModel implements AutoCloseable
 
 		this.log.debug ("removing Element from the DataStore");
 		this.datastore.remove (element);
+		DomainModel.table.remove (element);
 	}
 }
