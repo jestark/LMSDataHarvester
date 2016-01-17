@@ -141,6 +141,21 @@ public interface DataStore
 	public abstract <T extends Element> boolean contains (T element);
 
 	/**
+	 * Clear any caches present in the <code>DataStore</code>.
+	 */
+
+	public abstract void clear ();
+
+	/**
+	 * Remove the specified <code>Element</code> instance from any caches in the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code>, not null
+	 */
+
+	public abstract void evict (Element element);
+
+	/**
 	 * Insert the specified <code>Element</code> instance into the
 	 * <code>DataStore</code>.
 	 *

@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 James E. Stark
+/* Copyright (C) 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -279,6 +279,23 @@ public final class DummyDataStore implements DataStore
 
 		return true;
 	}
+
+	/**
+	 * Clear any caches present in the <code>DataStore</code>.
+	 */
+
+	@Override
+	public void clear () {}
+
+	/**
+	 * Remove the specified <code>Element</code> instance from any caches in the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code>, not null
+	 */
+
+	@Override
+	public void evict (final Element element) {}
 
 	/**
 	 * Insert the specified <code>Element</code> instance into the

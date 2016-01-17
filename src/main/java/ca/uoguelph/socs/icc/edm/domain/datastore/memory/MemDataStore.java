@@ -321,6 +321,23 @@ public final class MemDataStore implements DataStore
 	}
 
 	/**
+	 * Clear any caches present in the <code>DataStore</code>.
+	 */
+
+	@Override
+	public void clear () {}
+
+	/**
+	 * Remove the specified <code>Element</code> instance from any caches in the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code>, not null
+	 */
+
+	@Override
+	public void evict (final Element element) {}
+
+	/**
 	 * Get a <code>List</code> containing all of the ID numbers in the
 	 * <code>DataStore</code> for instances of the specified
 	 * <code>Element</code> class.

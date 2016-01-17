@@ -306,7 +306,7 @@ public final class JPADataStore implements DataStore
 	 */
 
 	@Override
-	public  <T extends Element> boolean contains (final T element)
+	public <T extends Element> boolean contains (final T element)
 	{
 		this.log.trace ("contains: element={}", element);
 
@@ -314,6 +314,29 @@ public final class JPADataStore implements DataStore
 		assert this.isOpen () : "datastore is closed";
 
 		return this.em.contains (element);
+	}
+
+	/**
+	 * Clear any caches present in the <code>DataStore</code>.
+	 */
+
+	@Override
+	public void clear ()
+	{
+		this.em.clear ();
+	}
+
+	/**
+	 * Remove the specified <code>Element</code> instance from any caches in the
+	 * <code>DataStore</code>.
+	 *
+	 * @param  element The <code>Element</code>, not null
+	 */
+
+	@Override
+	public void evict (final Element element)
+	{
+		this.em.detach (element);
 	}
 
 	/**
