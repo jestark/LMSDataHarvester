@@ -73,9 +73,6 @@ public final class MetaData<T extends Element>
 		/** The <code>Set</code> of <code>Property</code> instances */
 		private final List<Property<T, ?>> properties;
 
-		/** The dependencies for the <code>Element</code> */
-		private final Set<Class<? extends Element>> dependencies;
-
 		/** The <code>Relationship</code> instances for the interface */
 		private final Map<Class<? extends Element>, Relationship<T, ? extends Element>> relationships;
 
@@ -119,7 +116,6 @@ public final class MetaData<T extends Element>
 			this.type = type;
 			this.parent = parent;
 
-			this.dependencies = new HashSet<> ();
 			this.properties = new ArrayList<> ();
 			this.relationships = new HashMap<> ();
 			this.selectors = new ArrayList<> ();
@@ -214,9 +210,6 @@ public final class MetaData<T extends Element>
 			this.relationships.put (metadata.element, PropertyRelationship.of (local, remote));
 			metadata.relationships.put (this.type, PropertyRelationship.of (remote, local));
 
-			this.dependencies.add (metadata.element);
-			this.dependencies.addAll (metadata.dependencies);
-
 			return this.addDependency (metadata);
 		}
 
@@ -261,9 +254,6 @@ public final class MetaData<T extends Element>
 
 			this.relationships.put (metadata.element, PropertyRelationship.of (local, remote));
 			metadata.relationships.put (this.type, SelectorRelationship.of (local, remote));
-
-			this.dependencies.add (metadata.element);
-			this.dependencies.addAll (metadata.dependencies);
 
 			return this.addDependency (metadata);
 		}
@@ -313,9 +303,6 @@ public final class MetaData<T extends Element>
 	/** The <code>Element</code> interface class */
 	private final Class<T> element;
 
-	/** The dependencies for the <code>Element</code> */
-	private final List<Class<? extends Element>> dependencies;
-
 	/** The <code>Property</code> instances associated with the interface */
 	private final List<Property<? super T, ?>> properties;
 
@@ -325,6 +312,7 @@ public final class MetaData<T extends Element>
 	/** The <code>Selector</code> instances for the interface */
 	private final List<Selector<? super T>> selectors;
 
+	/** The level of the <code>Element</code> in the dependency graph */
 	private final Integer level;
 
 	/**
@@ -380,14 +368,11 @@ public final class MetaData<T extends Element>
 		this.element = builder.type;
 		this.parent = builder.parent;
 
-		this.dependencies = new ArrayList<> (builder.dependencies);
+		this.level = builder.level;
+
 		this.properties = new ArrayList<> (builder.properties);
 		this.relationships = new HashMap<> (builder.relationships);
 		this.selectors = new ArrayList<> (builder.selectors);
-
-		this.level = builder.level;
-
-		this.log.info ("Dependency Level: {}/{}", this.element.getSimpleName (), this.level);
 	}
 
 	/**
@@ -479,22 +464,6 @@ public final class MetaData<T extends Element>
 	public Integer getDependencyLevel ()
 	{
 		return this.level;
-	}
-
-	/**
-	 * Get a <code>Stream</code> containing all of the dependencies for the 
-	 * <code>Element</code>.
-	 *
-	 * @return A <code>Stream</code> of <code>Class</code> instances
-	 */
-
-	public Stream<Class<? extends Element>> dependencies ()
-	{
-		Stream<Class<? extends Element>> stream = this.dependencies.stream ();
-
-		return (this.parent != null)
-			? Stream.concat (parent.dependencies (), stream)
-			: stream;
 	}
 
 	/**

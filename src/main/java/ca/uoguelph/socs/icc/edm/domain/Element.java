@@ -648,19 +648,6 @@ public abstract class Element implements Comparable<Element>, Serializable
 	protected abstract boolean disconnect ();
 
 	/**
-	 * Determine if this <code>Element</code> depends on the specified
-	 * <code>Element</code> class.  This method is used by
-	 * <code>compareTo</code> to order different <code>Element</code> classes
-	 * based on their dependencies.
-	 *
-	 * @param  element The <code>Element</code> implementation class, not null
-	 * @return         <code>true</code> if this<code>Element</code> depends on
-	 *                 the specified class, <code>false</code> otherwise
-	 */
-
-	protected abstract boolean isDependency (Class <? extends Element> element);
-
-	/**
 	 * Compare two <code>Element</code> instances.
 	 * <p>
 	 * <code>Element</code> instances with the same <code>Element</code>
@@ -772,6 +759,15 @@ public abstract class Element implements Comparable<Element>, Serializable
 	 */
 
 	public abstract Stream<Element> associations ();
+
+	/**
+	 * Get a <code>Stream</code> containing all of the dependencies for this
+	 * <code>Element</code> instance.
+	 *
+	 * @return  The <code>Stream</code>
+	 */
+
+	public abstract Stream<Element> dependencies ();
 
 	/**
 	 * Get an <code>Builder</code> instance for the specified

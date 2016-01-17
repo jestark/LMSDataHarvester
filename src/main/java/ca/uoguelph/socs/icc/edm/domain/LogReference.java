@@ -568,24 +568,6 @@ public abstract class LogReference extends Element
 	}
 
 	/**
-	 * Determine if this <code>Element</code> depends on the specified
-	 * <code>Element</code> class.  This method is used by
-	 * <code>compareTo</code> to order different <code>Element</code> classes
-	 * based on their dependencies.
-	 *
-	 * @param  element The <code>Element</code> implementation class, not null
-	 * @return         <code>true</code> if this<code>Element</code> depends on
-	 *                 the specified class, <code>false</code> otherwise
-	 */
-
-	@Override
-	protected boolean isDependency (final Class <? extends Element> element)
-	{
-		return LogReference.METADATA.dependencies ()
-			.anyMatch (d -> d.isAssignableFrom (element));
-	}
-
-	/**
 	 * Compare two <code>LogReference</code> instances, based upon the
 	 * associated <code>LogEntry</code> instances.
 	 * <p>
@@ -666,6 +648,23 @@ public abstract class LogReference extends Element
 			.filter (p -> p.hasFlags (Property.Flags.RELATIONSHIP))
 			.flatMap (p -> p.stream (this))
 			.map (e -> ((Element) e));
+	}
+
+	/**
+	 * Get a <code>Stream</code> containing all of the dependencies for this
+	 * <code>Element</code> instance.
+	 *
+	 * @return  The <code>Stream</code>
+	 */
+
+	@Override
+	public Stream<Element> dependencies ()
+	{
+		return LogReference.METADATA.properties ()
+			.filter (p -> p.hasFlags (Property.Flags.RELATIONSHIP))
+			.filter (p -> p.hasFlags (Property.Flags.REQUIRED) || p.hasFlags (Property.Flags.MUTABLE))
+			.flatMap (p -> p.stream (this))
+			.map (e -> (Element) e);
 	}
 
 	/**
