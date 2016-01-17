@@ -118,10 +118,12 @@ public final class TableRetriever<T extends Element> implements Retriever<T>
 
 		if (this.model.contains (element))
 		{
+			this.log.debug ("Element is already in the DomainModel, skipping query: {}", element);
 			result = Optional.of (element);
 		}
 		else if (this.model != element.getDomainModel ())
 		{
+			this.log.debug ("Returning Cached Element from the TranslationTable: {}", element);
 			result = TableRetriever.table.get (element, this.model);
 		}
 
