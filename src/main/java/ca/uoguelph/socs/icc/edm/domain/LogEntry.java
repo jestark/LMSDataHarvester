@@ -80,8 +80,8 @@ public abstract class LogEntry extends Element
 		/** Helper to substitute <code>Action</code> instances */
 		private final Retriever<Action> actionRetriever;
 
-		/** Helper to substitute <code>Action</code> instances */
-		private final Retriever<Activity> activityRetriever;
+		/** Helper to substitute <code>ActivityReference</code> instances */
+		private final Retriever<ActivityReference> referenceRetriever;
 
 		/** Helper to substitute <code>Enrolment</code> instances */
 		private final Retriever<Enrolment> enrolmentRetriever;
@@ -95,8 +95,8 @@ public abstract class LogEntry extends Element
 		/** The associated <code>Action</code> */
 		private @Nullable Action action;
 
-		/** The associated <code>Activity</code> */
-		private @Nullable Activity activity;
+		/** The associated <code>ActivityReference</code> */
+		private @Nullable ActivityReference activity;
 
 		/** The associated <code>Enrolment</code> */
 		private @Nullable Enrolment enrolment;
@@ -120,8 +120,9 @@ public abstract class LogEntry extends Element
 		 *                            <code>LogEntry</code> instances, not null
 		 * @param  actionRetriever    <code>Retriever</code> for
 		 *                            <code>Action</code> instances, not null
-		 * @param  activityRetriever  <code>Retriever</code> for
-		 *                            <code>Activity</code> instances, not null
+		 * @param  referenceRetriever <code>Retriever</code> for
+		 *                            <code>ActivityReference</code> instances,
+		 *                            not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
 		 *                            <code>Enrolment</code> instances, not null
 		 * @param  networkRetriever   <code>Retriever</code> for
@@ -134,7 +135,7 @@ public abstract class LogEntry extends Element
 				final IdGenerator idGenerator,
 				final Retriever<LogEntry> logRetriever,
 				final Retriever<Action> actionRetriever,
-				final Retriever<Activity> activityRetriever,
+				final Retriever<ActivityReference> referenceRetriever,
 				final Retriever<Enrolment> enrolmentRetriever,
 				final Retriever<Network> networkRetriever)
 		{
@@ -142,13 +143,13 @@ public abstract class LogEntry extends Element
 
 			assert idGenerator != null : "idGenerator is NULL";
 			assert actionRetriever != null : "actionRetriever is NULL";
-			assert activityRetriever != null : "activityRetriever is NULL";
+			assert referenceRetriever != null : "referenceRetriever is NULL";
 			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
 			assert networkRetriever != null : "networkRetriever is NULL";
 
 			this.idGenerator = idGenerator;
 			this.actionRetriever = actionRetriever;
-			this.activityRetriever = activityRetriever;
+			this.referenceRetriever = referenceRetriever;
 			this.enrolmentRetriever = enrolmentRetriever;
 			this.networkRetriever = networkRetriever;
 
@@ -263,7 +264,7 @@ public abstract class LogEntry extends Element
 
 			this.id = entry.getId ();
 			this.setAction (entry.getAction ());
-			this.setActivity (entry.getActivity ());
+			this.setActivityReference (entry.getActivityReference ());
 			this.setEnrolment (entry.getEnrolment ());
 			this.setNetwork (entry.getNetwork ());
 			this.setTime (entry.getTime ());
@@ -287,7 +288,26 @@ public abstract class LogEntry extends Element
 		@CheckReturnValue
 		protected ActivityReference getActivityReference ()
 		{
-			return this.activity.getReference ();
+			return this.activity;
+		}
+
+		/**
+		 * Set the <code>ActivityReference</code> for the <code>Activity</code>
+		 * upon which the logged <code>Action</code> was performed.
+		 *
+		 * @param  reference The <code>ActivityReference</code>, not null
+		 * @return           This <code>Builder</code>
+		 */
+
+		private final Builder setActivityReference (final ActivityReference reference)
+		{
+			this.log.trace ("setActivityReference: reference={}", reference);
+
+			assert reference != null;
+
+			this.activity = this.verifyRelationship (this.referenceRetriever, reference, "activity");
+
+			return this;
 		}
 
 		/**
@@ -346,7 +366,7 @@ public abstract class LogEntry extends Element
 		@CheckReturnValue
 		public final Activity getActivity ()
 		{
-			return this.activity;
+			return this.activity.getActivity ();
 		}
 
 		/**
@@ -364,9 +384,7 @@ public abstract class LogEntry extends Element
 		{
 			this.log.trace ("setActivity: activity={}", activity);
 
-			this.activity = this.verifyRelationship (this.activityRetriever, activity, "activity");
-
-			return this;
+			return this.setActivityReference (activity.getReference ());
 		}
 
 		/**
@@ -546,8 +564,9 @@ public abstract class LogEntry extends Element
 	 * @version 1.0
 	 */
 
-	@Module (includes = {LogEntryModule.class, Action.ActionModule.class, Activity.ActivityModule.class,
-		Enrolment.EnrolmentModule.class, Network.NetworkModule.class})
+	@Module (includes = {LogEntryModule.class, Action.ActionModule.class,
+		ActivityReference.ActivityReferenceModule.class, Enrolment.EnrolmentModule.class,
+		Network.NetworkModule.class})
 	public static final class LogEntryBuilderModule
 	{
 		/** The <code>Definition</code> */
@@ -573,8 +592,9 @@ public abstract class LogEntry extends Element
 		 * @param  retriever          The <code>Retriever</code>, not null
 		 * @param  actionRetriever    <code>Retriever</code> for
 		 *                            <code>Action</code> instances, not null
-		 * @param  activityRetriever  <code>Retriever</code> for
-		 *                            <code>Activity</code> instances, not null
+		 * @param  referenceRetriever <code>Retriever</code> for
+		 *                            <code>ActivityReference</code> instances,
+		 *                            not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
 		 *                            <code>Enrolment</code> instances, not null
 		 * @param  networkRetriever   <code>Retriever</code> for
@@ -587,12 +607,12 @@ public abstract class LogEntry extends Element
 				final IdGenerator generator,
 				final @Named ("TableRetriever") Retriever<LogEntry> retriever,
 				final @Named ("QueryRetriever") Retriever<Action> actionRetriever,
-				final @Named ("TableRetriever") Retriever<Activity> activityRetriever,
+				final @Named ("TableRetriever") Retriever<ActivityReference> referenceRetriever,
 				final @Named ("TableRetriever") Retriever<Enrolment> enrolmentRetriever,
 				final @Named ("QueryRetriever") Retriever<Network> networkRetriever)
 		{
 			return new Builder (model, this.definition, generator, retriever, actionRetriever,
-					activityRetriever, enrolmentRetriever, networkRetriever);
+					referenceRetriever, enrolmentRetriever, networkRetriever);
 		}
 	}
 
@@ -932,7 +952,7 @@ public abstract class LogEntry extends Element
 	{
 		return (obj == this) ? true : (obj instanceof LogEntry)
 			&& Objects.equals (this.getAction (), ((LogEntry) obj).getAction ())
-			&& Objects.equals (this.getActivity (), ((LogEntry) obj).getActivity ())
+			&& Objects.equals (this.getActivityReference (), ((LogEntry) obj).getActivityReference ())
 			&& Objects.equals (this.getEnrolment (), ((LogEntry) obj).getEnrolment ())
 			&& Objects.equals (this.getNetwork (), ((LogEntry) obj).getNetwork ())
 			&& Objects.equals (this.getTime (), ((LogEntry) obj).getTime ());
@@ -956,7 +976,7 @@ public abstract class LogEntry extends Element
 	{
 		return (element == this) ? true : (element instanceof LogEntry)
 			&& this.getAction ().equalsAll (((LogEntry) element).getAction ())
-			&& this.getActivity ().equalsAll (((LogEntry) element).getActivity ())
+			&& this.getActivityReference ().equalsAll (((LogEntry) element).getActivityReference ())
 			&& this.getEnrolment ().equalsAll (((LogEntry) element).getEnrolment ())
 			&& this.getNetwork ().equalsAll (((LogEntry) element).getNetwork ())
 			&& Objects.equals (this.getTime (), ((LogEntry) element).getTime ());
@@ -980,7 +1000,7 @@ public abstract class LogEntry extends Element
 	@Override
 	public int hashCode ()
 	{
-		return Objects.hash (this.getAction (), this.getActivity (), this.getEnrolment (), this.getNetwork (), this.getTime ());
+		return Objects.hash (this.getAction (), this.getActivityReference (), this.getEnrolment (), this.getNetwork (), this.getTime ());
 	}
 
 	/**
@@ -1058,7 +1078,7 @@ public abstract class LogEntry extends Element
 	 * @return A reference to the associated <code>Activity</code>
 	 */
 
-	public abstract Activity getActivity();
+	public abstract Activity getActivity ();
 
 	/**
 	 * Get the <code>ActivityReference</code> for the <code>Activity</code>
