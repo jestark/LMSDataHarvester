@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 James E. Stark
+/* Copyright (C) 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,9 +49,6 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public final class QueryRetriever<T extends Element> implements Retriever<T>
 {
-	/** The <code>TranslationTable</code> */
-	private static final TranslationTable table;
-
 	/** The Log */
 	private final Logger log;
 
@@ -60,15 +57,6 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 
 	/** The <code>Query</code> used to fetch <code>Element</code> instances */
 	private final Query<T> query;
-
-	/**
-	 * Static initializer to set the reference to the Translation table.
-	 */
-
-	static
-	{
-		table = TranslationTable.getInstance ();
-	}
 
 	/**
 	 * Create the <code>QueryRetriever</code>.
@@ -112,7 +100,7 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 			if ((supplied.getDomainModel () != retrieved.getDomainModel ()) && (supplied.getDomainModel ().contains (supplied)))
 			{
 				this.log.debug ("Creating association in the translation table");
-				QueryRetriever.table.put (supplied, retrieved);
+				TranslationTable.getInstance ().put (supplied, retrieved);
 			}
 			else
 			{
@@ -169,10 +157,10 @@ public final class QueryRetriever<T extends Element> implements Retriever<T>
 			this.log.debug ("Element is already in the DomainModel, skipping query: {}", element);
 			result = Optional.of (element);
 		}
-		else if (QueryRetriever.table.contains (element, this.model))
+		else if (TranslationTable.getInstance ().contains (element, this.model))
 		{
 			this.log.debug ("Returning Cached Element from the TranslationTable: {}", element);
-			result = QueryRetriever.table.get (element, this.model);
+			result = TranslationTable.getInstance ().get (element, this.model);
 		}
 		else
 		{

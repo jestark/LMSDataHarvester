@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 James E. Stark
+/* Copyright (C) 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,23 +45,11 @@ import ca.uoguelph.socs.icc.edm.domain.Element;
 
 public final class TableRetriever<T extends Element> implements Retriever<T>
 {
-	/** The <code>TranslationTable</code> */
-	private static final TranslationTable table;
-
 	/** The Log */
 	private final Logger log;
 
 	/** The <code>DomainModel</code> */
 	private final DomainModel model;
-
-	/**
-	 * Static initializer to set the reference to the Translation table.
-	 */
-
-	static
-	{
-		table = TranslationTable.getInstance ();
-	}
 
 	/**
 	 * Create the <code>TableRetriever</code>.
@@ -73,7 +61,6 @@ public final class TableRetriever<T extends Element> implements Retriever<T>
 	TableRetriever (final DomainModel model)
 	{
 		assert model != null : "model is NULL";
-		assert table != null : "table is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
@@ -124,7 +111,7 @@ public final class TableRetriever<T extends Element> implements Retriever<T>
 		else if (this.model != element.getDomainModel ())
 		{
 			this.log.debug ("Returning Cached Element from the TranslationTable: {}", element);
-			result = TableRetriever.table.get (element, this.model);
+			result = TranslationTable.getInstance ().get (element, this.model);
 		}
 
 		return result;
