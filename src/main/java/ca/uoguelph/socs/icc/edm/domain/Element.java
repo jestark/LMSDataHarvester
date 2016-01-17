@@ -485,6 +485,19 @@ public abstract class Element implements Comparable<Element>, Serializable
 		}
 
 		/**
+		 * Get the position of the <code>Element</code> class in the
+		 * level-ordered dependency graph.
+		 *
+		 * @return The level-order of the <code>Element</code> class in the
+		 *         dependency graph
+		 */
+
+		private Integer getDependencyLevel ()
+		{
+			return this.metadata.getDependencyLevel ();
+		}
+
+		/**
 		 * Create a new instance of the <code>Component</code> on the
 		 * specified <code>DomainModel</code>.
 		 *
@@ -493,19 +506,6 @@ public abstract class Element implements Comparable<Element>, Serializable
 		 */
 
 		protected abstract ElementComponent<T> getComponent (final DomainModel model);
-
-		/**
-		 * Get a <code>Stream</code> of the <code>Property</code> instances for
-		 * the <code>Element</code> class represented by this
-		 * <code>Definition</code>.
-		 *
-		 * @return A <code>Stream</code> of <code>Property</code> instances
-		 */
-
-		public final Stream<Property<? super T, ?>> properties ()
-		{
-			return this.metadata.properties ();
-		}
 
 		/**
 		 * Get a <code>Stream</code> of the <code>Selector</code> instances for
@@ -701,18 +701,15 @@ public abstract class Element implements Comparable<Element>, Serializable
 			{
 				result = this.getId ().compareTo (element.getId ());
 			}
-			else if (this.isDependency (element.getClass ()))
-			{
-				result = 1;
-			}
-			else if (element.isDependency (this.getClass ()))
-			{
-				result = -1;
-			}
 			else
 			{
-				result = ldef.getElementType ().getName ()
-					.compareTo (rdef.getElementType ().getName ());
+				result = ldef.getDependencyLevel ().compareTo (rdef.getDependencyLevel ());
+
+				if (result == 0)
+				{
+					result = ldef.getElementType ().getName ()
+						.compareTo (rdef.getElementType ().getName ());
+				}
 			}
 		}
 

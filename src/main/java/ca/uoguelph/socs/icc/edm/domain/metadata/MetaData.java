@@ -82,6 +82,9 @@ public final class MetaData<T extends Element>
 		/** The <code>Set</code> of <code>Selector</code> instances */
 		private final List<Selector<T>> selectors;
 
+		/** The level of the <code>Element</code> class in the dependency graph */
+		private Integer level;
+
 		/**
 		 * Determine if the specified <code>Property</code> represents a
 		 * dependency for the associated <code>Element</code> instance.
@@ -120,6 +123,35 @@ public final class MetaData<T extends Element>
 			this.properties = new ArrayList<> ();
 			this.relationships = new HashMap<> ();
 			this.selectors = new ArrayList<> ();
+
+			this.level = (this.parent != null) ? parent.level : Integer.valueOf (0);
+		}
+
+		/**
+		 * Declare a dependency on another <code>Element</code> class.  This
+		 * is used to add the class associated with the specified
+		 * <code>MetaData</code> instance to the dependency graph for the
+		 * <code>Element</code> class which is associated with the
+		 * <code>MetaData</code> instances which is being built by this
+		 * <code>Builder</code>.
+		 * <p>
+		 * Note: Dependencies are automatically added for relationships.  This
+		 * method is is only needed in the rare case where a dependency exists
+		 * without a relationship.
+		 *
+		 * @param  metadata The <code>MetaData</code>, not null
+		 * @return          This <code>Builder</code>
+		 */
+
+		public <V extends Element> Builder<T> addDependency (final MetaData<V> metadata)
+		{
+			this.log.trace ("addDependency: metadata={}", metadata);
+
+			assert metadata != null : "metadata is NULL";
+
+			this.level = Math.max (this.level, (metadata.level + 1));
+
+			return this;
 		}
 
 		/**
@@ -143,10 +175,11 @@ public final class MetaData<T extends Element>
 		}
 
 		/**
-		 * Add a bi-directional <code>Relationship</code> instance for the specified
-		 * <code>Property</code> instances.  This method creates a relationship
-		 * between the local <code>MetaData</code> instance (which is being built by
-		 * this builder) and the specified remote <code>MetaData</code> instance.
+		 * Add a bi-directional <code>Relationship</code> instance for the
+		 * specified <code>Property</code> instances.  This method creates a
+		 * relationship between the local <code>MetaData</code> instance (which
+		 * is being built by this builder) and the specified remote
+		 * <code>MetaData</code> instance.
 		 * <p>
 		 * This method will add the local <code>Property</code> to the
 		 * <code>MetaData</code> instance which being built.
@@ -184,7 +217,7 @@ public final class MetaData<T extends Element>
 			this.dependencies.add (metadata.element);
 			this.dependencies.addAll (metadata.dependencies);
 
-			return this;
+			return this.addDependency (metadata);
 		}
 
 		/**
@@ -232,7 +265,7 @@ public final class MetaData<T extends Element>
 			this.dependencies.add (metadata.element);
 			this.dependencies.addAll (metadata.dependencies);
 
-			return this;
+			return this.addDependency (metadata);
 		}
 
 		/**
@@ -292,6 +325,8 @@ public final class MetaData<T extends Element>
 	/** The <code>Selector</code> instances for the interface */
 	private final List<Selector<? super T>> selectors;
 
+	private final Integer level;
+
 	/**
 	 * Get the <code>Builder</code> for the specified <code>Element</code>
 	 * interface class.
@@ -349,6 +384,10 @@ public final class MetaData<T extends Element>
 		this.properties = new ArrayList<> (builder.properties);
 		this.relationships = new HashMap<> (builder.relationships);
 		this.selectors = new ArrayList<> (builder.selectors);
+
+		this.level = builder.level;
+
+		this.log.info ("Dependency Level: {}/{}", this.element.getSimpleName (), this.level);
 	}
 
 	/**
@@ -426,6 +465,20 @@ public final class MetaData<T extends Element>
 		assert this.relationships.containsKey (element) : "No relationship registered for element";
 
 		return this.relationships.get (element);
+	}
+
+	/**
+	 * Get level of the class represented by this <code>MetaData</code> instance
+	 * in the dependency graph.  The value returned by this method represents
+	 * the position of the associated <code>Element</code> class in a
+	 * level-ordered dependency graph.
+	 *
+	 * @return The level of the <code>Element</code> in the dependency graph
+	 */
+
+	public Integer getDependencyLevel ()
+	{
+		return this.level;
 	}
 
 	/**

@@ -74,6 +74,7 @@ public abstract class ParentActivity extends Element
 				Property.Flags.RECOMMENDED);
 
 		METADATA = MetaData.builder (ParentActivity.class)
+			.addDependency (ActivityReference.METADATA)
 			.addProperty (SUBACTIVITIES)
 			.build ();
 	}
