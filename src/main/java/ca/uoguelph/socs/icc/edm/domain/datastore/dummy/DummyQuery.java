@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore.dummy;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -91,9 +92,10 @@ final class DummyQuery<T extends Element> implements Query<T>
 		this.impl = impl;
 		this.model = model;
 
-		this.values = selector.getProperties ()
-			.stream ()
-			.collect (Collectors.toMap (Function.identity (), null));
+		this.values = new HashMap<> ();
+
+		selector.getProperties ()
+			.forEach (x -> this.values.put (x, null));
 	}
 
 	/**
