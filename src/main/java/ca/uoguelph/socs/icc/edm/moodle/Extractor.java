@@ -131,14 +131,16 @@ public final class Extractor implements AutoCloseable
 		{
 			this.log = LoggerFactory.getLogger (this.getClass ());
 
+			assert aConverter != null : "aConverter is NULL";
+			assert sConverter != null : "sConverter is NULL";
 			assert dest != null : "dest is NULL";
+
+			this.aConverter = aConverter;
+			this.sConverter = sConverter;
 			this.dest = dest;
 
 			this.course = Extractor.this.course.getBuilder (this.dest)
 				.build ();
-
-			this.aConverter = new ActivityConverter (this.dest, Extractor.this.source);
-			this.sConverter = new SubActivityConverter (this.dest, Extractor.this.source, Extractor.this.subActivities);
 		}
 
 		/**
@@ -382,9 +384,6 @@ public final class Extractor implements AutoCloseable
 	/** The source <code>DomainModel</code> */
 	private final DomainModel source;
 
-	/** <code>Activity</code> to <code>SubActivity</code> mapping */
-	private final Map<Class<? extends Activity>, List<Matcher>> subActivities;
-
 	/** username to <code>Registration</code> mapping */
 	private final Map<String, Registration> registrations;
 
@@ -440,7 +439,6 @@ public final class Extractor implements AutoCloseable
 		this.source = source;
 
 		this.registrations = new HashMap<> ();
-		this.subActivities = new HashMap<> ();
 
 		this.registrations.put (Extractor.NULL_USER_USERNAME,
 			Registration.create (Extractor.UNKNOWN_ROLE_NAME,
@@ -478,7 +476,6 @@ public final class Extractor implements AutoCloseable
 
 		this.course = null;
 		this.registrations.clear ();
-		this.subActivities.clear ();
 
 		return this;
 	}
@@ -497,7 +494,6 @@ public final class Extractor implements AutoCloseable
 
 		this.course = null;
 		this.registrations.clear ();
-		this.subActivities.clear ();
 		this.source.close ();
 	}
 
@@ -668,52 +664,6 @@ public final class Extractor implements AutoCloseable
 	}
 
 	/**
-	 * Get the <code>List</code> of <code>Matcher</code> instances which are
-	 * associated with the specified <code>Activity</code>.  If there are no
-	 * <code>Matcher</code> instances associated with the specified
-	 * <code>Activity</code> then the <code>List</code> will be empty.
-	 *
-	 * @param  activity The <code>Activity</code>, not null
-	 * @return          The <code>List</code> of <code>Matcher</code>
-	 *                  instances
-	 */
-
-	public List<Matcher> getMatchers (final Class<? extends Activity> activity)
-	{
-		return (this.subActivities.containsKey (activity))
-			? Collections.unmodifiableList (this.subActivities.get (activity))
-			: Collections.unmodifiableList (new ArrayList<> ());
-	}
-
-	/**
-	 * Add the specified <code>Matcher</code> to its associated
-	 * <code>Activity</code>.  Note that this method does not check for
-	 * duplicates.  Multiple <code>Matcher</code> instances matching a
-	 * given <code>LogEntry</code> will lead to inconsistent results.
-	 *
-	 * @param  matcher The <code>Matcher</code>, not null
-	 * @return         This <code>Builder</code>
-	 */
-
-	public Extractor addMatcher (final Matcher matcher)
-	{
-		this.log.trace ("addMatcher: matcher={}", matcher);
-
-		Preconditions.checkNotNull (matcher, "matcher");
-
-		if (! this.subActivities.containsKey (matcher.getActivityClass ()))
-		{
-			this.log.trace ("creating entry for activity");
-			this.subActivities.put (matcher.getActivityClass (), new ArrayList<> ());
-		}
-
-		this.subActivities.get (matcher.getActivityClass ())
-			.add (matcher);
-
-		return this;
-	}
-
-	/**
 	 * Extract the data for a <code>Course</code> from the Moodle
 	 * <code>DomainModel</code> into the specified <code>DomainModel</code>.
 	 *
@@ -735,7 +685,7 @@ public final class Extractor implements AutoCloseable
 
 		final Processor processor = new Processor (
 				new ActivityConverter (dest, this.source),
-				new SubActivityConverter (dest, this.source, this.subActivities),
+				new SubActivityConverter (dest, this.source),
 				dest);
 
 		this.source.getQuery (LogEntry.SELECTOR_COURSE)

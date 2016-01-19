@@ -16,16 +16,17 @@
 
 package ca.uoguelph.socs.icc.edm.moodle;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableMap;
 
 import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
@@ -102,11 +103,11 @@ public final class SubActivityConverter
 	/** The name of the given to missing <code>SubActivity</code> instances */
 	private static final String MISSING_SUBACTIVITY_NAME = "-=- MISSING SUBACTIVITY -=-";
 
+	/** <code>Activity</code> to <code>SubActivity</code> mapping */
+	private static final Map<Class<? extends Activity>, List<Matcher>> SUBACTIVITIES;
+
 	/** The log */
 	private final Logger log;
-
-	/** <code>Activity</code> to <code>SubActivity</code> mapping */
-	private final Map<Class<? extends Activity>, List<Matcher>> subActivities;
 
 	/** Cache of <code>SubActivity</code> instances */
 	private final Map<Key, SubActivity> subActivityCache;
@@ -116,6 +117,22 @@ public final class SubActivityConverter
 
 	/** The destination <code>DomainModel</code> */
 	private final DomainModel dest;
+
+	/**
+	 * Static initializer to load the configuration.
+	 */
+
+	static
+	{
+		SUBACTIVITIES = new MatcherLoader ()
+			.load ()
+			.stream ()
+			.collect (Collectors.collectingAndThen (
+						Collectors.groupingBy (Matcher::getActivityClass,
+							Collectors.collectingAndThen (Collectors.toList (),
+								Collections::unmodifiableList)),
+						Collections::unmodifiableMap));
+	}
 
 	/**
 	 * Create the <code>SubActivityConverter</code>.
@@ -128,18 +145,15 @@ public final class SubActivityConverter
 
 	SubActivityConverter (
 			final DomainModel dest,
-			final DomainModel source,
-			final Map<Class<? extends Activity>, List<Matcher>> subActivities)
+			final DomainModel source)
 	{
 		assert dest != null : "dest is null";
 		assert source != null : "source is NULL";
-		assert subActivities != null : "subActivities is NULL";
 
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
 		this.dest = dest;
 		this.source = source;
-		this.subActivities = ImmutableMap.copyOf (subActivities);
 
 		this.subActivityCache = new HashMap<> ();
 	}
@@ -232,7 +246,7 @@ public final class SubActivityConverter
 	{
 		this.log.trace ("getSubActivity: activity={}, entry={}", activity, entry);
 
-		return Optional.ofNullable (this.subActivities.get (activity.getClass ()))
+		return Optional.ofNullable (SubActivityConverter.SUBACTIVITIES.get (activity.getClass ()))
 			.flatMap (x -> x.stream ()
 					.filter (m -> m.matches (entry))
 					.findAny ())

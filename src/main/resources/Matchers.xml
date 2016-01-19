@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  -  Copyright (C) 2016 James E. Stark
+  -
+  -  This program is free software: you can redistribute it and/or modify
+  -  it under the terms of the GNU General Public License as published by
+  -  the Free Software Foundation, either version 3 of the License, or
+  -  (at your option) any later version.
+  -
+  -  This program is distributed in the hope that it will be useful,
+  -  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  -  GNU General Public License for more details.
+  -
+  -  You should have received a copy of the GNU General Public License
+  -  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<subActivityConverter xmlns="http://icc.socs.uoguelph.ca/edm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://icc.socs.uoguelph.ca/edm Matchers.xsd">
+	<matchers package="ca.uoguelph.socs.icc.edm.domain.element.activity.moodle">
+		<matcher activity="Book" subactivity="BookChapter">
+			<action>add chapter</action>
+			<action>print chapter</action>
+			<action>update chapter</action>
+			<action>view chapter</action>
+		</matcher>
+		<matcher activity="Forum" subactivity="ForumDiscussion">
+			<action>add discussion</action>
+			<action>move discussion</action>
+			<action>update discussion</action>
+			<action>view discussion</action>
+		</matcher>
+		<matcher activity="Forum" subactivity="ForumPost">
+			<action>add post</action>
+			<action>update post</action>
+			<action>delete post</action>
+		</matcher>
+		<matcher activity="Lesson" subactivity="LessonPage">
+			<action>view</action>
+		</matcher>
+		<matcher activity="Workshop" subactivity="WorkshopSubmission">
+			<action>add assessment</action>
+			<action>add example</action>
+			<action>add example assessment</action>
+			<action>add reference assessment</action>
+			<action>add submission</action>
+			<action>update assessment</action>
+			<action>update example</action>
+			<action>update example assessment</action>
+			<action>update reference assessment</action>
+			<action>update submission</action>
+			<action>view example</action>
+			<action>view submission</action>
+		</matcher>
+		<matcher activity="Wiki" subactivity="WikiPage">
+			<url>pageid</url>
+		</matcher>
+	</matchers>
+</subActivityConverter>
