@@ -485,6 +485,55 @@ public abstract class Element implements Comparable<Element>, Serializable
 		}
 
 		/**
+		 * Compare two <code>Definition</code> instances to determine if
+		 * they are equal.
+		 *
+		 * @param  obj The <code>Definition</code> instance to compare to
+		 *             the one represented by the called instance
+		 *
+		 * @return     <code>true</code> if the two <code>Definition</code>
+		 *             instances are equal, <code>false</code> otherwise
+		 */
+
+		@Override
+		public boolean equals (final Object obj)
+		{
+			return (obj == this) ? true : (obj instanceof Definition)
+				&& Objects.equals (this.metadata, ((Definition) obj).metadata)
+				&& Objects.equals (this.impl, ((Definition) obj).impl);
+		}
+
+		/**
+		 * Compute a hashCode for the <code>Definition</code> instance.
+		 *
+		 * @return An <code>Integer</code> containing the hash code
+		 */
+
+		@Override
+		public int hashCode ()
+		{
+			return Objects.hash (this.metadata, this.impl);
+		}
+
+		/**
+		 * Get a <code>String</code> representation of the
+		 * <code>Definition</code> instance, including the identifying fields.
+		 *
+		 * @return A <code>String</code> representation of the
+		 *         <code>Definition</code> instance
+		 */
+
+		@Override
+		@CheckReturnValue
+		public String toString ()
+		{
+			return MoreObjects.toStringHelper (this)
+				.add ("metadata", this.metadata)
+				.add ("implementation class", this.impl.getSimpleName ())
+				.toString ();
+		}
+
+		/**
 		 * Get the position of the <code>Element</code> class in the
 		 * level-ordered dependency graph.
 		 *
