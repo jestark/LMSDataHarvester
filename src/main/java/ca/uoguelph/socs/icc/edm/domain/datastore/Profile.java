@@ -235,7 +235,7 @@ public final class Profile
 
 		public <T extends Element> Builder setElement (final Class<T> type, final Class<? extends T> impl)
 		{
-			this.log.trace ("setElementClass: type={}, impl={}", type, impl);
+			this.log.trace ("setElement: type={}, impl={}", type, impl);
 
 			Preconditions.checkNotNull (type, "type");
 			Preconditions.checkNotNull (impl, "impl");
@@ -244,6 +244,24 @@ public final class Profile
 			this.implementations.put (type, impl);
 
 			return this;
+		}
+
+		/**
+		 * Set the default implementation class for the specified
+		 * <code>Element</code> interface from the <code>Definition</code>.
+		 *
+		 * @param  <T>        The <code>Element</code> interface type
+		 * @param  definition The <code>Definition</code>
+		 * @return            This <code>Builder</code>
+		 */
+
+		public <T extends Element> Builder setElement (final Element.Definition<T> definition)
+		{
+			this.log.trace ("setElement: definition={}", definition);
+
+			Preconditions.checkNotNull (definition, "definition");
+
+			return this.setElement (definition.getElementType (), definition.getElementClass ());
 		}
 
 		/**
