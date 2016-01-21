@@ -19,6 +19,7 @@ package ca.uoguelph.socs.icc.edm.domain.datastore;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.Function;
@@ -27,6 +28,7 @@ import java.util.stream.StreamSupport;
 
 import javax.annotation.CheckReturnValue;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 import org.slf4j.Logger;
@@ -536,6 +538,59 @@ public final class Profile
 		this.parameters = Collections.unmodifiableMap (new HashMap<> (builder.parameters));
 		this.implementations = Collections.unmodifiableMap (new HashMap<> (builder.implementations));
 		this.generators = Collections.unmodifiableMap (new HashMap<> (builder.generators));
+	}
+
+	/**
+	 * Compare two <code>Profile</code> instances to determine if they are
+	 * equal.
+	 *
+	 * @param  obj The <code>Profile</code> instance to compare to
+	 *             the one represented by the called instance
+	 *
+	 * @return     <code>true</code> if the two <code>Profile</code>
+	 *             instances are equal, <code>false</code> otherwise
+	 */
+
+	@Override
+	public boolean equals (final Object obj)
+	{
+		return (obj == this) ? true : (obj instanceof Profile)
+			&& Objects.equals (this.name, ((Profile) obj).name)
+			&& Objects.equals (this.mutable, ((Profile) obj).mutable)
+			&& Objects.equals (this.parameters, ((Profile) obj).parameters)
+			&& Objects.equals (this.implementations, ((Profile) obj).implementations)
+			&& Objects.equals (this.generators, ((Profile) obj).generators);
+	}
+
+	/**
+	 * Compute a hashCode for the <code>Profile</code>.
+	 *
+	 * @return An <code>Integer</code> containing the hash code
+	 */
+
+	@Override
+	public int hashCode ()
+	{
+		return Objects.hash (this.name, this.mutable, this.parameters, this.implementations, this.generators);
+	}
+
+	/**
+	 * Get a <code>String</code> representation of the <code>Profile</code>.
+	 *
+	 * @return A <code>String</code> representation of the <code>Profile</code>
+	 */
+
+	@Override
+	@CheckReturnValue
+	public String toString ()
+	{
+		return MoreObjects.toStringHelper (this)
+			.add ("name", this.name)
+			.add ("mutable", this.mutable)
+			.add ("parameters", this.parameters)
+			.add ("implementations", this.implementations)
+			.add ("generators", this.generators)
+			.toString ();
 	}
 
 	/**
