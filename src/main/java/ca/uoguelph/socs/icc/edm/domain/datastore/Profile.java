@@ -16,6 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -509,6 +510,20 @@ public final class Profile
 	{
 		return new Builder ()
 			.load (Preconditions.checkNotNull (profile, "profile"));
+	}
+
+	/**
+	 * Load a <code>Profile</code> instance from a <code>File</code>.
+	 *
+	 * @param  file The <code>File</code>, not null
+	 * @return      The <code>Profile</code>
+	 */
+
+	public static Profile Load (final File file)
+	{
+		Preconditions.checkNotNull (file);
+
+		return new ProfileLoader ().load (file);
 	}
 
 	/**

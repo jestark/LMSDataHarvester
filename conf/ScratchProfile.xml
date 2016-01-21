@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<profile xmlns="http://icc.socs.uoguelph.ca/edm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://icc.socs.uoguelph.ca/edm Profile.xsd">
+	<name>mem</name>
+	<mutable>true</mutable>
+
+	<element class="ca.uoguelph.socs.icc.edm.domain.Element">
+		<generator>ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.SequentialIdGenerator</generator>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.Action">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.ActionData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.ActivityReference">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.ActivityReferenceData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.ActivitySource">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.ActivitySourceData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.ActivityType">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.ActivityTypeData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.Course">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.CourseData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.Enrolment">
+		<generator>ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.RandomIdGenerator</generator>
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.EnrolmentData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.Grade">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.GradeData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.LogEntry">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.LogEntryData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.Network">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.NetworkData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.Role">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.RoleData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.User">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.UserData</implementation>
+	</element>
+</profile>

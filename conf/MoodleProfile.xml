@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<profile xmlns="http://icc.socs.uoguelph.ca/edm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://icc.socs.uoguelph.ca/edm Profile.xsd">
+	<name>moodledb</name>
+
+	<parameter name="javax.persistence.jdbc.url">jdbc:postgresql://DATABASE_HOST/DATABASE</parameter>
+	<parameter name="javax.persistence.jdbc.user">USERNAME</parameter>
+	<parameter name="javax.persistence.jdbc.password">PASSWORD</parameter>
+
+	<element class="ca.uoguelph.socs.icc.edm.domain.Element">
+		<generator>ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.NullIdGenerator</generator>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.ActivityReference">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityReference</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.ActivityType">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.MoodleActivityType</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.Course">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.CourseData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.Enrolment">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.EnrolmentData</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.LogEntry">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.MoodleLogEntry</implementation>
+	</element>
+	<element class="ca.uoguelph.socs.icc.edm.domain.User">
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.UserData</implementation>
+	</element>
+</profile>

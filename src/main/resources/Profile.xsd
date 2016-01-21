@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  -  Copyright (C) 2016 James E. Stark
+  -
+  -  This program is free software: you can redistribute it and/or modify
+  -  it under the terms of the GNU General Public License as published by
+  -  the Free Software Foundation, either version 3 of the License, or
+  -  (at your option) any later version.
+  -
+  -  This program is distributed in the hope that it will be useful,
+  -  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  -  GNU General Public License for more details.
+  -
+  -  You should have received a copy of the GNU General Public License
+  -  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://icc.socs.uoguelph.ca/edm"
+	targetNamespace="http://icc.socs.uoguelph.ca/edm" elementFormDefault="qualified">
+
+	<xs:element name="profile" type="profile"/>
+
+	<xs:complexType name="profile">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="mutable" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="parameter" type="parameter" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="element" type="element" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="parameter">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="name" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="element">
+		<xs:sequence>
+			<xs:element name="generator" type="xs:string" minOccurs="0"/>
+			<xs:element name="implementation" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="class" type="xs:string"/>
+	</xs:complexType>
+</xs:schema>
