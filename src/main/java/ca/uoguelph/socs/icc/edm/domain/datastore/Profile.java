@@ -16,7 +16,7 @@
 
 package ca.uoguelph.socs.icc.edm.domain.datastore;
 
-import java.io.File;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +34,7 @@ import com.google.common.base.Preconditions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
 
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.Element;
@@ -49,7 +50,191 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 public final class Profile
 {
 	/**
-	 * Builder for the datastore <code>Profile</code>.
+	 * Load <code>Profile</code> data from a configuration file.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	private static final class Loader
+	{
+		/** The log */
+		private final Logger log;
+
+		/** The <code>Activity</code> class */
+		private Class<? extends Element> elementClass;
+
+		/** The config file parser */
+		private final ConfigLoader loader;
+
+		/** The profile builder */
+		private final Profile.Builder builder;
+
+		/**
+		 * Create the <code>ProfileLoader</code>.
+		 */
+
+		private Loader ()
+		{
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			this.elementClass = null;
+
+			this.builder = Profile.builder ();
+
+			this.loader = ConfigLoader.create (this.getClass ().getResource ("/Profile.xsd"))
+				.registerProcessor ("element", (n -> this.processElement (n)))
+				.registerProcessor ("generator", (n -> this.processGenerator (n)))
+				.registerProcessor ("implementation", (n -> this.processImplementation (n)))
+				.registerProcessor ("name", (n -> this.processName (n)))
+				.registerProcessor ("mutable", (n -> this.processMutable (n)))
+				.registerProcessor ("parameters", (n -> this.processParameter (n)));
+		}
+
+		/**
+		 * Load a class with the specified name.  This method will load a class
+		 * with the specified name and ensure that it extends the specified
+		 * superclass.
+		 *
+		 * @param  <T>        The type of the superclass
+		 * @param  superclass The superclass, not null
+		 * @param  name       The name of the class, not null
+		 * @return            The loaded class
+		 *
+		 * @throws IllegalstateException if the loaded class does not extends the
+		 *                               superclass
+		 * @throws RuntimeException      if the named class can not be loaded
+		 */
+
+		@SuppressWarnings ("unchecked")
+		private <T> Class<? extends T> processClass (final Class<T> superclass, final String name)
+		{
+			this.log.trace ("processElementClass: superclass={}, name={}", superclass, name);
+
+			assert superclass != null : "superclass is NULL";
+			assert name != null : "name is NULL";
+
+			try
+			{
+				Class<?> element = Class.forName (name);
+
+				if (! superclass.isAssignableFrom (element))
+				{
+					throw new IllegalStateException ("The loaded class does not extend the specified superclass");
+				}
+
+				return (Class<? extends T>) element;
+			}
+			catch (ClassNotFoundException ex)
+			{
+				throw new RuntimeException ("Class does not exist", ex);
+			}
+		}
+
+		/**
+		 * Process a "name" configuration element.
+		 *
+		 * @param  node The DOM tree node for the name, not null
+		 */
+
+		private void processName (final Node node)
+		{
+			this.log.trace ("processName: node={}", node);
+
+			this.builder.setName (node.getChildNodes ().item (0).getNodeValue ());
+		}
+
+		/**
+		 * Process a "mutable" configuration element.
+		 *
+		 * @param  node The DOM tree node for the mutable, not null
+		 */
+
+		private void processMutable (final Node node)
+		{
+			this.log.trace ("processMutable: node={}", node);
+
+			this.builder.setMutable ((node.getChildNodes ().item (0).getNodeValue ().equalsIgnoreCase ("true")) ? true : false);
+		}
+
+		/**
+		 * Process an "element" configuration element.
+		 *
+		 * @param  node The DOM tree node for the element, not null
+		 */
+
+		private void processElement (final Node node)
+		{
+			this.log.trace ("processElement: node={}", node);
+
+			this.elementClass = this.processClass (Element.class, node.getAttributes ().getNamedItem ("class").getNodeValue ());
+		}
+
+		/**
+		 * Process a "generator" configuration element.
+		 *
+		 * @param  node The DOM tree node for the generator, not null
+		 */
+
+		private void processGenerator (final Node node)
+		{
+			this.log.trace ("processGenerator: node={}", node);
+
+			this.builder.setGenerator (this.elementClass, this.processClass (IdGenerator.class, node.getChildNodes ().item (0).getNodeValue ()));
+		}
+
+		/**
+		 * Process a "implementation" configuration element.
+		 *
+		 * @param  node The DOM tree node for the implementation, not null
+		 */
+
+		private void processImplementation (final Node node)
+		{
+			this.log.trace ("processImplementation: node={}", node);
+
+			this.builder.setElement (Profile.ELEMENT_DEFINITIONS.get (this.processClass (this.elementClass, node.getChildNodes ().item (0).getNodeValue ())));
+		}
+
+		/**
+		 * Process a "parameter" configuration element.
+		 *
+		 * @param  node The DOM tree node for the parameter, not null
+		 */
+
+		private void processParameter (final Node node)
+		{
+			this.log.trace ("processParameter: node={}", node);
+
+			this.builder.setParameter (node.getAttributes ().getNamedItem ("name").getNodeValue (),
+				node.getChildNodes ().item (0).getNodeValue ());
+		}
+
+		/**
+		 * Load the configuration from the specified URL and use it to build a
+		 * <code>Profile</code>.
+		 *
+		 * @param  url The <code>URL</code>, not null
+		 * @return     The <code>Profile</code>
+		 */
+
+		public Profile load (final URL url)
+		{
+			this.log.trace ("load: url={}", url);
+
+			assert url != null : "url is NULL";
+
+			this.loader.load (url);
+
+			return this.builder.build ();
+		}
+	}
+
+	/**
+	 * Builder for the <code>Profile</code>.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
 	 */
 
 	public static final class Builder
@@ -513,17 +698,16 @@ public final class Profile
 	}
 
 	/**
-	 * Load a <code>Profile</code> instance from a <code>File</code>.
+	 * Load a <code>Profile</code> instance from a <code>URL</code>.
 	 *
-	 * @param  file The <code>File</code>, not null
-	 * @return      The <code>Profile</code>
+	 * @param  url The <code>URL</code>, not null
+	 * @return     The <code>Profile</code>
 	 */
 
-	public static Profile Load (final File file)
+	public static Profile load (final URL url)
 	{
-		Preconditions.checkNotNull (file);
-
-		return new ProfileLoader ().load (file);
+		return new Loader ()
+			.load (Preconditions.checkNotNull (url, "url"));
 	}
 
 	/**
