@@ -222,7 +222,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>ca.uoguelph.socs.icc.edm.App</mainClass>
+							<mainClass>ca.uoguelph.socs.icc.edm.Harvester</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
@@ -241,7 +241,7 @@
 						<arguement>-ea</arguement>
 						<argument>-classpath</argument>
 						<classpath/>
-						<argument>ca.uoguelph.socs.icc.edm.App</argument>
+						<argument>ca.uoguelph.socs.icc.edm.Harvester</argument>
 					</arguments>
 				</configuration>
 			</plugin>

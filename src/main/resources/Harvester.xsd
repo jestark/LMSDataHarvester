@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  -  Copyright (C) 2016 James E. Stark
+  -
+  -  This program is free software: you can redistribute it and/or modify
+  -  it under the terms of the GNU General Public License as published by
+  -  the Free Software Foundation, either version 3 of the License, or
+  -  (at your option) any later version.
+  -
+  -  This program is distributed in the hope that it will be useful,
+  -  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  -  GNU General Public License for more details.
+  -
+  -  You should have received a copy of the GNU General Public License
+  -  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:edm="http://icc.socs.uoguelph.ca/edm"
+	targetNamespace="http://icc.socs.uoguelph.ca/edm" elementFormDefault="qualified">
+
+	<xs:element name="harvester" type="edm:harvester">
+		<xs:unique name="uniqueType">
+			<xs:selector xpath="edm:datastore"/>
+			<xs:field xpath="@type"/>
+		</xs:unique>
+	</xs:element>
+
+	<xs:simpleType name="datastoreType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="input"/>
+			<xs:enumeration value="output"/>
+			<xs:enumeration value="scratch"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="registration">
+		<xs:simpleContent>
+			<xs:extension base="xs:anyURI">
+				<xs:attribute name="role" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="course">
+		<xs:sequence>
+			<xs:element name="registration" type="edm:registration" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="datastore">
+		<xs:simpleContent>
+			<xs:extension base="xs:anyURI">
+				<xs:attribute name="type" type="edm:datastoreType" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="harvester">
+		<xs:sequence>
+			<xs:element name="datastore" type="edm:datastore" minOccurs="3" maxOccurs="3"/>
+			<xs:element name="course" type="edm:course">
+				<xs:unique name="uniqueRole">
+					<xs:selector xpath="edm:registration"/>
+					<xs:field xpath="@role"/>
+				</xs:unique>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
