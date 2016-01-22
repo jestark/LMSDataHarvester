@@ -16,9 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.moodle;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -647,17 +646,24 @@ public final class Extractor implements AutoCloseable
 	 *                     specified file
 	 */
 
-	public Extractor addRegistrations (final String role, final File data) throws IOException
+	public Extractor addRegistrations (final String role, final URL data)
 	{
 		this.log.trace ("addRegistrations: role={}, data={}", role, data);
 
-		for (CSVRecord rec : CSVParser.parse (data, Charset.forName ("UTF-8"), FORMAT))
+		try
 		{
-			String user = rec.get(0);
-			Integer grade = (rec.get (1) != null) ? Integer.valueOf ((int) Math.ceil (Double.valueOf (rec.get (1)))) : null;
-			Boolean usable = (rec.get (2) != null) ? true : false;
+			for (CSVRecord rec : CSVParser.parse (data, Charset.forName ("UTF-8"), FORMAT))
+			{
+				String user = rec.get(0);
+				Integer grade = (rec.get (1) != null) ? Integer.valueOf ((int) Math.ceil (Double.valueOf (rec.get (1)))) : null;
+				Boolean usable = (rec.get (2) != null) ? true : false;
 
-			this.registrations.put (user, Registration.create (role, user, usable, grade));
+				this.registrations.put (user, Registration.create (role, user, usable, grade));
+			}
+		}
+		catch (IOException ex)
+		{
+			throw new RuntimeException ("Failed to load registration data:", ex);
 		}
 
 		return this;
