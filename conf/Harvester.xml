@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<harvester xmlns="http://icc.socs.uoguelph.ca/edm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://icc.socs.uoguelph.ca/edm Harvester.xsd">
+
+	<datastore type="input">file:///path/to/InputProfile.xml</datastore>
+	<datastore type="output">file:///path/to/OutputProfile.xml</datastore>
+	<datastore type="scratch">file:///path/to/ScratchProfile.xml</datastore>
+
+	<course id="ID_NUMBER">
+		<registration role="instructor">file:///path/to/instructor.csv</registration>
+		<registration role="ta">file:///path/to/ta.csv</registration>
+		<registration role="student">file:///path/to/student.csv</registration>
+	</course>
+</harvester>
