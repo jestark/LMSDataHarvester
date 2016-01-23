@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 James E. Stark
+/* Copyright (C) 2015, 2016 James E. Stark
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
 
 package ca.uoguelph.socs.icc.edm.moodle;
 
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
 
 import com.google.auto.value.AutoValue;
 
@@ -32,6 +35,7 @@ import ca.uoguelph.socs.icc.edm.domain.Action;
 import ca.uoguelph.socs.icc.edm.domain.Activity;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.SubActivity;
+import ca.uoguelph.socs.icc.edm.domain.datastore.ConfigLoader;
 import ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData;
 
 /**
@@ -58,6 +62,193 @@ import ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData;
 
 public final class SubActivityConverter
 {
+	/**
+	 * Loader <code>Matcher</code> instances from a configuration file.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	private static final class Loader
+	{
+		/** The log */
+		private final Logger log;
+
+		/** The configuration file parser */
+		private final ConfigLoader loader;
+
+		/** The <code>List</code> of loaded <code>Matcher</code> instances */
+		private final List<Matcher> matchers;
+
+		/** The name of the package containing the <code>Activity</code> and <code>SubActivity</code> classes */
+		private String packageName;
+
+		/** The <code>Activity</code> class */
+		private Class<? extends Activity> activityClass;
+
+		/** The <code>SubActivity</code> class */
+		private Class<? extends SubActivity> subActivityClass;
+
+		/**
+		 * Create the <code>MatcherLoader</code>.
+		 */
+
+		private Loader ()
+		{
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			this.matchers = new ArrayList<> ();
+
+			this.packageName = "";
+			this.activityClass = null;
+			this.subActivityClass = null;
+
+			this.loader = ConfigLoader.create (this.getClass ().getResource ("/Matchers.xsd"))
+				.registerProcessor ("matchers", (n -> this.processMatchers (n)))
+				.registerProcessor ("matcher", (n -> this.processMatcher (n)))
+				.registerProcessor ("action", (n -> this.processAction (n)))
+				.registerProcessor ("url", (n -> this.processURL (n)));
+		}
+
+		/**
+		 * Load a class with the specified name.  This method will load a class with
+		 * the specified name and ensure that it extends the specified superclass.
+		 *
+		 * @param  <T>        The type of the superclass
+		 * @param  superclass The superclass, not null
+		 * @param  name       The name of the class, not null
+		 * @return            The loaded class
+		 *
+		 * @throws IllegalstateException if the loaded class does not extends the
+		 *                               superclass
+		 * @throws RuntimeException      if the named class can not be loaded
+		 */
+
+		@SuppressWarnings ("unchecked")
+		private <T> Class<? extends T> processClass (final Class<T> superclass, final String name)
+		{
+			this.log.trace ("processClass: superclass={}, name={}", superclass, name);
+
+			assert superclass != null : "superclass is NULL";
+			assert name != null : "name is NULL";
+
+			try
+			{
+				Class<?> element = Class.forName ((name.indexOf ('.') == -1)
+						? this.packageName + "." + name
+						: name);
+
+				if (! superclass.isAssignableFrom (element))
+				{
+					throw new IllegalStateException ("The loaded class does not extend the specified superclass");
+				}
+
+				return (Class<? extends T>) element;
+			}
+			catch (ClassNotFoundException ex)
+			{
+				throw new RuntimeException ("Class does not exist", ex);
+			}
+		}
+
+		/**
+		 * Process a "matchers" configuration element to extract the package
+		 * name.
+		 *
+		 * @param  node The DOM tree node for the matchers, not null
+		 */
+
+		private void processMatchers (final Node node)
+		{
+			this.log.trace ("processMatchers: node={}", node);
+
+			assert node != null : "node is NULL";
+
+			if (node.hasAttributes ())
+			{
+				this.packageName = node.getAttributes ()
+					.getNamedItem ("package")
+					.getNodeValue ();
+			}
+		}
+
+		/**
+		 * Process a "matcher" configuration element to extract the
+		 * <code>Activity</code> and <code>SubActivity</code> classes.
+		 *
+		 * @param  node The DOM tree node for the matcher, not null
+		 */
+
+		private void processMatcher (final Node node)
+		{
+			this.log.trace ("processMatcher: node={}", node);
+
+			assert node != null : "node is NULL";
+
+			this.activityClass = this.processClass (Activity.class, node.getAttributes ()
+					.getNamedItem ("activity")
+					.getNodeValue ());
+
+			this.subActivityClass = this.processClass (SubActivity.class, node.getAttributes ()
+					.getNamedItem ("subActivity")
+					.getNodeValue ());
+		}
+
+		/**
+		 * Create an <code>ActionMatcher</code> from the specified node.
+		 *
+		 * @param  node The DOM tree node for the url, not null
+		 */
+
+		private void processAction (final Node node)
+		{
+			this.log.trace ("processAction: node={}", node);
+
+			assert node != null : "node is NULL";
+
+			this.matchers.add (ActionMatcher.create (this.activityClass, this.subActivityClass,
+						node.getChildNodes ()
+						.item (0)
+						.getNodeValue ()));
+		}
+
+		/**
+		 * Create a <code>URLMatcher</code> from the specified node.
+		 *
+		 * @param  node The DOM tree node for the url, not null
+		 */
+
+		private void processURL (final Node node)
+		{
+			this.log.trace ("processURL: node={}", node);
+
+			assert node != null : "node is NULL";
+
+			this.matchers.add (URLMatcher.create (this.activityClass, this.subActivityClass,
+						node.getChildNodes ()
+						.item (0)
+						.getNodeValue ()));
+		}
+
+		/**
+		 * Load the <code>Matcher</code> instances.
+		 *
+		 * @param  url The <code>URL</code> for the config file
+		 * @return     A <code>List</code> of <code>Matcher</code> instances
+		 */
+
+		public List<Matcher> load (final URL url)
+		{
+			this.log.trace ("load: url={}", url);
+
+			assert url != null : "url is NULL";
+
+			this.loader.load (url);
+
+			return Collections.unmodifiableList (this.matchers);
+		}
+	}
+
 	/**
 	 * Key for the cache of <code>SubActivity</code> instances.
 	 *
@@ -124,8 +315,8 @@ public final class SubActivityConverter
 
 	static
 	{
-		SUBACTIVITIES = new MatcherLoader ()
-			.load ()
+		SUBACTIVITIES = new Loader ()
+			.load (SubActivityConverter.class.getResource ("/Matchers.xml"))
 			.stream ()
 			.collect (Collectors.collectingAndThen (
 						Collectors.groupingBy (Matcher::getActivityClass,
