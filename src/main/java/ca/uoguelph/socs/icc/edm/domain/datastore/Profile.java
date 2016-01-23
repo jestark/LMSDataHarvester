@@ -88,7 +88,7 @@ public final class Profile
 				.registerProcessor ("implementation", (n -> this.processImplementation (n)))
 				.registerProcessor ("name", (n -> this.processName (n)))
 				.registerProcessor ("mutable", (n -> this.processMutable (n)))
-				.registerProcessor ("parameters", (n -> this.processParameter (n)));
+				.registerProcessor ("parameter", (n -> this.processParameter (n)));
 		}
 
 		/**

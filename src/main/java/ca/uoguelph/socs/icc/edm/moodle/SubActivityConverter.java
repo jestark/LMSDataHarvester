@@ -190,7 +190,7 @@ public final class SubActivityConverter
 					.getNodeValue ());
 
 			this.subActivityClass = this.processClass (SubActivity.class, node.getAttributes ()
-					.getNamedItem ("subActivity")
+					.getNamedItem ("subactivity")
 					.getNodeValue ());
 		}
 

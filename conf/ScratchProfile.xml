@@ -11,7 +11,7 @@
 	<element class="ca.uoguelph.socs.icc.edm.domain.Action">
 		<implementation>ca.uoguelph.socs.icc.edm.domain.element.ActionData</implementation>
 	</element>
-	<element class="ca.uoguelph.socs.icc.edm.ActivityReference">
+	<element class="ca.uoguelph.socs.icc.edm.domain.ActivityReference">
 		<implementation>ca.uoguelph.socs.icc.edm.domain.element.ActivityReferenceData</implementation>
 	</element>
 	<element class="ca.uoguelph.socs.icc.edm.domain.ActivitySource">
@@ -31,7 +31,7 @@
 		<implementation>ca.uoguelph.socs.icc.edm.domain.element.GradeData</implementation>
 	</element>
 	<element class="ca.uoguelph.socs.icc.edm.domain.LogEntry">
-		<implementation>ca.uoguelph.socs.icc.edm.domain.element.LogEntryData</implementation>
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.LogData</implementation>
 	</element>
 	<element class="ca.uoguelph.socs.icc.edm.domain.Network">
 		<implementation>ca.uoguelph.socs.icc.edm.domain.element.NetworkData</implementation>

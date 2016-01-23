@@ -24,7 +24,7 @@
 		<implementation>ca.uoguelph.socs.icc.edm.domain.element.EnrolmentData</implementation>
 	</element>
 	<element class="ca.uoguelph.socs.icc.edm.domain.LogEntry">
-		<implementation>ca.uoguelph.socs.icc.edm.domain.element.MoodleLogEntry</implementation>
+		<implementation>ca.uoguelph.socs.icc.edm.domain.element.MoodleLogData</implementation>
 	</element>
 	<element class="ca.uoguelph.socs.icc.edm.domain.User">
 		<implementation>ca.uoguelph.socs.icc.edm.domain.element.UserData</implementation>
