@@ -221,7 +221,6 @@ public final class ConfigLoader
 	 * Parse the specified configuration file.
 	 *
 	 * @param  url The URL of the config file to load, not null
-	 * @return     The root node of the DOM tree for the config file
 	 */
 
 	public void load (final URL url)

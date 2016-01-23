@@ -21,7 +21,6 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import com.google.common.base.Preconditions;
 
@@ -37,22 +36,151 @@ import ca.uoguelph.socs.icc.edm.domain.datastore.jpa.JPADataStore;
 import ca.uoguelph.socs.icc.edm.domain.datastore.memory.MemDataStore;
 import ca.uoguelph.socs.icc.edm.moodle.Extractor;
 
-public final class Harvester
+/**
+ * Extract data from a Learning Management System database and store it into a
+ * research database.  This class acts as a driver for performing the
+ * extraction, synchronization and storage of the data in the LMS.  All of the
+ * information concerning the location and format of the source and destination
+ * databases, along with the <code>Course</code> to process, is stored in a
+ * series of configuration files, which this class will load and use to guide
+ * its operation.
+ *
+ * @author  James E. Stark
+ * @version 1.0
+ */
+
+public final class Harvester implements AutoCloseable
 {
+	/**
+	 * Loader to create a Harvester from a configuration file.
+	 *
+	 * @author  James E. Stark
+	 * @version 1.0
+	 */
+
+	private static final class Loader
+	{
+		/** The log */
+		private final Logger log;
+
+		/** The config file loader */
+		private final ConfigLoader loader;
+
+		/** The <code>Profile</code> instances for the data-sets */
+		private final Map<String, Profile> profiles;
+
+		/** The registrations */
+		private final Map<String, URL> registrations;
+
+		/** The course ID number */
+		private Long courseId;
+
+		/**
+		 * Create the <code>Loader</code>.
+		 */
+
+		private Loader ()
+		{
+			this.log = LoggerFactory.getLogger (this.getClass ());
+
+			this.courseId = Long.valueOf (0);
+			this.profiles = new HashMap<> ();
+			this.registrations = new HashMap<> ();
+
+			this.loader = ConfigLoader.create (this.getClass ().getResource ("/Harvester.xsd"))
+				.registerProcessor ("datastore", (n -> this.processDataStore (n)))
+				.registerProcessor ("course", (n -> this.processCourse (n)))
+				.registerProcessor ("registration", (n -> this.processRegistration (n)));
+		}
+
+		/**
+		 * Process a datastore configuration element.
+		 *
+		 * @param  node The DOM tree node for the datastore, not null
+		 */
+
+		private void processDataStore (final Node node)
+		{
+			this.log.trace ("processDataStore: node={}", node);
+
+			assert node != null : "node is NULL";
+
+			try
+			{
+				this.profiles.put (node.getAttributes ().getNamedItem ("type").getNodeValue (),
+						Profile.load (new URL (node.getChildNodes ().item (0).getNodeValue ())));
+			}
+			catch (MalformedURLException ex)
+			{
+				throw new RuntimeException ("Failed to load profile:", ex);
+			}
+		}
+
+		/**
+		 * Process a course configuration element.
+		 *
+		 * @param  node The DOM tree node for the course, not null
+		 */
+
+		private void processCourse (final Node node)
+		{
+			this.log.trace ("processCourse: node={}", node);
+
+			assert node != null : "node is NULL";
+
+			this.courseId = Long.valueOf (node.getAttributes ().getNamedItem ("id").getNodeValue ());
+		}
+
+		/**
+		 * Process a registration configuration element.
+		 *
+		 * @param  node The DOM tree node for the registration, not null
+		 */
+
+		private void processRegistration (final Node node)
+		{
+			this.log.trace ("processRegistration: node={}", node);
+
+			assert node != null : "node is NULL";
+
+			try
+			{
+				this.registrations.put (node.getAttributes ().getNamedItem ("role").getNodeValue (),
+						new URL (node.getChildNodes ().item (0).getNodeValue ()));
+			}
+			catch (MalformedURLException ex)
+			{
+				throw new RuntimeException ("Failed to load registration data:", ex);
+			}
+		}
+
+		/**
+		 * Load the configuration data from the specified <code>URL</code>.
+		 *
+		 * @param  url The <code>URL</code>, not null
+		 * @return     The <code>Harvester</code>
+		 */
+
+		public Harvester load (final URL url)
+		{
+			this.log.trace ("load: url={}", url);
+
+			assert url != null : "url is NULL";
+
+			this.loader.load (url);
+
+			return new Harvester (this);
+		}
+	}
+
 	/** The log */
 	private final Logger log;
 
-	/** The config file loader */
-	private final ConfigLoader loader;
+	/** The loader, containing the data from the configuration file */
+	private final Loader loader;
 
-	/** The <code>Profile</code> instances for the data-sets */
-	private final Map<String, Profile> profiles;
-
-	/** The registrations */
-	private final Map<String, URL> registrations;
-
-	/** The course ID number */
-	private Long courseId;
+	/** The DomainModel holding the data extracted from the source datastore */
+	private final DomainModel model;
 
 	/**
 	 * The main program.  This method confirms the existence of the config file,
@@ -62,7 +190,7 @@ public final class Harvester
 	 * @param  args  The program arguments.  It expects a single file name
 	 */
 
-    public static void main(final String[] args) throws Exception
+    public static void main (final String[] args) throws Exception
     {
 		Preconditions.checkArgument (args.length == 1, "Expected one argument");
 
@@ -70,147 +198,118 @@ public final class Harvester
 
 		Preconditions.checkArgument (input.canRead (), "Input file is not readable");
 
-		Harvester harvester = new Harvester (input.toURI ().toURL ());
-		harvester.extract ();
-//		harvester.store ();
+		try (Harvester harvester = Harvester.create (input.toURI ().toURL ()))
+		{
+			harvester.extract ();
+			harvester.store ();
+		}
 	}
 
 	/**
-	 * Create the <code>Harvester</code>.  
+	 * Load the contents of the configuration file referenced by the supplied
+	 * URL and use them to create a <code>Harvester</code> instance.
 	 *
-	 * @param  url The URL for the configuration file, not null
+	 * @param  url The <code>URL</code>, not null
+	 * @return     The <code>Harvester</code>
 	 */
 
-	private Harvester (final URL url)
+	private static Harvester create (final URL url)
+	{
+		assert url != null : "url is NULL";
+
+		return new Loader ()
+			.load (url);
+	}
+
+	/**
+	 * Create the <code>Harvester</code>.
+	 *
+	 * @param  loader The <code>Loader</code>, not null
+	 */
+
+	private Harvester (final Loader loader)
 	{
 		this.log = LoggerFactory.getLogger (this.getClass ());
 
-		assert url != null : "url is NULL";
+		assert loader != null : "loader is NULL";
 
-		this.courseId = Long.valueOf (0);
-		this.profiles = new HashMap<> ();
-		this.registrations = new HashMap<> ();
+		this.loader = loader;
 
-		this.loader = ConfigLoader.create (this.getClass ().getResource ("/Harvester.xsd"))
-			.registerProcessor ("datastore", (n -> this.processDataStore (n)))
-			.registerProcessor ("course", (n -> this.processCourse (n)))
-			.registerProcessor ("registration", (n -> this.processRegistration (n)));
-
-		this.loader.load (url);
+		this.model = MemDataStore.create (this.loader.profiles.get ("scratch"));
 	}
 
 	/**
-	 * Process a datastore configuration element.
-	 *
-	 * @param  node The DOM tree node for the datastore, not null
+	 * Close the <code>Harvester</code>.
 	 */
 
-	private void processDataStore (final Node node)
+	@Override
+	public void close ()
 	{
-		this.log.trace ("processDataStore: node={}", node);
-
-		assert node != null : "node is NULL";
-
-		try
-		{
-			this.profiles.put (node.getAttributes ().getNamedItem ("type").getNodeValue (),
-					Profile.load (new URL (node.getChildNodes ().item (0).getNodeValue ())));
-		}
-		catch (MalformedURLException ex)
-		{
-			throw new RuntimeException ("Failed to load profile:", ex);
-		}
-	}
-
-	/**
-	 * Process a course configuration element.
-	 *
-	 * @param  node The DOM tree node for the course, not null
-	 */
-
-	private void processCourse (final Node node)
-	{
-		this.log.trace ("processCourse: node={}", node);
-
-		assert node != null : "node is NULL";
-
-		this.courseId = Long.valueOf (node.getAttributes ().getNamedItem ("id").getNodeValue ());
-	}
-
-	/**
-	 * Process a registration configuration element.
-	 *
-	 * @param  node The DOM tree node for the registration, not null
-	 */
-
-	private void processRegistration (final Node node)
-	{
-		this.log.trace ("processRegistration: node={}", node);
-
-		assert node != null : "node is NULL";
-
-		try
-		{
-			this.registrations.put (node.getAttributes ().getNamedItem ("role").getNodeValue (),
-					new URL (node.getChildNodes ().item (0).getNodeValue ()));
-		}
-		catch (MalformedURLException ex)
-		{
-			throw new RuntimeException ("Failed to load registration data:", ex);
-		}
+		this.model.close ();
 	}
 
 	/**
 	 * Extract the course data from the input data-store.
 	 *
-	 * @return A <code>DomainModel</code> containing the course data
+	 * @return This <code>Harvester</code>
 	 */
 
-	public DomainModel extract ()
+	public Harvester extract ()
 	{
 		this.log.trace ("extract:");
 
 		this.log.info ("Extracting data from the input data-store");
 
-		DomainModel model = MemDataStore.create (this.profiles.get ("scratch"));
-
-		try (Extractor extractor = Extractor.create (JPADataStore.create (this.profiles.get ("input"))))
+		try (Extractor extractor = Extractor.create (JPADataStore.create (this.loader.profiles.get ("input"))))
 		{
-			this.registrations.entrySet ()
+			this.loader.registrations.entrySet ()
 				.stream ()
 				.forEach (r -> extractor.addRegistrations (r.getKey (), r.getValue ()));
 
-			extractor.setCourse (this.courseId)
+			extractor.setCourse (this.loader.courseId)
 				.addRegistration ("admin", "admin")
 				.extract (model);
 		}
 
 		this.log.info ("Data extraction complete");
 
-		return model;
+		return this;
+	}
+
+	/**
+	 * Get a reference to the <code>DomainModel</code>.
+	 *
+	 * @return The <code>DomainModel</code>
+	 */
+
+	public DomainModel getModel ()
+	{
+		return this.model;
 	}
 
 	/**
 	 * Write the contents of the specified <code>DomainModel</code> out to the
 	 * output <code>DataStore</code>
 	 *
-	 * @param  model The <code>DomainModel</code>, not null
+	 * @return This <code>Harvester</code>
 	 */
 
-	public void store (final DomainModel model)
+	public Harvester store ()
 	{
 		this.log.trace ("store:");
 
 		this.log.info ("Writing data to the output data-store");
 
-		try (DomainModel coursedb = JPADataStore.create (this.profiles.get ("output")))
+		try (DomainModel coursedb = JPADataStore.create (this.loader.profiles.get ("output")))
 		{
 			coursedb.getSynchronizer ()
-				.addAll (model.getQuery (User.SELECTOR_ALL)
+				.addAll (this.model.getQuery (User.SELECTOR_ALL)
 						.queryAll ())
 				.synchronize ();
 		}
 
 		this.log.info ("Data output complete");
+
+		return this;
 	}
 }
