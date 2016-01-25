@@ -51,7 +51,7 @@ comment on column activity_type.name is 'Name of the Activity type, for moodle a
 create table if not exists activity (
 	id bigserial primary key,
 	course_id bigint not null references course (id) on delete restrict on update cascade,
-	activity_type_id bigint not null references activity_type (id) on delete restrict on update cascade
+	type_id bigint not null references activity_type (id) on delete restrict on update cascade
 );
 
 comment on table activity is 'All of the activities associated with a course offering';
