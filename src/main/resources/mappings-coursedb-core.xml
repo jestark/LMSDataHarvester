@@ -68,7 +68,7 @@
 				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<many-to-one name="type" target-entity="ActivityTypeData" optional="false">
-				<join-column name="activity_type_id" nullable="false" referenced-column-name="id"/>
+				<join-column name="type_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
 			<one-to-many name="log" target-entity="LogData" mapped-by="activity"/>
 			<one-to-one name="activity" target-entity="ca.uoguelph.socs.icc.edm.domain.Activity" mapped-by="reference"/>
