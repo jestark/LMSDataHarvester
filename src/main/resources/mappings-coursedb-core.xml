@@ -72,6 +72,7 @@
 			</many-to-one>
 			<one-to-many name="log" target-entity="LogData" mapped-by="activity"/>
 			<one-to-one name="activity" target-entity="ca.uoguelph.socs.icc.edm.domain.Activity" mapped-by="reference"/>
+			<transient name="grades"/>
 		</attributes>
 	</entity>
 

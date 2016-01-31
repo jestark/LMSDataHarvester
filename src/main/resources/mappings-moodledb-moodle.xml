@@ -21,7 +21,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="grades"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
@@ -40,7 +39,6 @@
 				<column name="name"/>
 			</basic>
 			<one-to-many name="subActivities" target-entity="BookChapter" mapped-by="parent"/>
-			<transient name="grades"/>
 		</attributes>
 	</entity>
 
@@ -74,7 +72,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="grades"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
@@ -92,7 +89,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="grades"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
@@ -110,7 +106,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="grades"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
@@ -128,7 +123,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="grades"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
@@ -147,7 +141,6 @@
 				<column name="name"/>
 			</basic>
 			<one-to-many name="subActivities" target-entity="ForumDiscussion" mapped-by="parent"/>
-			<transient name="grades"/>
 		</attributes>
 	</entity>
 
@@ -198,7 +191,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="grades"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
@@ -217,7 +209,6 @@
 				<column name="name"/>
 			</basic>
 			<one-to-many name="subActivities" target-entity="LessonPage" mapped-by="parent"/>
-			<transient name="grades"/>
 		</attributes>
 	</entity>
 
@@ -254,7 +245,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="grades"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
@@ -272,7 +262,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="grades"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
@@ -290,7 +279,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="grades"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
@@ -308,7 +296,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="grades"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
@@ -326,7 +313,6 @@
 			<basic name="name">
 				<column name="name"/>
 			</basic>
-			<transient name="grades"/>
 			<transient name="subActivities"/>
 		</attributes>
 	</entity>
@@ -345,7 +331,6 @@
 				<column name="name"/>
 			</basic>
 			<one-to-many name="subActivities" target-entity="WikiPage" mapped-by="parent"/>
-			<transient name="grades"/>
 		</attributes>
 	</entity>
 
@@ -380,7 +365,6 @@
 				<column name="name"/>
 			</basic>
 			<one-to-many name="subActivities" target-entity="WorkshopSubmission" mapped-by="parent"/>
-			<transient name="grades"/>
 		</attributes>
 	</entity>
 

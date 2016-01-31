@@ -28,6 +28,7 @@
 				<join-column name="module" nullable="false" insertable="false" updatable="false"/>
 			</many-to-one>
 			<transient name="activity"/>
+			<transient name="grades"/>
 			<transient name="log"/>
 		</attributes>
 	</entity>
