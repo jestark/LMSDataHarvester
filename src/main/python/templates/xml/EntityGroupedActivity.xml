@@ -1,6 +1,0 @@
-<entity name="$ActivityClass" class="$ActivityClass" metadata-complete="true">
-	<table name="$ActivityTable"/>
-	<attributes>
-		<one-to-many name="children" mapped-by="parent"/>
-	</attributes>
-</entity>

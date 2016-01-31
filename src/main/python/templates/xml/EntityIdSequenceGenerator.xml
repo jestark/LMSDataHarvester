@@ -1,2 +1,0 @@
-			<generated-value strategy="SEQUENCE" generator="$ActivityTable_$IdColumn_seq"/>
-			<sequence-generator name="$ActivityTable_$IdColumn_seq" sequence-name="$ActivityTable_$IdColumn_seq" initial-value="1" allocation-size="1"/>
