@@ -33,6 +33,7 @@ import ca.uoguelph.socs.icc.edm.domain.ActivityReference;
 import ca.uoguelph.socs.icc.edm.domain.ActivityType;
 import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.Element;
+import ca.uoguelph.socs.icc.edm.domain.Grade;
 import ca.uoguelph.socs.icc.edm.domain.LogEntry;
 
 /**
@@ -97,6 +98,9 @@ public class MoodleActivityReference extends ActivityReference
 	/** The associated <code>Course</code> */
 	private Course course;
 
+	/** The associated <code>Grade</code> instances */
+	private List<Grade> grades;
+
 	/** The associated <code>LogEntry</code> instances */
 	private List<LogEntry> log;
 
@@ -111,6 +115,7 @@ public class MoodleActivityReference extends ActivityReference
 		this.type = null;
 		this.course = null;
 		this.instanceId = null;
+		this.grades = new ArrayList<Grade> ();
 		this.log = new ArrayList<LogEntry> ();
 	}
 
@@ -279,6 +284,77 @@ public class MoodleActivityReference extends ActivityReference
 		assert type != null : "type is NULL";
 
 		this.type = type;
+	}
+
+	/**
+	 * Get the <code>List</code> of <code>Grade</code> instances which are
+	 * associated with the <code>Activity</code>.  Not all
+	 * <code>Activity</code> instances are graded.  If the
+	 * <code>Activity</code> does is not graded then the <code>List</code> will
+	 * be empty.
+	 *
+	 * @return A <code>List</code> of <code>Grade</code> instances
+	 */
+
+	@Override
+	public List<Grade> getGrades ()
+	{
+		this.grades.forEach (x -> this.propagateDomainModel (x));
+
+		return Collections.unmodifiableList (this.grades);
+	}
+
+	/**
+	 * Initialize the <code>List</code> of <code>Grade</code> instances
+	 * associated with the <code>Activity</code> instance.  This method is
+	 * intended to be used to initialize a new <code>Activity</code> instance.
+	 *
+	 * @param  grades The <code>List</code> of <code>Grade</code> instances, not
+	 *                null
+	 */
+
+	@Override
+	protected void setGrades (final List<Grade> grades)
+	{
+		assert grades != null : "grades is NULL";
+
+		this.grades = grades;
+	}
+
+	/**
+	 * Add the specified <code>Grade</code> to the
+	 * <code>Activity</code>.
+	 *
+	 * @param  grade    The <code>Grade</code> to add, not null
+	 *
+	 * @return          <code>True</code> if the <code>Grade</code> was
+	 *                  successfully added, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean addGrade (final Grade grade)
+	{
+		assert grade != null : "grade is NULL";
+
+		return this.grades.add (grade);
+	}
+
+	/**
+	 * Remove the specified <code>Grade</code> from the
+	 * <code>Activity</code>.
+	 *
+	 * @param  grade    The <code>Grade</code> to remove, not null
+	 *
+	 * @return          <code>True</code> if the <code>Grade</code> was
+	 *                  successfully removed from, <code>False</code> otherwise
+	 */
+
+	@Override
+	protected boolean removeGrade (final Grade grade)
+	{
+		assert grade != null : "grade is NULL";
+
+		return this.grades.remove (grade);
 	}
 
 	/**

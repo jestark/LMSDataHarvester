@@ -557,9 +557,6 @@ public abstract class Activity extends ParentActivity
 	/** The associated <code>ActivityReference</code> */
 	public static final Property<Activity, ActivityReference> REFERENCE;
 
-	/** The <code>Grade</code> instances associated with the <code>Activity</code> */
-	public static final Property<Activity, Grade> GRADES;
-
 	/** Select the <code>Activity</code> instance by its id */
 	public static final Selector<Activity> SELECTOR_ID;
 
@@ -591,9 +588,6 @@ public abstract class Activity extends ParentActivity
 				Activity::getReference, Activity::setReference,
 				Property.Flags.REQUIRED);
 
-		GRADES = Property.of (Activity.class, Grade.class, "grade",
-				Activity::getGrades, Activity::addGrade, Activity::removeGrade);
-
 		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
 
 		SELECTOR_ALL = Selector.builder (Activity.class)
@@ -605,7 +599,6 @@ public abstract class Activity extends ParentActivity
 			.addProperty (ID)
 			.addProperty (MODEL)
 			.addProperty (NAME)
-			.addProperty (GRADES)
 			.addRelationship (REFERENCE, ActivityReference.METADATA, ActivityReference.ACTIVITY)
 			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
@@ -920,6 +913,22 @@ public abstract class Activity extends ParentActivity
 	}
 
 	/**
+	 * Get the <code>List</code> of <code>Grade</code> instances which are
+	 * associated with the <code>Activity</code>.  Not all
+	 * <code>Activity</code> instances are graded.  If the
+	 * <code>Activity</code> does is not graded then the <code>List</code> will
+	 * be empty.
+	 *
+	 * @return A <code>List</code> of <code>Grade</code> instances
+	 */
+
+	@Override
+	public List<Grade> getGrades ()
+	{
+		return this.getReference ().getGrades ();
+	}
+
+	/**
 	 * Get a <code>List</code> of all of the <code>LogEntry</code> instances
 	 * which act upon the <code>Activity</code>.
 	 *
@@ -981,37 +990,4 @@ public abstract class Activity extends ParentActivity
 	 */
 
 	protected abstract void setName (String name);
-
-	/**
-	 * Initialize the <code>List</code> of <code>Grade</code> instances
-	 * associated with the <code>Activity</code> instance.  This method is
-	 * intended to be used to initialize a new <code>Activity</code> instance.
-	 *
-	 * @param  grades The <code>List</code> of <code>Grade</code> instances, not
-	 *                null
-	 */
-
-	protected abstract void setGrades (List<Grade> grades);
-
-	/**
-	 * Add the specified <code>Grade</code> to the
-	 * <code>Activity</code>.
-	 *
-	 * @param  grade    The <code>Grade</code> to add, not null
-	 * @return          <code>True</code> if the <code>Grade</code> was
-	 *                  successfully added, <code>False</code> otherwise
-	 */
-
-	protected abstract boolean addGrade (Grade grade);
-
-	/**
-	 * Remove the specified <code>Grade</code> from the
-	 * <code>Activity</code>.
-	 *
-	 * @param  grade    The <code>Grade</code> to remove, not null
-	 * @return          <code>True</code> if the <code>Grade</code> was
-	 *                  successfully removed from, <code>False</code> otherwise
-	 */
-
-	protected abstract boolean removeGrade (Grade grade);
 }

@@ -72,7 +72,7 @@ public class GradeData extends Grade
 	private Enrolment enrolment;
 
 	/** The activity for which the grade is assigned */
-	private Activity activity;
+	private ActivityReference activity;
 
 	/**
 	 * Create the <code>Grade</code> with null values.
@@ -96,7 +96,6 @@ public class GradeData extends Grade
 		super (builder);
 
 		this.enrolment = Preconditions.checkNotNull (builder.getEnrolment (), "enrolment");
-		this.activity = Preconditions.checkNotNull (builder.getActivity (), "activity");
 		this.grade = Preconditions.checkNotNull (builder.getGrade (), "grade");
 	}
 
@@ -130,14 +129,14 @@ public class GradeData extends Grade
 	}
 
 	/**
-	 * Get the <code>Activity</code> for which the <code>Grade</code> is
-	 * assigned.
+	 * Get the <code>ActivityReference</code> for which the <code>Grade</code>
+	 * is assigned.
 	 *
-	 * @return The associated <code>Activity</code>
+	 * @return The associated <code>ActivityReference</code>
 	 */
 
 	@Override
-	public Activity getActivity ()
+	public ActivityReference getActivityReference ()
 	{
 		return this.propagateDomainModel (this.activity);
 	}
@@ -151,7 +150,7 @@ public class GradeData extends Grade
 	 */
 
 	@Override
-	protected void setActivity (final Activity activity)
+	protected void setActivityReference (final ActivityReference activity)
 	{
 		assert activity != null : "activity is NULL";
 

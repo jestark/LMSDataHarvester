@@ -74,14 +74,14 @@ public abstract class Grade extends Element
 
 	public static class Builder extends Element.Builder<Grade>
 	{
-		/** Helper to substitute <code>Activity</code> instances */
-		private final Retriever<Activity> activityRetriever;
+		/** Helper to substitute <code>ActivityReference</code> instances */
+		private final Retriever<ActivityReference> activityRetriever;
 
 		/** Helper to substitute <code>Enrolment</code> instances */
 		private final Retriever<Enrolment> enrolmentRetriever;
 
-		/** The associated <code>Activity</code> */
-		private @Nullable Activity activity;
+		/** The associated <code>ActivityReference</code> */
+		private @Nullable ActivityReference activity;
 
 		/** The associated <code>Enrolment</code> */
 		private @Nullable Enrolment enrolment;
@@ -97,7 +97,8 @@ public abstract class Grade extends Element
 		 * @param  gradeRetriever     <code>Retriever</code> for
 		 *                            <code>Grade</code> instances, not null
 		 * @param  activityRetriever  <code>Retriever</code> for
-		 *                            <code>Role</code> instances, not null
+		 *                            <code>ActivityReference</code> instances,
+		 *                            not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
 		 *                            <code>Enrolment</code> instances, not null
 		 */
@@ -106,7 +107,7 @@ public abstract class Grade extends Element
 				final DomainModel model,
 				final Definition definition,
 				final Retriever<Grade> gradeRetriever,
-				final Retriever<Activity> activityRetriever,
+				final Retriever<ActivityReference> activityRetriever,
 				final Retriever<Enrolment> enrolmentRetriever)
 		{
 			super (model, definition, gradeRetriever);
@@ -181,7 +182,7 @@ public abstract class Grade extends Element
 
 			super.load (grade);
 
-			this.setActivity (grade.getActivity ());
+			this.setActivityReference (grade.getActivityReference ());
 			this.setEnrolment (grade.getEnrolment ());
 			this.setGrade (grade.getGrade ());
 
@@ -199,7 +200,30 @@ public abstract class Grade extends Element
 		@CheckReturnValue
 		protected ActivityReference getActivityReference ()
 		{
-			return this.activity.getReference ();
+			return this.activity;
+		}
+
+		/**
+		 * Set the <code>ActivityReference</code> which is associated with the
+		 * <code>Grade</code>.
+		 *
+		 * @param  reference The <code>ActivityReference</code>, not null
+		 * @return           This <code>Builder</code>
+		 *
+		 * @throws IllegalArgumentException if the
+		 *                                  <code>ActivityReference</code> is
+		 *                                  not in the <code>DataStore</code>
+		 */
+
+		private final Builder setActivityReference (final ActivityReference reference)
+		{
+			this.log.trace ("setActivityReference: reference={}", reference);
+
+			assert reference != null : "reference is NULL";
+
+			this.activity = this.verifyRelationship (this.activityRetriever, reference, "activity");
+
+			return this;
 		}
 
 		/**
@@ -212,7 +236,7 @@ public abstract class Grade extends Element
 		@CheckReturnValue
 		public final Activity getActivity ()
 		{
-			return this.activity;
+			return (this.activity != null) ? this.activity.getActivity () : null;
 		}
 
 		/**
@@ -230,9 +254,9 @@ public abstract class Grade extends Element
 		{
 			this.log.trace ("setActivity: activity={}", activity);
 
-			this.activity = this.verifyRelationship (this.activityRetriever, activity, "activity");
+			Preconditions.checkNotNull (activity, "activity");
 
-			return this;
+			return this.setActivityReference (activity.getReference ());
 		}
 
 		/**
@@ -346,7 +370,8 @@ public abstract class Grade extends Element
 	 * @version 1.0
 	 */
 
-	@Module (includes = {GradeModule.class, Activity.ActivityModule.class, Enrolment.EnrolmentModule.class})
+	@Module (includes = {GradeModule.class, ActivityReference.ActivityReferenceModule.class,
+		Enrolment.EnrolmentModule.class})
 	public static final class GradeBuilderModule
 	{
 		/** The <code>Definition</code> */
@@ -370,7 +395,8 @@ public abstract class Grade extends Element
 		 * @param  model              The <code>DomainModel</code>, not null
 		 * @param  retriever          The <code>Retriever</code>, not null
 		 * @param  activityRetriever  <code>Retriever</code> for
-		 *                            <code>Role</code> instances, not null
+		 *                            <code>ActivityReference</code> instances,
+		 *                            not null
 		 * @param  enrolmentRetriever <code>Retriever</code> for
 		 *                            <code>Enrolment</code> instances, not null
 		 */
@@ -379,7 +405,7 @@ public abstract class Grade extends Element
 		public Builder createBuilder (
 				final DomainModel model,
 				final @Named ("TableRetriever") Retriever<Grade> retriever,
-				final @Named ("TableRetriever") Retriever<Activity> activityRetriever,
+				final @Named ("TableRetriever") Retriever<ActivityReference> activityRetriever,
 				final @Named ("TableRetriever") Retriever<Enrolment> enrolmentRetriever)
 		{
 			return new Builder (model, this.definition, retriever, activityRetriever, enrolmentRetriever);
@@ -445,7 +471,7 @@ public abstract class Grade extends Element
 	public static final Property<Grade, DomainModel> MODEL;
 
 	/** The associated <code>Activity</code> */
-	public static final Property<Grade, Activity> ACTIVITY;
+	public static final Property<Grade, ActivityReference> ACTIVITY;
 
 	/** The associated <code>Enrolment</code> */
 	public static final Property<Grade, Enrolment> ENROLMENT;
@@ -469,8 +495,8 @@ public abstract class Grade extends Element
 		MODEL = Property.of (Grade.class, DomainModel.class, "domainmodel",
 				Grade::getDomainModel, Grade::setDomainModel);
 
-		ACTIVITY = Property.of (Grade.class, Activity.class, "activity",
-				Grade::getActivity, Grade::setActivity,
+		ACTIVITY = Property.of (Grade.class, ActivityReference.class, "activity",
+				Grade::getActivityReference, Grade::setActivityReference,
 				Property.Flags.REQUIRED);
 
 		ENROLMENT = Property.of (Grade.class, Enrolment.class, "enrolment",
@@ -496,7 +522,7 @@ public abstract class Grade extends Element
 		METADATA = MetaData.builder (Grade.class)
 			.addProperty (MODEL)
 			.addProperty (GRADE)
-			.addRelationship (ACTIVITY, Activity.METADATA, Activity.GRADES)
+			.addRelationship (ACTIVITY, ActivityReference.METADATA, ActivityReference.GRADES)
 			.addRelationship (ENROLMENT, Enrolment.METADATA, Enrolment.GRADES)
 			.addSelector (SELECTOR_ALL)
 			.addSelector (SELECTOR_PKEY)
@@ -545,6 +571,8 @@ public abstract class Grade extends Element
 	protected Grade (final Builder builder)
 	{
 		super (builder);
+
+		this.setActivityReference (Preconditions.checkNotNull (builder.getActivityReference (), "activity"));
 	}
 
 	/**
@@ -762,7 +790,19 @@ public abstract class Grade extends Element
 	 * @return The associated <code>Activity</code>
 	 */
 
-	public abstract Activity getActivity ();
+	public Activity getActivity ()
+	{
+		return this.getActivityReference ().getActivity ();
+	}
+
+	/**
+	 * Get the <code>ActivityReference</code> for which the <code>Grade</code>
+	 * is assigned.
+	 *
+	 * @return The associated <code>Activity</code>
+	 */
+
+	protected abstract ActivityReference getActivityReference ();
 
 	/**
 	 * Set the <code>Activity</code> which is associated with the
@@ -772,7 +812,7 @@ public abstract class Grade extends Element
 	 * @param  activity The <code>Activity</code>, not null
 	 */
 
-	protected abstract void setActivity (Activity activity);
+	protected abstract void setActivityReference (ActivityReference activity);
 
 	/**
 	 * Get the <code>Enrolment</code>, for the student, to which the
