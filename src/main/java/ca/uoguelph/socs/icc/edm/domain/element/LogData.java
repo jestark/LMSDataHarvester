@@ -187,19 +187,6 @@ public class LogData extends LogEntry
 	}
 
 	/**
-	 * Get the <code>Activity</code> upon which the logged action was
-	 * performed.
-	 *
-	 * @return A reference to the associated <code>Activity</code> object.
-	 */
-
-	@Override
-	public Activity getActivity ()
-	{
-		return this.getActivityReference ().getActivity ();
-	}
-
-	/**
 	 * Get the <code>ActivityReference</code> for the <code>Activity</code>
 	 * upon which the logged <code>Action</code> was performed.
 	 *

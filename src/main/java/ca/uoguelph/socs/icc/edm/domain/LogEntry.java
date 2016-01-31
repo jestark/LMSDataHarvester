@@ -366,7 +366,7 @@ public abstract class LogEntry extends Element
 		@CheckReturnValue
 		public final Activity getActivity ()
 		{
-			return this.activity.getActivity ();
+			return (this.activity != null) ? this.activity.getActivity () : null;
 		}
 
 		/**
@@ -383,6 +383,8 @@ public abstract class LogEntry extends Element
 		public final Builder setActivity (final Activity activity)
 		{
 			this.log.trace ("setActivity: activity={}", activity);
+
+			Preconditions.checkNotNull (activity, "activity");
 
 			return this.setActivityReference (activity.getReference ());
 		}
@@ -1058,7 +1060,7 @@ public abstract class LogEntry extends Element
 	 * @return A reference to the logged <code>Action</code>
 	 */
 
-	public abstract Action getAction();
+	public abstract Action getAction ();
 
 	/**
 	 * Set the <code>Action</code> which was performed upon the logged
@@ -1077,7 +1079,10 @@ public abstract class LogEntry extends Element
 	 * @return A reference to the associated <code>Activity</code>
 	 */
 
-	public abstract Activity getActivity ();
+	public Activity getActivity ()
+	{
+		return this.getActivityReference ().getActivity ();
+	}
 
 	/**
 	 * Get the <code>ActivityReference</code> for the <code>Activity</code>
