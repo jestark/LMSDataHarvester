@@ -192,6 +192,10 @@ public final class ActivityConverter
 	 *
 	 * @param  ref The <code>ActivityReference</code>, not null
 	 * @return     The <code>Activity</code>
+	 *
+	 * @throws IllegalStateException if an <code>Activity</code> implementation
+	 *                               is not registered for the associated
+	 *                               <code>ActivityType</code>
 	 */
 
 	private Activity loadActivity (final ActivityReference ref)
@@ -199,6 +203,9 @@ public final class ActivityConverter
 		this.log.trace ("loadActivity: ref={}", ref);
 
 		this.log.debug ("Loaded activity instance for module: {} id: {}", ref.getType ().getName (), ref.getId ());
+
+		Preconditions.checkState (Activity.hasActivityClass (ref.getType ()),
+				"Missing Activity implementation for: %s", ref.getType ().getName ());
 
 		return ref.getActivity ().getBuilder (this.dest).build ();
 	}
@@ -276,7 +283,7 @@ public final class ActivityConverter
 
 		if (! this.typeCache.containsKey (type))
 		{
-			this.log.info ("Created dummy activity instance for module: {}", type.getName ());
+			this.log.debug ("Created dummy activity instance for module: {}", type.getName ());
 			this.typeCache.put (type, this.createActivity (type, course));
 		}
 
