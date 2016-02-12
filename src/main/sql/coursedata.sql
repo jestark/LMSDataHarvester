@@ -90,10 +90,11 @@ comment on column enrolment.grade is 'Final grade in the course';
 
 -- All of the grades recorded for the gradable activities
 create table if not exists enrolment_activity_grade (
+	id bigserial primary key,
 	enrolment_id bigint not null references enrolment (id) on delete cascade on update cascade,
 	activity_id bigint not null references activity (id) on delete restrict on update cascade,
 	grade integer not null,
-	primary key (enrolment_id, activity_id)
+	unique (enrolment_id, activity_id)
 );
 
 comment on table enrolment_activity_grade is 'Grades assigned to each student for a graded activity';

@@ -70,9 +70,9 @@
 			<many-to-one name="type" target-entity="ActivityTypeData" optional="false">
 				<join-column name="type_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
+			<one-to-many name="grades" target-entity="GradeData" mapped-by="activity"/>
 			<one-to-many name="log" target-entity="LogData" mapped-by="activity"/>
 			<one-to-one name="activity" target-entity="ca.uoguelph.socs.icc.edm.domain.Activity" mapped-by="reference"/>
-			<transient name="grades"/>
 		</attributes>
 	</entity>
 
@@ -191,8 +191,32 @@
 			<many-to-one name="course" target-entity="CourseData" optional="false">
 				<join-column name="course_id" nullable="false" referenced-column-name="id"/>
 			</many-to-one>
+			<one-to-many name="grades" target-entity="GradeData" mapped-by="enrolment"/>
 			<one-to-many name="log" target-entity="LogData" mapped-by="enrolment"/>
-			<transient name="grades"/>
+		</attributes>
+	</entity>
+
+	<!--********************************************************************-->
+	<!-- Grades                                                             -->
+	<!--********************************************************************-->
+
+	<entity name="Grade" class="GradeData" metadata-complete="true">
+		<table name="enrolment_activity_grade"/>
+		<attributes>
+			<id name="id">
+				<column name="id" nullable="false" unique="true"/>
+				<generated-value strategy="SEQUENCE" generator="enrolment_activity_grade_id_seq"/>
+				<sequence-generator name="enrolment_activity_grade_id_seq" sequence-name="enrolment_activity_grade_id_seq" initial-value="1" allocation-size="1"/>
+			</id>
+			<basic name="grade" optional="false">
+				<column name="grade" nullable="false"/>
+			</basic>
+			<many-to-one name="activity" target-entity="ActivityReferenceData" optional="false">
+				<join-column name="activity_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
+			<many-to-one name="enrolment" target-entity="EnrolmentData" optional="false">
+				<join-column name="enrolment_id" nullable="false" referenced-column-name="id"/>
+			</many-to-one>
 		</attributes>
 	</entity>
 

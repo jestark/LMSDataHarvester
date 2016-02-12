@@ -65,6 +65,9 @@ public class GradeData extends Grade
 	/** Serial version id, required by the Serializable interface */
 	private static final long serialVersionUID = 1L;
 
+	/** The primary key of the grade. */
+	private @Nullable Long id;
+
 	/** The grade */
 	private Integer grade;
 
@@ -80,6 +83,7 @@ public class GradeData extends Grade
 
 	protected GradeData ()
 	{
+		this.id = null;
 		this.grade = null;
 		this.activity = null;
 		this.enrolment = null;
@@ -95,6 +99,7 @@ public class GradeData extends Grade
 	{
 		super (builder);
 
+		this.id = builder.getId ();
 		this.enrolment = Preconditions.checkNotNull (builder.getEnrolment (), "enrolment");
 		this.grade = Preconditions.checkNotNull (builder.getGrade (), "grade");
 	}
@@ -113,7 +118,7 @@ public class GradeData extends Grade
 	@CheckReturnValue
 	public Long getId ()
 	{
-		return this.enrolment.getId ();
+		return this.id;
 	}
 
 	/**
@@ -126,6 +131,7 @@ public class GradeData extends Grade
 	@Override
 	protected void setId (final @Nullable Long id)
 	{
+		this.id = id;
 	}
 
 	/**

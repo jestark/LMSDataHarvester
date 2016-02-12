@@ -32,6 +32,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 import ca.uoguelph.socs.icc.edm.domain.datastore.Retriever;
+import ca.uoguelph.socs.icc.edm.domain.datastore.idgenerator.IdGenerator;
 import ca.uoguelph.socs.icc.edm.domain.metadata.MetaData;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Property;
 import ca.uoguelph.socs.icc.edm.domain.metadata.Selector;
@@ -74,11 +75,17 @@ public abstract class Grade extends Element
 
 	public static class Builder extends Element.Builder<Grade>
 	{
+		/** The <code>IdGenerator</code>*/
+		private final IdGenerator idGenerator;
+
 		/** Helper to substitute <code>ActivityReference</code> instances */
 		private final Retriever<ActivityReference> activityRetriever;
 
 		/** Helper to substitute <code>Enrolment</code> instances */
 		private final Retriever<Enrolment> enrolmentRetriever;
+
+		/** The <code>DataStore</code> id number for the <code>Grade</code> */
+		private @Nullable Long id;
 
 		/** The associated <code>ActivityReference</code> */
 		private @Nullable ActivityReference activity;
@@ -94,6 +101,7 @@ public abstract class Grade extends Element
 		 *
 		 * @param  model              The <code>DomainModel</code>, not null
 		 * @param  definition         The <code>Definition</code>, not null
+		 * @param  idGenerator        The <code>IdGenerator</code>, not null
 		 * @param  gradeRetriever     <code>Retriever</code> for
 		 *                            <code>Grade</code> instances, not null
 		 * @param  activityRetriever  <code>Retriever</code> for
@@ -106,18 +114,23 @@ public abstract class Grade extends Element
 		protected Builder (
 				final DomainModel model,
 				final Definition definition,
+				final IdGenerator idGenerator,
 				final Retriever<Grade> gradeRetriever,
 				final Retriever<ActivityReference> activityRetriever,
 				final Retriever<Enrolment> enrolmentRetriever)
 		{
 			super (model, definition, gradeRetriever);
 
+			assert idGenerator != null : "idGenerator is NULL";
 			assert activityRetriever != null : "activityRetriever is NULL";
 			assert enrolmentRetriever != null : "enrolmentRetriever is NULL";
+
+			this.idGenerator = idGenerator;
 
 			this.activityRetriever = activityRetriever;
 			this.enrolmentRetriever = enrolmentRetriever;
 
+			this.id = null;
 			this.activity = null;
 			this.enrolment = null;
 			this.value = null;
@@ -140,6 +153,24 @@ public abstract class Grade extends Element
 		}
 
 		/**
+		 * Implementation of the pre-insert hook to set the ID number.
+		 *
+		 * @param  grade The <code>Grade</code> to be inserted, not null
+		 * @return       The <code>Grade</code> to be inserted
+		 */
+
+		@Override
+		protected Grade preInsert (final Grade grade)
+		{
+			assert grade != null : "grade is NULL";
+
+			this.log.debug ("Setting ID");
+			grade.setId (this.idGenerator.nextId ());
+
+			return grade;
+		}
+
+		/**
 		 * Reset the builder.  This method will set all of the fields for the
 		 * <code>Element</code> to be built to <code>null</code>.
 		 *
@@ -153,6 +184,7 @@ public abstract class Grade extends Element
 
 			super.clear ();
 
+			this.id = null;
 			this.activity = null;
 			this.enrolment = null;
 			this.value = null;
@@ -182,11 +214,25 @@ public abstract class Grade extends Element
 
 			super.load (grade);
 
+			this.id = grade.getId ();
 			this.setActivityReference (grade.getActivityReference ());
 			this.setEnrolment (grade.getEnrolment ());
 			this.setGrade (grade.getGrade ());
 
 			return this;
+		}
+
+		/**
+		 * Get the <code>DataStore</code> identifier for the <code>Grade</code>
+		 * instance.
+		 *
+		 * @return The <code>DataStore</code> identifier
+		 */
+
+		@CheckReturnValue
+		public final Long getId ()
+		{
+			return this.id;
 		}
 
 		/**
@@ -338,7 +384,7 @@ public abstract class Grade extends Element
 	 */
 
 	@ElementScope
-	@Component (modules = {GradeBuilderModule.class})
+	@Component (dependencies = {IdGenerator.IdGeneratorComponent.class}, modules = {GradeBuilderModule.class})
 	protected interface GradeComponent extends Element.ElementComponent<Grade>
 	{
 		/**
@@ -393,6 +439,7 @@ public abstract class Grade extends Element
 		 * Create the <code>Builder</code>.
 		 *
 		 * @param  model              The <code>DomainModel</code>, not null
+		 * @param  generator          The <code>IdGenerator</code>, not null
 		 * @param  retriever          The <code>Retriever</code>, not null
 		 * @param  activityRetriever  <code>Retriever</code> for
 		 *                            <code>ActivityReference</code> instances,
@@ -404,11 +451,12 @@ public abstract class Grade extends Element
 		@Provides
 		public Builder createBuilder (
 				final DomainModel model,
+				final IdGenerator generator,
 				final @Named ("TableRetriever") Retriever<Grade> retriever,
 				final @Named ("TableRetriever") Retriever<ActivityReference> activityRetriever,
 				final @Named ("TableRetriever") Retriever<Enrolment> enrolmentRetriever)
 		{
-			return new Builder (model, this.definition, retriever, activityRetriever, enrolmentRetriever);
+			return new Builder (model, this.definition, generator, retriever, activityRetriever, enrolmentRetriever);
 		}
 	}
 
@@ -455,6 +503,7 @@ public abstract class Grade extends Element
 		protected Grade.GradeComponent getComponent (final DomainModel model)
 		{
 			return DaggerGrade_GradeComponent.builder ()
+				.idGeneratorComponent (model.getIdGeneratorComponent (this.impl))
 				.domainModelModule (new DomainModel.DomainModelModule (Grade.class, model))
 				.gradeBuilderModule (new GradeBuilderModule (this))
 				.build ();
@@ -466,6 +515,9 @@ public abstract class Grade extends Element
 
 	/** The <code>MetaData</code> for the <code>Grade</code> */
 	protected static final MetaData<Grade> METADATA;
+
+	/** The <code>DataStore</code> identifier of the <code>Grade</code> */
+	public static final Property<Grade, Long> ID;
 
 	/** The <code>DomainModel</code> which contains the <code>Grade</code> */
 	public static final Property<Grade, DomainModel> MODEL;
@@ -479,11 +531,11 @@ public abstract class Grade extends Element
 	/** The assigned grade */
 	public static final Property<Grade, Integer> GRADE;
 
+	/** Select the <code>Grade</code> instance by its id */
+	public static final Selector<Grade> SELECTOR_ID;
+
 	/** Select all of the <code>Grade</code> instances */
 	public static final Selector<Grade> SELECTOR_ALL;
-
-	/** Select a <code>Grade</code> based the <code>Activity</code> and <code>Enrolment</code> */
-	public static final Selector<Grade> SELECTOR_PKEY;
 
 	/**
 	 * Initialize the <code>MetaData</code>, <code>Property</code> and
@@ -494,6 +546,9 @@ public abstract class Grade extends Element
 	{
 		MODEL = Property.of (Grade.class, DomainModel.class, "domainmodel",
 				Grade::getDomainModel, Grade::setDomainModel);
+
+		ID = Property.of (Grade.class, Long.class, "id",
+				Grade::getId, Grade::setId);
 
 		ACTIVITY = Property.of (Grade.class, ActivityReference.class, "activity",
 				Grade::getActivityReference, Grade::setActivityReference,
@@ -507,25 +562,21 @@ public abstract class Grade extends Element
 				Grade::getGrade, Grade::setGrade,
 				Property.Flags.REQUIRED);
 
+		SELECTOR_ID = Selector.of (Selector.Cardinality.KEY, ID);
+
 		SELECTOR_ALL =  Selector.builder (Grade.class)
 			.setCardinality (Selector.Cardinality.MULTIPLE)
 			.setName ("all")
 			.build ();
 
-		SELECTOR_PKEY = Selector.builder (Grade.class)
-			.setCardinality (Selector.Cardinality.SINGLE)
-			.setName ("pkey")
-			.addProperty (Grade.ACTIVITY)
-			.addProperty (Grade.ENROLMENT)
-			.build ();
-
 		METADATA = MetaData.builder (Grade.class)
 			.addProperty (MODEL)
+			.addProperty (ID)
 			.addProperty (GRADE)
 			.addRelationship (ACTIVITY, ActivityReference.METADATA, ActivityReference.GRADES)
 			.addRelationship (ENROLMENT, Enrolment.METADATA, Enrolment.GRADES)
+			.addSelector (SELECTOR_ID)
 			.addSelector (SELECTOR_ALL)
-			.addSelector (SELECTOR_PKEY)
 			.build ();
 	}
 
