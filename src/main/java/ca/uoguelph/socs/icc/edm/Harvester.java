@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
+import ca.uoguelph.socs.icc.edm.domain.Course;
 import ca.uoguelph.socs.icc.edm.domain.DomainModel;
 import ca.uoguelph.socs.icc.edm.domain.User;
 import ca.uoguelph.socs.icc.edm.domain.datastore.ConfigLoader;
@@ -292,6 +293,9 @@ public final class Harvester implements AutoCloseable
 	 * output <code>DataStore</code>
 	 *
 	 * @return This <code>Harvester</code>
+	 *
+	 * @throws IllegalstateException if the course is already in the destination
+	 *                               <code>DomainModel</code>
 	 */
 
 	public Harvester store ()
@@ -302,6 +306,13 @@ public final class Harvester implements AutoCloseable
 
 		try (DomainModel coursedb = JPADataStore.create (this.loader.profiles.get ("output")))
 		{
+			Preconditions.checkState (this.model.getQuery (Course.SELECTOR_ALL)
+				.stream ()
+				.allMatch (c -> (! coursedb.getQuery (Course.SELECTOR_OFFERING)
+							.setAllValues (c).query ()
+							.isPresent ())),
+				"The course already exists in the destination DomainModel");
+
 			coursedb.getSynchronizer ()
 				.addAll (this.model.getQuery (User.SELECTOR_ALL)
 						.queryAll ())
