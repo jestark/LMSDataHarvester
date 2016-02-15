@@ -1,6 +1,5 @@
 Extract data from a Learning Management System (LMS), to a database suitable
-for research.  Learning Management Systems, such as
-[Moodle](http://www.moodle.org).
+for research.
 
 # Dependencies
 To build the Harvester, the following software packages are required:
